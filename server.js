@@ -6,12 +6,12 @@ const router = new Router();
 
 let counter = 0;
 
-router.get('/api/counter', async (ctx, next) => {
+router.get('/counter', async (ctx, next) => {
   await next();
   ctx.body = { counter };
 });
 
-router.put('/api/counter', async (ctx, next) => {
+router.put('/counter', async (ctx, next) => {
   await next();
   counter += 1;
   ctx.body = { counter };

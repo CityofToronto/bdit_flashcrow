@@ -3,6 +3,16 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+function apiFetch(url, options) {
+  url = `/flashcrow/api${url}`;
+  options = options || {};
+  Object.assign(options, {
+    credentials: 'include',
+  });
+  return fetch(url, options)
+    .then(response => response.json());
+}
+
 export default new Vuex.Store({
   state: {
     counter: 0,
@@ -25,8 +35,7 @@ export default new Vuex.Store({
         method: 'PUT',
       };
       commit('startLoading');
-      return fetch('/api/counter', options)
-        .then(response => response.json())
+      return apiFetch('/counter', options)
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
@@ -34,8 +43,7 @@ export default new Vuex.Store({
     },
     init({ commit }) {
       commit('startLoading');
-      return fetch('/api/counter')
-        .then(response => response.json())
+      return apiFetch('/counter')
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
