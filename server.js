@@ -1,24 +1,17 @@
-const Koa = require('koa');
-const Router = require('koa-router');
+const express = require('express');
 
-const app = new Koa();
-const router = new Router();
+const app = express();
+const PORT = 8081;
 
 let counter = 0;
 
-router.get('/counter', async (ctx, next) => {
-  await next();
-  ctx.body = { counter };
+app.get('/counter', (req, res) => {
+  res.send({ counter });
 });
 
-router.put('/counter', async (ctx, next) => {
-  await next();
+app.put('/counter', (req, res) => {
   counter += 1;
-  ctx.body = { counter };
+  res.send({ counter });
 });
 
-app
-  .use(router.routes())
-  .use(router.allowedMethods());
-
-app.listen(8081, 'localhost');
+app.listen(PORT, () => console.log(`app listening on port ${PORT}!`));
