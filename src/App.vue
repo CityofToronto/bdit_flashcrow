@@ -22,7 +22,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="postcss">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
