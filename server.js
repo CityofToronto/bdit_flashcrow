@@ -1,39 +1,16 @@
-// const csrf = require('csurf');
-const express = require('express');
-const Router = require('express-promise-router');
-const session = require('express-session');
-const helmet = require('helmet');
+const app = require('./lib/app');
+const { port, ENV } = require('./lib/config');
+const db = require('./lib/db/db');
 
-let serverConfig = require('./server-config');
-
-const app = express();
-const ENV = app.get('env');
-const PORT = 8081;
-serverConfig = serverConfig[ENV];
-
-app.use(helmet());
-app.use(session(serverConfig.session));
-/*
-app.use(csrf({
-  cookie: false,
-}));
-*/
-
-let counter = 0;
-
-const router = new Router();
-
-router.get('/counter', async (req, res) => {
-  res.send({ counter });
+const server = app.listen(port, () => {
+  console.log(`[${ENV}] app listening on port ${port}!`);
 });
 
-router.put('/counter', async (req, res) => {
-  counter += 1;
-  res.send({ counter });
-});
-
-app.use(router);
-
-app.listen(PORT, () => {
-  console.log(`[${ENV}] app listening on port ${PORT}!`);
+const shutdownEvents = ['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM'];
+function onShutdown() {
+  db.$pool.end();
+  server.close();
+}
+shutdownEvents.forEach((event) => {
+  process.on(event, onShutdown);
 });
