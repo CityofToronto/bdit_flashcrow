@@ -4,6 +4,7 @@
     <div>
       <span>Counter: {{counter}}</span>
       <button @click="incrementCounter" :disabled="loading">Increment</button>
+      <button @click="resetCounter" :disabled="loading">Reset</button>
     </div>
   </div>
 </template>
@@ -17,7 +18,10 @@ export default {
     ...mapState(['counter', 'loading']),
   },
   methods: {
-    ...mapActions(['incrementCounter']),
+    ...mapActions([
+      'incrementCounter',
+      'resetCounter',
+    ]),
   },
 };
 </script>

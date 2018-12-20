@@ -4,12 +4,12 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 function apiFetch(url, options) {
-  url = `/flashcrow/api${url}`;
-  options = options || {};
-  Object.assign(options, {
+  const apiUrl = `/flashcrow/api${url}`;
+  const apiOptions = options || {};
+  Object.assign(apiOptions, {
     credentials: 'include',
   });
-  return fetch(url, options)
+  return fetch(apiUrl, apiOptions)
     .then(response => response.json());
 }
 
@@ -44,6 +44,17 @@ export default new Vuex.Store({
     init({ commit }) {
       commit('startLoading');
       return apiFetch('/counter')
+        .then(({ counter }) => {
+          commit('setCounter', counter);
+          commit('stopLoading');
+        });
+    },
+    resetCounter({ commit }) {
+      const options = {
+        method: 'DELETE',
+      };
+      commit('startLoading');
+      return apiFetch('/counter', options)
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
