@@ -1,15 +1,22 @@
-const app = require('./lib/app');
-const { port, ENV } = require('./lib/config');
+const server = require('./lib/app');
+const { ENV, host, port } = require('./lib/config');
 const db = require('./lib/db/db');
 
-const server = app.listen(port, () => {
-  console.log(`[${ENV}] app listening on port ${port}!`);
-});
+async function initServer() {
+  try {
+    await server.start();
+    console.log(`[${ENV}] server listening on ${host}:${port}...`);
+  } catch (err) {
+    console.error('Error starting server: ', err);
+  }
+}
+
+initServer();
 
 const shutdownEvents = ['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM'];
 function onShutdown() {
   db.$pool.end();
-  server.close();
+  server.stop();
 }
 shutdownEvents.forEach((event) => {
   process.on(event, onShutdown);
