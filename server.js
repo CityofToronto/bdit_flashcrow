@@ -10,6 +10,20 @@ const options = {
   app: { config },
   host: config.host,
   port: config.port,
+  routes: {
+    security: {
+      hsts: {
+        maxAge: 2592000,
+        includeSubdomains: true,
+        preload: false,
+      },
+      xframe: true,
+      xss: true,
+      noOpen: true,
+      noSniff: true,
+      referrer: false,
+    },
+  },
 };
 if (config.ENV === 'development') {
   const tls = config.https;
