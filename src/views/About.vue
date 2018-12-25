@@ -20,8 +20,12 @@ export default {
   methods: {
     ...mapActions([
       'incrementCounter',
+      'init',
       'resetCounter',
     ]),
+  },
+  mounted() {
+    this.init();
   },
 };
 </script>
