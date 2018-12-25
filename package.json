@@ -10,9 +10,11 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "blankie": "^4.1.0",
     "hapi": "^17.8.1",
     "hapi-auth-cookie": "^9.1.0",
     "pg-promise": "^8.5.4",
+    "scooter": "^5.0.1",
     "uuid": "^3.3.2",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",

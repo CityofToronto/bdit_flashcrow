@@ -1,5 +1,7 @@
+const Blankie = require('blankie');
 const Hapi = require('hapi');
 const hapiAuthCookie = require('hapi-auth-cookie');
+const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
@@ -35,6 +37,11 @@ async function initServer() {
   await server.register({
     plugin: hapiAuthCookie,
   });
+
+  await server.register([Scooter, {
+    plugin: Blankie,
+    options: {},
+  }]);
 
   const cache = server.cache({
     segment: 'sessions',
