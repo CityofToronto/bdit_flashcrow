@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import apiFetch from '@/lib/ApiFetch';
+import store from '@/store';
 
 Vue.use(Router);
 
@@ -26,15 +26,15 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  apiFetch('/auth')
-    .then((response) => {
+  store.dispatch('checkAuth')
+    .then((auth) => {
       if (to.name === 'login') {
-        if (response.loggedIn) {
+        if (auth.loggedIn) {
           next({ name: 'home' });
         } else {
           next();
         }
-      } else if (response.loggedIn) {
+      } else if (auth.loggedIn) {
         next();
       } else {
         next({ name: 'login' });

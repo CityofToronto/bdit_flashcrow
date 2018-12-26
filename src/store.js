@@ -9,8 +9,14 @@ export default new Vuex.Store({
   state: {
     counter: 0,
     loading: false,
+    auth: {
+      loggedIn: false,
+    },
   },
   mutations: {
+    setAuth(state, auth) {
+      Vue.set(state, 'auth', auth);
+    },
     setCounter(state, counter) {
       Vue.set(state, 'counter', counter);
     },
@@ -22,6 +28,15 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    checkAuth({ commit }) {
+      commit('startLoading');
+      return apiFetch('/auth')
+        .then((auth) => {
+          commit('setAuth', auth);
+          commit('stopLoading');
+          return auth;
+        });
+    },
     incrementCounter({ commit }) {
       const options = {
         method: 'PUT',
@@ -31,6 +46,7 @@ export default new Vuex.Store({
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
+          return counter;
         });
     },
     init({ commit }) {
@@ -39,6 +55,7 @@ export default new Vuex.Store({
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
+          return counter;
         });
     },
     resetCounter({ commit }) {
@@ -50,6 +67,7 @@ export default new Vuex.Store({
         .then(({ counter }) => {
           commit('setCounter', counter);
           commit('stopLoading');
+          return counter;
         });
     },
   },

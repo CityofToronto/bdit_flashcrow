@@ -1,17 +1,27 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <a href="/flashcrow/api/logout">Logout</a>
+      <template v-if="auth.loggedIn">
+        <router-link to="/">Home</router-link>
+        <span> | </span>
+        <router-link to="/about">About</router-link>
+        <span> | </span>
+        <a href="/flashcrow/api/logout">Logout</a>
+      </template>
+      <h1 v-else>Log In</h1>
     </div>
     <router-view/>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'app',
+  computed: {
+    ...mapState(['auth']),
+  },
 };
 </script>
 
