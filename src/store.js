@@ -1,17 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-Vue.use(Vuex);
+import apiFetch from '@/lib/ApiFetch';
 
-function apiFetch(url, options) {
-  const apiUrl = `/flashcrow/api${url}`;
-  const apiOptions = options || {};
-  Object.assign(apiOptions, {
-    credentials: 'include',
-  });
-  return fetch(apiUrl, apiOptions)
-    .then(response => response.json());
-}
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {

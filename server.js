@@ -66,6 +66,26 @@ async function initServer() {
   // AUTH
 
   server.route({
+    method: 'GET',
+    path: '/auth',
+    config: {
+      auth: { mode: 'try' },
+    },
+    handler: async (request) => {
+      const out = {
+        loggedIn: request.auth.isAuthenticated,
+      };
+      if (out.loggedIn) {
+        const { sessionId } = request.state.sessionId;
+        const { user } = await request.server.app.cache.get(sessionId);
+        const { id } = user;
+        out.user = { id };
+      }
+      return out;
+    },
+  });
+
+  server.route({
     method: 'POST',
     path: '/login',
     config: {

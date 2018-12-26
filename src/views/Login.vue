@@ -2,11 +2,11 @@
   <form action="/flashcrow/api/login" method="POST">
     <div class="form-group">
       <label for="username">Username</label>
-      <input type="text" id="username" name="username">
+      <input type="text" id="username" name="username" required placeholder="Username">
     </div>
     <div class="form-group">
       <label for="password">Password</label>
-      <input type="password" id="password" name="password">
+      <input type="password" id="password" name="password" required placeholder="Password">
     </div>
     <div class="form-group">
       <input type="submit" value="Login">
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'login',
 };
 </script>
 
