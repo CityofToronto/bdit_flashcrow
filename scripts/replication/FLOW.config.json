@@ -1,6 +1,5 @@
 {
   "tables": [
-    "CATEGORY",
-    "COUNTINFOMICS"
+    "ARC_LINK"
   ]
 }

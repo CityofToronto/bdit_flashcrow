@@ -12,15 +12,16 @@ SET LONG 2000000
 SET PAGESIZE 0
 SET LINESIZE 32767
 SET ECHO OFF
+SET FEEDBACK OFF
 EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'STORAGE', false);
 EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'SQLTERMINATOR', true);
-EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'CONSTRAINTS', false);
 EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'SEGMENT_ATTRIBUTES', false);
-EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'PRETTY', false);
 SELECT dbms_metadata.get_ddl('TABLE', '$table', 'TRAFFIC') FROM dual;
-EXIT
+EXIT;
 "@
-  $sqlFile = "$table.ddl.sql"
+
+  $sqlFile = "build\$table.ddl.sql"
   $sqlData | Out-File -Encoding Ascii -FilePath $sqlFile
-  sqlplus.exe -s $oracle @$sqlFile
+  $ddlFile = "build\$table.ddl.txt"
+  sqlplus.exe -s $oracle @$sqlFile | Out-File -FilePath $ddlFile
 }
