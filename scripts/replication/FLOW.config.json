@@ -4,6 +4,10 @@
     "ARTERYDATA",
     "CATEGORY",
     "COUNTINFO",
-    "COUNTINFOMICS"
+    "COUNTINFOMICS",
+    "CNT_DET",
+    "DET",
+    "CNT_SPD",
+    "NODE"
   ]
 }

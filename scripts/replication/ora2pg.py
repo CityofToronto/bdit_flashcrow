@@ -5,7 +5,7 @@ import sys
 TABLE_REGEX = re.compile(
   r'CREATE TABLE "TRAFFIC"."([A-Z0-9_]+)"')
 COLUMN_REGEX = re.compile(
-  r'"(?P<name>[A-Z0-9_]+)" (?P<type>DATE|NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
+  r'"(?P<name>[A-Z0-9_]+)" (?P<type>CHAR|DATE|FLOAT|NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
 CONSTRAINT_NAME_REGEX = re.compile(
   r'CONSTRAINT "([A-Z0-9_]+)"')
 CONSTRAINT_PK_REGEX = re.compile(
@@ -26,11 +26,32 @@ def parse_table(line):
 
 def get_pg_type(name, ora_type, ora_type_args):
   # TODO: allow configured overrides
-  if ora_type == 'DATE':
+  if ora_type == 'CHAR':
+    if len(ora_type_args) != 1:
+      raise TypeError('invalid CHAR arguments: {ora_type_args}'.format(
+        ora_type_args = ora_type_args))
+    return 'char({n})'.format(
+      n = ora_type_args[0])
+  elif ora_type == 'DATE':
     return 'date'
-  elif ora_type == 'NUMBER':
+  elif ora_type == 'FLOAT':
     # TODO: consider size here
-    return 'int8'
+    return 'float8'
+  elif ora_type == 'NUMBER':
+    if ora_type_args is None:
+      return 'int8'
+    if len(ora_type_args) != 2 or ora_type_args[1] != '0':
+      raise TypeError('invalid NUMBER arguments: {ora_type_args}'.format(
+        ora_type_args = ora_type_args))
+    n = int(ora_type_args[0])
+    if n <= 4:
+      return 'int2'
+    if n <= 9:
+      return 'int4'
+    if n <= 18:
+      return 'int8'
+    return 'numeric({n},0)'.format(
+      n = n)
   elif ora_type == 'VARCHAR2':
     if len(ora_type_args) != 1:
       raise TypeError('invalid VARCHAR arguments: {ora_type_args}'.format(
@@ -159,7 +180,7 @@ def generate_constraint_sql(constraint):
   if constraint_type == ConstraintType.PRIMARY_KEY:
     return 'PRIMARY KEY ({column_name})'.format(**constraint)
   elif constraint_type == ConstraintType.FOREIGN_KEY:
-    return 'FOREIGN KEY ({column_name}) REFERENCES {fk_table} ({fk_column})'.format(**constraint)
+    return 'FOREIGN KEY ({column_name}) REFERENCES TRAFFIC.{fk_table} ({fk_column})'.format(**constraint)
   elif constraint_type == ConstraintType.UNIQUE:
     return 'UNIQUE ({column_name})'.format(**constraint)
 
@@ -209,7 +230,8 @@ for line in sys.stdin:
         constraints.append(constraint)
       constraint_lines = []
     constraint_lines.append(line)
-  elif ') ;' in line:
+  elif line == ') ;' or line == ')':
+    # TODO: handle PARTITION clauses
     # last line of query
     if constraint_lines:
       constraint = parse_constraint(constraint_lines)

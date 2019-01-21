@@ -7,10 +7,11 @@ $ErrorActionPreference = "Stop"
 
 $configData = Get-Content -Raw -Path $config | ConvertFrom-Json
 foreach ($table in $configData.tables) {
-  $sqlData = @"
+  $fetchSqlData = @"
 SET LONG 2000000
 SET PAGESIZE 0
 SET LINESIZE 32767
+SET LONGCHUNKSIZE 200000
 SET ECHO OFF
 SET FEEDBACK OFF
 EXECUTE dbms_metadata.set_transform_param(DBMS_METADATA.SESSION_TRANSFORM, 'STORAGE', false);
@@ -20,8 +21,10 @@ SELECT dbms_metadata.get_ddl('TABLE', '$table', 'TRAFFIC') FROM dual;
 EXIT;
 "@
 
-  $sqlFile = "build\$table.fetch-ddl.sql"
-  $sqlData | Out-File -Encoding Ascii -FilePath $sqlFile
-  $ddlFile = "build\$table.ddl.sql"
-  sqlplus.exe -s $oracle @$sqlFile | Out-File -FilePath $ddlFile
+  $fetchSqlFile = "build\$table.fetch.sql"
+  $fetchSqlData | Out-File -Encoding Ascii -FilePath $fetchSqlFile
+  $oraSqlFile = "build\$table.ora.sql"
+  sqlplus.exe -s $oracle @$fetchSqlFile | Out-File -FilePath $oraSqlFile
+  $pgSqlFile = "build\$table.pg.sql"
+  Get-Content $oraSqlFile | python ora2pg.py | Out-File -FilePath $pgSqlFile
 }
