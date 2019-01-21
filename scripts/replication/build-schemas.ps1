@@ -20,8 +20,8 @@ SELECT dbms_metadata.get_ddl('TABLE', '$table', 'TRAFFIC') FROM dual;
 EXIT;
 "@
 
-  $sqlFile = "build\$table.ddl.sql"
+  $sqlFile = "build\$table.fetch-ddl.sql"
   $sqlData | Out-File -Encoding Ascii -FilePath $sqlFile
-  $ddlFile = "build\$table.ddl.txt"
+  $ddlFile = "build\$table.ddl.sql"
   sqlplus.exe -s $oracle @$sqlFile | Out-File -FilePath $ddlFile
 }

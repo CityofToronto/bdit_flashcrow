@@ -1,5 +1,9 @@
 {
   "tables": [
-    "ARC_LINK"
+    "ARC_LINK",
+    "ARTERYDATA",
+    "CATEGORY",
+    "COUNTINFO",
+    "COUNTINFOMICS"
   ]
 }
