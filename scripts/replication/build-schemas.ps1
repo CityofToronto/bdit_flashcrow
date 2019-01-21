@@ -1,9 +1,17 @@
 param (
   [Parameter(Mandatory = $true)][string]$config,
-  [Parameter(Mandatory = $true)][string]$oracle
+  [Parameter(Mandatory = $true)][string]$oracle,
+  [Parameter(Mandatory = $true)][string]$scpTarget,
+  [Parameter(Mandatory = $true)][string]$sshKey
 )
 
 $ErrorActionPreference = "Stop"
+
+mkdir -Force flashcrow
+mkdir -Force flashcrow\fetch
+mkdir -Force flashcrow\ora
+mkdir -Force flashcrow\pg
+mkdir -Force flashcrow\dat
 
 $configData = Get-Content -Raw -Path $config | ConvertFrom-Json
 foreach ($table in $configData.tables) {
@@ -21,10 +29,31 @@ SELECT dbms_metadata.get_ddl('TABLE', '$table', 'TRAFFIC') FROM dual;
 EXIT;
 "@
 
-  $fetchSqlFile = "build\$table.fetch.sql"
+  $fetchSqlFile = "flashcrow\fetch\$table.sql"
   $fetchSqlData | Out-File -Encoding Ascii -FilePath $fetchSqlFile
-  $oraSqlFile = "build\$table.ora.sql"
-  sqlplus.exe -s $oracle @$fetchSqlFile | Out-File -FilePath $oraSqlFile
-  $pgSqlFile = "build\$table.pg.sql"
-  Get-Content $oraSqlFile | python ora2pg.py | Out-File -FilePath $pgSqlFile
+  $oraSqlFile = "flashcrow\ora\$table.sql"
+  sqlplus.exe -s $oracle @$fetchSqlFile | Out-File -Encoding Ascii -FilePath $oraSqlFile
+  $pgSqlFile = "flashcrow\pg\$table.sql"
+  Get-Content $oraSqlFile | python ora2pg.py | Out-File -Encoding Ascii -FilePath $pgSqlFile
 }
+
+foreach ($i in ($configData.tables.Count - 1)..0) {
+  $table = $configData.tables[$i]
+  psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS TRAFFIC.$table"
+}
+
+foreach ($table in $configData.tables) {
+  $pgSqlFile = "flashcrow\pg\$table.sql"
+  psql -U flashcrow -f $pgSqlFile
+}
+
+foreach ($table in $configData.tables) {
+  $pgDataFile = "flashcrow\dat\$table.dat"
+  psql -U flashcrow -c "\COPY (SELECT * FROM TRAFFIC.$table) TO STDOUT (FORMAT binary)" > $pgDataFile
+}
+
+$pgDataArchive = "flashcrow.tar.gz"
+tar czvf $pgDataArchive flashcrow
+pscp -i $sshKey $pgDataArchive $scpTarget`:
+plink -i $sshKey -ssh $scpTarget tar xzvf flashcrow.tar.gz
+plink -i $sshKey -ssh $scpTarget find flashcrow -type f

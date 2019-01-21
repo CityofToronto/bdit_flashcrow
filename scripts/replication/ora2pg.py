@@ -152,19 +152,6 @@ def find_column(columns, column_name):
       return column
   return None
 
-def process_constraint(columns, constraint):
-  # TODO: handle constraints that can't be attached to a specific column
-  constraint_type = constraint['constraint_type']
-  column_name = constraint['column_name']
-  column = find_column(columns, column_name)
-  if column is None:
-    raise RuntimeError('no such column: {column_name}'.format(
-      column_name = column_name))
-  if constraint_type == ConstraintType.PRIMARY_KEY:
-    column['primary_key'] = True
-  elif constraint_type == ConstraintType.UNIQUE:
-    column['unique'] = True
-
 def generate_table_sql(table_name):
   return 'CREATE FOREIGN TABLE TRAFFIC.{table_name}'.format(
     table_name = table_name)
@@ -185,6 +172,7 @@ def generate_constraint_sql(constraint):
     return 'UNIQUE ({column_name})'.format(**constraint)
 
 def generate_pg_sql(table_name, columns, constraints):
+  constraints = [c for c in constraints if c['constraint_type'] != ConstraintType.PRIMARY_KEY]
   table_sql = generate_table_sql(table_name)
   column_sqls = map(generate_column_sql, columns)
   column_sql = ',\n  '.join(column_sqls)
