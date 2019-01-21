@@ -5,7 +5,7 @@ import sys
 TABLE_REGEX = re.compile(
   r'CREATE TABLE "TRAFFIC"."([A-Z0-9_]+)"')
 COLUMN_REGEX = re.compile(
-  r'"(?P<name>[A-Z0-9_]+)" (?P<type>NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL|DEFAULT NULL)?')
+  r'"(?P<name>[A-Z0-9_]+)" (?P<type>DATE|NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
 CONSTRAINT_NAME_REGEX = re.compile(
   r'CONSTRAINT "([A-Z0-9_]+)"')
 CONSTRAINT_PK_REGEX = re.compile(
@@ -26,7 +26,9 @@ def parse_table(line):
 
 def get_pg_type(name, ora_type, ora_type_args):
   # TODO: allow configured overrides
-  if ora_type == 'NUMBER':
+  if ora_type == 'DATE':
+    return 'date'
+  elif ora_type == 'NUMBER':
     # TODO: consider size here
     return 'int8'
   elif ora_type == 'VARCHAR2':
@@ -47,7 +49,9 @@ def parse_column(line):
       line = line))
   name = match.group('name')
   ora_type = match.group('type')
-  ora_type_args = tuple(match.group('type_args').split(','))
+  ora_type_args = match.group('type_args')
+  if ora_type_args is not None:
+    ora_type_args = tuple(ora_type_args.split(','))
   pg_type = get_pg_type(name, ora_type, ora_type_args)
   constraint = match.group('constraint')
   value = match.group('value')
@@ -57,9 +61,7 @@ def parse_column(line):
     'ora_type_args': ora_type_args,
     'pg_type': pg_type,
     'constraint': constraint,
-    'value': value,
-    'primary_key': False,
-    'unique': False
+    'value': value
   }
 
 class ConstraintType(Enum):
@@ -77,8 +79,7 @@ def parse_constraint(constraint_lines):
   constraint = {
     'name': match.group(1),
     'constraint_type': None,
-    'column_name': None,
-    'metadata': {}
+    'column_name': None
   }
   for line in constraint_lines:
     if 'DISABLE' in line:
@@ -100,16 +101,15 @@ def parse_constraint(constraint_lines):
         raise RuntimeError('invalid FOREIGN KEY declaration: {line}'.format(
           line = line))
       constraint['constraint_type'] = ConstraintType.FOREIGN_KEY
+      constraint['column_name'] = match.group(1)
     elif constraint['constraint_type'] == ConstraintType.FOREIGN_KEY:
       # second line of FOREIGN KEY constraint
       match = CONSTRAINT_FK_REGEX_2.search(line)
       if match is None:
         raise RuntimeError('invalid FOREIGN KEY declaration: {line}'.format(
           line = line))
-      constraint['metadata'] = {
-        'fk_table': match.group(1),
-        'fk_column': match.group(2)
-      }
+      constraint['fk_table'] = match.group(1)
+      constraint['fk_column'] = match.group(2)
     elif 'UNIQUE' in line:
       match = CONSTRAINT_UNIQUE_REGEX.search(line)
       if match is None:
@@ -150,28 +150,42 @@ def generate_table_sql(table_name):
 
 def generate_column_sql(column):
   column_sql = '{name} {pg_type}'.format(**column)
-  if column['primary_key']:
-    column_sql += ' PRIMARY KEY'
-  if column['unique']:
-    column_sql += ' UNIQUE'
   if column['value'] is not None:
     column_sql += column['value']
   return column_sql
 
-def generate_pg_sql(table_name, columns):
+def generate_constraint_sql(constraint):
+  constraint_type = constraint['constraint_type']
+  if constraint_type == ConstraintType.PRIMARY_KEY:
+    return 'PRIMARY KEY ({column_name})'.format(**constraint)
+  elif constraint_type == ConstraintType.FOREIGN_KEY:
+    return 'FOREIGN KEY ({column_name}) REFERENCES {fk_table} ({fk_column})'.format(**constraint)
+  elif constraint_type == ConstraintType.UNIQUE:
+    return 'UNIQUE ({column_name})'.format(**constraint)
+
+def generate_pg_sql(table_name, columns, constraints):
   table_sql = generate_table_sql(table_name)
   column_sqls = map(generate_column_sql, columns)
+  column_sql = ',\n  '.join(column_sqls)
+  if not constraints:
+    constraint_sql = ''
+  else:
+    constraint_sqls = map(generate_constraint_sql, constraints)
+    constraint_sql = ',\n  '.join(constraint_sqls)
+    constraint_sql = ',\n  ' + constraint_sql
   return '''\
 {table_sql} (
-  {column_sql}
+  {column_sql}{constraint_sql}
 ) SERVER zodiac OPTIONS (schema 'TRAFFIC', table '{table_name}');'''.format(
   table_name = table_name,
   table_sql = table_sql,
-  column_sql = ',\n  '.join(column_sqls))
+  column_sql = column_sql,
+  constraint_sql = constraint_sql)
 
 # main state
 table_name = None
 columns = []
+constraints = []
 
 # state of current constraint
 constraint_lines = []
@@ -192,7 +206,7 @@ for line in sys.stdin:
     if constraint_lines:
       constraint = parse_constraint(constraint_lines)
       if constraint is not None:
-        process_constraint(columns, constraint)
+        constraints.append(constraint)
       constraint_lines = []
     constraint_lines.append(line)
   elif ') ;' in line:
@@ -200,9 +214,9 @@ for line in sys.stdin:
     if constraint_lines:
       constraint = parse_constraint(constraint_lines)
       if constraint is not None:
-        process_constraint(columns, constraint)
+        constraints.append(constraint)
       constraint_lines = []
-    pg_sql = generate_pg_sql(table_name, columns)
+    pg_sql = generate_pg_sql(table_name, columns, constraints)
     print(pg_sql)
     break
   elif in_constraints:
