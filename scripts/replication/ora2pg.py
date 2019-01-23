@@ -1,9 +1,24 @@
+import argparse
 from enum import Enum
 import re
 import sys
 
+parser = argparse.ArgumentParser(
+  description = 'Convert Oracle schemas to PostgreSQL.')
+parser.add_argument(
+  '--sourceSchema',
+  type=str,
+  default='TRAFFIC',
+  help='Schema where data is read from in Oracle source')
+parser.add_argument(
+  '--targetSchema',
+  type=str,
+  default='TRAFFIC_NEW',
+  help='Schema where data is written to in PostgreSQL target')
+args = parser.parse_args()
+
 TABLE_REGEX = re.compile(
-  r'CREATE TABLE "TRAFFIC"."([A-Z0-9_]+)"')
+  r'CREATE TABLE "' + args.sourceSchema + r'"."([A-Z0-9_]+)"')
 COLUMN_REGEX = re.compile(
   r'"(?P<name>[A-Z0-9_]+)" (?P<type>CHAR|DATE|FLOAT|NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
 CONSTRAINT_NAME_REGEX = re.compile(
@@ -13,7 +28,7 @@ CONSTRAINT_PK_REGEX = re.compile(
 CONSTRAINT_FK_REGEX = re.compile(
   r'FOREIGN KEY \("([A-Z0-9_]+)"\)')
 CONSTRAINT_FK_REGEX_2 = re.compile(
-  r'REFERENCES "TRAFFIC"."([A-Z0-9_]+)" \("([A-Z0-9_]+)"\)')
+  r'REFERENCES "' + args.sourceSchema + r'"."([A-Z0-9_]+)" \("([A-Z0-9_]+)"\)')
 CONSTRAINT_UNIQUE_REGEX = re.compile(
   r'UNIQUE \("([A-Z0-9_]+)"\)')
 
@@ -153,8 +168,9 @@ def find_column(columns, column_name):
   return None
 
 def generate_table_sql(table_name):
-  return 'CREATE FOREIGN TABLE TRAFFIC.{table_name}'.format(
-    table_name = table_name)
+  return 'CREATE TABLE {targetSchema}.{table_name}'.format(
+    table_name = table_name,
+    targetSchema = args.targetSchema)
 
 def generate_column_sql(column):
   column_sql = '{name} {pg_type}'.format(**column)
@@ -167,25 +183,26 @@ def generate_constraint_sql(constraint):
   if constraint_type == ConstraintType.PRIMARY_KEY:
     return 'PRIMARY KEY ({column_name})'.format(**constraint)
   elif constraint_type == ConstraintType.FOREIGN_KEY:
-    return 'FOREIGN KEY ({column_name}) REFERENCES TRAFFIC.{fk_table} ({fk_column})'.format(**constraint)
+    return 'FOREIGN KEY ({column_name}) REFERENCES {targetSchema}.{fk_table} ({fk_column})'.format(
+      targetSchema = args.targetSchema,
+      **constraint)
   elif constraint_type == ConstraintType.UNIQUE:
     return 'UNIQUE ({column_name})'.format(**constraint)
 
 def generate_pg_sql(table_name, columns, constraints):
-  constraints = [c for c in constraints if c['constraint_type'] != ConstraintType.PRIMARY_KEY]
   table_sql = generate_table_sql(table_name)
   column_sqls = map(generate_column_sql, columns)
-  column_sql = ',\n  '.join(column_sqls)
+  column_sql = '\n, '.join(column_sqls)
   if not constraints:
     constraint_sql = ''
   else:
     constraint_sqls = map(generate_constraint_sql, constraints)
-    constraint_sql = ',\n  '.join(constraint_sqls)
-    constraint_sql = ',\n  ' + constraint_sql
+    constraint_sql = '\n, '.join(constraint_sqls)
+    constraint_sql = '\n, ' + constraint_sql
   return '''\
 {table_sql} (
   {column_sql}{constraint_sql}
-) SERVER zodiac OPTIONS (schema 'TRAFFIC', table '{table_name}');'''.format(
+);'''.format(
   table_name = table_name,
   table_sql = table_sql,
   column_sql = column_sql,
