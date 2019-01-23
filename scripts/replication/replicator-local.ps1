@@ -88,11 +88,12 @@ function Stop-With-Success {
   Exit 0
 }
 
-function Scp-To {
+function Safe-Scp {
   param (
     [string]$src,
     [string]$key,
-    [string]$dst
+    [string]$dst,
+    [switch]$exec = $false
   )
   $srcSum = (shasum $src).Substring(0, 40)
   pscp -i $key $src $dst`:
@@ -100,8 +101,11 @@ function Scp-To {
     Stop-With-Error -message "scp $src -> $dst failed"
   }
   $sumDst = (plink -i $key -ssh $dst shasum $src).Substring(0, 40)
-  if ($sumLocal -eq $sumTransfer) {
+  if ($sumLocal -ne $sumTransfer) {
     Stop-With-Error -message "checksum validation of $src failed"
+  }
+  if ($exec) {
+    plink -i $key -ssh $dst chmod u+x $src
   }
 }
 
@@ -132,7 +136,6 @@ function Safe-Mkdir {
     }
   }
 }
-
 Notify-Status "Starting Oracle -> PostgreSQL replication..."
 
 # clean directory and archive, if they exist
@@ -173,6 +176,7 @@ Notify-Status "Fetched Oracle schemas..."
 
 # convert Oracle table schemas to PostgreSQL
 foreach ($table in $configData.tables) {
+  $oraSqlFile = Join-Path -Path $dirOra -ChildPath "$table.sql"
   $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
   Get-Content $oraSqlFile | python ora2pg.py --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgSqlFile
   if (-Not ($? -And (Get-Content $pgSqlFile | Select-String "CREATE" -Quiet))) {
@@ -186,12 +190,10 @@ foreach ($table in $configData.tables) {
 }
 Notify-Status "Generated PostgreSQL schemas..."
 
-Stop-With-Success "Completed Oracle -> PostgreSQL replication."
-
 # drop any existing foreign tables in reverse order
 foreach ($i in ($configData.tables.Count - 1)..0) {
   $table = $configData.tables[$i]
-  psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS $targetValidationSchema.$table"
+  psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS \`"$targetValidationSchema\`".\`"$table\`""
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
   if ($exists -ne "f") {
     Stop-With-Error -message "Failed to drop $targetValidationSchema.$table from local PostgreSQL!"
@@ -200,21 +202,21 @@ foreach ($i in ($configData.tables.Count - 1)..0) {
 
 # run PostgreSQL schemas to create foreign tables
 foreach ($table in $configData.tables) {
-  $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
-  psql -U flashcrow -f $pgSqlFile
+  $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
+  psql -U flashcrow -f $pgLocalSqlFile
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
   if ($exists -ne "t") {
-    Stop-With-Error -message "Failed to create $targetSchema.$table in local PostgreSQL!"
+    Stop-With-Error -message "Failed to create $targetValidationSchema.$table in local PostgreSQL!"
   }
 }
 Notify-Status "Created local PostgreSQL tables..."
 
 # copy data from foreign tables to local binary files
 foreach ($table in $configData.tables) {
-  $pgDataFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
-  psql -U flashcrow -c "\COPY (SELECT * FROM $targetSchema.$table) TO STDOUT (FORMAT binary)" > $pgDataFile
+  $datFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
+  psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`") TO STDOUT (FORMAT binary)" > $datFile
   if (-Not $?) {
-    Stop-With-Error -message "Failed to copy Oracle data for $targetSchema.$table from local PostgreSQL!"
+    Stop-With-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
   }
 }
 Notify-Status "Copied data from local PostgreSQL..."
@@ -229,11 +231,11 @@ Notify-Status "Created data archive to send to transfer machine..."
 # TODO: clean up archive, other files on transfer machine
 
 # copy archive and remote script to transfer machine
-Scp-File -src $pgDataArchive -key $transferSshKey -dst $transferSsh
-Scp-File -src $transferScript -key $transferSshKey -dst $transferSsh
+Safe-Scp -src $pgDataArchive -key $transferSshKey -dst $transferSsh
+Safe-Scp -src $transferScript -key $transferSshKey -dst $transferSsh -exec
 Notify-Status "Sent data archive to transfer machine..."
 
 # run remote script on transfer machine
-plink -i $transferSshKey -ssh $transferSsh $transferScript
+plink -i $transferSshKey -ssh $transferSsh ./$transferScript
 
 Stop-With-Success "Completed Oracle -> PostgreSQL replication."

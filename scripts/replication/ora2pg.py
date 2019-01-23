@@ -168,12 +168,12 @@ def find_column(columns, column_name):
   return None
 
 def generate_table_sql(table_name):
-  return 'CREATE TABLE {targetSchema}.{table_name}'.format(
+  return 'CREATE TABLE "{targetSchema}"."{table_name}"'.format(
     table_name = table_name,
     targetSchema = args.targetSchema)
 
 def generate_column_sql(column):
-  column_sql = '{name} {pg_type}'.format(**column)
+  column_sql = '"{name}" {pg_type}'.format(**column)
   if column['value'] is not None:
     column_sql += column['value']
   return column_sql
@@ -181,13 +181,13 @@ def generate_column_sql(column):
 def generate_constraint_sql(constraint):
   constraint_type = constraint['constraint_type']
   if constraint_type == ConstraintType.PRIMARY_KEY:
-    return 'PRIMARY KEY ({column_name})'.format(**constraint)
+    return 'PRIMARY KEY ("{column_name}")'.format(**constraint)
   elif constraint_type == ConstraintType.FOREIGN_KEY:
-    return 'FOREIGN KEY ({column_name}) REFERENCES {targetSchema}.{fk_table} ({fk_column})'.format(
+    return 'FOREIGN KEY ("{column_name}") REFERENCES "{targetSchema}"."{fk_table}" ("{fk_column}")'.format(
       targetSchema = args.targetSchema,
       **constraint)
   elif constraint_type == ConstraintType.UNIQUE:
-    return 'UNIQUE ({column_name})'.format(**constraint)
+    return 'UNIQUE ("{column_name}")'.format(**constraint)
 
 def generate_pg_sql(table_name, columns, constraints):
   table_sql = generate_table_sql(table_name)

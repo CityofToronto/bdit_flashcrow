@@ -18,7 +18,7 @@ sql = sys.stdin.read()
 
 # add foreign table declarations
 sql = sql.replace('CREATE TABLE', 'CREATE FOREIGN TABLE')
-sql = sql.replace(');', "SERVER zodiac OPTIONS (schema '{sourceSchema}', '{sourceTable}');".format(
+sql = sql.replace(');', ") SERVER zodiac OPTIONS (schema '{sourceSchema}', table '{sourceTable}');".format(
   sourceSchema = args.sourceSchema,
   sourceTable = args.sourceTable))
 
