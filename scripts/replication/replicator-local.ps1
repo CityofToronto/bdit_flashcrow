@@ -11,18 +11,21 @@ param (
     HelpMessage = "Database connection string for Oracle source"
   )][string]$sourceDb,
   [Parameter(
+    Mandatory = $true,
     HelpMessage = "Schema where data is read from in Oracle source"
-  )][string]$sourceSchema = "TRAFFIC",
+  )][string]$sourceSchema,
   [Parameter(
     Mandatory = $true,
     HelpMessage = "Database connection string for PostgreSQL target"
   )][string]$targetDb,
   [Parameter(
+    Mandatory = $true,
     HelpMessage = "Schema where data is ultimately written in PostgreSQL target"
-  )][string]$targetSchema = "TRAFFIC",
+  )][string]$targetSchema,
   [Parameter(
+    Mandatory = $true,
     HelpMessage = "Schema where data is initially written and validated in PostgreSQL target"
-  )][string]$targetValidationSchema = "TRAFFIC_NEW",
+  )][string]$targetValidationSchema,
   [Parameter(
     Mandatory = $true,
     HelpMessage = "Path to SSH private key file for accessing transfer machine"
@@ -33,6 +36,7 @@ param (
   )][string]$transferSsh
 )
 
+# script settings
 $ErrorActionPreference = "Stop"
 
 # paths to important folders / files
@@ -91,21 +95,19 @@ function Stop-With-Success {
 function Safe-Scp {
   param (
     [string]$src,
-    [string]$key,
-    [string]$dst,
     [switch]$exec = $false
   )
   $srcSum = (shasum $src).Substring(0, 40)
-  pscp -i $key $src $dst`:
+  pscp -i $transferSshKey $src "$transferSsh`:"
   if (-Not $?) {
-    Stop-With-Error -message "scp $src -> $dst failed"
+    Stop-With-Error -message "scp $src -> $transferSsh failed"
   }
-  $sumDst = (plink -i $key -ssh $dst shasum $src).Substring(0, 40)
+  $sumDst = (plink -i $transferSshKey -ssh $transferSsh shasum "$src").Substring(0, 40)
   if ($sumLocal -ne $sumTransfer) {
     Stop-With-Error -message "checksum validation of $src failed"
   }
   if ($exec) {
-    plink -i $key -ssh $dst chmod u+x $src
+    plink -i $transferSshKey -ssh $transferSsh chmod u+x $src
   }
 }
 
@@ -211,31 +213,36 @@ foreach ($table in $configData.tables) {
 }
 Notify-Status "Created local PostgreSQL tables..."
 
-# copy data from foreign tables to local binary files
+# copy data from foreign tables to local text files
 foreach ($table in $configData.tables) {
   $datFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
-  psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`") TO STDOUT (FORMAT binary)" > $datFile
+  psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`") TO STDOUT (FORMAT text, ENCODING 'UTF8')" | Out-File -Encoding UTF8 -FilePath $datFile
+  # Out-File starts files with a Byte Order Mark (BOM), which trips up PostgreSQL's
+  # COPY ... FROM STDIN.  We strip that here.
+  dos2unix $datFile
   if (-Not $?) {
     Stop-With-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
   }
 }
 Notify-Status "Copied data from local PostgreSQL..."
 
-# tar / gzip the local binary files
+# pack archive
 tar czvf $pgDataArchive flashcrow
 if (-Not $?) {
-  Stop-With-Error -message "tar / gzip archiving failed"
+  Stop-With-Error -message "Failed to create data archive!"
 }
-Notify-Status "Created data archive to send to transfer machine..."
+Notify-Status "Packed data archive to send to transfer machine..."
 
-# TODO: clean up archive, other files on transfer machine
+# copy archive and transfer script to transfer machine
+Safe-Scp -src $pgDataArchive
+Safe-Scp -src $config
+Safe-Scp -src $transferScript -exec
+Notify-Status "Sent data archive and transfer script to transfer machine..."
 
-# copy archive and remote script to transfer machine
-Safe-Scp -src $pgDataArchive -key $transferSshKey -dst $transferSsh
-Safe-Scp -src $transferScript -key $transferSshKey -dst $transferSsh -exec
-Notify-Status "Sent data archive to transfer machine..."
-
-# run remote script on transfer machine
-plink -i $transferSshKey -ssh $transferSsh ./$transferScript
+# run transfer script on transfer machine
+plink -i $transferSshKey -ssh $transferSsh ./$transferScript --config "$config" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
+if (-Not $?) {
+  Stop-With-Error -message "Failed to run transfer script on transfer machine!"
+}
 
 Stop-With-Success "Completed Oracle -> PostgreSQL replication."
