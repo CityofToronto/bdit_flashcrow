@@ -1,7 +1,7 @@
 param (
   [Parameter(
     Mandatory = $true,
-    HelpMessage = "Path to JSON config file"
+    HelpMessage = "Configuration to use (`$config.config.json)"
   )][string]$config,
   [Parameter(
     HelpMessage = "Email address(es) to send notifications to"
@@ -40,22 +40,23 @@ param (
 $ErrorActionPreference = "Stop"
 
 # paths to important folders / files
-$dirRoot = "flashcrow"
+$dirRoot = "flashcrow-$config"
 $dirFetch = Join-Path -path $dirRoot -childPath "fetch"
 $dirOraCnt = Join-Path -path $dirRoot -childPath "ora_cnt"
 $dirOra = Join-Path -path $dirRoot -childPath "ora"
 $dirPg = Join-Path -path $dirRoot -childPath "pg"
 $dirPgLocal = Join-Path -path $dirRoot -childPath "pg_local"
 $dirDat = Join-Path -path $dirRoot -childPath "dat"
-$pgDataArchive = "flashcrow.tar.gz"
+$configFile = "$config.config.json"
+$pgDataArchive = "flashcrow-$config.tar.gz"
 $transferScript = "replicator-transfer.sh"
 
 # email settings
 $emailFrom = "Flashcrow Replicator <Flashcrow+Replicator@toronto.ca>"
 $emailSmtp = "mail.toronto.ca"
-$emailSubjectStatus = "[flashcrow] [replicator] Replication Status"
-$emailSubjectError = "[flashcrow] [replicator] Replication Failure"
-$emailSubjectSuccess = "[flashcrow] [replicator] Replication Success"
+$emailSubjectStatus = "[flashcrow] [replicator] Replication Status: $config"
+$emailSubjectError = "[flashcrow] [replicator] Replication Failure: $config"
+$emailSubjectSuccess = "[flashcrow] [replicator] Replication Success: $config"
 
 # unique ID for this replication job
 $guid = [guid]::NewGuid().Guid
@@ -148,7 +149,7 @@ Safe-Rm @($dirRoot, $pgDataArchive)
 Safe-Mkdir @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
 
 # get config data
-$configData = Get-Content -Raw -Path $config | ConvertFrom-Json
+$configData = Get-Content -Raw -Path $configFile | ConvertFrom-Json
 
 # fetch Oracle row counts
 foreach ($table in $configData.tables) {
@@ -257,7 +258,7 @@ foreach ($table in $configData.tables) {
 Notify-Status "Copied data from local PostgreSQL..."
 
 # pack archive
-tar czvf $pgDataArchive flashcrow
+tar czvf $pgDataArchive $dirRoot
 if (-Not $?) {
   Stop-With-Error -message "Failed to create data archive!"
 }
@@ -265,12 +266,12 @@ Notify-Status "Packed data archive to send to transfer machine..."
 
 # copy archive and transfer script to transfer machine
 Safe-Scp -src $pgDataArchive
-Safe-Scp -src $config
+Safe-Scp -src $configFile
 Safe-Scp -src $transferScript -exec
 Notify-Status "Sent data archive and transfer script to transfer machine..."
 
 # run transfer script on transfer machine
-plink -i $transferSshKey -ssh $transferSsh ./$transferScript --config "$config" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
+plink -i $transferSshKey -ssh $transferSsh ./$transferScript --config "$config" --guid "$guid" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {
   Stop-With-Error -message "Failed to run transfer script on transfer machine!"
 }
