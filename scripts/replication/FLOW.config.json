@@ -1,6 +1,11 @@
 {
   "tables": [
     "ARC_LINK",
-    "ARTERYDATA"
+    "ARTERYDATA",
+    "CATEGORY",
+    "COUNTINFO",
+    "COUNTINFOMICS",
+    "DET",
+    "NODE"
   ]
 }

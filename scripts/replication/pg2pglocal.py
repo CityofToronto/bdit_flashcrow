@@ -22,7 +22,9 @@ sql = sql.replace(');', ") SERVER zodiac OPTIONS (schema '{sourceSchema}', table
   sourceSchema = args.sourceSchema,
   sourceTable = args.sourceTable))
 
-# comment out primary keys
+# comment out constraints that are not supported on foreign tables
+sql = sql.replace(', FOREIGN KEY', '-- , FOREIGN KEY')
 sql = sql.replace(', PRIMARY KEY', '-- , PRIMARY KEY')
+sql = sql.replace(', UNIQUE', '-- , UNIQUE')
 
 sys.stdout.write(sql)
