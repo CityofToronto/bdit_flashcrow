@@ -8,6 +8,7 @@ TARGET_DB=
 TARGET_SCHEMA=
 TARGET_VALIDATION_SCHEMA=
 DIR_ROOT="flashcrow"
+DIR_ORA_CNT="$DIR_ROOT/ora_cnt"
 DIR_PG="$DIR_ROOT/pg"
 DIR_DAT="$DIR_ROOT/dat"
 PG_DATA_ARCHIVE="flashcrow.tar.gz"
@@ -86,15 +87,21 @@ jq -r ".tables[]" "$CONFIG" | while read -r table; do
 done
 echo "Created remote PostgreSQL validation tables..."
 
-# copy data from local text files to tables
+# copy data from local text files to tables in validation schema
 jq -r ".tables[]" "$CONFIG" | while read -r table; do
   DAT_FILE="$DIR_DAT/$table.dat"
   psql $TARGET_DB -c "\COPY \"$TARGET_VALIDATION_SCHEMA\".\"$table\" FROM STDIN (FORMAT text, ENCODING 'UTF8')" < "$DAT_FILE"
+
+  # check row count
+  PG_COUNT=$(psql $TARGET_DB -tAc "SELECT COUNT(*) FROM \"$TARGET_VALIDATION_SCHEMA\".\"$table\"")
+  ORA_COUNT=$(cat "$DIR_ORA_CNT/$table.cnt")
+  if [ "$PG_COUNT" != "$ORA_COUNT" ]; then
+    echo "Row count mismatch on $TARGET_VALIDATION_SCHEMA.$table: Oracle ($ORA_COUNT rows) -> PostgreSQL ($PG_COUNT rows)!"
+    exit 1
+  fi
+  echo "Validated $TARGET_VALIDATION_SCHEMA.$table..."
 done
 echo "Copied data into remote PostgreSQL validation schema..."
-
-# TODO: validate counts against computed counts from local script
-# TODO: other validation checks?
 
 # drop any existing target schema tables in reverse order
 jq -r ".tables[]" "$CONFIG" | tac | while read -r table; do

@@ -42,6 +42,7 @@ $ErrorActionPreference = "Stop"
 # paths to important folders / files
 $dirRoot = "flashcrow"
 $dirFetch = Join-Path -path $dirRoot -childPath "fetch"
+$dirOraCnt = Join-Path -path $dirRoot -childPath "ora_cnt"
 $dirOra = Join-Path -path $dirRoot -childPath "ora"
 $dirPg = Join-Path -path $dirRoot -childPath "pg"
 $dirPgLocal = Join-Path -path $dirRoot -childPath "pg_local"
@@ -144,10 +145,39 @@ Notify-Status "Starting Oracle -> PostgreSQL replication..."
 Safe-Rm @($dirRoot, $pgDataArchive)
 
 # recreate directory
-Safe-Mkdir @($dirRoot, $dirFetch, $dirOra, $dirPg, $dirPgLocal, $dirDat)
+Safe-Mkdir @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
+
+# get config data
+$configData = Get-Content -Raw -Path $config | ConvertFrom-Json
+
+# fetch Oracle row counts
+foreach ($table in $configData.tables) {
+  $fetchSqlData = @"
+SET LONG 2000000
+SET PAGESIZE 0
+SET LINESIZE 32767
+SET LONGCHUNKSIZE 200000
+SET ECHO OFF
+SET FEEDBACK OFF
+SELECT COUNT(*) FROM "$sourceSchema"."$table";
+EXIT;
+"@
+
+  $fetchSqlFile = Join-Path -Path $dirFetch -ChildPath "$table.sql"
+  $fetchSqlData | Out-File -Encoding Ascii -FilePath $fetchSqlFile
+  if (-Not $?) {
+    Stop-With-Error -message "Failed to write SQL for fetching $sourceSchema.$table row count from Oracle!"
+  }
+  $oraCntFile = Join-Path -Path $dirOraCnt -ChildPath "$table.cnt"
+  sqlplus.exe -s $sourceDb @$fetchSqlFile | ForEach-Object -Process {$_.ToString().Trim() } | Out-File -Encoding Ascii -FilePath $oraCntFile
+  dos2unix $oraCntFile
+  if (-Not $? -Or (Get-Content $oraCntFile | Select-String "ERROR" -Quiet)) {
+    Stop-With-Error -message "Failed to fetch $sourceSchema.$table row count from Oracle!"
+  }
+}
+Notify-Status "Fetched Oracle row counts..."
 
 # fetch Oracle table schemas
-$configData = Get-Content -Raw -Path $config | ConvertFrom-Json
 foreach ($table in $configData.tables) {
   $fetchSqlData = @"
 SET LONG 2000000
