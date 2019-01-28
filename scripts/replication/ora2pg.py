@@ -54,7 +54,7 @@ def get_pg_type(name, ora_type, ora_type_args):
     return 'float8'
   elif ora_type == 'NUMBER':
     if ora_type_args is None:
-      return 'int8'
+      return 'float8'
     if len(ora_type_args) != 2 or ora_type_args[1] != '0':
       raise TypeError('invalid NUMBER arguments: {ora_type_args}'.format(
         ora_type_args = ora_type_args))

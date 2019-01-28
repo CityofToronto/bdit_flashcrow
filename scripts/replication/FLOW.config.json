@@ -5,7 +5,9 @@
     "CATEGORY",
     "COUNTINFO",
     "COUNTINFOMICS",
+    "CNT_DET",
     "DET",
+    "CNT_SPD",
     "NODE"
   ]
 }
