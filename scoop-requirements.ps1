@@ -1,18 +1,33 @@
 # script settings
 $ErrorActionPreference = "Stop"
 
-# list of packages
+# list of packages that are always installed
 $packagesToInstall = @(
   "dos2unix",
   "git",
   "jq",
   "nginx@1.13.6",
   "nodejs-lts@10.15.1",
-  "openssh",
   "postgresql@9.6.5",
   "python@3.7.2",
   "tar"
 )
+
+# list of packages that are only installed on 64-bit platforms
+$packagesToInstall64Bit = @(
+  "openssh"
+)
+
+# list of packages that are only installed on 32-bit platforms
+$packagesToInstall32Bit = @(
+  "win32-openssh"
+)
+
+if ([Environment]::Is64BitOperatingSystem) {
+  $packagesToInstall += $packagesToInstall64Bit
+} else {
+  $packagesToInstall += $packagesToInstall32Bit
+}
 
 # install scoop if needed
 if (-Not (Get-Command "scoop" -errorAction SilentlyContinue)) {
@@ -44,13 +59,15 @@ foreach ($packageIdentifier in $packagesToInstall) {
     $packageName = $Matches[1]
     $packageVersion = $Matches[2]
   }
+  $packageVersionInstalled = $packagesInstalled[$packageName]
   if (-Not $packagesInstalled.ContainsKey($packageName)) {
     # not installed yet: install fresh
     scoop install $packageIdentifier
   } elseif (-Not $packageVersion) {
     # installed but no version provided: update to latest
+    # note this is a NOOP if latest version already installed
     scoop update $packageName
-  } else {
+  } elseif ($packageVersion -ne $packageVersionInstalled) {
     # installed but need to upgrade / downgrade: uninstall, then re-install
     scoop uninstall $packageName
     scoop install $packageIdentifier
