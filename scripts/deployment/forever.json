@@ -1,8 +1,10 @@
 {
+  "id": "flashcrow-api",
   "append": true,
   "watch": false,
   "script": "server.js",
   "sourceDir": "/home/ec2-user/git/bdit_flashcrow",
+  "pidFile": "/home/ec2-user/log/flashcrow/forever.pid",
   "logFile": "/home/ec2-user/log/flashcrow/forever.log",
   "outFile": "/home/ec2-user/log/flashcrow/flashcrow.log",
   "errFile": "/home/ec2-user/log/flashcrow/flashcrow.err"
