@@ -61,7 +61,7 @@ $emailSubjectSuccess = "[flashcrow] [replicator] Replication Success: $config"
 # unique ID for this replication job
 $guid = [guid]::NewGuid().Guid
 
-function Notify-Status {
+function Send-Status {
   param (
     [string]$message
   )
@@ -71,7 +71,7 @@ function Notify-Status {
   Write-Output $message
 }
 
-function Stop-With-Error {
+function Exit-Error {
   param (
     [string]$message,
     [Int32]$exitCode = 1
@@ -83,7 +83,7 @@ function Stop-With-Error {
   Exit $exitCode
 }
 
-function Stop-With-Success {
+function Exit-Success {
   param (
     [string]$message
   )
@@ -94,59 +94,61 @@ function Stop-With-Success {
   Exit 0
 }
 
-function Safe-Scp {
+function Copy-RemoteItem {
   param (
     [string]$src,
     [switch]$exec = $false
   )
-  $srcSum = (shasum $src).Substring(0, 40)
+  $sumLocal = (shasum $src).Substring(0, 40)
   pscp -i $transferSshKey $src "$transferSsh`:"
   if (-Not $?) {
-    Stop-With-Error -message "scp $src -> $transferSsh failed"
+    Exit-Error -message "scp $src -> $transferSsh failed"
   }
-  $sumDst = (plink -i $transferSshKey -ssh $transferSsh shasum "$src").Substring(0, 40)
+  $sumTransfer = (plink -i $transferSshKey -ssh $transferSsh shasum "$src").Substring(0, 40)
   if ($sumLocal -ne $sumTransfer) {
-    Stop-With-Error -message "checksum validation of $src failed"
+    Exit-Error -message "checksum validation of $src failed"
   }
   if ($exec) {
     plink -i $transferSshKey -ssh $transferSsh chmod u+x $src
   }
 }
 
-function Safe-Rm {
+function Remove-Path {
+  [CmdletBinding(supportsShouldProcess)]
   param (
     [string[]]$paths
   )
   foreach ($path in $paths) {
     if (Test-Path $path -PathType Container) {
-      rm -Recurse $path
+      Remove-Item -Recurse $path
     } elseif (Test-Path $path -PathType Leaf) {
-      rm $path
+      Remove-Item $path
     }
     if (-Not $?) {
-      Stop-With-Error -message "Failed to remove path $path!"
+      Exit-Error -message "Failed to remove path $path!"
     }
   }
 }
 
-function Safe-Mkdir {
+function New-Directory {
+  [CmdletBinding(supportsShouldProcess)]
   param(
     [string[]]$paths
   )
   foreach ($path in $paths) {
     mkdir -Force $path
     if (-Not $?) {
-      Stop-With-Error -message "Failed to create path $path!"
+      Exit-Error -message "Failed to create path $path!"
     }
   }
 }
-Notify-Status "Starting Oracle -> PostgreSQL replication..."
+Send-Status "Starting Oracle -> PostgreSQL replication..."
 
 # clean directory and archive, if they exist
-Safe-Rm @($dirRoot, $pgDataArchive)
+Remove-Path @($dirRoot, $pgDataArchive)
 
 # recreate directory
-Safe-Mkdir @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
+New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
 
 # get config data
 $configData = Get-Content -Raw -Path $configFile | ConvertFrom-Json
@@ -167,16 +169,16 @@ EXIT;
   $fetchSqlFile = Join-Path -Path $dirFetch -ChildPath "$table.sql"
   $fetchSqlData | Out-File -Encoding Ascii -FilePath $fetchSqlFile
   if (-Not $?) {
-    Stop-With-Error -message "Failed to write SQL for fetching $sourceSchema.$table row count from Oracle!"
+    Exit-Error -message "Failed to write SQL for fetching $sourceSchema.$table row count from Oracle!"
   }
   $oraCntFile = Join-Path -Path $dirOraCnt -ChildPath "$table.cnt"
   sqlplus.exe -s $sourceDb @$fetchSqlFile | ForEach-Object -Process {$_.ToString().Trim() } | Out-File -Encoding Ascii -FilePath $oraCntFile
   dos2unix $oraCntFile
   if (-Not $? -Or (Get-Content $oraCntFile | Select-String "ERROR" -Quiet)) {
-    Stop-With-Error -message "Failed to fetch $sourceSchema.$table row count from Oracle!"
+    Exit-Error -message "Failed to fetch $sourceSchema.$table row count from Oracle!"
   }
 }
-Notify-Status "Fetched Oracle row counts..."
+Send-Status "Fetched Oracle row counts..."
 
 # fetch Oracle table schemas
 foreach ($table in $configData.tables) {
@@ -197,15 +199,15 @@ EXIT;
   $fetchSqlFile = Join-Path -Path $dirFetch -ChildPath "$table.sql"
   $fetchSqlData | Out-File -Encoding Ascii -FilePath $fetchSqlFile
   if (-Not $?) {
-    Stop-With-Error -message "Failed to write SQL for fetching $sourceSchema.$table schema from Oracle!"
+    Exit-Error -message "Failed to write SQL for fetching $sourceSchema.$table schema from Oracle!"
   }
   $oraSqlFile = Join-Path -Path $dirOra -ChildPath "$table.sql"
   sqlplus.exe -s $sourceDb @$fetchSqlFile | Out-File -Encoding Ascii -FilePath $oraSqlFile
   if (-Not $? -Or (Get-Content $oraSqlFile | Select-String "ERROR" -Quiet)) {
-    Stop-With-Error -message "Failed to fetch $sourceSchema.$table schema from Oracle!"
+    Exit-Error -message "Failed to fetch $sourceSchema.$table schema from Oracle!"
   }
 }
-Notify-Status "Fetched Oracle schemas..."
+Send-Status "Fetched Oracle schemas..."
 
 # convert Oracle table schemas to PostgreSQL
 foreach ($table in $configData.tables) {
@@ -213,15 +215,15 @@ foreach ($table in $configData.tables) {
   $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
   Get-Content $oraSqlFile | python ora2pg.py --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgSqlFile
   if (-Not ($? -And (Get-Content $pgSqlFile | Select-String "CREATE" -Quiet))) {
-    Stop-With-Error -message "Failed to generate PostgreSQL schema (without foreign tables) for $targetValidationSchema.$table!"
+    Exit-Error -message "Failed to generate PostgreSQL schema (without foreign tables) for $targetValidationSchema.$table!"
   }
   $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
   Get-Content $pgSqlFile | python pg2pglocal.py --sourceSchema="$sourceSchema" --sourceTable="$table" | Out-File -Encoding Ascii -FilePath $pgLocalSqlFile
   if (-Not ($? -And (Get-Content $pgLocalSqlFile | Select-String "CREATE" -Quiet))) {
-    Stop-With-Error -message "Failed to generate local PostgreSQL schema (with foreign tables) for $targetValidationSchema.$table!"
+    Exit-Error -message "Failed to generate local PostgreSQL schema (with foreign tables) for $targetValidationSchema.$table!"
   }
 }
-Notify-Status "Generated PostgreSQL schemas..."
+Send-Status "Generated PostgreSQL schemas..."
 
 # drop any existing foreign tables in reverse order
 foreach ($i in ($configData.tables.Count - 1)..0) {
@@ -229,7 +231,7 @@ foreach ($i in ($configData.tables.Count - 1)..0) {
   psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS \`"$targetValidationSchema\`".\`"$table\`""
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
   if ($exists -ne "f") {
-    Stop-With-Error -message "Failed to drop $targetValidationSchema.$table from local PostgreSQL!"
+    Exit-Error -message "Failed to drop $targetValidationSchema.$table from local PostgreSQL!"
   }
 }
 
@@ -239,10 +241,10 @@ foreach ($table in $configData.tables) {
   psql -U flashcrow -f $pgLocalSqlFile
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
   if ($exists -ne "t") {
-    Stop-With-Error -message "Failed to create $targetValidationSchema.$table in local PostgreSQL!"
+    Exit-Error -message "Failed to create $targetValidationSchema.$table in local PostgreSQL!"
   }
 }
-Notify-Status "Created local PostgreSQL tables..."
+Send-Status "Created local PostgreSQL tables..."
 
 # copy data from foreign tables to local text files
 foreach ($table in $configData.tables) {
@@ -252,28 +254,28 @@ foreach ($table in $configData.tables) {
   # COPY ... FROM STDIN.  We strip that here.
   dos2unix $datFile
   if (-Not $?) {
-    Stop-With-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
+    Exit-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
   }
 }
-Notify-Status "Copied data from local PostgreSQL..."
+Send-Status "Copied data from local PostgreSQL..."
 
 # pack archive
 tar czvf $pgDataArchive $dirRoot
 if (-Not $?) {
-  Stop-With-Error -message "Failed to create data archive!"
+  Exit-Error -message "Failed to create data archive!"
 }
-Notify-Status "Packed data archive to send to transfer machine..."
+Send-Status "Packed data archive to send to transfer machine..."
 
 # copy archive and transfer script to transfer machine
-Safe-Scp -src $pgDataArchive
-Safe-Scp -src $configFile
-Safe-Scp -src $transferScript -exec
-Notify-Status "Sent data archive and transfer script to transfer machine..."
+Copy-RemoteItem -src $pgDataArchive
+Copy-RemoteItem -src $configFile
+Copy-RemoteItem -src $transferScript -exec
+Send-Status "Sent data archive and transfer script to transfer machine..."
 
 # run transfer script on transfer machine
 plink -i $transferSshKey -ssh $transferSsh ./$transferScript --config "$config" --guid "$guid" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {
-  Stop-With-Error -message "Failed to run transfer script on transfer machine!"
+  Exit-Error -message "Failed to run transfer script on transfer machine!"
 }
 
-Stop-With-Success "Completed Oracle -> PostgreSQL replication."
+Exit-Success "Completed Oracle -> PostgreSQL replication."
