@@ -1,4 +1,15 @@
 #!/bin/bash
+#
+# db-update-ec2.sh [--targetVersion TARGET_VERSION]
+#
+# Migrates the application database to the target version, applying up / down
+# migration files as appropriate.
+#
+# If no target version is provided, or if the target version is negative, updates
+# to the latest version.
+#
+# Note that we have disabled SC2086 (double-quotes around arguments) in several
+# places, as we are intentionally expanding $PSQL_ARGS into separate arguments.
 
 set -e
 set -o nounset
@@ -29,6 +40,7 @@ DIR_DB="$DIR_SCRIPTS/db"
 PSQL_ARGS="-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
 # install schema if necessary
+# shellcheck disable=SC2086
 if psql $PSQL_ARGS -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'APP_META' AND table_name = 'DB_UPDATE')" | grep f; then
   echo "Installing db-update metadata tables..."
   DB_UPDATE_SQL_FILE="$DIR_DB/db-update-install.sql"
@@ -40,6 +52,7 @@ if psql $PSQL_ARGS -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables 
 fi
 
 # get current database version
+# shellcheck disable=SC2086
 CURRENT_VERSION=$(psql $PSQL_ARGS -tAc 'SELECT "currentVersion" from "APP_META"."DB_UPDATE"')
 
 # figure out latest version
@@ -63,14 +76,16 @@ if [ "$TARGET_VERSION" -gt "$CURRENT_VERSION" ]; then
   for i in $(seq $((CURRENT_VERSION+1)) $TARGET_VERSION); do
     UP_SQL_FILE="$DIR_DB/schema-${i}.up.sql"
     echo "Applying upgrade migration: ${UP_SQL_FILE}..."
+    # shellcheck disable=SC2086
     psql $PSQL_ARGS -f "$UP_SQL_FILE"
   done
   echo "Upgraded database to version ${TARGET_VERSION}."
 elif [ "$TARGET_VERSION" -lt "$CURRENT_VERSION" ]; then
   # downgrade database to target by applying "down" migrations
-  for i in $(seq $CURRENT_VERSION -1 $((TARGET_VERSION+1))); do
+  for i in $(seq "$CURRENT_VERSION" -1 $((TARGET_VERSION+1))); do
     DOWN_SQL_FILE="$DIR_DB/schema-${i}.down.sql"
     echo "Applying downgrade migration: ${DOWN_SQL_FILE}..."
+    # shellcheck disable=SC2086
     psql $PSQL_ARGS -f "$DOWN_SQL_FILE"
   done
   echo "Downgraded database to version ${TARGET_VERSION}."

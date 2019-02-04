@@ -55,6 +55,10 @@
     "*.ps1": [
       "python ./scripts/dev/ps1_linter.py",
       "git add"
+    ],
+    "*.sh": [
+      "shellcheck --shell=bash",
+      "git add"
     ]
   }
 }
