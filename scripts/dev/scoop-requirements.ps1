@@ -1,4 +1,5 @@
 # script settings
+# testing linter
 $ErrorActionPreference = "Stop"
 
 # list of packages that are always installed
@@ -29,10 +30,10 @@ if ([Environment]::Is64BitOperatingSystem) {
   $packagesToInstall += $packagesToInstall32Bit
 }
 
-# install scoop if needed
+# double-check that scoop is installed
 if (-Not (Get-Command "scoop" -errorAction SilentlyContinue)) {
-  Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-  iex (new-object net.webclient).downloadstring("https://get.scoop.sh")
+  Write-Error "scoop not installed - visit https://scoop.sh/ for installation instructions!"
+  Exit 1
 }
 
 # refresh package list
@@ -72,4 +73,9 @@ foreach ($packageIdentifier in $packagesToInstall) {
     scoop uninstall $packageName
     scoop install $packageIdentifier
   }
+}
+
+# install PSScriptAnalyzer for static linting of PowerShell scripts
+if (-Not (Get-Command "Invoke-ScriptAnalyzer" -errorAction SilentlyContinue)) {
+  Install-Module -Name PSScriptAnalyzer -Scope CurrentUser
 }

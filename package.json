@@ -51,6 +51,10 @@
     "*.py": [
       "pylint",
       "git add"
+    ],
+    "*.ps1": [
+      "python ./scripts/dev/ps1_linter.py",
+      "git add"
     ]
   }
 }
