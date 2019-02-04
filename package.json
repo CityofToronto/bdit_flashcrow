@@ -47,6 +47,10 @@
     "*.vue": [
       "vue-cli-service lint",
       "git add"
+    ],
+    "*.py": [
+      "pylint",
+      "git add"
     ]
   }
 }

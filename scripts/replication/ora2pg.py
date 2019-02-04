@@ -1,52 +1,52 @@
+"""
+ora2pg.py
+
+Convert Oracle schemas to their PostgreSQL equivalents.
+"""
 import argparse
 from enum import Enum
 import re
 import sys
 
-parser = argparse.ArgumentParser(
-  description = 'Convert Oracle schemas to PostgreSQL.')
-parser.add_argument(
-  '--sourceSchema',
-  type=str,
-  default='TRAFFIC',
-  help='Schema where data is read from in Oracle source')
-parser.add_argument(
-  '--targetSchema',
-  type=str,
-  default='TRAFFIC_NEW',
-  help='Schema where data is written to in PostgreSQL target')
-args = parser.parse_args()
-
-TABLE_REGEX = re.compile(
-  r'CREATE TABLE "' + args.sourceSchema + r'"."([A-Z0-9_]+)"')
 COLUMN_REGEX = re.compile(
-  r'"(?P<name>[A-Z0-9_]+)" (?P<type>CHAR|DATE|FLOAT|NUMBER|VARCHAR2)(?:\((?P<type_args>[0-9,]+)\))?(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
+  r'"(?P<name>[A-Z0-9_]+)" '
+  r'(?P<type>CHAR|DATE|FLOAT|NUMBER|VARCHAR2)'
+  r'(?:\((?P<type_args>[0-9,]+)\))?'
+  r'(?: CONSTRAINT "(?P<constraint>[A-Z0-9_]+)")?'
+  r'(?P<value> NOT NULL| DEFAULT (?:0|NULL))?')
 CONSTRAINT_NAME_REGEX = re.compile(
   r'CONSTRAINT "([A-Z0-9_]+)"')
 CONSTRAINT_PK_REGEX = re.compile(
   r'PRIMARY KEY \("([A-Z0-9_]+)"\)')
 CONSTRAINT_FK_REGEX = re.compile(
   r'FOREIGN KEY \("([A-Z0-9_]+)"\)')
-CONSTRAINT_FK_REGEX_2 = re.compile(
-  r'REFERENCES "' + args.sourceSchema + r'"."([A-Z0-9_]+)" \("([A-Z0-9_]+)"\)')
 CONSTRAINT_UNIQUE_REGEX = re.compile(
   r'UNIQUE \("([A-Z0-9_]+)"\)')
 
-def parse_table(line):
-  match = TABLE_REGEX.search(line)
+def parse_table(args, line):
+  """
+  Parse a 'CREATE TABLE' statement, extracting the table name.
+  """
+  table_regex = re.compile(
+    r'CREATE TABLE "' + args.sourceSchema + r'"."([A-Z0-9_]+)"')
+  match = table_regex.search(line)
   if match is None:
     raise TypeError('invalid table statement: {line}'.format(
-      line = line))
+      line=line))
   return match.group(1)
 
 def get_pg_type(name, ora_type, ora_type_args):
+  """
+  Given the Oracle data type (e.g. FLOAT(126)), return the corresponding
+  PostgreSQL data type (e.g. float8).
+  """
   # TODO: allow configured overrides
   if ora_type == 'CHAR':
     if len(ora_type_args) != 1:
       raise TypeError('invalid CHAR arguments: {ora_type_args}'.format(
-        ora_type_args = ora_type_args))
+        ora_type_args=ora_type_args))
     return 'char({n})'.format(
-      n = ora_type_args[0])
+      n=ora_type_args[0])
   elif ora_type == 'DATE':
     return 'date'
   elif ora_type == 'FLOAT':
@@ -57,7 +57,7 @@ def get_pg_type(name, ora_type, ora_type_args):
       return 'float8'
     if len(ora_type_args) != 2 or ora_type_args[1] != '0':
       raise TypeError('invalid NUMBER arguments: {ora_type_args}'.format(
-        ora_type_args = ora_type_args))
+        ora_type_args=ora_type_args))
     n = int(ora_type_args[0])
     if n <= 4:
       return 'int2'
@@ -66,23 +66,28 @@ def get_pg_type(name, ora_type, ora_type_args):
     if n <= 18:
       return 'int8'
     return 'numeric({n},0)'.format(
-      n = n)
+      n=n)
   elif ora_type == 'VARCHAR2':
     if len(ora_type_args) != 1:
       raise TypeError('invalid VARCHAR arguments: {ora_type_args}'.format(
-        ora_type_args = ora_type_args))
+        ora_type_args=ora_type_args))
     return 'varchar({n})'.format(
-      n = ora_type_args[0])
+      n=ora_type_args[0])
   else:
     raise TypeError('unexpected Oracle type for {name}: {ora_type}'.format(
-      name = name,
-      ora_type = ora_type))
+      name=name,
+      ora_type=ora_type))
 
 def parse_column(line):
+  """
+  Parse a column within a 'CREATE TABLE' statement, extracting the
+  column name, Oracle data type, and any type-modifying clauses (e.g.
+  'NOT NULL', 'DEFAULT 0') or constraints ('CONSTRAINT ...').
+  """
   match = COLUMN_REGEX.search(line)
   if match is None:
     raise TypeError('invalid column statement: {line}'.format(
-      line = line))
+      line=line))
   name = match.group('name')
   ora_type = match.group('type')
   ora_type_args = match.group('type_args')
@@ -101,17 +106,29 @@ def parse_column(line):
   }
 
 class ConstraintType(Enum):
+  """
+  Used to identify the type of constraint.  This also serves as a list of constraint
+  types supported by this script.
+  """
   PRIMARY_KEY = 1
   FOREIGN_KEY = 2
   UNIQUE = 3
 
-def parse_constraint(constraint_lines):
+def parse_constraint(args, constraint_lines):
+  """
+  Parse a constraint clause.  These clauses are often spread across two or more lines, and
+  the exact syntax varies depending on the constraint type ('PRIMARY KEY', 'UNIQUE', etc.)
+
+  We also handle Oracle's 'DISABLE' clause, which disables the constraint in question.  In
+  that case, this will return None to signal that the constraint is not to be reflected in
+  the PostgreSQL DDL output.
+  """
   if not constraint_lines:
     raise RuntimeError('expected at least one line in constraint')
   match = CONSTRAINT_NAME_REGEX.search(constraint_lines[0])
   if match is None:
     raise RuntimeError('expected CONSTRAINT line at beginning, got {line}'.format(
-      line = constraint_lines[0]))
+      line=constraint_lines[0]))
   constraint = {
     'name': match.group(1),
     'constraint_type': None,
@@ -128,128 +145,188 @@ def parse_constraint(constraint_lines):
       match = CONSTRAINT_PK_REGEX.search(line)
       if match is None:
         raise RuntimeError('invalid PRIMARY KEY declaration: {line}'.format(
-          line = line))
+          line=line))
       constraint['constraint_type'] = ConstraintType.PRIMARY_KEY
       constraint['column_name'] = match.group(1)
     elif 'FOREIGN KEY' in line:
       match = CONSTRAINT_FK_REGEX.search(line)
       if match is None:
         raise RuntimeError('invalid FOREIGN KEY declaration: {line}'.format(
-          line = line))
+          line=line))
       constraint['constraint_type'] = ConstraintType.FOREIGN_KEY
       constraint['column_name'] = match.group(1)
     elif constraint['constraint_type'] == ConstraintType.FOREIGN_KEY:
       # second line of FOREIGN KEY constraint
-      match = CONSTRAINT_FK_REGEX_2.search(line)
+      constraint_fk_regex_2 = re.compile(
+        r'REFERENCES "' + args.sourceSchema + r'"."([A-Z0-9_]+)" \("([A-Z0-9_]+)"\)')
+      match = constraint_fk_regex_2.search(line)
       if match is None:
         raise RuntimeError('invalid FOREIGN KEY declaration: {line}'.format(
-          line = line))
+          line=line))
       constraint['fk_table'] = match.group(1)
       constraint['fk_column'] = match.group(2)
     elif 'UNIQUE' in line:
       match = CONSTRAINT_UNIQUE_REGEX.search(line)
       if match is None:
         raise RuntimeError('invalid UNIQUE declaration: {line}'.format(
-          line = line))
+          line=line))
       constraint['constraint_type'] = ConstraintType.UNIQUE
       constraint['column_name'] = match.group(1)
   if constraint['constraint_type'] is None:
     raise RuntimeError('could not determine constraint type: {constraint}'.format(
-      constraint = '\n'.join(constraint_lines)))
+      constraint='\n'.join(constraint_lines)))
   if constraint['column_name'] is None:
     raise RuntimeError('could not determine constraint column: {constraint}'.format(
-      constraint = '\n'.join(constraint_lines)))
+      constraint='\n'.join(constraint_lines)))
   return constraint
 
 def find_column(columns, column_name):
+  """
+  Given a list of columns as returned by parse_column(), return the column with the given
+  name, or None if no such column was found.
+  """
   for column in columns:
     if column['name'] == column_name:
       return column
   return None
 
-def generate_table_sql(table_name):
+def generate_table_sql(args, table_name):
+  """
+  Given the table name as returned by parse_table(), return the first 'CREATE TABLE' line
+  of the corresponding PostgreSQL DDL statement.
+  """
   return 'CREATE TABLE "{targetSchema}"."{table_name}"'.format(
-    table_name = table_name,
-    targetSchema = args.targetSchema)
+    table_name=table_name,
+    targetSchema=args.targetSchema)
 
 def generate_column_sql(column):
+  """
+  Given a column definition as returned by parse_column(), return the corresponding column
+  line in the PostgreSQL DDL statement.
+  """
   column_sql = '"{name}" {pg_type}'.format(**column)
   if column['value'] is not None:
     column_sql += column['value']
   return column_sql
 
-def generate_constraint_sql(constraint):
+def generate_constraint_sql(args, constraint):
+  """
+  Given a constraint as returned by parse_constraint(), return the corresponding constraint
+  clause in the PostgreSQL DDL statement.
+  """
   constraint_type = constraint['constraint_type']
   if constraint_type == ConstraintType.PRIMARY_KEY:
     return 'PRIMARY KEY ("{column_name}")'.format(**constraint)
   elif constraint_type == ConstraintType.FOREIGN_KEY:
-    return 'FOREIGN KEY ("{column_name}") REFERENCES "{targetSchema}"."{fk_table}" ("{fk_column}")'.format(
-      targetSchema = args.targetSchema,
+    fk_format = (
+      'FOREIGN KEY ("{column_name}") '
+      'REFERENCES "{targetSchema}"."{fk_table}" ("{fk_column}")')
+    return fk_format.format(
+      targetSchema=args.targetSchema,
       **constraint)
   elif constraint_type == ConstraintType.UNIQUE:
     return 'UNIQUE ("{column_name}")'.format(**constraint)
+  else:
+    raise RuntimeError('invalid constraint type: {constraint_type}'.format(
+      **constraint))
 
-def generate_pg_sql(table_name, columns, constraints):
-  table_sql = generate_table_sql(table_name)
+def generate_pg_sql(args, table_name, columns, constraints):
+  """
+  Generate the PostgreSQL DDL statement, based on the values returned by parse_table(),
+  parse_column(), and parse_constraint().  This internally calls the other
+  generate_*_sql() functions to build the corresponding parts of the DDL statement.
+  """
+  table_sql = generate_table_sql(args, table_name)
   column_sqls = map(generate_column_sql, columns)
   column_sql = '\n, '.join(column_sqls)
   if not constraints:
     constraint_sql = ''
   else:
-    constraint_sqls = map(generate_constraint_sql, constraints)
+    constraint_sqls = map(
+      lambda c: generate_constraint_sql(args, c),
+      constraints)
     constraint_sql = '\n, '.join(constraint_sqls)
     constraint_sql = '\n, ' + constraint_sql
   return '''\
 {table_sql} (
   {column_sql}{constraint_sql}
 );'''.format(
-  table_name = table_name,
-  table_sql = table_sql,
-  column_sql = column_sql,
-  constraint_sql = constraint_sql)
+  table_sql=table_sql,
+  column_sql=column_sql,
+  constraint_sql=constraint_sql)
 
-# main state
-table_name = None
-columns = []
-constraints = []
+def parse_args():
+  """
+  Parse command-line arguments.
+  """
+  parser = argparse.ArgumentParser(
+    description='Convert Oracle schemas to their PostgreSQL equivalents.')
+  parser.add_argument(
+    '--sourceSchema',
+    type=str,
+    default='TRAFFIC',
+    help='Schema where data is read from in Oracle source')
+  parser.add_argument(
+    '--targetSchema',
+    type=str,
+    default='TRAFFIC_NEW',
+    help='Schema where data is written to in PostgreSQL target')
+  return parser.parse_args()
 
-# state of current constraint
-constraint_lines = []
-in_constraints = False
+def main():
+  """
+  Read Oracle DDL from stdin, write PostgreSQL DDL to stdout.  The output of this is intended
+  to be run on our AWS PostgreSQL RDS.  To create DDL that can be run against the local replication
+  helper database, use pg2pglocal.py on the output of this script.  That will convert the output
+  to a 'CREATE FOREIGN TABLE' statement suitable for loading data from the Oracle source on zodiac.
+  """
+  args = parse_args()
 
-# parse Oracle DDL, line by line
-# assume that order is TABLE, then columns, then CONSTRAINTs
-for line in sys.stdin:
-  line = ' '.join(line.strip().split())
-  if not line:
-    # ignore empty lines
-    continue
-  if 'CREATE TABLE' in line:
-    table_name = parse_table(line)
-  elif line.startswith('CONSTRAINT'):
-    # first line of a constraint
-    in_constraints = True
-    if constraint_lines:
-      constraint = parse_constraint(constraint_lines)
-      if constraint is not None:
-        constraints.append(constraint)
-      constraint_lines = []
-    constraint_lines.append(line)
-  elif line == ') ;' or line == ')':
-    # TODO: handle PARTITION clauses
-    # last line of query
-    if constraint_lines:
-      constraint = parse_constraint(constraint_lines)
-      if constraint is not None:
-        constraints.append(constraint)
-      constraint_lines = []
-    pg_sql = generate_pg_sql(table_name, columns, constraints)
-    print(pg_sql)
-    break
-  elif in_constraints:
-    # subsequent line of a constraint
-    constraint_lines.append(line)
-  else:
-    # line for column
-    column = parse_column(line)
-    columns.append(column)
+  # main state
+  table_name = None
+  columns = []
+  constraints = []
+
+  # state of current constraint
+  constraint_lines = []
+  in_constraints = False
+
+  # parse Oracle DDL, line by line
+  # assume that order is TABLE, then columns, then CONSTRAINTs
+  for line in sys.stdin:
+    line = ' '.join(line.strip().split())
+    if not line:
+      # ignore empty lines
+      continue
+    if 'CREATE TABLE' in line:
+      table_name = parse_table(args, line)
+    elif line.startswith('CONSTRAINT'):
+      # first line of a constraint
+      in_constraints = True
+      if constraint_lines:
+        constraint = parse_constraint(args, constraint_lines)
+        if constraint is not None:
+          constraints.append(constraint)
+        constraint_lines = []
+      constraint_lines.append(line)
+    elif line in (') ;', ')'):
+      # TODO: handle PARTITION clauses
+      # last line of query
+      if constraint_lines:
+        constraint = parse_constraint(args, constraint_lines)
+        if constraint is not None:
+          constraints.append(constraint)
+        constraint_lines = []
+      pg_sql = generate_pg_sql(args, table_name, columns, constraints)
+      print(pg_sql)
+      break
+    elif in_constraints:
+      # subsequent line of a constraint
+      constraint_lines.append(line)
+    else:
+      # line for column
+      column = parse_column(line)
+      columns.append(column)
+
+if __name__ == '__main__':
+  main()
