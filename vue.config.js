@@ -5,7 +5,7 @@ const key = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.key'));
 const cert = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.crt'));
 
 module.exports = {
-  baseUrl: '/flashcrow/',
+  publicPath: '/flashcrow/',
   devServer: {
     host: 'localhost',
     https: { key, cert },

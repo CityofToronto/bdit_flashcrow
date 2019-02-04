@@ -92,7 +92,7 @@ async function initServer() {
       auth: false,
       handler: async (request, h) => {
         if (request.auth.isAuthenticated) {
-          return h.redirect(config.BASE_URL);
+          return h.redirect(config.PUBLIC_PATH);
         }
         const { username, password } = request.payload;
         const { credentials } = config;
@@ -102,7 +102,7 @@ async function initServer() {
           await request.server.app.cache.set(sessionId, { user }, 0);
           request.cookieAuth.set({ sessionId });
         }
-        return h.redirect(config.BASE_URL);
+        return h.redirect(config.PUBLIC_PATH);
       },
     },
   });
@@ -114,7 +114,7 @@ async function initServer() {
       handler: async (request, h) => {
         request.server.app.cache.drop(request.state.sessionId.sessionId);
         request.cookieAuth.clear();
-        return h.redirect(config.BASE_URL);
+        return h.redirect(config.PUBLIC_PATH);
       },
     },
   });
