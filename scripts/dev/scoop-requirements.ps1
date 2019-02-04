@@ -11,6 +11,7 @@ $packagesToInstall = @(
   "nodejs-lts@10.15.1",
   "postgresql@9.6.5",
   "python@3.7.2",
+  "shellcheck",
   "tar"
 )
 
