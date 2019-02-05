@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "jest",
+    "test:unit": "jest --changedSince=master",
     "pre-commit:lint": "lint-staged",
     "pre-commit:audit": "npm audit"
   },
