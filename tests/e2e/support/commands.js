@@ -7,10 +7,13 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
+
+Cypress.Commands.add('login', (username, password) => {
+  // TODO: use API instead
+  cy.visit('/');
+  cy.get('input[name=username]').type(username);
+  cy.get('input[name=password]').type(`${password}{enter}`);
+});
 //
 //
 // -- This is a child command --
