@@ -53,7 +53,6 @@ async function initServer() {
     ...config.session,
     clearInvalid: true,
     cookie: 'session',
-    domain: 'localhost',
     isHttpOnly: true,
     isSameSite: 'Lax',
     isSecure: true,
@@ -70,11 +69,6 @@ async function initServer() {
       }
       return out;
     },
-    /*
-     * This must go at the end here, so that config.production can override the domain
-     * in production.
-     */
-    ...config.session,
   });
   server.auth.default('session');
 
