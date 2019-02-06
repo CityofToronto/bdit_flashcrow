@@ -108,7 +108,7 @@ async function initServer() {
   });
 
   server.route({
-    method: 'GET',
+    method: 'POST',
     path: '/logout',
     config: {
       handler: async (request, h) => {

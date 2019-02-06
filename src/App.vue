@@ -6,7 +6,9 @@
         <span> | </span>
         <router-link to="/about">About</router-link>
         <span> | </span>
-        <a href="/flashcrow/api/logout">Logout</a>
+        <form id="form_logout" method="POST" action="/flashcrow/api/logout">
+          <input type="submit" id="btn_logout" value="Logout" />
+        </form>
       </template>
       <h1 v-else>Log In</h1>
     </div>
@@ -40,6 +42,20 @@ export default {
     color: #2c3e50;
     &.router-link-exact-active {
       color: #42b983;
+    }
+  }
+  form#form_logout {
+    display: inline-block;
+    & > #btn_logout {
+      display: inline-block;
+      background: none!important;
+      color: inherit;
+      border: none;
+      padding: 0!important;
+      font: inherit;
+      /*border is optional*/
+      border-bottom: 1px solid #444;
+      cursor: pointer;
     }
   }
 }
