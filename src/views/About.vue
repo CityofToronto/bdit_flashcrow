@@ -2,9 +2,9 @@
   <div class="about">
     <h1>This is an about page</h1>
     <div>
-      <span>Counter: {{counter}}</span>
-      <button @click="incrementCounter" :disabled="loading">Increment</button>
-      <button @click="resetCounter" :disabled="loading">Reset</button>
+      <span id="info_counter">Counter: {{counter}}</span>
+      <button id="btn_increment" @click="incrementCounter" :disabled="loading">Increment</button>
+      <button id="btn_reset" @click="resetCounter" :disabled="loading">Reset</button>
     </div>
   </div>
 </template>

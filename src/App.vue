@@ -4,7 +4,7 @@
       <template v-if="auth.loggedIn">
         <router-link to="/">Home</router-link>
         <span> | </span>
-        <router-link to="/about">About</router-link>
+        <router-link to="/about" id="link_about">About</router-link>
         <span> | </span>
         <form id="form_logout" method="POST" action="/flashcrow/api/logout">
           <input type="submit" id="btn_logout" value="Logout" />
