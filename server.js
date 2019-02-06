@@ -7,6 +7,7 @@ const uuid = require('uuid/v4');
 const config = require('./lib/config');
 const CounterDAO = require('./lib/db/CounterDAO');
 const db = require('./lib/db/db');
+const vueConfig = require('./vue.config');
 
 const options = {
   app: { config },
@@ -50,8 +51,17 @@ async function initServer() {
   server.app.cache = cache;
   server.auth.strategy('session', 'cookie', {
     ...config.session,
+    clearInvalid: true,
+    cookie: 'session',
+    domain: 'localhost',
+    isHttpOnly: true,
+    isSameSite: 'Lax',
+    isSecure: true,
+    path: vueConfig.publicPath,
+    ttl: 24 * 60 * 60 * 1000,
     validateFunc: async (request, session) => {
-      const cached = await cache.get(session.sessionId);
+      const { sessionId } = session;
+      const cached = await cache.get(sessionId);
       const out = {
         valid: !!cached,
       };
@@ -60,6 +70,11 @@ async function initServer() {
       }
       return out;
     },
+    /*
+     * This must go at the end here, so that config.production can override the domain
+     * in production.
+     */
+    ...config.session,
   });
   server.auth.default('session');
 
@@ -76,7 +91,7 @@ async function initServer() {
         loggedIn: request.auth.isAuthenticated,
       };
       if (out.loggedIn) {
-        const { sessionId } = request.state.sessionId;
+        const { sessionId } = request.state.session;
         const { user } = await request.server.app.cache.get(sessionId);
         const { id } = user;
         out.user = { id };
@@ -112,7 +127,8 @@ async function initServer() {
     path: '/logout',
     config: {
       handler: async (request, h) => {
-        request.server.app.cache.drop(request.state.sessionId.sessionId);
+        const { sessionId } = request.state.session;
+        request.server.app.cache.drop(sessionId);
         request.cookieAuth.clear();
         return h.redirect(config.PUBLIC_PATH);
       },
