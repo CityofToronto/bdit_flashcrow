@@ -9,7 +9,6 @@ $packagesToInstall = @(
   "jq",
   "nginx@1.13.6",
   "nodejs-lts@10.15.1",
-  "postgresql@9.6.5",
   "python@3.7.2",
   "shellcheck",
   "tar"
@@ -17,11 +16,15 @@ $packagesToInstall = @(
 
 # list of packages that are only installed on 64-bit platforms
 $packagesToInstall64Bit = @(
+  "postgresql@9.6.5",
   "openssh"
 )
 
 # list of packages that are only installed on 32-bit platforms
 $packagesToInstall32Bit = @(
+  # for some reason "postgresql@9.6.5" tries to download and install the 64-bit zip file on 32-bit Windows?
+  # we also need PostgreSQL 10.5 here, as previous versions are incompatible with oracle_fdw.
+  # "https://raw.githubusercontent.com/lukesampson/scoop/ae0f925fd85991806c57776f86a2214688b5cf06/bucket/postgresql.json",
   "win32-openssh"
 )
 
