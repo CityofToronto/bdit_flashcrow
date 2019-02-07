@@ -28,12 +28,12 @@ param (
   )][string]$targetValidationSchema,
   [Parameter(
     Mandatory = $true,
-    HelpMessage = "Path to SSH private key file for accessing transfer machine"
-  )][string]$transferSshKey,
+    HelpMessage = "ID of transfer stack (e.g. flashcrow-dev0)"
+  )][string]$transferStack,
   [Parameter(
     Mandatory = $true,
-    HelpMessage = "SSH connection string for accessing transfer machine"
-  )][string]$transferSsh
+    HelpMessage = "Path to SSH private key file for accessing transfer stack"
+  )][string]$transferStackKey
 )
 
 # script settings
@@ -100,16 +100,16 @@ function Copy-RemoteItem {
     [switch]$exec = $false
   )
   $sumLocal = (shasum $src).Substring(0, 40)
-  pscp -i $transferSshKey $src "$transferSsh`:"
+  scp -i $transferStackKey $src "$transferSsh`:"
   if (-Not $?) {
     Exit-Error -message "scp $src -> $transferSsh failed"
   }
-  $sumTransfer = (plink -i $transferSshKey -ssh $transferSsh shasum "$src").Substring(0, 40)
+  $sumTransfer = (ssh -i $transferStackKey $transferSsh sha1sum "$src").Substring(0, 40)
   if ($sumLocal -ne $sumTransfer) {
     Exit-Error -message "checksum validation of $src failed"
   }
   if ($exec) {
-    plink -i $transferSshKey -ssh $transferSsh chmod u+x $src
+    ssh -i $transferStackKey $transferSsh chmod u+x $src
   }
 }
 
@@ -150,11 +150,19 @@ Remove-Path @($dirRoot, $pgDataArchive)
 # recreate directory
 New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
 
-# get config data
-$configData = Get-Content -Raw -Path $configFile | ConvertFrom-Json
+# get transfer machine
+$instancesUrl = "https://instmgmt.intra.sandbox-toronto.ca/instances?stack=$transferStack"
+$transferData = curl.exe $instancesUrl | ConvertFrom-Json
+if ($transferData.instances.length -eq 0) {
+  Exit-Error "Failed to identify transfer machine!"
+}
+$transferIp = $transferData.instances[0].PrivateIpAddress
+$transferSsh = "ec2-user@$transferIp"
+Send-Status "Identified transfer machine: $transferIp..."
 
 # fetch Oracle row counts
-foreach ($table in $configData.tables) {
+jq -r ".tables[]" "$configFile" | ForEach-Object {
+  $table = $_
   $fetchSqlData = @"
 SET LONG 2000000
 SET PAGESIZE 0
@@ -181,7 +189,8 @@ EXIT;
 Send-Status "Fetched Oracle row counts..."
 
 # fetch Oracle table schemas
-foreach ($table in $configData.tables) {
+jq -r ".tables[]" "$configFile" | ForEach-Object {
+  $table = $_
   $fetchSqlData = @"
 SET LONG 2000000
 SET PAGESIZE 0
@@ -210,7 +219,8 @@ EXIT;
 Send-Status "Fetched Oracle schemas..."
 
 # convert Oracle table schemas to PostgreSQL
-foreach ($table in $configData.tables) {
+jq -r ".tables[]" "$configFile" | ForEach-Object {
+  $table = $_
   $oraSqlFile = Join-Path -Path $dirOra -ChildPath "$table.sql"
   $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
   Get-Content $oraSqlFile | python ora2pg.py --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgSqlFile
@@ -226,8 +236,8 @@ foreach ($table in $configData.tables) {
 Send-Status "Generated PostgreSQL schemas..."
 
 # drop any existing foreign tables in reverse order
-foreach ($i in ($configData.tables.Count - 1)..0) {
-  $table = $configData.tables[$i]
+jq -r ".tables | reverse | .[]" "$configFile" | ForEach-Object {
+  $table = $_
   psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS \`"$targetValidationSchema\`".\`"$table\`""
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
   if ($exists -ne "f") {
@@ -236,7 +246,8 @@ foreach ($i in ($configData.tables.Count - 1)..0) {
 }
 
 # run PostgreSQL schemas to create foreign tables
-foreach ($table in $configData.tables) {
+jq -r ".tables[]" "$configFile" | ForEach-Object {
+  $table = $_
   $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
   psql -U flashcrow -f $pgLocalSqlFile
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
@@ -247,7 +258,8 @@ foreach ($table in $configData.tables) {
 Send-Status "Created local PostgreSQL tables..."
 
 # copy data from foreign tables to local text files
-foreach ($table in $configData.tables) {
+jq -r ".tables[]" "$configFile" | ForEach-Object {
+  $table = $_
   $datFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
   psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`") TO STDOUT (FORMAT text, ENCODING 'UTF8')" | Out-File -Encoding UTF8 -FilePath $datFile
   # Out-File starts files with a Byte Order Mark (BOM), which trips up PostgreSQL's
@@ -273,7 +285,7 @@ Copy-RemoteItem -src $transferScript -exec
 Send-Status "Sent data archive and transfer script to transfer machine..."
 
 # run transfer script on transfer machine
-plink -i $transferSshKey -ssh $transferSsh ./$transferScript --config "$config" --guid "$guid" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
+ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" --guid "$guid" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {
   Exit-Error -message "Failed to run transfer script on transfer machine!"
 }

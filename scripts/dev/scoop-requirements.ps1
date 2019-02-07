@@ -83,3 +83,22 @@ foreach ($packageIdentifier in $packagesToInstall) {
 if (-Not (Get-Command "Invoke-ScriptAnalyzer" -errorAction SilentlyContinue)) {
   Install-Module -Name PSScriptAnalyzer -Scope CurrentUser
 }
+
+# configure git, npm, pip
+$corpProxy = "137.15.73.132:8080"
+$corpProxyWithScheme = "http://$corpProxy"
+
+git config --global http.proxy $corpProxyWithScheme
+git config --global core.autocrlf false
+
+npm config set proxy $corpProxyWithScheme
+npm config set https-proxy $corpProxyWithScheme
+
+$dirPip = Join-Path -path $env:APPDATA -childPath "pip"
+$pipIni = Join-Path -path $dirPip -childPath "pip.ini"
+$pipIniData = @"
+[global]
+
+proxy = $corpProxy
+"@
+$pipIniData | Out-File -Encoding Ascii -FilePath $pipIni

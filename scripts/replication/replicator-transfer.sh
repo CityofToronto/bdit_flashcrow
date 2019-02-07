@@ -119,7 +119,7 @@ sendStatus "$GUID Unpacked data archive on transfer machine..."
 
 # drop any existing validation schema tables in reverse order
 # shellcheck disable=SC2086
-jq -r ".tables[]" "$CONFIG_FILE" | tac | while read -r table; do
+jq -r ".tables | reverse | .[]" "$CONFIG_FILE" | while read -r table; do
   psql $TARGET_DB -c "DROP TABLE IF EXISTS \"$TARGET_VALIDATION_SCHEMA\".\"$table\""
   if psql $TARGET_DB -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$TARGET_VALIDATION_SCHEMA' AND table_name = '$table')" | grep t; then
     exitError "Failed to drop $TARGET_VALIDATION_SCHEMA.$table from remote PostgreSQL!"
@@ -155,7 +155,7 @@ sendStatus "Copied data into remote PostgreSQL validation schema..."
 
 # drop any existing target schema tables in reverse order
 # shellcheck disable=SC2086
-jq -r ".tables[]" "$CONFIG_FILE" | tac | while read -r table; do
+jq -r ".tables | reverse | .[]" "$CONFIG_FILE" | while read -r table; do
   psql $TARGET_DB -c "DROP TABLE IF EXISTS \"$TARGET_SCHEMA\".\"$table\""
   if psql $TARGET_DB -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$TARGET_SCHEMA' AND table_name = '$table')" | grep t; then
     exitError "Failed to drop $TARGET_SCHEMA.$table from remote PostgreSQL!"
