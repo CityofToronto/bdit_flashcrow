@@ -1,11 +1,19 @@
 param (
   [Parameter(
     Mandatory = $true,
+    HelpMessage = "Number of rows to read per chunk"
+  )][Int32]$chunkSize,
+  [Parameter(
+    Mandatory = $true,
     HelpMessage = "Configuration to use (`$config.config.json)"
   )][string]$config,
   [Parameter(
     HelpMessage = "Email address(es) to send notifications to"
-  )][string[]]$emailsTo = @("Evan Savage <Evan.Savage@toronto.ca>"),
+  )][string[]]$emailsTo = @(),
+  [Parameter(
+    Mandatory = $true,
+    HelpMessage = "Tolerance factor for row count validation"
+  )][Double]$rowCountTolerance,
   [Parameter(
     Mandatory = $true,
     HelpMessage = "Database connection string for Oracle source"
@@ -63,10 +71,13 @@ $guid = [guid]::NewGuid().Guid
 
 function Send-Status {
   param (
-    [string]$message
+    [string]$message,
+    [switch]$emailDisable = $false
   )
-  $now = Get-Date -Format o
-  Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectStatus -Body $message
+  $now = Get-Date -Format s
+  if ((-Not $emailDisable) -And ($emailsTo.Count -gt 0)) {
+    Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectStatus -Body $message
+  }
   $message = "$guid $now $message"
   Write-Output $message
 }
@@ -74,10 +85,13 @@ function Send-Status {
 function Exit-Error {
   param (
     [string]$message,
+    [switch]$emailDisable = $false,
     [Int32]$exitCode = 1
   )
-  $now = Get-Date -Format o
-  Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectError -Body $message
+  $now = Get-Date -Format s
+  if ((-Not $emailDisable) -And ($emailsTo.Count -gt 0)) {
+    Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectError -Body $message
+  }
   $message = "$guid $now $message"
   Write-Error -Message $message
   Exit $exitCode
@@ -85,10 +99,13 @@ function Exit-Error {
 
 function Exit-Success {
   param (
-    [string]$message
+    [string]$message,
+    [switch]$emailDisable = $false
   )
-  $now = Get-Date -Format o
-  Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectSuccess -Body $message
+  $now = Get-Date -Format s
+  if ((-Not $emailDisable) -And ($emailsTo.Count -gt 0)) {
+    Send-MailMessage -From $emailFrom -To $emailsTo -SmtpServer $emailSmtp -Subject $emailSubjectSuccess -Body $message
+  }
   $message = "$guid $now $message"
   Write-Output $message
   Exit 0
@@ -142,6 +159,7 @@ function New-Directory {
     }
   }
 }
+
 Send-Status "Starting Oracle -> PostgreSQL replication..."
 
 # clean directory and archive, if they exist
@@ -161,7 +179,7 @@ $transferSsh = "ec2-user@$transferIp"
 Send-Status "Identified transfer machine: $transferIp..."
 
 # fetch Oracle row counts
-jq -r ".tables[]" "$configFile" | ForEach-Object {
+jq -r ".tables[].name" "$configFile" | ForEach-Object {
   $table = $_
   $fetchSqlData = @"
 SET LONG 2000000
@@ -189,7 +207,7 @@ EXIT;
 Send-Status "Fetched Oracle row counts..."
 
 # fetch Oracle table schemas
-jq -r ".tables[]" "$configFile" | ForEach-Object {
+jq -r ".tables[].name" "$configFile" | ForEach-Object {
   $table = $_
   $fetchSqlData = @"
 SET LONG 2000000
@@ -219,7 +237,7 @@ EXIT;
 Send-Status "Fetched Oracle schemas..."
 
 # convert Oracle table schemas to PostgreSQL
-jq -r ".tables[]" "$configFile" | ForEach-Object {
+jq -r ".tables[].name" "$configFile" | ForEach-Object {
   $table = $_
   $oraSqlFile = Join-Path -Path $dirOra -ChildPath "$table.sql"
   $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
@@ -236,7 +254,7 @@ jq -r ".tables[]" "$configFile" | ForEach-Object {
 Send-Status "Generated PostgreSQL schemas..."
 
 # drop any existing foreign tables in reverse order
-jq -r ".tables | reverse | .[]" "$configFile" | ForEach-Object {
+jq -r ".tables | reverse | .[].name" "$configFile" | ForEach-Object {
   $table = $_
   psql -U flashcrow -c "DROP FOREIGN TABLE IF EXISTS \`"$targetValidationSchema\`".\`"$table\`""
   $exists = psql -U flashcrow -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '$targetValidationSchema' AND table_name = '$table')"
@@ -246,7 +264,7 @@ jq -r ".tables | reverse | .[]" "$configFile" | ForEach-Object {
 }
 
 # run PostgreSQL schemas to create foreign tables
-jq -r ".tables[]" "$configFile" | ForEach-Object {
+jq -r ".tables[].name" "$configFile" | ForEach-Object {
   $table = $_
   $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
   psql -U flashcrow -f $pgLocalSqlFile
@@ -258,10 +276,66 @@ jq -r ".tables[]" "$configFile" | ForEach-Object {
 Send-Status "Created local PostgreSQL tables..."
 
 # copy data from foreign tables to local text files
-jq -r ".tables[]" "$configFile" | ForEach-Object {
-  $table = $_
+jq -c ".tables[]" "$configFile" | ForEach-Object {
+  $tableObject = $_ | ConvertFrom-Json
+  $table = $tableObject.name
+  $chunkBy = $tableObject.chunkBy
+  $chunkNumeric = $tableObject.chunkNumeric
   $datFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
-  psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`") TO STDOUT (FORMAT text, ENCODING 'UTF8')" | Out-File -Encoding UTF8 -FilePath $datFile
+
+  # determine chunkBy column index table by parsing SQL
+  $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
+  $chunkByMatches = Get-Content $pgLocalSqlFile | Select-String -SimpleMatch $chunkBy
+  if ($chunkByMatches -eq $null) {
+    Exit-Error "Failed to find column $chunkBy in $table DDL!"
+  }
+  # The first line is the CREATE TABLE statement, which means the second line starts the list of
+  # columns.
+  $chunkByIndex = $chunkByMatches[0].LineNumber - 2
+
+  # initialize chunk iteration parameters
+  $current = ''
+  if ($chunkNumeric) {
+    $current = 0
+  }
+  $cmp = ">="
+  $numRows = 0
+
+  # Note that chunk rows could be updated after their chunk has been copied.
+  #
+  # This risk is considered acceptable, as our replication job aims for eventual
+  # consistency.
+  while ($true) {
+    Send-Status -message "[$targetValidationSchema.$table] $numRows..." -emailDisable
+
+    # get chunk rows, write to data file, and count
+    $numChunkRows = psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`" WHERE \`"$chunkBy\`" $cmp '$current' ORDER BY \`"$chunkBy\`" LIMIT $chunkSize) TO STDOUT (FORMAT text, ENCODING 'UTF8')" |
+      Add-Content -Encoding utf8 -Path $datFile -PassThru |
+      Measure-Object
+    $numChunkRows = $numChunkRows.Count
+    if ($numChunkRows -eq 0) {
+      break
+    }
+
+    # update chunk iteration parameters
+    $current = Get-Content $datFile -Tail 1 | ForEach-Object { $_.split("`t")[$chunkByIndex] }
+    if ($chunkNumeric) {
+      $current = [Int64]$current
+    }
+    $cmp = ">"
+    $numRows += $numChunkRows
+  }
+  Send-Status -message "[$targetValidationSchema.$table] $numRows." -emailDisable
+
+  # check that row counts match within tolerance
+  $oraCntFile = Join-Path -Path $dirOraCnt -ChildPath "$table.cnt"
+  $oraCount = [Int64](Get-Content $oraCntFile)
+  $numRowsDat = (Get-Content $datFile | Measure-Object).Count
+  $rowCountError = [Math]::abs($numRowsDat - $oraCount) / $oraCount
+  if ($rowCountError -gt $rowCountTolerance) {
+    Exit-Error "Row count mismatch on $targetValidationSchema`.$table`: Oracle ($oraCount rows) -> data file ($numRowsDat rows)!"
+  }
+
   # Out-File starts files with a Byte Order Mark (BOM), which trips up PostgreSQL's
   # COPY ... FROM STDIN.  We strip that here.
   dos2unix $datFile
@@ -285,7 +359,7 @@ Copy-RemoteItem -src $transferScript -exec
 Send-Status "Sent data archive and transfer script to transfer machine..."
 
 # run transfer script on transfer machine
-ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" --guid "$guid" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
+ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" --guid "$guid" --rowCountTolerance "$rowCountTolerance" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {
   Exit-Error -message "Failed to run transfer script on transfer machine!"
 }

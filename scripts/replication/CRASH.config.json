@@ -1,5 +1,7 @@
 {
-  "tables": [
-    "ACC"
-  ]
+  "tables": [{
+    "name": "ACC",
+    "chunkBy": "REC_ID",
+    "chunkNumeric": true
+  }]
 }

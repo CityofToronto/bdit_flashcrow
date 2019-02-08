@@ -20,6 +20,18 @@
     "chunkBy": "COUNT_INFO_ID",
     "chunkNumeric": true
   }, {
+    "name": "CNT_DET",
+    "chunkBy": "ID",
+    "chunkNumeric": true
+  }, {
+    "name": "DET",
+    "chunkBy": "ID",
+    "chunkNumeric": true
+  }, {
+    "name": "CNT_SPD",
+    "chunkBy": "ID",
+    "chunkNumeric": true
+  }, {
     "name": "NODE",
     "chunkBy": "NODE_ID",
     "chunkNumeric": false
