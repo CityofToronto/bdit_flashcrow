@@ -13,7 +13,7 @@
 import { mapActions, mapState } from 'vuex';
 
 export default {
-  name: 'about',
+  name: 'About',
   computed: {
     ...mapState(['counter', 'loading']),
   },
