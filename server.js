@@ -1,7 +1,7 @@
 const Blankie = require('blankie');
 const Hapi = require('hapi');
 const hapiAuthCookie = require('hapi-auth-cookie');
-// const { Issuer } = require('openid-client');
+const { Issuer } = require('openid-client');
 const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
@@ -76,18 +76,18 @@ async function initServer() {
   // AUTH
 
   /**
-   * GET /auth/openid-connect
+   * GET /auth/openid-connect-callback
    *
    * OpenID Connect callback URL.
    */
   server.route({
     method: 'GET',
-    path: '/auth/openid-connect',
+    path: '/auth/openid-connect-callback',
     config: {
       auth: { mode: 'try' },
     },
-    handler: async () => {
-
+    handler: async (/* request */) => {
+      // TODO: handle request authorization code
     },
   });
 
@@ -182,6 +182,16 @@ async function initServer() {
   });
 
   const { ENV } = config;
+  const openidIssuer = await Issuer.discover('https://accounts.google.com');
+  console.log(`[${ENV}] Discovered OpenID Connect issuer: ${openidIssuer.issuer}...`);
+
+  const openidClient = new openidIssuer.Client(config.openid);
+  const openidAuthorizationUrl = openidClient.authorizationUrl({
+    redirect_uri: 'https://lvh.me:8080/flashcrow/openid-connect-callback',
+    scope: 'openid email',
+  });
+  console.log(`[${ENV}] OpenID Connect Authorization URL: ${openidAuthorizationUrl}`);
+
   await server.start();
   console.log(`[${ENV}] Server started at: ${server.info.uri}...`);
 }
