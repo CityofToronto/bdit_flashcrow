@@ -5,17 +5,41 @@ import store from '@/store';
 
 Vue.use(Router);
 
+const NAME_LOGIN = 'login';
+const NAME_HOME = 'home';
+
 const router = new Router({
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: () => import(/* webpackChunkName: "home" */ './views/Home.vue'),
-    },
+    // PUBLIC-FACING PAGES
     {
       path: '/login',
-      name: 'login',
-      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+      name: NAME_LOGIN,
+      component: () => import(/* webpackChunkName: "public" */ './views/Login.vue'),
+      meta: {
+        auth: false,
+      },
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacyPolicy',
+      component: () => import(/* webpackChunkName: "public" */ './views/PrivacyPolicy.vue'),
+      meta: {
+        auth: { mode: 'try' },
+      },
+    },
+    {
+      path: '/terms-of-service',
+      name: 'termsOfService',
+      component: () => import(/* webpackChunkName: "public" */ './views/TermsOfService.vue'),
+      meta: {
+        auth: { mode: 'try' },
+      },
+    },
+    // AUTHENTICATED PAGES
+    {
+      path: '/',
+      name: NAME_HOME,
+      component: () => import(/* webpackChunkName: "home" */ './views/Home.vue'),
     },
     {
       path: '/about',
@@ -25,19 +49,33 @@ const router = new Router({
   ],
 });
 
+function routeMetaAuth(route) {
+  if (route.meta && Object.prototype.hasOwnProperty.call(route.meta, 'auth')) {
+    return route.meta.auth;
+  }
+  return true;
+}
+
 router.beforeEach((to, from, next) => {
   store.dispatch('checkAuth')
-    .then((auth) => {
-      if (to.name === 'login') {
-        if (auth.loggedIn) {
-          next({ name: 'home' });
+    .then(({ loggedIn }) => {
+      if (to.matched.some(route => routeMetaAuth(route) === true)) {
+        // this route requires an authenticated user
+        if (loggedIn) {
+          next();
+        } else {
+          next({ name: NAME_LOGIN });
+        }
+      } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
+        // this route requires an unauthenticated user
+        if (loggedIn) {
+          next({ name: NAME_HOME });
         } else {
           next();
         }
-      } else if (auth.loggedIn) {
-        next();
       } else {
-        next({ name: 'login' });
+        // this route accepts both authenticated and unauthenticated users
+        next();
       }
     })
     .catch((err) => {

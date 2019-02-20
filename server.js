@@ -1,6 +1,7 @@
 const Blankie = require('blankie');
 const Hapi = require('hapi');
 const hapiAuthCookie = require('hapi-auth-cookie');
+// const { Issuer } = require('openid-client');
 const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
@@ -73,6 +74,22 @@ async function initServer() {
   server.auth.default('session');
 
   // AUTH
+
+  /**
+   * GET /auth/openid-connect
+   *
+   * OpenID Connect callback URL.
+   */
+  server.route({
+    method: 'GET',
+    path: '/auth/openid-connect',
+    config: {
+      auth: { mode: 'try' },
+    },
+    handler: async () => {
+
+    },
+  });
 
   server.route({
     method: 'GET',
