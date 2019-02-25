@@ -2,6 +2,18 @@
   "tables": [{
     "name": "ACC",
     "chunkBy": "REC_ID",
-    "chunkNumeric": true
+    "chunkNumeric": true,
+    "exclude": [
+      "SURNAME",
+      "GIVEN",
+      "STR_NUMBER",
+      "STREET",
+      "TYPE",
+      "DIR",
+      "APT",
+      "CITY",
+      "PROV",
+      "POSTAL"
+    ]
   }]
 }

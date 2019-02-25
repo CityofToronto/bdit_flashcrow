@@ -35,14 +35,22 @@ param (
     HelpMessage = "Schema where data is initially written and validated in PostgreSQL target"
   )][string]$targetValidationSchema,
   [Parameter(
-    Mandatory = $true,
+    HelpMessage = "IP address of transfer machine"
+  )][string]$transferIp = "",
+  [Parameter(
     HelpMessage = "ID of transfer stack (e.g. flashcrow-dev0)"
-  )][string]$transferStack,
+  )][string]$transferStack = "",
   [Parameter(
     Mandatory = $true,
-    HelpMessage = "Path to SSH private key file for accessing transfer stack"
-  )][string]$transferStackKey
+    HelpMessage = "Path to SSH private key file for accessing transfer machine"
+  )][string]$transferStackKey,
+  [Parameter(
+    HelpMessage = "user for accessing transfer machine"
+  )][string]$transferUser = "ec2-user"
 )
+
+# run in context of script directory
+Set-Location $PSScriptRoot
 
 # script settings
 $ErrorActionPreference = "Stop"
@@ -56,7 +64,7 @@ $dirPg = Join-Path -path $dirRoot -childPath "pg"
 $dirPgLocal = Join-Path -path $dirRoot -childPath "pg_local"
 $dirDat = Join-Path -path $dirRoot -childPath "dat"
 $configFile = "$config.config.json"
-$pgDataArchive = "flashcrow-$config.tar.gz"
+$pgDataArchive = "flashcrow-$config.tar"
 $transferScript = "replicator-transfer.sh"
 
 # email settings
@@ -169,14 +177,19 @@ Remove-Path @($dirRoot, $pgDataArchive)
 New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
 
 # get transfer machine
-$instancesUrl = "https://instmgmt.intra.sandbox-toronto.ca/instances?stack=$transferStack"
-$transferData = curl.exe $instancesUrl | ConvertFrom-Json
-if ($transferData.instances.length -eq 0) {
-  Exit-Error "Failed to identify transfer machine!"
+if (-Not $transferIp) {
+  if (-Not $transferStack) {
+    Exit-Error "No IP address or stack ID provided; you must provide one or the other!"
+  }
+  $instancesUrl = "https://instmgmt.intra.sandbox-toronto.ca/instances?stack=$transferStack"
+  $transferData = curl.exe -s $instancesUrl | ConvertFrom-Json
+  if ($transferData.instances.length -eq 0) {
+    Exit-Error "Failed to identify transfer machine!"
+  }
+  $transferIp = $transferData.instances[0].PrivateIpAddress
 }
-$transferIp = $transferData.instances[0].PrivateIpAddress
-$transferSsh = "ec2-user@$transferIp"
-Send-Status "Identified transfer machine: $transferIp..."
+$transferSsh = "$transferUser@$transferIp"
+Send-Status "Identified transfer machine: $transferSsh..."
 
 # fetch Oracle row counts
 jq -r ".tables[].name" "$configFile" | ForEach-Object {
@@ -199,7 +212,7 @@ EXIT;
   }
   $oraCntFile = Join-Path -Path $dirOraCnt -ChildPath "$table.cnt"
   sqlplus.exe -s $sourceDb @$fetchSqlFile | ForEach-Object -Process {$_.ToString().Trim() } | Out-File -Encoding Ascii -FilePath $oraCntFile
-  dos2unix $oraCntFile
+  dos2unix -q $oraCntFile
   if (-Not $? -Or (Get-Content $oraCntFile | Select-String "ERROR" -Quiet)) {
     Exit-Error -message "Failed to fetch $sourceSchema.$table row count from Oracle!"
   }
@@ -338,7 +351,12 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
 
   # Out-File starts files with a Byte Order Mark (BOM), which trips up PostgreSQL's
   # COPY ... FROM STDIN.  We strip that here.
-  dos2unix $datFile
+  sed -i '1s/^\xEF\xBB\xBF//' $datFile
+  # sed writes a temporary file that it uses to perform the in-place BOM stripping.
+  # The suffix is random, so we have to remove it here.  Note that this is in the
+  # current directory!
+  Remove-Item sed*
+  gzip $datFile
   if (-Not $?) {
     Exit-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
   }
@@ -346,7 +364,7 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
 Send-Status "Copied data from local PostgreSQL..."
 
 # pack archive
-tar czvf $pgDataArchive $dirRoot
+tar cf $pgDataArchive $dirRoot
 if (-Not $?) {
   Exit-Error -message "Failed to create data archive!"
 }

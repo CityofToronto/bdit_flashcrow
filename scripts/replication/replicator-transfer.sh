@@ -99,12 +99,17 @@ function parse_args {
 }
 
 parse_args "$@"
+
+# paths to important folders / files
 DIR_ROOT="flashcrow-$CONFIG"
 DIR_ORA_CNT="$DIR_ROOT/ora_cnt"
 DIR_PG="$DIR_ROOT/pg"
 DIR_DAT="$DIR_ROOT/dat"
 CONFIG_FILE="$CONFIG.config.json"
-PG_DATA_ARCHIVE="flashcrow-$CONFIG.tar.gz"
+PG_DATA_ARCHIVE="flashcrow-$CONFIG.tar"
+
+# squelch NOTICEs from psql
+export PGOPTIONS="--client-min-messages=warning"
 
 function sendStatus {
   local -r MESSAGE="$1"
@@ -131,7 +136,8 @@ sendStatus "Starting remote PostgreSQL data transfer..."
 # cleanup previous data, unpack archive
 cd "$HOME"
 rm -rf "$DIR_ROOT"
-tar xzvf "$PG_DATA_ARCHIVE"
+tar xf "$PG_DATA_ARCHIVE"
+gunzip -r "$DIR_DAT"
 sendStatus "$GUID Unpacked data archive on transfer machine..."
 
 # drop any existing validation schema tables in reverse order
