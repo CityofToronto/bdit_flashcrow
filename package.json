@@ -15,10 +15,11 @@
     "blankie": "^4.1.0",
     "hapi": "^18.1.0",
     "hapi-auth-cookie": "^9.1.0",
+    "openid-client": "^2.4.5",
     "pg-promise": "^8.5.5",
     "scooter": "^5.0.2",
     "uuid": "^3.3.2",
-    "vue": "^2.6.0",
+    "vue": "^2.6.3",
     "vue-router": "^3.0.2",
     "vuex": "^3.1.0"
   },
@@ -32,10 +33,10 @@
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.0.0",
+    "babel-jest": "^24.1.0",
     "eslint": "^5.13.0",
     "eslint-plugin-vue": "^5.1.0",
-    "jest": "^24.0.0",
+    "jest": "^24.1.0",
     "jest-serializer-vue": "^2.0.2",
     "jest-transform-stub": "^2.0.0",
     "lint-staged": "^8.1.3",
@@ -44,7 +45,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "vue-jest": "^3.0.2",
-    "vue-template-compiler": "^2.6.0"
+    "vue-template-compiler": "^2.6.3"
   },
   "gitHooks": {
     "pre-commit": "npm-run-all pre-commit:* test:unit"

@@ -5,7 +5,9 @@ const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
+const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CounterDAO = require('./lib/db/CounterDAO');
+const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
 
@@ -74,6 +76,72 @@ async function initServer() {
 
   // AUTH
 
+  /**
+   * GET /auth/openid-connect
+   *
+   * Initiates the OpenID Connect OAuth handshake by redirecting the user to the
+   * authorization URL.
+   */
+  server.route({
+    method: 'GET',
+    path: '/auth/openid-connect',
+    config: {
+      auth: false,
+    },
+    handler: async (request, h) => {
+      const client = await OpenIDClient.get();
+      const authorizationUrl = client.authorizationUrl({
+        redirect_uri: 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        scope: 'openid email',
+      });
+      console.log(authorizationUrl);
+      return h.redirect(authorizationUrl);
+    },
+  });
+
+  /**
+   * GET /auth/openid-connect-callback
+   *
+   * OpenID Connect callback URL.
+   */
+  server.route({
+    method: 'GET',
+    path: '/auth/openid-connect-callback',
+    config: {
+      auth: false,
+    },
+    handler: async (request, h) => {
+      console.log(request.query);
+
+      // retrieve token set from OpenID Connect provider
+      const client = await OpenIDClient.get();
+      const tokenSet = await client.authorizationCallback(
+        'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        request.query,
+      );
+      console.log('received and validated tokens %j', tokenSet);
+      console.log('validated id_token claims %j', tokenSet.claims);
+
+      // upgrade to application session ID
+      const { sub, email } = tokenSet.claims;
+      const token = tokenSet.id_token;
+      let user = await UserDAO.bySubject(sub);
+      if (user === null) {
+        user = { subject: sub, email, token };
+        await UserDAO.create(user);
+      } else {
+        Object.assign(user, { email, token });
+        await UserDAO.update(user);
+      }
+      const sessionId = uuid();
+      await request.server.app.cache.set(sessionId, { user }, 0);
+      request.cookieAuth.set({ sessionId });
+
+      // redirect to home
+      return h.redirect(config.PUBLIC_PATH);
+    },
+  });
+
   server.route({
     method: 'GET',
     path: '/auth',
@@ -96,34 +164,23 @@ async function initServer() {
 
   server.route({
     method: 'POST',
-    path: '/login',
-    config: {
-      auth: false,
-      handler: async (request, h) => {
-        if (request.auth.isAuthenticated) {
-          return h.redirect(config.PUBLIC_PATH);
-        }
-        const { username, password } = request.payload;
-        const { credentials } = config;
-        if (username === credentials.username && password === credentials.password) {
-          const user = { id: 42, username, password };
-          const sessionId = uuid();
-          await request.server.app.cache.set(sessionId, { user }, 0);
-          request.cookieAuth.set({ sessionId });
-        }
-        return h.redirect(config.PUBLIC_PATH);
-      },
-    },
-  });
-
-  server.route({
-    method: 'POST',
     path: '/logout',
     config: {
       handler: async (request, h) => {
+        // revoke OpenID Connect token
         const { sessionId } = request.state.session;
+        const { user } = await request.server.app.cache.get(sessionId);
+        const { token } = user;
+
+        const client = await OpenIDClient.get();
+        const response = await client.revoke(token);
+        console.log('revoked token %s', token, response);
+
+        // clear session
         request.server.app.cache.drop(sessionId);
         request.cookieAuth.clear();
+
+        // redirect home
         return h.redirect(config.PUBLIC_PATH);
       },
     },
@@ -165,6 +222,7 @@ async function initServer() {
   });
 
   const { ENV } = config;
+
   await server.start();
   console.log(`[${ENV}] Server started at: ${server.info.uri}...`);
 }

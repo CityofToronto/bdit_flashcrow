@@ -17,5 +17,6 @@ module.exports = {
         },
       },
     },
+    public: 'lvh.me:8080/flashcrow',
   },
 };
