@@ -60,6 +60,7 @@ $dirRoot = "flashcrow-$config"
 $dirFetch = Join-Path -path $dirRoot -childPath "fetch"
 $dirOraCnt = Join-Path -path $dirRoot -childPath "ora_cnt"
 $dirOra = Join-Path -path $dirRoot -childPath "ora"
+$dirJson = Join-Path -path $dirRoot -childPath "json"
 $dirPg = Join-Path -path $dirRoot -childPath "pg"
 $dirPgLocal = Join-Path -path $dirRoot -childPath "pg_local"
 $dirDat = Join-Path -path $dirRoot -childPath "dat"
@@ -174,7 +175,7 @@ Send-Status "Starting Oracle -> PostgreSQL replication..."
 Remove-Path @($dirRoot, $pgDataArchive)
 
 # recreate directory
-New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirPg, $dirPgLocal, $dirDat)
+New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirJson, $dirPg, $dirPgLocal, $dirDat)
 
 # get transfer machine
 if (-Not $transferIp) {
@@ -253,15 +254,21 @@ Send-Status "Fetched Oracle schemas..."
 jq -r ".tables[].name" "$configFile" | ForEach-Object {
   $table = $_
   $oraSqlFile = Join-Path -Path $dirOra -ChildPath "$table.sql"
+  $jsonFile = Join-Path -Path $dirJson -ChildPath "$table.json"
   $pgSqlFile = Join-Path -Path $dirPg -ChildPath "$table.sql"
-  Get-Content $oraSqlFile | python ora2pg.py --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgSqlFile
-  if (-Not ($? -And (Get-Content $pgSqlFile | Select-String "CREATE" -Quiet))) {
-    Exit-Error -message "Failed to generate PostgreSQL schema (without foreign tables) for $targetValidationSchema.$table!"
-  }
   $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
-  Get-Content $pgSqlFile | python pg2pglocal.py --sourceSchema="$sourceSchema" --sourceTable="$table" | Out-File -Encoding Ascii -FilePath $pgLocalSqlFile
+
+  Get-Content $oraSqlFile | python ora2json.py --config="$config" --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $jsonFile
+  if (-Not ($? -And (Get-Content $jsonFile | Select-String "table_name" -Quiet))) {
+    Exit-Error "Failed to generate JSON representation from $sourceSchema.$table!"
+  }
+  Get-Content $jsonFile | python json2pg.py --config="$config" --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgSqlFile
+  if (-Not ($? -And (Get-Content $pgSqlFile | Select-String "CREATE" -Quiet))) {
+    Exit-Error "Failed to generate PostgreSQL schema (without foreign tables) for $targetValidationSchema.$table!"
+  }
+  Get-Content $jsonFile | python json2pglocal.py --config="$config" --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema" | Out-File -Encoding Ascii -FilePath $pgLocalSqlFile
   if (-Not ($? -And (Get-Content $pgLocalSqlFile | Select-String "CREATE" -Quiet))) {
-    Exit-Error -message "Failed to generate local PostgreSQL schema (with foreign tables) for $targetValidationSchema.$table!"
+    Exit-Error "Failed to generate local PostgreSQL schema (with foreign tables) for $targetValidationSchema.$table!"
   }
 }
 Send-Status "Generated PostgreSQL schemas..."
@@ -297,21 +304,15 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
   $datFile = Join-Path -Path $dirDat -ChildPath "$table.dat"
 
   # determine chunkBy column index table by parsing SQL
-  $pgLocalSqlFile = Join-Path -Path $dirPgLocal -ChildPath "$table.sql"
-  $chunkByMatches = Get-Content $pgLocalSqlFile | Select-String -SimpleMatch $chunkBy
-  if ($chunkByMatches -eq $null) {
-    Exit-Error "Failed to find column $chunkBy in $table DDL!"
-  }
-  # The first line is the CREATE TABLE statement, which means the second line starts the list of
-  # columns.
-  $chunkByIndex = $chunkByMatches[0].LineNumber - 2
+  $jsonFile = Join-Path -Path $dirJson -ChildPath "$table.json"
+  $chunkByIndex = (Get-Content $jsonFile | ConvertFrom-Json).chunk_by_index
 
   # initialize chunk iteration parameters
+  $sqlPrefix = (Get-Content $jsonFile | python json2sql.py --config="$config" --sourceSchema="$sourceSchema" --targetSchema="$targetValidationSchema")
   $current = ''
   if ($chunkNumeric) {
     $current = 0
   }
-  $cmp = ">="
   $numRows = 0
 
   # Note that chunk rows could be updated after their chunk has been copied.
@@ -322,7 +323,7 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
     Send-Status -message "[$targetValidationSchema.$table] $numRows..." -emailDisable
 
     # get chunk rows, write to data file, and count
-    $numChunkRows = psql -U flashcrow -c "\COPY (SELECT * FROM \`"$targetValidationSchema\`".\`"$table\`" WHERE \`"$chunkBy\`" $cmp '$current' ORDER BY \`"$chunkBy\`" LIMIT $chunkSize) TO STDOUT (FORMAT text, ENCODING 'UTF8')" |
+    $numChunkRows = psql -U flashcrow -c "\COPY ($sqlPrefix '$current' ORDER BY \`"$chunkBy\`" LIMIT $chunkSize) TO STDOUT (FORMAT text, ENCODING 'UTF8')" |
       Add-Content -Encoding utf8 -Path $datFile -PassThru |
       Measure-Object
     $numChunkRows = $numChunkRows.Count
@@ -335,7 +336,6 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
     if ($chunkNumeric) {
       $current = [Int64]$current
     }
-    $cmp = ">"
     $numRows += $numChunkRows
   }
   Send-Status -message "[$targetValidationSchema.$table] $numRows." -emailDisable

@@ -1,12 +1,14 @@
 """
-ora2pg.py
+ora2json.py
 
-Convert Oracle schemas to their PostgreSQL equivalents.
+Parse Oracle schemas into a normalized JSON representation describing the table name,
+columns, and constraints.
 """
-import argparse
-from enum import Enum
+import json
 import re
 import sys
+
+from replication_utils import ConstraintType, get_table_config, parse_args
 
 COLUMN_REGEX = re.compile(
   r'"(?P<name>[A-Z0-9_]+)" '
@@ -105,15 +107,6 @@ def parse_column(line):
     'value': value
   }
 
-class ConstraintType(Enum):
-  """
-  Used to identify the type of constraint.  This also serves as a list of constraint
-  types supported by this script.
-  """
-  PRIMARY_KEY = 1
-  FOREIGN_KEY = 2
-  UNIQUE = 3
-
 def parse_constraint(args, constraint_lines):
   """
   Parse a constraint clause.  These clauses are often spread across two or more lines, and
@@ -180,107 +173,52 @@ def parse_constraint(args, constraint_lines):
       constraint='\n'.join(constraint_lines)))
   return constraint
 
-def find_column(columns, column_name):
+def get_chunk_by_index(chunk_by, columns):
   """
-  Given a list of columns as returned by parse_column(), return the column with the given
-  name, or None if no such column was found.
+  Given the column to chunk by, return the index of the column in the filtered
+  set of columns (i.e. after exclusions are applied).
   """
+  for i, column in enumerate(c for c in columns if not c['exclude']):
+    if column['name'] == chunk_by:
+      return i
+  raise RuntimeError('chunkBy column not found')
+
+def generate_ora_json(args, table_name, columns, constraints):
+  """
+  Generate the final parsed JSON representation by merging the table config with the
+  results of parsing Oracle DDL.
+  """
+  table_config = get_table_config(args, table_name)
   for column in columns:
-    if column['name'] == column_name:
-      return column
-  return None
-
-def generate_table_sql(args, table_name):
-  """
-  Given the table name as returned by parse_table(), return the first 'CREATE TABLE' line
-  of the corresponding PostgreSQL DDL statement.
-  """
-  return 'CREATE TABLE "{targetSchema}"."{table_name}"'.format(
-    table_name=table_name,
-    targetSchema=args.targetSchema)
-
-def generate_column_sql(column):
-  """
-  Given a column definition as returned by parse_column(), return the corresponding column
-  line in the PostgreSQL DDL statement.
-  """
-  column_sql = '"{name}" {pg_type}'.format(**column)
-  if column['value'] is not None:
-    column_sql += column['value']
-  return column_sql
-
-def generate_constraint_sql(args, constraint):
-  """
-  Given a constraint as returned by parse_constraint(), return the corresponding constraint
-  clause in the PostgreSQL DDL statement.
-  """
-  constraint_type = constraint['constraint_type']
-  if constraint_type == ConstraintType.PRIMARY_KEY:
-    return 'PRIMARY KEY ("{column_name}")'.format(**constraint)
-  elif constraint_type == ConstraintType.FOREIGN_KEY:
-    fk_format = (
-      'FOREIGN KEY ("{column_name}") '
-      'REFERENCES "{targetSchema}"."{fk_table}" ("{fk_column}")')
-    return fk_format.format(
-      targetSchema=args.targetSchema,
-      **constraint)
-  elif constraint_type == ConstraintType.UNIQUE:
-    return 'UNIQUE ("{column_name}")'.format(**constraint)
-  else:
-    raise RuntimeError('invalid constraint type: {constraint_type}'.format(
-      **constraint))
-
-def generate_pg_sql(args, table_name, columns, constraints):
-  """
-  Generate the PostgreSQL DDL statement, based on the values returned by parse_table(),
-  parse_column(), and parse_constraint().  This internally calls the other
-  generate_*_sql() functions to build the corresponding parts of the DDL statement.
-  """
-  table_sql = generate_table_sql(args, table_name)
-  column_sqls = map(generate_column_sql, columns)
-  column_sql = '\n, '.join(column_sqls)
-  if not constraints:
-    constraint_sql = ''
-  else:
-    constraint_sqls = map(
-      lambda c: generate_constraint_sql(args, c),
-      constraints)
-    constraint_sql = '\n, '.join(constraint_sqls)
-    constraint_sql = '\n, ' + constraint_sql
-  return '''\
-{table_sql} (
-  {column_sql}{constraint_sql}
-);'''.format(
-  table_sql=table_sql,
-  column_sql=column_sql,
-  constraint_sql=constraint_sql)
-
-def parse_args():
-  """
-  Parse command-line arguments.
-  """
-  parser = argparse.ArgumentParser(
-    description='Convert Oracle schemas to their PostgreSQL equivalents.')
-  parser.add_argument(
-    '--sourceSchema',
-    type=str,
-    default='TRAFFIC',
-    help='Schema where data is read from in Oracle source')
-  parser.add_argument(
-    '--targetSchema',
-    type=str,
-    default='TRAFFIC_NEW',
-    help='Schema where data is written to in PostgreSQL target')
-  return parser.parse_args()
+    column['exclude'] = column['name'] in table_config['exclude']
+  for column in constraints:
+    column['exclude'] = column['column_name'] in table_config['exclude']
+  chunk_by = table_config['chunkBy']
+  chunk_numeric = table_config['chunkNumeric']
+  ora_json = {
+    'table_name': table_name,
+    'chunk_by': chunk_by,
+    'chunk_numeric': chunk_numeric,
+    'columns': columns,
+    'constraints': constraints
+  }
+  ora_json['chunk_by_index'] = get_chunk_by_index(chunk_by, columns)
+  return ora_json
 
 def main():
   """
-  Read Oracle DDL from stdin, write PostgreSQL DDL to stdout.  The output of this is intended
-  to be run on our AWS PostgreSQL RDS.  To create DDL that can be run against the local replication
-  helper database, use pg2pglocal.py on the output of this script.  That will convert the output
-  to a 'CREATE FOREIGN TABLE' statement suitable for loading data from the Oracle source on zodiac.
+  Read Oracle DDL from stdin, write parsed JSON representation.  The output of this is intended
+  to be run through these scripts:
+
+  - json2pg.py: converts output to a 'CREATE TABLE' statement suitable for creating the remote
+    RDS table.
+  - json2pglocal.py: converts output to a 'CREATE FOREIGN TABLE' statement suitable for loading
+    data from the Oracle source on zodiac.
+  - json2sql.py: converts output to the beginning of a 'SELECT ...' query suitable for fetching
+    chunks from the foreign table.
   """
-  args = parse_args()
+  description = 'Convert Oracle DDL to parsed JSON representation'
+  args = parse_args(description)
 
   # main state
   table_name = None
@@ -317,8 +255,8 @@ def main():
         if constraint is not None:
           constraints.append(constraint)
         constraint_lines = []
-      pg_sql = generate_pg_sql(args, table_name, columns, constraints)
-      print(pg_sql)
+      ora_json = generate_ora_json(args, table_name, columns, constraints)
+      print(json.dumps(ora_json, indent=2))
       break
     elif in_constraints:
       # subsequent line of a constraint
