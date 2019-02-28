@@ -1,10 +1,13 @@
+# libraries and build artifacts
 .DS_Store
 node_modules
 /dist
 
+# testing output
 /tests/e2e/videos/
 /tests/e2e/screenshots/
 
+# private configuration
 lib/config.js
 
 # local env files
@@ -15,6 +18,9 @@ lib/config.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Python
+__pycache__
 
 # Editor directories and files
 .idea
