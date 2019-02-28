@@ -1,12 +1,12 @@
 <template>
-  <div class="home">
+  <div class="privacy-policy">
     <img alt="Vue logo" src="../assets/logo.png">
-    <h1>Home page!</h1>
+    <h1>Privacy Policy!</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Home',
+  name: 'PrivacyPolicy',
 };
 </script>

@@ -1,16 +1,23 @@
 <template>
   <div id="app">
     <div id="nav">
+      <router-link :to="{ name: 'privacyPolicy' }">Privacy Policy</router-link>
+      <span> | </span>
+      <router-link :to="{ name: 'termsOfService' }">Terms of Service</router-link>
       <template v-if="auth.loggedIn">
-        <router-link to="/">Home</router-link>
         <span> | </span>
-        <router-link to="/about" id="link_about">About</router-link>
+        <router-link :to="{ name: 'home' }">Home</router-link>
+        <span> | </span>
+        <router-link :to="{ name: 'about' }" id="link_about">About</router-link>
         <span> | </span>
         <form id="form_logout" method="POST" action="/flashcrow/api/logout">
-          <input type="submit" id="btn_logout" value="Logout" />
+          <input type="submit" id="btn_logout" value="Sign Out" />
         </form>
       </template>
-      <h1 v-else>Log In</h1>
+      <template v-else>
+        <span> | </span>
+        <router-link :to="{ name: 'login' }">Sign In</router-link>
+      </template>
     </div>
     <router-view/>
   </div>
