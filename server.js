@@ -162,9 +162,49 @@ async function initServer() {
     },
   });
 
+  /**
+   * POST /auth/test-login
+   *
+   * Bypasses the OpenID Connect flow in testing, allowing us to run REST
+   * API tests.
+   */
   server.route({
     method: 'POST',
-    path: '/logout',
+    path: '/auth/test-login',
+    config: {
+      auth: false,
+    },
+    handler: async (request) => {
+      if (config.ENV === 'production') {
+        throw new Error('nope.');
+      }
+
+      // "authenticate" test user
+      const sub = '0123456789';
+      const email = 'flashcrow.tester@gmail.com';
+      const token = 'HEADER.PAYLOAD.SIGNATURE';
+      let user = await UserDAO.bySubject(sub);
+      if (user === null) {
+        user = { subject: sub, email, token };
+        await UserDAO.create(user);
+      } else {
+        Object.assign(user, { email, token });
+        await UserDAO.update(user);
+      }
+      const sessionId = uuid();
+      await request.server.app.cache.set(sessionId, { user }, 0);
+      request.cookieAuth.set({ sessionId });
+    },
+  });
+
+  /**
+   * POST /auth/logout
+   *
+   * Logs the currently authenticated user out.
+   */
+  server.route({
+    method: 'POST',
+    path: '/auth/logout',
     config: {
       handler: async (request, h) => {
         // revoke OpenID Connect token
