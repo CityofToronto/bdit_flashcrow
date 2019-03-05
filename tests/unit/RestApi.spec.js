@@ -1,4 +1,3 @@
-import config from '@/../lib/config';
 import fs from 'fs';
 import path from 'path';
 import request from 'request-promise-native';
@@ -34,13 +33,12 @@ function fcTransformGetCookie(body, response) {
 
 function fcLogin() {
   const options = {
-    formData: config.credentials,
     json: false,
     method: 'POST',
     simple: false,
     transform: fcTransformGetCookie,
   };
-  return fcApi('/login', options)
+  return fcApi('/auth/test-login', options)
     .then((cookie) => {
       if (cookie !== null) {
         COOKIE_JAR.setCookie(cookie, HOST);
@@ -54,7 +52,7 @@ function fcLogout() {
     simple: false,
     transform: fcTransformGetCookie,
   };
-  return fcApi('/logout', options)
+  return fcApi('/auth/logout', options)
     .then(() => {
       COOKIE_JAR = request.jar(null, {
         rejectPublicSuffixes: false,
