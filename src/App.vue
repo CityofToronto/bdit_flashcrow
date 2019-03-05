@@ -10,7 +10,7 @@
         <span> | </span>
         <router-link :to="{ name: 'about' }" id="link_about">About</router-link>
         <span> | </span>
-        <form id="form_logout" method="POST" action="/flashcrow/api/logout">
+        <form id="form_logout" method="POST" action="/flashcrow/api/auth/logout">
           <input type="submit" id="btn_logout" value="Sign Out" />
         </form>
       </template>
