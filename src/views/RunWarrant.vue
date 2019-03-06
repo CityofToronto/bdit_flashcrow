@@ -1,25 +1,25 @@
 <template>
-  <div class="main home">
+  <div class="main run-warrant">
     <CardMap />
-    <CardDataTable />
+    <CardWarrant />
   </div>
 </template>
 
 <script>
-import CardDataTable from '@/components/CardDataTable.vue';
 import CardMap from '@/components/CardMap.vue';
+import CardWarrant from '@/components/CardWarrant.vue';
 
 export default {
-  name: 'Home',
+  name: 'RunWarrant',
   components: {
-    CardDataTable,
     CardMap,
+    CardWarrant,
   },
 };
 </script>
 
 <style lang="postcss">
-.home {
+.run-warrant {
   display: flex;
   flex-direction: column;
 }
