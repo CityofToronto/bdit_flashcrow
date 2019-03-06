@@ -207,16 +207,8 @@ async function initServer() {
     path: '/auth/logout',
     config: {
       handler: async (request, h) => {
-        // revoke OpenID Connect token
-        const { sessionId } = request.state.session;
-        const { user } = await request.server.app.cache.get(sessionId);
-        const { token } = user;
-
-        const client = await OpenIDClient.get();
-        const response = await client.revoke(token);
-        console.log('revoked token %s', token, response);
-
         // clear session
+        const { sessionId } = request.state.session;
         request.server.app.cache.drop(sessionId);
         request.cookieAuth.clear();
 
