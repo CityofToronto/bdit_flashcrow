@@ -155,8 +155,8 @@ async function initServer() {
       if (out.loggedIn) {
         const { sessionId } = request.state.session;
         const { user } = await request.server.app.cache.get(sessionId);
-        const { id } = user;
-        out.user = { id };
+        const { email } = user;
+        out.user = { email };
       }
       return out;
     },
