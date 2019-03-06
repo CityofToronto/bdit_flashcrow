@@ -56,6 +56,8 @@
 <script>
 import { mapState } from 'vuex';
 
+import 'mapbox-gl/dist/mapbox-gl.css';
+
 export default {
   name: 'App',
   computed: {
@@ -159,6 +161,7 @@ header {
         position: absolute;
         right: 0;
         top: 100%;
+        z-index: 1000;
         & > li {
           transition: background-color 100ms ease-in-out;
           width: 236px;
