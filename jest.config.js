@@ -15,6 +15,9 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  setupFiles: [
+    '<rootDir>/tests/unitSetup.js',
+  ],
   snapshotSerializers: [
     'jest-serializer-vue',
   ],
