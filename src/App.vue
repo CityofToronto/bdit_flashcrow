@@ -15,17 +15,33 @@
           </template>
         </div>
         <div id="user_dropdown" class="header-hover-link">
-          <div class="user-name text-ellipsis">Guest</div>
-          <div class="user-pic">&nbsp;</div>
+          <template v-if="auth.loggedIn">
+            <div class="user-name text-ellipsis">{{auth.user.email}}</div>
+            <div class="user-pic">&nbsp;</div>
+          </template>
+          <template v-else>
+            <div class="user-name text-ellipsis">Guest</div>
+            <div class="user-pic">&nbsp;</div>
+          </template>
           <ul>
+            <li v-if="auth.loggedIn">
+              <form id="form_logout" method="POST" action="/flashcrow/api/auth/logout">
+                <input id="btn_logout" class="nav-link" type="submit" value="Sign Out">
+              </form>
+            </li>
+            <li v-else>
+              <a class="nav-link" href="/flashcrow/api/auth/openid-connect">Sign In</a>
+            </li>
+            <li class="separator" />
             <li>
-              <a href="/flashcrow/api/auth/openid-connect">Sign In</a>
+              <router-link
+                class="nav-link"
+                :to="{ name: 'privacyPolicy' }">Privacy Policy</router-link>
             </li>
             <li>
-              <router-link :to="{ name: 'privacyPolicy' }">Privacy Policy</router-link>
-            </li>
-            <li>
-              <router-link :to="{ name: 'termsOfService' }">Terms of Service</router-link>
+              <router-link
+                class="nav-link"
+                :to="{ name: 'termsOfService' }">Terms of Service</router-link>
             </li>
           </ul>
         </div>
@@ -61,6 +77,13 @@ html, body {
 .card {
   box-shadow: 0 3px 6px 0 #00000033;
   margin: 8px;
+}
+.nav-link {
+  font-weight: bold;
+  color: #2c3e50;
+  &.router-link-exact-active {
+    color: #42b983;
+  }
 }
 .text-ellipsis {
   overflow: hidden;
@@ -104,13 +127,8 @@ header {
     text-align: right;
     #nav_bar {
       flex-grow: 1;
-      a.nav-link {
-        font-weight: bold;
-        padding-right: 32px;
-        color: #2c3e50;
-        &.router-link-exact-active {
-          color: #42b983;
-        }
+      & > .nav-link {
+        margin: 0 16px;
       }
     }
     #user_dropdown {
@@ -121,8 +139,8 @@ header {
       position: relative;
       .user-name {
         display: inline-block;
-        font-size: 18px;
-        width: 94px;
+        font-size: 16px;
+        width: 180px;
       }
       .user-pic {
         background-color: white;
@@ -142,11 +160,20 @@ header {
         right: 0;
         top: 100%;
         & > li {
-          padding: 8px 8px;
           transition: background-color 100ms ease-in-out;
-          width: 150px;
+          width: 236px;
           &:hover {
             background-color: #eee;
+          }
+          &.separator {
+            padding: 0;
+            border-bottom: 1px solid #e7e7e7;
+          }
+          & > a {
+            display: inline-block;
+            height: 100%;
+            padding: 8px;
+            width: 100%;
           }
         }
       }
@@ -164,16 +191,20 @@ header {
   }
   form#form_logout {
     display: inline-block;
+    height: 100%;
+    padding: 8px;
+    width: 100%;
     & > #btn_logout {
-      display: inline-block;
-      background: none!important;
-      color: inherit;
+      background: none;
       border: none;
-      padding: 0!important;
-      font: inherit;
-      /*border is optional*/
-      border-bottom: 1px solid #444;
       cursor: pointer;
+      display: inline-block;
+      font: inherit;
+      font-weight: bold;
+      height: 100%;
+      text-align: right;
+      text-decoration: underline;
+      width: 100%;
     }
   }
 }
