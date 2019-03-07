@@ -7,11 +7,12 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 
-import style from '@/lib/geo/style.json';
+import GeoStyle from '@/lib/geo/GeoStyle';
 
 export default {
   name: 'CardMap',
   mounted() {
+    const style = GeoStyle.get();
     Vue.nextTick(() => {
       this.map = new mapboxgl.Map({
         container: this.$el,
