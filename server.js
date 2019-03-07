@@ -13,6 +13,9 @@ const vueConfig = require('./vue.config');
 
 const options = {
   app: { config },
+  debug: {
+    request: ['error'],
+  },
   host: config.host,
   port: config.port,
   routes: {
@@ -76,6 +79,13 @@ async function initServer() {
 
   // AUTH
 
+  function getRedirectUri() {
+    if (config.ENV === 'production') {
+      return 'https://flashcrow.intra.dev-toronto.ca/flashcrow/api/auth/openid-connect-callback';
+    }
+    return 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback';
+  }
+
   /**
    * GET /auth/openid-connect
    *
@@ -91,7 +101,7 @@ async function initServer() {
     handler: async (request, h) => {
       const client = await OpenIDClient.get();
       const authorizationUrl = client.authorizationUrl({
-        redirect_uri: 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        redirect_uri: getRedirectUri(),
         scope: 'openid email',
       });
       console.log(authorizationUrl);
@@ -116,7 +126,7 @@ async function initServer() {
       // retrieve token set from OpenID Connect provider
       const client = await OpenIDClient.get();
       const tokenSet = await client.authorizationCallback(
-        'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        getRedirectUri(),
         request.query,
       );
       console.log('received and validated tokens %j', tokenSet);
