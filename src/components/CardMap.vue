@@ -25,6 +25,11 @@
         <strong>{{ showSidebar ? '&lt;' : '&gt;' }}</strong>
       </div>
     </div>
+    <div class="card-map-mode">
+      <button class="btn-mode" @click="toggleSatellite">
+        {{ satellite ? 'Map' : 'Satellite' }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -38,6 +43,7 @@ export default {
   name: 'CardMap',
   data() {
     return {
+      satellite: false,
       showSidebar: true,
     };
   },
@@ -47,7 +53,27 @@ export default {
       new mapboxgl.LngLat(-78.852997, 43.899377),
     );
     const center = new mapboxgl.LngLat(-79.396477, 43.703871);
-    const style = GeoStyle.get();
+    this.mapStyle = GeoStyle.get();
+    // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
+    this.satelliteStyle = {
+      version: 8,
+      sources: {
+        'gcc-ortho-webm': {
+          type: 'raster',
+          tiles: [
+            'https://insideto-gis.toronto.ca/arcgis/rest/services/primary/cot_ortho_webm/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+        },
+      },
+      layers: [{
+        id: 'gcc-ortho-webm',
+        type: 'raster',
+        source: 'gcc-ortho-webm',
+        minzoom: 0,
+        maxzoom: 23,
+      }],
+    };
     Vue.nextTick(() => {
       this.map = new mapboxgl.Map({
         bounds,
@@ -59,7 +85,7 @@ export default {
         minZoom: 11,
         pitchWithRotate: false,
         renderWorldCopies: false,
-        style,
+        style: this.mapStyle,
         zoom: 11,
       });
       this.map.addControl(
@@ -70,6 +96,16 @@ export default {
   },
   beforeDestroy() {
     this.map.remove();
+  },
+  methods: {
+    toggleSatellite() {
+      this.satellite = !this.satellite;
+      if (this.satellite) {
+        this.map.setStyle(this.satelliteStyle, { diff: false });
+      } else {
+        this.map.setStyle(this.mapStyle, { diff: false });
+      }
+    },
   },
 };
 </script>
@@ -126,6 +162,12 @@ export default {
         display: block;
       }
     }
+  }
+  & > .card-map-mode {
+    bottom: 8px;
+    position: absolute;
+    right: 64px;
+    z-index: 999;
   }
 }
 </style>
