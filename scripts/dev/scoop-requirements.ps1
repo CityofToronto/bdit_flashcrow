@@ -1,5 +1,4 @@
 # script settings
-# testing linter
 $ErrorActionPreference = "Stop"
 
 # list of packages that are always installed
