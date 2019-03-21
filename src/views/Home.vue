@@ -1,18 +1,18 @@
 <template>
   <div class="main home">
     <CardMap />
-    <CardDataTable />
+    <CardBottom />
   </div>
 </template>
 
 <script>
-import CardDataTable from '@/components/CardDataTable.vue';
+import CardBottom from '@/components/CardBottom.vue';
 import CardMap from '@/components/CardMap.vue';
 
 export default {
   name: 'Home',
   components: {
-    CardDataTable,
+    CardBottom,
     CardMap,
   },
 };

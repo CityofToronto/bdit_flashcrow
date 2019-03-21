@@ -79,6 +79,7 @@ html, body {
   flex-direction: column;
   height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
   padding: 0;
 }
 #row_main {
