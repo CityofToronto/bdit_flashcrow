@@ -23,9 +23,9 @@
       </div>
     </div>
     <div class="card-map-mode">
-      <button class="btn-mode" @click="toggleSatellite">
-        {{ satellite ? 'Map' : 'Satellite' }}
-      </button>
+      <b-button size="sm" @click="toggleSatellite">
+        {{ satellite ? 'Map' : 'Aerial' }}
+      </b-button>
     </div>
   </div>
 </template>
@@ -167,8 +167,11 @@ export default {
   & > .card-map-mode {
     bottom: 8px;
     position: absolute;
-    right: 64px;
+    right: 8px;
     z-index: 999;
   }
+}
+.mapboxgl-ctrl-bottom-right {
+  bottom: 36px;
 }
 </style>
