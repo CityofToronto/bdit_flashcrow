@@ -34,12 +34,6 @@ const router = new Router({
         auth: { mode: 'try' },
       },
     },
-    // AUTHENTICATED PAGES
-    {
-      path: '/run-warrant',
-      name: 'runWarrant',
-      component: () => import(/* webpackChunkName: "warrant" */ './views/RunWarrant.vue'),
-    },
   ],
 });
 
