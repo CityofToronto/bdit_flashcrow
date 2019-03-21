@@ -1,26 +1,23 @@
 <template>
-  <div class="card card-map">
+  <div class="card-map">
     <div class="card-map-locate">
-      <input
-        class="input-locate"
-        type="text"
-        name="locate"
-        value=""
-        placeholder="e.g. 'King and Bathurst', 'px:1234', '43.507725, -79.939957'" />
-      <button class="btn-locate">Locate</button>
+      <b-input-group>
+        <b-form-input
+          v-model="locationQuery"
+          class="input-location-query"
+          type="text"
+          placeholder="Search for a location" />
+        <b-input-group-append>
+          <b-button size="sm" text="Search" variant="success">Search</b-button>
+        </b-input-group-append>
+      </b-input-group>
     </div>
     <div class="card-map-sidebar" :class="{ open: showSidebar }">
-      <div class="card-map-sidebar-controls">
-      <div><strong>layers</strong></div>
-      <div class="form-control">
-        <label for="chk_collisions">Collisions</label>
-        <input id="chk_collisions" type="checkbox" name="layers" value="COLLISIONS">
-      </div>
-      <div class="form-control">
-        <label for="chk_volume">Volume</label>
-        <input id="chk_volume" type="checkbox" name="layers" value="VOLUME">
-      </div>
-      </div>
+      <b-form-group label="Layers:">
+        <b-form-checkbox-group
+          v-model="layers"
+          :options="optionsLayers" />
+      </b-form-group>
       <div class="card-map-sidebar-toggle" @click="showSidebar = !showSidebar">
         <strong>{{ showSidebar ? '&lt;' : '&gt;' }}</strong>
       </div>
@@ -43,6 +40,12 @@ export default {
   name: 'CardMap',
   data() {
     return {
+      layers: [],
+      locationQuery: '',
+      optionsLayers: [
+        { text: 'Collisions', value: 'COLLISIONS' },
+        { text: 'Counts', value: 'COUNTS' },
+      ],
       satellite: false,
       showSidebar: true,
     };
@@ -118,26 +121,24 @@ export default {
     left: 8px;
     position: absolute;
     top: 8px;
+    width: 320px;
     z-index: 999;
-    & > input.input-locate {
-      width: 360px;
-    }
   }
   & > .card-map-sidebar {
     background-color: #fff;
     border-radius: 0 8px 8px 0;
-    height: 50%;
+    height: 92px;
     left: 0;
     padding: 8px;
     position: absolute;
     transition: width 100ms ease-in-out;
-    top: 25%;
+    top: 64px;
     width: 0;
     z-index: 999;
     .form-control {
       display: inline-block;
     }
-    & > .card-map-sidebar-controls {
+    & > .form-group {
       display: none;
     }
     & > .card-map-sidebar-toggle {
@@ -157,8 +158,8 @@ export default {
       }
     }
     &.open {
-      width: 100px;
-      & > .card-map-sidebar-controls {
+      width: 160px;
+      & > .form-group {
         display: block;
       }
     }
