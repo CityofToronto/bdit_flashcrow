@@ -1,20 +1,41 @@
 <template>
   <div class="card-bottom">
     <b-row>
-      <b-col md="4">
+      <b-col md="4" class="align-self-center">
         <b-form-select
           v-model="countType"
           :options="optionsCountTypes"
           primary-key="id" />
       </b-col>
       <b-col md="8" class="align-self-center">
-        <span>at <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr></span>
+        <span>
+          at
+          <b-img
+            src="/flashcrow/icons/location-icon.svg"
+            width="48"
+            height="48" />
+          <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
+        </span>
       </b-col>
       <b-col md="12">
         <div class="card-bottom-table-wrapper overflow-auto">
           <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
             <b-card-header header-tag="header" class="p-1" role="tab">
-              <div class="text-left" v-b-toggle="`accordion_${index}`">{{section.title}}</div>
+              <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
+                <b-img
+                  class="card-bottom-icon float-right when-opened"
+                  src="/flashcrow/icons/chevron-up-icon.svg"
+                  alt="Close" />
+                <b-img
+                  class="card-bottom-icon float-right when-closed"
+                  src="/flashcrow/icons/chevron-down-icon.svg"
+                  alt="Open" />
+                <b-img
+                  class="card-bottom-icon card-bottom-icon-status"
+                  :src="`/flashcrow/icons/${section.icon}-icon.svg`"
+                  :alt="section.title" />
+                <span>{{section.title}}</span>
+              </div>
             </b-card-header>
             <b-collapse
               :id="`accordion_${index}`"
@@ -38,7 +59,9 @@
                       v-else
                       size="sm"
                       variant="outline-primary"
-                      @click="viewCount(data.item)">View</b-button>
+                      @click="viewCount(data.item)">
+                      View
+                      </b-button>
                   </template>
                   <template slot="requestNew" slot-scope="data">
                     <b-form-checkbox v-model="data.item.requestNew" />
@@ -98,7 +121,7 @@ function randomType() {
 }
 
 function randomDate(now) {
-  const sevenYearsAgo = now - 7 * 365 * 24 * 60 * 60 * 1000;
+  const sevenYearsAgo = now - 5 * 365 * 24 * 60 * 60 * 1000;
   const t = Random.range(sevenYearsAgo, now);
   return new Date(t);
 }
@@ -110,10 +133,10 @@ const Status = {
   REQUESTED: 3,
 };
 
-const STATUS_TITLES = [
-  'Current Data',
-  'Outdated Data',
-  'Missing Data',
+const STATUS_META = [
+  { title: 'Current Counts', icon: 'checkmark' },
+  { title: 'Outdated Counts', icon: 'warning' },
+  { title: 'Missing Counts', icon: 'close' },
 ];
 
 function getStatus(count, now) {
@@ -234,14 +257,15 @@ export default {
     },
     countsSections() {
       const groups = groupBy(this.countsFiltered, c => c.status);
-      return groups.map((group) => {
-        const i = group[0].status;
-        const title = STATUS_TITLES[i];
+      return groups.map((counts) => {
+        const i = counts[0].status;
+        const { title, icon } = STATUS_META[i];
         return {
           title,
-          counts: group,
+          icon,
+          counts,
         };
-      });
+      }).filter(({ counts }) => counts.length > 0);
     },
     numRequested() {
       return this.counts.filter(c => c.requestNew).length;
@@ -262,7 +286,6 @@ export default {
 }
 .card-bottom-table-wrapper {
   height: 280px;
-  margin-top: 8px;
 }
 .card-bottom-table-body {
   padding: 0;
@@ -270,5 +293,18 @@ export default {
 .btn-request-data {
   margin-top: 8px;
   width: 100%;
+}
+.card-bottom-icon {
+  background-color: white;
+  border-radius: 16px;
+  height: 32px;
+  width: 32px;
+  &.card-bottom-icon-status {
+    margin-right: 8px;
+  }
+}
+.collapsed > .when-opened,
+:not(.collapsed) > .when-closed {
+  display: none;
 }
 </style>
