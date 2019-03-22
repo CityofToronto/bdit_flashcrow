@@ -13,13 +13,15 @@
       </b-container>
     </b-modal>
     <b-row>
-      <b-col md="4" class="align-self-center">
-        <b-form-select
-          v-model="countType"
+      <b-col md="7" class="align-self-center">
+        <v-select
+          v-model="countTypes"
           :options="optionsCountTypes"
-          primary-key="id" />
+          multiple
+          placeholder="All Counts">
+        </v-select>
       </b-col>
-      <b-col md="8" class="align-self-center">
+      <b-col md="5" class="align-self-center">
         <span>
           at
           <b-img
@@ -51,22 +53,23 @@
             </b-card-header>
             <b-collapse
               :id="`accordion_${index}`"
-              visible
+              :visible="index === 0"
               accordion="acc-counts-sections"
               role="tabpanel">
               <b-card-body class="card-bottom-table-body">
                 <b-table
                   :fields="countFields"
-                  :items="section.counts"
+                  :items="section.groupsByType"
                   small borderless hover>
                   <template slot="type" slot-scope="data">
-                    {{ data.value.text }}
+                    {{ data.item[0].type.label }}
                   </template>
                   <template slot="date" slot-scope="data">
-                    {{ data.value | date }}
+                    <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
+                    <span v-else>{{ data.item[0].date | date }}</span>
                   </template>
                   <template slot="id" slot-scope="data">
-                    <span v-if="data.item.id === null" class="text-muted">N/A</span>
+                    <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
                     <b-button
                       v-else
                       size="sm"
@@ -76,7 +79,7 @@
                       </b-button>
                   </template>
                   <template slot="requestNew" slot-scope="data">
-                    <b-form-checkbox v-model="data.item.requestNew" />
+                    <b-form-checkbox v-model="data.item[0].requestNew" />
                   </template>
                 </b-table>
               </b-card-body>
@@ -89,7 +92,10 @@
           class="btn-request-data"
           size="lg"
           variant="primary"
-          :disabled="numRequested === 0">Request Data (<span>{{ numRequested }}</span>)</b-button>
+          :disabled="numRequested === 0">
+          Request New Data
+          <span class="badge badge-pill badge-light">{{ numRequested }}</span>
+        </b-button>
       </b-col>
     </b-row>
   </div>
@@ -117,16 +123,13 @@ class Random {
 }
 
 const COUNT_TYPES = [
-  { text: 'Turning Movement Count', value: 'TMC' },
-  { text: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME' },
-  { text: 'Pedestrian Delay and Classification', value: 'PED_DELAY' },
-  { text: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE' },
-  { text: 'Mid-Block Multi-Modal Traffic Count', value: 'MID_BLOCK_MULTI_MODAL' },
-  { text: 'Volume ATR', value: 'ATR_VOLUME' },
+  { label: 'Turning Movement Count', value: 'TMC' },
+  { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME' },
+  { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY' },
+  { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE' },
+  { label: 'Mid-Block Multi-Modal Traffic Count', value: 'MID_BLOCK_MULTI_MODAL' },
+  { label: 'Volume ATR', value: 'ATR_VOLUME' },
 ];
-
-const OPTIONS_COUNT_TYPES = COUNT_TYPES.slice(0);
-OPTIONS_COUNT_TYPES.unshift({ text: 'All Counts', value: null });
 
 function randomType() {
   return Random.choice(COUNT_TYPES);
@@ -256,45 +259,41 @@ export default {
         { key: 'id', label: 'View Existing' },
         { key: 'requestNew', label: 'Request New Data' },
       ],
-      countType: null,
+      countTypes: [],
       countViewed: null,
-      optionsCountTypes: OPTIONS_COUNT_TYPES,
+      optionsCountTypes: COUNT_TYPES,
     };
   },
   computed: {
     countsFiltered() {
-      if (this.countType === null) {
+      if (this.countTypes.length === 0) {
         return this.counts;
       }
-      return this.counts.filter(c => c.type.value === this.countType);
+      const values = this.countTypes.map(type => type.value);
+      return this.counts.filter(c => values.includes(c.type.value));
     },
     countsSections() {
       // group by type
       const countsByType = groupBy(this.countsFiltered, c => c.type.value);
       // sort groups by date, pull out first element
-      const groupsByType = countsByType.map((countsOfType) => {
-        const countsOfTypeByDate = sortBy(countsOfType, c => -c.date.valueOf());
-        const groupByType = Object.assign({}, countsOfTypeByDate[0]);
-        groupByType.counts = countsOfTypeByDate;
-        return groupByType;
-      });
+      const byType = countsByType
+        .map(countsOfType => sortBy(countsOfType, c => -c.date.valueOf()));
 
       // group these by status
-      const groups = groupBy(groupsByType, c => c.status);
+      const groupsByStatus = groupBy(byType, groupByType => groupByType[0].status);
       // add status metadata (title, icon)
-      return groups.map((groupByType) => {
-        const i = groupByType[0].status;
+      return groupsByStatus.map((groupsByType) => {
+        const i = groupsByType[0][0].status;
         const { title, icon } = STATUS_META[i];
         return {
           title,
           icon,
-          counts: groupByType,
+          groupsByType,
         };
-      }).filter(({ counts }) => counts.length > 0);
+      }).filter(({ groupsByType }) => groupsByType.length > 0);
     },
     numRequested() {
-      const requested = this.counts.filter(c => c.requestNew);
-      return requested.length;
+      return this.counts.filter(c => c.requestNew).length;
     },
     showModalView: {
       get() {
