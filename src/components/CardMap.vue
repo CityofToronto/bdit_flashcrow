@@ -47,7 +47,7 @@ export default {
         { text: 'Counts', value: 'COUNTS' },
       ],
       satellite: false,
-      showSidebar: true,
+      showSidebar: false,
     };
   },
   mounted() {
@@ -126,10 +126,11 @@ export default {
   }
   & > .card-map-sidebar {
     background-color: #fff;
+    border: 1px solid #ced4da;
     border-radius: 0 8px 8px 0;
-    height: 92px;
+    height: 100px;
     left: 0;
-    padding: 8px;
+    padding: 12px;
     position: absolute;
     transition: width 100ms ease-in-out;
     top: 64px;

@@ -1,5 +1,5 @@
 <template>
-  <div class="card-bottom">
+  <div class="card-bottom" :class="{'with-map': requestStep === 1}">
     <b-modal
       v-model="showModalView"
       title="View Count"
@@ -32,6 +32,11 @@
             <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
           </span>
         </b-col>
+      </template>
+      <b-col v-else md="12">
+        TODO: breadcrumbs
+      </b-col>
+      <template v-if="requestStep === 1">
         <b-col md="12">
           <div class="card-bottom-table-wrapper overflow-auto">
             <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
@@ -88,46 +93,65 @@
             </b-card>
           </div>
         </b-col>
-        <b-col md="12">
-          <b-button
-            class="btn-request-step-action"
-            size="lg"
-            variant="primary"
-            :disabled="numRequested === 0"
-            @click="$emit('set-request-step', 2)">
-            Request New Data
-            <span class="badge badge-pill badge-light">{{ numRequested }}</span>
-          </b-button>
-        </b-col>
       </template>
       <template v-if="requestStep === 2">
-        <b-col md="12">
-          <b-button
-            class="btn-request-step-action"
-            size="lg"
-            variant="primary"
-            @click="$emit('set-request-step', 3)">
-            Continue
-          </b-button>
+        <b-col md="4">
+          <b-form-group
+            label="*Service Request Number"
+            label-for="input_service_request_id">
+            <b-form-input
+              v-model.number="serviceRequestId"
+              id="input_service_request_id"
+              type="text" />
+          </b-form-group>
         </b-col>
+        <b-col md="4">
+          <b-form-group
+            label="*Service Request Priority"
+            label-for="input_service_request_priority">
+            <b-form-radio-group
+              v-model.number="serviceRequestPriority"
+              id="input_service_request_priority"
+              buttons
+              button-variant="outline-primary"
+              :options="optionsServiceRequestPriority" />
+          </b-form-group>
+        </b-col>
+        <b-col md="4">
+          <b-form-group
+            label="Pick Delivery Date"
+            label-for="input_delivery_date">
+          </b-form-group>
+        </b-col>
+        <count-details
+          v-for="(count, index) in countsRequested"
+          :count="count"
+          :index="index"
+          :key="count.id" />
       </template>
       <template v-if="requestStep === 3">
-        <b-col md="12">
-          <b-button
-            class="btn-request-step-action"
-            size="lg"
-            variant="primary"
-            @click="$emit('set-request-step', 1)">
-            Confirm
-          </b-button>
-        </b-col>
       </template>
+      <b-col md="12">
+        <b-button
+          class="btn-request-step-action"
+          size="lg"
+          variant="primary"
+          :disabled="disableRequestStepAction"
+          @click="$emit('set-request-step', nextRequestStep)">
+          {{ requestStepActionText }}
+          <span
+            v-if="requestStep === 1"
+            class="badge badge-pill badge-light">{{ numCountsRequested }}</span>
+        </b-button>
+      </b-col>
     </b-row>
   </div>
 </template>
 
 <script>
 /* eslint-disable no-continue */
+import CountDetails from '@/components/CountDetails.vue';
+
 class Random {
   static uniform(lo, hi) {
     return lo + (hi - lo) * Math.random();
@@ -148,12 +172,12 @@ class Random {
 }
 
 const COUNT_TYPES = [
-  { label: 'Turning Movement Count', value: 'TMC' },
-  { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME' },
-  { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY' },
-  { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE' },
-  { label: 'Mid-Block Multi-Modal Traffic Count', value: 'MID_BLOCK_MULTI_MODAL' },
-  { label: 'Volume ATR', value: 'ATR_VOLUME' },
+  { label: 'Turning Movement Count', value: 'TMC', automatic: false },
+  { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME', automatic: true },
+  { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
+  { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
+  { label: 'Mid-Block Multi-Modal Traffic Count', value: 'MID_BLOCK_MULTI_MODAL', automatic: false },
+  { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
 function randomType() {
@@ -274,6 +298,9 @@ function groupBy(xs, g) {
 
 export default {
   name: 'CardBottom',
+  components: {
+    CountDetails,
+  },
   props: {
     requestStep: Number,
   },
@@ -290,6 +317,13 @@ export default {
       countTypes: [],
       countViewed: null,
       optionsCountTypes: COUNT_TYPES,
+      optionsServiceRequestPriority: [
+        { text: 'PRI1', value: 1 },
+        { text: 'PRI2', value: 2 },
+        { text: 'PRI3', value: 3 },
+      ],
+      serviceRequestId: null,
+      serviceRequestPriority: 3,
     };
   },
   computed: {
@@ -299,6 +333,9 @@ export default {
       }
       const values = this.countTypes.map(type => type.value);
       return this.counts.filter(c => values.includes(c.type.value));
+    },
+    countsRequested() {
+      return this.counts.filter(c => c.requestNew);
     },
     countsSections() {
       // group by type
@@ -320,8 +357,35 @@ export default {
         };
       }).filter(({ groupsByType }) => groupsByType.length > 0);
     },
-    numRequested() {
-      return this.counts.filter(c => c.requestNew).length;
+    disableRequestStepAction() {
+      if (this.requestStep === 1) {
+        return this.numCountsRequested === 0;
+      }
+      if (this.requestStep === 2) {
+        return false;
+      }
+      return false;
+    },
+    nextRequestStep() {
+      if (this.requestStep === 1) {
+        return 2;
+      }
+      if (this.requestStep === 2) {
+        return 3;
+      }
+      return 1;
+    },
+    numCountsRequested() {
+      return this.countsRequested.length;
+    },
+    requestStepActionText() {
+      if (this.requestStep === 1) {
+        return 'Request New Data';
+      }
+      if (this.requestStep === 2) {
+        return 'Continue';
+      }
+      return 'Confirm';
     },
     showModalView: {
       get() {
@@ -344,8 +408,12 @@ export default {
 
 <style lang="postcss">
 .card-bottom {
-  height: 400px;
+  flex-grow: 1;
   padding: 8px;
+  &.with-map {
+    flex-grow: unset;
+    height: 400px;
+  }
 }
 .card-bottom-table-wrapper {
   height: 280px;
