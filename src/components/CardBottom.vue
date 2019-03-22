@@ -269,19 +269,32 @@ export default {
       return this.counts.filter(c => c.type.value === this.countType);
     },
     countsSections() {
-      const groups = groupBy(this.countsFiltered, c => c.status);
-      return groups.map((counts) => {
-        const i = counts[0].status;
+      // group by type
+      const countsByType = groupBy(this.countsFiltered, c => c.type.value);
+      // sort groups by date, pull out first element
+      const groupsByType = countsByType.map((countsOfType) => {
+        const countsOfTypeByDate = sortBy(countsOfType, c => -c.date.valueOf());
+        const groupByType = Object.assign({}, countsOfTypeByDate[0]);
+        groupByType.counts = countsOfTypeByDate;
+        return groupByType;
+      });
+
+      // group these by status
+      const groups = groupBy(groupsByType, c => c.status);
+      // add status metadata (title, icon)
+      return groups.map((groupByType) => {
+        const i = groupByType[0].status;
         const { title, icon } = STATUS_META[i];
         return {
           title,
           icon,
-          counts,
+          counts: groupByType,
         };
       }).filter(({ counts }) => counts.length > 0);
     },
     numRequested() {
-      return this.counts.filter(c => c.requestNew).length;
+      const requested = this.counts.filter(c => c.requestNew);
+      return requested.length;
     },
     showModalView: {
       get() {
