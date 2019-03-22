@@ -1,5 +1,17 @@
 <template>
   <div class="card-bottom">
+    <b-modal
+      v-model="showModalView"
+      title="View Count"
+      ok-only>
+      <b-container fluid>
+        <b-row>
+          <b-col cols="12">
+            <code>{{JSON.stringify(countViewed)}}</code>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-modal>
     <b-row>
       <b-col md="4" class="align-self-center">
         <b-form-select
@@ -245,6 +257,7 @@ export default {
         { key: 'requestNew', label: 'Request New Data' },
       ],
       countType: null,
+      countViewed: null,
       optionsCountTypes: OPTIONS_COUNT_TYPES,
     };
   },
@@ -270,10 +283,20 @@ export default {
     numRequested() {
       return this.counts.filter(c => c.requestNew).length;
     },
+    showModalView: {
+      get() {
+        return this.countViewed !== null;
+      },
+      set(value) {
+        if (value === false) {
+          this.countViewed = null;
+        }
+      },
+    },
   },
   methods: {
     viewCount(count) {
-      window.alert(`viewing count ${JSON.stringify(count)}`);
+      this.countViewed = count;
     },
   },
 };
