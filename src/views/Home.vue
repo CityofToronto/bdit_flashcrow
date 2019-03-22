@@ -1,7 +1,9 @@
 <template>
   <div class="main home">
-    <CardMap />
-    <CardBottom />
+    <CardMap v-if="requestStep === 1" />
+    <CardBottom
+      :request-step="requestStep"
+      v-on:set-request-step="setRequestStep" />
   </div>
 </template>
 
@@ -14,6 +16,16 @@ export default {
   components: {
     CardBottom,
     CardMap,
+  },
+  data() {
+    return {
+      requestStep: 1,
+    };
+  },
+  methods: {
+    setRequestStep(requestStep) {
+      this.requestStep = requestStep;
+    },
   },
 };
 </script>

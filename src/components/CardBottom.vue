@@ -13,90 +13,115 @@
       </b-container>
     </b-modal>
     <b-row>
-      <b-col md="7" class="align-self-center">
-        <v-select
-          v-model="countTypes"
-          :options="optionsCountTypes"
-          multiple
-          placeholder="All Counts">
-        </v-select>
-      </b-col>
-      <b-col md="5" class="align-self-center">
-        <span>
-          at
-          <b-img
-            src="/flashcrow/icons/location-icon.svg"
-            width="48"
-            height="48" />
-          <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
-        </span>
-      </b-col>
-      <b-col md="12">
-        <div class="card-bottom-table-wrapper overflow-auto">
-          <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
-            <b-card-header header-tag="header" class="p-1" role="tab">
-              <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
-                <b-img
-                  class="card-bottom-icon float-right when-opened"
-                  src="/flashcrow/icons/chevron-up-icon.svg"
-                  alt="Close" />
-                <b-img
-                  class="card-bottom-icon float-right when-closed"
-                  src="/flashcrow/icons/chevron-down-icon.svg"
-                  alt="Open" />
-                <b-img
-                  class="card-bottom-icon card-bottom-icon-status"
-                  :src="`/flashcrow/icons/${section.icon}-icon.svg`"
-                  :alt="section.title" />
-                <span>{{section.title}}</span>
-              </div>
-            </b-card-header>
-            <b-collapse
-              :id="`accordion_${index}`"
-              :visible="index === 0"
-              accordion="acc-counts-sections"
-              role="tabpanel">
-              <b-card-body class="card-bottom-table-body">
-                <b-table
-                  :fields="countFields"
-                  :items="section.groupsByType"
-                  small borderless hover>
-                  <template slot="type" slot-scope="data">
-                    {{ data.item[0].type.label }}
-                  </template>
-                  <template slot="date" slot-scope="data">
-                    <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
-                    <span v-else>{{ data.item[0].date | date }}</span>
-                  </template>
-                  <template slot="id" slot-scope="data">
-                    <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
-                    <b-button
-                      v-else
-                      size="sm"
-                      variant="outline-primary"
-                      @click="viewCount(data.item)">
-                      View
-                      </b-button>
-                  </template>
-                  <template slot="requestNew" slot-scope="data">
-                    <b-form-checkbox v-model="data.item[0].requestNew" />
-                  </template>
-                </b-table>
-              </b-card-body>
-            </b-collapse>
-          </b-card>
-        </div>
-      </b-col>
-      <b-col md="12">
-        <b-button
-          class="btn-request-data"
-          size="lg"
-          variant="primary"
-          :disabled="numRequested === 0">
-          Request New Data
-          <span class="badge badge-pill badge-light">{{ numRequested }}</span>
-        </b-button>
-      </b-col>
+      <template v-if="requestStep === 1">
+        <b-col md="7" class="align-self-center">
+          <v-select
+            v-model="countTypes"
+            :options="optionsCountTypes"
+            multiple
+            placeholder="All Counts">
+          </v-select>
+        </b-col>
+        <b-col md="5" class="align-self-center">
+          <span>
+            at
+            <b-img
+              src="/flashcrow/icons/location-icon.svg"
+              width="48"
+              height="48" />
+            <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
+          </span>
+        </b-col>
+        <b-col md="12">
+          <div class="card-bottom-table-wrapper overflow-auto">
+            <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
+              <b-card-header header-tag="header" class="p-1" role="tab">
+                <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
+                  <b-img
+                    class="card-bottom-icon float-right when-opened"
+                    src="/flashcrow/icons/chevron-up-icon.svg"
+                    alt="Close" />
+                  <b-img
+                    class="card-bottom-icon float-right when-closed"
+                    src="/flashcrow/icons/chevron-down-icon.svg"
+                    alt="Open" />
+                  <b-img
+                    class="card-bottom-icon card-bottom-icon-status"
+                    :src="`/flashcrow/icons/${section.icon}-icon.svg`"
+                    :alt="section.title" />
+                  <span>{{section.title}}</span>
+                </div>
+              </b-card-header>
+              <b-collapse
+                :id="`accordion_${index}`"
+                :visible="index === 0"
+                accordion="acc-counts-sections"
+                role="tabpanel">
+                <b-card-body class="card-bottom-table-body">
+                  <b-table
+                    :fields="countFields"
+                    :items="section.groupsByType"
+                    small borderless hover>
+                    <template slot="type" slot-scope="data">
+                      {{ data.item[0].type.label }}
+                    </template>
+                    <template slot="date" slot-scope="data">
+                      <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
+                      <span v-else>{{ data.item[0].date | date }}</span>
+                    </template>
+                    <template slot="id" slot-scope="data">
+                      <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
+                      <b-button
+                        v-else
+                        size="sm"
+                        variant="outline-primary"
+                        @click="viewCount(data.item)">
+                        View
+                        </b-button>
+                    </template>
+                    <template slot="requestNew" slot-scope="data">
+                      <b-form-checkbox v-model="data.item[0].requestNew" />
+                    </template>
+                  </b-table>
+                </b-card-body>
+              </b-collapse>
+            </b-card>
+          </div>
+        </b-col>
+        <b-col md="12">
+          <b-button
+            class="btn-request-step-action"
+            size="lg"
+            variant="primary"
+            :disabled="numRequested === 0"
+            @click="$emit('set-request-step', 2)">
+            Request New Data
+            <span class="badge badge-pill badge-light">{{ numRequested }}</span>
+          </b-button>
+        </b-col>
+      </template>
+      <template v-if="requestStep === 2">
+        <b-col md="12">
+          <b-button
+            class="btn-request-step-action"
+            size="lg"
+            variant="primary"
+            @click="$emit('set-request-step', 3)">
+            Continue
+          </b-button>
+        </b-col>
+      </template>
+      <template v-if="requestStep === 3">
+        <b-col md="12">
+          <b-button
+            class="btn-request-step-action"
+            size="lg"
+            variant="primary"
+            @click="$emit('set-request-step', 1)">
+            Confirm
+          </b-button>
+        </b-col>
+      </template>
     </b-row>
   </div>
 </template>
@@ -249,6 +274,9 @@ function groupBy(xs, g) {
 
 export default {
   name: 'CardBottom',
+  props: {
+    requestStep: Number,
+  },
   data() {
     const counts = randomCounts();
     return {
@@ -275,7 +303,7 @@ export default {
     countsSections() {
       // group by type
       const countsByType = groupBy(this.countsFiltered, c => c.type.value);
-      // sort groups by date, pull out first element
+      // sort groups by date
       const byType = countsByType
         .map(countsOfType => sortBy(countsOfType, c => -c.date.valueOf()));
 
@@ -325,7 +353,7 @@ export default {
 .card-bottom-table-body {
   padding: 0;
 }
-.btn-request-data {
+.btn-request-step-action {
   margin-top: 8px;
   width: 100%;
 }
