@@ -1,7 +1,10 @@
 <template>
 <b-row>
   <b-col md="12">
-    {{ index + 1 }}: {{ count.type.label }} Details
+    <h2>
+      <span class="badge badge-pill badge-info">{{ index + 1 }}</span>
+      {{ count.type.label }} Details
+    </h2>
   </b-col>
   <b-col md="4">
     <b-form-group
@@ -42,7 +45,9 @@
       <b-form-textarea
         v-if="notesEditable"
         v-model="notes"
-        :id="`input_notes_${index}`" />
+        :id="`input_notes_${index}`"
+        :rows="5"
+        no-resize />
       <b-form-textarea
         v-else
         :id="`input_notes_${index}`"
@@ -100,10 +105,20 @@ export default {
       return this.countAutomatic || this.hours === 'OTHER';
     },
     notesSchedule() {
-      return `07:30-09:30
+      if (this.hours === 'ROUTINE') {
+        return `07:30-09:30
 10:00-12:00
 13:00-15:00
 16:00-18:00`;
+      }
+      if (this.hours === 'SCHOOL') {
+        return `07:30-09:30
+10:00-11:00
+12:00-13:30
+14:15-15:45
+16:00-18:00`;
+      }
+      return '';
     },
   },
 };

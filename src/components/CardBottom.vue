@@ -19,8 +19,7 @@
             v-model="countTypes"
             :options="optionsCountTypes"
             multiple
-            placeholder="All Counts">
-          </v-select>
+            placeholder="All Counts" />
         </b-col>
         <b-col md="5" class="align-self-center">
           <span>
@@ -36,65 +35,67 @@
       <b-col v-else md="12">
         TODO: breadcrumbs
       </b-col>
-      <template v-if="requestStep === 1">
-        <b-col md="12">
-          <div class="card-bottom-table-wrapper overflow-auto">
-            <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
-              <b-card-header header-tag="header" class="p-1" role="tab">
-                <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
-                  <b-img
-                    class="card-bottom-icon float-right when-opened"
-                    src="/flashcrow/icons/chevron-up-icon.svg"
-                    alt="Close" />
-                  <b-img
-                    class="card-bottom-icon float-right when-closed"
-                    src="/flashcrow/icons/chevron-down-icon.svg"
-                    alt="Open" />
-                  <b-img
-                    class="card-bottom-icon card-bottom-icon-status"
-                    :src="`/flashcrow/icons/${section.icon}-icon.svg`"
-                    :alt="section.title" />
-                  <span>{{section.title}}</span>
-                </div>
-              </b-card-header>
-              <b-collapse
-                :id="`accordion_${index}`"
-                :visible="index === 0"
-                accordion="acc-counts-sections"
-                role="tabpanel">
-                <b-card-body class="card-bottom-table-body">
-                  <b-table
-                    :fields="countFields"
-                    :items="section.groupsByType"
-                    small borderless hover>
-                    <template slot="type" slot-scope="data">
-                      {{ data.item[0].type.label }}
-                    </template>
-                    <template slot="date" slot-scope="data">
-                      <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
-                      <span v-else>{{ data.item[0].date | date }}</span>
-                    </template>
-                    <template slot="id" slot-scope="data">
-                      <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
-                      <b-button
-                        v-else
-                        size="sm"
-                        variant="outline-primary"
-                        @click="viewCount(data.item)">
-                        View
-                        </b-button>
-                    </template>
-                    <template slot="requestNew" slot-scope="data">
-                      <b-form-checkbox v-model="data.item[0].requestNew" />
-                    </template>
-                  </b-table>
-                </b-card-body>
-              </b-collapse>
-            </b-card>
-          </div>
-        </b-col>
-      </template>
-      <template v-if="requestStep === 2">
+    </b-row>
+    <b-row v-if="requestStep === 1">
+      <b-col md="12">
+        <div class="card-bottom-table-wrapper overflow-auto">
+          <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
+            <b-card-header header-tag="header" class="p-1" role="tab">
+              <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
+                <b-img
+                  class="card-bottom-icon float-right when-opened"
+                  src="/flashcrow/icons/chevron-up-icon.svg"
+                  alt="Close" />
+                <b-img
+                  class="card-bottom-icon float-right when-closed"
+                  src="/flashcrow/icons/chevron-down-icon.svg"
+                  alt="Open" />
+                <b-img
+                  class="card-bottom-icon card-bottom-icon-status"
+                  :src="`/flashcrow/icons/${section.icon}-icon.svg`"
+                  :alt="section.title" />
+                <span>{{section.title}}</span>
+              </div>
+            </b-card-header>
+            <b-collapse
+              :id="`accordion_${index}`"
+              :visible="index === 0"
+              accordion="acc-counts-sections"
+              role="tabpanel">
+              <b-card-body class="card-bottom-table-body">
+                <b-table
+                  :fields="countFields"
+                  :items="section.groupsByType"
+                  small borderless hover>
+                  <template slot="type" slot-scope="data">
+                    {{ data.item[0].type.label }}
+                  </template>
+                  <template slot="date" slot-scope="data">
+                    <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
+                    <span v-else>{{ data.item[0].date | date }}</span>
+                  </template>
+                  <template slot="id" slot-scope="data">
+                    <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
+                    <b-button
+                      v-else
+                      size="sm"
+                      variant="outline-primary"
+                      @click="viewCount(data.item)">
+                      View
+                      </b-button>
+                  </template>
+                  <template slot="requestNew" slot-scope="data">
+                    <b-form-checkbox v-model="data.item[0].requestNew" />
+                  </template>
+                </b-table>
+              </b-card-body>
+            </b-collapse>
+          </b-card>
+        </div>
+      </b-col>
+    </b-row>
+    <template v-if="requestStep === 2">
+      <b-row>
         <b-col md="4">
           <b-form-group
             label="*Service Request Number"
@@ -121,16 +122,56 @@
           <b-form-group
             label="Pick Delivery Date"
             label-for="input_delivery_date">
+            <v-datepicker
+              v-model="deliveryDate"
+              id="input_delivery_date"
+              :disabled-dates="disabledDeliveryDates"
+              bootstrap-styling
+              required />
           </b-form-group>
         </b-col>
-        <count-details
-          v-for="(count, index) in countsRequested"
-          :count="count"
-          :index="index"
-          :key="count.id" />
-      </template>
-      <template v-if="requestStep === 3">
-      </template>
+      </b-row>
+      <count-details
+        v-for="(count, index) in countsRequested"
+        :count="count"
+        :index="index"
+        :key="count.id" />
+      <b-row>
+        <b-col md="12">
+          <h2>Additional Details</h2>
+        </b-col>
+        <b-col md="4">
+          <b-form-group
+            label="Reason for Request"
+            label-for="input_reason">
+            <b-form-select
+              v-model="reason"
+              id="input_reason"
+              :options="optionsReason" />
+          </b-form-group>
+        </b-col>
+        <b-col md="4">
+          <b-form-group
+            label="Additional Emails to Notify"
+            label-for="input_additional_emails">
+            <b-form-input
+              v-model="additionalEmails"
+              id="input_additional_emails"
+              type="text" />
+          </b-form-group>
+        </b-col>
+        <b-col md="4">
+          <p class="lead">
+            For <strong>Priority One</strong> requests or
+            timing related details, the Traffic Safety Unit will
+            contact you as soon as possible to discuss your request.
+          </p>
+        </b-col>
+      </b-row>
+    </template>
+    <template v-if="requestStep === 3">
+    </template>
+    <b-row>
       <b-col md="12">
         <b-button
           class="btn-request-step-action"
@@ -316,12 +357,22 @@ export default {
       ],
       countTypes: [],
       countViewed: null,
+      deliveryDate: new Date(2019, 3, 15),
+      disabledDeliveryDates: {
+        to: new Date(2019, 3, 15),
+      },
       optionsCountTypes: COUNT_TYPES,
+      optionsReason: [
+        { text: 'Traffic Safety Control', value: 'TCS' },
+        { text: 'All-Way Stop', value: 'AWS' },
+        { text: 'Count is outdated', value: 'OUTDATED' },
+      ],
       optionsServiceRequestPriority: [
         { text: 'PRI1', value: 1 },
         { text: 'PRI2', value: 2 },
         { text: 'PRI3', value: 3 },
       ],
+      reason: 'TCS',
       serviceRequestId: null,
       serviceRequestPriority: 3,
     };
