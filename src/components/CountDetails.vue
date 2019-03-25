@@ -1,5 +1,5 @@
 <template>
-<b-row>
+<b-row class="row-request-step-2">
   <b-col md="12">
     <h2>
       <span class="badge badge-pill badge-info">{{ index + 1 }}</span>
@@ -13,6 +13,7 @@
       <b-form-checkbox-group
         v-model="countDays"
         :id="`input_count_days_${index}`"
+        class="input-count-days"
         buttons
         button-variant="outline-primary"
         :options="optionsCountDays" />
@@ -89,6 +90,8 @@ export default {
         { text: '48H', value: 48 },
         { text: '72H', value: 72 },
         { text: '96H', value: 96 },
+        { text: '120H', value: 120 },
+        { text: '168H', value: 168 },
       ],
       optionsHours: [
         { text: 'Routine Hours', value: 'ROUTINE' },
@@ -124,6 +127,8 @@ export default {
 };
 </script>
 
-<style>
-
+<style lang="postcss">
+.input-count-days {
+  width: 100%;
+}
 </style>
