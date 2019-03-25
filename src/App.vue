@@ -7,8 +7,16 @@
         method="POST"
         action="/flashcrow/api/auth/logout"></form>
     </div>
-    <b-navbar toggleable="md" type="dark" variant="info">
-      <b-navbar-brand>flashcrow</b-navbar-brand>
+    <b-navbar id="nav" toggleable="md" type="light">
+      <b-img
+        class="icon-logo"
+        src="/flashcrow/icons/logo-icon.svg"
+        width="20"
+        height="24"
+        alt="flashcrow" />
+      <b-navbar-brand :to="{name: 'home'}">
+        <strong>flashcrow</strong>
+      </b-navbar-brand>
       <b-navbar-toggle target="nav_collapse" />
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav class="ml-auto">
@@ -69,10 +77,14 @@ export default {
   box-sizing: border-box;
 }
 html, body {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  background-color: #f1f4fe;
+  font-family: 'Work Sans', Helvetica, Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
   padding: 0;
+}
+.icon-logo {
+  margin-right: 8px;
 }
 #app {
   display: flex;
@@ -82,10 +94,36 @@ html, body {
   overflow: hidden;
   padding: 0;
 }
+#nav {
+  background-color: #fafafa;
+  padding: 8px 40px;
+}
 #row_main {
   flex-grow: 1;
 }
 .main {
   height: 100%;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+.v-select .dropdown-toggle {
+  transition: border-color 100ms ease-in-out;
+}
+.v-select:hover .dropdown-toggle {
+  border-color: #8c85db;
+}
+.open-indicator {
+  margin-right: 8px;
+  .v-select:hover &::before {
+    color: black;
+  }
+}
+.dropdown-toggle::after {
+  display: none;
 }
 </style>
