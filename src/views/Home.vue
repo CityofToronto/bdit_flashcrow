@@ -1,6 +1,7 @@
 <template>
   <div class="main home">
-    <CardMap v-if="requestStep === 1" />
+    <CardMap
+      :request-step="requestStep" />
     <CardBottom
       :request-step="requestStep"
       v-on:set-request-step="setRequestStep" />
@@ -31,8 +32,4 @@ export default {
 </script>
 
 <style lang="postcss">
-.home {
-  display: flex;
-  flex-direction: column;
-}
 </style>
