@@ -104,10 +104,20 @@ html, body {
 .main {
   height: 100%;
 }
+strong {
+  font-weight: 600;
+}
 h2 {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 1.7px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
   margin-bottom: 22px;
   text-transform: uppercase;
 }
@@ -125,5 +135,8 @@ h2 {
 }
 .dropdown-toggle::after {
   display: none;
+}
+.d-block, th[role=columnheader] {
+  font-weight: 500;
 }
 </style>
