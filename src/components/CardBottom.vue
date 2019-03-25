@@ -15,7 +15,7 @@
       </b-container>
     </b-modal>
     <div class="card-bottom-body">
-      <b-row class="available-data">
+      <b-row class="available-data mt-2">
         <template v-if="requestStep === 1">
           <b-col md="12">
             <h2>Available Data</h2>
@@ -30,10 +30,7 @@
           <b-col md="5" class="align-self-center">
             <span>
               at
-              <b-img
-                src="/flashcrow/icons/location-icon.svg"
-                width="48"
-                height="48" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="28" viewBox="0 0 20.11 28.12" class="location-icon"><path d="M10.06,25.2C4.82,19.54,2,14.52,2,10.29a8.07,8.07,0,0,1,2.15-6A8.06,8.06,0,0,1,10.06,2a8,8,0,0,1,5.86,2.27,8.24,8.24,0,0,1,2.23,6C18.09,14.52,15.34,19.52,10.06,25.2ZM17.29,2.88A10.08,10.08,0,0,0,10.06,0,10.05,10.05,0,0,0,2.75,2.88,10,10,0,0,0,0,10.35c0,4.92,3.23,10.66,9.31,17l.73.75.72-.75c6.14-6.38,9.28-12,9.32-17A10,10,0,0,0,17.29,2.88Z"/><path d="M10.06,11.75a1.73,1.73,0,0,1-1.6-1.07A1.71,1.71,0,0,1,8.84,8.8a1.73,1.73,0,1,1,1.22,2.95Zm0-5.72a4,4,0,1,0,4,4A4,4,0,0,0,10.06,6Z"/></svg>
               <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
             </span>
           </b-col>
@@ -47,7 +44,7 @@
           <breadcrumb-arrow
             :completed="requestStep > 1"
             :height="8"
-            :width="400" />
+            :width="444" />
           <span
             class="breadcrumb-step"
             :class="{active: requestStep === 2, completed: requestStep > 2}">
@@ -56,7 +53,7 @@
           <breadcrumb-arrow
             :completed="requestStep > 2"
             :height="8"
-            :width="400" />
+            :width="444" />
           <span
             class="breadcrumb-step"
             :class="{active: requestStep === 3, completed: requestStep > 3}">
@@ -64,7 +61,18 @@
           </span>
         </b-col>
       </b-row>
-      <b-row v-if="requestStep > 1">
+      <b-row v-if="requestStep > 1" class="mb-4">
+        <template v-if="requestStep === 3">
+          <b-col md="10">
+            <h3>Request Summary</h3>
+            <p class="lead">
+              Your reference number is: <strong>{{serviceRequestId}}</strong>
+            </p>
+          </b-col>
+          <b-col md="2" class="text-right">
+            <b-button variant="secondary">Print</b-button>
+          </b-col>
+        </template>
         <b-col md="12">
           <span
             v-for="count in countsRequested"
@@ -72,13 +80,9 @@
             class="count-selected-tag">
             {{count.type.label}}
           </span>
-            at
-            <b-img
-              src="/flashcrow/icons/location-icon.svg"
-              width="48"
-              height="48" />
-            <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
-          </span>
+          at
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="28" viewBox="0 0 20.11 28.12" class="location-icon"><path d="M10.06,25.2C4.82,19.54,2,14.52,2,10.29a8.07,8.07,0,0,1,2.15-6A8.06,8.06,0,0,1,10.06,2a8,8,0,0,1,5.86,2.27,8.24,8.24,0,0,1,2.23,6C18.09,14.52,15.34,19.52,10.06,25.2ZM17.29,2.88A10.08,10.08,0,0,0,10.06,0,10.05,10.05,0,0,0,2.75,2.88,10,10,0,0,0,0,10.35c0,4.92,3.23,10.66,9.31,17l.73.75.72-.75c6.14-6.38,9.28-12,9.32-17A10,10,0,0,0,17.29,2.88Z"/><path d="M10.06,11.75a1.73,1.73,0,0,1-1.6-1.07A1.71,1.71,0,0,1,8.84,8.8a1.73,1.73,0,1,1,1.22,2.95Zm0-5.72a4,4,0,1,0,4,4A4,4,0,0,0,10.06,6Z"/></svg>
+          <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
         </b-col>
       </b-row>
       <b-row v-if="requestStep === 1">
@@ -141,7 +145,7 @@
         </b-col>
       </b-row>
       <template v-if="requestStep === 2">
-        <b-row class="row-request-step-2">
+        <b-row class="row-request-step-2 mb-3">
           <b-col md="4">
             <b-form-group
               label="*Service Request Number"
@@ -182,7 +186,7 @@
           :count="count"
           :index="index"
           :key="count.id" />
-        <b-row class="row-request-step-2">
+        <b-row class="row-request-step-2 mt-3">
           <b-col md="12">
             <h2>Additional Details</h2>
           </b-col>
@@ -190,7 +194,7 @@
             <b-form-group
               label="Reason for Request"
               label-for="input_reason">
-              <b-form-select
+              <v-select
                 v-model="reason"
                 id="input_reason"
                 :options="optionsReason" />
@@ -204,6 +208,7 @@
                 v-model="additionalEmails"
                 id="input_additional_emails"
                 type="text"
+                size="lg"
                 placeholder="e.g. shawn.dillon@toronto.ca" />
             </b-form-group>
           </b-col>
@@ -217,6 +222,66 @@
         </b-row>
       </template>
       <template v-if="requestStep === 3">
+        <b-row class="row-request-step-2 mb-3">
+          <b-col md="4">
+            <b-form-group
+              label="Service Request Number">
+              <p class="lead">
+                {{serviceRequestId}}
+              </p>
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Service Request Priority">
+              <p class="lead">
+                Priority {{serviceRequestPriority}}
+              </p>
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Estimated Delivery Date">
+              <p class="lead">
+                {{deliveryDate}}
+              </p>
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <count-details
+          v-for="(count, index) in countsRequested"
+          :count="count"
+          :index="index"
+          :key="count.id"
+          summary />
+        <b-row class="row-request-step-2 mt-3">
+          <b-col md="12">
+            <h2>Additional Details</h2>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Reason for Request">
+              <p class="lead">
+                {{reason.label}}
+              </p>
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Additional Emails to Notify">
+              <p class="lead">
+                {{additionalEmails}}
+              </p>
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <p class="lead">
+              For <strong>Priority One</strong> requests or
+              timing related details, the Traffic Safety Unit will
+              contact you as soon as possible to discuss your request.
+            </p>
+          </b-col>
+        </b-row>
       </template>
     </div>
     <b-button
@@ -410,9 +475,9 @@ export default {
       },
       optionsCountTypes: COUNT_TYPES,
       optionsReason: [
-        { text: 'Traffic Safety Control', value: 'TCS' },
-        { text: 'All-Way Stop', value: 'AWS' },
-        { text: 'Count is outdated', value: 'OUTDATED' },
+        { label: 'Traffic Safety Control', value: 'TCS' },
+        { label: 'All-Way Stop', value: 'AWS' },
+        { label: 'Count is outdated', value: 'OUTDATED' },
       ],
       optionsServiceRequestPriority: [
         { text: 'PRI1', value: 1 },
@@ -581,7 +646,7 @@ export default {
 .breadcrumb-step {
   color: #9b9b9b;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 1.7px;
   text-transform: uppercase;
@@ -628,5 +693,11 @@ export default {
   margin: 8px 4px 0;
   padding: 0 .25em;
   transition: opacity .25s;
+}
+.location-icon {
+  margin: 0 8px;
+}
+#input_reason .clear {
+  display: none;
 }
 </style>

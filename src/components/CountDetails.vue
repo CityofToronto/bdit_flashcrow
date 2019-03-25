@@ -1,16 +1,20 @@
 <template>
-<b-row class="row-request-step-2">
+<b-row class="count-details row-request-step-2 mb-2">
   <b-col md="12">
-    <h2>
-      <span class="badge badge-pill badge-info">{{ index + 1 }}</span>
+    <h3>
+      <span class="count-details-number">{{ index + 1 }}</span>
       {{ count.type.label }} Details
-    </h2>
+    </h3>
   </b-col>
   <b-col md="4">
     <b-form-group
-      label="Count Days"
+      :label="(summary ? '' : '*') + 'Count Days'"
       :label-for="`input_count_days_${index}`">
+      <p v-if="summary" class="lead">
+        {{countDaysHuman}}
+      </p>
       <b-form-checkbox-group
+        v-else
         v-model="countDays"
         :id="`input_count_days_${index}`"
         class="input-count-days"
@@ -23,8 +27,13 @@
     <b-form-group
       v-if="countAutomatic"
       label="Duration"
-      :label-for="`input_duration_${index}`">
+      :label-for="`input_duration_${index}`"
+      class="input-duration">
+      <p v-if="summary" class="lead">
+        {{duration}} hours
+      </p>
       <b-form-radio-group
+        v-else
         v-model.number="duration"
         :id="`input_duration_${index}`"
         :options="optionsDuration" />
@@ -32,8 +41,15 @@
     <b-form-group
       v-else
       label="Hours"
-      :label-for="`input_hours_${index}`">
+      :label-for="`input_hours_${index}`"
+      class="input-hours">
+      <p v-if="summary" class="lead">
+        <span v-if="hours === 'ROUTINE'">Routine Hours</span>
+        <span v-if="hours === 'SCHOOL'">School Hours</span>
+        <span v-if="hours === 'OTHER'">Other Hours (see Additional Notes)</span>
+      </p>
       <b-form-radio-group
+        v-else
         v-model="hours"
         :id="`input_hours_${index}`"
         :options="optionsHours" />
@@ -41,22 +57,25 @@
   </b-col>
   <b-col md="4">
     <b-form-group
-      label="Additional Notes"
+      :label="labelAdditionalNotes"
       :label-for="`input_notes_${index}`">
-      <b-form-textarea
-        v-if="notesEditable"
-        v-model="notes"
-        :id="`input_notes_${index}`"
-        :rows="5"
-        no-resize />
-      <b-form-textarea
-        v-else
-        :id="`input_notes_${index}`"
-        :rows="5"
-        readonly
-        :placeholder="notesSchedule"
-        no-resize>
-      </b-form-textarea>
+      <template v-if="notesEditable">
+        <p v-if="summary">
+          {{notes}}
+        </p>
+        <b-form-textarea
+          v-else
+          v-model="notes"
+          :id="`input_notes_${index}`"
+          :rows="3"
+          no-resize
+          :placeholder="placeholderAdditionalNotes" />
+      </template>
+      <div v-else>
+        <div v-for="(hours, index) in notesSchedule.split('\n')" :key="index">
+          {{hours}}
+        </div>
+      </div>
     </b-form-group>
   </b-col>
 </b-row>
@@ -68,6 +87,7 @@ export default {
   props: {
     count: Object,
     index: Number,
+    summary: Boolean,
   },
   data() {
     return {
@@ -94,15 +114,33 @@ export default {
         { text: '168H', value: 168 },
       ],
       optionsHours: [
-        { text: 'Routine Hours', value: 'ROUTINE' },
-        { text: 'School Hours', value: 'SCHOOL' },
+        { text: 'Routine', value: 'ROUTINE' },
+        { text: 'School', value: 'SCHOOL' },
         { text: 'Other', value: 'OTHER' },
       ],
+      placeholderAdditionalNotes:
+        'If you have more specific requirements for '
+        + 'scheduling your count, enter them here.',
     };
   },
   computed: {
     countAutomatic() {
       return this.count.type.automatic;
+    },
+    countDaysHuman() {
+      const countDaysText = this.optionsCountDays.map(d => d.text);
+      const sunday = countDaysText.pop();
+      countDaysText.unshift(sunday);
+      return this.countDays.map(d => countDaysText[d]).join(', ');
+    },
+    labelAdditionalNotes() {
+      if (this.notesEditable) {
+        return 'Additional Notes';
+      }
+      if (this.hours === 'ROUTINE') {
+        return 'Routine Hours';
+      }
+      return 'School Hours';
     },
     notesEditable() {
       return this.countAutomatic || this.hours === 'OTHER';
@@ -128,7 +166,25 @@ export default {
 </script>
 
 <style lang="postcss">
+.count-details {
+  background-color: white;
+  padding-top: 22px;
+}
+.count-details-number {
+  border: 1px solid black;
+  border-radius: 16.5px;
+  display: inline-block;
+  height: 33px;
+  line-height: 30px;
+  margin-right: 5px;
+  text-align: center;
+  width: 33px;
+}
 .input-count-days {
   width: 100%;
+}
+.input-duration .custom-radio,
+.input-hours .custom-radio {
+  width: calc(33% - 1rem);
 }
 </style>
