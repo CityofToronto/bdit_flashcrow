@@ -2,25 +2,23 @@
   <div class="card-map">
     <div class="card-map-locate">
       <b-input-group>
+        <b-input-group-prepend>
+          <b-button
+            variant="light">
+            <b-img
+              src="/flashcrow/icons/search-icon.svg"
+              width="30"
+              height="30"
+              alt="Search" />
+          </b-button>
+        </b-input-group-prepend>
         <b-form-input
           v-model="locationQuery"
           class="input-location-query"
+          size="lg"
           type="text"
-          placeholder="Search for a location" />
-        <b-input-group-append>
-          <b-button size="sm" text="Search" variant="success">Search</b-button>
-        </b-input-group-append>
+          placeholder="Try &quot;Kingston and Lee&quot;" />
       </b-input-group>
-    </div>
-    <div class="card-map-sidebar" :class="{ open: showSidebar }">
-      <b-form-group label="Layers:">
-        <b-form-checkbox-group
-          v-model="layers"
-          :options="optionsLayers" />
-      </b-form-group>
-      <div class="card-map-sidebar-toggle" @click="showSidebar = !showSidebar">
-        <strong>{{ showSidebar ? '&lt;' : '&gt;' }}</strong>
-      </div>
     </div>
     <div class="card-map-mode">
       <b-button size="sm" @click="toggleSatellite">
@@ -85,11 +83,11 @@ export default {
         dragRotate: false,
         maxBounds: bounds,
         maxZoom: 15,
-        minZoom: 11,
+        minZoom: 10,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
-        zoom: 11,
+        zoom: 10,
       });
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
@@ -115,64 +113,31 @@ export default {
 
 <style lang="postcss">
 .card-map {
-  flex-grow: 1;
+  height: calc(100% - 300px);
   position: relative;
   & > .card-map-locate {
-    left: 8px;
+    left: 40px;
     position: absolute;
-    top: 8px;
-    width: 320px;
+    top: 22px;
+    width: 380px;
     z-index: 999;
-  }
-  & > .card-map-sidebar {
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    border-radius: 0 8px 8px 0;
-    height: 100px;
-    left: 0;
-    padding: 12px;
-    position: absolute;
-    transition: width 100ms ease-in-out;
-    top: 64px;
-    width: 0;
-    z-index: 999;
-    .form-control {
-      display: inline-block;
-    }
-    & > .form-group {
-      display: none;
-    }
-    & > .card-map-sidebar-toggle {
-      border: 1px solid #ccc;
-      border-right: 0;
-      border-radius: 4px 0 0 4px;
-      bottom: 16px;
-      color: #999;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 4px;
-      position: absolute;
-      right: 0;
-      transition: background-color 100ms ease-in-out;
-      &:hover {
-        background-color: #ccc;
-      }
-    }
-    &.open {
-      width: 160px;
-      & > .form-group {
-        display: block;
-      }
+    & input {
+      font-family: 'Work Sans';
+      font-size: 12pt;
     }
   }
   & > .card-map-mode {
-    bottom: 8px;
+    bottom: 122px;
     position: absolute;
-    right: 8px;
+    right: 40px;
     z-index: 999;
   }
 }
+.input-location-query {
+   box-shadow: 3px 2px 0 1px rgba(208, 208, 208, 0.23), inset 0 1px 3px 0 rgba(255, 255, 255, 0.5);
+}
 .mapboxgl-ctrl-bottom-right {
-  bottom: 36px;
+  bottom: 155px;
+  right: 31px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="card-bottom" :class="{'with-map': requestStep === 1}">
+  <div class="card-bottom">
     <b-modal
       v-model="showModalView"
       title="View Count"
@@ -12,185 +12,213 @@
         </b-row>
       </b-container>
     </b-modal>
-    <b-row>
-      <template v-if="requestStep === 1">
-        <b-col md="7" class="align-self-center">
-          <v-select
-            v-model="countTypes"
-            :options="optionsCountTypes"
-            multiple
-            placeholder="All Counts" />
-        </b-col>
-        <b-col md="5" class="align-self-center">
-          <span>
-            at
-            <b-img
-              src="/flashcrow/icons/location-icon.svg"
-              width="48"
-              height="48" />
-            <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
+    <div class="card-bottom-body">
+      <b-row class="available-data">
+        <template v-if="requestStep === 1">
+          <b-col md="12">
+            <h2>Available Data</h2>
+          </b-col>
+          <b-col md="7" class="align-self-center">
+            <v-select
+              v-model="countTypes"
+              :options="optionsCountTypes"
+              multiple
+              placeholder="Select a type of study" />
+          </b-col>
+          <b-col md="5" class="align-self-center">
+            <span>
+              at
+              <b-img
+                src="/flashcrow/icons/location-icon.svg"
+                width="48"
+                height="48" />
+              <abbr title="Kingston and Lee" class="lead">Kingston and Lee</abbr>
+            </span>
+          </b-col>
+        </template>
+        <b-col v-else md="12">
+          <span
+            class="breadcrumb-step"
+            :class="{active: requestStep === 1, completed: requestStep > 1}">
+            Request Data
+          </span>
+          <breadcrumb-arrow
+            :completed="requestStep > 1"
+            :height="8"
+            :width="512" />
+          <span
+            class="breadcrumb-step"
+            :class="{active: requestStep === 2, completed: requestStep > 2}">
+            Schedule
+          </span>
+          <breadcrumb-arrow
+            :completed="requestStep > 2"
+            :height="8"
+            :width="512" />
+          <span
+            class="breadcrumb-step"
+            :class="{active: requestStep === 3, completed: requestStep > 3}">
+            Confirm
           </span>
         </b-col>
-      </template>
-      <b-col v-else md="12">
-        TODO: breadcrumbs
-      </b-col>
-    </b-row>
-    <b-row v-if="requestStep === 1">
-      <b-col md="12">
-        <div class="card-bottom-table-wrapper overflow-auto">
-          <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
-            <b-card-header header-tag="header" class="p-1" role="tab">
-              <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
-                <b-img
-                  class="card-bottom-icon float-right when-opened"
-                  src="/flashcrow/icons/chevron-up-icon.svg"
-                  alt="Close" />
-                <b-img
-                  class="card-bottom-icon float-right when-closed"
-                  src="/flashcrow/icons/chevron-down-icon.svg"
-                  alt="Open" />
-                <b-img
-                  class="card-bottom-icon card-bottom-icon-status"
-                  :src="`/flashcrow/icons/${section.icon}-icon.svg`"
-                  :alt="section.title" />
-                <span>{{section.title}}</span>
-              </div>
-            </b-card-header>
-            <b-collapse
-              :id="`accordion_${index}`"
-              :visible="index === 0"
-              accordion="acc-counts-sections"
-              role="tabpanel">
-              <b-card-body class="card-bottom-table-body">
-                <b-table
-                  :fields="countFields"
-                  :items="section.groupsByType"
-                  small borderless hover>
-                  <template slot="type" slot-scope="data">
-                    {{ data.item[0].type.label }}
-                  </template>
-                  <template slot="date" slot-scope="data">
-                    <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
-                    <span v-else>{{ data.item[0].date | date }}</span>
-                  </template>
-                  <template slot="id" slot-scope="data">
-                    <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
-                    <b-button
-                      v-else
-                      size="sm"
-                      variant="outline-primary"
-                      @click="viewCount(data.item)">
-                      View
-                      </b-button>
-                  </template>
-                  <template slot="requestNew" slot-scope="data">
-                    <b-form-checkbox v-model="data.item[0].requestNew" />
-                  </template>
-                </b-table>
-              </b-card-body>
-            </b-collapse>
-          </b-card>
-        </div>
-      </b-col>
-    </b-row>
-    <template v-if="requestStep === 2">
-      <b-row>
-        <b-col md="4">
-          <b-form-group
-            label="*Service Request Number"
-            label-for="input_service_request_id">
-            <b-form-input
-              v-model.number="serviceRequestId"
-              id="input_service_request_id"
-              type="text" />
-          </b-form-group>
-        </b-col>
-        <b-col md="4">
-          <b-form-group
-            label="*Service Request Priority"
-            label-for="input_service_request_priority">
-            <b-form-radio-group
-              v-model.number="serviceRequestPriority"
-              id="input_service_request_priority"
-              buttons
-              button-variant="outline-primary"
-              :options="optionsServiceRequestPriority" />
-          </b-form-group>
-        </b-col>
-        <b-col md="4">
-          <b-form-group
-            label="Pick Delivery Date"
-            label-for="input_delivery_date">
-            <v-datepicker
-              v-model="deliveryDate"
-              id="input_delivery_date"
-              :disabled-dates="disabledDeliveryDates"
-              bootstrap-styling
-              required />
-          </b-form-group>
-        </b-col>
       </b-row>
-      <count-details
-        v-for="(count, index) in countsRequested"
-        :count="count"
-        :index="index"
-        :key="count.id" />
-      <b-row>
+      <b-row v-if="requestStep === 1">
         <b-col md="12">
-          <h2>Additional Details</h2>
-        </b-col>
-        <b-col md="4">
-          <b-form-group
-            label="Reason for Request"
-            label-for="input_reason">
-            <b-form-select
-              v-model="reason"
-              id="input_reason"
-              :options="optionsReason" />
-          </b-form-group>
-        </b-col>
-        <b-col md="4">
-          <b-form-group
-            label="Additional Emails to Notify"
-            label-for="input_additional_emails">
-            <b-form-input
-              v-model="additionalEmails"
-              id="input_additional_emails"
-              type="text" />
-          </b-form-group>
-        </b-col>
-        <b-col md="4">
-          <p class="lead">
-            For <strong>Priority One</strong> requests or
-            timing related details, the Traffic Safety Unit will
-            contact you as soon as possible to discuss your request.
-          </p>
+          <div class="card-bottom-table-wrapper overflow-auto">
+            <b-card v-for="(section, index) in countsSections" :key="index" no-body class="mb-1">
+              <b-card-header header-tag="header" class="p-1" role="tab">
+                <div class="card-bottom-table-toggle" v-b-toggle="`accordion_${index}`">
+                  <div class="card-bottom-icon float-right when-opened">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="10" viewBox="0 0 24.31 14.56"><polygon points="12.15 4.84 21.87 14.56 24.3 12.12 12.15 0 0 12.12 2.44 14.56 12.15 4.84"/></svg>
+                  </div>
+                  <div class="card-bottom-icon float-right when-closed">
+                    <b-img
+                      src="/flashcrow/icons/chevron-down-icon.svg"
+                      alt="Open" />
+                  </div>
+                  <div
+                    class="card-bottom-icon card-bottom-icon-status"
+                    :class="`card-bottom-icon-${section.icon}`">
+                    <b-img
+                      :src="`/flashcrow/icons/${section.icon}-icon.svg`"
+                      :alt="section.title" />
+                  </div>
+                  <span>{{section.title}}</span>
+                </div>
+              </b-card-header>
+              <b-collapse
+                :id="`accordion_${index}`"
+                :visible="index === 0"
+                accordion="acc-counts-sections"
+                role="tabpanel">
+                <b-card-body class="card-bottom-table-body">
+                  <b-table
+                    :fields="countFields"
+                    :items="section.groupsByType"
+                    small borderless hover>
+                    <template slot="type" slot-scope="data">
+                      {{ data.item[0].type.label }}
+                    </template>
+                    <template slot="date" slot-scope="data">
+                      <span v-if="data.item[0].date === null" class="text-muted">N/A</span>
+                      <span v-else>{{ data.item[0].date | date }}</span>
+                    </template>
+                    <template slot="id" slot-scope="data">
+                      <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
+                      <b-button
+                        v-else
+                        size="sm"
+                        variant="outline-primary"
+                        @click="viewCount(data.item)">
+                        View
+                        </b-button>
+                    </template>
+                    <template slot="requestNew" slot-scope="data">
+                      <b-form-checkbox v-model="data.item[0].requestNew" />
+                    </template>
+                  </b-table>
+                </b-card-body>
+              </b-collapse>
+            </b-card>
+          </div>
         </b-col>
       </b-row>
-    </template>
-    <template v-if="requestStep === 3">
-    </template>
-    <b-row>
-      <b-col md="12">
-        <b-button
-          class="btn-request-step-action"
-          size="lg"
-          variant="primary"
-          :disabled="disableRequestStepAction"
-          @click="$emit('set-request-step', nextRequestStep)">
-          {{ requestStepActionText }}
-          <span
-            v-if="requestStep === 1"
-            class="badge badge-pill badge-light">{{ numCountsRequested }}</span>
-        </b-button>
-      </b-col>
-    </b-row>
+      <template v-if="requestStep === 2">
+        <b-row>
+          <b-col md="4">
+            <b-form-group
+              label="*Service Request Number"
+              label-for="input_service_request_id">
+              <b-form-input
+                v-model.number="serviceRequestId"
+                id="input_service_request_id"
+                type="text" />
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="*Service Request Priority"
+              label-for="input_service_request_priority">
+              <b-form-radio-group
+                v-model.number="serviceRequestPriority"
+                id="input_service_request_priority"
+                buttons
+                button-variant="outline-primary"
+                :options="optionsServiceRequestPriority" />
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Pick Delivery Date"
+              label-for="input_delivery_date">
+              <v-datepicker
+                v-model="deliveryDate"
+                id="input_delivery_date"
+                :disabled-dates="disabledDeliveryDates"
+                bootstrap-styling
+                required />
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <count-details
+          v-for="(count, index) in countsRequested"
+          :count="count"
+          :index="index"
+          :key="count.id" />
+        <b-row>
+          <b-col md="12">
+            <h2>Additional Details</h2>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Reason for Request"
+              label-for="input_reason">
+              <b-form-select
+                v-model="reason"
+                id="input_reason"
+                :options="optionsReason" />
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <b-form-group
+              label="Additional Emails to Notify"
+              label-for="input_additional_emails">
+              <b-form-input
+                v-model="additionalEmails"
+                id="input_additional_emails"
+                type="text"
+                placeholder="e.g. shawn.dillon@toronto.ca" />
+            </b-form-group>
+          </b-col>
+          <b-col md="4">
+            <p class="lead">
+              For <strong>Priority One</strong> requests or
+              timing related details, the Traffic Safety Unit will
+              contact you as soon as possible to discuss your request.
+            </p>
+          </b-col>
+        </b-row>
+      </template>
+      <template v-if="requestStep === 3">
+      </template>
+    </div>
+    <b-button
+      class="btn-request-step-action"
+      size="lg"
+      variant="primary"
+      :disabled="disableRequestStepAction"
+      @click="$emit('set-request-step', nextRequestStep)">
+      {{ requestStepActionText }}
+      <span
+        v-if="requestStep === 1"
+        class="badge badge-pill badge-light">{{ numCountsRequested }}</span>
+    </b-button>
   </div>
 </template>
 
 <script>
 /* eslint-disable no-continue */
+import BreadcrumbArrow from '@/components/BreadcrumbArrow.vue';
 import CountDetails from '@/components/CountDetails.vue';
 
 class Random {
@@ -340,6 +368,7 @@ function groupBy(xs, g) {
 export default {
   name: 'CardBottom',
   components: {
+    BreadcrumbArrow,
     CountDetails,
   },
   props: {
@@ -348,6 +377,7 @@ export default {
   data() {
     const counts = randomCounts();
     return {
+      additionalEmails: '',
       counts,
       countFields: [
         { key: 'type', label: 'Type of Count', sortable: true },
@@ -459,34 +489,85 @@ export default {
 
 <style lang="postcss">
 .card-bottom {
-  flex-grow: 1;
-  padding: 8px;
-  &.with-map {
-    flex-grow: unset;
-    height: 400px;
-  }
+  background-color: #fafafa;
+  bottom: 0;
+  box-shadow: 0 10px 20px 0 rgba(46, 91, 255, 0.07);
+  height: 400px;
+  margin: 0 40px;
+  position: absolute;
+  width: calc(100% - 80px);
+  z-index: 100;
 }
-.card-bottom-table-wrapper {
-  height: 280px;
+.card-bottom-body {
+  height: 330px;
+  overflow-y: auto;
+  padding: 22px 40px;
+}
+.btn-request-step-action {
+  bottom: 11px;
+  margin: 0 40px;
+  position: fixed;
+  width: calc(100% - 160px);
+}
+.card-header {
+  background-color: #fff;
+}
+.card-bottom-table-toggle {
+  padding: 10px;
 }
 .card-bottom-table-body {
   padding: 0;
 }
-.btn-request-step-action {
-  margin-top: 8px;
-  width: 100%;
-}
 .card-bottom-icon {
   background-color: white;
   border-radius: 16px;
+  display: inline-block;
   height: 32px;
+  vertical-align: middle;
   width: 32px;
+  & > img {
+    margin: 5px 0;
+  }
+  &.float-right {
+    background-color: black;
+    & > svg {
+      margin: 10px 8px;
+    }
+    & polygon {
+      fill: white;
+    }
+  }
   &.card-bottom-icon-status {
     margin-right: 8px;
+  }
+  &.card-bottom-icon-checkmark {
+    background-color: #a7a0f833;
+  }
+  &.card-bottom-icon-warning {
+    background-color: #f8e71c33;
+  }
+  &.card-bottom-icon-close {
+    background-color: #ff98a433;
   }
 }
 .collapsed > .when-opened,
 :not(.collapsed) > .when-closed {
   display: none;
+}
+.breadcrumb-step {
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bolder;
+  text-transform: uppercase;
+  vertical-align: middle;
+  &.active {
+    color: magenta;
+  }
+  &.completed {
+    color: #000;
+  }
+}
+.available-data {
+  margin-bottom: 22px;
 }
 </style>
