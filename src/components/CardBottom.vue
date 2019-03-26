@@ -42,7 +42,9 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 19.58 19.62"><polygon points="16.81 0 9.79 7.02 2.77 0 0 2.81 6.98 9.83 0 16.85 2.77 19.62 9.79 12.64 16.81 19.62 19.58 16.85 12.61 9.83 19.58 2.81 16.81 0"/></svg>
     </div>
     <template v-if="locationQuery">
-      <div class="card-bottom-body">
+      <div
+        class="card-bottom-body"
+        :class="{confirm: requestStep === 3}">
         <b-row class="available-data mt-2">
           <template v-if="requestStep === 1">
             <b-col md="12">
@@ -96,18 +98,24 @@
             </span>
           </b-col>
         </b-row>
-        <b-row v-if="requestStep > 1" class="mb-4">
-          <template v-if="requestStep === 3">
+        <template v-if="requestStep === 3">
+          <b-row class="mt-2">
             <b-col md="10">
               <h3>Request Summary</h3>
-              <p class="lead">
-                Your reference number is: <strong>{{serviceRequestId}}</strong>
-              </p>
             </b-col>
             <b-col md="2" class="text-right">
               <b-button variant="secondary">Print</b-button>
             </b-col>
-          </template>
+          </b-row>
+          <b-row class="mt-2 pt-2">
+            <b-col md="12">
+              <p class="lead">
+                Your reference number is: <strong>{{serviceRequestId}}</strong>
+              </p>
+            </b-col>
+          </b-row>
+        </template>
+        <b-row v-if="requestStep > 1" class="pb-4">
           <b-col md="12">
             <span
               v-for="count in countsRequested"
@@ -288,7 +296,7 @@
           </b-row>
         </template>
         <template v-if="requestStep === 3">
-          <b-row class="row-request-step-2 mb-3">
+          <b-row class="row-request-step-2 pt-3 pb-3">
             <b-col md="4">
               <b-form-group
                 label="Service Request Number">
@@ -309,7 +317,7 @@
               <b-form-group
                 label="Estimated Delivery Date">
                 <p class="lead">
-                  {{deliveryDate}}
+                  {{deliveryDate | date}}
                 </p>
               </b-form-group>
             </b-col>
@@ -320,7 +328,7 @@
             :index="index"
             :key="count.id"
             summary />
-          <b-row class="row-request-step-2 mt-3">
+          <b-row class="row-request-step-2 pt-4">
             <b-col md="12">
               <h2>Additional Details</h2>
             </b-col>
@@ -726,6 +734,14 @@ export default {
   height: 330px;
   overflow-y: auto;
   padding: 22px 40px;
+  &.confirm {
+    fieldset > legend {
+      font-weight: 500;
+    }
+    & > .row:nth-child(n+3) {
+      background-color: white;
+    }
+  }
 }
 .request-step-action-wrapper {
   background-color: white;

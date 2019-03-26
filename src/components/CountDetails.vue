@@ -1,5 +1,7 @@
 <template>
-<b-row class="count-details row-request-step-2 mb-2">
+<b-row
+  class="count-details row-request-step-2"
+  :class="summary ? 'pb-3': 'mb-2'">
   <b-col md="12">
     <h3>
       <span class="count-details-number">{{ index + 1 }}</span>
