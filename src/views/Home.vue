@@ -1,9 +1,14 @@
 <template>
   <div class="main home">
     <CardMap
-      :request-step="requestStep" />
-    <CardBottom
+      :highlight-marker="highlightMarker"
+      :location-query="locationQuery"
       :request-step="requestStep"
+      v-on:set-location-query="setLocationQuery" />
+    <CardBottom
+      :location-query="locationQuery"
+      :request-step="requestStep"
+      v-on:set-highlight-marker="setHighlightMarker"
       v-on:set-request-step="setRequestStep" />
   </div>
 </template>
@@ -20,10 +25,18 @@ export default {
   },
   data() {
     return {
+      highlightMarker: false,
+      locationQuery: '',
       requestStep: 1,
     };
   },
   methods: {
+    setHighlightMarker(highlightMarker) {
+      this.highlightMarker = highlightMarker;
+    },
+    setLocationQuery(locationQuery) {
+      this.locationQuery = locationQuery;
+    },
     setRequestStep(requestStep) {
       this.requestStep = requestStep;
     },

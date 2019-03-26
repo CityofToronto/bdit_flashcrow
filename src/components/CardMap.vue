@@ -5,21 +5,21 @@
     <div class="card-map-locate">
       <b-input-group>
         <b-input-group-prepend>
-          <b-button
-            variant="light">
+          <button type="button">
             <b-img
               src="/flashcrow/icons/search-icon.svg"
               width="30"
               height="30"
               alt="Search" />
-          </b-button>
+          </button>
         </b-input-group-prepend>
         <b-form-input
-          v-model="locationQuery"
+          :value="locationQuery"
           class="input-location-query"
           size="lg"
           type="text"
-          placeholder="Try &quot;Kingston and Lee&quot;" />
+          placeholder="Try &quot;Kingston and Lee&quot;"
+          @click="setLocationQueryForDemo" />
       </b-input-group>
     </div>
     <div class="card-map-mode">
@@ -36,15 +36,22 @@ import Vue from 'vue';
 
 import GeoStyle from '@/lib/geo/GeoStyle';
 
+const LOCATION_DEMO = {
+  label: 'Kingston and Lee',
+  lngLat: new mapboxgl.LngLat(-79.301199, 43.678138),
+  zoom: 15,
+};
+
 export default {
   name: 'CardMap',
   props: {
+    highlightMarker: Boolean,
+    locationQuery: String,
     requestStep: Number,
   },
   data() {
     return {
       layers: [],
-      locationQuery: '',
       optionsLayers: [
         { text: 'Collisions', value: 'COLLISIONS' },
         { text: 'Counts', value: 'COUNTS' },
@@ -55,10 +62,9 @@ export default {
   },
   mounted() {
     const bounds = new mapboxgl.LngLatBounds(
-      new mapboxgl.LngLat(-79.939957, 43.507725),
-      new mapboxgl.LngLat(-78.852997, 43.899377),
+      new mapboxgl.LngLat(-79.639264937, 43.580995995),
+      new mapboxgl.LngLat(-79.115243191, 43.855457183),
     );
-    const center = new mapboxgl.LngLat(-79.396477, 43.703871);
     this.mapStyle = GeoStyle.get();
     // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
     this.satelliteStyle = {
@@ -83,7 +89,6 @@ export default {
     Vue.nextTick(() => {
       this.map = new mapboxgl.Map({
         bounds,
-        center,
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
@@ -98,12 +103,28 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+      const markerDemoPopup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      }).setText(LOCATION_DEMO.label);
+      this.markerDemo = new mapboxgl.Marker()
+        .setLngLat(LOCATION_DEMO.lngLat)
+        .setPopup(markerDemoPopup)
+        .addTo(this.map);
     });
   },
   beforeDestroy() {
     this.map.remove();
   },
   methods: {
+    setLocationQueryForDemo() {
+      this.$emit('set-location-query', LOCATION_DEMO.label);
+      this.map.easeTo({
+        center: LOCATION_DEMO.lngLat,
+        duration: 500,
+        zoom: LOCATION_DEMO.zoom,
+      });
+    },
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -111,6 +132,11 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
+    },
+  },
+  watch: {
+    highlightMarker() {
+      this.markerDemo.togglePopup();
     },
   },
 };
@@ -131,7 +157,17 @@ export default {
     top: 22px;
     width: 380px;
     z-index: 999;
+    & button {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-right: 0;
+      padding: 0 1px 0 6px;
+      & > img {
+        border-right: 1px solid #ccc;
+      }
+    }
     & input {
+      border-left: none;
       font-family: 'Work Sans';
       font-size: 12pt;
     }
