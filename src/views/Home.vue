@@ -4,7 +4,8 @@
       :highlight-marker="highlightMarker"
       :location-query="locationQuery"
       :request-step="requestStep"
-      v-on:set-location-query="setLocationQuery" />
+      v-on:set-location-query="setLocationQuery"
+      v-on:set-request-step="setRequestStep" />
     <CardBottom
       :location-query="locationQuery"
       :request-step="requestStep"
