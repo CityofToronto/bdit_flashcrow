@@ -89,6 +89,7 @@ export default {
     Vue.nextTick(() => {
       this.map = new mapboxgl.Map({
         bounds,
+        boxZoom: false,
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
@@ -119,6 +120,7 @@ export default {
   methods: {
     setLocationQueryForDemo() {
       this.$emit('set-location-query', LOCATION_DEMO.label);
+      this.$emit('set-request-step', 1);
       this.map.easeTo({
         center: LOCATION_DEMO.lngLat,
         duration: 500,
@@ -137,6 +139,17 @@ export default {
   watch: {
     highlightMarker() {
       this.markerDemo.togglePopup();
+    },
+    requestStep() {
+      if (this.requestStep === 1) {
+        this.map.doubleClickZoom.enable();
+        this.map.dragPan.enable();
+        this.map.keyboard.enable();
+      } else {
+        this.map.doubleClickZoom.disable();
+        this.map.dragPan.disable();
+        this.map.keyboard.disable();
+      }
     },
   },
 };
