@@ -31,6 +31,7 @@
 </template>
 
 <script>
+/* eslint-disable no-alert */
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 
@@ -39,7 +40,7 @@ import GeoStyle from '@/lib/geo/GeoStyle';
 const LOCATION_DEMO = {
   label: 'Kingston and Lee',
   lngLat: new mapboxgl.LngLat(-79.301199, 43.678138),
-  zoom: 15,
+  zoom: 19,
 };
 
 export default {
@@ -93,7 +94,7 @@ export default {
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        maxZoom: 15,
+        maxZoom: 19,
         minZoom: 10,
         pitchWithRotate: false,
         renderWorldCopies: false,
@@ -119,6 +120,11 @@ export default {
   },
   methods: {
     setLocationQueryForDemo() {
+      window.alert(
+        'For this demo, the search box jumps to Kingston and Lee '
+        + 'when you click it.  We will be building and testing '
+        + 'search functionality in future tests.',
+      );
       this.$emit('set-location-query', LOCATION_DEMO.label);
       this.$emit('set-request-step', 1);
       this.map.easeTo({
@@ -175,14 +181,21 @@ export default {
       border: 1px solid #ccc;
       border-right: 0;
       padding: 0 1px 0 6px;
+      transition: border-color .15s ease-in-out;
       & > img {
         border-right: 1px solid #ccc;
+        transition: border-color .15s ease-in-out;
       }
     }
     & input {
       border-left: none;
       font-family: 'Work Sans';
       font-size: 12pt;
+    }
+    &:hover {
+      button, button > img, input {
+        border-color: #8c85db;
+      }
     }
   }
   & > .card-map-mode {

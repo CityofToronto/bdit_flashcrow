@@ -20,21 +20,7 @@
       <b-navbar-toggle target="nav_collapse" />
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav class="ml-auto">
-          <b-nav-item-dropdown :text="username" right>
-            <b-dropdown-item-button
-              v-if="auth.loggedIn"
-              @click="signOut">Sign Out</b-dropdown-item-button>
-            <b-dropdown-item
-              v-else
-              href="/flashcrow/api/auth/openid-connect">Sign In</b-dropdown-item>
-            <li class="separator" />
-            <b-dropdown-item :to="{ name: 'privacyPolicy' }">
-              Privacy Policy
-            </b-dropdown-item>
-            <b-dropdown-item :to="{ name: 'termsOfService' }">
-              Terms of Service
-            </b-dropdown-item>
-          </b-nav-item-dropdown>
+          <svg @click="profileComingSoon" class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -47,6 +33,7 @@
 </template>
 
 <script>
+/* eslint-disable no-alert */
 import { mapState } from 'vuex';
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -65,6 +52,9 @@ export default {
     ...mapState(['auth']),
   },
   methods: {
+    profileComingSoon() {
+      window.alert('Coming soon: user profiles!');
+    },
     signOut() {
       this.$refs.formSignOut.submit();
     },
@@ -138,5 +128,14 @@ h3 {
 }
 .d-block, th[role=columnheader] {
   font-weight: 500;
+}
+.icon-profile {
+  cursor: pointer;
+  stroke: none;
+  fill: #9b9b9b;
+  transition: fill .15s ease-in-out;
+  &:hover {
+    fill: black;
+  }
 }
 </style>
