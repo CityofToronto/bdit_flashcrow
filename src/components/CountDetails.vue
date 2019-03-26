@@ -119,8 +119,9 @@ export default {
         { text: 'Other', value: 'OTHER' },
       ],
       placeholderAdditionalNotes:
-        'If you have more specific requirements for '
-        + 'scheduling your count, enter them here.',
+        'Need a specific time of day, or month for your '
+        + 'count?  Let us know any scheduling '
+        + 'requirements out of the norm.',
     };
   },
   computed: {

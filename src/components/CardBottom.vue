@@ -35,6 +35,12 @@
         </b-row>
       </b-container>
     </b-modal>
+    <div
+      v-if="requestStep > 1"
+      class="card-bottom-close"
+      @click="setRequestStepFromBreadcrumb(1)">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 19.58 19.62"><polygon points="16.81 0 9.79 7.02 2.77 0 0 2.81 6.98 9.83 0 16.85 2.77 19.62 9.79 12.64 16.81 19.62 19.58 16.85 12.61 9.83 19.58 2.81 16.81 0"/></svg>
+    </div>
     <template v-if="locationQuery">
       <div class="card-bottom-body">
         <b-row class="available-data mt-2">
@@ -64,7 +70,8 @@
           <b-col v-else md="12">
             <span
               class="breadcrumb-step"
-              :class="{active: requestStep === 1, completed: requestStep > 1}">
+              :class="{active: requestStep === 1, completed: requestStep > 1}"
+              @click="setRequestStepFromBreadcrumb(1)">
               Request
             </span>
             <breadcrumb-arrow
@@ -73,7 +80,8 @@
               :width="444" />
             <span
               class="breadcrumb-step"
-              :class="{active: requestStep === 2, completed: requestStep > 2}">
+              :class="{active: requestStep === 2, completed: requestStep > 2}"
+              @click="setRequestStepFromBreadcrumb(2)">
               Schedule
             </span>
             <breadcrumb-arrow
@@ -82,7 +90,8 @@
               :width="444" />
             <span
               class="breadcrumb-step"
-              :class="{active: requestStep === 3, completed: requestStep > 3}">
+              :class="{active: requestStep === 3, completed: requestStep > 3}"
+              @click="setRequestStepFromBreadcrumb(3)">
               Confirm
             </span>
           </b-col>
@@ -181,7 +190,9 @@
                 <b-form-input
                   v-model.number="serviceRequestId"
                   id="input_service_request_id"
-                  type="text" />
+                  type="text"
+                  placeholder="Customer Service Request ID"
+                  required />
               </b-form-group>
             </b-col>
             <b-col md="4">
@@ -203,10 +214,37 @@
                 <v-datepicker
                   v-model="deliveryDate"
                   id="input_delivery_date"
-                  :disabled-dates="disabledDeliveryDates"
                   bootstrap-styling
+                  :disabled-dates="deliveryDatesDisabled"
+                  :format="datepickerFormat"
                   required />
               </b-form-group>
+            </b-col>
+            <b-col md="8" offset-md="4">
+              <b-alert
+                show
+                :variant="serviceRequestPriority === 1 ? 'warning' : 'info'">
+                <p v-if="serviceRequestPriority === 1">
+                  You marked this <strong>urgent</strong>.  We might have to reshuffle our request
+                  queue in order to accommodate your request.  TSU will contact you with further
+                  details once you've completed your request.
+                </p>
+                <p v-else-if="deliveryDate.valueOf() === deliveryDateNextAvailable.valueOf()">
+                  The next available date is {{ deliveryDateNextAvailable | date }}.
+                  We've selected this date automatically for you, but you can change it if you have
+                  scheduling requirements out of the norm.
+                </p>
+                <p v-else>
+                  You've selected {{ deliveryDate | date }}.
+                  If you don't have scheduling requirements out of the
+                  norm, consider
+                  <a
+                    href="#"
+                    @click.prevent="deliveryDate = deliveryDateNextAvailable">
+                    <strong>using the next available date</strong>
+                  </a>.
+                </p>
+              </b-alert>
             </b-col>
           </b-row>
           <count-details
@@ -514,21 +552,25 @@ export default {
       countTypes: [],
       countViewed: null,
       deliveryDate: new Date(2019, 3, 15),
-      disabledDeliveryDates: {
+      deliveryDateNextAvailable: new Date(2019, 3, 15),
+      deliveryDatesDisabled: {
         to: new Date(2019, 3, 15),
       },
       optionsCountTypes: COUNT_TYPES,
       optionsReason: [
         { label: 'Traffic Safety Control', value: 'TCS' },
-        { label: 'All-Way Stop', value: 'AWS' },
-        { label: 'Count is outdated', value: 'OUTDATED' },
+        { label: 'Pedestrian Crossover (PXO)', value: 'PXO' },
+        { label: 'Updated count (3 years expired)', value: 'EXPIRED' },
+        { label: 'Pedestrian Safety', value: 'PED_SAFETY' },
+        { label: 'Signal Timing', value: 'SIGNAL_TIMING' },
+        { label: 'Other', value: null },
       ],
       optionsServiceRequestPriority: [
         { text: 'PRI1', value: 1 },
         { text: 'PRI2', value: 2 },
         { text: 'PRI3', value: 3 },
       ],
-      reason: 'TCS',
+      reason: { label: 'Traffic Safety Control', value: 'TCS' },
       serviceRequestId: null,
       serviceRequestPriority: 3,
     };
@@ -569,7 +611,7 @@ export default {
         return this.numCountsRequested === 0;
       }
       if (this.requestStep === 2) {
-        return false;
+        return !this.serviceRequestId;
       }
       return false;
     },
@@ -613,6 +655,18 @@ export default {
     },
   },
   methods: {
+    datepickerFormat(d) {
+      // TODO: DRY with main.js Vue filter
+      if (!d) {
+        return '';
+      }
+      return new Intl.DateTimeFormat('en-US').format(d);
+    },
+    setRequestStepFromBreadcrumb(requestStep) {
+      if (this.requestStep > requestStep) {
+        this.$emit('set-request-step', requestStep);
+      }
+    },
     sortCompareCountFields(a, b, key) {
       let ka = a[0][key];
       let kb = b[0][key];
@@ -652,6 +706,19 @@ export default {
     height: 625px;
     .card-bottom-body {
       height: 555px;
+    }
+  }
+  & > .card-bottom-close {
+    cursor: pointer;
+    position: absolute;
+    right: 22px;
+    top: 11px;
+    & > svg > polygon {
+      fill: #9b9b9b;
+      transition: fill .15s ease-in-out;
+    }
+    &:hover > svg > polygon {
+      fill: #796fe4;
     }
   }
 }
@@ -740,7 +807,6 @@ export default {
 }
 .breadcrumb-step {
   color: #9b9b9b;
-  cursor: pointer;
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 1.7px;
@@ -752,6 +818,8 @@ export default {
   }
   &.completed {
     color: #9b9b9b;
+    cursor: pointer;
+    transition: color .15s ease-in-out;
     &:hover {
       color: #796fe4;
     }
