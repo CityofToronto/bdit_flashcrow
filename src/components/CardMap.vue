@@ -156,7 +156,7 @@ export default {
     position: absolute;
     top: 22px;
     width: 380px;
-    z-index: 999;
+    z-index: 99;
     & button {
       background-color: white;
       border: 1px solid #ccc;
@@ -176,7 +176,7 @@ export default {
     bottom: 122px;
     position: absolute;
     right: 40px;
-    z-index: 999;
+    z-index: 99;
   }
 }
 .input-location-query {

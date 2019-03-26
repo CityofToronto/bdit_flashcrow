@@ -4,12 +4,33 @@
     :class="{'card-bottom-full': requestStep > 1}">
     <b-modal
       v-model="showModalView"
-      title="View Count"
+      size="xl"
+      :title="titleModalView"
       ok-only>
       <b-container fluid>
-        <b-row>
-          <b-col cols="12">
-            <code>{{JSON.stringify(countViewed)}}</code>
+        <b-row v-if="countViewed !== null">
+          <b-col cols="4">
+            <h3>Available Counts ({{ countViewed.length }})</h3>
+            <b-list-group>
+              <b-list-group-item
+                v-for="(count, index) in countViewed"
+                :key="index"
+                :active="index === 0">
+                {{ count.date | date }}
+              </b-list-group-item>
+            </b-list-group>
+          </b-col>
+          <b-col cols="8">
+            <b-button-group class="float-right mb-3">
+              <b-button variant="outline-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24.75 24.75"><path d="M22,0H2.75V6.88H0v11H2.75v6.87H22V17.88h2.75v-11H22ZM4.12,1.38h16.5v5.5H4.12Zm0,22V13.75h16.5v9.63Z"/><rect x="18.63" y="9.88" width="1.25" height="1.25"/><rect class="cls-1" x="6.13" y="14.88" width="12.5" height="1.25"/><rect class="cls-1" x="6.13" y="17.38" width="12.5" height="1.25"/></svg>
+              </b-button>
+              <b-button variant="outline-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24.17 25.39"><polygon points="21.25 22.47 2.92 22.47 2.92 17.45 0 17.45 0 25.39 24.17 25.39 24.17 17.45 21.25 17.45 21.25 22.47"/><polygon points="19.86 7.9 13.45 14.31 13.45 0 10.72 0 10.72 14.31 4.31 7.9 2.36 9.85 12.08 19.55 21.8 9.85 19.86 7.9"/></svg>
+              </b-button>
+            </b-button-group>
+            <h3>Count Data</h3>
+            <b-table :items="countData" small striped />
           </b-col>
         </b-row>
       </b-container>
@@ -109,7 +130,7 @@
                         :src="`/flashcrow/icons/${section.icon}-icon.svg`"
                         :alt="section.title" />
                     </div>
-                    <span>{{section.title}}</span>
+                    <h3>{{section.title}}</h3>
                   </div>
                 </b-card-header>
                 <b-collapse
@@ -121,7 +142,8 @@
                     <b-table
                       :fields="countFields"
                       :items="section.groupsByType"
-                      small borderless hover>
+                      :sort-compare="sortCompareCountFields"
+                      small borderless>
                       <template slot="type" slot-scope="data">
                         {{ data.item[0].type.label }}
                       </template>
@@ -133,10 +155,11 @@
                         <span v-if="data.item[0].id === null" class="text-muted">N/A</span>
                         <b-button
                           v-else
+                          class="btn-count-view"
                           size="sm"
                           variant="outline-primary"
                           @click="viewCount(data.item)">
-                          View
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="15" viewBox="0 0 38.07 23.67"><path d="M28.66,17.21a14,14,0,0,1-19.25,0L3.83,11.84,9.41,6.59a14,14,0,0,1,19.25,0l5.58,5.25ZM30.57,4.6a16.76,16.76,0,0,0-23.06,0L0,11.84l7.51,7.23a16.74,16.74,0,0,0,23.06,0l7.5-7.23Z"/><path d="M19,14.46a2.62,2.62,0,1,1,2.72-2.62A2.66,2.66,0,0,1,19,14.46Zm0-7.87a5.34,5.34,0,0,0-5.44,5.25A5.34,5.34,0,0,0,19,17.08a5.35,5.35,0,0,0,5.44-5.24A5.35,5.35,0,0,0,19,6.59Z"/></svg>
                           </b-button>
                       </template>
                       <template slot="requestNew" slot-scope="data">
@@ -289,17 +312,19 @@
           </b-row>
         </template>
       </div>
-      <b-button
-        class="btn-request-step-action"
-        size="lg"
-        variant="primary"
-        :disabled="disableRequestStepAction"
-        @click="$emit('set-request-step', nextRequestStep)">
-        {{ requestStepActionText }}
-        <span
-          v-if="requestStep === 1"
-          class="badge badge-pill badge-light">{{ numCountsRequested }}</span>
-      </b-button>
+      <div v-if="locationQuery" class="request-step-action-wrapper">
+        <b-button
+          class="btn-request-step-action"
+          size="lg"
+          variant="primary"
+          :disabled="disableRequestStepAction"
+          @click="$emit('set-request-step', nextRequestStep)">
+          {{ requestStepActionText }}
+          <span
+            v-if="requestStep === 1"
+            class="badge badge-pill badge-light">{{ numCountsRequested }}</span>
+        </b-button>
+      </div>
     </template>
     <div v-else class="card-bottom-body">
       <p class="lead">
@@ -473,11 +498,18 @@ export default {
     return {
       additionalEmails: '',
       counts,
+      countData: [
+        { time: '07:00', n_cars_r: 6, etc: null },
+        { time: '07:15', n_cars_r: 17, etc: null },
+        { time: '07:30', n_cars_r: 42, etc: null },
+        { time: '07:45', n_cars_r: 73, etc: null },
+        { time: 'etc.', n_cars_r: null, etc: null },
+      ],
       countFields: [
         { key: 'type', label: 'Type of Count', sortable: true },
-        { key: 'date', sortable: true },
-        { key: 'id', label: 'View Existing' },
-        { key: 'requestNew', label: 'Request New Data' },
+        { key: 'date', label: 'Date Completed', sortable: true },
+        { key: 'id', label: 'View' },
+        { key: 'requestNew', label: 'Request New' },
       ],
       countTypes: [],
       countViewed: null,
@@ -572,8 +604,32 @@ export default {
         }
       },
     },
+    titleModalView() {
+      if (this.countViewed === null) {
+        return '';
+      }
+      const count = this.countViewed[0];
+      return count.type.label;
+    },
   },
   methods: {
+    sortCompareCountFields(a, b, key) {
+      let ka = a[0][key];
+      let kb = b[0][key];
+      if (key === 'date') {
+        ka = ka.valueOf();
+        kb = kb.valueOf();
+      } else if (key === 'type') {
+        ka = ka.label;
+        kb = kb.label;
+      }
+      if (typeof ka === 'number' && typeof kb === 'number') {
+        return ka - kb;
+      }
+      return ka.localeCompare(kb, undefined, {
+        numeric: true,
+      });
+    },
     viewCount(count) {
       this.countViewed = count;
     },
@@ -604,26 +660,44 @@ export default {
   overflow-y: auto;
   padding: 22px 40px;
 }
-.btn-request-step-action {
-  bottom: 11px;
-  margin: 0 40px;
+.request-step-action-wrapper {
+  background-color: white;
+  bottom: 0;
+  box-shadow: 0px -3px 3px -1px #66666666;
   position: fixed;
-  width: calc(100% - 160px);
+  width: calc(100% - 80px);
+  & > .btn-request-step-action {
+    margin: 11px 40px 11px 40px;
+    width: calc(100% - 80px);
+  }
 }
 .card-header {
   background-color: #fff;
+  cursor: pointer;
+  transition: background-color 100ms ease-in-out;
+  &:hover {
+    background-color: #eee;
+  }
 }
 .card-bottom-table-toggle {
   padding: 10px;
+  & h3 {
+    display: inline-block;
+    margin-bottom: 0;
+  }
 }
 .card-bottom-table-body {
   padding: 0;
+  & > table {
+    margin-left: 50px;
+  }
 }
 .card-bottom-icon {
   background-color: white;
   border-radius: 16px;
   display: inline-block;
   height: 32px;
+  transition: background-color 100ms ease-in-out;
   vertical-align: middle;
   width: 32px;
   & > img {
@@ -643,12 +717,21 @@ export default {
   }
   &.card-bottom-icon-checkmark {
     background-color: #a7a0f833;
+    .card-header:hover & {
+      background-color: #a7a0f87f;
+    }
   }
   &.card-bottom-icon-warning {
     background-color: #f8e71c33;
+    .card-header:hover & {
+      background-color: #f8e71c7f;
+    }
   }
   &.card-bottom-icon-close {
     background-color: #ff98a433;
+    .card-header:hover & {
+      background-color: #ff98a47f;
+    }
   }
 }
 .collapsed > .when-opened,
@@ -711,5 +794,16 @@ export default {
 }
 #input_reason .clear {
   display: none;
+}
+.btn-count-view {
+  & > svg > path {
+    stroke: none;
+    fill: #007bff;
+    transition: fill 0.15s ease-in-out;
+  }
+  &:hover > svg > path {
+    stroke: none;
+    fill: white;
+  }
 }
 </style>
