@@ -15,17 +15,22 @@
               <b-list-group-item
                 v-for="(count, index) in countViewed"
                 :key="index"
-                :active="index === 0">
+                :active="index === countViewedIndexActive"
+                @click="countViewedIndexActive = index">
                 {{ count.date | date }}
               </b-list-group-item>
             </b-list-group>
           </b-col>
           <b-col cols="8">
             <b-button-group class="float-right mb-3">
-              <b-button variant="outline-secondary">
+              <b-button
+                variant="outline-secondary"
+                @click="countViewedPrint">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24.75 24.75"><path d="M22,0H2.75V6.88H0v11H2.75v6.87H22V17.88h2.75v-11H22ZM4.12,1.38h16.5v5.5H4.12Zm0,22V13.75h16.5v9.63Z"/><rect x="18.63" y="9.88" width="1.25" height="1.25"/><rect class="cls-1" x="6.13" y="14.88" width="12.5" height="1.25"/><rect class="cls-1" x="6.13" y="17.38" width="12.5" height="1.25"/></svg>
               </b-button>
-              <b-button variant="outline-secondary">
+              <b-button
+                variant="outline-secondary"
+                @click="countViewedDownload">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24.17 25.39"><polygon points="21.25 22.47 2.92 22.47 2.92 17.45 0 17.45 0 25.39 24.17 25.39 24.17 17.45 21.25 17.45 21.25 22.47"/><polygon points="19.86 7.9 13.45 14.31 13.45 0 10.72 0 10.72 14.31 4.31 7.9 2.36 9.85 12.08 19.55 21.8 9.85 19.86 7.9"/></svg>
               </b-button>
             </b-button-group>
@@ -174,13 +179,15 @@
                           v-else
                           class="btn-count-view"
                           size="sm"
-                          variant="outline-primary"
+                          variant="outline-secondary"
                           @click="viewCount(data.item)">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="15" viewBox="0 0 38.07 23.67"><path d="M28.66,17.21a14,14,0,0,1-19.25,0L3.83,11.84,9.41,6.59a14,14,0,0,1,19.25,0l5.58,5.25ZM30.57,4.6a16.76,16.76,0,0,0-23.06,0L0,11.84l7.51,7.23a16.74,16.74,0,0,0,23.06,0l7.5-7.23Z"/><path d="M19,14.46a2.62,2.62,0,1,1,2.72-2.62A2.66,2.66,0,0,1,19,14.46Zm0-7.87a5.34,5.34,0,0,0-5.44,5.25A5.34,5.34,0,0,0,19,17.08a5.35,5.35,0,0,0,5.44-5.24A5.35,5.35,0,0,0,19,6.59Z"/></svg>
                           </b-button>
                       </template>
                       <template slot="requestNew" slot-scope="data">
-                        <b-form-checkbox v-model="data.item[0].requestNew" />
+                        <b-form-checkbox
+                          v-model="data.item[0].requestNew"
+                          class="chk-request-new" />
                       </template>
                     </b-table>
                   </b-card-body>
@@ -374,14 +381,14 @@
     </template>
     <div v-else class="card-bottom-body">
       <p class="lead">
-        Use the map search box to search for a location.
+        Click on the search box to start the demo.
       </p>
     </div>
   </div>
 </template>
 
 <script>
-/* eslint-disable no-continue */
+/* eslint-disable no-continue, no-alert */
 import BreadcrumbArrow from '@/components/BreadcrumbArrow.vue';
 import CountDetails from '@/components/CountDetails.vue';
 
@@ -559,6 +566,7 @@ export default {
       ],
       countTypes: [],
       countViewed: null,
+      countViewedIndexActive: 0,
       deliveryDate: new Date(2019, 3, 15),
       deliveryDateNextAvailable: new Date(2019, 3, 15),
       deliveryDatesDisabled: {
@@ -651,6 +659,7 @@ export default {
       set(value) {
         if (value === false) {
           this.countViewed = null;
+          this.countViewedIndexActive = 0;
         }
       },
     },
@@ -663,6 +672,12 @@ export default {
     },
   },
   methods: {
+    countViewedDownload() {
+      window.alert('Coming soon: download raw count data!');
+    },
+    countViewedPrint() {
+      window.alert('Coming soon: print count data!');
+    },
     datepickerFormat(d) {
       // TODO: DRY with main.js Vue filter
       if (!d) {
@@ -882,7 +897,7 @@ export default {
 .btn-count-view {
   & > svg > path {
     stroke: none;
-    fill: #007bff;
+    fill: #6c757d;
     transition: fill 0.15s ease-in-out;
   }
   &:hover > svg > path {
