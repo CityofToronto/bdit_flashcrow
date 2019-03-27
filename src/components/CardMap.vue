@@ -1,58 +1,71 @@
 <template>
-  <div class="card card-map">
+  <div
+    class="card-map"
+    :class="{'card-map-fade': requestStep > 1}">
     <div class="card-map-locate">
-      <input
-        class="input-locate"
-        type="text"
-        name="locate"
-        value=""
-        placeholder="e.g. 'King and Bathurst', 'px:1234', '43.507725, -79.939957'" />
-      <button class="btn-locate">Locate</button>
-    </div>
-    <div class="card-map-sidebar" :class="{ open: showSidebar }">
-      <div class="card-map-sidebar-controls">
-      <div><strong>layers</strong></div>
-      <div class="form-control">
-        <label for="chk_collisions">Collisions</label>
-        <input id="chk_collisions" type="checkbox" name="layers" value="COLLISIONS">
-      </div>
-      <div class="form-control">
-        <label for="chk_volume">Volume</label>
-        <input id="chk_volume" type="checkbox" name="layers" value="VOLUME">
-      </div>
-      </div>
-      <div class="card-map-sidebar-toggle" @click="showSidebar = !showSidebar">
-        <strong>{{ showSidebar ? '&lt;' : '&gt;' }}</strong>
-      </div>
+      <b-input-group>
+        <b-input-group-prepend>
+          <button type="button">
+            <b-img
+              src="/flashcrow/icons/search-icon.svg"
+              width="30"
+              height="30"
+              alt="Search" />
+          </button>
+        </b-input-group-prepend>
+        <b-form-input
+          :value="locationQuery"
+          class="input-location-query"
+          size="lg"
+          type="text"
+          placeholder="Try &quot;Kingston and Lee&quot;"
+          @click="setLocationQueryForDemo" />
+      </b-input-group>
     </div>
     <div class="card-map-mode">
-      <button class="btn-mode" @click="toggleSatellite">
-        {{ satellite ? 'Map' : 'Satellite' }}
-      </button>
+      <b-button size="sm" @click="toggleSatellite">
+        {{ satellite ? 'Map' : 'Aerial' }}
+      </b-button>
     </div>
   </div>
 </template>
 
 <script>
+/* eslint-disable no-alert */
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 
 import GeoStyle from '@/lib/geo/GeoStyle';
 
+const LOCATION_DEMO = {
+  label: 'Kingston and Lee',
+  lngLat: new mapboxgl.LngLat(-79.301199, 43.678138),
+  zoom: 19,
+};
+
 export default {
   name: 'CardMap',
+  props: {
+    highlightMarker: Boolean,
+    locationQuery: String,
+    requestStep: Number,
+  },
   data() {
     return {
+      layers: [],
+      optionsLayers: [
+        { text: 'Collisions', value: 'COLLISIONS' },
+        { text: 'Counts', value: 'COUNTS' },
+      ],
       satellite: false,
-      showSidebar: true,
+      showSidebar: false,
     };
   },
   mounted() {
     const bounds = new mapboxgl.LngLatBounds(
-      new mapboxgl.LngLat(-79.939957, 43.507725),
-      new mapboxgl.LngLat(-78.852997, 43.899377),
+      new mapboxgl.LngLat(-79.639264937, 43.580995995),
+      new mapboxgl.LngLat(-79.115243191, 43.855457183),
     );
-    const center = new mapboxgl.LngLat(-79.396477, 43.703871);
     this.mapStyle = GeoStyle.get();
     // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
     this.satelliteStyle = {
@@ -77,27 +90,49 @@ export default {
     Vue.nextTick(() => {
       this.map = new mapboxgl.Map({
         bounds,
-        center,
+        boxZoom: false,
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        maxZoom: 15,
-        minZoom: 11,
+        maxZoom: 19,
+        minZoom: 10,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
-        zoom: 11,
+        zoom: 10,
       });
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+      const markerDemoPopup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      }).setText(LOCATION_DEMO.label);
+      this.markerDemo = new mapboxgl.Marker()
+        .setLngLat(LOCATION_DEMO.lngLat)
+        .setPopup(markerDemoPopup)
+        .addTo(this.map);
     });
   },
   beforeDestroy() {
     this.map.remove();
   },
   methods: {
+    setLocationQueryForDemo() {
+      window.alert(
+        'For this demo, the search box jumps to Kingston and Lee '
+        + 'when you click it.  We will be building and testing '
+        + 'search functionality in future tests.',
+      );
+      this.$emit('set-location-query', LOCATION_DEMO.label);
+      this.$emit('set-request-step', 1);
+      this.map.easeTo({
+        center: LOCATION_DEMO.lngLat,
+        duration: 500,
+        zoom: LOCATION_DEMO.zoom,
+      });
+    },
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -107,67 +142,74 @@ export default {
       }
     },
   },
+  watch: {
+    highlightMarker() {
+      this.markerDemo.togglePopup();
+    },
+    requestStep() {
+      if (this.requestStep === 1) {
+        this.map.doubleClickZoom.enable();
+        this.map.dragPan.enable();
+        this.map.keyboard.enable();
+      } else {
+        this.map.doubleClickZoom.disable();
+        this.map.dragPan.disable();
+        this.map.keyboard.disable();
+      }
+    },
+  },
 };
 </script>
 
 <style lang="postcss">
 .card-map {
-  flex-grow: 1;
+  height: calc(100% - 300px);
+  opacity: 1;
   position: relative;
-  & > .card-map-locate {
-    left: 8px;
-    position: absolute;
-    top: 8px;
-    z-index: 999;
-    & > input.input-locate {
-      width: 360px;
-    }
+  transition: 250ms opacity ease-in-out;
+  &.card-map-fade {
+    opacity: 0.3;
   }
-  & > .card-map-sidebar {
-    background-color: #fff;
-    border-radius: 0 8px 8px 0;
-    height: 50%;
-    left: 0;
-    padding: 8px;
+  & > .card-map-locate {
+    left: 40px;
     position: absolute;
-    transition: width 100ms ease-in-out;
-    top: 25%;
-    width: 0;
-    z-index: 999;
-    .form-control {
-      display: inline-block;
-    }
-    & > .card-map-sidebar-controls {
-      display: none;
-    }
-    & > .card-map-sidebar-toggle {
+    top: 22px;
+    width: 380px;
+    z-index: 99;
+    & button {
+      background-color: white;
       border: 1px solid #ccc;
       border-right: 0;
-      border-radius: 4px 0 0 4px;
-      bottom: 16px;
-      color: #999;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 4px;
-      position: absolute;
-      right: 0;
-      transition: background-color 100ms ease-in-out;
-      &:hover {
-        background-color: #ccc;
+      padding: 0 1px 0 6px;
+      transition: border-color .15s ease-in-out;
+      & > img {
+        border-right: 1px solid #ccc;
+        transition: border-color .15s ease-in-out;
       }
     }
-    &.open {
-      width: 100px;
-      & > .card-map-sidebar-controls {
-        display: block;
+    & input {
+      border-left: none;
+      font-family: 'Work Sans';
+      font-size: 12pt;
+    }
+    &:hover {
+      button, button > img, input {
+        border-color: #8c85db;
       }
     }
   }
   & > .card-map-mode {
-    bottom: 8px;
+    bottom: 122px;
     position: absolute;
-    right: 64px;
-    z-index: 999;
+    right: 40px;
+    z-index: 99;
   }
+}
+.input-location-query {
+   box-shadow: 3px 2px 0 1px rgba(208, 208, 208, 0.23), inset 0 1px 3px 0 rgba(255, 255, 255, 0.5);
+}
+.mapboxgl-ctrl-bottom-right {
+  bottom: 155px;
+  right: 31px;
 }
 </style>
