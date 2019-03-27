@@ -1,67 +1,63 @@
 <template>
-  <div id="app">
-    <header>
-      <div id="site_brand" class="header-hover-link" @click="$router.push({name: 'home'})">
-        <div id="logo_wrapper">
-          <img id="logo" alt="flashcrow" src="./assets/logo.png" width="32" height="32">
-        </div>
-        <div id="site_name">flashcrow</div>
-      </div>
-      <nav>
-        <div id="nav_bar">
-          <router-link class="nav-link" :to="{ name: 'home' }">View Data</router-link>
-          <template v-if="auth.loggedIn">
-            <router-link class="nav-link" :to="{ name: 'runWarrant' }">Run Warrant</router-link>
-          </template>
-        </div>
-        <div id="user_dropdown" class="header-hover-link">
-          <template v-if="auth.loggedIn">
-            <div class="user-name text-ellipsis">{{auth.user.email}}</div>
-            <div class="user-pic">&nbsp;</div>
-          </template>
-          <template v-else>
-            <div class="user-name text-ellipsis">Guest</div>
-            <div class="user-pic">&nbsp;</div>
-          </template>
-          <ul>
-            <li v-if="auth.loggedIn">
-              <form id="form_logout" method="POST" action="/flashcrow/api/auth/logout">
-                <input id="btn_logout" class="nav-link" type="submit" value="Sign Out">
-              </form>
-            </li>
-            <li v-else>
-              <a class="nav-link" href="/flashcrow/api/auth/openid-connect">Sign In</a>
-            </li>
-            <li class="separator" />
-            <li>
-              <router-link
-                class="nav-link"
-                :to="{ name: 'privacyPolicy' }">Privacy Policy</router-link>
-            </li>
-            <li>
-              <router-link
-                class="nav-link"
-                :to="{ name: 'termsOfService' }">Terms of Service</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
-    <main>
-      <router-view/>
-    </main>
-  </div>
+  <b-container fluid id="app">
+    <div class="d-none">
+      <form
+        v-if="auth.loggedIn"
+        ref="formSignOut"
+        method="POST"
+        action="/flashcrow/api/auth/logout"></form>
+    </div>
+    <b-navbar id="nav" toggleable="md" type="light">
+      <b-img
+        class="icon-logo"
+        src="/flashcrow/icons/logo-icon.svg"
+        width="20"
+        height="24"
+        alt="flashcrow" />
+      <b-navbar-brand :to="{name: 'home'}">
+        <strong>flashcrow</strong>
+      </b-navbar-brand>
+      <b-navbar-toggle target="nav_collapse" />
+      <b-collapse is-nav id="nav_collapse">
+        <b-navbar-nav class="ml-auto">
+          <svg @click="profileComingSoon" class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <b-row no-gutters id="row_main">
+      <b-col>
+        <router-view/>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
+/* eslint-disable no-alert */
 import { mapState } from 'vuex';
 
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 export default {
   name: 'App',
   computed: {
+    username() {
+      if (this.auth.loggedIn) {
+        return this.auth.user.email;
+      }
+      return 'Guest';
+    },
     ...mapState(['auth']),
+  },
+  methods: {
+    profileComingSoon() {
+      window.alert('Coming soon: user profiles!');
+    },
+    signOut() {
+      this.$refs.formSignOut.submit();
+    },
   },
 };
 </script>
@@ -71,151 +67,75 @@ export default {
   box-sizing: border-box;
 }
 html, body {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  background-color: #f1f4fe;
+  font-family: 'Work Sans', Helvetica, Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
   padding: 0;
 }
-.card {
-  box-shadow: 0 3px 6px 0 #00000033;
-  margin: 8px;
+.icon-logo {
+  margin-right: 8px;
 }
-.nav-link {
-  font-weight: bold;
-  color: #2c3e50;
-  &.router-link-exact-active {
-    color: #42b983;
-  }
-}
-.text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 #app {
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
+  padding: 0;
 }
-header {
-  align-items: center;
-  background-color: #e7e7e7;
-  display: flex;
-  flex-direction: row;
-  height: 48px;
-  min-height: 48px;
-  #site_brand {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    height: 48px;
-    padding: 8px;
-    #logo_wrapper {
-      display: inline-block;
-      margin-right: 8px;
-    }
-    #site_name {
-      display: inline-block;
-      font-size: 24px;
-    }
-  }
-  nav {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    text-align: right;
-    #nav_bar {
-      flex-grow: 1;
-      & > .nav-link {
-        margin: 0 16px;
-      }
-    }
-    #user_dropdown {
-      align-items: center;
-      display: flex;
-      height: 48px;
-      padding: 8px;
-      position: relative;
-      .user-name {
-        display: inline-block;
-        font-size: 16px;
-        width: 180px;
-      }
-      .user-pic {
-        background-color: white;
-        border-radius: 16px;
-        display: inline-block;
-        height: 32px;
-        margin-left: 8px;
-        width: 32px;
-      }
-      ul {
-        background-color: #f7f7f7;
-        display: none;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        position: absolute;
-        right: 0;
-        top: 100%;
-        z-index: 1000;
-        & > li {
-          transition: background-color 100ms ease-in-out;
-          width: 236px;
-          &:hover {
-            background-color: #eee;
-          }
-          &.separator {
-            padding: 0;
-            border-bottom: 1px solid #e7e7e7;
-          }
-          & > a {
-            display: inline-block;
-            height: 100%;
-            padding: 8px;
-            width: 100%;
-          }
-        }
-      }
-      &:hover > ul {
-        display: block;
-      }
-    }
-  }
-  .header-hover-link {
-    cursor: pointer;
-    transition: background-color 100ms ease-in-out;
-    &:hover {
-      background-color: #ddd;
-    }
-  }
-  form#form_logout {
-    display: inline-block;
-    height: 100%;
-    padding: 8px;
-    width: 100%;
-    & > #btn_logout {
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: inline-block;
-      font: inherit;
-      font-weight: bold;
-      height: 100%;
-      text-align: right;
-      text-decoration: underline;
-      width: 100%;
-    }
-  }
+#nav {
+  background-color: #fafafa;
+  padding: 8px 40px;
 }
-main {
+#row_main {
   flex-grow: 1;
-  padding: 8px;
 }
 .main {
   height: 100%;
+}
+strong {
+  font-weight: 600;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+.v-select .dropdown-toggle {
+  transition: border-color 100ms ease-in-out;
+}
+.v-select:hover .dropdown-toggle {
+  border-color: #8c85db;
+}
+.open-indicator {
+  margin-right: 8px;
+  .v-select:hover &::before {
+    color: black;
+  }
+}
+.dropdown-toggle::after {
+  display: none;
+}
+.d-block, th[role=columnheader] {
+  font-weight: 500;
+}
+.icon-profile {
+  cursor: pointer;
+  stroke: none;
+  fill: #9b9b9b;
+  transition: fill .15s ease-in-out;
+  &:hover {
+    fill: black;
+  }
 }
 </style>
