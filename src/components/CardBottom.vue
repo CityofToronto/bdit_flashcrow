@@ -3,6 +3,22 @@
     class="card-bottom"
     :class="{'card-bottom-full': requestStep > 1}">
     <b-modal
+      v-model="showModalConfirmation"
+      :title="titleModalConfirmation"
+      ok-only>
+      <b-container fluid>
+        <b-row>
+          <b-col cols="12">
+            <p class="lead">
+            Thank you for your request!  You should receive your data by
+            <strong>{{ deliveryDate | date }}</strong>.  TSU will contact you if there are
+            unforeseen scheduling changes.
+            </p>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-modal>
+    <b-modal
       v-model="showModalView"
       size="xl"
       :title="titleModalView"
@@ -385,7 +401,7 @@
           size="lg"
           variant="primary"
           :disabled="disableRequestStepAction"
-          @click="$emit('set-request-step', nextRequestStep)">
+          @click="requestStepAction">
           {{ requestStepActionText }}
           <span
             v-if="requestStep === 1"
@@ -608,6 +624,7 @@ export default {
       reasonOther: '',
       serviceRequestId: null,
       serviceRequestPriority: 3,
+      showModalConfirmation: false,
     };
   },
   computed: {
@@ -683,6 +700,9 @@ export default {
         }
       },
     },
+    titleModalConfirmation() {
+      return `Confirmation: Request #${this.serviceRequestId}`;
+    },
     titleModalView() {
       if (this.countViewed === null) {
         return '';
@@ -704,6 +724,13 @@ export default {
         return '';
       }
       return new Intl.DateTimeFormat('en-US').format(d);
+    },
+    requestStepAction() {
+      if (this.requestStep === 3) {
+        this.showModalConfirmation = true;
+        this.$emit('set-location-query', '');
+      }
+      this.$emit('set-request-step', this.nextRequestStep);
     },
     setRequestStepFromBreadcrumb(requestStep) {
       if (this.requestStep > requestStep) {

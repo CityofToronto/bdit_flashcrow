@@ -9,6 +9,7 @@
     <CardBottom
       :location-query="locationQuery"
       :request-step="requestStep"
+      v-on:set-location-query="setLocationQuery"
       v-on:set-highlight-marker="setHighlightMarker"
       v-on:set-request-step="setRequestStep" />
   </div>
