@@ -10,6 +10,7 @@
   </b-col>
   <b-col md="4">
     <b-form-group
+      :description="descriptionCountDays"
       :label="(summary ? '' : '*') + 'Count Days'"
       :label-for="`input_count_days_${index}`">
       <p v-if="summary" class="lead">
@@ -134,7 +135,26 @@ export default {
       const countDaysText = this.optionsCountDays.map(d => d.text);
       const sunday = countDaysText.pop();
       countDaysText.unshift(sunday);
-      return this.countDays.map(d => countDaysText[d]).join(', ');
+      return this.countDays
+        .slice(0)
+        .sort((a, b) => {
+          let ka = a;
+          let kb = b;
+          if (ka === 0) {
+            ka = 7;
+          }
+          if (kb === 0) {
+            kb = 7;
+          }
+          return ka - kb;
+        })
+        .map(d => countDaysText[d]).join(', ');
+    },
+    descriptionCountDays() {
+      if (this.countAutomatic) {
+        return 'Your count will be scheduled on these days.';
+      }
+      return 'Your count will be scheduled on one of these days.';
     },
     labelAdditionalNotes() {
       if (this.notesEditable) {

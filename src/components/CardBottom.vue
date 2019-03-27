@@ -3,6 +3,22 @@
     class="card-bottom"
     :class="{'card-bottom-full': requestStep > 1}">
     <b-modal
+      v-model="showModalConfirmation"
+      :title="titleModalConfirmation"
+      ok-only>
+      <b-container fluid>
+        <b-row>
+          <b-col cols="12">
+            <p class="lead">
+            Thank you for your request!  You should receive your data by
+            <strong>{{ deliveryDate | date }}</strong>.  TSU will contact you if there are
+            unforeseen scheduling changes.
+            </p>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-modal>
+    <b-modal
       v-model="showModalView"
       size="xl"
       :title="titleModalView"
@@ -60,7 +76,7 @@
                 v-model="countTypes"
                 :options="optionsCountTypes"
                 multiple
-                placeholder="Select a type of study" />
+                placeholder="Select a type of study to filter results below" />
             </b-col>
             <b-col md="5" class="align-self-center">
               <span>
@@ -109,7 +125,11 @@
               <h3>Request Summary</h3>
             </b-col>
             <b-col md="2" class="text-right">
-              <b-button variant="secondary">Print</b-button>
+              <b-button
+                variant="outline-secondary"
+                @click="summaryPrint">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24.75 24.75"><path d="M22,0H2.75V6.88H0v11H2.75v6.87H22V17.88h2.75v-11H22ZM4.12,1.38h16.5v5.5H4.12Zm0,22V13.75h16.5v9.63Z"/><rect x="18.63" y="9.88" width="1.25" height="1.25"/><rect class="cls-1" x="6.13" y="14.88" width="12.5" height="1.25"/><rect class="cls-1" x="6.13" y="17.38" width="12.5" height="1.25"/></svg>
+              </b-button>
             </b-col>
           </b-row>
           <b-row class="mt-2 pt-2">
@@ -166,6 +186,9 @@
                       :items="section.groupsByType"
                       :sort-compare="sortCompareCountFields"
                       small borderless>
+                      <template slot="HEAD_requestNew" slot-scope="data">
+                        <strong class="text-primary">{{ data.label }}</strong>
+                      </template>
                       <template slot="type" slot-scope="data">
                         {{ data.item[0].type.label }}
                       </template>
@@ -224,7 +247,7 @@
             </b-col>
             <b-col md="4">
               <b-form-group
-                label="Pick Delivery Date"
+                label="Pick &quot;Receive By&quot; Date"
                 label-for="input_delivery_date">
                 <v-datepicker
                   v-model="deliveryDate"
@@ -240,17 +263,17 @@
                 show
                 :variant="serviceRequestPriority === 1 ? 'warning' : 'info'">
                 <p v-if="serviceRequestPriority === 1">
-                  You marked this <strong>urgent</strong>.  We might have to reshuffle our request
-                  queue in order to accommodate your request.  TSU will contact you with further
+                  You marked this <strong>urgent</strong>.  We might have to reschedule other
+                  data requests to accommodate your request.  TSU will contact you with further
                   details once you've completed your request.
                 </p>
                 <p v-else-if="deliveryDate.valueOf() === deliveryDateNextAvailable.valueOf()">
-                  The next available date is {{ deliveryDateNextAvailable | date }}.
+                  You can expect to receive your data by {{ deliveryDateNextAvailable | date }}.
                   We've selected this date automatically for you, but you can change it if you have
                   scheduling requirements out of the norm.
                 </p>
                 <p v-else>
-                  You've selected {{ deliveryDate | date }}.
+                  You've requested to receive your data by {{ deliveryDate | date }}.
                   If you don't have scheduling requirements out of the
                   norm, consider
                   <a
@@ -279,6 +302,12 @@
                   v-model="reason"
                   id="input_reason"
                   :options="optionsReason" />
+                <b-form-input
+                  v-if="reason.value === null"
+                  v-model="reasonOther"
+                  type="text"
+                  class="mt-1"
+                  placeholder="Enter reason for your request" />
               </b-form-group>
             </b-col>
             <b-col md="4">
@@ -343,7 +372,8 @@
               <b-form-group
                 label="Reason for Request">
                 <p class="lead">
-                  {{reason.label}}
+                  <span v-if="reason.value === null">{{ reasonOther }}</span>
+                  <span v-else>{{reason.label}}</span>
                 </p>
               </b-form-group>
             </b-col>
@@ -371,7 +401,7 @@
           size="lg"
           variant="primary"
           :disabled="disableRequestStepAction"
-          @click="$emit('set-request-step', nextRequestStep)">
+          @click="requestStepAction">
           {{ requestStepActionText }}
           <span
             v-if="requestStep === 1"
@@ -416,7 +446,6 @@ const COUNT_TYPES = [
   { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME', automatic: true },
   { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
   { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
-  { label: 'Mid-Block Multi-Modal Traffic Count', value: 'MID_BLOCK_MULTI_MODAL', automatic: false },
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
@@ -439,7 +468,7 @@ const Status = {
 
 const STATUS_META = [
   { title: 'Current Counts', icon: 'checkmark' },
-  { title: 'Outdated Counts', icon: 'warning' },
+  { title: 'Expired Counts (more than 3 years old)', icon: 'warning' },
   { title: 'Missing Counts', icon: 'close' },
 ];
 
@@ -560,9 +589,14 @@ export default {
       ],
       countFields: [
         { key: 'type', label: 'Type of Count', sortable: true },
-        { key: 'date', label: 'Date Completed', sortable: true },
-        { key: 'id', label: 'View' },
-        { key: 'requestNew', label: 'Request New' },
+        {
+          key: 'date',
+          label: 'Date Completed',
+          sortable: true,
+          class: 'text-center',
+        },
+        { key: 'id', label: 'View', class: 'text-center' },
+        { key: 'requestNew', label: 'Request New', class: 'text-center' },
       ],
       countTypes: [],
       countViewed: null,
@@ -582,13 +616,15 @@ export default {
         { label: 'Other', value: null },
       ],
       optionsServiceRequestPriority: [
-        { text: 'PRI1', value: 1 },
-        { text: 'PRI2', value: 2 },
-        { text: 'PRI3', value: 3 },
+        { text: 'PRI 1', value: 1 },
+        { text: 'PRI 2', value: 2 },
+        { text: 'PRI 3', value: 3 },
       ],
       reason: { label: 'Traffic Safety Control', value: 'TCS' },
+      reasonOther: '',
       serviceRequestId: null,
       serviceRequestPriority: 3,
+      showModalConfirmation: false,
     };
   },
   computed: {
@@ -615,10 +651,11 @@ export default {
       return groupsByStatus.map((groupsByType) => {
         const i = groupsByType[0][0].status;
         const { title, icon } = STATUS_META[i];
+        const groupsByTypeSorted = sortBy(groupsByType, groupByType => groupByType[0].type.label);
         return {
           title,
           icon,
-          groupsByType,
+          groupsByType: groupsByTypeSorted,
         };
       }).filter(({ groupsByType }) => groupsByType.length > 0);
     },
@@ -663,6 +700,9 @@ export default {
         }
       },
     },
+    titleModalConfirmation() {
+      return `Confirmation: Request #${this.serviceRequestId}`;
+    },
     titleModalView() {
       if (this.countViewed === null) {
         return '';
@@ -685,6 +725,13 @@ export default {
       }
       return new Intl.DateTimeFormat('en-US').format(d);
     },
+    requestStepAction() {
+      if (this.requestStep === 3) {
+        this.showModalConfirmation = true;
+        this.$emit('set-location-query', '');
+      }
+      this.$emit('set-request-step', this.nextRequestStep);
+    },
     setRequestStepFromBreadcrumb(requestStep) {
       if (this.requestStep > requestStep) {
         this.$emit('set-request-step', requestStep);
@@ -706,6 +753,9 @@ export default {
       return ka.localeCompare(kb, undefined, {
         numeric: true,
       });
+    },
+    summaryPrint() {
+      window.alert('Coming soon: print request summary!');
     },
     viewCount(count) {
       this.countViewed = count;
@@ -894,13 +944,17 @@ export default {
 #input_reason .clear {
   display: none;
 }
-.btn-count-view {
-  & > svg > path {
+.btn-outline-secondary {
+  & > svg > path,
+  & > svg > polygon,
+  & > svg > rect {
     stroke: none;
     fill: #6c757d;
     transition: fill 0.15s ease-in-out;
   }
-  &:hover > svg > path {
+  &:hover > svg > path,
+  &:hover > svg > polygon,
+  &:hover > svg > rect {
     stroke: none;
     fill: white;
   }
