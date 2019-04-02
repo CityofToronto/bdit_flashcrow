@@ -2,6 +2,7 @@
 #
 # replicator-transfer.sh \
 #   --config CONFIG \
+#   --emailsTo EMAILS_TO \
 #   --guid GUID \
 #   --rowCountTolerance ROW_COUNT_TOLERANCE \
 #   --targetDb TARGET_DB \
@@ -31,6 +32,7 @@ set -e
 set -o nounset
 
 CONFIG=
+declare -a EMAILS_TO
 GUID=
 ROW_COUNT_TOLERANCE=
 TARGET_DB=
@@ -42,6 +44,10 @@ function parse_args {
     case "$1" in
       --config )
       CONFIG="$2"
+      shift
+      ;;
+      --emailsTo )
+      EMAILS_TO+=("$2")
       shift
       ;;
       --guid )
@@ -106,7 +112,12 @@ DIR_ORA_CNT="$DIR_ROOT/ora_cnt"
 DIR_PG="$DIR_ROOT/pg"
 DIR_DAT="$DIR_ROOT/dat"
 CONFIG_FILE="$CONFIG.config.json"
-PG_DATA_ARCHIVE="flashcrow-$CONFIG.tar"
+
+# email settings
+EMAIL_FROM="Flashcrow Replicator <replicator@flashcrow.intra.dev-toronto.ca>"
+EMAIL_SUBJECT_STATUS="[flashcrow] [replicator] Replication Status: $CONFIG"
+EMAIL_SUBJECT_ERROR="[flashcrow] [replicator] Replication Error: $CONFIG"
+EMAIL_SUBJECT_SUCCESS="[flashcrow] [replicator] Replication Success: $CONFIG"
 
 # squelch NOTICEs from psql
 export PGOPTIONS="--client-min-messages=warning"
@@ -114,12 +125,18 @@ export PGOPTIONS="--client-min-messages=warning"
 function sendStatus {
   local -r MESSAGE="$1"
   local -r NOW=$(TZ='America/Toronto' date +"%Y-%m-%dT%H:%M:%S")
+  for emailTo in "${EMAILS_TO[@]}"; do
+    echo "$MESSAGE" | mail -r "$EMAIL_FROM" -s "$EMAIL_SUBJECT_STATUS" "$emailTo"
+  done
   echo "$GUID $NOW $MESSAGE"
 }
 
 function exitError {
   local -r MESSAGE="$1"
   local -r NOW=$(TZ='America/Toronto' date +"%Y-%m-%dT%H:%M:%S")
+  for emailTo in "${EMAILS_TO[@]}"; do
+    echo "$MESSAGE" | mail -r "$EMAIL_FROM" -s "$EMAIL_SUBJECT_ERROR" "$emailTo"
+  done
   (>&2 echo "$GUID $NOW $MESSAGE")
   exit 1
 }
@@ -127,18 +144,19 @@ function exitError {
 function exitSuccess {
   local -r MESSAGE="$1"
   local -r NOW=$(TZ='America/Toronto' date +"%Y-%m-%dT%H:%M:%S")
+  for emailTo in "${EMAILS_TO[@]}"; do
+    echo "$MESSAGE" | mail -r "$EMAIL_FROM" -s "$EMAIL_SUBJECT_SUCCESS" "$emailTo"
+  done
   echo "$GUID $NOW $MESSAGE"
   exit 0
 }
 
 sendStatus "Starting remote PostgreSQL data transfer..."
 
-# cleanup previous data, unpack archive
+# unpack data files
 cd "$HOME"
-rm -rf "$DIR_ROOT"
-tar xf "$PG_DATA_ARCHIVE"
 gunzip -r "$DIR_DAT"
-sendStatus "$GUID Unpacked data archive on transfer machine..."
+sendStatus "$GUID Unpacked data on transfer machine..."
 
 # drop any existing validation schema tables in reverse order
 # shellcheck disable=SC2086

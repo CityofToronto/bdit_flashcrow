@@ -65,7 +65,6 @@ $dirPg = Join-Path -path $dirRoot -childPath "pg"
 $dirPgLocal = Join-Path -path $dirRoot -childPath "pg_local"
 $dirDat = Join-Path -path $dirRoot -childPath "dat"
 $configFile = "$config.config.json"
-$pgDataArchive = "flashcrow-$config.tar"
 $transferScript = "replicator-transfer.sh"
 
 # email settings
@@ -172,7 +171,7 @@ function New-Directory {
 Send-Status "Starting Oracle -> PostgreSQL replication..."
 
 # clean directory and archive, if they exist
-Remove-Path @($dirRoot, $pgDataArchive)
+Remove-Path @($dirRoot)
 
 # recreate directory
 New-Directory @($dirRoot, $dirFetch, $dirOraCnt, $dirOra, $dirJson, $dirPg, $dirPgLocal, $dirDat)
@@ -363,21 +362,17 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
 }
 Send-Status "Copied data from local PostgreSQL..."
 
-# pack archive
-tar cf $pgDataArchive $dirRoot
-if (-Not $?) {
-  Exit-Error -message "Failed to create data archive!"
-}
-Send-Status "Packed data archive to send to transfer machine..."
-
-# copy archive and transfer script to transfer machine
-Copy-RemoteItem -src $pgDataArchive
+# copy data files to transfer machine
+# TODO: rsync
 Copy-RemoteItem -src $configFile
 Copy-RemoteItem -src $transferScript -exec
-Send-Status "Sent data archive and transfer script to transfer machine..."
+Send-Status "Sent data, config, and scripts to transfer machine..."
 
 # run transfer script on transfer machine
-ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" --guid "$guid" --rowCountTolerance "$rowCountTolerance" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
+$emailsToOptions = $emailsTo | ForEach-Object -Process {
+  Write-Host -NoNewline " --emailsTo '$_'"
+}
+ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" $emailsToOptions --guid "$guid" --rowCountTolerance "$rowCountTolerance" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {
   Exit-Error -message "Failed to run transfer script on transfer machine!"
 }
