@@ -125,9 +125,11 @@ function Copy-RemoteItem {
     [switch]$exec = $false
   )
   $sumLocal = (shasum $src).Substring(0, 40)
-  scp -i $transferStackKey $src "$transferSsh`:"
+  $srcDir = ssh -i $transferStackKey $transferSsh dirname "$src"
+  ssh -i $transferStackKey $transferSsh mkdir -p $srcDir
+  scp -i $transferStackKey $src "$transferSsh`:$src"
   if (-Not $?) {
-    Exit-Error -message "scp $src -> $transferSsh failed"
+    Exit-Error -message "scp $src -> $transferSsh`:$src failed"
   }
   $sumTransfer = (ssh -i $transferStackKey $transferSsh sha1sum "$src").Substring(0, 40)
   if ($sumLocal -ne $sumTransfer) {
@@ -363,14 +365,19 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
 Send-Status "Copied data from local PostgreSQL..."
 
 # copy data files to transfer machine
-# TODO: rsync
+Get-ChildItem -Recurse -File -Path $dirRoot | ForEach-Object {
+  $fileWindowsPath = Resolve-Path -Relative $_.FullName
+  $fileUnixPath = $fileWindowsPath -replace "\\","/" -replace "\./",""
+  Copy-RemoteItem -src $fileUnixPath
+}
 Copy-RemoteItem -src $configFile
 Copy-RemoteItem -src $transferScript -exec
 Send-Status "Sent data, config, and scripts to transfer machine..."
 
 # run transfer script on transfer machine
-$emailsToOptions = $emailsTo | ForEach-Object -Process {
-  Write-Host -NoNewline " --emailsTo '$_'"
+$emailsToOptions = ""
+$emailsTo | ForEach-Object -Process {
+  $emailsToOptions += " --emailsTo '$_'"
 }
 ssh -i $transferStackKey $transferSsh ./$transferScript --config "$config" $emailsToOptions --guid "$guid" --rowCountTolerance "$rowCountTolerance" --targetDb "'$targetDb'" --targetSchema "$targetSchema" --targetValidationSchema "$targetValidationSchema"
 if (-Not $?) {

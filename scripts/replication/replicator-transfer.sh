@@ -155,7 +155,7 @@ sendStatus "Starting remote PostgreSQL data transfer..."
 
 # unpack data files
 cd "$HOME"
-gunzip -r "$DIR_DAT"
+gunzip -rf "$DIR_DAT"
 sendStatus "$GUID Unpacked data on transfer machine..."
 
 # drop any existing validation schema tables in reverse order
