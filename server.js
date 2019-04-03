@@ -13,6 +13,9 @@ const vueConfig = require('./vue.config');
 
 const options = {
   app: { config },
+  debug: {
+    request: ['error'],
+  },
   host: config.host,
   port: config.port,
   routes: {
@@ -76,6 +79,13 @@ async function initServer() {
 
   // AUTH
 
+  function getRedirectUri() {
+    if (config.ENV === 'production') {
+      return 'https://flashcrow.intra.dev-toronto.ca/flashcrow/api/auth/openid-connect-callback';
+    }
+    return 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback';
+  }
+
   /**
    * GET /auth/openid-connect
    *
@@ -91,7 +101,7 @@ async function initServer() {
     handler: async (request, h) => {
       const client = await OpenIDClient.get();
       const authorizationUrl = client.authorizationUrl({
-        redirect_uri: 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        redirect_uri: getRedirectUri(),
         scope: 'openid email',
       });
       console.log(authorizationUrl);
@@ -116,7 +126,7 @@ async function initServer() {
       // retrieve token set from OpenID Connect provider
       const client = await OpenIDClient.get();
       const tokenSet = await client.authorizationCallback(
-        'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback',
+        getRedirectUri(),
         request.query,
       );
       console.log('received and validated tokens %j', tokenSet);
@@ -155,28 +165,60 @@ async function initServer() {
       if (out.loggedIn) {
         const { sessionId } = request.state.session;
         const { user } = await request.server.app.cache.get(sessionId);
-        const { id } = user;
-        out.user = { id };
+        const { email } = user;
+        out.user = { email };
       }
       return out;
     },
   });
 
+  /**
+   * POST /auth/test-login
+   *
+   * Bypasses the OpenID Connect flow in testing, allowing us to run REST
+   * API tests.
+   */
   server.route({
     method: 'POST',
-    path: '/logout',
+    path: '/auth/test-login',
+    config: {
+      auth: false,
+    },
+    handler: async (request) => {
+      if (config.ENV === 'production') {
+        throw new Error('nope.');
+      }
+
+      // "authenticate" test user
+      const sub = '0123456789';
+      const email = 'flashcrow.tester@gmail.com';
+      const token = 'HEADER.PAYLOAD.SIGNATURE';
+      let user = await UserDAO.bySubject(sub);
+      if (user === null) {
+        user = { subject: sub, email, token };
+        await UserDAO.create(user);
+      } else {
+        Object.assign(user, { email, token });
+        await UserDAO.update(user);
+      }
+      const sessionId = uuid();
+      await request.server.app.cache.set(sessionId, { user }, 0);
+      request.cookieAuth.set({ sessionId });
+    },
+  });
+
+  /**
+   * POST /auth/logout
+   *
+   * Logs the currently authenticated user out.
+   */
+  server.route({
+    method: 'POST',
+    path: '/auth/logout',
     config: {
       handler: async (request, h) => {
-        // revoke OpenID Connect token
-        const { sessionId } = request.state.session;
-        const { user } = await request.server.app.cache.get(sessionId);
-        const { token } = user;
-
-        const client = await OpenIDClient.get();
-        const response = await client.revoke(token);
-        console.log('revoked token %s', token, response);
-
         // clear session
+        const { sessionId } = request.state.session;
         request.server.app.cache.drop(sessionId);
         request.cookieAuth.clear();
 
