@@ -5,20 +5,11 @@ import store from '@/store';
 
 Vue.use(Router);
 
-const NAME_LOGIN = 'login';
 const NAME_HOME = 'home';
 
 const router = new Router({
   routes: [
     // PUBLIC-FACING PAGES
-    {
-      path: '/login',
-      name: NAME_LOGIN,
-      component: () => import(/* webpackChunkName: "public" */ './views/Login.vue'),
-      meta: {
-        auth: false,
-      },
-    },
     {
       path: '/privacy-policy',
       name: 'privacyPolicy',
@@ -35,16 +26,13 @@ const router = new Router({
         auth: { mode: 'try' },
       },
     },
-    // AUTHENTICATED PAGES
     {
       path: '/',
       name: NAME_HOME,
       component: () => import(/* webpackChunkName: "home" */ './views/Home.vue'),
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      meta: {
+        auth: { mode: 'try' },
+      },
     },
   ],
 });
@@ -64,7 +52,7 @@ router.beforeEach((to, from, next) => {
         if (loggedIn) {
           next();
         } else {
-          next({ name: NAME_LOGIN });
+          next({ name: NAME_HOME });
         }
       } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
         // this route requires an unauthenticated user
