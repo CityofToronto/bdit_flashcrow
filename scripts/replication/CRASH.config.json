@@ -12,8 +12,7 @@
       "DIR",
       "APT",
       "CITY",
-      "PROV",
-      "POSTAL"
+      "PROV"
     ]
   }]
 }
