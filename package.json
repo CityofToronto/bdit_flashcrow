@@ -13,14 +13,19 @@
   },
   "dependencies": {
     "blankie": "^4.1.0",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.18",
     "hapi": "^18.1.0",
     "hapi-auth-cookie": "^9.1.0",
+    "mapbox-gl": "^0.53.1",
     "openid-client": "^2.4.5",
     "pg-promise": "^8.5.5",
     "scooter": "^5.0.2",
     "uuid": "^3.3.2",
     "vue": "^2.6.3",
     "vue-router": "^3.0.2",
+    "vue-select": "^2.6.4",
+    "vuejs-datepicker": "^1.5.4",
     "vuex": "^3.1.0"
   },
   "devDependencies": {

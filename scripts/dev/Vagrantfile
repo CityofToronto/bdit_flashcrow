@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+  config.vm.box = "winky/amazonlinux-2"
+  config.vm.box_version = "1.0"
+
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.http     = "http://proxy.toronto.ca:8080"
+    config.proxy.https    = "http://proxy.toronto.ca:8080"
+    config.proxy.no_proxy = "localhost,127.0.0.1"
+    config.proxy.enabled = { npm: false }
+  end
+
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.network "forwarded_port", guest: 8081, host: 8081
+
+  # Disable automatic box checking.  While the comments in Vagrant's default
+  # config discourage this, in a non-production setting it seems wiser to
+  # prevent surprises for developers.
+  config.vm.box_check_update = false
+
+  # Map the repository root.
+  config.vm.synced_folder "../../", "/home/vagrant/git/bdit_flashcrow", create: true
+
+  shell_script = <<-EOF
+/vagrant/provision-admin.sh
+sudo -u vagrant /vagrant/provision-user.sh
+EOF
+  config.vm.provision "shell", privileged: true, inline: shell_script
+end

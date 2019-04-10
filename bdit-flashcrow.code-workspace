@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
+		"files.associations": {
+			"Vagrantfile": "ruby"
+		},
 		"files.eol": "\n",
     "explorer.confirmDelete": false,
     "files.insertFinalNewline": true,
