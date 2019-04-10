@@ -23,7 +23,7 @@ git fetch
 git merge origin/master
 
 # update dependencies
-# shellcheck source=/dev/null
+# shellcheck disable=SC1090
 . ~/.nvm/nvm.sh
 nvm use
 npm install -g forever
