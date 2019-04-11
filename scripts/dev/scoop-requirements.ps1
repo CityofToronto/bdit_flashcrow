@@ -10,7 +10,8 @@ $packagesToInstall = @(
   "nodejs-lts@10.15.1",
   "python@3.7.2",
   "shellcheck",
-  "tar"
+  "tar",
+  "vagrant"
 )
 
 # list of packages that are only installed on 64-bit platforms
