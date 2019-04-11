@@ -109,6 +109,7 @@ npm install -g npm@latest shellcheck
 # configure git
 echo "configuring git..."
 git config --global core.autocrlf true
+git config --global credential.helper cache
 
 # install Python, node dependencies
 echo "installing Python, node dependencies..."
