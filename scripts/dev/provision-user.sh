@@ -14,6 +14,31 @@ set -e
 # Normally we would set -o nounset here, but that conflicts with /etc/bashrc
 # and /etc/profile.d scripts.
 
+PG_PASSWORD=
+
+function parse_args {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pgPassword )
+      PG_PASSWORD="$2"
+      shift
+      ;;
+      * )
+      echo "Invalid argument $1!"
+      exit 1
+      ;;
+    esac
+    shift
+  done
+
+  if [[ -z "$PG_PASSWORD" ]]; then
+    echo "PostgreSQL password required!"
+    exit 1
+  fi
+}
+
+parse_args "$@"
+
 # We run .bashrc here to make sure that pyenv, nvm are accessible in the
 # sudo shell.
 # shellcheck disable=SC1090
@@ -53,6 +78,17 @@ export HTTPS_PROXY=http://proxy.toronto.ca:8080
 EOF
 fi
 
+# set PATH
+if grep pgsql-9.6 ~/.bashrc; then
+  echo "PostgreSQL utils already added to PATH, skipping..."
+else
+  echo "Adding PostgreSQL utils to PATH..."
+  cat <<'EOF' >> ~/.bashrc
+export PATH="$PATH:/usr/pgsql-9.6/bin"
+export PGDATA="$HOME/data/pgsql-9.6"
+EOF
+fi
+
 # ensure that pyenv, nvm shims are available in current shell session
 # shellcheck disable=SC1090
 . ~/.bashrc
@@ -81,3 +117,33 @@ pip install -r requirements.txt
 nvm use
 npm config --global set proxy http://proxy.toronto.ca:8080
 npm install
+
+# create log directories
+echo "creating log directories..."
+mkdir -p "$HOME/log/flashcrow"
+
+# set up PostgreSQL
+echo "setting up PostgreSQL..."
+PGLOG="$HOME/log/pgsql-9.6"
+if [ -d "$PGDATA" ]; then
+  echo "PostgreSQL database already initialized, skipping..."
+else
+  echo "initializing PostgreSQL database..."
+  mkdir -p "$PGDATA"
+  mkdir -p "$PGLOG"
+  pg_ctl initdb
+fi
+pg_ctl status && pg_ctl stop
+pg_ctl -l "$PGLOG/pgsql.log" -w start
+
+# install application database
+echo "installing application database..."
+psql -U vagrant postgres -v pgPassword="'$PG_PASSWORD'" < /vagrant/provision-db-vagrant.sql
+echo "Configuring .pgpass..."
+  cat <<EOF > ~/.pgpass
+#hostname:port:database:username:password
+localhost:5432:flashcrow:flashcrow:$PG_PASSWORD
+EOF
+chmod 0600 ~/.pgpass
+cd ~/git/bdit_flashcrow
+./scripts/db/db-update.sh --psqlArgs "-U flashcrow"

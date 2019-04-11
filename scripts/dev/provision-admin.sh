@@ -31,3 +31,11 @@ yum install -y /tmp/epel.rpm
 
 # install EPEL packages
 yum install -y ShellCheck
+
+# install PostgreSQL repository
+curl https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-6-x86_64/pgdg-ami201503-96-9.6-2.noarch.rpm > /tmp/pgdg.rpm
+yum install -y /tmp/pgdg.rpm
+
+# install PostgreSQL server and utilities
+yum install -y postgresql96-server postgresql96-contrib
+chown -R vagrant:vagrant /var/run/postgresql

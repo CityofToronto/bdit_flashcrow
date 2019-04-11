@@ -38,7 +38,7 @@ sudo rm -r $WEB_ROOT
 sudo cp -r dist $WEB_ROOT
 
 # update database
-"$GIT_ROOT/scripts/db/db-update-ec2.sh"
+"$GIT_ROOT/scripts/db/db-update.sh" --psqlArgs "-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
 # start application again
 NODE_ENV=production forever start "$GIT_ROOT/scripts/deployment/forever.json"
