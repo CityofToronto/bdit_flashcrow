@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# db-update-ec2.sh [--targetVersion TARGET_VERSION]
+# db-update.sh [--targetVersion TARGET_VERSION]
 #
 # Migrates the application database to the target version, applying up / down
 # migration files as appropriate.
@@ -14,11 +14,16 @@
 set -e
 set -o nounset
 
+PSQL_ARGS=
 TARGET_VERSION="-1"
 
 function parse_args {
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --psqlArgs )
+      PSQL_ARGS="$2"
+      shift
+      ;;
       --targetVersion )
       TARGET_VERSION="$2"
       shift
@@ -30,6 +35,10 @@ function parse_args {
     esac
     shift
   done
+  if [ -z "$PSQL_ARGS" ]; then
+    echo "PostgreSQL arguments required!"
+    exit 1
+  fi
 }
 
 parse_args "$@"
@@ -37,7 +46,6 @@ parse_args "$@"
 GIT_ROOT=$(git rev-parse --show-toplevel)
 DIR_SCRIPTS="$GIT_ROOT/scripts"
 DIR_DB="$DIR_SCRIPTS/db"
-PSQL_ARGS="-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
 # install schema if necessary
 # shellcheck disable=SC2086
