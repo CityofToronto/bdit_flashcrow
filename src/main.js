@@ -6,17 +6,13 @@ import VueSelect from 'vue-select';
 import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 
 Vue.use(BootstrapVue);
 Vue.component('v-datepicker', VueDatepicker);
 Vue.component('v-select', VueSelect);
 
-Vue.filter('date', (d) => {
-  if (!d) {
-    return '';
-  }
-  return new Intl.DateTimeFormat('en-US').format(d);
-});
+Vue.filter('date', TimeFormatters.formatDate);
 
 Vue.config.productionTip = false;
 

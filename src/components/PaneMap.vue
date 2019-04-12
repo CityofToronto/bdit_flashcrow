@@ -1,5 +1,5 @@
 <template>
-  <b-col class="pane-map" :cols="4"></b-col>
+  <b-col class="pane-map" :cols="cols"></b-col>
 </template>
 
 <script>
@@ -10,15 +10,13 @@ import GeoStyle from '@/lib/geo/GeoStyle';
 
 export default {
   name: 'PaneMap',
+  props: {
+    cols: Number,
+  },
   data() {
     return {
       satellite: false,
     };
-  },
-  computed: {
-    cols() {
-      return 4;
-    },
   },
   mounted() {
     const bounds = new mapboxgl.LngLatBounds(

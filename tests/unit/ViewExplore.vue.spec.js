@@ -1,10 +1,11 @@
 import BootstrapVue from 'bootstrap-vue';
 import VueDatepicker from 'vuejs-datepicker';
 import VueSelect from 'vue-select';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 
-import Home from '@/views/Home.vue';
+import router from '@/router';
+import ViewExplore from '@/views/ViewExplore.vue';
 
 const localVue = createLocalVue();
 localVue.use(BootstrapVue);
@@ -30,11 +31,12 @@ beforeEach(() => {
   });
 });
 
-test('Home.vue renders properly', () => {
-  const wrapper = shallowMount(Home, {
-    propsData: { },
-    store,
+test('ViewExplore.vue renders properly', () => {
+  const component = mount(ViewExplore, {
     localVue,
+    propsData: { },
+    router,
+    store,
   });
-  expect(wrapper.contains('div')).toBe(true);
+  expect(component.contains('div')).toBe(true);
 });

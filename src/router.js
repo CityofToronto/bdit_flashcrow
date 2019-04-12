@@ -9,30 +9,30 @@ const NAME_HOME = 'home';
 
 const router = new Router({
   routes: [
-    // PUBLIC-FACING PAGES
     {
-      path: '/privacy-policy',
-      name: 'privacyPolicy',
-      component: () => import(/* webpackChunkName: "public" */ './views/PrivacyPolicy.vue'),
-      meta: {
-        auth: { mode: 'try' },
-      },
-    },
-    {
-      path: '/terms-of-service',
-      name: 'termsOfService',
-      component: () => import(/* webpackChunkName: "public" */ './views/TermsOfService.vue'),
-      meta: {
-        auth: { mode: 'try' },
-      },
-    },
-    {
-      path: '/',
+      path: '/view',
       name: NAME_HOME,
-      component: () => import(/* webpackChunkName: "home" */ './views/Home.vue'),
-      meta: {
-        auth: { mode: 'try' },
-      },
+      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
+    },
+    {
+      path: '/view/:query',
+      name: 'viewQuery',
+      component: () => import(/* webpackChunkName: "home" */ './views/ViewQuery.vue'),
+    },
+    {
+      path: '/requests/new/request',
+      name: 'requestsNewRequest',
+      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewRequest.vue'),
+    },
+    {
+      path: '/requests/new/schedule',
+      name: 'requestsNewSchedule',
+      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewSchedule.vue'),
+    },
+    {
+      path: '/requests/new/request',
+      name: 'requestsNewConfirm',
+      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewConfirm.vue'),
     },
   ],
 });
@@ -41,7 +41,7 @@ function routeMetaAuth(route) {
   if (route.meta && Object.prototype.hasOwnProperty.call(route.meta, 'auth')) {
     return route.meta.auth;
   }
-  return true;
+  return { mode: 'try' };
 }
 
 router.beforeEach((to, from, next) => {

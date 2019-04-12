@@ -24,7 +24,7 @@
     </b-navbar>
     <b-row no-gutters id="row_main">
       <b-col>
-        <router-view/>
+        <router-view></router-view>
       </b-col>
     </b-row>
   </b-container>
@@ -92,9 +92,6 @@ html, body {
 }
 #row_main {
   flex-grow: 1;
-}
-.main {
-  height: 100%;
 }
 strong {
   font-weight: 600;
