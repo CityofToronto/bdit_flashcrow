@@ -12,7 +12,23 @@
       </b-col>
     </template>
     <template v-slot:panes>
-      <PaneDisplay :cols="colsPaneDisplay" />
+      <PaneDisplay :cols="colsPaneDisplay">
+        <template v-slot:title>
+          <h2>Available Data</h2>
+        </template>
+        <template v-slot:content>
+          <p>test</p>
+        </template>
+        <template v-slot:actionBar>
+          <b-col cols="12">
+            <router-link
+              class="btn btn-primary"
+              :to="{name: 'requestsNewRequest'}">
+              RequestsNewRequest
+            </router-link>
+          </b-col>
+        </template>
+      </PaneDisplay>
       <PaneMap v-if="showMap" :cols="4" />
     </template>
   </LayoutMain>
