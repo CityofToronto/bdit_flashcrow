@@ -17,5 +17,9 @@ module.exports = {
         },
       },
     },
+    public: 'localhost:8080',
+    watchOptions: {
+      poll: 1000,
+    },
   },
 };

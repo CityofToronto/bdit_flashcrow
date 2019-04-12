@@ -8,10 +8,17 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     counter: 0,
-    loading: false,
+    // authentication
     auth: {
       loggedIn: false,
     },
+    // searching
+    query: '',
+    // filtering
+    filterCountTypes: [],
+    filterDate: null,
+    // map mode
+    showMap: true,
   },
   mutations: {
     setAuth(state, auth) {
@@ -20,20 +27,24 @@ export default new Vuex.Store({
     setCounter(state, counter) {
       Vue.set(state, 'counter', counter);
     },
-    startLoading(state) {
-      Vue.set(state, 'loading', true);
+    setQuery(state, query) {
+      Vue.set(state, 'query', query);
     },
-    stopLoading(state) {
-      Vue.set(state, 'loading', false);
+    setFilterCountTypes(state, filterCountTypes) {
+      Vue.set(state, 'filterCountTypes', filterCountTypes);
+    },
+    setFilterDate(state, filterDate) {
+      Vue.set(state, 'filterDate', filterDate);
+    },
+    setShowMap(state, showMap) {
+      Vue.set(state, 'showMap', showMap);
     },
   },
   actions: {
     checkAuth({ commit }) {
-      commit('startLoading');
       return apiFetch('/auth')
         .then((auth) => {
           commit('setAuth', auth);
-          commit('stopLoading');
           return auth;
         });
     },
@@ -41,20 +52,16 @@ export default new Vuex.Store({
       const options = {
         method: 'PUT',
       };
-      commit('startLoading');
       return apiFetch('/counter', options)
         .then(({ counter }) => {
           commit('setCounter', counter);
-          commit('stopLoading');
           return counter;
         });
     },
     init({ commit }) {
-      commit('startLoading');
       return apiFetch('/counter')
         .then(({ counter }) => {
           commit('setCounter', counter);
-          commit('stopLoading');
           return counter;
         });
     },
@@ -62,11 +69,9 @@ export default new Vuex.Store({
       const options = {
         method: 'DELETE',
       };
-      commit('startLoading');
       return apiFetch('/counter', options)
         .then(({ counter }) => {
           commit('setCounter', counter);
-          commit('stopLoading');
           return counter;
         });
     },
