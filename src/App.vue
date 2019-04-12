@@ -17,12 +17,10 @@
       <b-navbar-brand :to="{name: 'home'}">
         <strong>flashcrow</strong>
       </b-navbar-brand>
-      <b-navbar-toggle target="nav_collapse" />
-      <b-collapse is-nav id="nav_collapse">
-        <b-navbar-nav class="ml-auto">
-          <svg @click="profileComingSoon" class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
-        </b-navbar-nav>
-      </b-collapse>
+      <search-bar-location />
+      <b-navbar-nav class="ml-auto">
+        <svg @click="profileComingSoon" class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
+      </b-navbar-nav>
     </b-navbar>
     <b-row no-gutters id="row_main">
       <b-col>
@@ -40,8 +38,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import SearchBarLocation from '@/components/SearchBarLocation.vue';
+
 export default {
   name: 'App',
+  components: {
+    SearchBarLocation,
+  },
   computed: {
     username() {
       if (this.auth.loggedIn) {
@@ -86,7 +89,6 @@ html, body {
 }
 #nav {
   background-color: #fafafa;
-  padding: 8px 40px;
 }
 #row_main {
   flex-grow: 1;

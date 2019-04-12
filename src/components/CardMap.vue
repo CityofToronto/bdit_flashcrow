@@ -2,26 +2,6 @@
   <div
     class="card-map"
     :class="{'card-map-fade': requestStep > 1}">
-    <div class="card-map-locate">
-      <b-input-group>
-        <b-input-group-prepend>
-          <button type="button">
-            <b-img
-              src="/flashcrow/icons/search-icon.svg"
-              width="30"
-              height="30"
-              alt="Search" />
-          </button>
-        </b-input-group-prepend>
-        <b-form-input
-          :value="locationQuery"
-          class="input-location-query"
-          size="lg"
-          type="text"
-          placeholder="Try &quot;Kingston and Lee&quot;"
-          @click="setLocationQueryForDemo" />
-      </b-input-group>
-    </div>
     <div class="card-map-mode">
       <b-button size="sm" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
@@ -119,20 +99,6 @@ export default {
     this.map.remove();
   },
   methods: {
-    setLocationQueryForDemo() {
-      window.alert(
-        'For this demo, the search box jumps to Kingston and Lee '
-        + 'when you click it.  We will be building and testing '
-        + 'search functionality in future tests.',
-      );
-      this.$emit('set-location-query', LOCATION_DEMO.label);
-      this.$emit('set-request-step', 1);
-      this.map.easeTo({
-        center: LOCATION_DEMO.lngLat,
-        duration: 500,
-        zoom: LOCATION_DEMO.zoom,
-      });
-    },
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -169,34 +135,6 @@ export default {
   transition: 250ms opacity ease-in-out;
   &.card-map-fade {
     opacity: 0.3;
-  }
-  & > .card-map-locate {
-    left: 40px;
-    position: absolute;
-    top: 22px;
-    width: 380px;
-    z-index: 99;
-    & button {
-      background-color: white;
-      border: 1px solid #ccc;
-      border-right: 0;
-      padding: 0 1px 0 6px;
-      transition: border-color .15s ease-in-out;
-      & > img {
-        border-right: 1px solid #ccc;
-        transition: border-color .15s ease-in-out;
-      }
-    }
-    & input {
-      border-left: none;
-      font-family: 'Work Sans';
-      font-size: 12pt;
-    }
-    &:hover {
-      button, button > img, input {
-        border-color: #8c85db;
-      }
-    }
   }
   & > .card-map-mode {
     bottom: 122px;
