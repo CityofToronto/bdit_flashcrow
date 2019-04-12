@@ -6,6 +6,6 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
-module.exports = {
+export default {
   COUNT_TYPES,
 };

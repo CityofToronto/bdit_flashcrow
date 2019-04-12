@@ -24,8 +24,12 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--ioapic", "on"]
   end
 
+  # webpack-dev-server
   config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # backend API server
   config.vm.network "forwarded_port", guest: 8081, host: 8081
+  # node --inspect=0.0.0.0:9229
+  config.vm.network "forwarded_port", guest: 9229, host: 9229
 
   # Disable automatic box checking.  While the comments in Vagrant's default
   # config discourage this, in a non-production setting it seems wiser to
