@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="main">
-    <b-row class="row-nav-secondary pb-2">
+    <b-row class="row-nav-secondary pb-3">
       <slot name="navSecondary"></slot>
     </b-row>
     <b-row class="row-panes" no-gutters>

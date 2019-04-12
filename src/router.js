@@ -30,7 +30,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewSchedule.vue'),
     },
     {
-      path: '/requests/new/request',
+      path: '/requests/new/confirm',
       name: 'requestsNewConfirm',
       component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewConfirm.vue'),
     },
