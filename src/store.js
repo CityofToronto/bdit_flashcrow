@@ -7,13 +7,13 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    counter: 0,
     // authentication
     auth: {
       loggedIn: false,
     },
-    // searching
-    query: '',
+    // searching locations
+    location: null,
+    locationSuggestions: null,
     // filtering
     filterCountTypes: [],
     filterDate: null,
@@ -24,11 +24,17 @@ export default new Vuex.Store({
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
     },
-    setCounter(state, counter) {
-      Vue.set(state, 'counter', counter);
+    clearLocation(state) {
+      Vue.set(state, 'location', null);
     },
-    setQuery(state, query) {
-      Vue.set(state, 'query', query);
+    setLocation(state, location) {
+      Vue.set(state, 'location', location);
+    },
+    clearLocationSuggestions(state) {
+      Vue.set(state, 'locationSuggestions', null);
+    },
+    setLocationSuggestions(state, locationSuggestions) {
+      Vue.set(state, 'locationSuggestions', locationSuggestions);
     },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
@@ -48,31 +54,28 @@ export default new Vuex.Store({
           return auth;
         });
     },
-    incrementCounter({ commit }) {
+    fetchLocation({ commit }, keyString) {
       const options = {
-        method: 'PUT',
+        data: { keyString },
       };
-      return apiFetch('/counter', options)
-        .then(({ counter }) => {
-          commit('setCounter', counter);
-          return counter;
+      return apiFetch('/cotgeocoder/findAddressCandidates', options)
+        .then((location) => {
+          commit('setLocation', location);
+          return location;
         });
     },
-    init({ commit }) {
-      return apiFetch('/counter')
-        .then(({ counter }) => {
-          commit('setCounter', counter);
-          return counter;
-        });
-    },
-    resetCounter({ commit }) {
+    fetchLocationSuggestions({ commit }, query) {
+      if (query.length < 3) {
+        commit('clearLocationSuggestions');
+        return Promise.resolve(null);
+      }
       const options = {
-        method: 'DELETE',
+        data: { q: query },
       };
-      return apiFetch('/counter', options)
-        .then(({ counter }) => {
-          commit('setCounter', counter);
-          return counter;
+      return apiFetch('/cotgeocoder/suggest', options)
+        .then((locationSuggestions) => {
+          commit('setLocationSuggestions', locationSuggestions);
+          return locationSuggestions;
         });
     },
   },
