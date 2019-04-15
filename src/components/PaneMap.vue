@@ -1,12 +1,27 @@
 <template>
-  <b-col class="pane-map" :cols="cols"></b-col>
+  <b-col class="pane-map" :cols="cols">
+    <div class="pane-map-mode">
+      <b-button size="sm" @click="toggleSatellite">
+        {{ satellite ? 'Map' : 'Aerial' }}
+      </b-button>
+    </div>
+  </b-col>
 </template>
 
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
+import { mapState } from 'vuex';
 
 import GeoStyle from '@/lib/geo/GeoStyle';
+
+const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
+  new mapboxgl.LngLat(-79.639264937, 43.580995995),
+  new mapboxgl.LngLat(-79.115243191, 43.855457183),
+);
+const ZOOM_TORONTO = 10;
+const ZOOM_LOCATION = 17;
+const ZOOM_MAX = 19;
 
 export default {
   name: 'PaneMap',
@@ -17,6 +32,9 @@ export default {
     return {
       satellite: false,
     };
+  },
+  computed: {
+    ...mapState(['location']),
   },
   mounted() {
     const bounds = new mapboxgl.LngLatBounds(
@@ -51,12 +69,12 @@ export default {
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        maxZoom: 19,
-        minZoom: 10,
+        maxZoom: ZOOM_MAX,
+        minZoom: ZOOM_TORONTO,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
-        zoom: 10,
+        zoom: ZOOM_TORONTO,
       });
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
@@ -77,11 +95,41 @@ export default {
       }
     },
   },
+  watch: {
+    location() {
+      if (this.location === null) {
+        // zoom to Toronto
+        const center = BOUNDS_TORONTO.getCenter();
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_TORONTO,
+        });
+      } else {
+        // zoom to location
+        const { lat, lng } = this.location;
+        const center = new mapboxgl.LngLat(lng, lat);
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_LOCATION,
+        });
+      }
+    },
+  },
 };
 </script>
 
 <style lang="postcss">
 .pane-map {
   background-color: #fff;
+  & > .pane-map-mode {
+    bottom: 8px;
+    position: absolute;
+    right: 15px;
+    z-index: 99;
+  }
+  .mapboxgl-ctrl-bottom-right {
+    bottom: 38px;
+    right: 5px;
+  }
 }
 </style>
