@@ -80,23 +80,19 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+      this.easeToLocation();
     });
   },
   beforeDestroy() {
     this.map.remove();
   },
-  methods: {
-    toggleSatellite() {
-      this.satellite = !this.satellite;
-      if (this.satellite) {
-        this.map.setStyle(this.satelliteStyle, { diff: false });
-      } else {
-        this.map.setStyle(this.mapStyle, { diff: false });
-      }
-    },
-  },
   watch: {
     location() {
+      this.easeToLocation();
+    },
+  },
+  methods: {
+    easeToLocation() {
       if (this.location === null) {
         // zoom to Toronto
         const center = BOUNDS_TORONTO.getCenter();
@@ -112,6 +108,14 @@ export default {
           center,
           zoom: ZOOM_LOCATION,
         });
+      }
+    },
+    toggleSatellite() {
+      this.satellite = !this.satellite;
+      if (this.satellite) {
+        this.map.setStyle(this.satelliteStyle, { diff: false });
+      } else {
+        this.map.setStyle(this.mapStyle, { diff: false });
       }
     },
   },
