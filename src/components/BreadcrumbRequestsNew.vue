@@ -1,23 +1,88 @@
 <template>
-  <div></div>
+<div class="breadcrumb-steps">
+  <template
+    v-for="(step, i) in steps">
+    <div
+      :key="step.name"
+      v-if="i > 0"
+      class="breadcrumb-step-separator"
+      :class="{completed: i < currentIndex}">
+      &nbsp;
+    </div>
+    <div
+      :key="step.name"
+      class="breadcrumb-step"
+      :class="{
+        completed: i < currentIndex,
+        current: i === currentIndex
+      }">
+      <router-link
+        v-if="i < currentIndex"
+        :to="{name: step.name}">{{step.label}}</router-link>
+      <span v-else>{{step.label}}</span>
+      <i v-if="i === currentIndex" class="fa fa-hand-point-left"></i>
+      <i v-else class="fa fa-check-circle"></i>
+    </div>
+  </template>
+</div>
 </template>
 
 <script>
+
+const steps = [
+  { name: 'requestsNewRequest', label: 'Request' },
+  { name: 'requestsNewSchedule', label: 'Schedule' },
+  { name: 'requestsNewConfirm', label: 'Confirm' },
+];
+
 export default {
   name: 'BreadcrumbRequestsNew',
   data() {
-    const steps = [
-      'requestsNewRequest',
-      'requestsNewSchedule',
-      'requestsNewConfirm',
-    ];
-    return {
-      steps,
-    };
+    return { steps };
+  },
+  computed: {
+    currentIndex() {
+      return this.steps.findIndex(step => step.name === this.currentStep);
+    },
+    currentStep() {
+      return this.$route.name;
+    },
   },
 };
 </script>
 
 <style lang="postcss">
-
+.breadcrumb-steps {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  font-size: var(--text-xxl);
+  margin-bottom: calc(var(--sp) * 4);
+  text-transform: uppercase;
+  & > .breadcrumb-step {
+    color: var(--outline-grey);
+    & > a, & > span {
+      color: var(--outline-grey);
+      display: inline-block;
+      margin-right: var(--sp);
+    }
+    & > a:hover,
+    & > a:hover + i {
+      color: var(--blue);
+    }
+    &.completed, &.completed > a, &.completed > span {
+      color: var(--off-black);
+    }
+    &.current, &.current > a, &.current > span {
+      color: var(--green);
+    }
+  }
+  & > .breadcrumb-step-separator {
+    border-bottom: 1px solid var(--outline-grey);
+    display: inline-block;
+    flex-grow: 1;
+    height: 1px;
+    margin: 0 calc(var(--sp) * 2);
+  }
+}
 </style>

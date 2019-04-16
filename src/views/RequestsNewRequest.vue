@@ -8,12 +8,12 @@
         :to="{name: 'viewQuery'}">
         View all data
       </router-link>
-      <BreadcrumbRequestsNew />
       <ToggleShowMap />
     </template>
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
+          <BreadcrumbRequestsNew />
           <CountsRequestedTable
             :counts-requested="countsRequested" />
           <div>
@@ -27,8 +27,9 @@
         </template>
         <template v-slot:actionBar>
           <button
-            class="btn-request-data btn-primary">
-            Start Request ({{countsRequested.length}})
+            class="btn-request-data btn-primary"
+            @click="onClickRequestData">
+            Request Data ({{countsRequested.length}})
           </button>
         </template>
       </PaneDisplay>
@@ -79,13 +80,18 @@ export default {
         c => c.date.valueOf(),
       );
       if (mostRecentCountOfType.requestNew) {
-        // TODO: handle this case
+        /* eslint-disable no-alert */
         window.alert('already selected');
       } else {
         mostRecentCountOfType.requestNew = true;
       }
       this.$refs.requestAnother.clearSelection();
       this.requestAnother = null;
+    },
+  },
+  methods: {
+    onClickRequestData() {
+
     },
   },
 };
