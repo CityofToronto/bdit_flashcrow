@@ -1,11 +1,11 @@
 <template>
-  <b-col class="pane-map" :cols="cols">
+  <div class="pane-map">
     <div class="pane-map-mode">
-      <b-button size="sm" @click="toggleSatellite">
+      <button @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
-      </b-button>
+      </button>
     </div>
-  </b-col>
+  </div>
 </template>
 
 <script>
@@ -120,7 +120,7 @@ export default {
 
 <style lang="postcss">
 .pane-map {
-  background-color: #fff;
+  background-color: var(--white);
   & > .pane-map-mode {
     bottom: 8px;
     position: absolute;

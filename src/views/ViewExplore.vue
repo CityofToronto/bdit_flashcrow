@@ -1,18 +1,12 @@
 <template>
-  <LayoutMain>
+  <LayoutMain class="view-explore">
     <template v-slot:navSecondary>
-      <b-col cols="2">
-        <FilterDate />
-      </b-col>
-      <b-col cols="2">
-        <FilterCountTypes />
-      </b-col>
-      <b-col cols="2" offset="6" class="text-right">
-        <router-link :to="{name: 'viewQuery', params: {query: 'test'}}">ViewQuery</router-link>
-      </b-col>
+      <FilterDate />
+      <FilterCountTypes />
+      <router-link :to="{name: 'viewQuery', params: {query: 'test'}}">ViewQuery</router-link>
     </template>
     <template v-slot:panes>
-      <PaneMap :cols="12" />
+      <PaneMap />
     </template>
   </LayoutMain>
 </template>
@@ -35,5 +29,10 @@ export default {
 </script>
 
 <style lang="postcss">
-
+.view-explore {
+  & .pane-map {
+    height: 100%;
+    width: 100%;
+  }
+}
 </style>

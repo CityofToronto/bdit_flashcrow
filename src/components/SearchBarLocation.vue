@@ -1,35 +1,28 @@
 <template>
   <div
-    class="search-bar-location"
+    class="search-bar search-bar-location"
     :class="{suggestions: suggestionsActive}">
-    <b-input-group>
-      <b-input-group-prepend>
-        <button role="button">
-          <b-img
-            src="/flashcrow/icons/search-icon.svg"
-            width="30"
-            height="30"
-            alt="Search" />
-        </button>
-      </b-input-group-prepend>
-      <b-form-input
+    <div class="input-group">
+      <img
+        src="/flashcrow/icons/search-icon.svg"
+        alt="Search" />
+      <input
         v-model="query"
         class="input-query"
-        size="lg"
         type="text"
         placeholder="Try &quot;Kingston and Lee&quot;"
         @input="onInputQuery" />
-    </b-input-group>
-    <div v-if="suggestionsActive" class="location-suggestions">
+    </div>
+    <div v-if="suggestionsActive" class="suggestions">
       <div
         v-if="locationSuggestions.length === 0"
-        class="location-suggestion disabled">
+        class="suggestion disabled">
         No suggestions for <em>{{query}}</em>.
       </div>
       <div
         v-for="suggestion in locationSuggestions"
         :key="suggestion.KEYSTRING"
-        class="location-suggestion"
+        class="suggestion"
         @click="onSelectSuggestion(suggestion)">
         {{suggestion.ADDRESS}}
       </div>
@@ -95,9 +88,8 @@ export default {
 </script>
 
 <style lang="postcss">
-.search-bar-location {
+.search-bar {
   position: relative;
-  width: 480px;
   & button {
     background-color: white;
     border: 1px solid #ccc;
@@ -111,16 +103,9 @@ export default {
     }
   }
   & input {
-    border-left: none;
-    font-family: 'Work Sans';
-    font-size: 12pt;
+    width: 320px;
   }
-  &:hover {
-    button, button > img, input, .location-suggestions {
-      border-color: #8c85db;
-    }
-  }
-  & > .location-suggestions {
+  & > .suggestions {
     background-color: white;
     border: 1px solid #ced4da;
     border-top: none;
@@ -129,7 +114,7 @@ export default {
     transition: border-color .15s ease-in-out;
     width: 100%;
     z-index: 99;
-    & > .location-suggestion {
+    & > .suggestion {
       cursor: pointer;
       padding: 4px 8px;
       &.disabled {

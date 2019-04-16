@@ -1,12 +1,12 @@
 <template>
 <LayoutMain>
     <template v-slot:navSecondary>
-      <b-col cols="10">
+      <div class="flex-grow">
         <BreadcrumbRequestsNew />
-      </b-col>
-      <b-col cols="2" class="text-right">
+      </div>
+      <div>
         <ToggleShowMap />
-      </b-col>
+      </div>
     </template>
     <template v-slot:panes>
       <PaneDisplay :cols="colsPaneDisplay">
