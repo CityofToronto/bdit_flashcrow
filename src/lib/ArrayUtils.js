@@ -1,4 +1,22 @@
 class ArrayUtils {
+  static getMaxBy(xs, key) {
+    const n = xs.length;
+    if (n === 0) {
+      return null;
+    }
+    let xMax = xs[0];
+    let kMax = key(xMax);
+    for (let i = 1; i < n; i += 1) {
+      const x = xs[i];
+      const k = key(x);
+      if (k > kMax) {
+        xMax = x;
+        kMax = k;
+      }
+    }
+    return xMax;
+  }
+
   static sortBy(xs, key) {
     return xs.slice(0).sort((a, b) => {
       const ka = key(a);

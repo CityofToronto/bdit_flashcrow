@@ -153,7 +153,7 @@ p {
 strong {
   font-weight: var(--font-bold);
 }
-button {
+button, .btn {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
   cursor: pointer;
@@ -179,10 +179,31 @@ input[type=text] {
     border-color: var(--outline-grey-focus);
   }
 }
-input[type='checkbox'] {
+input[type=checkbox] {
   height: 1.8rem;
   vertical-align: middle;
   width: 1.8rem;
+}
+.v-select.form-select {
+  background-color: var(--white);
+  & input[type=search] {
+    font-family: var(--font-family);
+    font-size: var(--text-xl);
+    margin: 0;
+    padding: 0 calc(var(--sp) * 2);
+  }
+  & .dropdown-toggle {
+    border-color: var(--outline-grey);
+    border-radius: 0;
+    padding-bottom: 2px;
+    transition: border-color var(--transition-short) ease-in-out;
+    &::after {
+      display: none;
+    }
+  }
+  &:hover .dropdown-toggle {
+    border-color: var(--outline-grey-focus);
+  }
 }
 label {
   font-weight: var(--font-bold);

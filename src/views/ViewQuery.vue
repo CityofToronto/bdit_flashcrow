@@ -30,7 +30,9 @@
             </button>
           </div>
           <div class="start-request-wrapper text-right">
-            <button class="btn-primary">
+            <button
+              class="btn-primary"
+              @click="onClickStartRequest">
               Start Request
             </button>
           </div>
@@ -42,7 +44,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+/* eslint-disable no-alert */
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import CountsTable from '@/components/CountsTable.vue';
 import FilterCountTypes from '@/components/FilterCountTypes.vue';
@@ -51,7 +54,6 @@ import LayoutMain from '@/components/LayoutMain.vue';
 import PaneDisplay from '@/components/PaneDisplay.vue';
 import PaneMap from '@/components/PaneMap.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
-import SampleData from '@/lib/SampleData';
 
 export default {
   name: 'ViewQuery',
@@ -64,15 +66,20 @@ export default {
     PaneMap,
     ToggleShowMap,
   },
-  data() {
-    const counts = SampleData.randomCounts();
-    return { counts };
-  },
   computed: {
-    countsRequested() {
-      return this.counts.filter(c => c.requestNew);
+    ...mapGetters(['countsRequested']),
+    ...mapState(['counts', 'showMap']),
+  },
+  methods: {
+    onClickStartRequest() {
+      if (this.countsRequested.length === 0) {
+        window.alert('Nothing selected!');
+      } else {
+        this.$router.push({ name: 'requestsNewRequest' });
+        this.setShowMap(false);
+      }
     },
-    ...mapState(['showMap']),
+    ...mapMutations(['setShowMap']),
   },
 };
 </script>
