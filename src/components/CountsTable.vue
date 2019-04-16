@@ -31,7 +31,7 @@
           </span>
         </td>
         <td>{{STATUS_META[countsOfType[0].status]}}</td>
-        <td class="ellipsis"><strong>&hellip;</strong></td>
+        <td><i class="fa fa-ellipsis-h"></i></td>
       </tr>
     </tbody>
   </table>
@@ -120,9 +120,6 @@ export default {
         &:last-child {
           border-right: 1px solid var(--outline-grey);
         }
-        &.ellipsis {
-          font-size: var(--text-xl);
-        }
       }
       &:hover > td {
         border-color: var(--outline-grey-focus);
@@ -136,10 +133,10 @@ export default {
       }
       &.selected,
       &.not-in-system.selected {
-        background-color: var(--light-blue);
+        background-color: var(--light-green);
         & > td {
-          border-color: var(--blue);
-          color: var(--blue);
+          border-color: var(--green);
+          color: var(--green);
         }
       }
     }

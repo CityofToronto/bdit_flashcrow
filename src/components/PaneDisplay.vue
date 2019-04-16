@@ -35,6 +35,7 @@ export default {
   & > .content-wrapper {
     flex-grow: 1;
     & > .content {
+      height: 100%;
       overflow: auto;
     }
   }

@@ -2,8 +2,11 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
+import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
+
+const COUNTS = SampleData.randomCounts();
 
 export default new Vuex.Store({
   state: {
@@ -14,11 +17,16 @@ export default new Vuex.Store({
     // searching locations
     location: null,
     locationSuggestions: null,
+    // data
+    counts: COUNTS,
     // filtering
     filterCountTypes: [],
     filterDate: null,
     // map mode
     showMap: true,
+  },
+  getters: {
+    countsRequested: state => state.counts.filter(c => c.requestNew),
   },
   mutations: {
     setAuth(state, auth) {

@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import FilterCountTypes from '@/components/FilterCountTypes.vue';
 import FilterDate from '@/components/FilterDate.vue';
 import LayoutMain from '@/components/LayoutMain.vue';
@@ -24,6 +26,21 @@ export default {
     FilterDate,
     LayoutMain,
     PaneMap,
+  },
+  computed: {
+    ...mapState(['location']),
+  },
+  watch: {
+    location() {
+      if (this.location !== null) {
+        const { geoId } = this.location;
+        // jump to next
+        this.$router.push({
+          name: 'viewQuery',
+          params: { query: geoId },
+        });
+      }
+    },
   },
 };
 </script>
