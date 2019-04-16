@@ -1,19 +1,18 @@
 <template>
 <LayoutMain
-  class="requests-new-request"
-  :class="{'show-map': showMap}">
+  class="requests-new-request">
     <template v-slot:navSecondary>
       <router-link
         class="link-back"
         :to="{name: 'viewQuery'}">
         View all data
       </router-link>
+      <BreadcrumbRequestsNew />
       <ToggleShowMap />
     </template>
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
-          <BreadcrumbRequestsNew />
           <CountsRequestedTable
             :counts-requested="countsRequested" />
           <div>
@@ -33,7 +32,7 @@
           </button>
         </template>
       </PaneDisplay>
-      <PaneMap />
+      <PaneMap v-if="showMap" />
     </template>
   </LayoutMain>
 </template>
@@ -91,7 +90,12 @@ export default {
   },
   methods: {
     onClickRequestData() {
-
+      if (this.countsRequested.length === 0) {
+        /* eslint-disable no-alert */
+        window.alert('Nothing selected!');
+      } else {
+        this.$router.push({ name: 'requestsNewSchedule' });
+      }
     },
   },
 };
@@ -99,17 +103,14 @@ export default {
 
 <style lang="postcss">
 .requests-new-request {
-  .link-back {
+  & .breadcrumb-steps {
     flex-grow: 1;
+    margin: 0 calc(var(--sp) * 8);
   }
   & .pane-display {
     flex-grow: 2;
   }
   & .pane-map {
-    display: none;
-  }
-  &.show-map .pane-map {
-    display: block;
     flex-grow: 1;
   }
   footer {

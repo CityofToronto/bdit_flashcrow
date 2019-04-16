@@ -1,7 +1,6 @@
 <template>
   <LayoutMain
-    class="view-query"
-    :class="{'show-map': showMap}">
+    class="view-query">
     <template v-slot:navSecondary>
       <FilterDate />
       <FilterCountTypes />
@@ -38,7 +37,7 @@
           </div>
         </template>
       </PaneDisplay>
-      <PaneMap />
+      <PaneMap v-if="showMap" />
     </template>
   </LayoutMain>
 </template>
@@ -126,10 +125,6 @@ export default {
     }
   }
   & .pane-map {
-    display: none;
-  }
-  &.show-map .pane-map {
-    display: block;
     flex-grow: 1;
   }
 }

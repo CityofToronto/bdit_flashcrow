@@ -3,10 +3,10 @@
   <template
     v-for="(step, i) in steps">
     <div
-      :key="step.name"
+      :key="i"
       v-if="i > 0"
       class="breadcrumb-step-separator"
-      :class="{completed: i < currentIndex}">
+      :class="{completed: i <= currentIndex}">
       &nbsp;
     </div>
     <div
@@ -57,7 +57,6 @@ export default {
   display: flex;
   flex-direction: row;
   font-size: var(--text-xxl);
-  margin-bottom: calc(var(--sp) * 4);
   text-transform: uppercase;
   & > .breadcrumb-step {
     color: var(--outline-grey);
@@ -66,8 +65,8 @@ export default {
       display: inline-block;
       margin-right: var(--sp);
     }
-    & > a:hover,
-    & > a:hover + i {
+    &.completed > a:hover,
+    &.completed > a:hover + i {
       color: var(--blue);
     }
     &.completed, &.completed > a, &.completed > span {
@@ -83,6 +82,9 @@ export default {
     flex-grow: 1;
     height: 1px;
     margin: 0 calc(var(--sp) * 2);
+    &.completed {
+      border-color: var(--off-black);
+    }
   }
 }
 </style>
