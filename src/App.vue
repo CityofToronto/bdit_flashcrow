@@ -29,9 +29,9 @@
             </router-link>
           </li>
           <li class="flex-grow text-right">
-            <a href="javascript:void(0);">
+            <a href="javascript:void(0);" @click="profileComingSoon">
               <span>Profile</span>
-              <svg @click="profileComingSoon" class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
+              <svg class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
             </a>
           </li>
         </ul>
@@ -87,9 +87,11 @@ export default {
   --blue: #1460aa;
   --green: #1d781d;
   --red: #b50000;
+  --yellow: #634806;
   --light-blue: #a9cff4;
   --light-green: #a7e9a7;
   --light-red: #ff9c9c;
+  --light-yellow: #f9dd98;
   --text-sm: 1.2rem;
   --text-md: 1.4rem;
   --text-lg: 1.6rem;
@@ -155,11 +157,17 @@ button {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
   cursor: pointer;
+  font-family: var(--font-family);
   font-size: var(--text-xl);
   padding: var(--sp) calc(var(--sp) * 2);
   transition: border-color var(--transition-short) ease-in-out;
   &:hover {
     border-color: var(--outline-grey-focus);
+  }
+  &.btn-primary {
+    background-color: var(--light-blue);
+    border-color: var(--blue);
+    color: var(--blue);
   }
 }
 input[type=text] {
@@ -202,6 +210,9 @@ label {
 }
 .flex-grow {
   flex-grow: 1;
+}
+.text-center {
+  text-align: center;
 }
 .text-right {
   text-align: right;

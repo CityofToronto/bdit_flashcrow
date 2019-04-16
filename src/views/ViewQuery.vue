@@ -9,18 +9,31 @@
     </template>
     <template v-slot:panes>
       <PaneDisplay>
-        <template v-slot:title>
-          <h2>Available Data</h2>
-        </template>
         <template v-slot:content>
-          <p>test</p>
+          <CountsTable :counts="counts" />
         </template>
         <template v-slot:actionBar>
-          <router-link
-            class="btn btn-primary"
-            :to="{name: 'requestsNewRequest'}">
-            RequestsNewRequest
-          </router-link>
+          <div
+            class="selected-count-wrapper text-center"
+            :class="{'some-selected': countsRequested.length > 0}">
+            <div class="selected-count">{{countsRequested.length}}</div>
+            <h3>Selected</h3>
+          </div>
+          <div class="print-wrapper">
+            <button disabled>
+              <i class="fa fa-print"></i> Print All
+            </button>
+          </div>
+          <div class="download-wrapper">
+            <button disabled>
+              <i class="fa fa-print"></i> Download All
+            </button>
+          </div>
+          <div class="start-request-wrapper text-right">
+            <button class="btn-primary">
+              Start Request
+            </button>
+          </div>
         </template>
       </PaneDisplay>
       <PaneMap />
@@ -31,16 +44,19 @@
 <script>
 import { mapState } from 'vuex';
 
+import CountsTable from '@/components/CountsTable.vue';
 import FilterCountTypes from '@/components/FilterCountTypes.vue';
 import FilterDate from '@/components/FilterDate.vue';
 import LayoutMain from '@/components/LayoutMain.vue';
 import PaneDisplay from '@/components/PaneDisplay.vue';
 import PaneMap from '@/components/PaneMap.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
+import SampleData from '@/lib/SampleData';
 
 export default {
   name: 'ViewQuery',
   components: {
+    CountsTable,
     FilterCountTypes,
     FilterDate,
     LayoutMain,
@@ -48,7 +64,14 @@ export default {
     PaneMap,
     ToggleShowMap,
   },
+  data() {
+    const counts = SampleData.randomCounts();
+    return { counts };
+  },
   computed: {
+    countsRequested() {
+      return this.counts.filter(c => c.requestNew);
+    },
     ...mapState(['showMap']),
   },
 };
@@ -58,6 +81,42 @@ export default {
 .view-query {
   & .pane-display {
     flex-grow: 2;
+    footer {
+      & > .selected-count-wrapper,
+      & > .print-wrapper,
+      & > .download-wrapper {
+        flex-grow: 1;
+        & > button {
+          height: 100%;
+        }
+      }
+      & > .start-request-wrapper {
+        flex-grow: 3;
+        & > button {
+          height: 100%;
+        }
+      }
+      & > .selected-count-wrapper {
+        color: var(--outline-grey-focus);
+        & > .selected-count {
+          background-color: var(--off-white);
+          border: 1px solid var(--outline-grey-focus);
+          border-radius: 16px;
+          font-size: var(--text-xxl);
+          height: 32px;
+          line-height: 30px;
+          margin: auto;
+          width: 32px;
+        }
+        &.some-selected {
+          color: var(--green);
+          & > .selected-count {
+            background-color: var(--light-green);
+            border-color: var(--green);
+          }
+        }
+      }
+    }
   }
   & .pane-map {
     display: none;

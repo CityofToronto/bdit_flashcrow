@@ -39,8 +39,12 @@ export default {
     }
   }
   & > footer {
-    background-color: #ddd;
-    border-top: 1px solid #ccc;
+    background-color: var(--outline-grey);
+    border-top: 1px solid var(--outline-grey-focus);
+    display: flex;
+    flex-direction: row;
+    font-size: var(--text-xl);
+    padding: calc(var(--sp) * 2);
   }
 }
 </style>

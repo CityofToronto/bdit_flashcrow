@@ -6,6 +6,15 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
+const Status = {
+  RECENT: 0,
+  OLD_3: 1,
+  NOT_IN_SYSTEM: 2,
+  REQUEST_PENDING: 3,
+};
+
+
 export default {
   COUNT_TYPES,
+  Status,
 };
