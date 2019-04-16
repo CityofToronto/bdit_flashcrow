@@ -1,7 +1,8 @@
 <template>
-<b-form-checkbox v-model="showMap" name="check-button" switch>
-  Show Map
-</b-form-checkbox>
+  <div class="form-group form-group-toggle">
+    <label for="cb1">Show Map</label>
+    <input id="cb1" type="checkbox" v-model="showMap" />
+  </div>
 </template>
 
 <script>
@@ -21,5 +22,8 @@ export default {
 </script>
 
 <style lang="postcss">
+/* see https://codepen.io/mallendeo/pen/eLIiG */
+.form-group-toggle {
 
+}
 </style>

@@ -1,6 +1,5 @@
 <template>
-<b-col class="pane-display" :cols="cols">
-  <section>
+  <section class="pane-display">
     <header>
       <slot name="title"></slot>
     </header>
@@ -10,14 +9,9 @@
       </div>
     </div>
     <footer>
-      <b-container fluid>
-        <b-row class="pt-2 pb-2">
-          <slot name="actionBar"></slot>
-        </b-row>
-      </b-container>
+      <slot name="actionBar"></slot>
     </footer>
   </section>
-</b-col>
 </template>
 
 <script>
@@ -31,25 +25,22 @@ export default {
 
 <style lang="postcss">
 .pane-display {
-  background-color: #fafafa;
-  & > section {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    & > header,
-    & > .content-wrapper {
-      padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  & > header,
+  & > .content-wrapper {
+    padding: 0 calc(var(--sp) * 2);
+  }
+  & > .content-wrapper {
+    flex-grow: 1;
+    & > .content {
+      overflow: auto;
     }
-    & > .content-wrapper {
-      flex-grow: 1;
-      & > .content {
-        overflow: auto;
-      }
-    }
-    & > footer {
-      background-color: #ddd;
-      border-top: 1px solid #ccc;
-    }
+  }
+  & > footer {
+    background-color: #ddd;
+    border-top: 1px solid #ccc;
   }
 }
 </style>

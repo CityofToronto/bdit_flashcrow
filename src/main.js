@@ -1,4 +1,3 @@
-import BootstrapVue from 'bootstrap-vue';
 import Vue from 'vue';
 import VueDatepicker from 'vuejs-datepicker';
 import VueSelect from 'vue-select';
@@ -8,7 +7,6 @@ import router from '@/router';
 import store from '@/store';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
-Vue.use(BootstrapVue);
 Vue.component('v-datepicker', VueDatepicker);
 Vue.component('v-select', VueSelect);
 

@@ -1,12 +1,12 @@
 <template>
-  <b-container fluid class="main">
-    <b-row class="row-nav-secondary pb-3">
+  <div class="layout-main">
+    <section class="nav-secondary">
       <slot name="navSecondary"></slot>
-    </b-row>
-    <b-row class="row-panes" no-gutters>
+    </section>
+    <section class="panes">
       <slot name="panes"></slot>
-    </b-row>
-  </b-container>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -16,17 +16,22 @@ export default {
 </script>
 
 <style lang="postcss">
-.main {
+.layout-main {
   display: flex;
   flex-direction: column;
   height: 100%;
-  & > .row-nav-secondary {
+  & > .nav-secondary {
+    align-items: center;
     background-color: #fafafa;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: calc(var(--sp) * 2);
+    padding: var(--sp) calc(var(--sp) * 2);
   }
-  & > .row-panes {
+  & > .panes {
+    display: flex;
+    flex-direction: row;
     flex-grow: 1;
-    margin-left: -15px;
-    margin-right: -15px;
   }
 }
 </style>

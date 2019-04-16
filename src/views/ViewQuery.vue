@@ -1,18 +1,14 @@
 <template>
-  <LayoutMain>
+  <LayoutMain
+    class="view-query"
+    :class="{'show-map': showMap}">
     <template v-slot:navSecondary>
-      <b-col cols="2">
-        <FilterDate />
-      </b-col>
-      <b-col cols="2">
-        <FilterCountTypes />
-      </b-col>
-      <b-col cols="2" offset="6" class="text-right">
-        <ToggleShowMap />
-      </b-col>
+      <FilterDate />
+      <FilterCountTypes />
+      <ToggleShowMap />
     </template>
     <template v-slot:panes>
-      <PaneDisplay :cols="colsPaneDisplay">
+      <PaneDisplay>
         <template v-slot:title>
           <h2>Available Data</h2>
         </template>
@@ -20,16 +16,14 @@
           <p>test</p>
         </template>
         <template v-slot:actionBar>
-          <b-col cols="12">
-            <router-link
-              class="btn btn-primary"
-              :to="{name: 'requestsNewRequest'}">
-              RequestsNewRequest
-            </router-link>
-          </b-col>
+          <router-link
+            class="btn btn-primary"
+            :to="{name: 'requestsNewRequest'}">
+            RequestsNewRequest
+          </router-link>
         </template>
       </PaneDisplay>
-      <PaneMap v-if="showMap" :cols="4" />
+      <PaneMap />
     </template>
   </LayoutMain>
 </template>
@@ -55,14 +49,22 @@ export default {
     ToggleShowMap,
   },
   computed: {
-    colsPaneDisplay() {
-      return this.showMap ? 8 : 12;
-    },
     ...mapState(['showMap']),
   },
 };
 </script>
 
 <style lang="postcss">
-
+.view-query {
+  & .pane-display {
+    flex-grow: 2;
+  }
+  & .pane-map {
+    display: none;
+  }
+  &.show-map .pane-map {
+    display: block;
+    flex-grow: 1;
+  }
+}
 </style>
