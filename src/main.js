@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import VueDatepicker from 'vuejs-datepicker';
+import VueCalendar from 'v-calendar';
 import VueSelect from 'vue-select';
 
 import App from '@/App.vue';
@@ -7,7 +7,7 @@ import router from '@/router';
 import store from '@/store';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
-Vue.component('v-datepicker', VueDatepicker);
+Vue.use(VueCalendar);
 Vue.component('v-select', VueSelect);
 
 Vue.filter('date', TimeFormatters.formatDate);

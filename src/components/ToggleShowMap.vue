@@ -1,7 +1,8 @@
 <template>
-  <div class="form-group form-group-toggle">
-    <label for="cb1">Show Map</label>
-    <input id="cb1" type="checkbox" v-model="showMap" />
+  <div class="form-group size-lg">
+    <label>Show Map
+      <input type="checkbox" v-model="showMap" />
+    </label>
   </div>
 </template>
 
@@ -22,8 +23,5 @@ export default {
 </script>
 
 <style lang="postcss">
-/* see https://codepen.io/mallendeo/pen/eLIiG */
-.form-group-toggle {
 
-}
 </style>

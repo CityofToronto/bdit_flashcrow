@@ -48,6 +48,7 @@
 import { mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
+import 'v-calendar/lib/v-calendar.min.css';
 
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
 
@@ -77,6 +78,7 @@ export default {
 </script>
 
 <style lang="postcss">
+/* THEME */
 :root {
   --white: #fff;
   --off-white: #fafafa;
@@ -103,11 +105,11 @@ export default {
   --sp: 0.4rem;
   --transition-short: .15s;
 }
-
 * {
   box-sizing: border-box;
 }
 
+/* LAYOUT */
 html, body {
   background-color: var(--off-white);
   font-family: var(--font-family);
@@ -133,6 +135,8 @@ body {
     flex-grow: 1;
   }
 }
+
+/* TYPOGRAPHY */
 h1, h2, h3 {
   font-weight: var(--font-bold);
   margin: 0.75em 0;
@@ -153,6 +157,11 @@ p {
 strong {
   font-weight: var(--font-bold);
 }
+
+/* FORMS */
+fieldset {
+  border: 1px solid var(--outline-grey);
+}
 button, .btn {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
@@ -170,7 +179,10 @@ button, .btn {
     color: var(--blue);
   }
 }
-input[type=text] {
+input[type=date],
+input[type=input],
+input[type=text],
+textarea {
   border: 1px solid var(--outline-grey);
   font-family: var(--font-family);
   font-size: var(--text-xl);
@@ -179,10 +191,16 @@ input[type=text] {
     border-color: var(--outline-grey-focus);
   }
 }
-input[type=checkbox] {
+input[type=checkbox],
+input[type=radio] {
   height: 1.8rem;
   vertical-align: middle;
   width: 1.8rem;
+}
+textarea {
+  font-size: var(--text-lg);
+  resize: none;
+  width: 100%;
 }
 .v-select.form-select {
   background-color: var(--white);
@@ -227,8 +245,23 @@ label {
   }
 }
 .form-group {
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
+  &.size-lg {
+    font-size: var(--text-lg);
+  }
+  & > label > div,
+  & > label > input[type=text] {
+    display: block;
+    margin: var(--sp) 0;
+    width: 100%;
+  }
+  & > label > input[type=checkbox],
+  & > label > input[type=radio] {
+    display: inline-block;
+  }
 }
+
+/* UTILITY */
 .flex-grow {
   flex-grow: 1;
 }
@@ -238,6 +271,8 @@ label {
 .text-right {
   text-align: right;
 }
+
+/* NAVIGATION BAR */
 .nav-bar {
   align-items: center;
   border-bottom: 1px solid var(--outline-grey);
@@ -283,12 +318,16 @@ label {
             vertical-align: middle;
           }
           & > svg {
+            display: inline-block;
             margin-left: calc(var(--sp) * 2);
           }
           &:hover {
             background-color: var(--light-blue);
             border-color: var(--blue);
             color: var(--blue);
+            & > svg {
+              fill: var(--blue);
+            }
           }
           &.router-link-active,
           &.router-link-active:hover {
@@ -305,18 +344,6 @@ label {
   margin-right: 8px;
   .v-select:hover &::before {
     color: black;
-  }
-}
-.d-block, th[role=columnheader] {
-  font-weight: 500;
-}
-.icon-profile {
-  cursor: pointer;
-  stroke: none;
-  fill: var(--off-black);
-  transition: fill .15s ease-in-out;
-  a:hover & {
-    fill: var(--blue);
   }
 }
 </style>

@@ -27,15 +27,6 @@ export default {
       },
     },
   },
-  methods: {
-    datepickerFormat(d) {
-      // TODO: DRY with main.js Vue filter
-      if (!d) {
-        return '';
-      }
-      return new Intl.DateTimeFormat('en-US').format(d);
-    },
-  },
 };
 </script>
 
