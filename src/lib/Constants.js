@@ -6,6 +6,15 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
+const REASONS = [
+  { label: 'Traffic Signal Control', value: 'TSC' },
+  { label: 'Pedestrian Crossover (PXO)', value: 'PXO' },
+  { label: 'Updated count (3 years expired)', value: 'EXPIRED' },
+  { label: 'Pedestrian Safety', value: 'PED_SAFETY' },
+  { label: 'Signal Timing', value: 'SIGNAL_TIMING' },
+  { label: 'Other', value: null },
+];
+
 const Status = {
   RECENT: 0,
   OLD_3: 1,
@@ -16,5 +25,6 @@ const Status = {
 
 export default {
   COUNT_TYPES,
+  REASONS,
   Status,
 };

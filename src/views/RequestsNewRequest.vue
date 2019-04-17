@@ -76,7 +76,12 @@ export default {
       }
       const mostRecentCountOfType = ArrayUtils.getMaxBy(
         this.counts.filter(c => c.type.value === this.requestAnother.value),
-        c => c.date.valueOf(),
+        (c) => {
+          if (c.date === null) {
+            return -Infinity;
+          }
+          return c.date.valueOf();
+        },
       );
       if (mostRecentCountOfType.requestNew) {
         /* eslint-disable no-alert */

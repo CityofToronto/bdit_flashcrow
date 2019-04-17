@@ -1,5 +1,4 @@
-import BootstrapVue from 'bootstrap-vue';
-import VueDatepicker from 'vuejs-datepicker';
+import VueCalendar from 'v-calendar';
 import VueSelect from 'vue-select';
 import { mount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
@@ -8,8 +7,7 @@ import router from '@/router';
 import ViewExplore from '@/views/ViewExplore.vue';
 
 const localVue = createLocalVue();
-localVue.use(BootstrapVue);
-localVue.component('v-datepicker', VueDatepicker);
+localVue.use(VueCalendar);
 localVue.component('v-select', VueSelect);
 localVue.use(Vuex);
 

@@ -13,7 +13,13 @@
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
-          <h3>Your Count Details</h3>
+          <h2>Your Count Details</h2>
+          <CountDetails
+            v-for="(count, i) in countsRequested"
+            :key="i"
+            :count="count"
+            :index="i" />
+          <NewRequestDetails />
         </template>
         <template v-slot:actionBar>
           <button
@@ -29,10 +35,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
+import CountDetails from '@/components/CountDetails.vue';
 import LayoutMain from '@/components/LayoutMain.vue';
+import NewRequestDetails from '@/components/NewRequestDetails.vue';
 import PaneDisplay from '@/components/PaneDisplay.vue';
 import PaneMap from '@/components/PaneMap.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
@@ -41,12 +49,15 @@ export default {
   name: 'RequestsNewRequest',
   components: {
     BreadcrumbRequestsNew,
+    CountDetails,
     LayoutMain,
+    NewRequestDetails,
     PaneDisplay,
     PaneMap,
     ToggleShowMap,
   },
   computed: {
+    ...mapGetters(['countsRequested']),
     ...mapState(['showMap']),
   },
   methods: {

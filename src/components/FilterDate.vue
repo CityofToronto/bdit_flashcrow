@@ -1,19 +1,38 @@
 <template>
-  <v-datepicker
-    class="filter-date"
+  <date-picker
     v-model="filterDate"
-    :calendar-button="true"
-    calendar-button-icon="fa fa-calendar"
-    :format="formatDate"
-    placeholder="Enter count date"
-    required />
+    class="filter-date"
+    :disabled-dates="{start: tomorrow, end: null}"
+    :input-props="{
+      placeholder: 'Filter by date range'
+    }"
+    :max-date="now"
+    :min-date="minDate"
+    mode="range">
+  </date-picker>
 </template>
 
 <script>
-import TimeFormatters from '@/lib/time/TimeFormatters';
+import DatePicker from '@/components/DatePicker.vue';
 
 export default {
   name: 'FilterDate',
+  components: {
+    DatePicker,
+  },
+  data() {
+    const now = new Date();
+    const tomorrow = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
+    return {
+      minDate: new Date(1985, 0, 1),
+      now,
+      tomorrow,
+    };
+  },
   computed: {
     filterDate: {
       get() {
@@ -24,24 +43,10 @@ export default {
       },
     },
   },
-  methods: {
-    formatDate: TimeFormatters.formatDate,
-  },
 };
 </script>
 
 <style lang="postcss">
 .filter-date {
-  .vdp-datepicker__calendar-button {
-    background-color: var(--white);
-    border: 1px solid var(--outline-grey);
-    font-size: var(--text-xl);
-    margin-right: -6px;
-    padding: var(--sp) calc(var(--sp) * 2);
-    transition: border-color var(--transition-short) ease-in-out;
-  }
-  &:hover .vdp-datepicker__calendar-button {
-    border-color: var(--outline-grey-focus);
-  }
 }
 </style>
