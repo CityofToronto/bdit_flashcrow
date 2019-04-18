@@ -72,14 +72,14 @@ export default {
 <style lang="postcss">
 .requests-new-schedule {
   & .breadcrumb-steps {
-    flex-grow: 1;
+    flex: 1;
     margin: 0 calc(var(--sp) * 8);
   }
   & .pane-display {
-    flex-grow: 2;
+    flex: 2;
   }
   & .pane-map {
-    flex-grow: 1;
+    flex: 1;
   }
   footer {
     & > .btn-continue {

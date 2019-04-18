@@ -79,7 +79,7 @@ export default {
   & > .breadcrumb-step-separator {
     border-bottom: 1px solid var(--outline-grey);
     display: inline-block;
-    flex-grow: 1;
+    flex: 1;
     height: 1px;
     margin: 0 calc(var(--sp) * 2);
     &.completed {

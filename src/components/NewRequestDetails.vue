@@ -77,5 +77,11 @@ export default {
       }
     }
   }
+  .reason-for-request {
+    .dropdown-menu {
+      bottom: 100%;
+      top: auto;
+    }
+  }
 }
 </style>

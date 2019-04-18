@@ -3,10 +3,8 @@
     <header>
       <slot name="title"></slot>
     </header>
-    <div class="content-wrapper">
-      <div class="content">
-        <slot name="content"></slot>
-      </div>
+    <div class="content">
+      <slot name="content"></slot>
     </div>
     <footer>
       <slot name="actionBar"></slot>
@@ -29,15 +27,12 @@ export default {
   flex-direction: column;
   height: 100%;
   & > header,
-  & > .content-wrapper {
+  & > .content {
     padding: 0 calc(var(--sp) * 2);
   }
-  & > .content-wrapper {
-    flex-grow: 1;
-    & > .content {
-      height: 100%;
-      overflow: auto;
-    }
+  & > .content {
+    flex: 1;
+    overflow: auto;
   }
   & > footer {
     background-color: var(--outline-grey);

@@ -37,9 +37,7 @@
         </ul>
       </nav>
     </div>
-    <main>
-      <router-view></router-view>
-    </main>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -114,6 +112,7 @@ html, body {
   background-color: var(--off-white);
   font-family: var(--font-family);
   font-weight: var(--font-normal);
+  height: 100vh;
   margin: 0;
   min-height: 100vh;
   padding: 0;
@@ -129,10 +128,9 @@ body {
   flex-direction: column;
   height: 100vh;
   min-height: 100vh;
-  overflow: hidden;
   padding: 0;
   & > main {
-    flex-grow: 1;
+    flex: 1;
   }
 }
 
@@ -263,13 +261,16 @@ label {
 
 /* UTILITY */
 .flex-grow {
-  flex-grow: 1;
+  flex: 1;
 }
 .text-center {
   text-align: center;
 }
 .text-right {
   text-align: right;
+}
+.hide {
+  display: none;
 }
 
 /* NAVIGATION BAR */
@@ -293,7 +294,7 @@ label {
     margin-left: calc(var(--sp) * 4);
   }
   & > nav {
-    flex-grow: 1;
+    flex: 1;
     & > ul {
       align-items: stretch;
       display: flex;

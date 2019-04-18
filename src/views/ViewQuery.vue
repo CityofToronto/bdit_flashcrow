@@ -87,18 +87,18 @@ export default {
 <style lang="postcss">
 .view-query {
   & .pane-display {
-    flex-grow: 2;
+    flex: 2;
     footer {
       & > .selected-count-wrapper,
       & > .print-wrapper,
       & > .download-wrapper {
-        flex-grow: 1;
+        flex: 1;
         & > button {
           height: 100%;
         }
       }
       & > .start-request-wrapper {
-        flex-grow: 3;
+        flex: 3;
         & > button {
           height: 100%;
         }
@@ -126,7 +126,7 @@ export default {
     }
   }
   & .pane-map {
-    flex-grow: 1;
+    flex: 1;
   }
 }
 </style>

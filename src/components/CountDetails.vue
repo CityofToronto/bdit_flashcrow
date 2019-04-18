@@ -20,26 +20,26 @@
         </div>
         <strong>Pick days of the week for the study</strong>
         <div class="count-details-checks">
-          <label>M
+          <label class="label-vertical">Su
+            <input type="checkbox" name="daysOfWeek" value="0" />
+          </label>
+          <label class="label-vertical">M
             <input type="checkbox" name="daysOfWeek" value="1" />
           </label>
-          <label>T
+          <label class="label-vertical">T
             <input type="checkbox" name="daysOfWeek" value="2" checked />
           </label>
-          <label>W
+          <label class="label-vertical">W
             <input type="checkbox" name="daysOfWeek" value="3" checked />
           </label>
-          <label>Th
+          <label class="label-vertical">Th
             <input type="checkbox" name="daysOfWeek" value="4" checked />
           </label>
-          <label>F
+          <label class="label-vertical">F
             <input type="checkbox" name="daysOfWeek" value="5" />
           </label>
-          <label>Sa
+          <label class="label-vertical">Sa
             <input type="checkbox" name="daysOfWeek" value="6" />
-          </label>
-          <label>Su
-            <input type="checkbox" name="daysOfWeek" value="0" />
           </label>
         </div>
       </div>
@@ -159,8 +159,14 @@ export default {
         flex-direction: row;
         flex-wrap: wrap;
         & > label {
-          flex: 0 0 14.2857%;
           margin: calc(var(--sp) * 2) 0;
+        }
+        .label-vertical {
+          text-align: center;
+          margin: calc(var(--sp) * 2) var(--sp);
+          & > input {
+            display: block;
+          }
         }
       }
       & > .count-details-radios {
