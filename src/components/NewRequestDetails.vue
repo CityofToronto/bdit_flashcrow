@@ -29,6 +29,23 @@
             <input v-model="priority" type="radio" name="priority" value="STANDARD" />
           </label>
         </div>
+        <div v-if="priority === 'URGENT'" class="panel panel-warning">
+          <i class="fa fa-exclamation-triangle"></i>
+          <span>
+            You've marked this request urgent, which will mean reshuffling the request queue.
+            The Traffic Safety Unit will contact you to make adjustments to the schedule.
+          </span>
+        </div>
+        <div v-if="priority === 'STANDARD'" class="panel panel-primary">
+          <i class="fa fa-calendar-check"></i>
+          <span>
+            Standard times to request counts are 2-3 months.  Peak times are April-June and
+            September-November.
+          </span>
+          <p>
+            Estimated Delivery of Data: 23/06/2019
+          </p>
+        </div>
       </div>
       <div class="details-column">
         <div class="form-group">
