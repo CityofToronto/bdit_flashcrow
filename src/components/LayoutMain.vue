@@ -1,12 +1,12 @@
 <template>
-  <div class="layout-main">
+  <main class="layout-main">
     <section class="nav-secondary">
       <slot name="navSecondary"></slot>
     </section>
     <section class="panes">
       <slot name="panes"></slot>
     </section>
-  </div>
+  </main>
 </template>
 
 <script>
@@ -19,7 +19,6 @@ export default {
 .layout-main {
   display: flex;
   flex-direction: column;
-  height: 100%;
   & > .nav-secondary {
     align-items: center;
     background-color: #fafafa;
@@ -31,7 +30,7 @@ export default {
   & > .panes {
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
+    flex: 1;
   }
 }
 </style>
