@@ -155,6 +155,21 @@ p {
 strong {
   font-weight: var(--font-bold);
 }
+.panel {
+  background-color: var(--white);
+  border: 1px solid var(--outline-grey);
+  padding: calc(var(--sp) * 2);
+  &.panel-primary {
+    background-color: var(--light-blue);
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+  &.panel-warning {
+    background-color: var(--light-yellow);
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+}
 
 /* FORMS */
 fieldset {
