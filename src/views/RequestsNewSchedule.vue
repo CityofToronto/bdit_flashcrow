@@ -15,7 +15,7 @@
         <template v-slot:content>
           <h2>Your Count Details</h2>
           <CountDetails
-            v-for="(count, i) in countsRequested"
+            v-for="(count, i) in dataSelectionItems"
             :key="i"
             :count="count"
             :index="i" />
@@ -57,7 +57,7 @@ export default {
     ToggleShowMap,
   },
   computed: {
-    ...mapGetters(['countsRequested']),
+    ...mapGetters(['dataSelectionItems']),
     ...mapState(['showMap']),
   },
   methods: {

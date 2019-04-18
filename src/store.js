@@ -8,6 +8,13 @@ Vue.use(Vuex);
 
 const COUNTS = SampleData.randomCounts();
 
+function makeNewDataSelection() {
+  return {
+    items: [],
+    meta: {},
+  };
+}
+
 export default new Vuex.Store({
   state: {
     // authentication
@@ -15,22 +22,50 @@ export default new Vuex.Store({
       loggedIn: false,
     },
     // searching locations
-    location: null,
     locationSuggestions: null,
-    // data
+    // selecting locations
+    // TODO: in searching / selecting phase, generalize to other selection types
+    location: null,
+    // data for selected locations
+    // TODO: in searching / selecting phase, generalize to collisions and other layers
     counts: COUNTS,
-    // filtering
+    // selecting data
+    // TODO: in searching / selecting phase, generalize to collisions and other layers
+    dataSelection: makeNewDataSelection(),
+    // filtering data
+    // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [],
     filterDate: null,
     // map mode
     showMap: true,
   },
   getters: {
-    countsRequested: state => state.counts.filter(c => c.requestNew),
+    dataSelectionContains: (state, getters) => (itemToFind) => {
+      const i = getters.dataSelectionIndexOf(itemToFind);
+      return i !== -1;
+    },
+    dataSelectionEmpty: state => state.dataSelection.items.length === 0,
+    dataSelectionFind: (state, getters) => (itemToFind) => {
+      const i = getters.dataSelectionIndexOf(itemToFind);
+      if (i === -1) {
+        return undefined;
+      }
+      return state.dataSelection.items[i];
+    },
+    dataSelectionIndexOf: state => itemToFind => state.dataSelection.items
+      .findIndex(({ item }) => item === itemToFind),
+    dataSelectionItems: state => state.dataSelection.items.map(({ item }) => item),
+    dataSelectionLength: state => state.dataSelection.items.length,
   },
   mutations: {
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
+    },
+    clearLocationSuggestions(state) {
+      Vue.set(state, 'locationSuggestions', null);
+    },
+    setLocationSuggestions(state, locationSuggestions) {
+      Vue.set(state, 'locationSuggestions', locationSuggestions);
     },
     clearLocation(state) {
       Vue.set(state, 'location', null);
@@ -38,11 +73,23 @@ export default new Vuex.Store({
     setLocation(state, location) {
       Vue.set(state, 'location', location);
     },
-    clearLocationSuggestions(state) {
-      Vue.set(state, 'locationSuggestions', null);
+    clearDataSelection(state) {
+      Vue.set(state, 'dataSelection', makeNewDataSelection());
     },
-    setLocationSuggestions(state, locationSuggestions) {
-      Vue.set(state, 'locationSuggestions', locationSuggestions);
+    setDataSelectionMeta(state, meta) {
+      Vue.set(state.dataSelection, 'meta', meta);
+    },
+    addToDataSelection(state, item) {
+      state.dataSelection.items.push({
+        item,
+        meta: {},
+      });
+    },
+    setDataSelectionEntryMeta(state, entry, meta) {
+      Vue.set(entry, 'meta', meta);
+    },
+    removeFromDataSelection(state, i) {
+      state.dataSelection.items.splice(i, 1);
     },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
@@ -85,6 +132,43 @@ export default new Vuex.Store({
           commit('setLocationSuggestions', locationSuggestions);
           return locationSuggestions;
         });
+    },
+    clearDataSelection({ commit }) {
+      commit('clearDataSelection');
+      return Promise.resolve();
+    },
+    setDataSelectionMeta({ commit }, meta) {
+      commit('setDataSelectionMeta', meta);
+      return Promise.resolve();
+    },
+    addToDataSelection({ commit, getters }, item) {
+      if (getters.dataSelectionContains(item)) {
+        return Promise.reject(
+          new Error('add failed: already in selection!'),
+        );
+      }
+      commit('addToDataSelection', item);
+      return Promise.resolve();
+    },
+    setDataSelectionItemMeta({ commit, getters }, item, meta) {
+      const entry = getters.dataSelectionFind(item);
+      if (entry === undefined) {
+        return Promise.reject(
+          new Error('set meta failed: not in selection!'),
+        );
+      }
+      commit('setDataSelectionEntryMeta', entry, meta);
+      return Promise.resolve();
+    },
+    removeFromDataSelection({ commit, getters }, item) {
+      const i = getters.dataSelectionIndexOf(item);
+      if (i === -1) {
+        return Promise.reject(
+          new Error('remove failed: not in selection!'),
+        );
+      }
+      commit('removeFromDataSelection', i);
+      return Promise.resolve();
     },
   },
 });

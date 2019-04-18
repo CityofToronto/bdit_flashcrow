@@ -11,7 +11,7 @@
     </thead>
     <tbody>
       <tr
-        v-for="(count, i) in countsRequested"
+        v-for="(count, i) in dataSelectionItems"
         :key="i">
         <td>{{count.type.label}}</td>
         <td>
@@ -23,8 +23,8 @@
         <td>{{STATUS_META[count.status]}}</td>
         <td class="text-right">
           <button
-            class="btn-delete-count"
-            @click="onClickDeleteCount(count)">
+            class="btn-remove-count"
+            @click="onClickRemoveCount(count)">
             <i class="fa fa-trash-alt"></i>
           </button>
         </td>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
+
 const STATUS_META = [
   'Recent',
   '3+ years old',
@@ -43,19 +45,19 @@ const STATUS_META = [
 
 export default {
   name: 'CountsRequestedTable',
-  props: {
-    countsRequested: Array,
-  },
   data() {
     return {
       STATUS_META,
     };
   },
+  computed: {
+    ...mapGetters(['dataSelectionItems']),
+  },
   methods: {
-    onClickDeleteCount(count) {
-      /* eslint-disable no-param-reassign */
-      count.requestNew = false;
+    onClickRemoveCount(count) {
+      this.removeFromDataSelection(count);
     },
+    ...mapActions(['removeFromDataSelection']),
   },
 };
 </script>
@@ -90,7 +92,7 @@ export default {
         &:last-child {
           border-right: 1px solid var(--outline-grey);
         }
-        & > .btn-delete-count {
+        & > .btn-remove-count {
           margin-right: calc(var(--sp) * 2);
         }
       }

@@ -27,7 +27,6 @@ function randomCount(id, now) {
     id,
     type,
     date,
-    requestNew: false,
   };
   count.status = getStatus(count, now);
   return count;
@@ -61,7 +60,6 @@ function randomCounts() {
         id: null,
         type,
         date: null,
-        requestNew: false,
         status: Constants.Status.NOT_IN_SYSTEM,
       };
       counts.push(countNotInSystem);

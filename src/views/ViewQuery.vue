@@ -14,24 +14,25 @@
         <template v-slot:actionBar>
           <div
             class="selected-count-wrapper text-center"
-            :class="{'some-selected': countsRequested.length > 0}">
-            <div class="selected-count">{{countsRequested.length}}</div>
+            :class="{'some-selected': !dataSelectionEmpty}">
+            <div class="selected-count">{{dataSelectionLength}}</div>
             <h3>Selected</h3>
           </div>
           <div class="print-wrapper">
-            <button disabled>
+            <button :disabled="dataSelectionEmpty">
               <i class="fa fa-print"></i> Print All
             </button>
           </div>
           <div class="download-wrapper">
-            <button disabled>
+            <button :disabled="dataSelectionEmpty">
               <i class="fa fa-print"></i> Download All
             </button>
           </div>
           <div class="start-request-wrapper text-right">
             <button
               class="btn-primary"
-              @click="onClickStartRequest">
+              @click="onClickStartRequest"
+              :disabled="dataSelectionEmpty">
               Start Request
             </button>
           </div>
@@ -66,12 +67,12 @@ export default {
     ToggleShowMap,
   },
   computed: {
-    ...mapGetters(['countsRequested']),
+    ...mapGetters(['dataSelectionEmpty', 'dataSelectionLength']),
     ...mapState(['counts', 'showMap']),
   },
   methods: {
     onClickStartRequest() {
-      if (this.countsRequested.length === 0) {
+      if (this.dataSelectionEmpty) {
         window.alert('Nothing selected!');
       } else {
         this.$router.push({ name: 'requestsNewRequest' });

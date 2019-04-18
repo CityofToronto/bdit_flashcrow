@@ -13,8 +13,7 @@
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
-          <CountsRequestedTable
-            :counts-requested="countsRequested" />
+          <CountsRequestedTable />
           <div>
             <v-select
               ref="requestAnother"
@@ -28,7 +27,7 @@
           <button
             class="btn-request-data btn-primary"
             @click="onClickRequestData">
-            Request Data ({{countsRequested.length}})
+            Request Data ({{dataSelectionLength}})
           </button>
         </template>
       </PaneDisplay>
@@ -38,7 +37,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
 import CountsRequestedTable from '@/components/CountsRequestedTable.vue';
@@ -66,7 +65,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['countsRequested']),
+    ...mapGetters([
+      'dataSelectionContains',
+      'dataSelectionEmpty',
+      'dataSelectionItems',
+      'dataSelectionLength',
+    ]),
     ...mapState(['counts', 'showMap']),
   },
   watch: {
@@ -74,20 +78,20 @@ export default {
       if (this.requestAnother === null) {
         return;
       }
-      const mostRecentCountOfType = ArrayUtils.getMaxBy(
+      const count = ArrayUtils.getMaxBy(
         this.counts.filter(c => c.type.value === this.requestAnother.value),
         (c) => {
           if (c.date === null) {
-            return -Infinity;
+            return Infinity;
           }
           return c.date.valueOf();
         },
       );
-      if (mostRecentCountOfType.requestNew) {
+      if (this.dataSelectionContains(count)) {
         /* eslint-disable no-alert */
         window.alert('already selected');
       } else {
-        mostRecentCountOfType.requestNew = true;
+        this.addToDataSelection(count);
       }
       this.$refs.requestAnother.clearSelection();
       this.requestAnother = null;
@@ -95,13 +99,14 @@ export default {
   },
   methods: {
     onClickRequestData() {
-      if (this.countsRequested.length === 0) {
+      if (this.dataSelectionEmpty) {
         /* eslint-disable no-alert */
         window.alert('Nothing selected!');
       } else {
         this.$router.push({ name: 'requestsNewSchedule' });
       }
     },
+    ...mapMutations(['addToDataSelection']),
   },
 };
 </script>
