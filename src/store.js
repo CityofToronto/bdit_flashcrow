@@ -76,8 +76,8 @@ export default new Vuex.Store({
     clearDataSelection(state) {
       Vue.set(state, 'dataSelection', makeNewDataSelection());
     },
-    setDataSelectionMeta(state, meta) {
-      Vue.set(state.dataSelection, 'meta', meta);
+    setDataSelectionMeta(state, { key, value }) {
+      Vue.set(state.dataSelection.meta, key, value);
     },
     addToDataSelection(state, item) {
       state.dataSelection.items.push({
@@ -85,8 +85,8 @@ export default new Vuex.Store({
         meta: {},
       });
     },
-    setDataSelectionEntryMeta(state, entry, meta) {
-      Vue.set(entry, 'meta', meta);
+    setDataSelectionEntryMeta(state, { entry, key, value }) {
+      Vue.set(entry.meta, key, value);
     },
     removeFromDataSelection(state, i) {
       state.dataSelection.items.splice(i, 1);
@@ -137,8 +137,8 @@ export default new Vuex.Store({
       commit('clearDataSelection');
       return Promise.resolve();
     },
-    setDataSelectionMeta({ commit }, meta) {
-      commit('setDataSelectionMeta', meta);
+    setDataSelectionMeta({ commit }, { key, value }) {
+      commit('setDataSelectionMeta', { key, value });
       return Promise.resolve();
     },
     addToDataSelection({ commit, getters }, item) {
@@ -150,14 +150,14 @@ export default new Vuex.Store({
       commit('addToDataSelection', item);
       return Promise.resolve();
     },
-    setDataSelectionItemMeta({ commit, getters }, item, meta) {
+    setDataSelectionItemMeta({ commit, getters }, { item, key, value }) {
       const entry = getters.dataSelectionFind(item);
       if (entry === undefined) {
         return Promise.reject(
           new Error('set meta failed: not in selection!'),
         );
       }
-      commit('setDataSelectionEntryMeta', entry, meta);
+      commit('setDataSelectionEntryMeta', { entry, key, value });
       return Promise.resolve();
     },
     removeFromDataSelection({ commit, getters }, item) {
