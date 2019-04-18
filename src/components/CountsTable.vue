@@ -12,25 +12,25 @@
     </thead>
     <tbody>
       <tr
-        v-for="(countsOfType, i) in countsSections"
-        :key="i"
+        v-for="count in countsSections"
+        :key="count.type.value"
         :class="{
-          'not-in-system': countsOfType[0].status === 2,
-          selected: countsOfType[0].requestNew
+          'not-in-system': count.status === 2,
+          selected: dataSelectionContains(count),
         }"
-        @click="countsOfType[0].requestNew = !countsOfType[0].requestNew">
+        @click="onClickSelectCount(count)">
         <td>
-          <input v-model="countsOfType[0].requestNew" type="checkbox" />
+          <input type="checkbox" :checked="dataSelectionContains(count)" />
         </td>
-        <td>{{countsOfType[0].type.label}}</td>
+        <td>{{count.type.label}}</td>
         <td>
-          <span v-if="countsOfType[0].date">{{countsOfType[0].date | date}}</span>
+          <span v-if="count.date">{{count.date | date}}</span>
           <span v-else class="text-muted">
             N/A
             <i class="fa fa-exclamation-triangle"></i>
           </span>
         </td>
-        <td>{{STATUS_META[countsOfType[0].status]}}</td>
+        <td>{{STATUS_META[count.status]}}</td>
         <td><i class="fa fa-ellipsis-h"></i></td>
       </tr>
     </tbody>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 
@@ -82,10 +82,26 @@ export default {
       const countsByType = ArrayUtils.groupBy(this.countsFiltered, c => c.type.value);
       // sort groups by date
       return countsByType.map(
-        countsOfType => ArrayUtils.sortBy(countsOfType, c => -c.date.valueOf()),
+        countsOfType => ArrayUtils.getMaxBy(countsOfType, (c) => {
+          if (c.date === null) {
+            return -Infinity;
+          }
+          return -c.date.valueOf();
+        }),
       );
     },
     ...mapState(['filterCountTypes', 'filterDate']),
+    ...mapGetters(['dataSelectionContains']),
+  },
+  methods: {
+    onClickSelectCount(count) {
+      if (this.dataSelectionContains(count)) {
+        this.removeFromDataSelection(count);
+      } else {
+        this.addToDataSelection(count);
+      }
+    },
+    ...mapActions(['addToDataSelection', 'removeFromDataSelection']),
   },
 };
 </script>

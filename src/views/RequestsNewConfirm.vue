@@ -50,9 +50,6 @@ export default {
     ToggleShowMap,
   },
   computed: {
-    colsPaneDisplay() {
-      return this.showMap ? 8 : 12;
-    },
     ...mapState(['showMap']),
   },
 };
