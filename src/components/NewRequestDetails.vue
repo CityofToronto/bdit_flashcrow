@@ -5,6 +5,7 @@
         <div class="form-group">
           <label>Reason for request?
             <v-select
+              :v-model="reason"
               class="form-select reason-for-request"
               :options="optionsReason"
               placeholder="Select reason for request" />
@@ -12,7 +13,7 @@
         </div>
         <div class="form-group">
           <label>Service Request Number (if applicable)
-            <input type="text" />
+            <input v-model="serviceRequestId" type="text" />
           </label>
         </div>
       </div>
@@ -21,11 +22,11 @@
         <div class="details-radios">
           <label>
             Urgent
-            <input type="radio" name="hours" value="1" />
+            <input v-model="priority" type="radio" name="priority" value="URGENT" />
           </label>
           <label>
             Standard
-            <input type="radio" name="hours" value="0" />
+            <input v-model="priority" type="radio" name="priority" value="STANDARD" />
           </label>
         </div>
       </div>
@@ -33,6 +34,7 @@
         <div class="form-group">
           <label>Other staff you'd like to update:
             <input
+              v-model="ccEmails"
               type="text"
               placeholder="e.g. tom.delaney@toronto.ca" />
           </label>
@@ -43,6 +45,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 import Constants from '@/lib/Constants';
 
 export default {
@@ -51,6 +55,56 @@ export default {
     return {
       optionsReason: Constants.REASONS,
     };
+  },
+  computed: {
+    ccEmails: {
+      get() {
+        return this.dataSelection.meta.ccEmails || '';
+      },
+      set(ccEmails) {
+        this.setDataSelectionMeta({
+          key: 'ccEmails',
+          value: ccEmails,
+        });
+      },
+    },
+    priority: {
+      get() {
+        return this.dataSelection.meta.priority || 'STANDARD';
+      },
+      set(priority) {
+        this.setDataSelectionMeta({
+          key: 'priority',
+          value: priority,
+        });
+      },
+    },
+    reason: {
+      get() {
+        return this.dataSelection.meta.reason || Constants.REASONS[0];
+      },
+      set(reason) {
+        this.setDataSelectionMeta({
+          key: 'reason',
+          value: reason,
+        });
+      },
+    },
+    serviceRequestId: {
+      get() {
+        return this.dataSelection.meta.serviceRequestId || '';
+      },
+      set(serviceRequestId) {
+        this.setDataSelectionMeta({
+          key: 'serviceRequestId',
+          value: serviceRequestId,
+        });
+      },
+    },
+    ...mapState(['dataSelection']),
+  },
+  methods: {
+    ...mapActions(['setDataSelectionMeta']),
   },
 };
 </script>

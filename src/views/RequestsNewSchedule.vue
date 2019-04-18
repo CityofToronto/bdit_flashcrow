@@ -15,10 +15,11 @@
         <template v-slot:content>
           <h2>Your Count Details</h2>
           <CountDetails
-            v-for="(count, i) in dataSelectionItems"
+            v-for="(entry, i) in dataSelection.items"
             :key="i"
-            :count="count"
-            :index="i" />
+            :count="entry.item"
+            :index="i"
+            :meta="entry.meta" />
           <NewRequestDetails />
         </template>
         <template v-slot:actionBar>
@@ -35,7 +36,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
 import CountDetails from '@/components/CountDetails.vue';
@@ -57,8 +58,7 @@ export default {
     ToggleShowMap,
   },
   computed: {
-    ...mapGetters(['dataSelectionItems']),
-    ...mapState(['showMap']),
+    ...mapState(['dataSelection', 'showMap']),
   },
   methods: {
     onClickContinue() {
