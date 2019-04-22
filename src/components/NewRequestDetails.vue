@@ -10,6 +10,9 @@
               :options="optionsReason"
               placeholder="Select reason for request" />
           </label>
+          <div class="validation-error" v-if="!v.reason.required">
+            A reason for the request must be selected.
+          </div>
         </div>
         <div class="form-group">
           <label>Service Request Number (if applicable)
@@ -70,6 +73,9 @@ import Constants from '@/lib/Constants';
 
 export default {
   name: 'NewRequestDetails',
+  props: {
+    v: Object,
+  },
   data() {
     return {
       optionsReason: Constants.REASONS,
