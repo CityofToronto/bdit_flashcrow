@@ -5,7 +5,7 @@
         <div class="form-group">
           <label>* Reason for request?
             <v-select
-              :v-model="reason"
+              v-model="reason"
               class="form-select reason-for-request"
               :options="optionsReason"
               placeholder="Select reason for request" />
@@ -131,6 +131,7 @@ export default {
         return this.dataSelectionMeta.reason;
       },
       set(reason) {
+        console.log(reason);
         this.setDataSelectionMeta({
           key: 'reason',
           value: reason,

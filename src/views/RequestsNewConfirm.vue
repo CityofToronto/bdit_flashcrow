@@ -1,60 +1,89 @@
 <template>
-<LayoutMain>
+<LayoutMain
+  class="requests-new-confirm">
     <template v-slot:navSecondary>
-      <div class="flex-grow">
-        <BreadcrumbRequestsNew />
-      </div>
-      <div>
-        <ToggleShowMap />
-      </div>
+      <router-link
+        class="link-back"
+        :to="{name: 'viewQuery'}">
+        View all data
+      </router-link>
+      <BreadcrumbRequestsNew />
+      <ToggleShowMap />
     </template>
     <template v-slot:panes>
-      <PaneDisplay :cols="colsPaneDisplay">
-        <template v-slot:title>
-          <h2>Schedule</h2>
-        </template>
+      <PaneDisplay>
         <template v-slot:content>
-          <p>test</p>
+          <h2>Your Count Details</h2>
+          <CountDetailsSummary
+            v-for="(_, i) in dataSelection.items"
+            :key="i"
+            :index="i" />
+          <NewRequestDetailsSummary />
         </template>
         <template v-slot:actionBar>
-          <b-col cols="12">
-            <router-link
-              class="btn btn-primary"
-              :to="{name: 'home'}">
-              ViewExplore
-            </router-link>
-          </b-col>
+          <button
+            class="btn-confirm btn-primary"
+            @click="onClickConfirm">
+            Confirm
+          </button>
         </template>
       </PaneDisplay>
-      <PaneMap v-if="showMap" :cols="4" />
+      <PaneMap v-if="showMap" />
     </template>
   </LayoutMain>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
+import CountDetailsSummary from '@/components/CountDetailsSummary.vue';
 import LayoutMain from '@/components/LayoutMain.vue';
+import NewRequestDetailsSummary from '@/components/NewRequestDetailsSummary.vue';
 import PaneDisplay from '@/components/PaneDisplay.vue';
 import PaneMap from '@/components/PaneMap.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
 
 export default {
-  name: 'RequestsNewRequest',
+  name: 'RequestsNewConfirm',
   components: {
     BreadcrumbRequestsNew,
+    CountDetailsSummary,
     LayoutMain,
+    NewRequestDetailsSummary,
     PaneDisplay,
     PaneMap,
     ToggleShowMap,
   },
   computed: {
-    ...mapState(['showMap']),
+    ...mapGetters(['dataSelectionItemsMeta', 'dataSelectionMeta']),
+    ...mapState(['dataSelection', 'showMap']),
+  },
+  methods: {
+    onClickConfirm() {
+      this.$router.push({ name: 'home' });
+    },
   },
 };
 </script>
 
 <style lang="postcss">
-
+.requests-new-confirm {
+  & .breadcrumb-steps {
+    flex: 1;
+    margin: 0 calc(var(--sp) * 8);
+  }
+  & .pane-display {
+    flex: 2;
+  }
+  & .pane-map {
+    flex: 1;
+  }
+  footer {
+    & > .btn-confirm {
+      height: 40px;
+      width: 100%;
+    }
+  }
+}
 </style>

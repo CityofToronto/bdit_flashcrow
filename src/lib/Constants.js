@@ -6,6 +6,16 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
+const DAYS_OF_WEEK = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
 const REASONS = [
   { label: 'Traffic Signal Control', value: 'TSC' },
   { label: 'Pedestrian Crossover (PXO)', value: 'PXO' },
@@ -25,6 +35,7 @@ const Status = {
 
 export default {
   COUNT_TYPES,
+  DAYS_OF_WEEK,
   REASONS,
   Status,
 };
