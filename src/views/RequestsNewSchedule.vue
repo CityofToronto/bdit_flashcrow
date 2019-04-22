@@ -19,7 +19,8 @@
             :key="i"
             :count="entry.item"
             :index="i"
-            :meta="entry.meta" />
+            :meta="entry.meta"
+            :selection-meta="dataSelection.meta" />
           <NewRequestDetails />
         </template>
         <template v-slot:actionBar>

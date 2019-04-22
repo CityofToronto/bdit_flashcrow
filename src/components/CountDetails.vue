@@ -2,7 +2,7 @@
   <fieldset class="count-details">
     <legend>
       <h3>
-        <span class="number-icon">{{index + 1}}</span>
+        <span class="number-icon">{{indexHuman}}</span>
         {{count.type.label}}
       </h3>
     </legend>
@@ -13,34 +13,36 @@
             <DatePicker
               v-model="dateRange"
               class="date-range"
+              :disabled="disableDateRange"
               :disabled-dates="{start: null, end: twoMonthsOut}"
               :min-date="twoMonthsOut"
-              mode="range">
+              mode="range"
+              :name="nameDateRange">
             </DatePicker>
           </label>
         </div>
         <strong>Pick days of the week for the study</strong>
         <div class="count-details-checks">
           <label class="label-vertical">Su
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="0" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="0" />
           </label>
           <label class="label-vertical">M
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="1" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="1" />
           </label>
           <label class="label-vertical">T
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="2" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="2" />
           </label>
           <label class="label-vertical">W
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="3" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="3" />
           </label>
           <label class="label-vertical">Th
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="4" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="4" />
           </label>
           <label class="label-vertical">F
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="5" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="5" />
           </label>
           <label class="label-vertical">Sa
-            <input v-model.number="daysOfWeek" type="checkbox" name="daysOfWeek" value="6" />
+            <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="6" />
           </label>
         </div>
       </div>
@@ -50,27 +52,27 @@
           <div class="count-details-radios">
             <label>
               <span>1 day<br /><small>24 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="24" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="24" />
             </label>
             <label>
               <span>2 days<br /><small>48 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="48" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="48" />
             </label>
             <label>
               <span>3 days<br /><small>72 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="72" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="72" />
             </label>
             <label>
               <span>4 days<br /><small>96 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="96" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="96" />
             </label>
             <label>
               <span>5 days<br /><small>120 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="120" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="120" />
             </label>
             <label>
               <span>1 week<br /><small>168 hours</small></span>
-              <input v-model.number="duration" type="radio" name="duration" value="168" />
+              <input v-model.number="duration" type="radio" :name="nameDuration" value="168" />
             </label>
           </div>
         </template>
@@ -79,16 +81,36 @@
           <div class="count-details-radios">
             <label>
               School
-              <input v-model="hours" type="radio" name="hours" value="SCHOOL" />
+              <input v-model="hours" type="radio" :name="nameHours" value="SCHOOL" />
             </label>
             <label>
               Routine
-              <input v-model="hours" type="radio" name="hours" value="ROUTINE" />
+              <input v-model="hours" type="radio" :name="nameHours" value="ROUTINE" />
             </label>
             <label>
               Other
-              <input v-model="hours" type="radio" name="hours" value="OTHER" />
+              <input v-model="hours" type="radio" :name="nameHours" value="OTHER" />
             </label>
+          </div>
+          <div class="panel panel-primary">
+            <i class="fa fa-clock"></i>
+            <span v-if="hours === 'SCHOOL'">
+              07:30 &ndash; 09:30<br />
+              10:00 &ndash; 11:00<br />
+              12:00 &ndash; 13:30<br />
+              14:15 &ndash; 15:45<br />
+              16:00 &ndash; 18:00
+            </span>
+            <span v-else-if="hours === 'ROUTINE'">
+              07:30 &ndash; 09:30<br />
+              10:00 &ndash; 12:00<br />
+              13:00 &ndash; 15:00<br />
+              16:00 &ndash; 18:00
+            </span>
+            <span v-else>
+              Use <strong>Any additional notes?</strong> to describe when you want
+              the study performed.
+            </span>
           </div>
         </template>
       </div>
@@ -96,7 +118,7 @@
         <div class="form-group">
           <label>Any additional notes?
             <div>
-              <textarea v-model="notes" rows="5"></textarea>
+              <textarea v-model="notes" :name="nameNotes" rows="5"></textarea>
             </div>
           </label>
         </div>
@@ -119,6 +141,7 @@ export default {
     count: Object,
     index: Number,
     meta: Object,
+    selectionMeta: Object,
   },
   data() {
     const now = new Date();
@@ -157,6 +180,9 @@ export default {
         });
       },
     },
+    disableDateRange() {
+      return this.selectionMeta.priority === 'URGENT';
+    },
     duration: {
       get() {
         return this.meta.duration || 24;
@@ -180,6 +206,24 @@ export default {
           value: hours,
         });
       },
+    },
+    indexHuman() {
+      return this.index + 1;
+    },
+    nameDateRange() {
+      return `dateRange_${this.indexHuman}`;
+    },
+    nameDaysOfWeek() {
+      return `daysOfWeek_${this.indexHuman}`;
+    },
+    nameDuration() {
+      return `duration_${this.indexHuman}`;
+    },
+    nameHours() {
+      return `hours_${this.indexHuman}`;
+    },
+    nameNotes() {
+      return `notes_${this.indexHuman}`;
     },
     notes: {
       get() {

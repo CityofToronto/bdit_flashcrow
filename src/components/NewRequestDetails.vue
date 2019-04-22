@@ -38,7 +38,7 @@
             The Traffic Safety Unit will contact you to make adjustments to the schedule.
           </p>
         </div>
-        <div v-if="priority === 'STANDARD'" class="panel panel-primary">
+        <div v-else-if="priority === 'STANDARD'" class="panel panel-primary">
           <i class="fa fa-calendar-check"></i>
           <span>
             Standard times to request counts are 2-3 months.  Peak times are April-June and
@@ -55,7 +55,7 @@
             <input
               v-model="ccEmails"
               type="text"
-              placeholder="e.g. tom.delaney@toronto.ca" />
+              placeholder="e.g. tom.delaney@toronto.ca, amy.schumer@toronto.ca" />
           </label>
         </div>
       </div>
