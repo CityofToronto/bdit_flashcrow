@@ -15,7 +15,6 @@
         <template v-slot:content>
           <h2>Your Count Details</h2>
           <CountDetails
-            ref="countDetails"
             v-for="(_, i) in dataSelection.items"
             :key="i"
             :index="i"
@@ -83,6 +82,7 @@ export default {
   methods: {
     onClickContinue() {
       if (this.$v.$invalid) {
+        /* eslint-disable no-alert */
         window.alert('The form contains one or more errors.');
       } else {
         this.$router.push({ name: 'requestsNewConfirm' });
