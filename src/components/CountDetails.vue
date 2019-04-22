@@ -21,7 +21,7 @@
             </DatePicker>
           </label>
         </div>
-        <strong>Pick days of the week for the study</strong>
+        <strong>* Pick days of the week for the study</strong>
         <div class="count-details-checks">
           <label class="label-vertical">Su
             <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="0" />
@@ -116,9 +116,13 @@
       </div>
       <div class="count-details-column">
         <div class="form-group">
-          <label>Any additional notes?
+          <label><span v-if="hours === 'OTHER'">*</span> Any additional notes?
             <div>
-              <textarea v-model="notes" :name="nameNotes" rows="5"></textarea>
+              <textarea
+                v-model="notes"
+                :name="nameNotes"
+                :required="hours === 'OTHER'"
+                rows="5"></textarea>
             </div>
           </label>
         </div>
@@ -128,7 +132,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import DatePicker from '@/components/DatePicker.vue';
 
@@ -138,27 +142,26 @@ export default {
     DatePicker,
   },
   props: {
-    count: Object,
     index: Number,
-    meta: Object,
-    selectionMeta: Object,
   },
   data() {
-    const now = new Date();
+    const { now } = this.$store.state;
     const twoMonthsOut = new Date(
       now.getFullYear(),
       now.getMonth() + 2,
       now.getDate(),
     );
     return {
-      now,
       twoMonthsOut,
     };
   },
   computed: {
+    count() {
+      return this.dataSelection.items[this.index].item;
+    },
     dateRange: {
       get() {
-        return this.meta.dateRange || null;
+        return this.meta.dateRange;
       },
       set(dateRange) {
         this.setDataSelectionItemMeta({
@@ -170,7 +173,7 @@ export default {
     },
     daysOfWeek: {
       get() {
-        return this.meta.daysOfWeek || [2, 3, 4];
+        return this.meta.daysOfWeek;
       },
       set(daysOfWeek) {
         this.setDataSelectionItemMeta({
@@ -181,11 +184,11 @@ export default {
       },
     },
     disableDateRange() {
-      return this.selectionMeta.priority === 'URGENT';
+      return this.dataSelectionMeta.priority === 'URGENT';
     },
     duration: {
       get() {
-        return this.meta.duration || 24;
+        return this.meta.duration;
       },
       set(duration) {
         this.setDataSelectionItemMeta({
@@ -197,7 +200,7 @@ export default {
     },
     hours: {
       get() {
-        return this.meta.hours || 'ROUTINE';
+        return this.meta.hours;
       },
       set(hours) {
         this.setDataSelectionItemMeta({
@@ -209,6 +212,9 @@ export default {
     },
     indexHuman() {
       return this.index + 1;
+    },
+    meta() {
+      return this.dataSelectionItemMeta(this.index);
     },
     nameDateRange() {
       return `dateRange_${this.indexHuman}`;
@@ -227,7 +233,7 @@ export default {
     },
     notes: {
       get() {
-        return this.meta.notes || '';
+        return this.meta.notes;
       },
       set(notes) {
         this.setDataSelectionItemMeta({
@@ -237,6 +243,8 @@ export default {
         });
       },
     },
+    ...mapGetters(['dataSelectionItemMeta', 'dataSelectionMeta']),
+    ...mapState(['dataSelection']),
   },
   methods: {
     ...mapActions(['setDataSelectionItemMeta']),

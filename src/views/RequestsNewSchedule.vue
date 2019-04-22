@@ -15,12 +15,9 @@
         <template v-slot:content>
           <h2>Your Count Details</h2>
           <CountDetails
-            v-for="(entry, i) in dataSelection.items"
+            v-for="(_, i) in dataSelection.items"
             :key="i"
-            :count="entry.item"
-            :index="i"
-            :meta="entry.meta"
-            :selection-meta="dataSelection.meta" />
+            :index="i" />
           <NewRequestDetails />
         </template>
         <template v-slot:actionBar>

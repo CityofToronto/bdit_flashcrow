@@ -3,7 +3,7 @@
     <div class="details-body">
       <div class="details-column">
         <div class="form-group">
-          <label>Reason for request?
+          <label>* Reason for request?
             <v-select
               :v-model="reason"
               class="form-select reason-for-request"
@@ -45,7 +45,7 @@
             September-November.
           </span>
           <p>
-            Estimated Delivery of Data: 23/06/2019
+            Estimated Delivery of Data: {{estimatedDeliveryDate | date}}
           </p>
         </div>
       </div>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import Constants from '@/lib/Constants';
 
@@ -78,7 +78,7 @@ export default {
   computed: {
     ccEmails: {
       get() {
-        return this.dataSelection.meta.ccEmails || '';
+        return this.dataSelectionMeta.ccEmails;
       },
       set(ccEmails) {
         this.setDataSelectionMeta({
@@ -87,9 +87,31 @@ export default {
         });
       },
     },
+    estimatedDeliveryDate() {
+      if (this.priority === 'URGENT') {
+        return null;
+      }
+      /*
+       * For now, the estimated delivery date is the latest midpoint of the date ranges
+       * selected in CountDetails.
+       *
+       * TODO: better delivery date estimates
+       */
+      let tMax = new Date().valueOf();
+      this.dataSelectionItemsMeta.forEach(({ dateRange }) => {
+        let { start, end } = dateRange;
+        start = start.valueOf();
+        end = end.valueOf();
+        const t = Math.round(start + (end - start) / 2);
+        if (t > tMax) {
+          tMax = t;
+        }
+      });
+      return new Date(tMax);
+    },
     priority: {
       get() {
-        return this.dataSelection.meta.priority || 'STANDARD';
+        return this.dataSelectionMeta.priority;
       },
       set(priority) {
         this.setDataSelectionMeta({
@@ -100,7 +122,7 @@ export default {
     },
     reason: {
       get() {
-        return this.dataSelection.meta.reason || Constants.REASONS[0];
+        return this.dataSelectionMeta.reason;
       },
       set(reason) {
         this.setDataSelectionMeta({
@@ -111,7 +133,7 @@ export default {
     },
     serviceRequestId: {
       get() {
-        return this.dataSelection.meta.serviceRequestId || '';
+        return this.dataSelectionMeta.serviceRequestId;
       },
       set(serviceRequestId) {
         this.setDataSelectionMeta({
@@ -120,6 +142,10 @@ export default {
         });
       },
     },
+    ...mapGetters([
+      'dataSelectionItemsMeta',
+      'dataSelectionMeta',
+    ]),
     ...mapState(['dataSelection']),
   },
   methods: {

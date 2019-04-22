@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
+import Constants from '@/lib/Constants';
 import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
@@ -17,6 +18,8 @@ function makeNewDataSelection() {
 
 export default new Vuex.Store({
   state: {
+    // time
+    now: new Date(),
     // authentication
     auth: {
       loggedIn: false,
@@ -54,8 +57,42 @@ export default new Vuex.Store({
     },
     dataSelectionIndexOf: state => itemToFind => state.dataSelection.items
       .findIndex(({ item }) => item === itemToFind),
+    /*
+     * TODO: extend this to handle different actions on the selection.
+     */
+    dataSelectionItemMeta: state => (i) => {
+      const start = new Date(
+        state.now.getFullYear(),
+        state.now.getMonth() + 2,
+        state.now.getDate() + 1,
+      );
+      const end = new Date(
+        state.now.getFullYear(),
+        state.now.getMonth() + 2,
+        state.now.getDate() + 7,
+      );
+      const { meta } = state.dataSelection.items[i];
+      return Object.assign({
+        dateRange: { start, end },
+        daysOfWeek: [2, 3, 4],
+        duration: 24,
+        hours: 'ROUTINE',
+        notes: '',
+      }, meta);
+    },
+    dataSelectionItemsMeta: (state, getters) => state.dataSelection.items
+      .map((_, i) => getters.dataSelectionItemMeta(i)),
     dataSelectionItems: state => state.dataSelection.items.map(({ item }) => item),
     dataSelectionLength: state => state.dataSelection.items.length,
+    /*
+     * TODO: extend this to handle different actions on the selection.
+     */
+    dataSelectionMeta: state => Object.assign({
+      ccEmails: '',
+      priority: 'STANDARD',
+      reason: Constants.REASONS[0],
+      serviceRequestId: '',
+    }, state.dataSelection.meta),
   },
   mutations: {
     setAuth(state, auth) {
