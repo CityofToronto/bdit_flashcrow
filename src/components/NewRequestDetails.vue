@@ -33,8 +33,10 @@
           <i class="fa fa-exclamation-triangle"></i>
           <span>
             You've marked this request urgent, which will mean reshuffling the request queue.
-            The Traffic Safety Unit will contact you to make adjustments to the schedule.
           </span>
+          <p>
+            The Traffic Safety Unit will contact you to make adjustments to the schedule.
+          </p>
         </div>
         <div v-if="priority === 'STANDARD'" class="panel panel-primary">
           <i class="fa fa-calendar-check"></i>
@@ -142,7 +144,7 @@ export default {
         flex-direction: row;
         flex-wrap: wrap;
         & > label {
-          flex: 0 0 33.3333%;
+          flex: 0 0 50%;
           margin: calc(var(--sp) * 2) 0;
         }
       }
