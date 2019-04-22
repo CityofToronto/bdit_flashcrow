@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
-import Constants from '@/lib/Constants';
 import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
@@ -90,7 +89,7 @@ export default new Vuex.Store({
     dataSelectionMeta: state => Object.assign({
       ccEmails: '',
       priority: 'STANDARD',
-      reason: Constants.REASONS[0],
+      reason: null,
       serviceRequestId: '',
     }, state.dataSelection.meta),
   },

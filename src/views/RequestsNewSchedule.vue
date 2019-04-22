@@ -15,10 +15,13 @@
         <template v-slot:content>
           <h2>Your Count Details</h2>
           <CountDetails
+            ref="countDetails"
             v-for="(_, i) in dataSelection.items"
             :key="i"
-            :index="i" />
-          <NewRequestDetails />
+            :index="i"
+            :v="$v.dataSelectionItemsMeta.$each[i]" />
+          <NewRequestDetails
+            :v="$v.dataSelectionMeta" />
         </template>
         <template v-slot:actionBar>
           <button
@@ -34,7 +37,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { required, requiredIf } from 'vuelidate/lib/validators';
+import { mapGetters, mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
 import CountDetails from '@/components/CountDetails.vue';
@@ -45,7 +49,7 @@ import PaneMap from '@/components/PaneMap.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
 
 export default {
-  name: 'RequestsNewRequest',
+  name: 'RequestsNewSchedule',
   components: {
     BreadcrumbRequestsNew,
     CountDetails,
@@ -56,12 +60,33 @@ export default {
     ToggleShowMap,
   },
   computed: {
+    ...mapGetters(['dataSelectionItemsMeta', 'dataSelectionMeta']),
     ...mapState(['dataSelection', 'showMap']),
+  },
+  validations: {
+    dataSelectionItemsMeta: {
+      $each: {
+        daysOfWeek: {
+          required,
+        },
+        notes: {
+          requiredIfOtherHours: requiredIf(meta => meta.hours === 'OTHER'),
+        },
+      },
+    },
+    dataSelectionMeta: {
+      reason: {
+        required,
+      },
+    },
   },
   methods: {
     onClickContinue() {
-      // TODO: implement this
-      this.$router.push({ name: 'requestsNewConfirm' });
+      if (this.$v.$invalid) {
+        window.alert('The form contains one or more errors.');
+      } else {
+        this.$router.push({ name: 'requestsNewConfirm' });
+      }
     },
   },
 };

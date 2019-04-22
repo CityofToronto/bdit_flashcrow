@@ -45,6 +45,9 @@
             <input v-model.number="daysOfWeek" type="checkbox" :name="nameDaysOfWeek" value="6" />
           </label>
         </div>
+        <div class="validation-error" v-if="!v.daysOfWeek.required">
+          At least one day of the week must be selected.
+        </div>
       </div>
       <div class="count-details-column">
         <template v-if="count.type.automatic">
@@ -125,6 +128,9 @@
                 rows="5"></textarea>
             </div>
           </label>
+          <div class="validation-error" v-if="!v.notes.requiredIfOtherHours">
+            Other hours must be described in <strong>Any additional notes?</strong>
+          </div>
         </div>
       </div>
     </div>
@@ -143,6 +149,7 @@ export default {
   },
   props: {
     index: Number,
+    v: Object,
   },
   data() {
     const { now } = this.$store.state;
@@ -208,6 +215,7 @@ export default {
           key: 'hours',
           value: hours,
         });
+        this.v.notes.$touch();
       },
     },
     indexHuman() {

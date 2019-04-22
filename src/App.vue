@@ -274,6 +274,11 @@ label {
   }
 }
 
+/* VALIDATION */
+.validation-error {
+  color: var(--red);
+}
+
 /* UTILITY */
 .flex-grow {
   flex: 1;
