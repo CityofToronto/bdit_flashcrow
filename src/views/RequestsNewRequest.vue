@@ -82,7 +82,7 @@ export default {
         this.counts.filter(c => c.type.value === this.requestAnother.value),
         (c) => {
           if (c.date === null) {
-            return Infinity;
+            return -Infinity;
           }
           return c.date.valueOf();
         },

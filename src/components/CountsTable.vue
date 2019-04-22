@@ -86,7 +86,7 @@ export default {
           if (c.date === null) {
             return -Infinity;
           }
-          return -c.date.valueOf();
+          return c.date.valueOf();
         }),
       );
     },
