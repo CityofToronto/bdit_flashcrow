@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import BreadcrumbRequestsNew from '@/components/BreadcrumbRequestsNew.vue';
 import CountDetailsSummary from '@/components/CountDetailsSummary.vue';
@@ -62,7 +62,9 @@ export default {
   methods: {
     onClickConfirm() {
       this.$router.push({ name: 'home' });
+      this.clearDataSelection();
     },
+    ...mapMutations(['clearDataSelection']),
   },
 };
 </script>
