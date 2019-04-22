@@ -2,15 +2,26 @@
   <v-date-picker
     v-bind="$attrs"
     v-model="internalValue"
-    :input-props="{class: 'input-date-picker'}"
+    :class="{
+      'date-picker': true,
+      'disabled': disabled
+    }"
+    :show-popover="false"
     :theme-styles="themeStyles">
+    <input
+      slot-scope="{ inputValue }"
+      type="text"
+      class="input-date-picker"
+      :disabled="disabled"
+      :name="name"
+      :value="inputValue" />
   </v-date-picker>
 </template>
 
 <script>
 export default {
   name: 'FilterDate',
-  props: ['value'],
+  props: ['disabled', 'name', 'value'],
   data() {
     const textLg = { fontSize: 'var(--text-lg)' };
     const textXl = { fontSize: 'var(--text-xl)' };
@@ -36,7 +47,13 @@ export default {
 </script>
 
 <style lang="postcss">
-.input-date-picker {
-  width: 100%;
+.date-picker {
+  &.disabled {
+    opacity: 0.75;
+    pointer-events: none;
+  }
+  .input-date-picker {
+    width: 100%;
+  }
 }
 </style>
