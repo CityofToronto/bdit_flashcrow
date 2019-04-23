@@ -67,7 +67,7 @@ export default {
     transition: var(--transition-short) ease;
     visibility: hidden;
     width: 100%;
-    z-index: 99;
+    z-index: var(--z-index-controls);
 
     &:before {
       border-bottom: 6px solid transparent;

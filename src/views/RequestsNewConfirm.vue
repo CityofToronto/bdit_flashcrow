@@ -56,9 +56,35 @@ export default {
     ToggleShowMap,
   },
   computed: {
+    estimatedDeliveryDate() {
+      if (this.priority === 'URGENT') {
+        return null;
+      }
+      /*
+       * For now, the estimated delivery date is the latest midpoint of the date ranges
+       * selected in CountDetails.
+       *
+       * TODO: better delivery date estimates
+       * TODO: DRY with NewRequestDetails.vue
+       */
+      let tMax = new Date().valueOf();
+      this.dataSelectionItemsMeta.forEach(({ dateRange }) => {
+        let { start, end } = dateRange;
+        start = start.valueOf();
+        end = end.valueOf();
+        const t = Math.round(start + (end - start) / 2);
+        if (t > tMax) {
+          tMax = t;
+        }
+      });
+      return new Date(tMax);
+    },
     linkBackTo() {
       const query = this.location === null ? '' : this.location.geoId;
       return { name: 'viewQuery', params: { query } };
+    },
+    priority() {
+      return this.dataSelectionMeta.priority;
     },
     ...mapGetters(['dataSelectionItemsMeta', 'dataSelectionMeta']),
     ...mapState(['dataSelection', 'location', 'showMap']),
@@ -66,10 +92,14 @@ export default {
   methods: {
     onClickConfirm() {
       this.$router.push({ name: 'home' });
-      this.clearDataSelection();
-      this.setShowMap(true);
+      this.setModal({
+        component: 'ModalRequestsNewConfirmation',
+        data: {
+          estimatedDeliveryDate: this.estimatedDeliveryDate,
+        },
+      });
     },
-    ...mapMutations(['clearDataSelection', 'setShowMap']),
+    ...mapMutations(['setModal']),
   },
 };
 </script>

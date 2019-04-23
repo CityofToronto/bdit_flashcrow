@@ -94,10 +94,7 @@ export default {
           return c.date.valueOf();
         },
       );
-      if (this.dataSelectionContains(count)) {
-        /* eslint-disable no-alert */
-        window.alert('Already selected!');
-      } else {
+      if (!this.dataSelectionContains(count)) {
         this.addToDataSelection(count);
       }
       this.$refs.requestAnother.clearSelection();
