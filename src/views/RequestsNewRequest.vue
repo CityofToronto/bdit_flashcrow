@@ -22,6 +22,9 @@
               :options="optionsCountTypes"
               placeholder="Request another study" />
           </div>
+          <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
+            To request data, first select one or more count types to request.
+          </div>
         </template>
         <template v-slot:actionBar>
           <button
@@ -89,7 +92,7 @@ export default {
       );
       if (this.dataSelectionContains(count)) {
         /* eslint-disable no-alert */
-        window.alert('already selected');
+        window.alert('Already selected!');
       } else {
         this.addToDataSelection(count);
       }
@@ -97,11 +100,16 @@ export default {
       this.requestAnother = null;
     },
   },
+  validations: {
+    dataSelectionEmpty: {
+      notEmpty: value => !value,
+    },
+  },
   methods: {
     onClickRequestData() {
-      if (this.dataSelectionEmpty) {
+      if (this.$v.$invalid) {
         /* eslint-disable no-alert */
-        window.alert('Nothing selected!');
+        window.alert('The form contains one or more errors.');
       } else {
         this.$router.push({ name: 'requestsNewSchedule' });
       }

@@ -41,6 +41,7 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
+import Constants from '@/lib/Constants';
 
 const STATUS_META = [
   'Recent',
@@ -74,7 +75,8 @@ export default {
       if (this.filterCountTypes.length === 0) {
         return this.counts;
       }
-      const values = this.filterCountTypes.map(type => type.value);
+      const values = this.filterCountTypes
+        .map(i => Constants.COUNT_TYPES[i].value);
       return this.counts.filter(c => values.includes(c.type.value));
     },
     countsSections() {

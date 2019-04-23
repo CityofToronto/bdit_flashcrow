@@ -4,12 +4,15 @@
     <template v-slot:navSecondary>
       <FilterDate />
       <FilterCountTypes />
-      <ToggleShowMap />
+      <ToggleShowMap class="flex-grow text-right" />
     </template>
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
           <CountsTable :counts="counts" />
+          <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
+            To request data, first select one or more count types to request.
+          </div>
         </template>
         <template v-slot:actionBar>
           <div
@@ -31,8 +34,7 @@
           <div class="start-request-wrapper text-right">
             <button
               class="btn-primary"
-              @click="onClickStartRequest"
-              :disabled="dataSelectionEmpty">
+              @click="onClickStartRequest">
               Start Request
             </button>
           </div>
@@ -44,7 +46,6 @@
 </template>
 
 <script>
-/* eslint-disable no-alert */
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import CountsTable from '@/components/CountsTable.vue';
@@ -70,10 +71,16 @@ export default {
     ...mapGetters(['dataSelectionEmpty', 'dataSelectionLength']),
     ...mapState(['counts', 'showMap']),
   },
+  validations: {
+    dataSelectionEmpty: {
+      notEmpty: value => !value,
+    },
+  },
   methods: {
     onClickStartRequest() {
-      if (this.dataSelectionEmpty) {
-        window.alert('Nothing selected!');
+      if (this.$v.$invalid) {
+        /* eslint-disable no-alert */
+        window.alert('The form contains one or more errors.');
       } else {
         this.$router.push({ name: 'requestsNewRequest' });
         this.setShowMap(false);
