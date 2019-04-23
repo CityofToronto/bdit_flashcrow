@@ -69,25 +69,10 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
 
-    &:before {
-      border-bottom: 6px solid transparent;
-      border-left: 6px solid transparent;
-      border-right: 6px solid var(--white);
-      border-top: 6px solid var(--white);
-      content: '';
-      height: 0;
-      left: 20px;
-      position: absolute;
-      top: -6px;
-      transform: rotate(-45deg);
-      width: 0;
-    }
-
     & > li {
       background: var(--white);
-      border-bottom: 1px solid var(--outline-grey);
       cursor: pointer;
-      padding: var(--sp) calc(var(--sp) * 2);
+      padding: 0;
 
       /* see https://developer.mozilla.org/en-US/docs/Web/CSS/list-style */
       &:before {
@@ -95,19 +80,12 @@ export default {
         float: left;
       }
 
-      &:last-child {
-        border-bottom: 0;
-      }
-
       &.selected {
-        background-color: var(--light-green);
-        border-bottom-color: var(--green);
         color: var(--green);
       }
 
       &:hover, &.selected:hover {
         background-color: var(--light-blue);
-        border-bottom-color: var(--blue);
         color: var(--blue);
       }
 
@@ -116,7 +94,7 @@ export default {
         display: block;
         font-size: var(--text-md);
         font-weight: var(--font-normal);
-        margin-bottom: var(--sp);
+        padding: var(--sp) calc(var(--sp) * 2);
       }
     }
   }
@@ -126,7 +104,7 @@ export default {
   &:hover > ul.dropdown,
   & > ul.dropdown:hover {
     opacity: 1;
-    transform: translate(0, 10px);
+    transform: translate(0, 1px);
     visibility: visible;
   }
 }
