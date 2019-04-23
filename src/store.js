@@ -18,6 +18,8 @@ function makeNewDataSelection() {
 
 export default new Vuex.Store({
   state: {
+    // modal
+    modal: null,
     // time
     now: new Date(),
     // authentication
@@ -95,6 +97,12 @@ export default new Vuex.Store({
     }, state.dataSelection.meta),
   },
   mutations: {
+    clearModal(state) {
+      Vue.set(state, 'modal', null);
+    },
+    setModal(state, modal) {
+      Vue.set(state, 'modal', modal);
+    },
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
     },

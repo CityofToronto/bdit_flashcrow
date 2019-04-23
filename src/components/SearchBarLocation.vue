@@ -111,7 +111,7 @@ export default {
     position: absolute;
     top: 31px;
     width: 100%;
-    z-index: 99;
+    z-index: var(--z-index-controls);
     & > .suggestion {
       cursor: pointer;
       padding: var(--sp) calc(var(--sp) * 2);

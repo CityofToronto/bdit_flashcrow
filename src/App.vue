@@ -7,6 +7,10 @@
         method="POST"
         action="/flashcrow/api/auth/logout"></form>
     </div>
+    <div v-if="modal !== null" class="modal-container">
+      <div class="modal-backdrop"></div>
+      <component :is="modal.component" :data="modal.data"></component>
+    </div>
     <div class="nav-bar">
       <div class="nav-brand">
         <img
@@ -42,17 +46,20 @@
 </template>
 
 <script>
-/* eslint-disable no-alert */
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
 
+import ModalComingSoon from '@/components/ModalComingSoon.vue';
+import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
 
 export default {
   name: 'App',
   components: {
+    ModalComingSoon,
+    ModalRequestsNewConfirmation,
     SearchBarLocation,
   },
   computed: {
@@ -62,15 +69,26 @@ export default {
       }
       return 'Guest';
     },
-    ...mapState(['auth']),
+    ...mapState(['auth', 'modal']),
   },
   methods: {
+    onModalToggle() {
+      if (!this.$refs.modalToggle.checked) {
+        this.clearModal();
+      }
+    },
     profileComingSoon() {
-      window.alert('Coming soon: user profiles!');
+      this.setModal({
+        component: 'ModalComingSoon',
+        data: {
+          feature: 'user profiles',
+        },
+      });
     },
     signOut() {
       this.$refs.formSignOut.submit();
     },
+    ...mapMutations(['clearModal', 'setModal']),
   },
 };
 </script>
@@ -78,6 +96,7 @@ export default {
 <style lang="postcss">
 /* THEME */
 :root {
+  --modal-bg: #00000099;
   --white: #fff;
   --off-white: #fafafa;
   --outline-grey: #c7c7c7;
@@ -102,6 +121,9 @@ export default {
   --font-bold: 600;
   --sp: 0.4rem;
   --transition-short: .15s;
+  --z-index-controls: 99;
+  --z-index-modal-backdrop: 1000;
+  --z-index-modal-content: 1001;
 }
 * {
   box-sizing: border-box;
@@ -131,6 +153,40 @@ body {
   padding: 0;
   & > main {
     flex: 1;
+  }
+}
+
+/* MODALS */
+.modal-container {
+  position: relative;
+  .modal-backdrop {
+    background-color: var(--modal-bg);
+    height: 100vh;
+    left: 0;
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    transition: opacity 0.2s ease-in;
+    visibility: visible;
+    width: 100vw;
+    z-index: var(--z-index-modal-backdrop);
+  }
+  .modal {
+    background-color: var(--white);
+    box-shadow: 0 3px 7px var(--modal-bg);
+    height: auto;
+    left: 50%;
+    max-height: 100%;
+    max-width: 100%;
+    opacity: 1;
+    padding: calc(var(--sp) * 2);
+    pointer-events: auto;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    visibility: visible;
+    width: 400px;
+    z-index: var(--z-index-modal-content);
   }
 }
 

@@ -129,7 +129,7 @@ export default {
     bottom: 8px;
     position: absolute;
     right: 15px;
-    z-index: 99;
+    z-index: var(--z-index-controls);
   }
   .mapboxgl-ctrl-bottom-right {
     bottom: 38px;

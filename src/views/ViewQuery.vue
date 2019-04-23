@@ -86,7 +86,7 @@ export default {
         this.setShowMap(false);
       }
     },
-    ...mapMutations(['setShowMap']),
+    ...mapMutations(['setModal', 'setShowMap']),
   },
 };
 </script>
