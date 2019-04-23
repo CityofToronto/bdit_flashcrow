@@ -91,38 +91,37 @@ export default {
 .search-bar {
   position: relative;
   & button {
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 0.3rem 0 0 0.3rem;
+    background-color: var(--white);
+    border: 1px solid var(--outline-grey);
     border-right: 0;
     padding: 0 1px 0 6px;
-    transition: border-color .15s ease-in-out;
+    transition: border-color var(--transition-short) ease-in-out;
     & > img {
-      border-right: 1px solid #ccc;
-      transition: border-color .15s ease-in-out;
+      border-right: 1px solid var(--outline-grey);
+      transition: border-color var(--transition-short) ease-in-out;
     }
   }
   & input {
     width: 320px;
   }
   & > .suggestions {
-    background-color: white;
-    border: 1px solid #ced4da;
-    border-top: none;
+    background-color: var(--white);
+    border: 1px solid var(--outline-grey);
+    border-top: 0;
     position: absolute;
-    top: 38px;
-    transition: border-color .15s ease-in-out;
+    top: 31px;
     width: 100%;
     z-index: 99;
     & > .suggestion {
       cursor: pointer;
-      padding: 4px 8px;
-      &.disabled {
-        cursor: default;
-        color: #444;
+      padding: var(--sp) calc(var(--sp) * 2);
+      &:hover {
+        background-color: var(--light-blue);
+        color: var(--blue);
       }
-      &:not(.disabled):hover {
-        background-color: #8c85db33;
+      &.disabled, &.disabled:hover {
+        cursor: not-allowed;
+        color: var(--outline-grey);
       }
     }
   }
