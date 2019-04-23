@@ -1,5 +1,5 @@
 <template>
-  <date-picker
+  <DatePicker
     v-model="filterDate"
     class="filter-date"
     :disabled-dates="{start: tomorrow, end: null}"
@@ -8,8 +8,9 @@
     }"
     :max-date="now"
     :min-date="minDate"
-    mode="range">
-  </date-picker>
+    mode="range"
+    placeholder="Filter by date">
+  </DatePicker>
 </template>
 
 <script>
