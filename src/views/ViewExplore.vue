@@ -3,7 +3,6 @@
     <template v-slot:navSecondary>
       <FilterDate />
       <FilterCountTypes />
-      <router-link :to="{name: 'viewQuery', params: {query: 'test'}}">ViewQuery</router-link>
     </template>
     <template v-slot:panes>
       <PaneMap />

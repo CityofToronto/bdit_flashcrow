@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
+import Constants from '@/lib/Constants';
 import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
@@ -36,7 +37,7 @@ export default new Vuex.Store({
     dataSelection: makeNewDataSelection(),
     // filtering data
     // TODO: in searching / selecting phase, bring this under one "filter" key
-    filterCountTypes: [],
+    filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
     // map mode
     showMap: true,
