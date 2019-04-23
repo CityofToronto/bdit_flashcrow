@@ -4,7 +4,7 @@
     <template v-slot:navSecondary>
       <router-link
         class="link-back"
-        :to="{name: 'viewQuery'}">
+        :to="linkBackTo">
         View all data
       </router-link>
       <BreadcrumbRequestsNew />
@@ -68,13 +68,17 @@ export default {
     };
   },
   computed: {
+    linkBackTo() {
+      const query = this.location === null ? '' : this.location.geoId;
+      return { name: 'viewQuery', params: { query } };
+    },
     ...mapGetters([
       'dataSelectionContains',
       'dataSelectionEmpty',
       'dataSelectionItems',
       'dataSelectionLength',
     ]),
-    ...mapState(['counts', 'showMap']),
+    ...mapState(['counts', 'location', 'showMap']),
   },
   watch: {
     requestAnother() {

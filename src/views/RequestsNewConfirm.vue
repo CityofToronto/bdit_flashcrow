@@ -4,7 +4,7 @@
     <template v-slot:navSecondary>
       <router-link
         class="link-back"
-        :to="{name: 'viewQuery'}">
+        :to="linkBackTo">
         View all data
       </router-link>
       <BreadcrumbRequestsNew />
@@ -56,15 +56,20 @@ export default {
     ToggleShowMap,
   },
   computed: {
+    linkBackTo() {
+      const query = this.location === null ? '' : this.location.geoId;
+      return { name: 'viewQuery', params: { query } };
+    },
     ...mapGetters(['dataSelectionItemsMeta', 'dataSelectionMeta']),
-    ...mapState(['dataSelection', 'showMap']),
+    ...mapState(['dataSelection', 'location', 'showMap']),
   },
   methods: {
     onClickConfirm() {
       this.$router.push({ name: 'home' });
       this.clearDataSelection();
+      this.setShowMap(true);
     },
-    ...mapMutations(['clearDataSelection']),
+    ...mapMutations(['clearDataSelection', 'setShowMap']),
   },
 };
 </script>
