@@ -1,7 +1,11 @@
 <template>
   <div
     class="search-bar search-bar-location"
-    :class="{suggestions: suggestionsActive}">
+    :class="{suggestions: locationSuggestions !== null}"
+    @keydown.arrow-down="onKeyArrowDown"
+    @keydown.arrow-up="onKeyArrowUp"
+    @keydown.enter="onKeyEnter"
+    @keydown.esc="onKeyEsc">
     <div class="input-group">
       <img
         src="/flashcrow/icons/search-icon.svg"
@@ -13,17 +17,24 @@
         placeholder="Try &quot;Kingston and Lee&quot;"
         @input="onInputQuery" />
     </div>
-    <div v-if="suggestionsActive" class="suggestions">
+    <div
+      v-if="locationSuggestions !== null"
+      class="suggestions"
+      @mouseleave="activeSuggestion = null">
       <div
         v-if="locationSuggestions.length === 0"
         class="suggestion disabled">
         No suggestions for <em>{{query}}</em>.
       </div>
       <div
-        v-for="suggestion in locationSuggestions"
+        v-for="(suggestion, i) in locationSuggestions"
         :key="suggestion.KEYSTRING"
         class="suggestion"
-        @click="onSelectSuggestion(suggestion)">
+        :class="{
+          'active': activeSuggestion === i,
+        }"
+        @click="onSelectSuggestion(suggestion)"
+        @mouseover="activeSuggestion = i">
         {{suggestion.ADDRESS}}
       </div>
     </div>
@@ -53,14 +64,12 @@ export default {
   name: 'SearchBarLocation',
   data() {
     return {
+      activeSuggestion: null,
       selectedSuggestion: false,
       query: '',
     };
   },
   computed: {
-    suggestionsActive() {
-      return this.locationSuggestions !== null;
-    },
     ...mapState(['location', 'locationSuggestions']),
   },
   watch: {
@@ -73,6 +82,44 @@ export default {
   methods: {
     onInputQuery() {
       this.selectedSuggestion = false;
+    },
+    onKeyArrowDown() {
+      if (this.locationSuggestions === null) {
+        return;
+      }
+      const n = this.locationSuggestions.length;
+      if (n === 0) {
+        return;
+      }
+      if (this.activeSuggestion === null || this.activeSuggestion === n - 1) {
+        this.activeSuggestion = 0;
+      } else {
+        this.activeSuggestion += 1;
+      }
+    },
+    onKeyArrowUp() {
+      if (this.locationSuggestions === null) {
+        return;
+      }
+      const n = this.locationSuggestions.length;
+      if (n === 0) {
+        return;
+      }
+      if (this.activeSuggestion === null || this.activeSuggestion === 0) {
+        this.activeSuggestion = n - 1;
+      } else {
+        this.activeSuggestion -= 1;
+      }
+    },
+    onKeyEnter() {
+      if (this.activeSuggestion === null) {
+        return;
+      }
+      const suggestion = this.locationSuggestions[this.activeSuggestion];
+      this.onSelectSuggestion(suggestion);
+    },
+    onKeyEsc() {
+      this.clearLocationSuggestions();
     },
     onSelectSuggestion(suggestion) {
       this.selectedSuggestion = true;
@@ -115,11 +162,11 @@ export default {
     & > .suggestion {
       cursor: pointer;
       padding: var(--sp) calc(var(--sp) * 2);
-      &:hover {
+      &.active {
         background-color: var(--light-blue);
         color: var(--blue);
       }
-      &.disabled, &.disabled:hover {
+      &.disabled {
         cursor: not-allowed;
         color: var(--outline-grey);
       }
