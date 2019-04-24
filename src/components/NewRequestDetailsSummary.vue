@@ -23,16 +23,28 @@
       </div>
       <div class="details-column">
         <div class="form-group">
-          <strong>Other staff you'd like to update:</strong>
-          <ul v-if="ccEmailsHuman.length > 0">
-            <li
-              v-for="(ccEmail, i) in ccEmailsHuman"
-              :key="i">{{ccEmail}}</li>
-          </ul>
+          <strong v-if="ccEmailsHuman.length === 0">
+            No other staff to update
+          </strong>
+          <template v-else>
+            <strong>Other staff you'd like to update:</strong>
+            <ul>
+              <li
+                v-for="(ccEmail, i) in ccEmailsHuman"
+                :key="i">{{ccEmail}}</li>
+            </ul>
+          </template>
         </div>
       </div>
     </div>
-    <div class="panel panel-primary">
+    <div v-if="priority === 'URGENT'" class="panel panel-warning">
+      <h3>Urgent Request</h3>
+      <p>
+        You've marked this request urgent.  The Traffic Safety Unit will
+        contact you to make adjustments to the schedule.
+      </p>
+    </div>
+    <div v-else class="panel panel-primary">
       <h3>Estimated Delivery Date: {{estimatedDeliveryDate | date}}</h3>
     </div>
   </fieldset>

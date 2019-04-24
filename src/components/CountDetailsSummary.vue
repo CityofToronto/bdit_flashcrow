@@ -8,7 +8,7 @@
     </legend>
     <div class="count-details-body">
       <div class="count-details-column">
-        <div class="form-group">
+        <div v-if="priority !== 'URGENT'" class="form-group">
           <strong>We'll conduct the study between:</strong>
           <p>
             {{dateRange.start | date}}&ndash;{{dateRange.end | date}}
@@ -116,6 +116,9 @@ export default {
     },
     notes() {
       return this.meta.notes;
+    },
+    priority() {
+      return this.dataSelectionMeta.priority;
     },
     ...mapGetters(['dataSelectionItemMeta', 'dataSelectionMeta']),
     ...mapState(['dataSelection']),

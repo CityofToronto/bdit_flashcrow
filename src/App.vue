@@ -211,6 +211,9 @@ p {
 strong {
   font-weight: var(--font-bold);
 }
+small {
+  color: var(--outline-grey-focus);
+}
 .panel {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
