@@ -4,11 +4,16 @@
       <div class="details-column">
         <div class="form-group">
           <label>* Reason for request?
-            <v-select
+            <select
               v-model="reason"
-              class="form-select reason-for-request"
-              :options="optionsReason"
-              placeholder="Select reason for request" />
+              class="form-select reason-for-request">
+              <option
+                v-for="r in optionsReason"
+                :key="r.value"
+                :value="JSON.stringify(r)">
+                {{r.label}}
+              </option>
+            </select>
           </label>
           <div class="validation-error" v-if="!v.reason.required">
             A reason for the request must be selected.
@@ -128,13 +133,17 @@ export default {
     },
     reason: {
       get() {
-        return this.dataSelectionMeta.reason;
+        const { reason } = this.dataSelectionMeta;
+        if (reason === null) {
+          return null;
+        }
+        return JSON.stringify(reason);
       },
       set(reason) {
-        console.log(reason);
+        const value = JSON.parse(reason);
         this.setDataSelectionMeta({
           key: 'reason',
-          value: reason,
+          value,
         });
       },
     },

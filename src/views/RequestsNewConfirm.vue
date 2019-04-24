@@ -96,6 +96,7 @@ export default {
         component: 'ModalRequestsNewConfirmation',
         data: {
           estimatedDeliveryDate: this.estimatedDeliveryDate,
+          priority: this.priority,
         },
       });
     },
