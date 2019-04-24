@@ -22,12 +22,16 @@
             <h3>Selected</h3>
           </div>
           <div class="print-wrapper">
-            <button :disabled="dataSelectionEmpty">
+            <button
+              :disabled="dataSelectionEmpty"
+              @click="onClickPrint">
               <i class="fa fa-print"></i> Print All
             </button>
           </div>
           <div class="download-wrapper">
-            <button :disabled="dataSelectionEmpty">
+            <button
+              :disabled="dataSelectionEmpty"
+              @click="onClickDownload">
               <i class="fa fa-print"></i> Download All
             </button>
           </div>
@@ -77,6 +81,14 @@ export default {
     },
   },
   methods: {
+    onClickDownload() {
+      this.setModal({
+        component: 'ModalComingSoon',
+        data: {
+          feature: 'download',
+        },
+      });
+    },
     onClickStartRequest() {
       if (this.$v.$invalid) {
         /* eslint-disable no-alert */
@@ -85,6 +97,14 @@ export default {
         this.$router.push({ name: 'requestsNewRequest' });
         this.setShowMap(false);
       }
+    },
+    onClickPrint() {
+      this.setModal({
+        component: 'ModalComingSoon',
+        data: {
+          feature: 'print',
+        },
+      });
     },
     ...mapMutations(['setModal', 'setShowMap']),
   },
