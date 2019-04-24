@@ -1,16 +1,17 @@
 <template>
   <div
-    class="search-bar search-bar-location"
+    class="search-bar-location"
     :class="{suggestions: locationSuggestions !== null}"
     @keydown.arrow-down="onKeyArrowDown"
     @keydown.arrow-up="onKeyArrowUp"
     @keydown.enter="onKeyEnter"
     @keydown.esc="onKeyEsc">
     <div class="input-group">
-      <img
-        src="/flashcrow/icons/search-icon.svg"
-        alt="Search" />
+      <div class="input-group-icon" @click="$refs.query.focus()">
+        <i class="fa fa-search"></i>
+      </div>
       <input
+        ref="query"
         v-model="query"
         class="input-query"
         type="text"
@@ -112,8 +113,11 @@ export default {
       }
     },
     onKeyEnter() {
-      if (this.activeSuggestion === null) {
+      if (this.locationSuggestions === null || this.locationSuggestions.length === 0) {
         return;
+      }
+      if (this.activeSuggestion === null) {
+        this.activeSuggestion = 0;
       }
       const suggestion = this.locationSuggestions[this.activeSuggestion];
       this.onSelectSuggestion(suggestion);
@@ -135,19 +139,8 @@ export default {
 </script>
 
 <style lang="postcss">
-.search-bar {
+.search-bar-location {
   position: relative;
-  & button {
-    background-color: var(--white);
-    border: 1px solid var(--outline-grey);
-    border-right: 0;
-    padding: 0 1px 0 6px;
-    transition: border-color var(--transition-short) ease-in-out;
-    & > img {
-      border-right: 1px solid var(--outline-grey);
-      transition: border-color var(--transition-short) ease-in-out;
-    }
-  }
   & input {
     width: 320px;
   }

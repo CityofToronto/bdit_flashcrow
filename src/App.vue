@@ -211,6 +211,9 @@ p {
 strong {
   font-weight: var(--font-bold);
 }
+small {
+  color: var(--outline-grey-focus);
+}
 .panel {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
@@ -271,25 +274,22 @@ textarea {
   resize: none;
   width: 100%;
 }
+select {
+  background-color: var(--white);
+  display: block;
+  font-family: var(--font-family);
+  font-size: var(--text-xl);
+  padding: var(--sp) calc(var(--sp) * 2);
+  width: 100%;
+}
 .v-select.form-select {
   background-color: var(--white);
+  font-family: var(--font-family);
+  font-size: var(--text-xl);
   & input[type=search] {
     font-family: var(--font-family);
-    font-size: var(--text-xl);
     margin: 0;
     padding: 0 calc(var(--sp) * 2);
-  }
-  & .dropdown-toggle {
-    border-color: var(--outline-grey);
-    border-radius: 0;
-    padding-bottom: 2px;
-    transition: border-color var(--transition-short) ease-in-out;
-    &::after {
-      display: none;
-    }
-  }
-  &:hover .dropdown-toggle {
-    border-color: var(--outline-grey-focus);
   }
 }
 label {
@@ -297,8 +297,17 @@ label {
   vertical-align: middle;
 }
 .input-group {
+  & > .input-group-icon {
+    background-color: var(--white);
+    border: 1px solid var(--outline-grey);
+    border-right: none;
+    font-size: var(--text-xl);
+    height: 31px;
+    padding: var(--sp) calc(var(--sp) * 2);
+  }
   & > * {
     border: 1px solid var(--outline-grey);
+    display: inline-block;
     transition: border-color var(--transition-short) ease-in-out;
     vertical-align: middle;
   }
