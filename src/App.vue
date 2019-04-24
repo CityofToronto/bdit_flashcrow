@@ -297,8 +297,17 @@ label {
   vertical-align: middle;
 }
 .input-group {
+  & > .input-group-icon {
+    background-color: var(--white);
+    border: 1px solid var(--outline-grey);
+    border-right: none;
+    font-size: var(--text-xl);
+    height: 31px;
+    padding: var(--sp) calc(var(--sp) * 2);
+  }
   & > * {
     border: 1px solid var(--outline-grey);
+    display: inline-block;
     transition: border-color var(--transition-short) ease-in-out;
     vertical-align: middle;
   }
