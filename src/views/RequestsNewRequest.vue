@@ -14,7 +14,7 @@
       <PaneDisplay>
         <template v-slot:content>
           <CountsRequestedTable />
-          <div>
+          <div v-if="optionsCountTypes.length > 0">
             <v-select
               ref="requestAnother"
               v-model="requestAnother"
@@ -63,7 +63,6 @@ export default {
   },
   data() {
     return {
-      optionsCountTypes: Constants.COUNT_TYPES,
       requestAnother: null,
     };
   },
@@ -71,6 +70,12 @@ export default {
     linkBackTo() {
       const query = this.location === null ? '' : this.location.geoId;
       return { name: 'viewQuery', params: { query } };
+    },
+    optionsCountTypes() {
+      return Constants.COUNT_TYPES.filter(({ value }) => {
+        const i = this.dataSelectionItems.findIndex(c => c.type.value === value);
+        return i === -1;
+      });
     },
     ...mapGetters([
       'dataSelectionContains',
