@@ -271,25 +271,21 @@ textarea {
   resize: none;
   width: 100%;
 }
+select {
+  background-color: var(--white);
+  font-family: var(--font-family);
+  font-size: var(--text-xl);
+  margin: 0;
+  padding: 0 calc(var(--sp) * 2);
+}
 .v-select.form-select {
   background-color: var(--white);
+  font-family: var(--font-family);
+  font-size: var(--text-xl);
   & input[type=search] {
     font-family: var(--font-family);
-    font-size: var(--text-xl);
     margin: 0;
     padding: 0 calc(var(--sp) * 2);
-  }
-  & .dropdown-toggle {
-    border-color: var(--outline-grey);
-    border-radius: 0;
-    padding-bottom: 2px;
-    transition: border-color var(--transition-short) ease-in-out;
-    &::after {
-      display: none;
-    }
-  }
-  &:hover .dropdown-toggle {
-    border-color: var(--outline-grey-focus);
   }
 }
 label {
