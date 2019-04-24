@@ -273,10 +273,11 @@ textarea {
 }
 select {
   background-color: var(--white);
+  display: block;
   font-family: var(--font-family);
   font-size: var(--text-xl);
-  margin: 0;
-  padding: 0 calc(var(--sp) * 2);
+  padding: var(--sp) calc(var(--sp) * 2);
+  width: 100%;
 }
 .v-select.form-select {
   background-color: var(--white);
