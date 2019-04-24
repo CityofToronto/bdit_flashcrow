@@ -1,5 +1,11 @@
 <template>
   <div class="pane-map">
+    <div class="pane-map-google-maps">
+      <button>
+        <span v-if="coordinates === null">Google Maps</span>
+        <a v-else :href="hrefGoogleMaps" target="_blank">Google Maps</a>
+      </button>
+    </div>
     <div class="pane-map-mode">
       <button @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
@@ -30,11 +36,23 @@ export default {
   },
   data() {
     return {
+      coordinates: null,
       satellite: false,
     };
   },
   computed: {
+    hrefGoogleMaps() {
+      if (this.coordinates === null) {
+        return '#';
+      }
+      const { lat, lng, zoom } = this.coordinates;
+      const z = Math.round(zoom);
+      return `https://www.google.com/maps/@${lat},${lng},${z}z`;
+    },
     ...mapState(['location']),
+  },
+  created() {
+    this.map = null;
   },
   mounted() {
     const bounds = new mapboxgl.LngLatBounds(
@@ -63,6 +81,7 @@ export default {
       }],
     };
     Vue.nextTick(() => {
+      this.loading = false;
       this.map = new mapboxgl.Map({
         bounds,
         boxZoom: false,
@@ -80,6 +99,7 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+      this.map.on('move', this.updateCoordinates.bind(this));
       this.easeToLocation();
     });
   },
@@ -118,6 +138,11 @@ export default {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
     },
+    updateCoordinates() {
+      const { lat, lng } = this.map.getCenter();
+      const zoom = this.map.getZoom();
+      this.coordinates = { lat, lng, zoom };
+    },
   },
 };
 </script>
@@ -125,6 +150,12 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  & > .pane-map-google-maps {
+    bottom: 8px;
+    position: absolute;
+    left: 15px;
+    z-index: var(--z-index-controls);
+  }
   & > .pane-map-mode {
     bottom: 8px;
     position: absolute;
