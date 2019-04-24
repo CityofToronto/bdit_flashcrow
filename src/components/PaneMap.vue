@@ -1,0 +1,139 @@
+<template>
+  <div class="pane-map">
+    <div class="pane-map-mode">
+      <button @click="toggleSatellite">
+        {{ satellite ? 'Map' : 'Aerial' }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script>
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import Vue from 'vue';
+import { mapState } from 'vuex';
+
+import GeoStyle from '@/lib/geo/GeoStyle';
+
+const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
+  new mapboxgl.LngLat(-79.639264937, 43.580995995),
+  new mapboxgl.LngLat(-79.115243191, 43.855457183),
+);
+const ZOOM_TORONTO = 10;
+const ZOOM_LOCATION = 17;
+const ZOOM_MAX = 19;
+
+export default {
+  name: 'PaneMap',
+  props: {
+    cols: Number,
+  },
+  data() {
+    return {
+      satellite: false,
+    };
+  },
+  computed: {
+    ...mapState(['location']),
+  },
+  mounted() {
+    const bounds = new mapboxgl.LngLatBounds(
+      new mapboxgl.LngLat(-79.639264937, 43.580995995),
+      new mapboxgl.LngLat(-79.115243191, 43.855457183),
+    );
+    this.mapStyle = GeoStyle.get();
+    // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
+    this.satelliteStyle = {
+      version: 8,
+      sources: {
+        'gcc-ortho-webm': {
+          type: 'raster',
+          tiles: [
+            'https://insideto-gis.toronto.ca/arcgis/rest/services/primary/cot_ortho_webm/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+        },
+      },
+      layers: [{
+        id: 'gcc-ortho-webm',
+        type: 'raster',
+        source: 'gcc-ortho-webm',
+        minzoom: 0,
+        maxzoom: 23,
+      }],
+    };
+    Vue.nextTick(() => {
+      this.map = new mapboxgl.Map({
+        bounds,
+        boxZoom: false,
+        container: this.$el,
+        dragRotate: false,
+        maxBounds: bounds,
+        maxZoom: ZOOM_MAX,
+        minZoom: ZOOM_TORONTO,
+        pitchWithRotate: false,
+        renderWorldCopies: false,
+        style: this.mapStyle,
+        zoom: ZOOM_TORONTO,
+      });
+      this.map.addControl(
+        new mapboxgl.NavigationControl({ showCompass: false }),
+        'bottom-right',
+      );
+      this.easeToLocation();
+    });
+  },
+  beforeDestroy() {
+    this.map.remove();
+  },
+  watch: {
+    location() {
+      this.easeToLocation();
+    },
+  },
+  methods: {
+    easeToLocation() {
+      if (this.location === null) {
+        // zoom to Toronto
+        const center = BOUNDS_TORONTO.getCenter();
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_TORONTO,
+        });
+      } else {
+        // zoom to location
+        const { lat, lng } = this.location;
+        const center = new mapboxgl.LngLat(lng, lat);
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_LOCATION,
+        });
+      }
+    },
+    toggleSatellite() {
+      this.satellite = !this.satellite;
+      if (this.satellite) {
+        this.map.setStyle(this.satelliteStyle, { diff: false });
+      } else {
+        this.map.setStyle(this.mapStyle, { diff: false });
+      }
+    },
+  },
+};
+</script>
+
+<style lang="postcss">
+.pane-map {
+  background-color: var(--white);
+  & > .pane-map-mode {
+    bottom: 8px;
+    position: absolute;
+    right: 15px;
+    z-index: var(--z-index-controls);
+  }
+  .mapboxgl-ctrl-bottom-right {
+    bottom: 38px;
+    right: 5px;
+  }
+}
+</style>

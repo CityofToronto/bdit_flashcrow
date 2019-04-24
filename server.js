@@ -1,12 +1,13 @@
 const Blankie = require('blankie');
+const Boom = require('boom');
 const Hapi = require('hapi');
 const hapiAuthCookie = require('hapi-auth-cookie');
+const rp = require('request-promise-native');
 const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
 const OpenIDClient = require('./lib/auth/OpenIDClient');
-const CounterDAO = require('./lib/db/CounterDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
@@ -228,38 +229,62 @@ async function initServer() {
     },
   });
 
-  // COUNTER
+  // LOCATION QUERYING
 
   server.route({
     method: 'GET',
-    path: '/counter',
+    path: '/cotgeocoder/suggest',
     config: {
-      handler: async () => {
-        const counter = await CounterDAO.get();
-        return { counter };
-      },
+      auth: { mode: 'try' },
+    },
+    handler: async (request) => {
+      const searchString = request.query.q;
+      const uri = 'https://insideto-map.toronto.ca/cotgeocoder/rest/geocoder/suggest';
+      const qs = { searchString, f: 'json' };
+      const response = await rp({
+        json: true,
+        uri,
+        qs,
+        rejectUnauthorized: false,
+      });
+      if (response.result && response.result.rows) {
+        return response.result.rows;
+      }
+      return [];
     },
   });
 
   server.route({
-    method: 'PUT',
-    path: '/counter',
+    method: 'GET',
+    path: '/cotgeocoder/findAddressCandidates',
     config: {
-      handler: async () => {
-        const counter = await CounterDAO.increment();
-        return { counter };
-      },
+      auth: { mode: 'try' },
     },
-  });
-
-  server.route({
-    method: 'DELETE',
-    path: '/counter',
-    config: {
-      handler: async () => {
-        const counter = await CounterDAO.reset();
-        return { counter };
-      },
+    handler: async (request) => {
+      const { keyString } = request.query;
+      const uri = 'https://insideto-map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates';
+      const qs = { keyString, f: 'json' };
+      const response = await rp({
+        json: true,
+        uri,
+        qs,
+        rejectUnauthorized: false,
+      });
+      if (response.result && response.result.rows && response.result.rows.length > 0) {
+        const {
+          INT_GEO_ID,
+          KEY_DESC,
+          LATITUDE,
+          LONGITUDE,
+        } = response.result.rows[0];
+        return {
+          description: KEY_DESC,
+          geoId: INT_GEO_ID,
+          lat: LATITUDE,
+          lng: LONGITUDE,
+        };
+      }
+      return Boom.notFound(`could not locate key string: ${keyString}`);
     },
   });
 
