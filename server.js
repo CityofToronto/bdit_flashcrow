@@ -239,7 +239,7 @@ async function initServer() {
     },
     handler: async (request) => {
       const searchString = request.query.q;
-      const uri = 'https://insideto-map.toronto.ca/cotgeocoder/rest/geocoder/suggest';
+      const uri = 'https://map.toronto.ca/cotgeocoder/rest/geocoder/suggest';
       const qs = { searchString, f: 'json' };
       const response = await rp({
         json: true,
@@ -262,7 +262,7 @@ async function initServer() {
     },
     handler: async (request) => {
       const { keyString } = request.query;
-      const uri = 'https://insideto-map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates';
+      const uri = 'https://map.toronto.ca/cotgeocoder/rest/geocoder/findAddressCandidates';
       const qs = { keyString, f: 'json' };
       const response = await rp({
         json: true,

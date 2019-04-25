@@ -67,7 +67,7 @@ export default {
         'gcc-ortho-webm': {
           type: 'raster',
           tiles: [
-            'https://insideto-gis.toronto.ca/arcgis/rest/services/primary/cot_ortho_webm/MapServer/tile/{z}/{y}/{x}',
+            'https://gis.toronto.ca/arcgis/rest/services/primary/cot_ortho_webm/MapServer/tile/{z}/{y}/{x}',
           ],
           tileSize: 256,
         },
