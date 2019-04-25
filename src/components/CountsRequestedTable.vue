@@ -76,17 +76,23 @@
           </button>
         </td>
       </tr>
-      <tr v-if="optionsCountTypes.length > 0" class="row-request-another">
+      <tr class="row-request-another">
         <td>
-          <i class="fa fa-plus-circle" @click="$refs.requestAnother.onSearchFocus()"></i>
+          <i
+            v-if="optionsCountTypes.length > 0"
+            class="fa fa-plus-circle"
+            @click="$refs.requestAnother.onSearchFocus()"></i>
+          <i v-else class="fa fa-plus-circle">All study types selected.</i>
         </td>
         <td colspan="4">
           <v-select
             ref="requestAnother"
+            v-if="optionsCountTypes.length > 0"
             v-model="requestAnother"
             class="form-select request-another"
             :options="optionsCountTypes"
             placeholder="Request another study" />
+          <span v-else>All study types selected.</span>
         </td>
       </tr>
     </tbody>
@@ -198,11 +204,6 @@ export default {
     & > tr {
       background-color: var(--white);
       cursor: pointer;
-      &.row-request-another {
-        & > td:first-child {
-          font-size: var(--text-xxl);
-        }
-      }
       & > td {
         padding: calc(var(--sp) * 2);
         border-top: 1px solid var(--outline-grey);
@@ -215,6 +216,16 @@ export default {
         }
         & > .btn-remove-count {
           margin-right: calc(var(--sp) * 2);
+        }
+      }
+      &.row-request-another {
+        background-color: var(--light-yellow);
+        & > td {
+          border-color: var(--yellow);
+          color: var(--yellow);
+          &:first-child {
+            font-size: var(--text-xxl);
+          }
         }
       }
     }

@@ -205,6 +205,7 @@ export default {
         & > td {
           border-color: var(--yellow);
           color: var(--yellow);
+          font-weight: var(--font-bold);
         }
       }
       &.selected,
