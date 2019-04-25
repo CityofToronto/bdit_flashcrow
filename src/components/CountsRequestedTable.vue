@@ -82,7 +82,7 @@
             v-if="optionsCountTypes.length > 0"
             class="fa fa-plus-circle"
             @click="$refs.requestAnother.onSearchFocus()"></i>
-          <i v-else class="fa fa-plus-circle">All study types selected.</i>
+          <i v-else class="fa fa-plus-circle"></i>
         </td>
         <td colspan="4">
           <v-select
