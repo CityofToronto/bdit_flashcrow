@@ -2,8 +2,7 @@
   <LayoutMain
     class="view-query">
     <template v-slot:navSecondary>
-      <FilterDate />
-      <FilterCountTypes />
+      <FilterBar />
       <ToggleShowMap class="flex-grow text-right" />
     </template>
     <template v-slot:panes>
@@ -53,8 +52,7 @@
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import CountsTable from '@/components/CountsTable.vue';
-import FilterCountTypes from '@/components/FilterCountTypes.vue';
-import FilterDate from '@/components/FilterDate.vue';
+import FilterBar from '@/components/FilterBar.vue';
 import LayoutMain from '@/components/LayoutMain.vue';
 import PaneDisplay from '@/components/PaneDisplay.vue';
 import PaneMap from '@/components/PaneMap.vue';
@@ -64,8 +62,7 @@ export default {
   name: 'ViewQuery',
   components: {
     CountsTable,
-    FilterCountTypes,
-    FilterDate,
+    FilterBar,
     LayoutMain,
     PaneDisplay,
     PaneMap,

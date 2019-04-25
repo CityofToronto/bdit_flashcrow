@@ -25,7 +25,7 @@ export default {
     display: flex;
     flex-direction: row;
     margin-bottom: calc(var(--sp) * 2);
-    padding: var(--sp) calc(var(--sp) * 2);
+    padding: var(--sp) calc(var(--sp) * 10);
   }
   & > .panes {
     display: flex;

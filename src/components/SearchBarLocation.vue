@@ -6,18 +6,13 @@
     @keydown.arrow-up="onKeyArrowUp"
     @keydown.enter="onKeyEnter"
     @keydown.esc="onKeyEsc">
-    <div class="input-group">
-      <div class="input-group-icon" @click="$refs.query.focus()">
-        <i class="fa fa-search"></i>
-      </div>
-      <input
-        ref="query"
-        v-model="query"
-        class="input-query"
-        type="text"
-        placeholder="Try &quot;Kingston and Lee&quot;"
-        @input="onInputQuery" />
-    </div>
+    <input
+      ref="query"
+      v-model="query"
+      class="input-query"
+      type="text"
+      placeholder="Try &quot;Kingston and Lee&quot;"
+      @input="onInputQuery" />
     <div
       v-if="locationSuggestions !== null"
       class="suggestions"
