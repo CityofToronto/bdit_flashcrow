@@ -4,15 +4,51 @@
     <thead>
       <tr>
         <th>&nbsp;</th>
-        <th>Count</th>
-        <th>Date</th>
-        <th>Status</th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'COUNT' }"
+          @click="onClickSortBy('COUNT')">
+          Count
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'COUNT',
+              'fa-sort-up': sortBy === 'COUNT' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'COUNT' && sortDirection === -1,
+            }"></i>
+        </th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'DATE' }"
+          @click="onClickSortBy('DATE')">
+          Date
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'DATE',
+              'fa-sort-up': sortBy === 'DATE' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'DATE' && sortDirection === -1,
+            }"></i>
+        </th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'STATUS' }"
+          @click="onClickSortBy('STATUS')">
+          Status
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'STATUS',
+              'fa-sort-up': sortBy === 'STATUS' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'STATUS' && sortDirection === -1,
+            }"></i>
+        </th>
         <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       <tr
-        v-for="(count, i) in dataSelectionItems"
+        v-for="(count, i) in dataSelectionItemsSorted"
         :key="i">
         <td>
           <input type="checkbox" checked disabled />
@@ -40,26 +76,39 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-const STATUS_META = [
-  'Recent',
-  '3+ years old',
-  'Not in system',
-  'Requested',
-];
+import ArrayUtils from '@/lib/ArrayUtils';
+import Constants from '@/lib/Constants';
 
 export default {
   name: 'CountsRequestedTable',
   data() {
     return {
-      STATUS_META,
+      sortBy: 'COUNT',
+      sortDirection: 1,
+      STATUS_META: Constants.STATUS_META,
     };
   },
   computed: {
+    dataSelectionItemsSorted() {
+      return ArrayUtils.sortBy(
+        this.dataSelectionItems,
+        Constants.SORT_KEYS[this.sortBy],
+        this.sortDirection,
+      );
+    },
     ...mapGetters(['dataSelectionItems']),
   },
   methods: {
     onClickRemoveCount(count) {
       this.removeFromDataSelection(count);
+    },
+    onClickSortBy(sortBy) {
+      if (sortBy !== this.sortBy) {
+        this.sortBy = sortBy;
+        this.sortDirection = 1;
+      } else {
+        this.sortDirection = -this.sortDirection;
+      }
     },
     ...mapActions(['removeFromDataSelection']),
   },
@@ -78,7 +127,20 @@ export default {
   & > thead {
     font-size: var(--text-xl);
     & > tr > th {
+      padding: calc(var(--sp) * 2);
       text-align: left;
+      &.selectable {
+        cursor: pointer;
+        &.selected,
+        &.selected:hover {
+          background-color: var(--light-green);
+          color: var(--green);
+        }
+        &:hover {
+          background-color: var(--light-blue);
+          color: var(--blue);
+        }
+      }
     }
   }
   & > tbody {

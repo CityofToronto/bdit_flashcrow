@@ -38,10 +38,18 @@ const Status = {
   REQUEST_PENDING: 3,
 };
 
+const STATUS_META = [
+  'Recent',
+  '3+ years old',
+  'Not in system',
+  'Requested',
+];
+
 export default {
   COUNT_TYPES,
   DAYS_OF_WEEK,
   REASONS,
   SORT_KEYS,
   Status,
+  STATUS_META,
 };
