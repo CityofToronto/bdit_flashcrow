@@ -28,7 +28,7 @@ export default {
   height: 100%;
   & > header,
   & > .content {
-    padding: 0 calc(var(--sp) * 2);
+    padding: 0 calc(var(--sp) * 10);
   }
   & > .content {
     flex: 1;
@@ -40,7 +40,7 @@ export default {
     display: flex;
     flex-direction: row;
     font-size: var(--text-xl);
-    padding: calc(var(--sp) * 2);
+    padding: calc(var(--sp) * 2) calc(var(--sp) * 10);
   }
 }
 </style>

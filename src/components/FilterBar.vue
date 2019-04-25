@@ -1,18 +1,18 @@
 <template>
 <div class="filter-bar">
   <button
-    :class="{ 'btn-primary': mode === 'ALL' }"
+    :class="{ 'btn-success': mode === 'ALL' }"
     @click="onClickAll">
     All
   </button>
   <button
-    :class="{ 'btn-primary': mode === 'COLLISIONS' }"
+    :class="{ 'btn-success': mode === 'COLLISIONS' }"
     @click="onClickCollisions">
     Collisions
   </button>
   <FilterCountTypes
     :class="{
-      'btn-primary': mode === 'COUNTS' && filterCountTypes.length > 0
+      'btn-success': mode === 'COUNTS' && filterCountTypes.length > 0
     }"
     @filter-count-types="onClickCounts" />
 </div>
