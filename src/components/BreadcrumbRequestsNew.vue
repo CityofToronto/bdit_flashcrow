@@ -57,6 +57,7 @@ export default {
   display: flex;
   flex-direction: row;
   font-size: var(--text-xxl);
+  margin-bottom: calc(var(--sp) * 4);
   text-transform: uppercase;
   & > .breadcrumb-step {
     color: var(--outline-grey);

@@ -3,7 +3,7 @@
     class="view-query">
     <template v-slot:navSecondary>
       <FilterBar />
-      <ToggleShowMap class="flex-grow text-right" />
+      <ToggleShowMap />
     </template>
     <template v-slot:panes>
       <PaneDisplay>
