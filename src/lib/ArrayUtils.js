@@ -17,15 +17,15 @@ class ArrayUtils {
     return xMax;
   }
 
-  static sortBy(xs, key) {
+  static sortBy(xs, key, direction = 1) {
     return xs.slice(0).sort((a, b) => {
       const ka = key(a);
       const kb = key(b);
       if (ka < kb) {
-        return -1;
+        return -direction;
       }
       if (ka > kb) {
-        return 1;
+        return direction;
       }
       return 0;
     });

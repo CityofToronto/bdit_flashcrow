@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group size-lg">
+  <div class="toggle-show-map form-group size-lg">
     <label>Show Map
       <input type="checkbox" v-model="showMap" />
     </label>
@@ -23,5 +23,8 @@ export default {
 </script>
 
 <style lang="postcss">
-
+.toggle-show-map {
+  flex: 1;
+  text-align: right;
+}
 </style>

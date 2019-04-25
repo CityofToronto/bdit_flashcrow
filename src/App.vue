@@ -28,13 +28,19 @@
         <ul>
           <li>
             <router-link
-               :to="{name: 'home'}">
-               View Data
+              v-if="location !== null"
+              :to="{name: 'viewQuery', params: { query: location.geoId }}">
+               <span>View Data </span>
+               <i class="fa fa-search"></i>
             </router-link>
+            <a v-else disabled>
+              <span>View Data </span>
+              <i class="fa fa-search"></i>
+            </a>
           </li>
           <li class="flex-grow text-right">
             <a href="javascript:void(0);" @click="profileComingSoon">
-              <span>Profile</span>
+              <span>Welcome, Chris!</span>
               <svg class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
             </a>
           </li>
@@ -69,7 +75,7 @@ export default {
       }
       return 'Guest';
     },
-    ...mapState(['auth', 'modal']),
+    ...mapState(['auth', 'modal', 'location']),
   },
   methods: {
     onModalToggle() {
@@ -234,6 +240,46 @@ small {
 fieldset {
   border: 1px solid var(--outline-grey);
 }
+.details {
+  padding: 0;
+  margin: 0;
+  & > legend {
+    margin-left: calc(var(--sp) * 4);
+    padding: 0 var(--sp);
+  }
+  & > .details-body {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: calc(var(--sp) * 4);
+    padding: 0 calc(var(--sp) * 4);
+    & > .details-column {
+      flex: 0 0 33.3333%;
+      padding: 0 calc(var(--sp) * 4);
+      & .details-checks {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        .label-vertical {
+          text-align: center;
+          margin: 0 var(--sp);
+          & > input {
+            display: block;
+          }
+        }
+      }
+      & .details-radios {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        & > label {
+          margin: calc(var(--sp) * 2) 0;
+        }
+      }
+    }
+  }
+}
 button, .btn {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
@@ -249,6 +295,16 @@ button, .btn {
     background-color: var(--light-blue);
     border-color: var(--blue);
     color: var(--blue);
+  }
+  &.btn-success {
+    background-color: var(--light-green);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  &.btn-warning {
+    background-color: var(--light-yellow);
+    border-color: var(--yellow);
+    color: var(--yellow);
   }
 }
 input[type=date],
@@ -324,6 +380,11 @@ label {
 }
 .form-group {
   font-size: var(--text-md);
+  margin-bottom: calc(var(--sp) * 4);
+  & > strong {
+    display: inline-block;
+    margin-bottom: calc(var(--sp) * 2);
+  }
   &.size-lg {
     font-size: var(--text-lg);
   }
@@ -364,6 +425,7 @@ label {
   border-bottom: 1px solid var(--outline-grey);
   display: flex;
   margin-bottom: calc(var(--sp) * 2);
+  padding: 0 calc(var(--sp) * 10);
   & > .nav-brand {
     align-items: center;
     display: flex;
@@ -400,6 +462,12 @@ label {
           line-height: calc(var(--sp) * 8);
           padding: calc(var(--sp) * 2);
           text-decoration: none;
+          &[disabled], &[disabled]:hover {
+            background-color: transparent;
+            border: none;
+            color: var(--outline-grey);
+            cursor: not-allowed;
+          }
           & > * {
             vertical-align: middle;
           }
@@ -426,10 +494,17 @@ label {
     }
   }
 }
+
+/* ONE-OFF STYLING */
 .open-indicator {
   margin-right: 8px;
   .v-select:hover &::before {
     color: black;
   }
+}
+
+.link-back {
+  font-size: var(--text-xl);
+  text-transform: uppercase;
 }
 </style>

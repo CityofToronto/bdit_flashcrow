@@ -1,18 +1,65 @@
 <template>
   <table class="counts-requested-table">
     <caption>Your selected data</caption>
+    <colgroup>
+      <col style="width: 50px;">
+      <col>
+      <col>
+      <col>
+      <col>
+    </colgroup>
     <thead>
       <tr>
-        <th>Count</th>
-        <th>Date</th>
-        <th>Status</th>
+        <th>&nbsp;</th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'COUNT' }"
+          @click="onClickSortBy('COUNT')">
+          Count
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'COUNT',
+              'fa-sort-up': sortBy === 'COUNT' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'COUNT' && sortDirection === -1,
+            }"></i>
+        </th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'DATE' }"
+          @click="onClickSortBy('DATE')">
+          Date
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'DATE',
+              'fa-sort-up': sortBy === 'DATE' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'DATE' && sortDirection === -1,
+            }"></i>
+        </th>
+        <th
+          class="selectable"
+          :class="{ selected: sortBy === 'STATUS' }"
+          @click="onClickSortBy('STATUS')">
+          Status
+          <i
+            class="fa"
+            :class="{
+              'fa-sort': sortBy !== 'STATUS',
+              'fa-sort-up': sortBy === 'STATUS' && sortDirection === 1,
+              'fa-sort-down': sortBy === 'STATUS' && sortDirection === -1,
+            }"></i>
+        </th>
         <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       <tr
-        v-for="(count, i) in dataSelectionItems"
+        v-for="(count, i) in dataSelectionItemsSorted"
         :key="i">
+        <td>
+          <input type="checkbox" checked disabled />
+        </td>
         <td>{{count.type.label}}</td>
         <td>
           <span v-if="count.date">{{count.date | date}}</span>
@@ -25,8 +72,27 @@
           <button
             class="btn-remove-count"
             @click="onClickRemoveCount(count)">
-            <i class="fa fa-trash-alt"></i>
+            Remove <i class="fa fa-trash-alt"></i>
           </button>
+        </td>
+      </tr>
+      <tr class="row-request-another">
+        <td>
+          <i
+            v-if="optionsCountTypes.length > 0"
+            class="fa fa-plus-circle"
+            @click="$refs.requestAnother.onSearchFocus()"></i>
+          <i v-else class="fa fa-plus-circle"></i>
+        </td>
+        <td colspan="4">
+          <v-select
+            ref="requestAnother"
+            v-if="optionsCountTypes.length > 0"
+            v-model="requestAnother"
+            class="form-select request-another"
+            :options="optionsCountTypes"
+            placeholder="Request another study" />
+          <span v-else>All study types selected.</span>
         </td>
       </tr>
     </tbody>
@@ -34,30 +100,73 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
-const STATUS_META = [
-  'Recent',
-  '3+ years old',
-  'Not in system',
-  'Requested',
-];
+import ArrayUtils from '@/lib/ArrayUtils';
+import Constants from '@/lib/Constants';
 
 export default {
   name: 'CountsRequestedTable',
   data() {
     return {
-      STATUS_META,
+      requestAnother: null,
+      sortBy: 'COUNT',
+      sortDirection: 1,
+      STATUS_META: Constants.STATUS_META,
     };
   },
   computed: {
-    ...mapGetters(['dataSelectionItems']),
+    dataSelectionItemsSorted() {
+      return ArrayUtils.sortBy(
+        this.dataSelectionItems,
+        Constants.SORT_KEYS[this.sortBy],
+        this.sortDirection,
+      );
+    },
+    optionsCountTypes() {
+      return Constants.COUNT_TYPES.filter(({ value }) => {
+        const i = this.dataSelectionItems.findIndex(c => c.type.value === value);
+        return i === -1;
+      });
+    },
+    ...mapGetters([
+      'dataSelectionContains',
+      'dataSelectionItems',
+    ]),
+    ...mapState(['counts']),
+  },
+  watch: {
+    requestAnother() {
+      if (this.requestAnother === null) {
+        return;
+      }
+      const count = ArrayUtils.getMaxBy(
+        this.counts.filter(c => c.type.value === this.requestAnother.value),
+        Constants.SORT_KEYS.DATE,
+      );
+      if (!this.dataSelectionContains(count)) {
+        this.addToDataSelection(count);
+      }
+      this.$refs.requestAnother.clearSelection();
+      this.requestAnother = null;
+    },
   },
   methods: {
     onClickRemoveCount(count) {
       this.removeFromDataSelection(count);
     },
-    ...mapActions(['removeFromDataSelection']),
+    onClickSortBy(sortBy) {
+      if (sortBy !== this.sortBy) {
+        this.sortBy = sortBy;
+        this.sortDirection = 1;
+      } else {
+        this.sortDirection = -this.sortDirection;
+      }
+    },
+    ...mapActions([
+      'addToDataSelection',
+      'removeFromDataSelection',
+    ]),
   },
 };
 </script>
@@ -74,7 +183,20 @@ export default {
   & > thead {
     font-size: var(--text-xl);
     & > tr > th {
+      padding: calc(var(--sp) * 2);
       text-align: left;
+      &.selectable {
+        cursor: pointer;
+        &.selected,
+        &.selected:hover {
+          background-color: var(--light-green);
+          color: var(--green);
+        }
+        &:hover {
+          background-color: var(--light-blue);
+          color: var(--blue);
+        }
+      }
     }
   }
   & > tbody {
@@ -83,7 +205,7 @@ export default {
       background-color: var(--white);
       cursor: pointer;
       & > td {
-        padding: calc(var(--sp) * 2) 0;
+        padding: calc(var(--sp) * 2);
         border-top: 1px solid var(--outline-grey);
         border-bottom: 1px solid var(--outline-grey);
         &:first-child {
@@ -94,6 +216,16 @@ export default {
         }
         & > .btn-remove-count {
           margin-right: calc(var(--sp) * 2);
+        }
+      }
+      &.row-request-another {
+        background-color: var(--light-yellow);
+        & > td {
+          border-color: var(--yellow);
+          color: var(--yellow);
+          &:first-child {
+            font-size: var(--text-xxl);
+          }
         }
       }
     }

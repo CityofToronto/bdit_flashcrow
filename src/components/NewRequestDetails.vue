@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="new-request-details">
+  <fieldset class="details new-request-details">
     <div class="details-body">
       <div class="details-column">
         <div class="form-group">
@@ -174,24 +174,6 @@ export default {
 .new-request-details {
   border: none;
   margin-top: calc(var(--sp) * 4);
-  & > .details-body {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-    & > .details-column {
-      flex: 0 0 33.3333%;
-      padding: 0 calc(var(--sp) * 2);
-      & > .details-radios {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        & > label {
-          flex: 0 0 50%;
-          margin: calc(var(--sp) * 2) 0;
-        }
-      }
-    }
-  }
   .reason-for-request {
     .dropdown-menu {
       bottom: 100%;
