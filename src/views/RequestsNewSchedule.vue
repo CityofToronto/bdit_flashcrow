@@ -12,7 +12,8 @@
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
-          <BreadcrumbRequestsNew />
+          <BreadcrumbRequestsNew
+            :current-step-completed="!$v.$invalid" />
           <h2>Your Count Details</h2>
           <CountDetails
             v-for="(_, i) in dataSelection.items"
