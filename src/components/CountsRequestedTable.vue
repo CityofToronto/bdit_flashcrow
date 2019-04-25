@@ -72,7 +72,7 @@
           <button
             class="btn-remove-count"
             @click="onClickRemoveCount(count)">
-            Delete <i class="fa fa-trash-alt"></i>
+            Remove <i class="fa fa-trash-alt"></i>
           </button>
         </td>
       </tr>
