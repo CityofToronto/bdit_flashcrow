@@ -1,6 +1,13 @@
 <template>
   <table class="counts-requested-table">
     <caption>Your selected data</caption>
+    <colgroup>
+      <col style="width: 50px;">
+      <col>
+      <col>
+      <col>
+      <col>
+    </colgroup>
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -65,8 +72,21 @@
           <button
             class="btn-remove-count"
             @click="onClickRemoveCount(count)">
-            <i class="fa fa-trash-alt"></i>
+            Delete <i class="fa fa-trash-alt"></i>
           </button>
+        </td>
+      </tr>
+      <tr v-if="optionsCountTypes.length > 0" class="row-request-another">
+        <td>
+          <i class="fa fa-plus-circle" @click="$refs.requestAnother.onSearchFocus()"></i>
+        </td>
+        <td colspan="4">
+          <v-select
+            ref="requestAnother"
+            v-model="requestAnother"
+            class="form-select request-another"
+            :options="optionsCountTypes"
+            placeholder="Request another study" />
         </td>
       </tr>
     </tbody>
@@ -74,7 +94,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
@@ -83,6 +103,7 @@ export default {
   name: 'CountsRequestedTable',
   data() {
     return {
+      requestAnother: null,
       sortBy: 'COUNT',
       sortDirection: 1,
       STATUS_META: Constants.STATUS_META,
@@ -96,7 +117,33 @@ export default {
         this.sortDirection,
       );
     },
-    ...mapGetters(['dataSelectionItems']),
+    optionsCountTypes() {
+      return Constants.COUNT_TYPES.filter(({ value }) => {
+        const i = this.dataSelectionItems.findIndex(c => c.type.value === value);
+        return i === -1;
+      });
+    },
+    ...mapGetters([
+      'dataSelectionContains',
+      'dataSelectionItems',
+    ]),
+    ...mapState(['counts']),
+  },
+  watch: {
+    requestAnother() {
+      if (this.requestAnother === null) {
+        return;
+      }
+      const count = ArrayUtils.getMaxBy(
+        this.counts.filter(c => c.type.value === this.requestAnother.value),
+        Constants.SORT_KEYS.DATE,
+      );
+      if (!this.dataSelectionContains(count)) {
+        this.addToDataSelection(count);
+      }
+      this.$refs.requestAnother.clearSelection();
+      this.requestAnother = null;
+    },
   },
   methods: {
     onClickRemoveCount(count) {
@@ -110,7 +157,10 @@ export default {
         this.sortDirection = -this.sortDirection;
       }
     },
-    ...mapActions(['removeFromDataSelection']),
+    ...mapActions([
+      'addToDataSelection',
+      'removeFromDataSelection',
+    ]),
   },
 };
 </script>
@@ -148,8 +198,13 @@ export default {
     & > tr {
       background-color: var(--white);
       cursor: pointer;
+      &.row-request-another {
+        & > td:first-child {
+          font-size: var(--text-xxl);
+        }
+      }
       & > td {
-        padding: calc(var(--sp) * 2) 0;
+        padding: calc(var(--sp) * 2);
         border-top: 1px solid var(--outline-grey);
         border-bottom: 1px solid var(--outline-grey);
         &:first-child {

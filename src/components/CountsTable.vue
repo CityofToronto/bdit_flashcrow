@@ -1,6 +1,13 @@
 <template>
   <table class="counts-table">
     <caption>{{caption}}</caption>
+    <colgroup>
+      <col style="width: 50px;">
+      <col>
+      <col>
+      <col>
+      <col style="width: 40px;">
+    </colgroup>
     <thead>
       <tr>
         <th>&nbsp;</th>

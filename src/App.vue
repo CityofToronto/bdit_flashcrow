@@ -449,10 +449,17 @@ label {
     }
   }
 }
+
+/* ONE-OFF STYLING */
 .open-indicator {
   margin-right: 8px;
   .v-select:hover &::before {
     color: black;
   }
+}
+
+.link-back {
+  font-size: var(--text-xl);
+  text-transform: uppercase;
 }
 </style>
