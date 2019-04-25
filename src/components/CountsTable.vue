@@ -79,13 +79,6 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
-const STATUS_META = [
-  'Recent',
-  '3+ years old',
-  'Not in system',
-  'Requested',
-];
-
 export default {
   name: 'CountsTable',
   props: {
@@ -95,7 +88,7 @@ export default {
     return {
       sortBy: 'COUNT',
       sortDirection: 1,
-      STATUS_META,
+      STATUS_META: Constants.STATUS_META,
     };
   },
   computed: {
