@@ -12,7 +12,8 @@
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
-          <BreadcrumbRequestsNew />
+          <BreadcrumbRequestsNew
+            :current-step-completed="!$v.$invalid" />
           <CountsRequestedTable />
           <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
             To request data, first select one or more count types to request.
