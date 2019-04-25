@@ -240,6 +240,46 @@ small {
 fieldset {
   border: 1px solid var(--outline-grey);
 }
+.details {
+  padding: 0;
+  margin: 0;
+  & > legend {
+    margin-left: calc(var(--sp) * 4);
+    padding: 0 var(--sp);
+  }
+  & > .details-body {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: calc(var(--sp) * 4);
+    padding: 0 calc(var(--sp) * 4);
+    & > .details-column {
+      flex: 0 0 33.3333%;
+      padding: 0 calc(var(--sp) * 4);
+      & .details-checks {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        .label-vertical {
+          text-align: center;
+          margin: 0 var(--sp);
+          & > input {
+            display: block;
+          }
+        }
+      }
+      & .details-radios {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        & > label {
+          margin: calc(var(--sp) * 2) 0;
+        }
+      }
+    }
+  }
+}
 button, .btn {
   background-color: var(--white);
   border: 1px solid var(--outline-grey);
@@ -340,6 +380,11 @@ label {
 }
 .form-group {
   font-size: var(--text-md);
+  margin-bottom: calc(var(--sp) * 4);
+  & > strong {
+    display: inline-block;
+    margin-bottom: calc(var(--sp) * 2);
+  }
   &.size-lg {
     font-size: var(--text-lg);
   }
