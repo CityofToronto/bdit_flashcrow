@@ -25,6 +25,12 @@ const REASONS = [
   { label: 'Other', value: null },
 ];
 
+const SORT_KEYS = {
+  COUNT: c => c.type.label,
+  DATE: c => (c.date === null ? -Infinity : c.date.valueOf()),
+  STATUS: c => c.status,
+};
+
 const Status = {
   RECENT: 0,
   OLD_3: 1,
@@ -32,10 +38,10 @@ const Status = {
   REQUEST_PENDING: 3,
 };
 
-
 export default {
   COUNT_TYPES,
   DAYS_OF_WEEK,
   REASONS,
+  SORT_KEYS,
   Status,
 };

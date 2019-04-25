@@ -3,6 +3,7 @@
     <caption>Your selected data</caption>
     <thead>
       <tr>
+        <th>&nbsp;</th>
         <th>Count</th>
         <th>Date</th>
         <th>Status</th>
@@ -13,6 +14,9 @@
       <tr
         v-for="(count, i) in dataSelectionItems"
         :key="i">
+        <td>
+          <input type="checkbox" checked disabled />
+        </td>
         <td>{{count.type.label}}</td>
         <td>
           <span v-if="count.date">{{count.date | date}}</span>
