@@ -28,9 +28,15 @@
         <ul>
           <li>
             <router-link
-               :to="{name: 'home'}">
-               View Data
+              v-if="location !== null"
+              :to="{name: 'viewQuery', params: { query: location.geoId }}">
+               <span>View Data </span>
+               <i class="fa fa-search"></i>
             </router-link>
+            <a v-else disabled>
+              <span>View Data </span>
+              <i class="fa fa-search"></i>
+            </a>
           </li>
           <li class="flex-grow text-right">
             <a href="javascript:void(0);" @click="profileComingSoon">
@@ -69,7 +75,7 @@ export default {
       }
       return 'Guest';
     },
-    ...mapState(['auth', 'modal']),
+    ...mapState(['auth', 'modal', 'location']),
   },
   methods: {
     onModalToggle() {
@@ -364,6 +370,7 @@ label {
   border-bottom: 1px solid var(--outline-grey);
   display: flex;
   margin-bottom: calc(var(--sp) * 2);
+  padding: 0 calc(var(--sp) * 10);
   & > .nav-brand {
     align-items: center;
     display: flex;
@@ -400,6 +407,12 @@ label {
           line-height: calc(var(--sp) * 8);
           padding: calc(var(--sp) * 2);
           text-decoration: none;
+          &[disabled], &[disabled]:hover {
+            background-color: transparent;
+            border: none;
+            color: var(--outline-grey);
+            cursor: not-allowed;
+          }
           & > * {
             vertical-align: middle;
           }

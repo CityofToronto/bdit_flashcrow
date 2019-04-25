@@ -1,5 +1,7 @@
 <template>
-  <button class="filter-count-types btn-dropdown">
+  <button
+    class="filter-count-types btn-dropdown"
+    @click="$emit('filter-count-types')">
     <span class="btn-dropdown-title">Counts ({{filterCountTypes.length}})</span>
     <ul class="dropdown">
       <li
@@ -45,7 +47,6 @@ export default {
 
 <style lang="postcss">
 .filter-count-types {
-  margin: 0 calc(var(--sp) * 2);
   &.btn-dropdown > ul.dropdown {
     width: 300px;
   }
@@ -56,6 +57,7 @@ export default {
   & > ul.dropdown {
     background: var(--white);
     box-shadow: 0 4px 12px var(--outline-grey);
+    color: var(--black);
     left: 0;
     list-style: none;
     margin: 0;

@@ -72,9 +72,6 @@ export default {
       return `${n} results`;
     },
     countsFiltered() {
-      if (this.filterCountTypes.length === 0) {
-        return this.counts;
-      }
       const values = this.filterCountTypes
         .map(i => Constants.COUNT_TYPES[i].value);
       return this.counts.filter(c => values.includes(c.type.value));
