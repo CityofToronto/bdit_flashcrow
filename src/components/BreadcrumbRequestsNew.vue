@@ -16,12 +16,14 @@
         completed: i < currentIndex,
         current: i === currentIndex
       }">
+      <i
+        v-if="i < currentIndex || (i === currentIndex && currentStepCompleted)"
+        class="breadcrumb-step-icon fa fa-check-circle"></i>
+      <strong v-else class="breadcrumb-step-icon">{{i + 1}}</strong>
       <router-link
         v-if="i < currentIndex"
         :to="{name: step.name}">{{step.label}}</router-link>
       <span v-else>{{step.label}}</span>
-      <i v-if="i === currentIndex" class="fa fa-hand-point-left"></i>
-      <i v-else class="fa fa-check-circle"></i>
     </div>
   </template>
 </div>
@@ -37,6 +39,12 @@ const steps = [
 
 export default {
   name: 'BreadcrumbRequestsNew',
+  props: {
+    currentStepCompleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return { steps };
   },
@@ -57,16 +65,33 @@ export default {
   display: flex;
   flex-direction: row;
   font-size: var(--text-xxl);
+  margin-bottom: calc(var(--sp) * 4);
   text-transform: uppercase;
   & > .breadcrumb-step {
     color: var(--outline-grey);
     & > a, & > span {
       color: var(--outline-grey);
       display: inline-block;
-      margin-right: var(--sp);
+      margin-left: var(--sp);
     }
-    &.completed > a:hover,
-    &.completed > a:hover + i {
+    & > .breadcrumb-step-icon {
+      display: inline-block;
+      height: var(--text-xxl);
+      line-height: var(--text-xxl);
+      text-align: center;
+      width: var(--text-xxl);
+    }
+    & > strong.breadcrumb-step-icon {
+      background-color: var(--outline-grey);
+      border-radius: 50%;
+      color: var(--outline-grey-focus);
+    }
+    &.current > strong.breadcrumb-step-icon {
+      background-color: var(--light-green);
+      color: var(--green);
+    }
+    &.completed:hover,
+    &.completed:hover > a {
       color: var(--blue);
     }
     &.completed, &.completed > a, &.completed > span {

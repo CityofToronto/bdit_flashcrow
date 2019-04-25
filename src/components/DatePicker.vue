@@ -85,6 +85,7 @@ export default {
 
 <style lang="postcss">
 .date-picker {
+  display: flex;
   &.disabled {
     opacity: 0.75;
     pointer-events: none;
@@ -101,6 +102,9 @@ export default {
     font-size: var(--text-xl);
     height: 31px;
     padding: var(--sp) calc(var(--sp) * 2);
+  }
+  & > .date-picker-control {
+    flex: 1;
   }
   &:hover > .date-picker-icon,
   &:hover .input-date-picker {

@@ -7,12 +7,13 @@
         :to="linkBackTo">
         View all data
       </router-link>
-      <BreadcrumbRequestsNew />
       <ToggleShowMap />
     </template>
     <template v-slot:panes>
       <PaneDisplay>
         <template v-slot:content>
+          <BreadcrumbRequestsNew
+            :current-step-completed="true" />
           <h2>Your Count Details</h2>
           <CountDetailsSummary
             v-for="(_, i) in dataSelection.items"
@@ -107,10 +108,6 @@ export default {
 
 <style lang="postcss">
 .requests-new-confirm {
-  & .breadcrumb-steps {
-    flex: 1;
-    margin: 0 calc(var(--sp) * 8);
-  }
   & .pane-display {
     flex: 2;
   }
