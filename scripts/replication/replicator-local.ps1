@@ -191,7 +191,7 @@ if (-Not $transferIp) {
   $transferIp = $transferData.instances[0].PrivateIpAddress
 }
 $transferSsh = "$transferUser@$transferIp"
-Send-Status "Identified transfer machine: $transferSsh..."
+Send-Status -message "Identified transfer machine: $transferSsh..." -emailDisable
 
 # fetch Oracle row counts
 jq -r ".tables[].name" "$configFile" | ForEach-Object {
@@ -219,7 +219,7 @@ EXIT;
     Exit-Error -message "Failed to fetch $sourceSchema.$table row count from Oracle!"
   }
 }
-Send-Status "Fetched Oracle row counts..."
+Send-Status -message "Fetched Oracle row counts..." -emailDisable
 
 # fetch Oracle table schemas
 jq -r ".tables[].name" "$configFile" | ForEach-Object {
@@ -249,7 +249,7 @@ EXIT;
     Exit-Error -message "Failed to fetch $sourceSchema.$table schema from Oracle!"
   }
 }
-Send-Status "Fetched Oracle schemas..."
+Send-Status -message "Fetched Oracle schemas..." -emailDisable
 
 # convert Oracle table schemas to PostgreSQL
 jq -r ".tables[].name" "$configFile" | ForEach-Object {
@@ -272,7 +272,7 @@ jq -r ".tables[].name" "$configFile" | ForEach-Object {
     Exit-Error "Failed to generate local PostgreSQL schema (with foreign tables) for $targetValidationSchema.$table!"
   }
 }
-Send-Status "Generated PostgreSQL schemas..."
+Send-Status -message "Generated PostgreSQL schemas..." -emailDisable
 
 # drop any existing foreign tables in reverse order
 jq -r ".tables | reverse | .[].name" "$configFile" | ForEach-Object {
@@ -294,7 +294,7 @@ jq -r ".tables[].name" "$configFile" | ForEach-Object {
     Exit-Error -message "Failed to create $targetValidationSchema.$table in local PostgreSQL!"
   }
 }
-Send-Status "Created local PostgreSQL tables..."
+Send-Status -message "Created local PostgreSQL tables..." -emailDisable
 
 # copy data from foreign tables to local text files
 jq -c ".tables[]" "$configFile" | ForEach-Object {
@@ -362,7 +362,7 @@ jq -c ".tables[]" "$configFile" | ForEach-Object {
     Exit-Error -message "Failed to copy Oracle data from $targetValidationSchema.$table in local PostgreSQL to $datFile!"
   }
 }
-Send-Status "Copied data from local PostgreSQL..."
+Send-Status -message "Copied data from local PostgreSQL..." -emailDisable
 
 # copy data files to transfer machine
 Get-ChildItem -Recurse -File -Path $dirRoot | ForEach-Object {
@@ -372,7 +372,7 @@ Get-ChildItem -Recurse -File -Path $dirRoot | ForEach-Object {
 }
 Copy-RemoteItem -src $configFile
 Copy-RemoteItem -src $transferScript -exec
-Send-Status "Sent data, config, and scripts to transfer machine..."
+Send-Status -message "Sent data, config, and scripts to transfer machine..."
 
 # run transfer script on transfer machine
 $emailsToOptions = ""
@@ -384,4 +384,4 @@ if (-Not $?) {
   Exit-Error -message "Failed to run transfer script on transfer machine!"
 }
 
-Exit-Success "Completed Oracle -> PostgreSQL replication."
+Exit-Success -message "Completed Oracle -> PostgreSQL replication."

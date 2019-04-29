@@ -131,6 +131,12 @@ function sendStatus {
   echo "$GUID $NOW $MESSAGE"
 }
 
+function sendStatusEmailDisable {
+  local -r MESSAGE="$1"
+  local -r NOW=$(TZ='America/Toronto' date +"%Y-%m-%dT%H:%M:%S")
+  echo "$GUID $NOW $MESSAGE"
+}
+
 function exitError {
   local -r MESSAGE="$1"
   local -r NOW=$(TZ='America/Toronto' date +"%Y-%m-%dT%H:%M:%S")
@@ -156,7 +162,7 @@ sendStatus "Starting remote PostgreSQL data transfer..."
 # unpack data files
 cd "$HOME"
 gunzip -rf "$DIR_DAT"
-sendStatus "$GUID Unpacked data on transfer machine..."
+sendStatusEmailDisable "$GUID Unpacked data on transfer machine..."
 
 # drop any existing validation schema tables in reverse order
 # shellcheck disable=SC2086
@@ -176,7 +182,7 @@ jq -r ".tables[].name" "$CONFIG_FILE" | while read -r table; do
     exitError "Failed to create $TARGET_VALIDATION_SCHEMA.$table in remote PostgreSQL!"
   fi
 done
-sendStatus "Created remote PostgreSQL validation tables..."
+sendStatusEmailDisable "Created remote PostgreSQL validation tables..."
 
 # copy data from local text files to tables in validation schema
 # shellcheck disable=SC2086
@@ -193,9 +199,9 @@ jq -r ".tables[].name" "$CONFIG_FILE" | while read -r table; do
   if [ "$ROW_COUNT_VALID" = "0" ]; then
     exitError "Row count mismatch on $TARGET_VALIDATION_SCHEMA.$table: Oracle ($ORA_COUNT rows) -> PostgreSQL ($PG_COUNT rows)!"
   fi
-  sendStatus "Validated $TARGET_VALIDATION_SCHEMA.$table..."
+  sendStatusEmailDisable "Validated $TARGET_VALIDATION_SCHEMA.$table..."
 done
-sendStatus "Copied data into remote PostgreSQL validation schema..."
+sendStatusEmailDisable "Copied data into remote PostgreSQL validation schema..."
 
 # drop any existing target schema tables in reverse order
 # shellcheck disable=SC2086
@@ -214,5 +220,5 @@ jq -r ".tables[].name" "$CONFIG_FILE" | while read -r table; do
     exitError "Failed to move $TARGET_VALIDATION_SCHEMA.$table -> $TARGET_SCHEMA.$table in remote PostgreSQL!"
   fi
 done
-sendStatus "Moved tables to remote PostgreSQL target schema..."
+sendStatusEmailDisable "Moved tables to remote PostgreSQL target schema..."
 exitSuccess "Finished remote PostgreSQL data transfer."
