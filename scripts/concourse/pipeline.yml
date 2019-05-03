@@ -24,6 +24,8 @@ jobs:
       - name: centreline
       run:
         path: bdit_flashcrow/scripts/concourse/fetch_centreline.sh
+      params:
+        PGPASS: ((pgpass))
 - name: job-build-centreline-vector-tiles
   serial: true
   plan:
