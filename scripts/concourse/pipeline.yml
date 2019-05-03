@@ -1,0 +1,43 @@
+---
+resources:
+- name: bdit_flashcrow
+  type: git
+  source:
+    uri: git@github.com:CityofToronto/bdit_flashcrow.git
+    branch: gh29-evaluate-concourse
+    private_key: ((bdit_flashcrow_private_key))
+
+jobs:
+- name: job-fetch-centreline
+  serial: true
+  plan:
+  - get: bdit_flashcrow
+  - task: task-fetch-centreline
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: { repository: amazonlinux }
+      inputs:
+      - name: bdit_flashcrow 
+      outputs:
+      - name: centreline
+      run:
+        path: bdit_flashcrow/scripts/concourse/fetch_centreline.sh
+- name: job-build-centreline-vector-tiles
+  serial: true
+  plan:
+  - get: bdit_flashcrow
+  - task: task-build-centreline-vector-tiles
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: { repository: amazonlinux }
+      inputs:
+      - name: bdit_flashcrow
+      - name: centreline
+      outputs:
+      - name: centreline-vector-tiles
+      run:
+        path: bdit_flashcrow/scripts/concourse/build_centreline_vector_tiles.sh
