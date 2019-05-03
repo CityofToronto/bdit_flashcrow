@@ -10,8 +10,9 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "1.0"
 
   if Vagrant.has_plugin?("vagrant-proxyconf")
-    config.proxy.http     = "http://proxy.toronto.ca:8080"
-    config.proxy.https    = "http://proxy.toronto.ca:8080"
+    proxy_url = "http://#{provision_conf["proxy_user"]}:#{provision_conf["proxy_pass"]}@proxy.toronto.ca:8080"
+    config.proxy.http     = proxy_url
+    config.proxy.https    = proxy_url
     config.proxy.no_proxy = "localhost,127.0.0.1"
     config.proxy.enabled = { npm: false }
   end
