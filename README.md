@@ -126,7 +126,9 @@ This configuration will not work in production, but for development it's fine.  
 Next, take your database password `dbpassword` from above and create a file at `scripts/dev/provision.conf.yml` as follows:
 
 ```yaml
-pg_password: "dbpassword"
+pg_password: "{dbpassword from above}"
+proxy_user: "{your City of Toronto username}"
+proxy_pass: "{your City of Toronto password}"
 ```
 
 ### Install Flashcrow development VM
