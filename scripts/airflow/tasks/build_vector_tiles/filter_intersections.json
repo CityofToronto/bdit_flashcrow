@@ -1,0 +1,12 @@
+{
+  "*": [
+    "any",
+    [ ">=", "$zoom", 13 ],
+    [
+      "all",
+      [ ">=", "$zoom", 12 ],
+      [ "in", "classifi6", "LSRML", "LSRSL" ]
+    ],
+    [ "in", "classifi6", "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL" ]
+  ]
+}
