@@ -1,4 +1,3 @@
-centreline.json
-centreline_intersection.json
-centreline.mbtiles
-intersections.mbtiles
+*.json
+*.mbtiles
+*.mbtiles-journal
