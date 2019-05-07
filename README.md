@@ -133,7 +133,7 @@ proxy_pass: "{your City of Toronto password}"
 
 ### Install Flashcrow development VM
 
-Flashcrow provides a configuration based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download).  This allows developers on any operating system to develop and test in an environment that closely mirrors our production environment.
+ Install [Virtual Box](https://www.virtualbox.org/) if your machine does not already have it. Flashcrow provides a configuration based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download). This allows developers on any operating system to develop and test in an environment that closely mirrors our production environment. This image will be downloaded by `vagrant` by scripts that are in the flashcrow repository in the next set of instructions.
 
 We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin:
 
@@ -157,6 +157,7 @@ To run Flashcrow, you need to start two services: `webpack-dev-server` to serve 
 From the first PowerShell window:
 
 ```powershell
+cd scripts/dev
 vagrant ssh
 cd git/bdit_flashcrow
 npm run serve
@@ -165,6 +166,7 @@ npm run serve
 From the second PowerShell window:
 
 ```powershell
+cd scripts/dev
 vagrant ssh
 cd git/bdit_flashcrow
 node ./server.js
