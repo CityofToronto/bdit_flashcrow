@@ -157,6 +157,7 @@ To run Flashcrow, you need to start two services: `webpack-dev-server` to serve 
 From the first PowerShell window:
 
 ```powershell
+cd script/dev
 vagrant ssh
 cd git/bdit_flashcrow
 npm run serve
@@ -165,6 +166,7 @@ npm run serve
 From the second PowerShell window:
 
 ```powershell
+cd scripts/dev
 vagrant ssh
 cd git/bdit_flashcrow
 node ./server.js
