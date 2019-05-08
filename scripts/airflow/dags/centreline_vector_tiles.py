@@ -8,7 +8,6 @@ AIRFLOW_ROOT = os.path.dirname(AIRFLOW_DAGS)
 AIRFLOW_TASKS = os.path.join(AIRFLOW_ROOT, 'tasks')
 
 default_args = {
-    'depends_on_past': True,
     'email': ['Evan.Savage@toronto.ca'],
     'email_on_failure': True,
     'email_on_retry': True,
@@ -20,7 +19,8 @@ default_args = {
 dag = DAG(
     'centreline_vector_tiles',
     default_args=default_args,
-    schedule_interval=timedelta(days=1))
+    max_active_runs=1,
+    schedule_interval='0 4 * * *')
 
 copy_centreline_sh = os.path.join(AIRFLOW_TASKS, 'copy_centreline.sh')
 copy_centreline = BashOperator(
