@@ -20,7 +20,7 @@ dag = DAG(
     'flow_geocoding',
     default_args=default_args,
     max_active_runs=1,
-    schedule_interval=timedelta(days=1))
+    schedule_interval='30 4 * * *')
 
 copy_artery_tcl_sh = os.path.join(AIRFLOW_TASKS, 'copy_artery_tcl.sh')
 copy_artery_tcl = BashOperator(
@@ -28,3 +28,17 @@ copy_artery_tcl = BashOperator(
     bash_command='{0} '.format(copy_artery_tcl_sh),
     dag=dag)
 
+build_artery_segments_sh = os.path.join(AIRFLOW_TASKS, 'build_artery_segments.sh')
+build_artery_segments = BashOperator(
+    task_id='build_artery_segments',
+    bash_command='{0} '.format(build_artery_segments_sh),
+    dag=dag)
+
+build_artery_centreline_sh = os.path.join(AIRFLOW_TASKS, 'build_artery_centreline.sh')
+build_artery_centreline = BashOperator(
+    task_id='build_artery_centreline',
+    bash_command='{0} '.format(build_artery_centreline_sh),
+    dag=dag)
+
+copy_artery_tcl >> build_artery_segments
+build_artery_segments >> build_artery_centreline
