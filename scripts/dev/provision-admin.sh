@@ -46,9 +46,9 @@ chown -R vagrant:vagrant /var/run/postgresql
 #
 # EPEL has GEOS 3.4.2, PROJ 4.8.0, and...PostGIS 2.0.7 :(  Given this, we decide to:
 #
-# - install GEOS / PROJ from EPEL;
+# - install GDAL / GEOS / PROJ from EPEL;
 # - install PostGIS 2.4.7 from source.
-yum install -y gcc make gcc-c++ libtool libxml2-devel geos geos-devel proj proj-devel proj-nad
+yum install -y gcc make gcc-c++ libtool libxml2-devel gdal gdal-devel geos geos-devel proj proj-devel proj-nad
 
 # see http://en.joysword.com/posts/2015/05/configuring_geo_spatial_stack_on_amazon_linux/
 mkdir /home/vagrant/postgis
@@ -56,11 +56,7 @@ cd /home/vagrant/postgis
 wget https://download.osgeo.org/postgis/source/postgis-2.4.7.tar.gz
 tar xzvf postgis-2.4.7.tar.gz
 cd postgis-2.4.7
-./configure --without-raster
+# --with-raster correctly builds and installs extension control / SQL files
+./configure --with-raster
 make
 make install
-
-find extensions -name "*.control" | xargs -I{} cp {} /usr/share/pgsql/extension
-find extensions -name "*.sql" | xargs -I{} cp {} /usr/share/pgsql/extension
-
-yum install -y postgresql postgresql-server postgresql-contrib postgresql-devel
