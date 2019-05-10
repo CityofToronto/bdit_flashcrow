@@ -35,5 +35,32 @@ yum install -y ShellCheck
 # install PostgreSQL server and utilities
 amazon-linux-extras enable postgresql9.6
 yum clean metadata
-yum install -y postgresql-server postgresql-contrib
+yum install -y postgresql postgresql-server postgresql-contrib postgresql-devel
 chown -R vagrant:vagrant /var/run/postgresql
+
+# as per https://trac.osgeo.org/postgis/wiki/UsersWikiPostgreSQLPostGIS, PostgreSQL 9.6
+# requires (and supports!) PostGIS >= 2.2.
+#
+# as per http://svn.osgeo.org/postgis/tags/2.5.2/NEWS, PostGIS 2.5.0 dropped support for
+# GEOS < 3.5, and PostGIS 2.2.0 introduced a PROJ4 >= 4.6 requirement.
+#
+# EPEL has GEOS 3.4.2, PROJ 4.8.0, and...PostGIS 2.0.7 :(  Given this, we decide to:
+#
+# - install GEOS / PROJ from EPEL;
+# - install PostGIS 2.4.7 from source.
+yum install -y gcc make gcc-c++ libtool libxml2-devel geos geos-devel proj proj-devel proj-nad
+
+# see http://en.joysword.com/posts/2015/05/configuring_geo_spatial_stack_on_amazon_linux/
+mkdir /home/vagrant/postgis
+cd /home/vagrant/postgis
+wget https://download.osgeo.org/postgis/source/postgis-2.4.7.tar.gz
+tar xzvf postgis-2.4.7.tar.gz
+cd postgis-2.4.7
+./configure --without-raster
+make
+make install
+
+find extensions -name "*.control" | xargs -I{} cp {} /usr/share/pgsql/extension
+find extensions -name "*.sql" | xargs -I{} cp {} /usr/share/pgsql/extension
+
+yum install -y postgresql postgresql-server postgresql-contrib postgresql-devel
