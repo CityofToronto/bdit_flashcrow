@@ -60,7 +60,7 @@ export default {
 <style lang="postcss">
 .filter-bar {
   & > button {
-    margin: 0 calc(var(--sp) * 2);
+    margin: 0 var(--space-m);
   }
 }
 </style>

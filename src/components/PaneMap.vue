@@ -149,7 +149,7 @@ export default {
 
 <style lang="postcss">
 .pane-map {
-  background-color: var(--white);
+  background-color: var(--base-lightest);
   & > .pane-map-google-maps {
     bottom: 8px;
     position: absolute;

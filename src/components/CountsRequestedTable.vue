@@ -174,57 +174,57 @@ export default {
 <style lang="postcss">
 .counts-requested-table {
   border-collapse: separate;
-  border-spacing: 0 calc(var(--sp) * 2);
+  border-spacing: 0 var(--space-m);
   width: 100%;
   & > caption {
     caption-side: top;
-    padding-bottom: calc(var(--sp) * 2);
+    padding-bottom: var(--space-m);
   }
   & > thead {
-    font-size: var(--text-xl);
+    font-size: var(--font-size-xl);
     & > tr > th {
-      padding: calc(var(--sp) * 2);
+      padding: var(--space-m);
       text-align: left;
       &.selectable {
         cursor: pointer;
         &.selected,
         &.selected:hover {
-          background-color: var(--light-green);
-          color: var(--green);
+          background-color: var(--success-light);
+          color: var(--success-darker);
         }
         &:hover {
-          background-color: var(--light-blue);
-          color: var(--blue);
+          background-color: var(--primary-light);
+          color: var(--primary-darker);
         }
       }
     }
   }
   & > tbody {
-    font-size: var(--text-md);
+    font-size: var(--font-size-m);
     & > tr {
-      background-color: var(--white);
+      background-color: var(--base-lightest);
       cursor: pointer;
       & > td {
-        padding: calc(var(--sp) * 2);
-        border-top: 1px solid var(--outline-grey);
-        border-bottom: 1px solid var(--outline-grey);
+        padding: var(--space-m);
+        border-top: var(--border-default);
+        border-bottom: var(--border-default);
         &:first-child {
-          border-left: 4px solid var(--outline-grey);
+          border-left: 4px solid var(--base);
         }
         &:last-child {
-          border-right: 1px solid var(--outline-grey);
+          border-right: var(--border-default);
         }
         & > .btn-remove-count {
-          margin-right: calc(var(--sp) * 2);
+          margin-right: var(--space-m);
         }
       }
       &.row-request-another {
-        background-color: var(--light-yellow);
+        background-color: var(--warning-light);
         & > td {
-          border-color: var(--yellow);
-          color: var(--yellow);
+          border-color: var(--warning-darker);
+          color: var(--warning-darker);
           &:first-child {
-            font-size: var(--text-xxl);
+            font-size: var(--font-size-2xl);
           }
         }
       }

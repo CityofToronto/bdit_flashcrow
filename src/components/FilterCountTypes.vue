@@ -3,7 +3,7 @@
     class="filter-count-types btn-dropdown"
     @click="$emit('filter-count-types')">
     <span class="btn-dropdown-title">Counts ({{filterCountTypes.length}})</span>
-    <ul class="dropdown">
+    <ul class="dropdown shadow-3">
       <li
         v-for="(countType, i) in optionsFilterCountTypes"
         :key="i"
@@ -55,9 +55,8 @@ export default {
   position: relative;
 
   & > ul.dropdown {
-    background: var(--white);
-    box-shadow: 0 4px 12px var(--outline-grey);
-    color: var(--black);
+    background: var(--base-lightest);
+    color: var(--base-darkest);
     left: 0;
     list-style: none;
     margin: 0;
@@ -66,13 +65,13 @@ export default {
     position: absolute;
     text-align: left;
     top: 100%;
-    transition: var(--transition-short) ease;
+    transition: var(--transition-short);
     visibility: hidden;
     width: 100%;
     z-index: var(--z-index-controls);
 
     & > li {
-      background: var(--white);
+      background: var(--base-lightest);
       cursor: pointer;
       padding: 0;
 
@@ -83,20 +82,20 @@ export default {
       }
 
       &.selected {
-        color: var(--green);
+        color: var(--success-darker);
       }
 
       &:hover, &.selected:hover {
-        background-color: var(--light-blue);
-        color: var(--blue);
+        background-color: var(--primary-light);
+        color: var(--primary-darker);
       }
 
       & > label {
         cursor: pointer;
         display: block;
-        font-size: var(--text-md);
+        font-size: var(--font-size-m);
         font-weight: var(--font-normal);
-        padding: var(--sp) calc(var(--sp) * 2);
+        padding: var(--space-l) var(--space-m);
       }
     }
   }
