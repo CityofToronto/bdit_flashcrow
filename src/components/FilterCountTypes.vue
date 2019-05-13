@@ -10,13 +10,14 @@
         :class="{
           selected: filterCountTypes.includes(i),
         }">
-        <label>
+        <label class="tds-checkbox">
           <input
             v-model.number="filterCountTypes"
             type="checkbox"
             name="countTypes"
             :value="i" />
-        {{countType.label}}</label>
+          <span>{{countType.label}}</span>
+        </label>
       </li>
     </ul>
   </button>
