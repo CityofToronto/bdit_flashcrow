@@ -58,7 +58,12 @@
         v-for="(count, i) in dataSelectionItemsSorted"
         :key="i">
         <td>
-          <input type="checkbox" checked disabled />
+          <label class="tds-checkbox">
+            <input
+              type="checkbox"
+              checked
+              disabled />
+          </label>
         </td>
         <td>{{count.type.label}}</td>
         <td>

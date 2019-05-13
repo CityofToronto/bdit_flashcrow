@@ -1,7 +1,11 @@
 <template>
   <div class="toggle-show-map form-group size-lg">
-    <label>Show Map
-      <input type="checkbox" v-model="showMap" />
+    <label class="tds-toggle">
+      <span v-if="showMap">Hide Map</span>
+      <span v-else>Show Map</span>
+      <input
+        type="checkbox"
+        v-model="showMap" />
     </label>
   </div>
 </template>

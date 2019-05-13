@@ -103,6 +103,7 @@ export default {
 <style lang="postcss">
 /* THEME */
 :root {
+  --white: #fff;
   --base-lightest: #f0f0f0;  /* gray-5 */
   --base-lighter: #dcdee0;  /* gray-cool-10 */
   --base-light: #a9aeb1;  /* gray-cool-30 */
@@ -150,6 +151,7 @@ export default {
   --disabled-dark: #adadad;  /* gray-30 */
 
   --font-family: 'Work Sans', Roboto, Helvetica, sans-serif;
+  --font-family-fa: 'Font Awesome 5 Free';
 
   --font-size-xs: 0.75rem;
   --font-size-s: 0.875rem;
@@ -160,6 +162,7 @@ export default {
 
   --font-weight-normal: 400;
   --font-weight-bold: 700;
+  --font-weight-fa: 900;
 
   --space-xs: 0.125rem;
   --space-s: 0.25rem;
@@ -339,10 +342,108 @@ p {
     border-color: var(--warning-darker);
     color: var(--warning-darker);
   }
-  &.error-warning {
+  &.panel-error {
     background-color: var(--error-lighter);
     border-color: var(--error-darker);
     color: var(--error-darker);
+  }
+}
+
+/* FORMS: CHECKBOX, RADIO, TOGGLE */
+.tds-checkbox {
+  cursor: pointer;
+  vertical-align: middle;
+  & > input[type="checkbox"] {
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    vertical-align: middle;
+    &:after {
+      background-color: var(--white);
+      border: 1px solid var(--base-darker);
+      border-radius: var(--space-s);
+      color: var(--base-darker);
+      content: ' ';
+      display: inline-block;
+      font-family: var(--font-family-fa);
+      font-size: var(--font-size-m);
+      font-weight: var(--font-weight-fa);
+      height: var(--font-size-l);
+      line-height: var(--font-size-l);
+      text-align: center;
+      transition: var(--transition-short);
+      vertical-align: middle;
+      width: var(--font-size-l);
+    }
+    &:checked:after {
+      content: '\f00c';
+    }
+    &:indeterminate:after {
+      content: '\f068';
+    }
+    &:focus:after {
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    &:disabled:after {
+      background-color: var(--disabled-light);
+      border-color: var(--disabled-dark);
+      color: var(--disabled-dark);
+      cursor: not-allowed;
+    }
+  }
+  &:hover > input[type="checkbox"]:not(:disabled):after {
+    border-color: var(--base-darker);
+    color: var(--base-darkest);
+  }
+  & > span {
+    padding-left: var(--space-s);
+    vertical-align: middle;
+  }
+}
+
+.tds-toggle {
+  cursor: pointer;
+  vertical-align: middle;
+  & > input[type="checkbox"] {
+    appearance: none;
+    background-color: var(--white);
+    border-radius: 1em;
+    border: 1px solid var(--base-dark);
+    box-shadow: inset -2em 0 0 0 var(--base);
+    cursor: pointer;
+    height: 2em;
+    outline: none;
+    position: relative;
+    transition: var(--transition-short);
+    vertical-align: middle;
+    vertical-align: middle;
+    width: 4em;
+    &:checked {
+      border-color: var(--success-dark);
+      box-shadow: inset 2em 0 0 0 var(--success);
+    }
+    &:disabled {
+      background-color: var(--disabled-light);
+      border-color: var(--disabled-dark);
+      box-shadow: inset -2em 0 0 0 var(--disabled);
+      cursor: not-allowed;
+    }
+    &:disabled:checked {
+      box-shadow: inset 2em 0 0 0 var(--disabled);
+    }
+  }
+  &:hover > input[type="checkbox"]:not(:disabled) {
+    border-color: var(--base);
+    box-shadow: inset -2em 0 0 0 var(--base-light);
+  }
+  &:hover > input[type="checkbox"]:not(:disabled):checked {
+    border-color: var(--success);
+    box-shadow: inset 2em 0 0 0 var(--success-light);
+  }
+  & > span {
+    padding-left: var(--space-s);
+    vertical-align: middle;
   }
 }
 
@@ -428,12 +529,6 @@ textarea {
   &:hover {
     border-color: var(--base-darkest);
   }
-}
-input[type=checkbox],
-input[type=radio] {
-  height: 1.8rem;
-  vertical-align: middle;
-  width: 1.8rem;
 }
 textarea {
   font-size: var(--font-size-l);

@@ -63,7 +63,11 @@
         }"
         @click="onClickSelectCount(count)">
         <td>
-          <input type="checkbox" :checked="dataSelectionContains(count)" />
+          <label class="tds-checkbox">
+            <input
+              type="checkbox"
+              :checked="dataSelectionContains(count)" />
+          </label>
         </td>
         <td>{{count.type.label}}</td>
         <td>
