@@ -98,7 +98,7 @@
               </label>
             </div>
           </div>
-          <div class="panel panel-primary">
+          <div class="panel panel-info">
             <i class="fa fa-clock"></i>
             <span v-if="hours === 'SCHOOL'">
               07:30 &ndash; 09:30<br />
@@ -265,21 +265,21 @@ export default {
 
 <style lang="postcss">
 .count-details {
-  background-color: var(--white);
+  background-color: var(--base-lightest);
   .number-icon {
-    background-color: var(--white);
-    border: 1px solid var(--outline-grey);
+    background-color: var(--base-lightest);
+    border: 1px solid var(--base);
     border-radius: 50%;
-    color: var(--off-black);
+    color: var(--ink);
     display: inline-block;
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    height: calc(var(--text-xl) * 1.5);
-    line-height: var(--text-xl);
-    margin-right: var(--sp);
-    padding: var(--sp);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    height: calc(var(--font-size-xl) * 1.5);
+    line-height: var(--font-size-xl);
+    margin-right: var(--space-s);
+    padding: var(--space-s);
     text-align: center;
-    width: calc(var(--text-xl) * 1.5);
+    width: calc(var(--font-size-xl) * 1.5);
   }
 }
 </style>

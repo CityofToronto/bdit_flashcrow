@@ -34,7 +34,7 @@
           <p>
             {{hours}}
           </p>
-          <div class="panel panel-primary">
+          <div class="panel panel-info">
             <i class="fa fa-clock"></i>
             <span v-if="hours === 'SCHOOL'">
               07:30 &ndash; 09:30<br />
@@ -129,18 +129,18 @@ export default {
 <style lang="postcss">
 .count-details-summary {
   .number-icon {
-    border: 1px solid var(--outline-grey);
+    border: 1px solid var(--base);
     border-radius: 50%;
-    color: var(--off-black);
+    color: var(--ink);
     display: inline-block;
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    height: calc(var(--text-xl) * 1.5);
-    line-height: var(--text-xl);
-    margin-right: var(--sp);
-    padding: var(--sp);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    height: calc(var(--font-size-xl) * 1.5);
+    line-height: var(--font-size-xl);
+    margin-right: var(--space-s);
+    padding: var(--space-s);
     text-align: center;
-    width: calc(var(--text-xl) * 1.5);
+    width: calc(var(--font-size-xl) * 1.5);
   }
   & > .count-details-body {
     align-items: flex-start;
@@ -148,17 +148,17 @@ export default {
     flex-direction: row;
     & > .count-details-column {
       flex: 0 0 33.3333%;
-      padding: 0 calc(var(--sp) * 2);
+      padding: 0 var(--space-m);
       & > .count-details-checks {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         & > label {
-          margin: calc(var(--sp) * 2) 0;
+          margin: var(--space-m) 0;
         }
         .label-vertical {
           text-align: center;
-          margin: calc(var(--sp) * 2) var(--sp);
+          margin: var(--space-m) var(--space-l);
           & > input {
             display: block;
           }
@@ -170,7 +170,7 @@ export default {
         flex-wrap: wrap;
         & > label {
           flex: 0 0 33.3333%;
-          margin: calc(var(--sp) * 2) 0;
+          margin: var(--space-m) 0;
         }
       }
     }

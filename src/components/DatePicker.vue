@@ -46,8 +46,8 @@ export default {
     value: Object,
   },
   data() {
-    const textLg = { fontSize: 'var(--text-lg)' };
-    const textXl = { fontSize: 'var(--text-xl)' };
+    const textLg = { fontSize: 'var(--font-size-l)' };
+    const textXl = { fontSize: 'var(--font-size-xl)' };
     return {
       disabledAttribute: {
         contentStyle: {
@@ -96,19 +96,19 @@ export default {
     vertical-align: middle;
   }
   & > .date-picker-icon {
-    background-color: var(--white);
-    border: 1px solid var(--outline-grey);
+    background-color: var(--base-lightest);
+    border: var(--border-default);
     border-right: none;
-    font-size: var(--text-xl);
+    font-size: var(--font-size-xl);
     height: 31px;
-    padding: var(--sp) calc(var(--sp) * 2);
+    padding: var(--space-l) var(--space-m);
   }
   & > .date-picker-control {
     flex: 1;
   }
   &:hover > .date-picker-icon,
   &:hover .input-date-picker {
-    border-color: var(--outline-grey-focus);
+    border-color: var(--base-darkest);
   }
   .input-date-picker {
     width: 100%;

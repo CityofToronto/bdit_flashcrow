@@ -1,5 +1,5 @@
 <template>
-  <Modal :data="data">
+  <TdsModal :data="data">
     <template v-slot:header>
       <h2>Confirmation: Request #1234567890</h2>
     </template>
@@ -17,22 +17,22 @@
       </p>
     </template>
     <template v-slot:footer>
-      <div class="flex-grow text-right">
+      <div class="flex-fill text-right">
         <button class="btn-primary" @click="onClickOk">OK</button>
       </div>
     </template>
-  </Modal>
+  </TdsModal>
 </template>
 
 <script>
 import { mapMutations } from 'vuex';
 
-import Modal from '@/components/Modal.vue';
+import TdsModal from '@/components/tds/TdsModal.vue';
 
 export default {
   name: 'ModalComingSoon',
   components: {
-    Modal,
+    TdsModal,
   },
   props: {
     data: {

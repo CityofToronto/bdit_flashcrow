@@ -28,19 +28,17 @@ export default {
   height: 100%;
   & > header,
   & > .content {
-    padding: 0 calc(var(--sp) * 10);
+    padding: 0 var(--space-xl);
   }
   & > .content {
     flex: 1;
     overflow: auto;
   }
   & > footer {
-    background-color: var(--outline-grey);
-    border-top: 1px solid var(--outline-grey-focus);
     display: flex;
     flex-direction: row;
-    font-size: var(--text-xl);
-    padding: calc(var(--sp) * 2) calc(var(--sp) * 10);
+    font-size: var(--font-size-xl);
+    padding: var(--space-m) var(--space-xl);
   }
 }
 </style>

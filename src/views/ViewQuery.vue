@@ -128,22 +128,22 @@ export default {
         }
       }
       & > .selected-count-wrapper {
-        color: var(--outline-grey-focus);
+        color: var(--base-darkest);
         & > .selected-count {
-          background-color: var(--off-white);
-          border: 1px solid var(--outline-grey-focus);
+          background-color: var(--base-lightest);
+          border: 1px solid var(--base-darkest);
           border-radius: 16px;
-          font-size: var(--text-xxl);
+          font-size: var(--font-size-2xl);
           height: 32px;
           line-height: 30px;
           margin: auto;
           width: 32px;
         }
         &.some-selected {
-          color: var(--green);
+          color: var(--success-darker);
           & > .selected-count {
-            background-color: var(--light-green);
-            border-color: var(--green);
+            background-color: var(--success-light);
+            border-color: var(--success-darker);
           }
         }
       }
