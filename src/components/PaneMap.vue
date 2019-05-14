@@ -59,6 +59,53 @@ export default {
       new mapboxgl.LngLat(-79.639264937, 43.580995995),
       new mapboxgl.LngLat(-79.115243191, 43.855457183),
     );
+
+    this.centrelineStyle = {
+      version: 8,
+      sources: {
+        'centreline-tiles': {
+          type: 'vector',
+          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline.pbf/{y}/{x}/{z}'],
+        },
+      },
+      layers: [
+        {
+          id: 'centreline',
+          source: 'centreline-tiles',
+          type: 'line',
+          paint: {
+            'fill-color': '#000000',
+          },
+
+
+        },
+
+      ],
+    };
+
+    this.intersectionStyle = {
+      version: 8,
+      sources: {
+        'int-tiles': {
+          type: 'vector',
+          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections.pbf/{y}/{x}/{z}'],
+        },
+      },
+      layers: [
+        {
+          id: 'intersections',
+          source: 'int-tiles',
+          type: 'circle',
+          paint: {
+            'fill-color': '#000000',
+          },
+
+
+        },
+
+      ],
+    };
+
     this.mapStyle = GeoStyle.get();
     // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
     this.satelliteStyle = {
@@ -71,14 +118,40 @@ export default {
           ],
           tileSize: 256,
         },
+        'centreline-tiles': {
+          type: 'vector',
+          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
+        },
+        'intersection-tiles' : {
+          type: 'vector',
+          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+        }
       },
-      layers: [{
+      layers: [
+      {
         id: 'gcc-ortho-webm',
         type: 'raster',
         source: 'gcc-ortho-webm',
         minzoom: 0,
         maxzoom: 23,
-      }],
+      },
+      {
+          id: 'centreline',
+          source: 'centreline-tiles',
+          'source-layer': 'centreline',
+          type: 'line',
+          minzoom: 10,
+          maxZoom: 15,
+      },
+      {
+          id: 'intersections',
+          source: 'intersection-tiles',
+          'source-layer': 'centreline_intersection',
+          type: 'circle',
+          minzoom: 11,
+          maxZoom: 15,
+      }
+      ],
     };
     Vue.nextTick(() => {
       this.loading = false;
