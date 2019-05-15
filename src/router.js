@@ -5,19 +5,22 @@ import store from '@/store';
 
 Vue.use(Router);
 
-const NAME_HOME = 'home';
-
 const router = new Router({
   routes: [
     {
       path: '/view',
-      name: NAME_HOME,
+      name: 'viewData',
       component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
     },
     {
       path: '/view/:query',
       name: 'viewQuery',
       component: () => import(/* webpackChunkName: "home" */ './views/ViewQuery.vue'),
+    },
+    {
+      path: '/requests/new',
+      name: 'requestStudy',
+      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
     },
     {
       path: '/requests/new/request',
@@ -33,6 +36,11 @@ const router = new Router({
       path: '/requests/new/confirm',
       name: 'requestsNewConfirm',
       component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewConfirm.vue'),
+    },
+    {
+      path: '/requests/track',
+      name: 'trackRequests',
+      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
     },
   ],
 });
@@ -52,12 +60,12 @@ router.beforeEach((to, from, next) => {
         if (loggedIn) {
           next();
         } else {
-          next({ name: NAME_HOME });
+          next({ name: 'viewData' });
         }
       } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
         // this route requires an unauthenticated user
         if (loggedIn) {
-          next({ name: NAME_HOME });
+          next({ name: 'viewData' });
         } else {
           next();
         }
