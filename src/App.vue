@@ -12,42 +12,22 @@
       :is="modal.component"
       :data="modal.data"
       @modal-close="clearModal"></component>
-    <div class="nav-bar">
-      <div class="nav-brand">
-        <img
-          class="icon-logo"
-          src="/flashcrow/icons/logo-icon.svg"
-          width="20"
-          height="24"
-          alt="flashcrow" />
-        <span>flashcrow</span>
-      </div>
-      <div class="nav-search">
+    <TdsTopBar>
+      <template slot="left">
         <search-bar-location />
-      </div>
-      <nav>
-        <ul>
-          <li>
-            <router-link
-              v-if="location !== null"
-              :to="{name: 'viewQuery', params: { query: location.geoId }}">
-               <span>View Data </span>
-               <i class="fa fa-search"></i>
-            </router-link>
-            <a v-else disabled>
-              <span>View Data </span>
-              <i class="fa fa-search"></i>
-            </a>
-          </li>
-          <li class="flex-fill text-right">
-            <a href="javascript:void(0);" @click="profileComingSoon">
-              <span>Welcome, Chris!</span>
-              <svg class="icon-profile" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 31.66 31.66"><path d="M15.83,15.83a3.4,3.4,0,1,1,3.39-3.39A3.39,3.39,0,0,1,15.83,15.83Zm0-9a5.66,5.66,0,1,0,5.65,5.66A5.65,5.65,0,0,0,15.83,6.78Z"/><path d="M25.28,25.53a1.55,1.55,0,0,0-.25-.61,10.33,10.33,0,0,0-18.25-.23,5.9,5.9,0,0,0-.34.82,13.57,13.57,0,1,1,19,0ZM8.14,27a10.06,10.06,0,0,1,.5-1.22A8.09,8.09,0,0,1,23,26c.16.34.29.7.43,1.06A13.58,13.58,0,0,1,8.14,27ZM15.83,0A15.83,15.83,0,1,0,31.66,15.83,15.83,15.83,0,0,0,15.83,0Z"/></svg>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+        <button
+          @click="onViewData"
+          :disabled="location === null">
+          <i class="fa fa-search"></i>
+          <span>View Data</span>
+        </button>
+      </template>
+      <template slot="right">
+        <a href="javascript:void(0);" @click="profileComingSoon">
+          <i class="fa fa-user-circle"></i>
+        </a>
+      </template>
+    </TdsTopBar>
     <router-view></router-view>
   </div>
 </template>
@@ -61,6 +41,7 @@ import 'v-calendar/lib/v-calendar.min.css';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
+import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
 export default {
   name: 'App',
@@ -68,6 +49,7 @@ export default {
     ModalComingSoon,
     ModalRequestsNewConfirmation,
     SearchBarLocation,
+    TdsTopBar,
   },
   computed: {
     username() {
@@ -83,6 +65,9 @@ export default {
       if (!this.$refs.modalToggle.checked) {
         this.clearModal();
       }
+    },
+    onViewData() {
+
     },
     profileComingSoon() {
       this.setModal({
@@ -361,9 +346,9 @@ p {
     vertical-align: middle;
     &:after {
       background-color: var(--white);
-      border: 1px solid var(--base-darker);
+      border: var(--border-default);
       border-radius: var(--space-s);
-      color: var(--base-darker);
+      color: var(--base-dark);
       content: ' ';
       display: inline-block;
       font-family: var(--font-family-fa);
@@ -393,7 +378,7 @@ p {
     }
   }
   &:hover > input[type="checkbox"]:not(:disabled):after {
-    border-color: var(--base-darker);
+    border-color: var(--base-darkest);
     color: var(--base-darkest);
   }
   & > span {
@@ -409,7 +394,7 @@ p {
     appearance: none;
     background-color: var(--white);
     border-radius: 1em;
-    border: 1px solid var(--base-dark);
+    border: var(--border-default);
     box-shadow: inset -2em 0 0 0 var(--base);
     cursor: pointer;
     height: 2em;
@@ -434,7 +419,6 @@ p {
     }
   }
   &:hover > input[type="checkbox"]:not(:disabled) {
-    border-color: var(--base);
     box-shadow: inset -2em 0 0 0 var(--base-light);
   }
   &:hover > input[type="checkbox"]:not(:disabled):checked {
@@ -444,6 +428,43 @@ p {
   & > span {
     padding-left: var(--space-s);
     vertical-align: middle;
+  }
+}
+
+/* BUTTONS */
+button {
+  background-color: var(--white);
+  border: var(--border-default);
+  border-radius: var(--space-s);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xl);
+  padding: var(--space-s) var(--space-m);
+  transition: border-color var(--transition-short);
+  &:disabled {
+    background-color: var(--disabled-light);
+    border-color: var(--disabled-dark);
+    color: var(--disabled-dark);
+    cursor: not-allowed;
+  }
+  &:not(:disabled):hover {
+    border-color: var(--base-darkest);
+  }
+  &.tds-button-primary {
+    background-color: var(--primary-light);
+    border-color: var(--primary-darker);
+    color: var(--primary-darker);
+  }
+  &.tds-button-success {
+    background-color: var(--success-light);
+    border-color: var(--success-darker);
+    color: var(--success-darker);
+  }
+  &.tds-button-warning {
+    background-color: var(--warning-light);
+    border-color: var(--warning-darker);
+    color: var(--warning-darker);
   }
 }
 
@@ -489,33 +510,6 @@ fieldset {
         }
       }
     }
-  }
-}
-button, .btn {
-  background-color: var(--base-lightest);
-  border: var(--border-default);
-  cursor: pointer;
-  font-family: var(--font-family);
-  font-size: var(--font-size-xl);
-  padding: var(--space-s) var(--space-m);
-  transition: border-color var(--transition-short);
-  &:hover {
-    border-color: var(--base-darkest);
-  }
-  &.btn-primary {
-    background-color: var(--primary-light);
-    border-color: var(--primary-darker);
-    color: var(--primary-darker);
-  }
-  &.btn-success {
-    background-color: var(--success-light);
-    border-color: var(--success-darker);
-    color: var(--success-darker);
-  }
-  &.btn-warning {
-    background-color: var(--warning-light);
-    border-color: var(--warning-darker);
-    color: var(--warning-darker);
   }
 }
 input[type=date],
@@ -608,82 +602,6 @@ label {
 /* VALIDATION */
 .validation-error {
   color: var(--error-darker);
-}
-
-/* NAVIGATION BAR */
-.nav-bar {
-  align-items: center;
-  border-bottom: var(--border-default);
-  display: flex;
-  margin-bottom: var(--space-m);
-  padding: 0 var(--space-xl);
-  & > .nav-brand {
-    align-items: center;
-    display: flex;
-    & > img {
-      margin: var(--space-m);
-    }
-    & > span {
-      font-size: var(--font-size-l);
-      font-weight: var(--font-weight-bold);
-    }
-  }
-  & > .nav-search {
-    margin-left: var(--space-l);
-  }
-  & > nav {
-    flex: 1;
-    & > ul {
-      align-items: stretch;
-      display: flex;
-      list-style: none;
-      margin-block-start: 0;
-      margin-block-end: 0;
-      padding-inline-start: var(--space-l);
-      & > li {
-        font-size: var(--font-size-xl);
-        & > * {
-          vertical-align: middle;
-        }
-        & > a {
-          border-bottom: 2px solid var(--base-lightest);
-          color: var(--base-darkest);
-          display: inline-block;
-          height: calc(var(--space-xl) * 1.5);
-          line-height: var(--space-xl);
-          padding: var(--space-m);
-          text-decoration: none;
-          &[disabled], &[disabled]:hover {
-            background-color: transparent;
-            border: none;
-            color: var(--disabled);
-            cursor: not-allowed;
-          }
-          & > * {
-            vertical-align: middle;
-          }
-          & > svg {
-            display: inline-block;
-            margin-left: var(--space-m);
-          }
-          &:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-darker);
-            color: var(--primary-darker);
-            & > svg {
-              fill: var(--primary-darker);
-            }
-          }
-          &.router-link-active,
-          &.router-link-active:hover {
-            background-color: var(--success-light);
-            border-color: var(--success-darker);
-            color: var(--success-darker);
-          }
-        }
-      }
-    }
-  }
 }
 
 /* ONE-OFF STYLING */
