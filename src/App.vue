@@ -1,5 +1,5 @@
 <template>
-  <div class="container full-screen">
+  <div class="full-screen flex-container-row">
     <div class="hide">
       <form
         v-if="auth.loggedIn"
@@ -12,23 +12,47 @@
       :is="modal.component"
       :data="modal.data"
       @modal-close="clearModal"></component>
-    <TdsTopBar>
-      <template slot="left">
-        <search-bar-location />
-        <button
-          @click="onViewData"
-          :disabled="location === null">
-          <i class="fa fa-search"></i>
-          <span>View Data</span>
-        </button>
-      </template>
-      <template slot="right">
-        <a href="javascript:void(0);" @click="profileComingSoon">
-          <i class="fa fa-user-circle"></i>
-        </a>
-      </template>
-    </TdsTopBar>
-    <router-view></router-view>
+    <div class="fc-sidebar">
+      <FcDashboardBrand />
+      <FcDashboardNav>
+        <FcDashboardNavItem
+          icon="map-marked-alt"
+          label="View Data"
+          :to="{ name: 'viewData' }" />
+        <FcDashboardNavItem
+          icon="folder-plus"
+          label="Request Study"
+          :to="{ name: 'requestStudy' }" />
+        <FcDashboardNavItem
+          icon="clipboard-list"
+          label="Track Requests"
+          :to="{ name: 'trackRequests' }" />
+        <FcDashboardNavItem
+          disabled
+          icon="road"
+          label="Run Warrant"
+          :to="{ name: 'runWarrant' }" />
+      </FcDashboardNav>
+    </div>
+    <main class="flex-fill">
+      <TdsTopBar>
+        <template slot="left">
+          <search-bar-location />
+          <button
+            @click="onViewData"
+            :disabled="location === null">
+            <i class="fa fa-search"></i>
+            <span>View Data</span>
+          </button>
+        </template>
+        <template slot="right">
+          <a href="javascript:void(0);" @click="profileComingSoon">
+            <i class="fa fa-user-circle"></i>
+          </a>
+        </template>
+      </TdsTopBar>
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 
@@ -38,6 +62,9 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
 
+import FcDashboardBrand from '@/components/FcDashboardBrand.vue';
+import FcDashboardNav from '@/components/FcDashboardNav.vue';
+import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
@@ -46,6 +73,9 @@ import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 export default {
   name: 'App',
   components: {
+    FcDashboardBrand,
+    FcDashboardNav,
+    FcDashboardNavItem,
     ModalComingSoon,
     ModalRequestsNewConfirmation,
     SearchBarLocation,
@@ -155,6 +185,7 @@ export default {
   --space-l: 1rem;
   --space-xl: 2rem;
   --space-2xl: 4rem;
+  --space-3xl: 8rem;
 
   --border-default: 1px solid var(--base);
 
@@ -171,6 +202,12 @@ export default {
   --flex-11: 11 0 0;
   --flex-12: 12 0 0;
   --flex-fill: 1 0 0;
+
+  --opacity-100: 1;
+  --opacity-75: 0.75;
+  --opacity-50: 0.5;
+  --opacity-25: 0.25;
+  --opacity-0: 0;
 
   --shadow-0: 0;
   --shadow-1: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
@@ -209,11 +246,14 @@ body {
   font-size: var(--font-size-m);
 }
 .full-screen {
-  display: flex;
-  flex-direction: column;
   height: 100vh;
   min-height: 100vh;
   padding: 0;
+}
+.fc-sidebar {
+  background-color: var(--base-darker);
+  color: var(--base-lighter);
+  width: var(--space-3xl);
 }
 
 /* TYPOGRAPHY */
@@ -252,6 +292,14 @@ p {
 }
 .text-right {
   text-align: right;
+}
+.flex-container-row {
+  display: flex;
+  flex-direction: row;
+}
+.flex-container-column {
+  display: flex;
+  flex-direction: column;
 }
 .flex-1 {
   flex: var(--flex-1);
