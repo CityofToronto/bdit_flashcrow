@@ -286,6 +286,10 @@ small {
 p {
   margin: var(--space-m) 0;
 }
+hr {
+  align-self: stretch;
+  margin: var(--space-m) 0;
+}
 .font-size-xs {
   font-size: var(--font-size-xs);
 }
@@ -304,6 +308,29 @@ p {
 .font-size-2xl {
   font-size: var(--font-size-2xl);
 }
+
+/* TEXT PANELS */
+.panel {
+  background-color: var(--base-lightest);
+  border: 1px solid var(--base);
+  padding: var(--space-m);
+  &.panel-info {
+    background-color: var(--info-lighter);
+    border-color: var(--info-darker);
+    color: var(--info-darker);
+  }
+  &.panel-warning {
+    background-color: var(--warning-lighter);
+    border-color: var(--warning-darker);
+    color: var(--warning-darker);
+  }
+  &.panel-error {
+    background-color: var(--error-lighter);
+    border-color: var(--error-darker);
+    color: var(--error-darker);
+  }
+}
+
 
 /* UTILITIES */
 .hide {
@@ -385,26 +412,53 @@ p {
   box-shadow: var(--shadow-5);
 }
 
-/* TYPOGRAPHY */
-.panel {
-  background-color: var(--base-lightest);
-  border: 1px solid var(--base);
+/* PADDING */
+.p-xs {
+  padding: var(--space-xs);
+}
+.p-s {
+  padding: var(--space-s);
+}
+.p-m {
   padding: var(--space-m);
-  &.panel-info {
-    background-color: var(--info-lighter);
-    border-color: var(--info-darker);
-    color: var(--info-darker);
-  }
-  &.panel-warning {
-    background-color: var(--warning-lighter);
-    border-color: var(--warning-darker);
-    color: var(--warning-darker);
-  }
-  &.panel-error {
-    background-color: var(--error-lighter);
-    border-color: var(--error-darker);
-    color: var(--error-darker);
-  }
+}
+.p-l {
+  padding: var(--space-l);
+}
+.p-xl {
+  padding: var(--space-xl);
+}
+
+.px-xs {
+  padding: 0 var(--space-xs);
+}
+.px-s {
+  padding: 0 var(--space-s);
+}
+.px-m {
+  padding: 0 var(--space-m);
+}
+.px-l {
+  padding: 0 var(--space-l);
+}
+.px-xl {
+  padding: 0 var(--space-xl);
+}
+
+.py-xs {
+  padding: var(--space-xs) 0;
+}
+.py-s {
+  padding: var(--space-s) 0;
+}
+.py-m {
+  padding: var(--space-m) 0;
+}
+.py-l {
+  padding: var(--space-l) 0;
+}
+.py-xl {
+  padding: var(--space-xl) 0;
 }
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
@@ -520,12 +574,6 @@ button {
   font-size: var(--font-size-xl);
   padding: var(--space-s) var(--space-m);
   transition: border-color var(--transition-short);
-  &:disabled {
-    background-color: var(--disabled-light);
-    border-color: var(--disabled-dark);
-    color: var(--disabled-dark);
-    cursor: not-allowed;
-  }
   &:not(:disabled):hover {
     border-color: var(--base-darkest);
   }
@@ -543,6 +591,12 @@ button {
     background-color: var(--warning-light);
     border-color: var(--warning-darker);
     color: var(--warning-darker);
+  }
+  &:disabled {
+    background-color: var(--disabled-light);
+    border-color: var(--disabled-dark);
+    color: var(--disabled-dark);
+    cursor: not-allowed;
   }
 }
 

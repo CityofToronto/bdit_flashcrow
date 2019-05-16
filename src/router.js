@@ -8,11 +8,16 @@ Vue.use(Router);
 const router = new Router({
   routes: [
     {
+      path: '/',
+      name: 'home',
+      redirect: { name: 'viewData' },
+    },
+    {
       path: '/view',
-      name: 'viewData',
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutViewData.vue'),
       children: [{
         path: '',
+        name: 'viewData',
         components: {
           filters: null,
           display: null,
@@ -24,32 +29,46 @@ const router = new Router({
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
           display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
         },
+        beforeEnter: (to, from, next) => {
+          if (store.state.location === null) {
+            const { keyString } = to.params;
+            store.dispatch('fetchLocation', keyString)
+              .then(() => {
+                next();
+              })
+              .catch((err) => {
+                next(err);
+              });
+          } else {
+            next();
+          }
+        },
       }],
     },
     {
       path: '/requests/study/new',
-      name: 'requestStudy',
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
-      /*
+      beforeEnter: (to, from, next) => {
+        if (store.state.location === null) {
+          // TODO: warn user that this requires location
+          next({ name: 'home' });
+        } else {
+          next();
+        }
+      },
       children: [{
         path: '',
-        components: {
-
-        },
+        name: 'requestStudy',
+        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyRequest.vue'),
       }, {
         path: 'schedule',
         name: 'requestStudySchedule',
-        components: {
-
-        },
+        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
       }, {
         path: 'confirm',
         name: 'requestStudyConfirm',
-        components: {
-
-        },
-      }]
-      */
+        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyConfirm.vue'),
+      }],
     },
     {
       path: '/requests/study/track',
@@ -74,12 +93,12 @@ router.beforeEach((to, from, next) => {
         if (loggedIn) {
           next();
         } else {
-          next({ name: 'viewData' });
+          next({ name: 'home' });
         }
       } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
         // this route requires an unauthenticated user
         if (loggedIn) {
-          next({ name: 'viewData' });
+          next({ name: 'home' });
         } else {
           next();
         }
