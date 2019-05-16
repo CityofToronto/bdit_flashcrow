@@ -14,7 +14,7 @@ export default {
 
 <style lang="postcss">
 .fc-dashboard-brand {
-  height: calc(var(--font-size-xl) + var(--space-s) * 7.5);
+  height: calc(var(--font-size-xl) + var(--space-m) * 4);
   position: relative;
   & > i {
     left: 50%;
@@ -22,11 +22,13 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
     &.fa-circle {
-      font-size: calc(var(--font-size-2xl) * 1.5);
+      color: var(--white);
+      font-size: calc(var(--font-size-xl) * 1.5);
+      opacity: var(--opacity-75);
     }
     &.fa-bolt {
       color: var(--warning);
-      font-size: var(--font-size-2xl);
+      font-size: calc(var(--font-size-xl) * 1.5);
     }
     &.fa-crow {
       color: var(--ink);

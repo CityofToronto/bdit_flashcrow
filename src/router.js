@@ -10,37 +10,51 @@ const router = new Router({
     {
       path: '/view',
       name: 'viewData',
-      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
+      component: () => import(/* webpackChunkName: "home" */ './views/LayoutViewData.vue'),
+      children: [{
+        path: '',
+        components: {
+          filters: null,
+          display: null,
+        },
+      }, {
+        path: 'location/:keyString',
+        name: 'viewDataAtLocation',
+        components: {
+          filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
+          display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
+        },
+      }],
     },
     {
-      path: '/view/:query',
-      name: 'viewQuery',
-      component: () => import(/* webpackChunkName: "home" */ './views/ViewQuery.vue'),
-    },
-    {
-      path: '/requests/new',
+      path: '/requests/study/new',
       name: 'requestStudy',
-      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
+      component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
+      /*
+      children: [{
+        path: '',
+        components: {
+
+        },
+      }, {
+        path: 'schedule',
+        name: 'requestStudySchedule',
+        components: {
+
+        },
+      }, {
+        path: 'confirm',
+        name: 'requestStudyConfirm',
+        components: {
+
+        },
+      }]
+      */
     },
     {
-      path: '/requests/new/request',
-      name: 'requestsNewRequest',
-      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewRequest.vue'),
-    },
-    {
-      path: '/requests/new/schedule',
-      name: 'requestsNewSchedule',
-      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewSchedule.vue'),
-    },
-    {
-      path: '/requests/new/confirm',
-      name: 'requestsNewConfirm',
-      component: () => import(/* webpackChunkName: "home" */ './views/RequestsNewConfirm.vue'),
-    },
-    {
-      path: '/requests/track',
+      path: '/requests/study/track',
       name: 'trackRequests',
-      component: () => import(/* webpackChunkName: "home" */ './views/ViewExplore.vue'),
+      component: () => import(/* webpackChunkName: "home" */ './views/LayoutTrackRequests.vue'),
     },
   ],
 });

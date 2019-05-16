@@ -34,7 +34,7 @@
           :to="{ name: 'runWarrant' }" />
       </FcDashboardNav>
     </div>
-    <main class="flex-fill">
+    <div class="fc-content flex-fill flex-container-column">
       <TdsTopBar>
         <template slot="left">
           <search-bar-location />
@@ -52,7 +52,7 @@
         </template>
       </TdsTopBar>
       <router-view></router-view>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -97,7 +97,14 @@ export default {
       }
     },
     onViewData() {
-
+      if (this.location === null) {
+        return;
+      }
+      const { keyString } = this.location;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params: { keyString },
+      });
     },
     profileComingSoon() {
       this.setModal({
@@ -279,6 +286,24 @@ small {
 p {
   margin: var(--space-m) 0;
 }
+.font-size-xs {
+  font-size: var(--font-size-xs);
+}
+.font-size-s {
+  font-size: var(--font-size-s);
+}
+.font-size-m {
+  font-size: var(--font-size-m);
+}
+.font-size-l {
+  font-size: var(--font-size-l);
+}
+.font-size-xl {
+  font-size: var(--font-size-xl);
+}
+.font-size-2xl {
+  font-size: var(--font-size-2xl);
+}
 
 /* UTILITIES */
 .hide {
@@ -446,10 +471,10 @@ p {
     box-shadow: inset -2em 0 0 0 var(--base);
     cursor: pointer;
     height: 2em;
+    margin: 0;
     outline: none;
     position: relative;
     transition: var(--transition-short);
-    vertical-align: middle;
     vertical-align: middle;
     width: 4em;
     &:checked {
@@ -474,8 +499,13 @@ p {
     box-shadow: inset 2em 0 0 0 var(--success-light);
   }
   & > span {
-    padding-left: var(--space-s);
     vertical-align: middle;
+  }
+  & > span + input[type="checkbox"] {
+    margin-left: var(--space-s);
+  }
+  & > input[type="checkbox"] + span {
+    padding-left: var(--space-s);
   }
 }
 
