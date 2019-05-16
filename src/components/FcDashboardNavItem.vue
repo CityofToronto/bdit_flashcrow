@@ -28,6 +28,7 @@ export default {
 <style lang="postcss">
 .fc-dashboard-nav-item {
   & > a, & > div {
+    font-size: var(--font-size-s);
     padding: var(--space-l) var(--space-m);
   }
   & > a {

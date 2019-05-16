@@ -28,7 +28,5 @@ export default {
 
 <style lang="postcss">
 .toggle-show-map {
-  flex: 1;
-  text-align: right;
 }
 </style>

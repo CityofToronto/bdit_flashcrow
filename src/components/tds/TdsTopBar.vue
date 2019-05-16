@@ -15,7 +15,6 @@ export default {
 <style lang="postcss">
 .tds-top-bar {
   align-items: center;
-  background-color: var(--base-lighter);
   display: flex;
   flex-direction: row;
   padding: var(--space-m) var(--space-xl);
