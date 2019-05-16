@@ -1,5 +1,5 @@
 <template>
-<div class="breadcrumb-steps">
+<div class="fc-breadcrumbs-request-study">
   <template
     v-for="(step, i) in steps">
     <div
@@ -32,13 +32,13 @@
 <script>
 
 const steps = [
-  { name: 'requestsNewRequest', label: 'Request' },
-  { name: 'requestsNewSchedule', label: 'Schedule' },
-  { name: 'requestsNewConfirm', label: 'Confirm' },
+  { name: 'requestStudy', label: 'Request' },
+  { name: 'requestStudySchedule', label: 'Schedule' },
+  { name: 'requestStudyConfirm', label: 'Confirm' },
 ];
 
 export default {
-  name: 'BreadcrumbRequestsNew',
+  name: 'FcBreadcrumbsRequestStudy',
   props: {
     currentStepCompleted: {
       type: Boolean,
@@ -60,12 +60,12 @@ export default {
 </script>
 
 <style lang="postcss">
-.breadcrumb-steps {
+.fc-breadcrumbs-request-study {
   align-items: center;
   display: flex;
   flex-direction: row;
   font-size: var(--font-size-2xl);
-  margin-bottom: var(--space-l);
+  margin: var(--space-l) 0;
   text-transform: uppercase;
   & > .breadcrumb-step {
     color: var(--base);

@@ -1,5 +1,5 @@
 <template>
-<div class="tds-top-bar">
+<div class="tds-top-bar flex-container-row">
   <slot name="left"></slot>
   <div class="flex-fill"></div>
   <slot name="right"></slot>
@@ -15,8 +15,6 @@ export default {
 <style lang="postcss">
 .tds-top-bar {
   align-items: center;
-  display: flex;
-  flex-direction: row;
   padding: var(--space-m) var(--space-xl);
   & > * {
     margin-right: var(--space-m);

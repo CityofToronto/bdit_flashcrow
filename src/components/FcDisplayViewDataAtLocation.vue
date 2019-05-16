@@ -1,54 +1,40 @@
 <template>
-  <PaneDisplay class="fc-display-view-data-at-location">
-    <template v-slot:content>
-      <CountsTable :counts="counts" />
-      <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
-        To request data, first select one or more count types to request.
-      </div>
-    </template>
-    <template v-slot:actionBar>
-      <div
-        class="selected-count-wrapper text-center"
-        :class="{'some-selected': !dataSelectionEmpty}">
-        <div class="selected-count">{{dataSelectionLength}}</div>
-        <h3>Selected</h3>
-      </div>
-      <div class="print-wrapper">
-        <button
-          :disabled="dataSelectionEmpty"
-          @click="onClickPrint">
-          <i class="fa fa-print"></i> Print All
-        </button>
-      </div>
-      <div class="download-wrapper">
-        <button
-          :disabled="dataSelectionEmpty"
-          @click="onClickDownload">
-          <i class="fa fa-print"></i> Download All
-        </button>
-      </div>
-      <div class="start-request-wrapper text-right">
-        <button
-          class="btn-primary"
-          @click="onClickStartRequest">
-          Start Request
-        </button>
-      </div>
-    </template>
-  </PaneDisplay>
+  <div class="fc-display-view-data-at-location flex-2 flex-container-column">
+    <header class="flex-container-row">
+      <label class="tds-checkbox">
+        <input type="checkbox" />
+      </label>
+      <div class="flex-fill"></div>
+      <button class="tds-button-secondary" :disabled="$v.$invalid">
+        <i class="fa fa-download"></i>
+      </button>
+      <button class="tds-button-secondary" :disabled="$v.$invalid">
+        <i class="fa fa-print"></i>
+      </button>
+      <button
+        class="tds-button-primary"
+        @click="onClickRequestStudy"
+        :disabled="$v.$invalid">
+        <i class="fa fa-plus"></i>
+        <span> Request Study</span>
+      </button>
+    </header>
+    <CountsTable :counts="counts" />
+    <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
+      To request data, first select one or more count types to request.
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import CountsTable from '@/components/CountsTable.vue';
-import PaneDisplay from '@/components/PaneDisplay.vue';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     CountsTable,
-    PaneDisplay,
   },
   computed: {
     ...mapGetters(['dataSelectionEmpty', 'dataSelectionLength']),
@@ -68,14 +54,9 @@ export default {
         },
       });
     },
-    onClickStartRequest() {
-      if (this.$v.$invalid) {
-        /* eslint-disable no-alert */
-        window.alert('The form contains one or more errors.');
-      } else {
-        this.$router.push({ name: 'requestsNewRequest' });
-        this.setShowMap(false);
-      }
+    onClickRequestStudy() {
+      this.$router.push({ name: 'requestStudy' });
+      this.setShowMap(true);
     },
     onClickPrint() {
       this.setModal({
@@ -92,39 +73,15 @@ export default {
 
 <style lang="postcss">
 .fc-display-view-data-at-location {
-  footer {
-    & > .selected-count-wrapper,
-    & > .print-wrapper,
-    & > .download-wrapper {
-      flex: 1;
-      & > button {
-        height: 100%;
-      }
-    }
-    & > .start-request-wrapper {
-      flex: 3;
-      & > button {
-        height: 100%;
-      }
-    }
-    & > .selected-count-wrapper {
-      color: var(--base-darkest);
-      & > .selected-count {
-        background-color: var(--base-lightest);
-        border: 1px solid var(--base-darkest);
-        border-radius: 16px;
-        font-size: var(--font-size-2xl);
-        height: 32px;
-        line-height: 30px;
-        margin: auto;
-        width: 32px;
-      }
-      &.some-selected {
-        color: var(--success-darker);
-        & > .selected-count {
-          background-color: var(--success-light);
-          border-color: var(--success-darker);
-        }
+  padding: var(--space-m) var(--space-xl);
+  header {
+    align-items: center;
+    background-color: var(--base-lighter);
+    padding: var(--space-m) var(--space-l);
+    & > * {
+      margin-right: var(--space-m);
+      &:last-child {
+        margin-right: 0;
       }
     }
   }
