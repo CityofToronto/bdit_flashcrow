@@ -19,7 +19,7 @@
         <span> Request Study</span>
       </button>
     </header>
-    <CountsTable :counts="counts" />
+    <FcCardTableCounts :counts="counts" />
     <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
       To request data, first select one or more count types to request.
     </div>
@@ -29,12 +29,12 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import CountsTable from '@/components/CountsTable.vue';
+import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
-    CountsTable,
+    FcCardTableCounts,
   },
   computed: {
     ...mapGetters(['dataSelectionEmpty', 'dataSelectionLength']),
@@ -74,7 +74,7 @@ export default {
 <style lang="postcss">
 .fc-display-view-data-at-location {
   padding: var(--space-m) var(--space-xl);
-  header {
+  & > header {
     align-items: center;
     background-color: var(--base-lighter);
     padding: var(--space-m) var(--space-l);

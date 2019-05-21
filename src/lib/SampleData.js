@@ -60,7 +60,7 @@ function randomCounts() {
         id: null,
         type,
         date: null,
-        status: Constants.Status.NOT_IN_SYSTEM,
+        status: Constants.Status.NO_EXISTING_COUNT,
       };
       counts.push(countNotInSystem);
     }

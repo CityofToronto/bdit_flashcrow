@@ -1,6 +1,6 @@
 <template>
 <TdsTopBar class="fc-filters-view-data-at-location">
-  <template slot="left">
+  <template v-slot:left>
     <button class="font-size-l" disabled>
       All
     </button>
@@ -14,7 +14,7 @@
       }"
       @filter-count-types="onClickCounts" />
   </template>
-  <template slot="right">
+  <template v-slot:right>
     <ToggleShowMap />
   </template>
 </TdsTopBar>
