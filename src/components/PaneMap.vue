@@ -29,6 +29,48 @@ const ZOOM_TORONTO = 10;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
 
+function injectCentrelineVectorTiles(style) {
+  const STYLE = {};
+  Object.assign(STYLE, style);
+
+  STYLE.sources.centreline = {
+    type: 'vector',
+    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
+  };
+
+
+  STYLE.sources.intersections = {
+    type: 'vector',
+    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+  };
+
+
+  STYLE.layers.push({
+    id: 'centreline',
+    source: 'centreline',
+    'source-layer': 'centreline',
+    type: 'line',
+    minzoom: 10,
+    maxZoom: 15,
+    paint: {
+      'line-width': 1.5,
+    },
+    // filter: ['all', 'lf_name'],
+  });
+
+  STYLE.layers.push({
+    id: 'intersections',
+    source: 'intersections',
+    'source-layer': 'centreline_intersection',
+    type: 'circle',
+    minzoom: 11,
+    maxZoom: 15,
+  });
+
+  return STYLE;
+}
+
+
 export default {
   name: 'PaneMap',
   props: {
@@ -60,55 +102,8 @@ export default {
       new mapboxgl.LngLat(-79.115243191, 43.855457183),
     );
 
-    this.centrelineStyle = {
-      version: 8,
-      sources: {
-        'centreline-tiles': {
-          type: 'vector',
-          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline.pbf/{y}/{x}/{z}'],
-        },
-      },
-      layers: [
-        {
-          id: 'centreline',
-          source: 'centreline-tiles',
-          type: 'line',
-          paint: {
-            'fill-color': '#000000',
-          },
-
-
-        },
-
-      ],
-    };
-
-    this.intersectionStyle = {
-      version: 8,
-      sources: {
-        'int-tiles': {
-          type: 'vector',
-          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections.pbf/{y}/{x}/{z}'],
-        },
-      },
-      layers: [
-        {
-          id: 'intersections',
-          source: 'int-tiles',
-          type: 'circle',
-          paint: {
-            'fill-color': '#000000',
-          },
-
-
-        },
-
-      ],
-    };
-
-    this.mapStyle = GeoStyle.get();
-    // see https://docs.mapbox.com/mapbox-gl-js/example/map-tiles/
-    this.satelliteStyle = {
+    this.mapStyle = injectCentrelineVectorTiles(GeoStyle.get());
+    this.satelliteStyle = injectCentrelineVectorTiles({
       version: 8,
       sources: {
         'gcc-ortho-webm': {
@@ -118,41 +113,18 @@ export default {
           ],
           tileSize: 256,
         },
-        'centreline-tiles': {
-          type: 'vector',
-          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
-        },
-        'intersection-tiles' : {
-          type: 'vector',
-          tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
-        }
       },
       layers: [
-      {
-        id: 'gcc-ortho-webm',
-        type: 'raster',
-        source: 'gcc-ortho-webm',
-        minzoom: 0,
-        maxzoom: 23,
-      },
-      {
-          id: 'centreline',
-          source: 'centreline-tiles',
-          'source-layer': 'centreline',
-          type: 'line',
-          minzoom: 10,
-          maxZoom: 15,
-      },
-      {
-          id: 'intersections',
-          source: 'intersection-tiles',
-          'source-layer': 'centreline_intersection',
-          type: 'circle',
-          minzoom: 11,
-          maxZoom: 15,
-      }
+        {
+          id: 'gcc-ortho-webm',
+          type: 'raster',
+          source: 'gcc-ortho-webm',
+          minzoom: 0,
+          maxzoom: 23,
+        },
       ],
-    };
+    });
+
     Vue.nextTick(() => {
       this.loading = false;
       this.map = new mapboxgl.Map({
@@ -174,6 +146,8 @@ export default {
       );
       this.map.on('move', this.updateCoordinates.bind(this));
       this.easeToLocation();
+      this.map.on('click', 'intersections', this.elementPopupIntersections.bind(this));
+      this.map.on('click', 'centreline', this.elementPopupCentreline.bind(this));
     });
   },
   beforeDestroy() {
@@ -215,6 +189,18 @@ export default {
       const { lat, lng } = this.map.getCenter();
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
+    },
+    elementPopupIntersections(e) {
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(JSON.stringify(e.features[0].properties.intersec5))
+        .addTo(this.map);
+    },
+    elementPopupCentreline(e) {
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(JSON.stringify(e.features[0].properties.lf_name))
+        .addTo(this.map);
     },
   },
 };
