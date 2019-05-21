@@ -40,7 +40,7 @@
     <template
       v-for="(section, i) in sectionsNormalized">
       <tr
-        :key="section.main.id"
+        :key="'spacer-' + i"
         v-if="i > 0"
         class="fc-card-table-spacer">
         <td :colspan="numTableColumns"></td>
@@ -72,9 +72,12 @@
           <!-- EXPAND TOGGLE -->
           <td
             v-if="expandable"
-            class="cell-expand"
-            @click="onClickSectionExpand(section)">
-            <i class="fa fa-ellipsis-h"></i>
+            class="cell-expand">
+            <button
+              class="tds-button-secondary font-size-l"
+              @click="onClickSectionExpand(section)">
+              <i class="fa fa-ellipsis-h"></i>
+            </button>
           </td>
         </tr>
         <template v-if="expandable && section === expanded">
