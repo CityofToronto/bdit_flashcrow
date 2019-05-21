@@ -27,8 +27,8 @@
             class="fa"
             :class="{
               'fa-sort': !column.sorted,
-              'fa-sort-up': column.sorted && sortDirection === 1,
-              'fa-sort-down': column.sorted && sortDirection === -1,
+              'fa-sort-up': column.sorted && internalSortDirection === 1,
+              'fa-sort-down': column.sorted && internalSortDirection === -1,
             }"></i>
         </th>
         <!-- EXPAND TOGGLE -->
@@ -171,7 +171,7 @@ export default {
 
         const sortKey = this.sortKeys[name] || null;
         const sortable = sortKey !== null;
-        const sorted = name === this.sortBy;
+        const sorted = name === this.internalSortBy;
         const headerClasses = { sortable, sorted };
 
         return {
@@ -202,7 +202,7 @@ export default {
       return ArrayUtils.sortBy(
         this.sections,
         ({ main }) => sortKey(main),
-        this.sortDirection,
+        this.internalSortDirection,
       );
     },
   },
@@ -216,9 +216,9 @@ export default {
       if (!column.sortable) {
         return;
       }
-      if (column.name !== this.internalSortBy.name) {
+      if (this.internalSortBy !== column.name) {
         this.internalSortBy = column.name;
-        this.internalSortDirection = 1;
+        this.internalSortDirection = Constants.SortDirection.ASC;
       } else {
         this.internalSortDirection = -this.internalSortDirection;
       }
