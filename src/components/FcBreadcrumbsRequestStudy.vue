@@ -1,5 +1,5 @@
 <template>
-<div class="breadcrumb-steps">
+<div class="fc-breadcrumbs-request-study">
   <template
     v-for="(step, i) in steps">
     <div
@@ -32,13 +32,13 @@
 <script>
 
 const steps = [
-  { name: 'requestsNewRequest', label: 'Request' },
-  { name: 'requestsNewSchedule', label: 'Schedule' },
-  { name: 'requestsNewConfirm', label: 'Confirm' },
+  { name: 'requestStudy', label: 'Request' },
+  { name: 'requestStudySchedule', label: 'Schedule' },
+  { name: 'requestStudyConfirm', label: 'Confirm' },
 ];
 
 export default {
-  name: 'BreadcrumbRequestsNew',
+  name: 'FcBreadcrumbsRequestStudy',
   props: {
     currentStepCompleted: {
       type: Boolean,
@@ -60,55 +60,55 @@ export default {
 </script>
 
 <style lang="postcss">
-.breadcrumb-steps {
+.fc-breadcrumbs-request-study {
   align-items: center;
   display: flex;
   flex-direction: row;
-  font-size: var(--text-xxl);
-  margin-bottom: calc(var(--sp) * 4);
+  font-size: var(--font-size-2xl);
+  margin: var(--space-l) 0;
   text-transform: uppercase;
   & > .breadcrumb-step {
-    color: var(--outline-grey);
+    color: var(--base);
     & > a, & > span {
-      color: var(--outline-grey);
+      color: var(--base);
       display: inline-block;
-      margin-left: var(--sp);
+      margin-left: var(--space-s);
     }
     & > .breadcrumb-step-icon {
       display: inline-block;
-      height: var(--text-xxl);
-      line-height: var(--text-xxl);
+      height: var(--font-size-2xl);
+      line-height: var(--font-size-2xl);
       text-align: center;
-      width: var(--text-xxl);
+      width: var(--font-size-2xl);
     }
     & > strong.breadcrumb-step-icon {
-      background-color: var(--outline-grey);
+      background-color: var(--base);
       border-radius: 50%;
-      color: var(--outline-grey-focus);
+      color: var(--base-darkest);
     }
     &.current > strong.breadcrumb-step-icon {
-      background-color: var(--light-green);
-      color: var(--green);
+      background-color: var(--success-light);
+      color: var(--success-darker);
     }
     &.completed:hover,
     &.completed:hover > a {
-      color: var(--blue);
+      color: var(--primary-darker);
     }
     &.completed, &.completed > a, &.completed > span {
-      color: var(--off-black);
+      color: var(--base-darkest);
     }
     &.current, &.current > a, &.current > span {
-      color: var(--green);
+      color: var(--success-darker);
     }
   }
   & > .breadcrumb-step-separator {
-    border-bottom: 1px solid var(--outline-grey);
+    border-bottom: var(--border-default);
     display: inline-block;
     flex: 1;
     height: 1px;
-    margin: 0 calc(var(--sp) * 2);
+    margin: 0 var(--space-m);
     &.completed {
-      border-color: var(--off-black);
+      border-color: var(--base-darkest);
     }
   }
 }

@@ -25,23 +25,30 @@ const REASONS = [
   { label: 'Other', value: null },
 ];
 
-const SORT_KEYS = {
-  COUNT: c => c.type.label,
-  DATE: c => (c.date === null ? -Infinity : c.date.valueOf()),
-  STATUS: c => c.status,
+const SortDirection = {
+  ASC: 1,
+  DESC: -1,
+};
+
+const SortKeys = {
+  Counts: {
+    DATE: c => (c.date === null ? -Infinity : c.date.valueOf()),
+    STATUS: c => c.status,
+    STUDY_TYPE: c => c.type.label,
+  },
 };
 
 const Status = {
   RECENT: 0,
   OLD_3: 1,
-  NOT_IN_SYSTEM: 2,
+  NO_EXISTING_COUNT: 2,
   REQUEST_PENDING: 3,
 };
 
 const STATUS_META = [
   'Recent',
   '3+ years old',
-  'Not in system',
+  'No existing count',
   'Requested',
 ];
 
@@ -49,7 +56,8 @@ export default {
   COUNT_TYPES,
   DAYS_OF_WEEK,
   REASONS,
-  SORT_KEYS,
+  SortDirection,
+  SortKeys,
   Status,
   STATUS_META,
 };

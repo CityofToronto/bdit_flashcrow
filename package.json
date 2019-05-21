@@ -7,9 +7,10 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "jest --changedSince=master",
+    "test:unit": "jest",
     "pre-commit:lint": "lint-staged",
-    "pre-commit:audit": "npm audit"
+    "pre-commit:unit-test": "jest --changedSince=master",
+    "ci:npm-audit": "npm audit"
   },
   "dependencies": {
     "blankie": "^4.1.0",
@@ -54,7 +55,7 @@
     "vue-template-compiler": "^2.6.3"
   },
   "gitHooks": {
-    "pre-commit": "npm-run-all pre-commit:* test:unit"
+    "pre-commit": "npm-run-all pre-commit:*"
   },
   "lint-staged": {
     "*.js": [

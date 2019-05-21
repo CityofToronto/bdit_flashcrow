@@ -280,6 +280,7 @@ async function initServer() {
         return {
           description: KEY_DESC,
           geoId: INT_GEO_ID,
+          keyString,
           lat: LATITUDE,
           lng: LONGITUDE,
         };
