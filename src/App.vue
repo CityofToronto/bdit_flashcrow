@@ -42,7 +42,7 @@
             @click="onViewData"
             :disabled="location === null">
             <i class="fa fa-search"></i>
-            <span>View Data</span>
+            <span> View Data</span>
           </button>
         </template>
         <template v-slot:right>
