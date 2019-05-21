@@ -1,13 +1,13 @@
 <template>
   <main class="layout-request-study flex-fill flex-container-column">
     <TdsTopBar class="text-size-l">
-      <template slot="left">
+      <template v-slot:left>
         <router-link :to="linkBackToData">
           <i class="fa fa-chevron-left"></i>
           <span> Back To Data</span>
         </router-link>
       </template>
-      <template slot="right">
+      <template v-slot:right>
         <router-link :to="{ name: 'home' }">
           <span>Cancel </span>
           <i class="fa fa-times"></i>

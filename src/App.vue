@@ -36,7 +36,7 @@
     </div>
     <div class="fc-content flex-fill flex-container-column">
       <TdsTopBar>
-        <template slot="left">
+        <template v-slot:left>
           <search-bar-location />
           <button
             @click="onViewData"
@@ -45,7 +45,7 @@
             <span>View Data</span>
           </button>
         </template>
-        <template slot="right">
+        <template v-slot:right>
           <a href="javascript:void(0);" @click="profileComingSoon">
             <i class="fa fa-user-circle"></i>
           </a>
@@ -307,6 +307,9 @@ hr {
 }
 .font-size-2xl {
   font-size: var(--font-size-2xl);
+}
+.text-muted {
+  color: var(--disabled-dark);
 }
 
 /* TEXT PANELS */
