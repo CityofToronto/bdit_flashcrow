@@ -35,11 +35,13 @@
     <template v-slot:ACTIONS="{ row }">
       <div class="cell-actions">
         <button
-          class="tds-button-secondary font-size-l">
+          class="tds-button-secondary font-size-l"
+          :disabled="row.status === 2">
           <i class="fa fa-download"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l">
+          class="tds-button-secondary font-size-l"
+          :disabled="row.status === 2">
           <i class="fa fa-print"></i>
         </button>
         <button
@@ -119,8 +121,14 @@ export default {
 
 <style lang="postcss">
 .fc-card-table-counts {
-  .cell-actions > button:not(:last-child) {
-    margin-right: var(--space-s);
+  .cell-actions {
+    opacity: 0;
+    & > button:not(:last-child) {
+      margin-right: var(--space-s);
+    }
+  }
+  tr:hover .cell-actions {
+    opacity: 1;
   }
   .no-existing-count {
     color: var(--warning-darker);
