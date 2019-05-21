@@ -5,10 +5,17 @@
     :columns="columns"
     expandable
     :sections="sections"
+    sort-by="STUDY_TYPE"
     :sort-keys="sortKeys"
     selectable>
     <template v-slot:STUDY_TYPE="{ row }">
-      <span>{{row.type.label}}</span>
+      <a
+        v-if="row.status !== 2"
+        href="#"
+        @click.prevent="$emit('foo')">
+        {{row.type.label}}
+      </a>
+      <span v-else>{{row.type.label}}</span>
     </template>
     <template v-slot:DATE="{ row }">
       <span v-if="row.date">{{row.date | date}}</span>
@@ -45,7 +52,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import FcCardTable from '@/components/FcCardTable.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
@@ -106,10 +113,6 @@ export default {
       });
     },
     ...mapState(['filterCountTypes', 'filterDate']),
-    ...mapGetters(['dataSelectionContains']),
-  },
-  methods: {
-    ...mapActions(['addToDataSelection', 'removeFromDataSelection']),
   },
 };
 </script>
