@@ -22,6 +22,7 @@ function buildStyle() {
     description: metadata.description || '',
     name: metadata.name,
   };
+
   return STYLE;
 }
 
