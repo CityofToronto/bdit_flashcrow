@@ -140,8 +140,8 @@ export default {
     width: 320px;
   }
   & > .suggestions {
-    background-color: var(--white);
-    border: 1px solid var(--outline-grey);
+    background-color: var(--base-lightest);
+    border: var(--border-default);
     border-top: 0;
     position: absolute;
     top: 31px;
@@ -149,14 +149,14 @@ export default {
     z-index: var(--z-index-controls);
     & > .suggestion {
       cursor: pointer;
-      padding: var(--sp) calc(var(--sp) * 2);
+      padding: var(--space-l) var(--space-m);
       &.active {
-        background-color: var(--light-blue);
-        color: var(--blue);
+        background-color: var(--primary-light);
+        color: var(--primary-darker);
       }
       &.disabled {
         cursor: not-allowed;
-        color: var(--outline-grey);
+        color: var(--base);
       }
     }
   }

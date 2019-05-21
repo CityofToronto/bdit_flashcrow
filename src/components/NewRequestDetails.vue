@@ -46,7 +46,7 @@
             The Traffic Safety Unit will contact you to make adjustments to the schedule.
           </p>
         </div>
-        <div v-else-if="priority === 'STANDARD'" class="panel panel-primary">
+        <div v-else-if="priority === 'STANDARD'" class="panel panel-info">
           <i class="fa fa-calendar-check"></i>
           <span>
             Standard times to request counts are 2-3 months.  Peak times are April-June and
@@ -173,7 +173,7 @@ export default {
 <style lang="postcss">
 .new-request-details {
   border: none;
-  margin-top: calc(var(--sp) * 4);
+  margin-top: var(--space-l);
   .reason-for-request {
     .dropdown-menu {
       bottom: 100%;

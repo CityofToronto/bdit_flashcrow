@@ -44,7 +44,7 @@
         contact you to make adjustments to the schedule.
       </p>
     </div>
-    <div v-else class="panel panel-primary">
+    <div v-else class="panel panel-info">
       <h3>Estimated Delivery Date: {{estimatedDeliveryDate | date}}</h3>
     </div>
   </fieldset>
@@ -110,14 +110,14 @@ export default {
 <style lang="postcss">
 .new-request-details-summary {
   border: none;
-  margin-top: calc(var(--sp) * 4);
+  margin-top: var(--space-l);
   & > .details-body {
     align-items: flex-start;
     display: flex;
     flex-direction: row;
     & > .details-column {
       flex: 0 0 33.3333%;
-      padding: 0 calc(var(--sp) * 2);
+      padding: 0 var(--space-m);
     }
   }
   .reason-for-request {

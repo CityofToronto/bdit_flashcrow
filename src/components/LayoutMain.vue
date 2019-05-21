@@ -1,9 +1,9 @@
 <template>
-  <main class="layout-main">
+  <main class="layout-main flex-fill">
     <section class="nav-secondary">
       <slot name="navSecondary"></slot>
     </section>
-    <section class="panes">
+    <section class="panes flex-fill">
       <slot name="panes"></slot>
     </section>
   </main>
@@ -21,16 +21,15 @@ export default {
   flex-direction: column;
   & > .nav-secondary {
     align-items: center;
-    background-color: #fafafa;
+    background-color: var(--base-lightest);
     display: flex;
     flex-direction: row;
-    margin-bottom: calc(var(--sp) * 2);
-    padding: var(--sp) calc(var(--sp) * 10);
+    margin-bottom: var(--space-m);
+    padding: var(--space-l) var(--space-xl);
   }
   & > .panes {
     display: flex;
     flex-direction: row;
-    flex: 1;
   }
 }
 </style>
