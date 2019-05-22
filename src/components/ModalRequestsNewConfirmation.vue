@@ -18,7 +18,7 @@
     </template>
     <template v-slot:footer>
       <div class="flex-fill text-right">
-        <button class="btn-primary" @click="onClickOk">OK</button>
+        <button class="tds-button-primary" @click="onClickOk">OK</button>
       </div>
     </template>
   </TdsModal>
@@ -27,29 +27,18 @@
 <script>
 import { mapMutations } from 'vuex';
 
-import TdsModal from '@/components/tds/TdsModal.vue';
+import TdsMixinModal from '@/components/tds/TdsMixinModal';
 
 export default {
   name: 'ModalComingSoon',
-  components: {
-    TdsModal,
-  },
-  props: {
-    data: {
-      type: Object,
-      default() { return {}; },
-    },
-  },
+  mixins: [TdsMixinModal],
   methods: {
     onClickOk() {
       this.clearModal();
-      this.clearDataSelection();
       // TODO: clear location, query as well
       this.setShowMap(true);
     },
     ...mapMutations([
-      'clearDataSelection',
-      'clearModal',
       'setShowMap',
     ]),
   },

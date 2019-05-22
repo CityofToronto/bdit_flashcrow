@@ -179,6 +179,15 @@ export default {
       this.$router.push({ name: 'requestStudy' });
       this.setShowMap(true);
     },
+    actionShowReports(items) {
+      // TODO: we could use options here to load specific report types?
+      this.setModal({
+        component: 'FcModalShowReports',
+        data: {
+          items,
+        },
+      });
+    },
     onActionBulk(type, options) {
       const actionOptions = options || {};
       if (type === 'download') {
@@ -193,6 +202,8 @@ export default {
         this.actionDownload([item], actionOptions);
       } else if (type === 'request-study') {
         this.actionRequestStudy([item], actionOptions);
+      } else if (type === 'show-reports') {
+        this.actionShowReports([item], actionOptions);
       }
     },
     onChangeSelectAll() {

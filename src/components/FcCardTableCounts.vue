@@ -21,7 +21,10 @@
       <a
         v-if="item.status !== Status.NO_EXISTING_COUNT"
         href="#"
-        @click.prevent="$emit('foo')">
+        @click.prevent="$emit('action-item', {
+          type: 'show-reports',
+          item,
+        })">
         {{item.type.label}}
       </a>
       <span v-else>{{item.type.label}}</span>
