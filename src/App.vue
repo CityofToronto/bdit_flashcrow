@@ -65,6 +65,7 @@ import 'v-calendar/lib/v-calendar.min.css';
 import FcDashboardBrand from '@/components/FcDashboardBrand.vue';
 import FcDashboardNav from '@/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
+import FcModalShowReports from '@/components/FcModalShowReports.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
@@ -76,6 +77,7 @@ export default {
     FcDashboardBrand,
     FcDashboardNav,
     FcDashboardNavItem,
+    FcModalShowReports,
     ModalComingSoon,
     ModalRequestsNewConfirmation,
     SearchBarLocation,

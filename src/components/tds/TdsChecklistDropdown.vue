@@ -1,7 +1,8 @@
 <template>
-  <button class="tds-checklist-dropdown">
-    <span>{{title}}</span>
-    <ul class="dropdown shadow-3">
+  <TdsButtonDropdown
+    class="tds-checklist-dropdown"
+    :title="title">
+    <ul>
       <li
         v-for="{ label, value } in options"
         :key="value"
@@ -18,12 +19,17 @@
         </label>
       </li>
     </ul>
-  </button>
+  </TdsButtonDropdown>
 </template>
 
 <script>
+import TdsButtonDropdown from '@/components/tds/TdsButtonDropdown.vue';
+
 export default {
   name: 'TdsChecklistDropdown',
+  components: {
+    TdsButtonDropdown,
+  },
   props: {
     name: String,
     options: {
@@ -33,14 +39,14 @@ export default {
     title: String,
     value: Array,
   },
-  data() {
-    return {
-      internalValue: this.value,
-    };
-  },
-  watch: {
-    internalValue() {
-      this.$emit('input', this.internalValue);
+  computed: {
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
     },
   },
 };
@@ -48,24 +54,10 @@ export default {
 
 <style lang="postcss">
 .tds-checklist-dropdown {
-  position: relative;
-
-  & > ul.dropdown {
-    background: var(--white);
-    border: 1px solid var(--base);
-    color: var(--base-darkest);
-    left: 0;
+  & > .dropdown > ul {
     list-style: none;
     margin: 0;
-    opacity: 0;
     padding: 0;
-    position: absolute;
-    text-align: left;
-    top: 100%;
-    transition: var(--transition-short);
-    visibility: hidden;
-    width: 100%;
-    z-index: var(--z-index-controls);
 
     & > li {
       cursor: pointer;
@@ -94,18 +86,6 @@ export default {
         padding: var(--space-l) var(--space-m);
       }
     }
-  }
-
-  &:focus, &:active, &:hover {
-    border-radius: var(--space-s) var(--space-s) 0 0;
-  }
-  &:focus > ul.dropdown,
-  &:active > ul.dropdown,
-  &:hover > ul.dropdown,
-  & > ul.dropdown:hover {
-    opacity: 1;
-    transform: translate(-1px, 0);
-    visibility: visible;
   }
 }
 </style>

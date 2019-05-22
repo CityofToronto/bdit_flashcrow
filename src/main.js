@@ -12,7 +12,7 @@ Vue.use(VueCalendar);
 Vue.use(Vuelidate);
 Vue.component('v-select', VueSelect);
 
-Vue.filter('date', TimeFormatters.formatDate);
+Vue.filter('date', TimeFormatters.formatDefault);
 
 Vue.config.productionTip = false;
 

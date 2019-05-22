@@ -1,11 +1,16 @@
 <template>
   <TdsModal :data="data">
     <template v-slot:header>
-      <h2>Coming Soon!</h2>
+      <h2>Show Reports</h2>
     </template>
     <template v-slot:content>
       <p>
-        Coming soon: {{data.feature || ''}}!
+        Coming soon: show reports!
+      </p>
+      <p>
+        <code>
+          {{JSON.stringify(data.items, null, 2)}}
+        </code>
       </p>
     </template>
     <template v-slot:footer>
@@ -20,7 +25,7 @@
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 
 export default {
-  name: 'ModalComingSoon',
+  name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
 };
 </script>
