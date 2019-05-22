@@ -6,43 +6,59 @@
     expandable
     :sections="sections"
     sort-by="STUDY_TYPE"
-    :sort-keys="sortKeys"
-    selectable>
-    <template v-slot:STUDY_TYPE="{ row }">
+    :sort-keys="sortKeys">
+    <template v-slot:children-empty="{ item }">
+      <span class="text-muted">
+        No older counts available.
+      </span>
+    </template>
+    <template v-slot:SELECTION="{ item }">
+      <label class="tds-checkbox">
+        <input
+          type="checkbox"
+          name="selectionItems"
+          :value="item.id"
+          v-model="selection" />
+      </label>
+    </template>
+    <template v-slot:STUDY_TYPE="{ item }">
       <a
-        v-if="row.status !== 2"
+        v-if="item.status !== Status.NO_EXISTING_COUNT"
         href="#"
         @click.prevent="$emit('foo')">
-        {{row.type.label}}
+        {{item.type.label}}
       </a>
-      <span v-else>{{row.type.label}}</span>
+      <span v-else>{{item.type.label}}</span>
     </template>
-    <template v-slot:DATE="{ row }">
-      <span v-if="row.date">{{row.date | date}}</span>
+    <template v-slot:DATE="{ item, children }">
+      <span v-if="item.date">
+        <span>{{item.date | date}}</span>
+        <template v-if="children !== null && children.length > 0">
+          <br />
+          <small class="text-muted">+{{children.length}} older</small>
+        </template>
+      </span>
       <span v-else class="text-muted">
         N/A
       </span>
     </template>
-    <template v-slot:STATUS="{ row }">
+    <template v-slot:STATUS="{ item, isChild, children }">
+      <span v-if="isChild">Historical</span>
       <span
+        v-else
         :class="{
-          'no-existing-count': row.status === 2,
+          'no-existing-count': item.status === Status.NO_EXISTING_COUNT,
         }">
-        <i v-if="row.status === 2" class="fa fa-exclamation-triangle"></i>
-        <span> {{STATUS_META[row.status]}}</span>
+        <i v-if="item.status === Status.NO_EXISTING_COUNT" class="fa fa-exclamation-triangle"></i>
+        <span> {{STATUS_META[item.status]}}</span>
       </span>
     </template>
-    <template v-slot:ACTIONS="{ row }">
+    <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          :disabled="row.status === 2">
+          :disabled="item.status === Status.NO_EXISTING_COUNT">
           <i class="fa fa-download"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          :disabled="row.status === 2">
-          <i class="fa fa-print"></i>
         </button>
         <button
           class="tds-button-secondary font-size-l">
@@ -70,6 +86,8 @@ export default {
   },
   data() {
     const columns = [{
+      name: 'SELECTION',
+    }, {
       name: 'STUDY_TYPE',
       sortable: true,
       title: 'Study Type',
@@ -88,8 +106,9 @@ export default {
       columns,
       selection: [],
       sortBy: 'COUNT',
-      sortDirection: 1,
+      sortDirection: Constants.SortDirection.ASC,
       sortKeys: Constants.SortKeys.Counts,
+      Status: Constants.Status,
       STATUS_META: Constants.STATUS_META,
     };
   },
@@ -100,18 +119,28 @@ export default {
       return this.counts.filter(c => values.includes(c.type.value));
     },
     sections() {
-      // group by type
-      const countsByType = ArrayUtils.groupBy(this.countsFiltered, c => c.type.value);
-      // sort groups by date
-      return countsByType.map((countsOfType) => {
+      return Constants.COUNT_TYPES.map((type) => {
+        const countsOfType = this.countsFiltered
+          .filter(c => c.type.value === type.value);
+        if (countsOfType.length === 0) {
+          return {
+            item: {
+              id: type.value,
+              type,
+              date: null,
+              status: Constants.Status.NO_EXISTING_COUNT,
+            },
+            children: null,
+          };
+        }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
           Constants.SortKeys.Counts.DATE,
           Constants.SortDirection.DESC,
         );
-        const main = countsOfTypeSorted[0];
-        const items = countsOfTypeSorted.slice(1);
-        return { main, items };
+        const item = countsOfTypeSorted[0];
+        const children = countsOfTypeSorted.slice(1);
+        return { item, children };
       });
     },
     ...mapState(['filterCountTypes', 'filterDate']),
