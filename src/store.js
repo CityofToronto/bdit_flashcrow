@@ -27,7 +27,7 @@ export default new Vuex.Store({
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
     counts: COUNTS,
-    // filtering data
+    // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
@@ -35,6 +35,15 @@ export default new Vuex.Store({
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+  },
+  getters: {
+    // FILTERING DATA
+    hasFilters(state, getters) {
+      return getters.hasFilterCountTypes || state.filterDate !== null;
+    },
+    hasFilterCountTypes(state) {
+      return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+    },
   },
   mutations: {
     clearModal(state) {
@@ -58,12 +67,18 @@ export default new Vuex.Store({
     setLocation(state, location) {
       Vue.set(state, 'location', location);
     },
+    // FILTERING DATA
+    clearFilters(state) {
+      Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
+      Vue.set(state, 'filterDate', null);
+    },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
     },
     setFilterDate(state, filterDate) {
       Vue.set(state, 'filterDate', filterDate);
     },
+    // MAP MODE
     setShowMap(state, showMap) {
       Vue.set(state, 'showMap', showMap);
     },
