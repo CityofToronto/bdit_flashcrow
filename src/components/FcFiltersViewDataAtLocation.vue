@@ -1,7 +1,12 @@
 <template>
 <TdsTopBar class="fc-filters-view-data-at-location">
   <template v-slot:left>
-    <button class="font-size-l" disabled>
+    <button
+      class="font-size-l"
+      :class="{
+        'tds-button-success': !hasFilters,
+      }"
+      @click="clearFilters">
       All
     </button>
     <button class="font-size-l" disabled>
@@ -10,7 +15,7 @@
     <FcFilterCountTypes
       class="font-size-l"
       :class="{
-        'tds-button-success': filterCountTypes.length > 0,
+        'tds-button-success': hasFilterCountTypes,
       }" />
     <FcFilterDate
       :class="{
@@ -25,7 +30,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcFilterCountTypes from '@/components/FcFilterCountTypes.vue';
 import FcFilterDate from '@/components/FcFilterDate.vue';
@@ -41,7 +46,11 @@ export default {
     ToggleShowMap,
   },
   computed: {
+    ...mapGetters(['hasFilters', 'hasFilterCountTypes']),
     ...mapState(['filterCountTypes', 'filterDate']),
+  },
+  methods: {
+    ...mapMutations(['clearFilters']),
   },
 };
 </script>

@@ -56,22 +56,15 @@ export default {
     };
   },
   computed: {
-    countsFiltered() {
-      const values = this.filterCountTypes
-        .map(i => Constants.COUNT_TYPES[i].value);
-      return this.counts.filter(c => values.includes(c.type.value));
-    },
-    numSelectable() {
-      return this.selectableIds.length;
-    },
-    numSelected() {
-      return this.selection.length;
-    },
     sections() {
-      return Constants.COUNT_TYPES.map((type) => {
-        const countsOfType = this.counts
+      return this.filterCountTypes.map((i) => {
+        const type = Constants.COUNT_TYPES[i];
+        let countsOfType = this.counts
           .filter(c => c.type.value === type.value);
         if (countsOfType.length === 0) {
+          if (this.filterDate !== null) {
+            return null;
+          }
           return {
             item: {
               id: type.value,
@@ -82,6 +75,14 @@ export default {
             children: null,
           };
         }
+        if (this.filterDate !== null) {
+          const { start, end } = this.filterDate;
+          countsOfType = countsOfType
+            .filter(c => start <= c.date && c.date <= end);
+          if (countsOfType.length === 0) {
+            return null;
+          }
+        }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
           Constants.SortKeys.Counts.DATE,
@@ -90,7 +91,7 @@ export default {
         const item = countsOfTypeSorted[0];
         const children = countsOfTypeSorted.slice(1);
         return { item, children };
-      });
+      }).filter(section => section !== null);
     },
     selectableIds() {
       const selectableIds = [];
@@ -105,10 +106,11 @@ export default {
       return selectableIds;
     },
     selectionAll() {
-      return this.numSelected === this.numSelectable;
+      return this.selectableIds
+        .every(id => this.selection.includes(id));
     },
     selectionIndeterminate() {
-      return this.numSelected > 0 && !this.selectionAll;
+      return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapState([
       'counts',
