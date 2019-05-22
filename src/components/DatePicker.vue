@@ -1,33 +1,28 @@
 <template>
-  <div
-    class="date-picker"
-    :class="{ disabled }">
-    <div class="date-picker-icon">
-      <i class="fa fa-calendar"></i>
-    </div>
-    <v-date-picker
-      v-bind="$attrs"
-      v-model="internalValue"
-      class="date-picker-control"
-      :disabled-attribute="disabledAttribute"
-      popover-visibility="focus"
-      :show-caps="true"
-      :show-day-popover="false"
-      :theme-styles="themeStyles">
-      <input
-        slot-scope="{ inputValue }"
-        type="text"
-        class="input-date-picker"
-        :disabled="disabled"
-        :name="name"
-        :placeholder="placeholder"
-        :value="inputValue"
-        @input="internalValue = null" />
-    </v-date-picker>
-  </div>
+  <v-date-picker
+    v-bind="$attrs"
+    v-model="internalValue"
+    class="date-picker-control"
+    :disabled-attribute="disabledAttribute"
+    popover-visibility="focus"
+    :show-caps="true"
+    :show-day-popover="false"
+    :theme-styles="themeStyles">
+    <input
+      slot-scope="{ inputValue }"
+      type="text"
+      class="input-date-picker"
+      :disabled="disabled"
+      :name="name"
+      :placeholder="placeholder"
+      :value="inputValue"
+      @input="internalValue = null" />
+  </v-date-picker>
 </template>
 
 <script>
+const SIZES = ['xs', 's', 'm', 'l', 'xl', '2xl'];
+
 export default {
   name: 'FilterDate',
   props: {
@@ -43,11 +38,10 @@ export default {
       type: String,
       default: '',
     },
+    size: String,
     value: Object,
   },
   data() {
-    const textLg = { fontSize: 'var(--font-size-l)' };
-    const textXl = { fontSize: 'var(--font-size-xl)' };
     return {
       disabledAttribute: {
         contentStyle: {
@@ -58,26 +52,42 @@ export default {
           textDecoration: 'line-through',
         },
       },
-      internalValue: this.value,
-      themeStyles: {
-        dayCell: textLg,
+    };
+  },
+  computed: {
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
+    },
+    sizeMinusOne() {
+      const i = SIZES.indexOf(this.size);
+      return SIZES[i - 1];
+    },
+    themeStyles() {
+      const textSizeMinusOne = {
+        fontSize: `var(--font-size-${this.sizeMinusOne})`,
+      };
+      const textSize = {
+        fontSize: `var(--font-size-${this.size})`,
+      };
+      return {
+        dayCell: textSizeMinusOne,
         dayContent: {
           height: '1.8em',
           width: '1.8em',
-          ...textLg,
+          ...textSizeMinusOne,
         },
-        headerArrows: textXl,
-        headerTitle: textXl,
-        navHeaderArrows: textXl,
-        navHeaderTitle: textXl,
-        navMonthCell: textLg,
-        navYearCell: textLg,
-      },
-    };
-  },
-  watch: {
-    internalValue(value) {
-      this.$emit('input', value);
+        headerArrows: textSize,
+        headerTitle: textSize,
+        navHeaderArrows: textSize,
+        navHeaderTitle: textSize,
+        navMonthCell: textSizeMinusOne,
+        navYearCell: textSizeMinusOne,
+      };
     },
   },
 };

@@ -1,0 +1,49 @@
+<template>
+  <button class="tds-button-dropdown">
+    <span>{{title}}</span>
+    <div class="dropdown shadow-3 text-left">
+      <slot></slot>
+    </div>
+  </button>
+</template>
+
+<script>
+export default {
+  name: 'TdsButtonDropdown',
+  props: {
+    title: String,
+  },
+};
+</script>
+
+<style lang="postcss">
+.tds-button-dropdown {
+  position: relative;
+
+  & > .dropdown {
+    background: var(--white);
+    border: 1px solid var(--base);
+    color: var(--base-darkest);
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 100%;
+    transition: var(--transition-short);
+    visibility: hidden;
+    width: 100%;
+    z-index: var(--z-index-controls);
+  }
+
+  &:focus, &:active, &:hover {
+    border-radius: var(--space-s) var(--space-s) 0 0;
+  }
+  &:focus > .dropdown,
+  &:active > .dropdown,
+  &:hover > .dropdown,
+  & > .dropdown:hover {
+    opacity: 1;
+    transform: translate(-1px, 0);
+    visibility: visible;
+  }
+}
+</style>
