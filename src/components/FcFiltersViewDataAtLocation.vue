@@ -10,8 +10,13 @@
     <FcFilterCountTypes
       class="font-size-l"
       :class="{
-        'tds-button-success': filterCountTypes.length > 0
+        'tds-button-success': filterCountTypes.length > 0,
       }" />
+    <FcFilterDate
+      :class="{
+        'tds-button-success': filterDate !== null,
+      }"
+      size="l" />
   </template>
   <template v-slot:right>
     <ToggleShowMap />
@@ -23,6 +28,7 @@
 import { mapState } from 'vuex';
 
 import FcFilterCountTypes from '@/components/FcFilterCountTypes.vue';
+import FcFilterDate from '@/components/FcFilterDate.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
@@ -30,11 +36,12 @@ export default {
   name: 'FcFiltersViewDataAtLocation',
   components: {
     FcFilterCountTypes,
+    FcFilterDate,
     TdsTopBar,
     ToggleShowMap,
   },
   computed: {
-    ...mapState(['filterCountTypes']),
+    ...mapState(['filterCountTypes', 'filterDate']),
   },
 };
 </script>
