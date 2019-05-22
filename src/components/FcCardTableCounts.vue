@@ -5,20 +5,16 @@
     :columns="columns"
     expandable
     :sections="sections"
-    sort-by="STUDY_TYPE"
+    :sort-by="sortBy"
+    :sort-direction="sortDirection"
     :sort-keys="sortKeys">
-    <template v-slot:children-empty="{ item }">
-      <span class="text-muted">
-        No older counts available.
-      </span>
-    </template>
     <template v-slot:SELECTION="{ item }">
       <label class="tds-checkbox">
         <input
           type="checkbox"
           name="selectionItems"
           :value="item.id"
-          v-model="selection" />
+          v-model="internalValue" />
       </label>
     </template>
     <template v-slot:STUDY_TYPE="{ item }">
@@ -57,11 +53,20 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          :disabled="item.status === Status.NO_EXISTING_COUNT">
+          :disabled="item.status === Status.NO_EXISTING_COUNT"
+          @click="$emit('action-item', {
+            type: 'download',
+            item,
+            options: { formats: ['CSV'] },
+          })">
           <i class="fa fa-download"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l">
+          class="tds-button-secondary font-size-l"
+          @click="$emit('action-item', {
+            type: 'request-study',
+            item,
+          })">
           <i class="fa fa-plus-circle"></i>
         </button>
       </div>
@@ -70,10 +75,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import FcCardTable from '@/components/FcCardTable.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
 export default {
@@ -82,7 +84,8 @@ export default {
     FcCardTable,
   },
   props: {
-    counts: Array,
+    sections: Array,
+    value: Array,
   },
   data() {
     const columns = [{
@@ -105,7 +108,7 @@ export default {
     return {
       columns,
       selection: [],
-      sortBy: 'COUNT',
+      sortBy: 'STUDY_TYPE',
       sortDirection: Constants.SortDirection.ASC,
       sortKeys: Constants.SortKeys.Counts,
       Status: Constants.Status,
@@ -113,37 +116,14 @@ export default {
     };
   },
   computed: {
-    countsFiltered() {
-      const values = this.filterCountTypes
-        .map(i => Constants.COUNT_TYPES[i].value);
-      return this.counts.filter(c => values.includes(c.type.value));
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
     },
-    sections() {
-      return Constants.COUNT_TYPES.map((type) => {
-        const countsOfType = this.countsFiltered
-          .filter(c => c.type.value === type.value);
-        if (countsOfType.length === 0) {
-          return {
-            item: {
-              id: type.value,
-              type,
-              date: null,
-              status: Constants.Status.NO_EXISTING_COUNT,
-            },
-            children: null,
-          };
-        }
-        const countsOfTypeSorted = ArrayUtils.sortBy(
-          countsOfType,
-          Constants.SortKeys.Counts.DATE,
-          Constants.SortDirection.DESC,
-        );
-        const item = countsOfTypeSorted[0];
-        const children = countsOfTypeSorted.slice(1);
-        return { item, children };
-      });
-    },
-    ...mapState(['filterCountTypes', 'filterDate']),
   },
 };
 </script>
