@@ -1,8 +1,6 @@
 <template>
   <table class="fc-card-table">
     <caption v-if="caption">
-      <!-- SELECTION -->
-      <col v-if="selectable" class="fc-card-table-col-select">
       <!-- DATA COLUMNS -->
       <col :span="columnsNormalized.length" class="fc-card-table-col-data">
       <!-- EXPAND TOGGLE -->
@@ -10,10 +8,6 @@
     </caption>
     <thead>
       <tr>
-        <!-- SELECTION -->
-        <th
-          v-if="selectable"
-          class="font-size-xl text-left">&nbsp;</th>
         <!-- DATA COLUMNS -->
         <th
           v-for="column in columnsNormalized"
@@ -27,8 +21,8 @@
             class="fa"
             :class="{
               'fa-sort': !column.sorted,
-              'fa-sort-up': column.sorted && sortDirection === 1,
-              'fa-sort-down': column.sorted && sortDirection === -1,
+              'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
+              'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
             }"></i>
         </th>
         <!-- EXPAND TOGGLE -->
@@ -38,74 +32,50 @@
       </tr>
     </thead>
     <template
-      v-for="(section, i) in sectionsNormalized">
+      v-for="({ item, children }, i) in sectionsNormalized">
       <tr
-        :key="section.main.id"
+        :key="'spacer-' + i"
         v-if="i > 0"
         class="fc-card-table-spacer">
         <td :colspan="numTableColumns"></td>
       </tr>
       <tbody
-        :key="section.main.id"
+        :key="item.id"
         :class="{
-          expanded: expandable && section === expanded
+          expanded: expandable && expanded === item.id
         }">
         <tr>
-          <!-- SELECTION -->
-          <td v-if="selectable">
-            <label class="tds-checkbox">
-              <input
-                type="checkbox"
-                name="selection"
-                :value="section.main.id"
-                v-model="internalValue" />
-            </label>
-          </td>
           <!-- DATA COLUMNS -->
           <td
             v-for="column in columnsNormalized"
             :key="column.name">
             <slot
               :name="column.name"
-              v-bind="{ column, row: section.main }"></slot>
+              v-bind="{ column, item, isChild: false, children }"></slot>
           </td>
           <!-- EXPAND TOGGLE -->
           <td
             v-if="expandable"
-            class="cell-expand"
-            @click="onClickSectionExpand(section)">
-            <i class="fa fa-ellipsis-h"></i>
+            class="cell-expand">
+            <button
+              class="tds-button-secondary font-size-l"
+              @click="onClickItemExpand(item)"
+              :disabled="children === null || children.length === 0">
+              <i class="fa fa-ellipsis-h"></i>
+            </button>
           </td>
         </tr>
-        <template v-if="expandable && section === expanded">
+        <template v-if="expandable && expanded === item.id">
           <tr
-            v-if="section.items.length === 0">
-            <td :colspan="numTableColumns">
-              <span class="text-muted">
-                No older counts available.
-              </span>
-            </td>
-          </tr>
-          <tr
-            v-for="row in section.items"
-            :key="row.id">
-            <!-- SELECTION -->
-            <td v-if="selectable">
-              <label class="tds-checkbox">
-                <input
-                  type="checkbox"
-                  name="selection"
-                  :value="row.id"
-                  v-model="internalValue" />
-              </label>
-            </td>
+            v-for="child in children"
+            :key="child.id">
             <!-- DATA COLUMNS -->
             <td
               v-for="column in columnsNormalized"
               :key="column.name">
               <slot
                 :name="column.name"
-                v-bind="{ column, row }"></slot>
+                v-bind="{ column, item: child, isChild: true, children: null }"></slot>
             </td>
             <!-- EXPAND PLACEHOLDER -->
             <td v-if="expandable">&nbsp;</td>
@@ -133,10 +103,6 @@ export default {
       default: false,
     },
     sections: Array,
-    selectable: {
-      type: Boolean,
-      default: false,
-    },
     sortBy: {
       type: String,
       default: null,
@@ -149,14 +115,13 @@ export default {
       type: Object,
       default() { return {}; },
     },
-    value: Array,
   },
   data() {
     return {
       expanded: null,
       internalSortBy: this.sortBy,
       internalSortDirection: this.sortDirection,
-      internalValue: this.value,
+      SortDirection: Constants.SortDirection,
     };
   },
   computed: {
@@ -168,7 +133,7 @@ export default {
 
         const sortKey = this.sortKeys[name] || null;
         const sortable = sortKey !== null;
-        const sorted = name === this.sortBy;
+        const sorted = name === this.internalSortBy;
         const headerClasses = { sortable, sorted };
 
         return {
@@ -182,14 +147,8 @@ export default {
       });
     },
     numTableColumns() {
-      let n = this.columns.length;
-      if (this.selectable) {
-        n += 1;
-      }
-      if (this.expandable) {
-        n += 1;
-      }
-      return n;
+      const n = this.columns.length;
+      return this.expandable ? n + 1 : n;
     },
     sectionsNormalized() {
       if (this.internalSortBy === null) {
@@ -198,14 +157,9 @@ export default {
       const sortKey = this.sortKeys[this.internalSortBy];
       return ArrayUtils.sortBy(
         this.sections,
-        ({ main }) => sortKey(main),
-        this.sortDirection,
+        ({ item }) => sortKey(item),
+        this.internalSortDirection,
       );
-    },
-  },
-  watch: {
-    internalValue() {
-      this.$emit('input', this.internalValue);
     },
   },
   methods: {
@@ -213,18 +167,18 @@ export default {
       if (!column.sortable) {
         return;
       }
-      if (column.name !== this.internalSortBy.name) {
+      if (this.internalSortBy !== column.name) {
         this.internalSortBy = column.name;
-        this.internalSortDirection = 1;
+        this.internalSortDirection = Constants.SortDirection.ASC;
       } else {
         this.internalSortDirection = -this.internalSortDirection;
       }
     },
-    onClickSectionExpand(section) {
-      if (this.expanded === section) {
+    onClickItemExpand(item) {
+      if (this.expanded === item.id) {
         this.expanded = null;
       } else {
-        this.expanded = section;
+        this.expanded = item.id;
       }
     },
   },

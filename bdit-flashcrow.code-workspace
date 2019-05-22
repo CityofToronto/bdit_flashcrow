@@ -14,6 +14,9 @@
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
 		"editor.tabSize": 2,
-		"shellcheck.customArgs": ["--shell=bash"]
+		"shellcheck.customArgs": [
+			"--shell=bash"
+		],
+		"editor.quickSuggestionsDelay": 250
 	}
 }

@@ -52,20 +52,6 @@ function randomCounts() {
       counts.push(count);
     }
   }
-  // create missing entries
-  Constants.COUNT_TYPES.forEach((type) => {
-    const hasCountOfType = counts.some(c => c.type === type);
-    if (!hasCountOfType) {
-      const countNotInSystem = {
-        id: null,
-        type,
-        date: null,
-        status: Constants.Status.NO_EXISTING_COUNT,
-      };
-      counts.push(countNotInSystem);
-    }
-  });
-
   return counts;
 }
 
