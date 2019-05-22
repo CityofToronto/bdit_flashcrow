@@ -42,7 +42,7 @@
             @click="onViewData"
             :disabled="location === null">
             <i class="fa fa-search"></i>
-            <span>View Data</span>
+            <span> View Data</span>
           </button>
         </template>
         <template v-slot:right>
@@ -334,7 +334,6 @@ hr {
   }
 }
 
-
 /* UTILITIES */
 .hide {
   display: none;
@@ -584,6 +583,17 @@ button {
     background-color: var(--primary-light);
     border-color: var(--primary-darker);
     color: var(--primary-darker);
+  }
+  &.tds-button-secondary {
+    background-color: transparent;
+    border: 0;
+    &:not(:disabled):hover {
+      background-color: var(--base-lighter);
+    }
+    &:disabled {
+      background-color: transparent;
+      color: var(--disabled-dark);
+    }
   }
   &.tds-button-success {
     background-color: var(--success-light);

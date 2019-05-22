@@ -7,12 +7,11 @@
     <button class="font-size-l" disabled>
       Collisions
     </button>
-    <FilterCountTypes
+    <FcFilterCountTypes
       class="font-size-l"
       :class="{
         'tds-button-success': filterCountTypes.length > 0
-      }"
-      @filter-count-types="onClickCounts" />
+      }" />
   </template>
   <template v-slot:right>
     <ToggleShowMap />
@@ -21,30 +20,21 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
-import FilterCountTypes from '@/components/FilterCountTypes.vue';
+import FcFilterCountTypes from '@/components/FcFilterCountTypes.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
-import Constants from '@/lib/Constants';
 
 export default {
   name: 'FcFiltersViewDataAtLocation',
   components: {
-    FilterCountTypes,
+    FcFilterCountTypes,
     TdsTopBar,
     ToggleShowMap,
   },
   computed: {
     ...mapState(['filterCountTypes']),
-  },
-  methods: {
-    onClickCounts() {
-      if (this.filterCountTypes.length === 0) {
-        this.setFilterCountTypes([...Constants.COUNT_TYPES.keys()]);
-      }
-    },
-    ...mapMutations(['setFilterCountTypes']),
   },
 };
 </script>

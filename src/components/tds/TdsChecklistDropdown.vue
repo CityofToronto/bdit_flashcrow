@@ -1,22 +1,20 @@
 <template>
-  <button
-    class="filter-count-types btn-dropdown"
-    @click="$emit('filter-count-types')">
-    <span class="btn-dropdown-title">Counts ({{filterCountTypes.length}})</span>
+  <button class="tds-checklist-dropdown">
+    <span>{{title}}</span>
     <ul class="dropdown shadow-3">
       <li
-        v-for="(countType, i) in optionsFilterCountTypes"
-        :key="i"
+        v-for="{ label, value } in options"
+        :key="value"
         :class="{
-          selected: filterCountTypes.includes(i),
+          selected: internalValue.includes(value),
         }">
         <label class="tds-checkbox">
           <input
-            v-model.number="filterCountTypes"
+            v-model="internalValue"
             type="checkbox"
-            name="countTypes"
-            :value="i" />
-          <span>{{countType.label}}</span>
+            :name="name"
+            :value="value" />
+          <span>{{label}}</span>
         </label>
       </li>
     </ul>
@@ -24,39 +22,37 @@
 </template>
 
 <script>
-import Constants from '@/lib/Constants';
-
 export default {
-  name: 'FilterCountTypes',
+  name: 'TdsChecklistDropdown',
+  props: {
+    name: String,
+    options: {
+      type: Array,
+      default() { return []; },
+    },
+    title: String,
+    value: Array,
+  },
   data() {
     return {
-      optionsFilterCountTypes: Constants.COUNT_TYPES,
+      internalValue: this.value,
     };
   },
-  computed: {
-    filterCountTypes: {
-      get() {
-        return this.$store.state.filterCountTypes;
-      },
-      set(filterCountTypes) {
-        this.$store.commit('setFilterCountTypes', filterCountTypes);
-      },
+  watch: {
+    internalValue() {
+      this.$emit('input', this.internalValue);
     },
   },
 };
 </script>
 
 <style lang="postcss">
-.filter-count-types {
-  &.btn-dropdown > ul.dropdown {
-    width: 300px;
-  }
-}
-.btn-dropdown {
+.tds-checklist-dropdown {
   position: relative;
 
   & > ul.dropdown {
-    background: var(--base-lightest);
+    background: var(--white);
+    border: 1px solid var(--base);
     color: var(--base-darkest);
     left: 0;
     list-style: none;
@@ -72,7 +68,6 @@ export default {
     z-index: var(--z-index-controls);
 
     & > li {
-      background: var(--base-lightest);
       cursor: pointer;
       padding: 0;
 
@@ -101,12 +96,15 @@ export default {
     }
   }
 
+  &:focus, &:active, &:hover {
+    border-radius: var(--space-s) var(--space-s) 0 0;
+  }
   &:focus > ul.dropdown,
   &:active > ul.dropdown,
   &:hover > ul.dropdown,
   & > ul.dropdown:hover {
     opacity: 1;
-    transform: translate(0, 1px);
+    transform: translate(-1px, 0);
     visibility: visible;
   }
 }

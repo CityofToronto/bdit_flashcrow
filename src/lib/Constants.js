@@ -41,15 +41,17 @@ const SortKeys = {
 const Status = {
   RECENT: 0,
   OLD_3: 1,
-  NO_EXISTING_COUNT: 2,
-  REQUEST_PENDING: 3,
+  OLD_5: 2,
+  NO_EXISTING_COUNT: 3,
+  REQUEST_IN_PROGRESS: 4,
 };
 
 const STATUS_META = [
   'Recent',
-  '3+ years old',
+  '3 years+',
+  '5 years+',
   'No existing count',
-  'Requested',
+  'Request in progress',
 ];
 
 export default {
