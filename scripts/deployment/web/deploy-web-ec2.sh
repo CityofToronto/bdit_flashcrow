@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# ec2.sh
+# deploy-web-ec2.sh
 #
 # Deploy the latest application version to the current machine.  This is
 # intended to be run on EC2.
@@ -41,4 +41,4 @@ sudo cp -r dist $WEB_ROOT
 "$GIT_ROOT/scripts/db/db-update.sh" --psqlArgs "-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
 # start application again
-NODE_ENV=production forever start "$GIT_ROOT/scripts/deployment/forever.json"
+NODE_ENV=production forever start "$GIT_ROOT/scripts/deployment/web/forever.json"

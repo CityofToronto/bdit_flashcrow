@@ -17,6 +17,9 @@
 		"shellcheck.customArgs": [
 			"--shell=bash"
 		],
-		"editor.quickSuggestionsDelay": 250
+		"editor.quickSuggestionsDelay": 250,
+		"files.watcherExclude": {
+			"**/dist/**": true
+		}
 	}
 }
