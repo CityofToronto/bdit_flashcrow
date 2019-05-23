@@ -1,13 +1,13 @@
 <template>
   <div class="pane-map">
     <div class="pane-map-google-maps">
-      <button class="font-size-l">
+      <button>
         <span v-if="coordinates === null">Google Maps</span>
         <a v-else :href="hrefGoogleMaps" target="_blank">Google Maps</a>
       </button>
     </div>
     <div class="pane-map-mode">
-      <button class="font-size-l" @click="toggleSatellite">
+      <button @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
     </div>
@@ -53,9 +53,10 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 10,
     maxZoom: 15,
     paint: {
-      'line-width': 1.5,
+      'line-width': 3,
+      'line-opacity': ['case',
+        ['boolean', ['feature-state', 'hover'], false], 0.5, 1],
     },
-    // filter: ['all', 'lf_name'],
   });
 
   STYLE.layers.push({
@@ -65,6 +66,10 @@ function injectCentrelineVectorTiles(style) {
     type: 'circle',
     minzoom: 11,
     maxZoom: 15,
+    paint: {
+      'circle-opacity': ['case',
+        ['boolean', ['feature-state', 'hover'], false], 0.5, 1],
+    },
   });
 
   return STYLE;
@@ -125,6 +130,9 @@ export default {
       ],
     });
 
+    // keeps track of which feature we are currently hovering over
+    this.hoveredFeature = null;
+
     Vue.nextTick(() => {
       this.loading = false;
       this.map = new mapboxgl.Map({
@@ -146,8 +154,12 @@ export default {
       );
       this.map.on('move', this.updateCoordinates.bind(this));
       this.easeToLocation();
-      this.map.on('click', 'intersections', this.elementPopupIntersections.bind(this));
-      this.map.on('click', 'centreline', this.elementPopupCentreline.bind(this));
+      this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
+      this.map.on('mousemove', 'intersections', this.elementHover.bind(this));
+      this.map.on('mouseout', 'intersections', this.elementLeaveHover.bind(this));
+      this.map.on('click', 'centreline', this.centrelinePopup.bind(this));
+      this.map.on('mousemove', 'centreline', this.elementHover.bind(this));
+      this.map.on('mouseout', 'centreline', this.elementLeaveHover.bind(this));
     });
   },
   beforeDestroy() {
@@ -156,9 +168,6 @@ export default {
   watch: {
     location() {
       this.easeToLocation();
-    },
-    $route() {
-      this.map.resize();
     },
   },
   methods: {
@@ -193,17 +202,32 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
-    elementPopupIntersections(e) {
+    intersectionPopup(e) {
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(JSON.stringify(e.features[0].properties.intersec5))
         .addTo(this.map);
     },
-    elementPopupCentreline(e) {
+    centrelinePopup(e) {
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(JSON.stringify(e.features[0].properties.lf_name))
         .addTo(this.map);
+    },
+    elementHover(e) {
+      if (e.features.length > 0) {
+        if (this.hoveredFeature) {
+          this.map.setFeatureState(this.hoveredFeature, { hover: false });
+        }
+        [this.hoveredFeature] = e.features;
+        this.map.setFeatureState(e.features[0], { hover: true });
+      }
+    },
+    elementLeaveHover() {
+      if (this.hoveredFeature) {
+        this.map.setFeatureState(this.hoveredFeature, { hover: false });
+      }
+      this.hoveredFeature = null;
     },
   },
 };
@@ -211,7 +235,7 @@ export default {
 
 <style lang="postcss">
 .pane-map {
-  background-color: var(--base-lightest);
+  background-color: var(--white);
   & > .pane-map-google-maps {
     bottom: 8px;
     position: absolute;
