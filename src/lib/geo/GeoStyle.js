@@ -10,6 +10,7 @@ let STYLE = null;
 function buildStyle() {
   STYLE = {};
   Object.assign(STYLE, style);
+
   STYLE.sources.esri = {
     type: 'vector',
     scheme: 'xyz',
@@ -17,7 +18,7 @@ function buildStyle() {
     format: (metadata.tileInfo && metadata.tileInfo.format) || 'pbf',
     maxzoom: 15,
     tiles: [
-      `${style.sources.esri.url}/${metadata.tiles[0]}`,
+      `${style.sources.esri.url}${metadata.tiles[0]}`,
     ],
     description: metadata.description || '',
     name: metadata.name,
