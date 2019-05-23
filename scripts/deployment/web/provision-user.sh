@@ -78,6 +78,6 @@ mkdir -p "$HOME/log/flashcrow"
 
 # install application database
 echo "installing application database..."
-psql -U flashcrow_dba -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow < /vagrant/provision-db-vagrant.sql
 cd ~/git/bdit_flashcrow
+psql -U flashcrow_dba -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow < ./scripts/deployment/web/provision-db-ec2.sql
 ./scripts/db/db-update.sh --psqlArgs "-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
