@@ -14,7 +14,7 @@ To contact the Flashcrow team:
 | If... | Contact: | Who? |
 | --- | --- | --- |
 | You have a question related to Flashcrow development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
-| You have a question related to Flashcrow design practices, usability, or accessibility | Designer | [Pallavi Thampi](mailto:Pallavi.Thampi@toronto.ca) |
+| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | [Pallavi Thampi](mailto:Pallavi.Thampi@toronto.ca) |
 | You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | [Andrew Konoff](mailto:Andrew.Konoff@toronto.ca) |
 | Your question isn't captured above, or you're not sure who to contact | Service Owner | [Jesse Coleman](mailto:Jesse.Coleman@toronto.ca) |
 
@@ -31,9 +31,11 @@ See the [Developer's Guide](scripts/dev/README.md).  This guide will help you:
 
 ## Deployment
 
-To deploy Flashcrow, follow the [Deployment Guide](scripts/deployment/README.md).
+To deploy the Flashcrow web application, follow the [Web Stack Deployment Guide](scripts/deployment/web/README.md).
 
 We are currently working with Cloud Services to create CI / CD pipelines around integration testing and deployment.  The Deployment Guide will be updated as that work proceeds.
+
+As part of that, the [ETL Stack Deployment Guide](scripts/deployment/etl/README.md) is a work in progress.
 
 ## Code Documentation
 

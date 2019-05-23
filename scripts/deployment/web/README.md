@@ -1,4 +1,4 @@
-# Web Stack Deployment
+# Web Stack Deployment Guide
 
 ## Accessing the Web Stack
 
