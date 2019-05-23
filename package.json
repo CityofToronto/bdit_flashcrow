@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "jest",
-    "pre-commit:lint": "lint-staged",
-    "pre-commit:unit-test": "jest --changedSince=master",
+    "pre-commit:lint-staged": "lint-staged",
+    "pre-commit:test-unit-staged": "jest --changedSince=master",
     "ci:npm-audit": "npm audit"
   },
   "dependencies": {
