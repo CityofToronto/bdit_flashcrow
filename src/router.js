@@ -48,18 +48,24 @@ const router = new Router({
     {
       path: '/requests/study/new',
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
-      beforeEnter: (to, from, next) => {
+      beforeEnter(to, from, next) {
         if (store.state.location === null) {
           // TODO: warn user that this requires location
           next({ name: 'home' });
         } else {
+          if (store.state.studyRequest === null) {
+            store.commit('setNewStudyRequest', []);
+          }
           next();
         }
       },
       children: [{
         path: '',
         name: 'requestStudy',
-        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyRequest.vue'),
+        components: {
+          default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyRequest.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomRequestData.vue'),
+        },
       }, {
         path: 'schedule',
         name: 'requestStudySchedule',

@@ -35,14 +35,14 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
-function itemIsCount(item) {
-  return Number.isInteger(item.id);
+function idIsCount(id) {
+  return Number.isInteger(id);
 }
 
 export default {
@@ -127,7 +127,7 @@ export default {
   methods: {
     actionDownload(items, { formats }) {
       const downloadFormats = formats || ['CSV'];
-      const counts = items.filter(itemIsCount);
+      const counts = items.filter(item => idIsCount(item.id));
       if (counts.length === 0) {
         return;
       }
@@ -148,41 +148,16 @@ export default {
       if (studyTypes.size === 0) {
         return;
       }
-      // TODO: move this logic into CountsRequestedTable to show these
-      /*
-      const requestStudyItems = Constants.COUNT_TYPES
-        .filter(({ value }) => studyTypes.has(value))
-        .map(type => {
-          const countsOfType = this.counts
-            .filter(c => c.type.value === type.value);
-          if (countsOfType.length === 0) {
-            return {
-              id: type.value,
-              type,
-              date: null,
-              status: Constants.Status.NO_EXISTING_COUNT,
-            };
-          }
-          const { type, date, status } = ArrayUtils.getMaxBy(
-            countsOfType,
-            Constants.SortKeys.Counts.DATE,
-          );
-          return {
-            id: type.value,
-            type,
-            date,
-            status,
-          };
-        });
-      */
-      this.newStudyRequest({
-        studyTypes: Array.from(studyTypes),
-      });
+      this.setNewStudyRequest(Array.from(studyTypes));
       this.$router.push({ name: 'requestStudy' });
       this.setShowMap(true);
     },
     actionShowReports(items) {
       // TODO: we could use options here to load specific report types?
+      const counts = items.filter(item => idIsCount(item.id));
+      if (counts.length === 0) {
+        return;
+      }
       this.setModal({
         component: 'FcModalShowReports',
         data: {
@@ -191,11 +166,23 @@ export default {
       });
     },
     onActionBulk(type, options) {
+      const items = this.selection.map((id) => {
+        if (idIsCount(id)) {
+          return this.counts.find(count => count.id === id);
+        }
+        const countType = Constants.COUNT_TYPES.find(({ value }) => value === id);
+        return {
+          id: countType.value,
+          type: countType,
+          date: null,
+          status: Constants.Status.NO_EXISTING_COUNT,
+        };
+      });
       const actionOptions = options || {};
       if (type === 'download') {
-        this.actionDownload(this.selection, actionOptions);
+        this.actionDownload(items, actionOptions);
       } else if (type === 'request-study') {
-        this.actionRequestStudy(this.selection, actionOptions);
+        this.actionRequestStudy(items, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
@@ -215,7 +202,12 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    ...mapMutations(['setModal', 'setShowMap']),
+    ...mapActions(['newStudyRequest']),
+    ...mapMutations([
+      'setNewStudyRequest',
+      'setModal',
+      'setShowMap',
+    ]),
   },
 };
 </script>

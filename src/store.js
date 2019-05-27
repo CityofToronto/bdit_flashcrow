@@ -9,6 +9,29 @@ Vue.use(Vuex);
 
 const COUNTS = SampleData.randomCounts();
 
+function makeStudyItem(state, studyType) {
+  const start = new Date(
+    state.now.getFullYear(),
+    state.now.getMonth() + 2,
+    state.now.getDate() + 1,
+  );
+  const end = new Date(
+    state.now.getFullYear(),
+    state.now.getMonth() + 2,
+    state.now.getDate() + 7,
+  );
+  return {
+    item: studyType,
+    meta: {
+      dateRange: { start, end },
+      daysOfWeek: [2, 3, 4],
+      duration: 24,
+      hours: 'ROUTINE',
+      notes: '',
+    },
+  };
+}
+
 export default new Vuex.Store({
   state: {
     // modal
@@ -43,6 +66,25 @@ export default new Vuex.Store({
     },
     hasFilterCountTypes(state) {
       return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+    },
+    // ACTIVE STUDY REQUEST
+    studyTypesUnselectedFirst(state) {
+      if (state.studyRequest === null) {
+        return Constants.COUNT_TYPES;
+      }
+      const studyTypesSelectedSet = new Set(
+        state.studyRequest.items.map(({ item }) => item),
+      );
+      const studyTypesUnselected = [];
+      const studyTypesSelected = [];
+      Constants.COUNT_TYPES.forEach((countType) => {
+        if (studyTypesSelectedSet.has(countType.value)) {
+          studyTypesSelected.push(countType);
+        } else {
+          studyTypesUnselected.push(countType);
+        }
+      });
+      return studyTypesUnselected.concat(studyTypesSelected);
     },
   },
   mutations: {
@@ -86,8 +128,22 @@ export default new Vuex.Store({
     clearStudyRequest(state) {
       Vue.set(state, 'studyRequest', null);
     },
-    setStudyRequest(state, studyRequest) {
-      Vue.set(state, 'studyRequest', studyRequest);
+    setNewStudyRequest(state, studyTypes) {
+      const meta = {
+        ccEmails: '',
+        priority: 'STANDARD',
+        reason: null,
+        serviceRequestId: '',
+      };
+      const items = studyTypes.map(studyType => makeStudyItem(state, studyType));
+      Vue.set(state, 'studyRequest', { items, meta });
+    },
+    addStudyToStudyRequest(state, studyType) {
+      const item = makeStudyItem(state, studyType);
+      state.studyRequest.items.push(item);
+    },
+    removeStudyFromStudyRequest(state, i) {
+      state.studyRequest.items.splice(i, 1);
     },
   },
   actions: {
@@ -121,35 +177,6 @@ export default new Vuex.Store({
           commit('setLocationSuggestions', locationSuggestions);
           return locationSuggestions;
         });
-    },
-    newStudyRequest({ commit, state }, { studyTypes }) {
-      const meta = {
-        ccEmails: '',
-        priority: 'STANDARD',
-        reason: null,
-        serviceRequestId: '',
-      };
-      const start = new Date(
-        state.now.getFullYear(),
-        state.now.getMonth() + 2,
-        state.now.getDate() + 1,
-      );
-      const end = new Date(
-        state.now.getFullYear(),
-        state.now.getMonth() + 2,
-        state.now.getDate() + 7,
-      );
-      const items = studyTypes.map(studyType => ({
-        item: studyType,
-        meta: {
-          dateRange: { start, end },
-          daysOfWeek: [2, 3, 4],
-          duration: 24,
-          hours: 'ROUTINE',
-          notes: '',
-        },
-      }));
-      commit('setStudyRequest', { items, meta });
     },
   },
 });

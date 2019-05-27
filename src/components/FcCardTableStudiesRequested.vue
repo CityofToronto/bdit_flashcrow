@@ -1,19 +1,17 @@
 <template>
   <FcCardTable
-    class="fc-card-table-counts"
+    class="fc-card-table-studies-requested"
     :columns="columns"
-    expandable
     :sections="sections"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
-    <template v-slot:SELECTION="{ item }">
+    <template v-slot:SELECTION>
       <label class="tds-checkbox">
         <input
           type="checkbox"
-          name="selectionItems"
-          :value="item.id"
-          v-model="internalValue" />
+          checked
+          disabled />
       </label>
     </template>
     <template v-slot:STUDY_TYPE="{ item }">
@@ -28,22 +26,16 @@
       </a>
       <span v-else>{{item.type.label}}</span>
     </template>
-    <template v-slot:DATE="{ item, children }">
+    <template v-slot:DATE="{ item }">
       <span v-if="item.date">
-        <span>{{item.date | date}}</span>
-        <template v-if="children !== null && children.length > 0">
-          <br />
-          <small class="text-muted">+{{children.length}} older</small>
-        </template>
+        {{item.date | date}}
       </span>
       <span v-else class="text-muted">
         N/A
       </span>
     </template>
-    <template v-slot:STATUS="{ item, isChild, children }">
-      <span v-if="isChild">Historical</span>
+    <template v-slot:STATUS="{ item }">
       <span
-        v-else
         :class="{
           'no-existing-count': item.status === Status.NO_EXISTING_COUNT,
         }">
@@ -51,27 +43,19 @@
         <span> {{STATUS_META[item.status]}}</span>
       </span>
     </template>
-    <template v-slot:ACTIONS="{ item }">
+    <template v-slot:ACTIONS="{ index }">
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          :disabled="item.status === Status.NO_EXISTING_COUNT"
-          @click="$emit('action-item', {
-            type: 'download',
-            item,
-            options: { formats: ['CSV'] },
-          })">
-          <i class="fa fa-download"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          @click="$emit('action-item', {
-            type: 'request-study',
-            item,
-          })">
-          <i class="fa fa-plus-circle"></i>
+          @click="$emit('remove-study', index)">
+          <i class="fa fa-trash-alt"></i>
         </button>
       </div>
+    </template>
+    <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
+      <slot
+        name="__footer"
+        v-bind="{ numTableColumns, sectionsNormalized }"></slot>
     </template>
   </FcCardTable>
 </template>
@@ -81,13 +65,12 @@ import FcCardTable from '@/components/FcCardTable.vue';
 import Constants from '@/lib/Constants';
 
 export default {
-  name: 'FcCardTableCounts',
+  name: 'FcCardTableStudiesRequested',
   components: {
     FcCardTable,
   },
   props: {
     sections: Array,
-    value: Array,
   },
   data() {
     const columns = [{
@@ -116,30 +99,11 @@ export default {
       STATUS_META: Constants.STATUS_META,
     };
   },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
-  },
 };
 </script>
 
 <style lang="postcss">
-.fc-card-table-counts {
-  .cell-actions {
-    opacity: 0;
-    & > button:not(:last-child) {
-      margin-right: var(--space-s);
-    }
-  }
-  tr:hover .cell-actions {
-    opacity: 1;
-  }
+.fc-card-table-studies-requested {
   .no-existing-count {
     color: var(--warning-darker);
   }

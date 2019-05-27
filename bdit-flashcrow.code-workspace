@@ -20,6 +20,7 @@
 		"editor.quickSuggestionsDelay": 250,
 		"files.watcherExclude": {
 			"**/dist/**": true
-		}
+		},
+		"terminal.integrated.cwd": "scripts\\dev"
 	}
 }
