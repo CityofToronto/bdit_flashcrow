@@ -3,9 +3,10 @@
     class="fc-filter-count-types"
     name="countTypes"
     :options="options"
-    :title="'Counts (' + filterCountTypes.length + ')'"
     v-model="filterCountTypes"
-    @click="$emit('filter-count-types')" />
+    @click="$emit('filter-count-types')">
+    <span>Counts ({{filterCountTypes.length}})</span>
+  </TdsChecklistDropdown>
 </template>
 
 <script>

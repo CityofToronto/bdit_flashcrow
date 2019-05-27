@@ -1,8 +1,8 @@
 <template>
   <button class="tds-button-dropdown">
-    <span>{{title}}</span>
+    <slot name="title"></slot>
     <div class="dropdown shadow-3 text-left">
-      <slot></slot>
+      <slot name="dropdown"></slot>
     </div>
   </button>
 </template>
@@ -10,9 +10,6 @@
 <script>
 export default {
   name: 'TdsButtonDropdown',
-  props: {
-    title: String,
-  },
 };
 </script>
 

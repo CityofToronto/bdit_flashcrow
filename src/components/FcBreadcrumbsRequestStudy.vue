@@ -1,5 +1,5 @@
 <template>
-<div class="fc-breadcrumbs-request-study">
+<div class="fc-breadcrumbs-request-study font-size-l">
   <template
     v-for="(step, i) in steps">
     <div
@@ -19,7 +19,7 @@
       <i
         v-if="i < currentIndex || (i === currentIndex && currentStepCompleted)"
         class="breadcrumb-step-icon fa fa-check-circle"></i>
-      <strong v-else class="breadcrumb-step-icon">{{i + 1}}</strong>
+      <strong v-else class="breadcrumb-step-icon text-center">{{i + 1}}</strong>
       <router-link
         v-if="i < currentIndex"
         :to="{name: step.name}">{{step.label}}</router-link>
@@ -64,27 +64,24 @@ export default {
   align-items: center;
   display: flex;
   flex-direction: row;
-  font-size: var(--font-size-2xl);
   margin: var(--space-l) 0;
   text-transform: uppercase;
   & > .breadcrumb-step {
-    color: var(--base);
+    color: var(--disabled-dark);
     & > a, & > span {
-      color: var(--base);
+      color: var(--disabled-dark);
       display: inline-block;
       margin-left: var(--space-s);
     }
     & > .breadcrumb-step-icon {
       display: inline-block;
-      height: var(--font-size-2xl);
-      line-height: var(--font-size-2xl);
-      text-align: center;
-      width: var(--font-size-2xl);
+      height: var(--font-size-xl);
+      width: var(--font-size-xl);
     }
     & > strong.breadcrumb-step-icon {
-      background-color: var(--base);
+      background-color: var(--disabled-light);
       border-radius: 50%;
-      color: var(--base-darkest);
+      color: var(--disabled-dark);
     }
     &.current > strong.breadcrumb-step-icon {
       background-color: var(--success-light);
@@ -95,7 +92,7 @@ export default {
       color: var(--primary-darker);
     }
     &.completed, &.completed > a, &.completed > span {
-      color: var(--base-darkest);
+      color: var(--ink);
     }
     &.current, &.current > a, &.current > span {
       color: var(--success-darker);

@@ -340,6 +340,15 @@ hr {
 .hide {
   display: none;
 }
+.full-width {
+  width: 100%;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
+}
 .text-left {
   text-align: left;
 }
@@ -684,16 +693,6 @@ select {
   padding: var(--space-s) var(--space-m);
   width: 100%;
 }
-.v-select.form-select {
-  background-color: var(--base-lightest);
-  font-family: var(--font-family);
-  font-size: var(--font-size-xl);
-  & input[type=search] {
-    font-family: var(--font-family);
-    margin: 0;
-    padding: 0 var(--space-m);
-  }
-}
 label {
   font-weight: var(--font-weight-bold);
   vertical-align: middle;
@@ -749,18 +748,5 @@ label {
 /* VALIDATION */
 .validation-error {
   color: var(--error-darker);
-}
-
-/* ONE-OFF STYLING */
-.open-indicator {
-  margin-right: 8px;
-  .v-select:hover &::before {
-    color: black;
-  }
-}
-
-.link-back {
-  font-size: var(--font-size-xl);
-  text-transform: uppercase;
 }
 </style>

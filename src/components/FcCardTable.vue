@@ -1,11 +1,12 @@
 <template>
   <table class="fc-card-table">
-    <caption v-if="caption">
+    <caption v-if="caption">{{caption}}</caption>
+    <colgroup>
       <!-- DATA COLUMNS -->
       <col :span="columnsNormalized.length" class="fc-card-table-col-data">
       <!-- EXPAND TOGGLE -->
       <col v-if="expandable" class="fc-card-table-col-expand">
-    </caption>
+    </colgroup>
     <thead>
       <tr>
         <!-- DATA COLUMNS -->
@@ -82,6 +83,10 @@
           </tr>
         </template>
       </tbody>
+      <slot name="__footer" v-bind="{
+        numTableColumns,
+        sectionsNormalized,
+      }"></slot>
     </template>
   </table>
 </template>
