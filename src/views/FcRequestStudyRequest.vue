@@ -24,9 +24,6 @@
         </tbody>
       </template>
     </FcCardTableStudiesRequested>
-    <div class="flex-container-row">
-
-    </div>
   </div>
 </template>
 
@@ -84,7 +81,29 @@ export default {
   },
   methods: {
     onAddStudy(studyType) {
-      this.addStudyToStudyRequest(studyType);
+      const studyTypesSelected = new Set(
+        this.studyRequest.items.map(({ item }) => item),
+      );
+      if (studyTypesSelected.has(studyType)) {
+        const { label } = Constants.COUNT_TYPES.find(({ value }) => value === studyType);
+        // TODO: maybe wrap this into a vuex action?
+        this.setModal({
+          component: 'TdsConfirmDialog',
+          data: {
+            title: 'Add Duplicate Study?',
+            prompt: `
+              You're already requesting a ${label}.
+              Do you want to request another study of that type?`,
+            textCancel: 'No, don\'t add it',
+            textOk: 'Yes, add it',
+            action: () => {
+              this.addStudyToStudyRequest(studyType);
+            },
+          },
+        });
+      } else {
+        this.addStudyToStudyRequest(studyType);
+      }
     },
     onRemoveStudy(i) {
       this.removeStudyFromStudyRequest(i);
@@ -92,6 +111,7 @@ export default {
     ...mapMutations([
       'addStudyToStudyRequest',
       'removeStudyFromStudyRequest',
+      'setModal',
     ]),
   },
 };
