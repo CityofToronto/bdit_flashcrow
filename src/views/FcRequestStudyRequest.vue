@@ -92,8 +92,8 @@ export default {
           data: {
             title: 'Add Duplicate Study?',
             prompt: `
-              You're already requesting a ${label}.
-              Do you want to request another study of that type?`,
+              You've already added a ${label}.
+              Do you want to add another study of that type?`,
             textCancel: 'No, don\'t add it',
             textOk: 'Yes, add it',
             action: () => {
