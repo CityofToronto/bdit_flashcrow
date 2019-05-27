@@ -3,7 +3,8 @@
     class="tds-button-primary"
     @click="onClickRequestData"
     :disabled="$v.$invalid">
-    Request Data ({{studyRequest.items.length}})
+    <span>Request Data </span>
+    <span class="tds-badge tds-badge-primary">{{studyRequest.items.length}}</span>
   </button>
 </template>
 
