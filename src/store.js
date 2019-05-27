@@ -35,6 +35,8 @@ export default new Vuex.Store({
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+    // query that will appear in the search bar
+    locationQuery: '',
   },
   mutations: {
     clearModal(state) {
@@ -73,6 +75,9 @@ export default new Vuex.Store({
     },
     setStudyRequest(state, studyRequest) {
       Vue.set(state, 'studyRequest', studyRequest);
+    },
+    setLocationQuery(state, locationQuery) {
+      Vue.set(state, 'locationQuery', locationQuery);
     },
   },
   actions: {
