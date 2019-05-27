@@ -148,36 +148,7 @@ export default {
       if (studyTypes.size === 0) {
         return;
       }
-      // TODO: move this logic into CountsRequestedTable to show these
-      /*
-      const requestStudyItems = Constants.COUNT_TYPES
-        .filter(({ value }) => studyTypes.has(value))
-        .map(type => {
-          const countsOfType = this.counts
-            .filter(c => c.type.value === type.value);
-          if (countsOfType.length === 0) {
-            return {
-              id: type.value,
-              type,
-              date: null,
-              status: Constants.Status.NO_EXISTING_COUNT,
-            };
-          }
-          const { type, date, status } = ArrayUtils.getMaxBy(
-            countsOfType,
-            Constants.SortKeys.Counts.DATE,
-          );
-          return {
-            id: type.value,
-            type,
-            date,
-            status,
-          };
-        });
-      */
-      this.newStudyRequest({
-        studyTypes: Array.from(studyTypes),
-      });
+      this.setNewStudyRequest(Array.from(studyTypes));
       this.$router.push({ name: 'requestStudy' });
       this.setShowMap(true);
     },
@@ -232,7 +203,11 @@ export default {
       }
     },
     ...mapActions(['newStudyRequest']),
-    ...mapMutations(['setModal', 'setShowMap']),
+    ...mapMutations([
+      'setNewStudyRequest',
+      'setModal',
+      'setShowMap',
+    ]),
   },
 };
 </script>

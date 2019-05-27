@@ -1,49 +1,92 @@
 <template>
-  <div class="fc-request-study-request flex-fill">
-    <CountsRequestedTable />
-    <div class="validation-error" v-if="!$v.dataSelectionEmpty.notEmpty">
-      To request data, first select one or more count types to request.
+  <div class="fc-request-study-request flex-fill flex-container-column">
+    <FcCardTableStudiesRequested :sections="sections">
+      <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
+        <tr
+          v-if="sectionsNormalized.length > 0"
+          class="fc-card-table-spacer">
+          <td :colspan="numTableColumns"></td>
+        </tr>
+        <tbody>
+          <tr>
+            <td><i class="px-xs font-size-xl fa fa-plus-circle"></i></td>
+            <td :colspan="numTableColumns - 1">
+              <TdsActionDropdown
+                class="full-width font-size-l"
+                :options="studyTypesUnselectedFirst"
+                @action-selected="onActionRequestAnother">
+                <span>Request another study</span>
+              </TdsActionDropdown>
+            </td>
+          </tr>
+        </tbody>
+      </template>
+    </FcCardTableStudiesRequested>
+    <div class="flex-container-row">
+
     </div>
-    <button
-      class="btn-request-data tds-button-primary"
-      @click="onClickRequestData">
-      Request Data ({{dataSelectionLength}})
-    </button>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import CountsRequestedTable from '@/components/CountsRequestedTable.vue';
+import FcCardTableStudiesRequested from '@/components/FcCardTableStudiesRequested.vue';
+import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
+import ArrayUtils from '@/lib/ArrayUtils';
+import Constants from '@/lib/Constants';
+
+function getStudyTypeItem(counts, type) {
+  const countsOfType = counts.filter(c => c.type.value === type.value);
+  if (countsOfType.length === 0) {
+    return {
+      id: type.value,
+      type,
+      date: null,
+      status: Constants.Status.NO_EXISTING_COUNT,
+    };
+  }
+  const { date, status } = ArrayUtils.getMaxBy(
+    countsOfType,
+    Constants.SortKeys.Counts.DATE,
+  );
+  return {
+    id: type.value,
+    type,
+    date,
+    status,
+  };
+}
 
 export default {
   name: 'FcRequestStudyRequest',
   components: {
-    CountsRequestedTable,
+    FcCardTableStudiesRequested,
+    TdsActionDropdown,
   },
   computed: {
-    ...mapGetters([
-      'dataSelectionContains',
-      'dataSelectionEmpty',
-      'dataSelectionItems',
-      'dataSelectionLength',
-    ]),
-    ...mapState(['counts']),
-  },
-  validations: {
-    dataSelectionEmpty: {
-      notEmpty: value => !value,
+    sections() {
+      const studyTypes = new Set(
+        this.studyRequest.items.map(({ item }) => item),
+      );
+      return Constants.COUNT_TYPES
+        .filter(({ value }) => studyTypes.has(value))
+        .map((type) => {
+          const item = getStudyTypeItem(this.counts, type);
+          return { item, children: null };
+        });
     },
+    ...mapGetters([
+      'studyTypesUnselectedFirst',
+    ]),
+    ...mapState([
+      'counts',
+      'studyRequest',
+    ]),
   },
   methods: {
-    onClickRequestData() {
-      if (this.$v.$invalid) {
-        /* eslint-disable no-alert */
-        window.alert('The form contains one or more errors.');
-      } else {
-        this.$router.push({ name: 'requestsNewSchedule' });
-      }
+    onActionRequestAnother(/* studyType */) {
+      // TODO: implement this
     },
   },
 };
@@ -52,7 +95,6 @@ export default {
 <style lang="postcss">
 .fc-request-study-request {
   & > .btn-request-data {
-    height: 40px;
     width: 100%;
   }
 }

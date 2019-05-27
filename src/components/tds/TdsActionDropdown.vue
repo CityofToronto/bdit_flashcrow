@@ -1,5 +1,5 @@
 <template>
-  <TdsButtonDropdown class="tds-checklist-dropdown">
+  <TdsButtonDropdown class="tds-action-dropdown">
     <template v-slot:title>
       <slot></slot>
     </template>
@@ -7,18 +7,10 @@
       <ul>
         <li
           v-for="{ label, value } in options"
-          :key="value"
-          :class="{
-            selected: internalValue.includes(value),
-          }">
-          <label class="tds-checkbox">
-            <input
-              v-model="internalValue"
-              type="checkbox"
-              :name="name"
-              :value="value" />
-            <span>{{label}}</span>
-          </label>
+          :key="value">
+          <span @click="onClickAction(value)">
+            {{label}}
+          </span>
         </li>
       </ul>
     </template>
@@ -29,7 +21,7 @@
 import TdsButtonDropdown from '@/components/tds/TdsButtonDropdown.vue';
 
 export default {
-  name: 'TdsChecklistDropdown',
+  name: 'TdsActionDropdown',
   components: {
     TdsButtonDropdown,
   },
@@ -39,23 +31,18 @@ export default {
       type: Array,
       default() { return []; },
     },
-    value: Array,
   },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
+  methods: {
+    onClickAction(value) {
+      this.$emit('action-selected', value);
+      // TODO: close the dropdown
     },
   },
 };
 </script>
 
 <style lang="postcss">
-.tds-checklist-dropdown {
+.tds-action-dropdown {
   & > .dropdown > ul {
     list-style: none;
     margin: 0;
@@ -71,16 +58,12 @@ export default {
         float: left;
       }
 
-      &.selected {
-        color: var(--success-darker);
-      }
-
-      &:hover, &.selected:hover {
+      &:hover {
         background-color: var(--primary-light);
         color: var(--primary-darker);
       }
 
-      & > label {
+      & > span {
         cursor: pointer;
         display: block;
         font-size: var(--font-size-m);

@@ -1,20 +1,24 @@
 <template>
   <TdsButtonDropdown
     class="fc-filter-date"
-    :class="'font-size-' + size"
-    :title="title">
-    <DatePicker
-      v-model="filterDate"
-      class="fc-filter-date"
-      :disabled-dates="{start: tomorrow, end: null}"
-      is-expanded
-      is-inline
-      :max-date="now"
-      :min-date="minDate"
-      mode="range"
-      placeholder="Filter by date"
-      :size="size">
-    </DatePicker>
+    :class="'font-size-' + size">
+    <template v-slot:title>
+      <span>{{title}}</span>
+    </template>
+    <template v-slot:dropdown>
+      <DatePicker
+        v-model="filterDate"
+        class="fc-filter-date"
+        :disabled-dates="{start: tomorrow, end: null}"
+        is-expanded
+        is-inline
+        :max-date="now"
+        :min-date="minDate"
+        mode="range"
+        placeholder="Filter by date"
+        :size="size">
+      </DatePicker>
+    </template>
   </TdsButtonDropdown>
 </template>
 
