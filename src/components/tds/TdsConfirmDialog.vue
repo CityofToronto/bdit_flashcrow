@@ -14,7 +14,7 @@
         {{textOk}}
       </button>
       <div class="flex-fill"></div>
-      <button @click="clearModal">
+      <button @click="onClickCancel">
         {{textCancel}}
       </button>
     </template>
@@ -39,6 +39,12 @@ export default {
     },
   },
   methods: {
+    onClickCancel() {
+      this.clearModal();
+      if (this.data.actionCancel) {
+        this.data.actionCancel();
+      }
+    },
     onClickOk() {
       this.clearModal();
       if (this.data.action) {
