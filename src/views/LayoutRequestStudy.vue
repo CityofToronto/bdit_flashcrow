@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import FcBreadcrumbsRequestStudy from '@/components/FcBreadcrumbsRequestStudy.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
@@ -49,6 +49,24 @@ export default {
       };
     },
     ...mapState(['location']),
+  },
+  beforeRouteLeave(to, from, next) {
+    this.setModal({
+      component: 'TdsConfirmDialog',
+      data: {
+        title: 'Cancel Request?',
+        prompt: 'If you cancel your request now, your selection will be lost.',
+        textCancel: 'No, go back',
+        textOk: 'Yes, cancel',
+        action: next,
+        actionCancel: () => {
+          next(false);
+        },
+      },
+    });
+  },
+  methods: {
+    ...mapMutations(['setModal']),
   },
 };
 </script>

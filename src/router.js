@@ -48,7 +48,7 @@ const router = new Router({
     {
       path: '/requests/study/new',
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
-      beforeEnter: (to, from, next) => {
+      beforeEnter(to, from, next) {
         if (store.state.location === null) {
           // TODO: warn user that this requires location
           next({ name: 'home' });
