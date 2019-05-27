@@ -69,6 +69,7 @@ import FcModalShowReports from '@/components/FcModalShowReports.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
+import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
 export default {
@@ -81,6 +82,7 @@ export default {
     ModalComingSoon,
     ModalRequestsNewConfirmation,
     SearchBarLocation,
+    TdsConfirmDialog,
     TdsTopBar,
   },
   computed: {
@@ -137,6 +139,7 @@ export default {
   --base-darkest: #1b1b1b;  /* gray-90 */
   --ink: #1b1b1b;  /* gray-90 */
 
+  --dialog-backdrop: #f0f0f099;
   --modal-backdrop: #1b1b1b99;
 
   --primary-lighter: #d9e8f6;  /* blue-10 */
