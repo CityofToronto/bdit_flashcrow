@@ -314,6 +314,20 @@ hr {
   color: var(--disabled-dark);
 }
 
+/* TEXT BADGES */
+.tds-badge {
+  background-color: var(--base-darker);
+  border-radius: var(--space-m);
+  color: var(--base-lightest);
+  display: inline-block;
+  min-width: calc(1em + var(--space-s) * 2);
+  padding: var(--space-xs) var(--space-s);
+  &.tds-badge-primary {
+    background-color: var(--primary-darker);
+    color: var(--primary-lighter);
+  }
+}
+
 /* TEXT PANELS */
 .panel {
   background-color: var(--base-lightest);

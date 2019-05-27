@@ -52,7 +52,13 @@
             :key="column.name">
             <slot
               :name="column.name"
-              v-bind="{ column, item, isChild: false, children }"></slot>
+              v-bind="{
+                column,
+                index: i,
+                item,
+                isChild: false,
+                children,
+              }"></slot>
           </td>
           <!-- EXPAND TOGGLE -->
           <td
@@ -76,18 +82,23 @@
               :key="column.name">
               <slot
                 :name="column.name"
-                v-bind="{ column, item: child, isChild: true, children: null }"></slot>
+                v-bind="{
+                  column,
+                  item: child,
+                  isChild: true,
+                  children: null,
+                }"></slot>
             </td>
             <!-- EXPAND PLACEHOLDER -->
             <td v-if="expandable">&nbsp;</td>
           </tr>
         </template>
       </tbody>
-      <slot name="__footer" v-bind="{
-        numTableColumns,
-        sectionsNormalized,
-      }"></slot>
     </template>
+    <slot name="__footer" v-bind="{
+      numTableColumns,
+      sectionsNormalized,
+    }"></slot>
   </table>
 </template>
 

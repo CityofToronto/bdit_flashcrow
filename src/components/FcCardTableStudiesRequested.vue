@@ -43,14 +43,11 @@
         <span> {{STATUS_META[item.status]}}</span>
       </span>
     </template>
-    <template v-slot:ACTIONS="{ item }">
+    <template v-slot:ACTIONS="{ index }">
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          @click="$emit('action-item', {
-            type: 'remove',
-            item,
-          })">
+          @click="$emit('remove-study', index)">
           <i class="fa fa-trash-alt"></i>
         </button>
       </div>

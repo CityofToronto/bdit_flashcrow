@@ -1,6 +1,8 @@
 <template>
   <div class="fc-request-study-request flex-fill flex-container-column">
-    <FcCardTableStudiesRequested :sections="sections">
+    <FcCardTableStudiesRequested
+      :sections="sections"
+      @remove-study="onRemoveStudy">
       <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
         <tr
           v-if="sectionsNormalized.length > 0"
@@ -14,7 +16,7 @@
               <TdsActionDropdown
                 class="full-width font-size-l"
                 :options="studyTypesUnselectedFirst"
-                @action-selected="onActionRequestAnother">
+                @action-selected="onAddStudy">
                 <span>Request another study</span>
               </TdsActionDropdown>
             </td>
@@ -29,7 +31,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcCardTableStudiesRequested from '@/components/FcCardTableStudiesRequested.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -66,15 +68,11 @@ export default {
   },
   computed: {
     sections() {
-      const studyTypes = new Set(
-        this.studyRequest.items.map(({ item }) => item),
-      );
-      return Constants.COUNT_TYPES
-        .filter(({ value }) => studyTypes.has(value))
-        .map((type) => {
-          const item = getStudyTypeItem(this.counts, type);
-          return { item, children: null };
-        });
+      return this.studyRequest.items.map(({ item: studyType }) => {
+        const type = Constants.COUNT_TYPES.find(({ value }) => value === studyType);
+        const item = getStudyTypeItem(this.counts, type);
+        return { item, children: null };
+      });
     },
     ...mapGetters([
       'studyTypesUnselectedFirst',
@@ -85,9 +83,16 @@ export default {
     ]),
   },
   methods: {
-    onActionRequestAnother(/* studyType */) {
-      // TODO: implement this
+    onAddStudy(studyType) {
+      this.addStudyToStudyRequest(studyType);
     },
+    onRemoveStudy(i) {
+      this.removeStudyFromStudyRequest(i);
+    },
+    ...mapMutations([
+      'addStudyToStudyRequest',
+      'removeStudyFromStudyRequest',
+    ]),
   },
 };
 </script>
