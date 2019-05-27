@@ -17,8 +17,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapState } from 'vuex';
-
+import { mapState, mapMutations } from 'vuex';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -96,7 +95,7 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
-    ...mapState(['location']),
+    ...mapState(['location', 'locationQuery']),
   },
   created() {
     this.map = null;
@@ -207,18 +206,39 @@ export default {
         .setLngLat(e.lngLat)
         .setHTML(JSON.stringify(e.features[0].properties.intersec5))
         .addTo(this.map);
+      // update location
+      const elementInfo = {
+        description: e.features[0].properties.intersec5,
+        geoId: e.features[0].properties.int_id,
+        keystring: `INTERSECTION:geo_id:${e.features[0].properties.int_id}:rowid:`,
+        lat: e.lngLat.lat,
+        lng: e.lngLat.lng,
+      };
+      this.setLocation(elementInfo);
+      this.setLocationQuery(e.features[0].properties.intersec5);
     },
     centrelinePopup(e) {
       new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(JSON.stringify(e.features[0].properties.lf_name))
         .addTo(this.map);
+      const elementInfo = {
+        description: e.features[0].properties.lf_name,
+        geoId: e.features[0].properties.geo_id,
+        keystring: `INTERSECTION:geo_id:${e.features[0].properties.geo_id}:rowid:`,
+        lat: e.lngLat.lat,
+        lng: e.lngLat.lng,
+      };
+      this.setLocation(elementInfo);
+      this.setLocationQuery(e.features[0].properties.lf_name);
     },
     elementHover(e) {
       if (e.features.length > 0) {
+        // unhighlight features that are currently highlighted
         if (this.hoveredFeature) {
           this.map.setFeatureState(this.hoveredFeature, { hover: false });
         }
+        // highlight feature that is currently being hovered over
         [this.hoveredFeature] = e.features;
         this.map.setFeatureState(e.features[0], { hover: true });
       }
@@ -229,6 +249,7 @@ export default {
       }
       this.hoveredFeature = null;
     },
+    ...mapMutations(['setLocation', 'setLocationQuery']),
   },
 };
 </script>
