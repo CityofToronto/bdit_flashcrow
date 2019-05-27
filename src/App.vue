@@ -69,6 +69,7 @@ import FcModalShowReports from '@/components/FcModalShowReports.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
+import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
 export default {
@@ -81,6 +82,7 @@ export default {
     ModalComingSoon,
     ModalRequestsNewConfirmation,
     SearchBarLocation,
+    TdsConfirmDialog,
     TdsTopBar,
   },
   computed: {
@@ -137,6 +139,7 @@ export default {
   --base-darkest: #1b1b1b;  /* gray-90 */
   --ink: #1b1b1b;  /* gray-90 */
 
+  --dialog-backdrop: #f0f0f099;
   --modal-backdrop: #1b1b1b99;
 
   --primary-lighter: #d9e8f6;  /* blue-10 */
@@ -314,6 +317,20 @@ hr {
   color: var(--disabled-dark);
 }
 
+/* TEXT BADGES */
+.tds-badge {
+  background-color: var(--base-darker);
+  border-radius: var(--space-m);
+  color: var(--base-lightest);
+  display: inline-block;
+  min-width: calc(1em + var(--space-s) * 2);
+  padding: var(--space-xs) var(--space-s);
+  &.tds-badge-primary {
+    background-color: var(--primary-darker);
+    color: var(--primary-lighter);
+  }
+}
+
 /* TEXT PANELS */
 .panel {
   background-color: var(--base-lightest);
@@ -339,6 +356,15 @@ hr {
 /* UTILITIES */
 .hide {
   display: none;
+}
+.full-width {
+  width: 100%;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
 }
 .text-left {
   text-align: left;
@@ -684,16 +710,6 @@ select {
   padding: var(--space-s) var(--space-m);
   width: 100%;
 }
-.v-select.form-select {
-  background-color: var(--base-lightest);
-  font-family: var(--font-family);
-  font-size: var(--font-size-xl);
-  & input[type=search] {
-    font-family: var(--font-family);
-    margin: 0;
-    padding: 0 var(--space-m);
-  }
-}
 label {
   font-weight: var(--font-weight-bold);
   vertical-align: middle;
@@ -749,18 +765,5 @@ label {
 /* VALIDATION */
 .validation-error {
   color: var(--error-darker);
-}
-
-/* ONE-OFF STYLING */
-.open-indicator {
-  margin-right: 8px;
-  .v-select:hover &::before {
-    color: black;
-  }
-}
-
-.link-back {
-  font-size: var(--font-size-xl);
-  text-transform: uppercase;
 }
 </style>
