@@ -58,6 +58,8 @@ export default new Vuex.Store({
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+    // query that will appear in the search bar
+    locationQuery: '',
   },
   getters: {
     // FILTERING DATA
@@ -144,6 +146,9 @@ export default new Vuex.Store({
     },
     removeStudyFromStudyRequest(state, i) {
       state.studyRequest.items.splice(i, 1);
+    },
+    setLocationQuery(state, locationQuery) {
+      Vue.set(state, 'locationQuery', locationQuery);
     },
   },
   actions: {

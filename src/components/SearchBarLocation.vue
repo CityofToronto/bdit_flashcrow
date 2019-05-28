@@ -67,14 +67,18 @@ export default {
     };
   },
   computed: {
-    ...mapState(['location', 'locationSuggestions']),
+    ...mapState(['location', 'locationSuggestions', 'locationQuery']),
   },
   watch: {
     query: debounce(function fetchQuerySuggestions() {
       if (!this.selectedSuggestion) {
-        this.fetchLocationSuggestions(this.query);
+        this.fetchLocationSuggestions(this.locationQuery);
       }
     }, 250),
+    locationQuery: function onSelectElement() {
+      this.selectedSuggestion = true;
+      this.query = this.locationQuery;
+    },
   },
   methods: {
     onInputQuery() {
@@ -123,13 +127,13 @@ export default {
     },
     onSelectSuggestion(suggestion) {
       this.selectedSuggestion = true;
-      this.query = suggestion.ADDRESS;
+      this.setLocationQuery(suggestion.ADDRESS);
       const keyString = suggestion.KEYSTRING;
       this.fetchLocation(keyString);
       this.clearLocationSuggestions();
     },
     ...mapActions(['fetchLocation', 'fetchLocationSuggestions']),
-    ...mapMutations(['clearLocation', 'clearLocationSuggestions']),
+    ...mapMutations(['clearLocation', 'clearLocationSuggestions', 'setLocationQuery']),
   },
 };
 </script>
