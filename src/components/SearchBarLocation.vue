@@ -7,9 +7,8 @@
     @keydown.enter="onKeyEnter"
     @keydown.esc="onKeyEsc">
     <input
-      ref="query"
       v-model="query"
-      class="input-query"
+      class="font-size-xl"
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />

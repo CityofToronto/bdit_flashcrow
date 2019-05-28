@@ -27,7 +27,7 @@ export default {
     top: 100%;
     transition: var(--transition-short);
     visibility: hidden;
-    width: 100%;
+    width: calc(100% + 2px);
     z-index: var(--z-index-controls);
   }
 
