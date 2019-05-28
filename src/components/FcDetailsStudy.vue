@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="details count-details">
+  <fieldset class="details fc-details-study">
     <legend>
       <h3>
         <span class="number-icon">{{indexHuman}}</span>
@@ -141,12 +141,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
-
 import DatePicker from '@/components/DatePicker.vue';
 
 export default {
-  name: 'CountDetails',
+  name: 'FcDetailsStudy',
   components: {
     DatePicker,
   },
@@ -254,17 +252,12 @@ export default {
         });
       },
     },
-    ...mapGetters(['dataSelectionItemMeta', 'dataSelectionMeta']),
-    ...mapState(['dataSelection']),
-  },
-  methods: {
-    ...mapActions(['setDataSelectionItemMeta']),
   },
 };
 </script>
 
 <style lang="postcss">
-.count-details {
+.fc-study-details {
   background-color: var(--base-lightest);
   .number-icon {
     background-color: var(--base-lightest);

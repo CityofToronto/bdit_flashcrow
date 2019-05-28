@@ -1,7 +1,10 @@
 <template>
-  <div class="fc-request-study-schedule flex-fill">
-    <h2>Schedule Your Request</h2>
-  </div>
+  <button
+    class="tds-button-primary"
+    @click="onClickContinue"
+    :disabled="$v.$invalid">
+    Continue
+  </button>
 </template>
 
 <script>
@@ -10,16 +13,19 @@ import { mapState } from 'vuex';
 import validations from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
-  name: 'FcRequestStudySchedule',
+  name: 'FcActionBottomContinue',
   computed: {
     ...mapState(['studyRequest']),
   },
   validations,
+  methods: {
+    onClickContinue() {
+      this.$router.push({ name: 'requestStudyConfirm' });
+    },
+  },
 };
 </script>
 
 <style lang="postcss">
-.fc-request-study-schedule {
 
-}
 </style>

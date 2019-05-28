@@ -69,7 +69,10 @@ const router = new Router({
       }, {
         path: 'schedule',
         name: 'requestStudySchedule',
-        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
+        components: {
+          default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinue.vue'),
+        },
       }, {
         path: 'confirm',
         name: 'requestStudyConfirm',

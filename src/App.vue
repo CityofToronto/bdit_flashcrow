@@ -293,7 +293,7 @@ p {
 }
 hr {
   align-self: stretch;
-  margin: var(--space-m) 0;
+  margin: var(--space-s) 0;
 }
 .font-size-xs {
   font-size: var(--font-size-xs);
@@ -644,46 +644,6 @@ button {
 /* FORMS */
 fieldset {
   border: var(--border-default);
-}
-.details {
-  padding: 0;
-  margin: 0;
-  & > legend {
-    margin-left: var(--space-l);
-    padding: 0 var(--space-s);
-  }
-  & > .details-body {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: var(--space-l);
-    padding: 0 var(--space-l);
-    & > .details-column {
-      flex: 0 0 33.3333%;
-      padding: 0 var(--space-l);
-      & .details-checks {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        .label-vertical {
-          text-align: center;
-          margin: 0 var(--space-s);
-          & > input {
-            display: block;
-          }
-        }
-      }
-      & .details-radios {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        & > label {
-          margin: var(--space-m) 0;
-        }
-      }
-    }
-  }
 }
 input[type=date],
 input[type=input],
