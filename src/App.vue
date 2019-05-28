@@ -332,21 +332,23 @@ hr {
 }
 
 /* TEXT PANELS */
-.panel {
+.tds-panel {
   background-color: var(--base-lightest);
   border: 1px solid var(--base);
+  border-radius: var(--space-m);
   padding: var(--space-m);
-  &.panel-info {
+  margin-bottom: var(--space-s);
+  &.tds-panel-info {
     background-color: var(--info-lighter);
     border-color: var(--info-darker);
     color: var(--info-darker);
   }
-  &.panel-warning {
+  &.tds-panel-warning {
     background-color: var(--warning-lighter);
     border-color: var(--warning-darker);
     color: var(--warning-darker);
   }
-  &.panel-error {
+  &.tds-panel-error {
     background-color: var(--error-lighter);
     border-color: var(--error-darker);
     color: var(--error-darker);
@@ -503,6 +505,10 @@ hr {
   padding: var(--space-xl) 0;
 }
 
+.mb-s {
+  margin-bottom: var(--space-s);
+}
+
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
 .tds-checkbox {
   cursor: pointer;
@@ -657,13 +663,11 @@ button {
 fieldset {
   border: var(--border-default);
 }
-input[type=date],
-input[type=input],
-input[type=text],
+input[type="text"],
 textarea {
   border: var(--border-default);
+  border-radius: var(--space-s);
   font-family: var(--font-family);
-  font-size: var(--font-size-xl);
   padding: var(--space-s) var(--space-m);
   &:hover {
     border-color: var(--base-darkest);
@@ -713,14 +717,10 @@ label {
   }
 }
 .form-group {
-  font-size: var(--font-size-m);
   margin-bottom: var(--space-l);
   & > strong {
     display: inline-block;
-    margin-bottom: var(--space-m);
-  }
-  &.size-lg {
-    font-size: var(--font-size-l);
+    margin-bottom: var(--space-s);
   }
   & > label > div,
   & > label > input[type=text] {

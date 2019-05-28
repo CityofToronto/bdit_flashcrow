@@ -12,6 +12,7 @@
       slot-scope="{ inputValue }"
       type="text"
       class="input-date-picker"
+      :class="'font-size-' + size"
       :disabled="disabled"
       :name="name"
       :placeholder="placeholder"
@@ -38,7 +39,10 @@ export default {
       type: String,
       default: '',
     },
-    size: String,
+    size: {
+      type: String,
+      default: 'm',
+    },
     value: Object,
   },
   data() {

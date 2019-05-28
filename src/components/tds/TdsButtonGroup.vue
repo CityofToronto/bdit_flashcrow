@@ -1,5 +1,5 @@
 <template>
-  <div class="tds-button-group flex-container-row">
+  <div class="tds-button-group flex-container-row mb-s">
     <label
       v-for="{ label, value } in options"
       :key="value">
