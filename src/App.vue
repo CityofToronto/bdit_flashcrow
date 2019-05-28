@@ -334,8 +334,7 @@ hr {
 /* TEXT PANELS */
 .tds-panel {
   background-color: var(--base-lightest);
-  border: 1px solid var(--base);
-  border-radius: var(--space-m);
+  border: var(--border-default);
   padding: var(--space-m);
   margin-bottom: var(--space-s);
   &.tds-panel-info {
@@ -392,10 +391,20 @@ hr {
 .flex-container-row {
   display: flex;
   flex-direction: row;
+  & > .flex-cross-scroll {
+    flex: var(--flex-fill);
+    max-height: 100%;
+    overflow-y: auto;
+  }
 }
 .flex-container-column {
   display: flex;
   flex-direction: column;
+  & > .flex-cross-scroll {
+    flex: var(--flex-fill);
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }
 .flex-1 {
   flex: var(--flex-1);

@@ -261,7 +261,7 @@ export default {
   background-color: var(--base-lightest);
   .number-icon {
     background-color: var(--base-lightest);
-    border: 1px solid var(--base);
+    border: var(--border-default);
     border-radius: 50%;
     color: var(--ink);
     display: inline-block;
