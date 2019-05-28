@@ -40,6 +40,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
+// TODO: move into separate library
 function debounce(func, wait) {
   let timeout;
   return function debounceWrapper(...args) {
