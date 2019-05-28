@@ -16,7 +16,7 @@
         </router-link>
       </template>
     </TdsTopBar>
-    <div class="px-xl flex-fill">
+    <div class="px-xl flex-fill flex-container-column">
       <hr />
       <FcBreadcrumbsRequestStudy :current-step-completed="false" />
       <hr />

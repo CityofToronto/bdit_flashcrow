@@ -46,6 +46,7 @@ export default {
 .tds-button-group {
   & > label {
     & > span {
+      background-color: var(--white);
       border: var(--border-default);
       cursor: pointer;
       display: inline-block;
