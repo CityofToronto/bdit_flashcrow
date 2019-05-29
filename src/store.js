@@ -9,21 +9,11 @@ Vue.use(Vuex);
 
 const COUNTS = SampleData.randomCounts();
 
-function makeStudyItem(state, studyType) {
-  const start = new Date(
-    state.now.getFullYear(),
-    state.now.getMonth() + 2,
-    state.now.getDate() + 1,
-  );
-  const end = new Date(
-    state.now.getFullYear(),
-    state.now.getMonth() + 2,
-    state.now.getDate() + 7,
-  );
+function makeStudyItem(studyType) {
   return {
     item: studyType,
     meta: {
-      dateRange: { start, end },
+      dateRange: null,
       daysOfWeek: [2, 3, 4],
       duration: 24,
       hours: 'ROUTINE',
@@ -111,6 +101,9 @@ export default new Vuex.Store({
     setLocation(state, location) {
       Vue.set(state, 'location', location);
     },
+    setLocationQuery(state, locationQuery) {
+      Vue.set(state, 'locationQuery', locationQuery);
+    },
     // FILTERING DATA
     clearFilters(state) {
       Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
@@ -132,23 +125,28 @@ export default new Vuex.Store({
     },
     setNewStudyRequest(state, studyTypes) {
       const meta = {
+        hasServiceRequestId: null,
+        serviceRequestId: null,
+        priority: null,
+        dueDate: null,
+        reasons: [],
         ccEmails: '',
-        priority: 'STANDARD',
-        reason: null,
-        serviceRequestId: '',
       };
-      const items = studyTypes.map(studyType => makeStudyItem(state, studyType));
+      const items = studyTypes.map(makeStudyItem);
       Vue.set(state, 'studyRequest', { items, meta });
     },
     addStudyToStudyRequest(state, studyType) {
-      const item = makeStudyItem(state, studyType);
+      const item = makeStudyItem(studyType);
       state.studyRequest.items.push(item);
     },
     removeStudyFromStudyRequest(state, i) {
       state.studyRequest.items.splice(i, 1);
     },
-    setLocationQuery(state, locationQuery) {
-      Vue.set(state, 'locationQuery', locationQuery);
+    setStudyRequestMeta(state, { key, value }) {
+      Vue.set(state.studyRequest.meta, key, value);
+    },
+    setStudyMeta(state, { i, key, value }) {
+      Vue.set(state.studyRequest.items[i].meta, key, value);
     },
   },
   actions: {

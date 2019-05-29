@@ -56,7 +56,7 @@ export default {
       data: {
         title: 'Cancel Request?',
         prompt: 'If you cancel your request now, your selection will be lost.',
-        textCancel: 'No, go back',
+        textCancel: 'No, continue',
         textOk: 'Yes, cancel',
         action: next,
         actionCancel: () => {

@@ -42,7 +42,7 @@ export default {
 <style lang="postcss">
 .fc-filter-count-types {
   & > .dropdown {
-    width: 300px;
+    width: 400px;
   }
 }
 </style>

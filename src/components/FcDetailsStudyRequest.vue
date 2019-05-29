@@ -1,174 +1,224 @@
 <template>
-  <fieldset class="fc-details-study-request">
-    <div class="details-body">
-      <div class="details-column">
-        <div class="form-group">
-          <label>* Reason for request?
-            <select
-              v-model="reason"
-              class="form-select reason-for-request">
-              <option
-                v-for="r in optionsReason"
-                :key="r.value"
-                :value="JSON.stringify(r)">
-                {{r.label}}
-              </option>
-            </select>
-          </label>
-          <div class="validation-error" v-if="!v.reason.required">
-            A reason for the request must be selected.
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Service Request Number (if applicable)
-            <input v-model="serviceRequestId" type="text" />
-          </label>
-        </div>
-      </div>
-      <div class="details-column">
-        <strong>Priority</strong>
-        <div class="details-radios">
-          <label>
-            Urgent
-            <input v-model="priority" type="radio" name="priority" value="URGENT" />
-          </label>
-          <label>
-            Standard
-            <input v-model="priority" type="radio" name="priority" value="STANDARD" />
-          </label>
-        </div>
-        <div v-if="priority === 'URGENT'" class="panel panel-warning">
-          <i class="fa fa-exclamation-triangle"></i>
-          <span>
-            You've marked this request urgent, which will mean reshuffling the request queue.
-          </span>
-          <p>
-            The Traffic Safety Unit will contact you to make adjustments to the schedule.
-          </p>
-        </div>
-        <div v-else-if="priority === 'STANDARD'" class="panel panel-info">
-          <i class="fa fa-calendar-check"></i>
-          <span>
-            Standard times to request counts are 2-3 months.  Peak times are April-June and
-            September-November.
-          </span>
-          <p>
-            Estimated Delivery of Data: {{estimatedDeliveryDate | date}}
-          </p>
-        </div>
-      </div>
-      <div class="details-column">
-        <div class="form-group">
-          <label>Other staff you'd like to update:
-            <input
-              v-model="ccEmails"
-              type="text"
-              placeholder="e.g. tom.delaney@toronto.ca, amy.schumer@toronto.ca" />
-          </label>
-        </div>
+  <div class="fc-details-study-request center-container-640">
+    <div class="form-group">
+      <strong>Do you have a service request number?</strong>
+      <div class="center-container-480">
+        <TdsButtonGroup
+          v-model="hasServiceRequestId"
+          class="font-size-l"
+          name="hasServiceRequestId"
+          :options="[
+            { label: 'Yes', value: true },
+            { label: 'No', value: false },
+          ]"
+          type="radio" />
       </div>
     </div>
-  </fieldset>
+    <div class="form-group">
+      <label>
+        <span>Enter service request number:</span>
+        <div class="center-container-480">
+          <input
+            v-model="serviceRequestId"
+            class="font-size-l full-width"
+            name="serviceRequestId"
+            type="text" />
+        </div>
+      </label>
+    </div>
+    <div class="form-group">
+      <strong>What is the priority of your request?</strong>
+      <div class="center-container-480">
+        <TdsButtonGroup
+          v-model="priority"
+          class="font-size-l"
+          name="priority"
+          :options="[
+            { label: 'Standard', value: 'STANDARD' },
+            { label: 'Urgent', value: 'URGENT' },
+          ]"
+          type="radio" />
+      </div>
+      <div
+        v-if="priority === 'STANDARD'"
+        class="tds-panel tds-panel-info">
+        <i class="fa fa-calendar-check"></i>
+        <p>
+          Standard times to request counts are 2-3 months.
+          Peak times are April-June and September-November.
+        </p>
+      </div>
+      <div
+        v-else-if="priority === 'URGENT'"
+        class="tds-panel tds-panel-warning">
+        <i class="fa fa-exclamation-triangle"></i>
+        <p>
+          You've marked this request urgent, which will mean reshuffling the request queue.
+          The Traffic Safety Unit will contact you to make adjustments to the schedule.
+        </p>
+      </div>
+    </div>
+    <div class="form-group">
+      <strong>When do you need the data by?</strong>
+      <div class="center-container-480 mb-s">
+        <DatePicker
+          v-model="dueDate"
+          mode="single"
+          name="dueDate"
+          show-icon
+          size="l"
+          v-bind="attrsDueDate">
+        </DatePicker>
+      </div>
+    </div>
+    <div class="form-group">
+      <strong>What's the reason for your request?</strong>
+      <div class="center-container-480 mb-s">
+        <TdsChecklistDropdown
+          v-model="reasons"
+          class="font-size-l full-width"
+          name="reasons"
+          :options="REASONS">
+          <span>
+            Reasons for Request
+            <span class="tds-badge">{{reasons.length}}</span>
+          </span>
+        </TdsChecklistDropdown>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>
+        <span>Any staff you'd like to keep informed on the request?</span>
+        <div class="center-container-480">
+          <input
+            v-model="ccEmails"
+            class="font-size-l full-width"
+            name="ccEmails"
+            type="text" />
+        </div>
+      </label>
+    </div>
+  </div>
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
+
+import DatePicker from '@/components/DatePicker.vue';
+import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
+import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
 import Constants from '@/lib/Constants';
 
 export default {
   name: 'FcDetailsStudyRequest',
+  components: {
+    DatePicker,
+    TdsButtonGroup,
+    TdsChecklistDropdown,
+  },
   props: {
     v: Object,
   },
   data() {
     return {
-      optionsReason: Constants.REASONS,
+      REASONS: Constants.REASONS,
     };
   },
   computed: {
+    attrsDueDate() {
+      const { now } = this.$store.state;
+      if (this.priority === 'URGENT') {
+        return {
+          disabledDates: { start: null, end: this.now },
+          minDate: now,
+        };
+      }
+      const twoMonthsOut = new Date(
+        now.getFullYear(),
+        now.getMonth() + 2,
+        now.getDate(),
+      );
+      return {
+        disabledDates: { start: null, end: twoMonthsOut },
+        minDate: twoMonthsOut,
+      };
+    },
     ccEmails: {
       get() {
-        return this.dataSelectionMeta.ccEmails;
+        return this.studyRequest.meta.ccEmails;
       },
       set(ccEmails) {
-        this.setDataSelectionMeta({
+        this.setStudyRequestMeta({
           key: 'ccEmails',
           value: ccEmails,
         });
       },
     },
-    estimatedDeliveryDate() {
-      if (this.priority === 'URGENT') {
-        return null;
-      }
-      /*
-       * For now, the estimated delivery date is the latest midpoint of the date ranges
-       * selected in CountDetails.
-       *
-       * TODO: better delivery date estimates
-       */
-      let tMax = new Date().valueOf();
-      this.dataSelectionItemsMeta.forEach(({ dateRange }) => {
-        let { start, end } = dateRange;
-        start = start.valueOf();
-        end = end.valueOf();
-        const t = Math.round(start + (end - start) / 2);
-        if (t > tMax) {
-          tMax = t;
-        }
-      });
-      return new Date(tMax);
+    dueDate: {
+      get() {
+        return this.studyRequest.meta.dueDate;
+      },
+      set(dueDate) {
+        this.setStudyRequestMeta({
+          key: 'dueDate',
+          value: dueDate,
+        });
+      },
+    },
+    hasServiceRequestId: {
+      get() {
+        return this.studyRequest.meta.hasServiceRequestId;
+      },
+      set(hasServiceRequestId) {
+        this.setStudyRequestMeta({
+          key: 'hasServiceRequestId',
+          value: hasServiceRequestId,
+        });
+      },
     },
     priority: {
       get() {
-        return this.dataSelectionMeta.priority;
+        return this.studyRequest.meta.priority;
       },
       set(priority) {
-        this.setDataSelectionMeta({
+        this.setStudyRequestMeta({
           key: 'priority',
           value: priority,
         });
       },
     },
-    reason: {
+    reasons: {
       get() {
-        const { reason } = this.dataSelectionMeta;
-        if (reason === null) {
-          return null;
-        }
-        return JSON.stringify(reason);
+        return this.studyRequest.meta.reasons;
       },
-      set(reason) {
-        const value = JSON.parse(reason);
-        this.setDataSelectionMeta({
-          key: 'reason',
-          value,
+      set(reasons) {
+        this.setStudyRequestMeta({
+          key: 'reasons',
+          value: reasons,
         });
       },
     },
     serviceRequestId: {
       get() {
-        return this.dataSelectionMeta.serviceRequestId;
+        return this.studyRequest.meta.serviceRequestId;
       },
       set(serviceRequestId) {
-        this.setDataSelectionMeta({
+        this.setStudyRequestMeta({
           key: 'serviceRequestId',
           value: serviceRequestId,
         });
       },
     },
+    ...mapState(['studyRequest']),
+  },
+  methods: {
+    ...mapMutations(['setStudyRequestMeta']),
   },
 };
 </script>
 
 <style lang="postcss">
-.fc-new-request-details {
-  border: none;
-  margin-top: var(--space-l);
-  .reason-for-request {
-    .dropdown-menu {
-      bottom: 100%;
-      top: auto;
-    }
-  }
+.fc-details-study-request {
+
 }
 </style>
