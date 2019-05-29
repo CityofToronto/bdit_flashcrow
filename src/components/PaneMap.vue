@@ -1,13 +1,13 @@
 <template>
   <div class="pane-map">
     <div class="pane-map-google-maps">
-      <button>
+      <button class="font-size-l">
         <span v-if="coordinates === null">Google Maps</span>
         <a v-else :href="hrefGoogleMaps" target="_blank">Google Maps</a>
       </button>
     </div>
     <div class="pane-map-mode">
-      <button @click="toggleSatellite">
+      <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
     </div>

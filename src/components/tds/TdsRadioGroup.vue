@@ -1,15 +1,21 @@
 <template>
   <div class="tds-radio-group flex-container-row mb-s">
     <label
-      v-for="{ label, value } in options"
-      :key="value">
+      v-for="{ label, sublabel, value } in options"
+      :key="value"
+      class="tds-radio">
       <input
         v-model="internalValue"
         type="radio"
-        class="tds-radio"
         :name="name"
         :value="value" />
-      <span>{{label}}</span>
+      <span>
+        {{label}}
+        <template v-if="sublabel">
+          <br />
+          <small>{{sublabel}}</small>
+        </template>
+      </span>
     </label>
   </div>
 </template>
@@ -23,7 +29,7 @@ export default {
       type: Array,
       default() { return []; },
     },
-    value: [Boolean, String],
+    value: [Boolean, Number, String],
   },
   computed: {
     internalValue: {
