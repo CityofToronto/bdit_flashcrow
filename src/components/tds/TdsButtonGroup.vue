@@ -2,14 +2,15 @@
   <div class="tds-button-group flex-container-row mb-s">
     <label
       v-for="{ label, value } in options"
-      :key="value">
+      :key="value"
+      class="flex-1">
       <input
         v-model="internalValue"
         :type="type"
         class="screen-reader-only"
         :name="name"
         :value="value" />
-      <span>{{label}}</span>
+      <span class="full-width">{{label}}</span>
     </label>
   </div>
 </template>
@@ -50,7 +51,6 @@ export default {
       border: var(--border-default);
       cursor: pointer;
       display: inline-block;
-      margin-right: -1px;
       padding: var(--space-s) var(--space-m);
       text-align: center;
     }
@@ -69,9 +69,6 @@ export default {
     &:hover > span {
       border-color: var(--base-darkest);
       color: var(--base-darkest);
-    }
-    &:hover + label > span {
-      border-left: 1px solid var(--base-darkest);
     }
   }
 }

@@ -285,9 +285,6 @@ h3 {
 strong {
   font-weight: var(--font-weight-bold);
 }
-small {
-  color: var(--base-darker);
-}
 p {
   margin: var(--space-m) 0;
 }
@@ -336,7 +333,20 @@ hr {
   background-color: var(--base-lightest);
   border: var(--border-default);
   padding: var(--space-m);
+  position: relative;
   margin-bottom: var(--space-s);
+  & > i {
+    font-size: 125%;
+    left: var(--space-m);
+    position: absolute;
+    top: var(--space-m);
+  }
+  & > p {
+    margin: 0 0 var(--space-m) var(--space-xl);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
   &.tds-panel-info {
     background-color: var(--info-lighter);
     border-color: var(--info-darker);
@@ -571,6 +581,55 @@ hr {
   }
 }
 
+.tds-radio {
+  cursor: pointer;
+  vertical-align: middle;
+  & > input[type="radio"] {
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    vertical-align: middle;
+    &:after {
+      background-color: var(--white);
+      border: var(--border-default);
+      border-radius: 50%;
+      color: var(--base-dark);
+      content: ' ';
+      display: inline-block;
+      font-family: var(--font-family-fa);
+      font-size: var(--font-size-m);
+      font-weight: var(--font-weight-fa);
+      height: var(--font-size-l);
+      line-height: var(--font-size-l);
+      text-align: center;
+      transition: var(--transition-short);
+      vertical-align: middle;
+      width: var(--font-size-l);
+    }
+    &:checked:after {
+      content: '\f111';
+    }
+    &:focus:after {
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    &:disabled:after {
+      background-color: var(--disabled-light);
+      border-color: var(--disabled-dark);
+      color: var(--disabled-dark);
+      cursor: not-allowed;
+    }
+  }
+  &:hover > input[type="radio"]:not(:disabled):after {
+    border-color: var(--base-darkest);
+    color: var(--base-darkest);
+  }
+  & > span {
+    padding-left: var(--space-s);
+    vertical-align: middle;
+  }
+}
+
 .tds-toggle {
   cursor: pointer;
   vertical-align: middle;
@@ -683,7 +742,6 @@ textarea {
   }
 }
 textarea {
-  font-size: var(--font-size-l);
   resize: none;
   width: 100%;
 }

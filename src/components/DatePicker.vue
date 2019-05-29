@@ -43,7 +43,7 @@ export default {
       type: String,
       default: 'm',
     },
-    value: Object,
+    value: [Date, Object],
   },
   data() {
     return {
