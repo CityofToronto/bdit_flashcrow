@@ -68,7 +68,7 @@ export default {
         display: block;
         font-size: var(--font-size-m);
         font-weight: var(--font-normal);
-        padding: var(--space-l) var(--space-m);
+        padding: var(--space-m);
       }
     }
   }
