@@ -22,7 +22,6 @@ const REASONS = [
   { label: 'Updated count (3 years expired)', value: 'EXPIRED' },
   { label: 'Pedestrian Safety', value: 'PED_SAFETY' },
   { label: 'Signal Timing', value: 'SIGNAL_TIMING' },
-  { label: 'Other', value: null },
 ];
 
 const SortDirection = {

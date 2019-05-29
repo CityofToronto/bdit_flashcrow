@@ -227,6 +227,7 @@ export default {
   --shadow-3: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
   --shadow-4: 0 12px 24px 0 rgba(0, 0, 0, 0.1);
   --shadow-5: 0 16px 32px 0 rgba(0, 0, 0, 0.1);
+  --shadow-outline: 0 0 0 3px var(--primary-light);
 
   --transition-short: .15s ease-in-out;
 
@@ -267,6 +268,14 @@ body {
   color: var(--base-lighter);
   width: var(--space-3xl);
 }
+.center-container-640 {
+  width: 640px;
+  margin: 0 auto;
+}
+.center-container-480 {
+  width: 480px;
+  margin: 0 auto;
+}
 
 /* TYPOGRAPHY */
 h1, h2, h3 {
@@ -285,15 +294,12 @@ h3 {
 strong {
   font-weight: var(--font-weight-bold);
 }
-small {
-  color: var(--base-darker);
-}
 p {
   margin: var(--space-m) 0;
 }
 hr {
   align-self: stretch;
-  margin: var(--space-m) 0;
+  margin: var(--space-s) 0;
 }
 .font-size-xs {
   font-size: var(--font-size-xs);
@@ -332,21 +338,35 @@ hr {
 }
 
 /* TEXT PANELS */
-.panel {
+.tds-panel {
   background-color: var(--base-lightest);
-  border: 1px solid var(--base);
+  border: var(--border-default);
   padding: var(--space-m);
-  &.panel-info {
+  position: relative;
+  margin-bottom: var(--space-s);
+  & > i {
+    font-size: 125%;
+    left: var(--space-m);
+    position: absolute;
+    top: var(--space-m);
+  }
+  & > p {
+    margin: 0 0 var(--space-m) var(--space-xl);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &.tds-panel-info {
     background-color: var(--info-lighter);
     border-color: var(--info-darker);
     color: var(--info-darker);
   }
-  &.panel-warning {
+  &.tds-panel-warning {
     background-color: var(--warning-lighter);
     border-color: var(--warning-darker);
     color: var(--warning-darker);
   }
-  &.panel-error {
+  &.tds-panel-error {
     background-color: var(--error-lighter);
     border-color: var(--error-darker);
     color: var(--error-darker);
@@ -356,6 +376,18 @@ hr {
 /* UTILITIES */
 .hide {
   display: none;
+}
+.screen-reader-only {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  word-wrap: normal;
 }
 .full-width {
   width: 100%;
@@ -378,10 +410,20 @@ hr {
 .flex-container-row {
   display: flex;
   flex-direction: row;
+  & > .flex-cross-scroll {
+    flex: var(--flex-fill);
+    max-height: 100%;
+    overflow: hidden auto;
+  }
 }
 .flex-container-column {
   display: flex;
   flex-direction: column;
+  & > .flex-cross-scroll {
+    flex: var(--flex-fill);
+    max-width: 100%;
+    overflow: auto hidden;
+  }
 }
 .flex-1 {
   flex: var(--flex-1);
@@ -491,6 +533,19 @@ hr {
   padding: var(--space-xl) 0;
 }
 
+.ml-s {
+  margin-left: var(--space-s);
+}
+.ml-m {
+  margin-left: var(--space-m);
+}
+.mb-s {
+  margin-bottom: var(--space-s);
+}
+.mb-m {
+  margin-bottom: var(--space-m);
+}
+
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
 .tds-checkbox {
   cursor: pointer;
@@ -525,7 +580,7 @@ hr {
       content: '\f068';
     }
     &:focus:after {
-      box-shadow: 0 0 0 3px var(--primary-light);
+      box-shadow: var(--shadow-outline);
     }
     &:disabled:after {
       background-color: var(--disabled-light);
@@ -541,6 +596,60 @@ hr {
   & > span {
     padding-left: var(--space-s);
     vertical-align: middle;
+  }
+}
+
+.tds-radio {
+  cursor: pointer;
+  vertical-align: middle;
+  & > input[type="radio"] {
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    vertical-align: middle;
+    &:after {
+      background-color: var(--white);
+      border: var(--border-default);
+      border-radius: 50%;
+      color: var(--base-dark);
+      content: ' ';
+      display: inline-block;
+      font-family: var(--font-family-fa);
+      font-size: calc(var(--font-size-l) - 8px);
+      font-weight: var(--font-weight-fa);
+      height: var(--font-size-l);
+      line-height: calc(var(--font-size-l) - 2px);
+      text-align: center;
+      text-rendering: geometricPrecision;
+      transition: var(--transition-short);
+      vertical-align: middle;
+      width: var(--font-size-l);
+    }
+    &:checked:after {
+      content: '\f111';
+    }
+    &:focus:after {
+      box-shadow: var(--shadow-outline);
+    }
+    &:disabled:after {
+      background-color: var(--disabled-light);
+      border-color: var(--disabled-dark);
+      color: var(--disabled-dark);
+      cursor: not-allowed;
+    }
+  }
+  &:hover > input[type="radio"]:not(:disabled):after {
+    border-color: var(--base-darkest);
+    color: var(--base-darkest);
+  }
+  & > span {
+    display: inline-block;
+    padding-left: var(--space-s);
+    vertical-align: middle;
+    & > small {
+      font-weight: var(--font-weight-normal);
+    }
   }
 }
 
@@ -607,6 +716,9 @@ button {
   &:not(:disabled):hover {
     border-color: var(--base-darkest);
   }
+  &:focus {
+    box-shadow: var(--shadow-outline);
+  }
   &.tds-button-primary {
     background-color: var(--primary-light);
     border-color: var(--primary-darker);
@@ -644,61 +756,45 @@ button {
 /* FORMS */
 fieldset {
   border: var(--border-default);
-}
-.details {
-  padding: 0;
-  margin: 0;
   & > legend {
-    margin-left: var(--space-l);
-    padding: 0 var(--space-s);
+    & > .number-icon {
+      background-color: var(--white);
+      border: var(--border-default);
+      border-radius: 50%;
+      color: var(--ink);
+      display: inline-block;
+      font-size: var(--font-size-l);
+      font-weight: var(--font-weight-bold);
+      height: calc(var(--font-size-l) * 1.25);
+      line-height: calc(var(--font-size-l) - 2px);
+      margin-right: var(--space-xs);
+      padding: var(--space-xs);
+      text-align: center;
+      vertical-align: middle;
+      width: calc(var(--font-size-l) * 1.25);
+    }
   }
-  & > .details-body {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-    margin-bottom: var(--space-l);
-    padding: 0 var(--space-l);
-    & > .details-column {
-      flex: 0 0 33.3333%;
+  & > .flex-container-row {
+    padding: var(--space-m) var(--space-m) 0 var(--space-m);
+    & > .form-group {
       padding: 0 var(--space-l);
-      & .details-checks {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        .label-vertical {
-          text-align: center;
-          margin: 0 var(--space-s);
-          & > input {
-            display: block;
-          }
-        }
-      }
-      & .details-radios {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        & > label {
-          margin: var(--space-m) 0;
-        }
-      }
     }
   }
 }
-input[type=date],
-input[type=input],
-input[type=text],
+input[type="text"],
 textarea {
   border: var(--border-default);
+  border-radius: var(--space-s);
   font-family: var(--font-family);
-  font-size: var(--font-size-xl);
   padding: var(--space-s) var(--space-m);
   &:hover {
     border-color: var(--base-darkest);
   }
+  &:focus {
+    box-shadow: var(--shadow-outline);
+  }
 }
 textarea {
-  font-size: var(--font-size-l);
   resize: none;
   width: 100%;
 }
@@ -713,57 +809,16 @@ select {
 label {
   font-weight: var(--font-weight-bold);
   vertical-align: middle;
-}
-.input-group {
-  & > .input-group-icon {
-    background-color: var(--base-lightest);
-    border: var(--border-default);
-    border-right: none;
-    font-size: var(--font-size-xl);
-    height: 31px;
-    padding: var(--space-s) var(--space-m);
-  }
-  & > * {
-    border: var(--border-default);
+  & > span {
     display: inline-block;
-    transition: border-color var(--transition-short);
-    vertical-align: middle;
-  }
-  &:hover > * {
-    border-color: var(--base-darkest);
-  }
-  & > img {
-    background-color: var(--base-lightest);
-    height: 31px;
-  }
-  & > :last-child {
-    border-left: none;
+    margin-bottom: var(--space-s);
   }
 }
 .form-group {
-  font-size: var(--font-size-m);
   margin-bottom: var(--space-l);
   & > strong {
     display: inline-block;
-    margin-bottom: var(--space-m);
+    margin-bottom: var(--space-s);
   }
-  &.size-lg {
-    font-size: var(--font-size-l);
-  }
-  & > label > div,
-  & > label > input[type=text] {
-    display: block;
-    margin: var(--space-s) 0;
-    width: 100%;
-  }
-  & > label > input[type=checkbox],
-  & > label > input[type=radio] {
-    display: inline-block;
-  }
-}
-
-/* VALIDATION */
-.validation-error {
-  color: var(--error-darker);
 }
 </style>

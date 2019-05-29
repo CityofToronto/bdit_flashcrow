@@ -119,8 +119,6 @@ export default {
 
 <style lang="postcss">
 .fc-request-study-request {
-  & > .btn-request-data {
-    width: 100%;
-  }
+
 }
 </style>
