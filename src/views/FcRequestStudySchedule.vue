@@ -5,119 +5,107 @@
     </header>
     <section class="flex-fill flex-container-row">
       <div class="flex-cross-scroll">
-        <div class="form-group">
-          <strong>Do you have a service request number?</strong>
-          <TdsButtonGroup
-            v-model="hasServiceRequestId"
-            name="hasServiceRequestId"
-            :options="[
-              { label: 'Yes', value: true },
-              { label: 'No', value: false },
-            ]"
-            type="radio" />
-        </div>
-        <div class="form-group">
-          <label>
-            <span>Enter service request number:</span>
-            <input
-              v-model="serviceRequestId"
-              class="font-size-l"
-              name="serviceRequestId"
-              type="text" />
-          </label>
-          <button
-            class="font-size-m">
-            <i class="fa fa-check"></i>
-            <span> OK</span>
-          </button>
-        </div>
-        <div class="form-group">
-          <strong>What is the priority of your request?</strong>
-          <TdsButtonGroup
-            v-model="priority"
-            name="priority"
-            :options="[
-              { label: 'Standard', value: 'STANDARD' },
-              { label: 'Urgent', value: 'URGENT' },
-            ]"
-            type="radio" />
-          <div
-            v-if="priority === 'STANDARD'"
-            class="tds-panel tds-panel-info">
-            <i class="fa fa-calendar-check"></i>
-            <p>
-              Standard times to request counts are 2-3 months.
-              Peak times are April-June and September-November.
-            </p>
+        <div class="center-container-640">
+          <div class="form-group">
+            <strong>Do you have a service request number?</strong>
+            <div class="center-container-480">
+              <TdsButtonGroup
+                v-model="hasServiceRequestId"
+                class="font-size-l"
+                name="hasServiceRequestId"
+                :options="[
+                  { label: 'Yes', value: true },
+                  { label: 'No', value: false },
+                ]"
+                type="radio" />
+            </div>
           </div>
-          <div
-            v-else-if="priority === 'URGENT'"
-            class="tds-panel tds-panel-warning">
-            <i class="fa fa-exclamation-triangle"></i>
-            <p>
-              You've marked this request urgent, which will mean reshuffling the request queue.
-              The Traffic Safety Unit will contact you to make adjustments to the schedule.
-            </p>
+          <div class="form-group">
+            <label>
+              <span>Enter service request number:</span>
+              <div class="center-container-480">
+                <input
+                  v-model="serviceRequestId"
+                  class="font-size-l full-width"
+                  name="serviceRequestId"
+                  type="text" />
+              </div>
+            </label>
           </div>
-          <button
-            class="font-size-m">
-            <i class="fa fa-check"></i>
-            <span> OK</span>
-          </button>
-        </div>
-        <div class="form-group">
-          <strong>When do you need the data by?</strong>
-          <div class="mb-s">
-            <DatePicker
-              v-model="dueDate"
-              mode="single"
-              name="dueDate"
-              size="l"
-              v-bind="attrsDueDate">
-            </DatePicker>
+          <div class="form-group">
+            <strong>What is the priority of your request?</strong>
+            <div class="center-container-480">
+              <TdsButtonGroup
+                v-model="priority"
+                class="font-size-l"
+                name="priority"
+                :options="[
+                  { label: 'Standard', value: 'STANDARD' },
+                  { label: 'Urgent', value: 'URGENT' },
+                ]"
+                type="radio" />
+            </div>
+            <div
+              v-if="priority === 'STANDARD'"
+              class="tds-panel tds-panel-info">
+              <i class="fa fa-calendar-check"></i>
+              <p>
+                Standard times to request counts are 2-3 months.
+                Peak times are April-June and September-November.
+              </p>
+            </div>
+            <div
+              v-else-if="priority === 'URGENT'"
+              class="tds-panel tds-panel-warning">
+              <i class="fa fa-exclamation-triangle"></i>
+              <p>
+                You've marked this request urgent, which will mean reshuffling the request queue.
+                The Traffic Safety Unit will contact you to make adjustments to the schedule.
+              </p>
+            </div>
           </div>
-          <button
-            class="font-size-m">
-            <i class="fa fa-check"></i>
-            <span> OK</span>
-          </button>
-        </div>
-        <div class="form-group">
-          <strong>What's the reason for your request?</strong>
-          <div class="mb-s">
-            <TdsChecklistDropdown
-              v-model="reasons"
-              class="font-size-l"
-              name="reasons"
-              :options="REASONS">
-              <span>
-                Reasons for Request
-                <span class="tds-badge">{{reasons.length}}</span>
-              </span>
-            </TdsChecklistDropdown>
+          <div class="form-group">
+            <strong>When do you need the data by?</strong>
+            <div class="center-container-480 mb-s">
+              <DatePicker
+                v-model="dueDate"
+                mode="single"
+                name="dueDate"
+                show-icon
+                size="l"
+                v-bind="attrsDueDate">
+              </DatePicker>
+            </div>
           </div>
-          <button
-            class="font-size-m">
-            <i class="fa fa-check"></i>
-            <span> OK</span>
-          </button>
+          <div class="form-group">
+            <strong>What's the reason for your request?</strong>
+            <div class="center-container-480 mb-s">
+              <TdsChecklistDropdown
+                v-model="reasons"
+                class="font-size-l full-width"
+                name="reasons"
+                :options="REASONS">
+                <span>
+                  Reasons for Request
+                  <span class="tds-badge">{{reasons.length}}</span>
+                </span>
+              </TdsChecklistDropdown>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+              <span>Any staff you'd like to keep informed on the request?</span>
+              <div class="center-container-480">
+                <input
+                  v-model="ccEmails"
+                  class="font-size-l full-width"
+                  name="ccEmails"
+                  type="text" />
+              </div>
+            </label>
+          </div>
         </div>
-        <div class="form-group">
-          <label>
-            <span>Any staff you'd like to keep informed on the request?</span>
-            <input
-              v-model="ccEmails"
-              class="font-size-l"
-              name="ccEmails"
-              type="text" />
-          </label>
-          <button
-            class="font-size-m">
-            <i class="fa fa-check"></i>
-            <span> OK</span>
-          </button>
-        </div>
-        <fieldset>
+        <fieldset class="mb-m">
           <legend>
             <span class="number-icon">1</span>
             Turning Movement Count
@@ -129,14 +117,15 @@
                 v-model="dateRange0"
                 mode="range"
                 name="dateRange0"
+                show-icon
                 size="l"
-                v-bind="attrsDueDate">
-              </DatePicker>
+                v-bind="attrsDueDate" />
             </div>
             <div class="form-group flex-1">
               <strong>What days of the week should the study fall on?</strong>
               <TdsButtonGroup
                 v-model="daysOfWeek0"
+                class="font-size-l"
                 name="daysOfWeek0"
                 :options="[
                   { label: 'Su', value: 0 },
@@ -173,11 +162,11 @@
                 </p>
                 <p>
                   <small>
-                  07:30 &ndash; 09:30<br />
-                  10:00 &ndash; 11:00<br />
-                  12:00 &ndash; 13:30<br />
-                  14:15 &ndash; 15:45<br />
-                  16:00 &ndash; 18:00
+                  07:30&ndash;09:30,
+                  10:00&ndash;11:00,
+                  12:00&ndash;13:30,
+                  14:15&ndash;15:45,
+                  16:00&ndash;18:00
                   </small>
                 </p>
               </div>
@@ -190,10 +179,10 @@
                 </p>
                 <p>
                   <small>
-                  07:30 &ndash; 09:30<br />
-                  10:00 &ndash; 12:00<br />
-                  13:00 &ndash; 15:00<br />
-                  16:00 &ndash; 18:00
+                  07:30&ndash;09:30,
+                  10:00&ndash;12:00,
+                  13:00&ndash;15:00,
+                  16:00&ndash;18:00
                   </small>
                 </p>
               </div>
@@ -213,15 +202,70 @@
               <textarea
                 v-model="notes0"
                 name="notes0"
-                rows="5"></textarea>
+                rows="4"></textarea>
             </div>
           </div>
         </fieldset>
-        <fieldset>
+        <fieldset class="mb-m">
           <legend>
             <span class="number-icon">2</span>
             Speed / Volume ATR
           </legend>
+          <div class="flex-container-row">
+            <div class="form-group flex-1">
+              <strong>When do you want your study to be conducted?</strong>
+              <DatePicker
+                v-model="dateRange1"
+                mode="range"
+                name="dateRange1"
+                size="l"
+                v-bind="attrsDueDate">
+                <i class="fa fa-calendar-alt ml-m font-size-l"></i>
+              </DatePicker>
+            </div>
+            <div class="form-group flex-1">
+              <strong>What days of the week should the study fall on?</strong>
+              <TdsButtonGroup
+                v-model="daysOfWeek1"
+                class="font-size-l"
+                name="daysOfWeek1"
+                :options="[
+                  { label: 'Su', value: 0 },
+                  { label: 'M', value: 1 },
+                  { label: 'Tu', value: 2 },
+                  { label: 'W', value: 3 },
+                  { label: 'Th', value: 4 },
+                  { label: 'F', value: 5 },
+                  { label: 'Sa', value: 6 },
+                ]"
+                type="checkbox" />
+            </div>
+          </div>
+          <div class="flex-container-row">
+            <div class="form-group flex-fill">
+              <strong>What type of hours should we use?</strong>
+              <TdsRadioGroup
+                v-model="duration1"
+                name="duration1"
+                :options="[
+                  { label: '1 day', sublabel: '24 hours', value: 24 },
+                  { label: '2 days', sublabel: '48 hours', value: 48 },
+                  { label: '3 days', sublabel: '72 hours', value: 72 },
+                  { label: '4 days', sublabel: '96 hours', value: 96 },
+                  { label: '5 days', sublabel: '120 hours', value: 120 },
+                  { label: '1 week', sublabel: '168 hours', value: 168 },
+                ]" />
+            </div>
+          </div>
+          <div class="flex-container-row">
+            <div class="form-group flex-fill">
+              <strong>Any additional notes you'd like to share?</strong>
+              <textarea
+                v-model="notes1"
+                name="notes1"
+                rows="4"></textarea>
+            </div>
+          </div>
         </fieldset>
       </div>
     </section>
@@ -265,6 +309,7 @@ export default {
       priority: null,
       dueDate,
       reasons: [],
+      ccEmails: '',
       REASONS: Constants.REASONS,
       // manual studies
       dateRange0: null,
@@ -272,6 +317,10 @@ export default {
       hours0: 'ROUTINE',
       notes0: '',
       // automatic counts
+      dateRange1: null,
+      daysOfWeek1: [2, 3, 4],
+      duration1: 24,
+      notes1: '',
     };
   },
   computed: {
@@ -313,37 +362,21 @@ export default {
     reasons: {
       required,
     },
+    ccEmails: {
+      mustBeListOfEmails(value) {
+        // TODO: move into computed prop
+        const ccEmails = value
+          .split(',')
+          .map(ccEmail => ccEmail.trim());
+        return ccEmails.length > 0;
+      },
+    },
   },
 };
 </script>
 
 <style lang="postcss">
 .fc-request-study-schedule {
-  fieldset {
-    & > legend {
-      padding-left: 0;
-    }
-    & > .flex-container-row {
-      padding: var(--space-m) var(--space-l);
-      & > .form-group {
-        padding: 0 var(--space-l);
-      }
-    }
-  }
-  .number-icon {
-    background-color: var(--white);
-    border: var(--border-default);
-    border-radius: 50%;
-    color: var(--ink);
-    display: inline-block;
-    font-size: var(--font-size-l);
-    font-weight: var(--font-weight-bold);
-    height: calc(var(--font-size-l) * 1.25);
-    line-height: var(--font-size-l);
-    margin-right: var(--space-xs);
-    padding: var(--space-xs);
-    text-align: center;
-    width: calc(var(--font-size-l) * 1.25);
-  }
+
 }
 </style>

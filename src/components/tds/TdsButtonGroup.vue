@@ -28,7 +28,7 @@ export default {
       type: String,
       default: 'checkbox',
     },
-    value: [Boolean, String, Array],
+    value: [Boolean, Number, String, Array],
   },
   computed: {
     internalValue: {
@@ -54,8 +54,10 @@ export default {
       padding: var(--space-s) var(--space-m);
       text-align: center;
     }
-    & > input[type="checkbox"]:checked + span,
-    & > input[type="radio"]:checked + span {
+    & > input:focus + span {
+      box-shadow: var(--shadow-outline);
+    }
+    & > input:checked + span {
       background-color: var(--success-light);
       color: var(--success-darker);
     }
