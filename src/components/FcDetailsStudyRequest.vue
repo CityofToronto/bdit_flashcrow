@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="details new-request-details">
+  <fieldset class="fc-details-study-request">
     <div class="details-body">
       <div class="details-column">
         <div class="form-group">
@@ -72,12 +72,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
-
 import Constants from '@/lib/Constants';
 
 export default {
-  name: 'NewRequestDetails',
+  name: 'FcDetailsStudyRequest',
   props: {
     v: Object,
   },
@@ -158,20 +156,12 @@ export default {
         });
       },
     },
-    ...mapGetters([
-      'dataSelectionItemsMeta',
-      'dataSelectionMeta',
-    ]),
-    ...mapState(['dataSelection']),
-  },
-  methods: {
-    ...mapActions(['setDataSelectionMeta']),
   },
 };
 </script>
 
 <style lang="postcss">
-.new-request-details {
+.fc-new-request-details {
   border: none;
   margin-top: var(--space-l);
   .reason-for-request {

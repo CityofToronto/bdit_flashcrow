@@ -7,9 +7,8 @@
     @keydown.enter="onKeyEnter"
     @keydown.esc="onKeyEsc">
     <input
-      ref="query"
       v-model="query"
-      class="input-query"
+      class="font-size-xl"
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />
@@ -40,6 +39,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
+// TODO: move into separate library
 function debounce(func, wait) {
   let timeout;
   return function debounceWrapper(...args) {

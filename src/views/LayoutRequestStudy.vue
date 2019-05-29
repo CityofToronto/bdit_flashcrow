@@ -16,7 +16,7 @@
         </router-link>
       </template>
     </TdsTopBar>
-    <div class="px-xl flex-fill">
+    <div class="px-xl flex-fill flex-container-column">
       <hr />
       <FcBreadcrumbsRequestStudy :current-step-completed="false" />
       <hr />
@@ -74,6 +74,7 @@ export default {
 <style lang="postcss">
 .layout-request-study {
   & > .nav-links {
+    padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
     text-transform: uppercase;
     & > a {
       text-decoration: none;

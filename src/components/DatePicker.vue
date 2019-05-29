@@ -2,21 +2,29 @@
   <v-date-picker
     v-bind="$attrs"
     v-model="internalValue"
-    class="date-picker-control"
+    class="date-picker-control flex-container-row"
     :disabled-attribute="disabledAttribute"
     popover-visibility="focus"
     :show-caps="true"
     :show-day-popover="false"
     :theme-styles="themeStyles">
-    <input
-      slot-scope="{ inputValue }"
-      type="text"
-      class="input-date-picker"
-      :disabled="disabled"
-      :name="name"
-      :placeholder="placeholder"
-      :value="inputValue"
-      @input="internalValue = null" />
+    <template slot-scope="{ inputValue, updateValue }">
+      <input
+        type="text"
+        class="input-date-picker flex-fill"
+        :class="'font-size-' + size"
+        :disabled="disabled"
+        :name="name"
+        :placeholder="placeholder"
+        :value="inputValue"
+        @input="updateValue($event.target.value, { formatInput: false, hidePopover: false })"
+        @change="updateValue($event.target.value, { formatInput: true, hidePopover: false })"
+        @keyup.esc="updateValue(internalValue, { formatInput: true, hidePopover: true })" />
+      <i
+        v-if="showIcon"
+        class="fa fa-calendar-alt ml-m"
+        :class="'font-size-' + size"></i>
+    </template>
   </v-date-picker>
 </template>
 
@@ -38,8 +46,15 @@ export default {
       type: String,
       default: '',
     },
-    size: String,
-    value: Object,
+    showIcon: {
+      type: Boolean,
+      default: false,
+    },
+    size: {
+      type: String,
+      default: 'm',
+    },
+    value: [Date, Object],
   },
   data() {
     return {
@@ -94,42 +109,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.date-picker {
-  display: flex;
-  &.disabled {
-    opacity: 0.75;
-    pointer-events: none;
-  }
-  & > .date-picker-icon,
-  & > .date-picker-control {
-    display: inline-block;
-    vertical-align: middle;
-  }
-  & > .date-picker-icon {
-    background-color: var(--base-lightest);
-    border: var(--border-default);
-    border-right: none;
-    font-size: var(--font-size-xl);
-    height: 31px;
-    padding: var(--space-l) var(--space-m);
-  }
-  & > .date-picker-control {
-    flex: 1;
-  }
-  &:hover > .date-picker-icon,
-  &:hover .input-date-picker {
-    border-color: var(--base-darkest);
-  }
-  .input-date-picker {
-    width: 100%;
-  }
-  .c-day-background {
-    height: 1.8em !important;
-  }
-  .c-day-box-center-center.c-day-slide-left-translate-enter > .c-day-background,
-  .c-day-box-center-center.c-day-slide-right-translate-enter > .c-day-background,
-  .c-day-box-center-center.c-day-scale-enter.c-day-scale-leave > .c-day-background {
-    width: 1.8em !important;
-  }
+.date-picker-control {
+  align-items: center;
 }
 </style>
