@@ -66,8 +66,8 @@ import FcDashboardBrand from '@/components/FcDashboardBrand.vue';
 import FcDashboardNav from '@/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/components/FcModalShowReports.vue';
+import FcModalRequestStudyConfirmation from '@/components/FcModalRequestStudyConfirmation.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
-import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
 import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
@@ -79,8 +79,8 @@ export default {
     FcDashboardNav,
     FcDashboardNavItem,
     FcModalShowReports,
+    FcModalRequestStudyConfirmation,
     ModalComingSoon,
-    ModalRequestsNewConfirmation,
     SearchBarLocation,
     TdsConfirmDialog,
     TdsTopBar,
@@ -267,14 +267,6 @@ body {
   background-color: var(--base-darker);
   color: var(--base-lighter);
   width: var(--space-3xl);
-}
-.center-container-640 {
-  width: 640px;
-  margin: 0 auto;
-}
-.center-container-480 {
-  width: 480px;
-  margin: 0 auto;
 }
 
 /* TYPOGRAPHY */
@@ -533,6 +525,16 @@ hr {
   padding: var(--space-xl) 0;
 }
 
+.my-m {
+  margin: var(--space-m) 0;
+}
+
+.mt-m {
+  margin-top: var(--space-m);
+}
+.mt-xl {
+  margin-top: var(--space-xl);
+}
 .ml-s {
   margin-left: var(--space-s);
 }
@@ -544,6 +546,9 @@ hr {
 }
 .mb-m {
   margin-bottom: var(--space-m);
+}
+.mb-xl {
+  margin-bottom: var(--space-xl);
 }
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
