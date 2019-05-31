@@ -65,7 +65,7 @@
           v-model="dueDate"
           mode="single"
           name="dueDate"
-          pane-width="480"
+          :pane-width="480"
           show-icon
           size="l"
           v-bind="attrsDueDate">
@@ -130,7 +130,7 @@ export default {
       const { now } = this.$store.state;
       if (this.priority === 'URGENT') {
         return {
-          disabledDates: { start: null, end: this.now },
+          disabledDates: { start: null, end: now },
           minDate: now,
         };
       }

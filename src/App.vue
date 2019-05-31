@@ -66,8 +66,8 @@ import FcDashboardBrand from '@/components/FcDashboardBrand.vue';
 import FcDashboardNav from '@/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/components/FcModalShowReports.vue';
+import FcModalRequestStudyConfirmation from '@/components/FcModalRequestStudyConfirmation.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
-import ModalRequestsNewConfirmation from '@/components/ModalRequestsNewConfirmation.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
 import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
@@ -79,8 +79,8 @@ export default {
     FcDashboardNav,
     FcDashboardNavItem,
     FcModalShowReports,
+    FcModalRequestStudyConfirmation,
     ModalComingSoon,
-    ModalRequestsNewConfirmation,
     SearchBarLocation,
     TdsConfirmDialog,
     TdsTopBar,
@@ -525,6 +525,13 @@ hr {
   padding: var(--space-xl) 0;
 }
 
+.my-m {
+  margin: var(--space-m) 0;
+}
+
+.mt-m {
+  margin-top: var(--space-m);
+}
 .mt-xl {
   margin-top: var(--space-xl);
 }

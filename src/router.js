@@ -76,7 +76,10 @@ const router = new Router({
       }, {
         path: 'confirm',
         name: 'requestStudyConfirm',
-        component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyConfirm.vue'),
+        components: {
+          default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyConfirm.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomConfirm.vue'),
+        },
       }],
     },
     {

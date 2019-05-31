@@ -5,13 +5,15 @@
     </template>
     <template v-slot:content>
       <p>Thank you for your request!</p>
-      <p v-if="data.priority === 'URGENT'">
+      <p>
+        You should receive your data by
+        <strong>{{dueDate | date}}</strong>.
+      </p>
+      <p v-if="priority === 'URGENT'">
         You've marked this request urgent.  The Traffic Safety Unit will
         contact you to make adjustments to the schedule.
       </p>
       <p v-else>
-        You should receive your data by
-        <strong>{{data.estimatedDeliveryDate | date}}</strong>.
         The Traffic Safety Unit will contact you if there are unforeseen
         scheduling changes.
       </p>
@@ -30,8 +32,16 @@ import { mapMutations } from 'vuex';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 
 export default {
-  name: 'ModalComingSoon',
+  name: 'FcModalRequestStudyConfirmation',
   mixins: [TdsMixinModal],
+  computed: {
+    dueDate() {
+      return this.data.meta.dueDate;
+    },
+    priority() {
+      return this.data.meta.priority;
+    },
+  },
   methods: {
     onClickOk() {
       this.clearModal();
