@@ -268,14 +268,6 @@ body {
   color: var(--base-lighter);
   width: var(--space-3xl);
 }
-.center-container-640 {
-  width: 640px;
-  margin: 0 auto;
-}
-.center-container-480 {
-  width: 480px;
-  margin: 0 auto;
-}
 
 /* TYPOGRAPHY */
 h1, h2, h3 {
@@ -533,6 +525,9 @@ hr {
   padding: var(--space-xl) 0;
 }
 
+.mt-xl {
+  margin-top: var(--space-xl);
+}
 .ml-s {
   margin-left: var(--space-s);
 }
@@ -544,6 +539,9 @@ hr {
 }
 .mb-m {
   margin-bottom: var(--space-m);
+}
+.mb-xl {
+  margin-bottom: var(--space-xl);
 }
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
