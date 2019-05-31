@@ -1,13 +1,13 @@
 <template>
   <v-date-picker
-    v-bind="$attrs"
     v-model="internalValue"
     class="date-picker-control flex-container-row"
     :disabled-attribute="disabledAttribute"
-    popover-visibility="focus"
+    popover-visibility="hover"
     :show-caps="true"
     :show-day-popover="false"
-    :theme-styles="themeStyles">
+    :theme-styles="themeStyles"
+    v-bind="$attrs">
     <template slot-scope="{ inputValue, updateValue }">
       <input
         type="text"

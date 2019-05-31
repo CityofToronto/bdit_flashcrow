@@ -1,8 +1,8 @@
 <template>
-  <div class="fc-details-study-request center-container-640">
-    <div class="form-group">
+  <div class="fc-details-study-request">
+    <div class="form-group mt-xl">
       <strong>Do you have a service request number?</strong>
-      <div class="center-container-480">
+      <div class="inner-container">
         <TdsButtonGroup
           v-model="hasServiceRequestId"
           class="font-size-l"
@@ -14,10 +14,10 @@
           type="radio" />
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-xl">
       <label>
         <span>Enter service request number:</span>
-        <div class="center-container-480">
+        <div class="inner-container">
           <input
             v-model="serviceRequestId"
             class="font-size-l full-width"
@@ -26,9 +26,9 @@
         </div>
       </label>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-xl">
       <strong>What is the priority of your request?</strong>
-      <div class="center-container-480">
+      <div class="inner-container">
         <TdsButtonGroup
           v-model="priority"
           class="font-size-l"
@@ -58,22 +58,23 @@
         </p>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-xl">
       <strong>When do you need the data by?</strong>
-      <div class="center-container-480 mb-s">
+      <div class="inner-container mb-s">
         <DatePicker
           v-model="dueDate"
           mode="single"
           name="dueDate"
+          pane-width="480"
           show-icon
           size="l"
           v-bind="attrsDueDate">
         </DatePicker>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-xl">
       <strong>What's the reason for your request?</strong>
-      <div class="center-container-480 mb-s">
+      <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="reasons"
           class="font-size-l full-width"
@@ -86,10 +87,10 @@
         </TdsChecklistDropdown>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group mt-xl">
       <label>
         <span>Any staff you'd like to keep informed on the request?</span>
-        <div class="center-container-480">
+        <div class="inner-container">
           <input
             v-model="ccEmails"
             class="font-size-l full-width"
@@ -218,7 +219,19 @@ export default {
 </script>
 
 <style lang="postcss">
+.inner-container {
+  width: 480px;
+  margin: 0 auto;
+}
 .fc-details-study-request {
+  --outer-width: 640px;
+  --inner-width: 480px;
 
+  width: var(--outer-width);
+  margin: 0 auto var(--space-xl) auto;
+  & > .form-group > .inner-container {
+    width: var(--inner-width);
+    margin: 0 auto;
+  }
 }
 </style>
