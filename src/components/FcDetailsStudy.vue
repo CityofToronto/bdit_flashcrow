@@ -54,22 +54,17 @@
         <strong>What type of hours should we use?</strong>
         <TdsRadioGroup
           v-model="hours"
+          class="mb-m"
           :name="nameHours"
           :options="[
             { label: 'School', value: 'SCHOOL' },
             { label: 'Routine', value: 'ROUTINE' },
             { label: 'Other', value: 'OTHER' },
           ]" />
-      </div>
-      <div class="form-group flex-1">
-        <strong>&nbsp;</strong>
         <div
           v-if="hours === 'SCHOOL'"
           class="tds-panel tds-panel-info">
           <i class="fa fa-clock"></i>
-          <p>
-            School hours:
-          </p>
           <p>
             <small>
             07:30&ndash;09:30,
@@ -85,9 +80,6 @@
           class="tds-panel tds-panel-info">
           <i class="fa fa-clock"></i>
           <p>
-            Routine hours:
-          </p>
-          <p>
             <small>
             07:30&ndash;09:30,
             10:00&ndash;12:00,
@@ -101,15 +93,22 @@
           class="tds-panel tds-panel-warning">
           <i class="fa fa-clock"></i>
           <p>
-            Please specify your desired schedule in the notes below.
+            Please specify your desired schedule in
+            <a
+              href="#"
+              @click.prevent="$refs.notes.focus()">
+              additional notes.
+            </a>
           </p>
         </div>
       </div>
+      <div class="form-group flex-1"></div>
     </div>
     <div class="flex-container-row">
       <div class="form-group flex-fill">
         <strong>Any additional notes you'd like to share?</strong>
         <textarea
+          ref="notes"
           v-model="notes"
           :name="nameNotes"
           rows="4"></textarea>
@@ -142,7 +141,7 @@ export default {
       const { now } = this.$store.state;
       if (this.priority === 'URGENT') {
         return {
-          disabledDates: { start: null, end: this.now },
+          disabledDates: { start: null, end: now },
           minDate: now,
         };
       }
@@ -238,6 +237,9 @@ export default {
         });
       },
     },
+    priority() {
+      return this.studyRequest.meta.priority;
+    },
     studyType() {
       const studyType = this.studyRequest.items[this.index].item;
       return Constants.COUNT_TYPES
@@ -252,22 +254,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-study-details {
-  background-color: var(--base-lightest);
-  .number-icon {
-    background-color: var(--base-lightest);
-    border: var(--border-default);
-    border-radius: 50%;
-    color: var(--ink);
-    display: inline-block;
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    height: calc(var(--font-size-xl) * 1.5);
-    line-height: var(--font-size-xl);
-    margin-right: var(--space-s);
-    padding: var(--space-s);
-    text-align: center;
-    width: calc(var(--font-size-xl) * 1.5);
-  }
+.fc-details-study {
+
 }
 </style>
