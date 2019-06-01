@@ -127,7 +127,7 @@ export default new Vuex.Store({
       const meta = {
         hasServiceRequestId: null,
         serviceRequestId: null,
-        priority: null,
+        priority: 'STANDARD',
         dueDate: null,
         reasons: [],
         ccEmails: [],

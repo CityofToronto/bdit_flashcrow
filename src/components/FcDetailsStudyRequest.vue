@@ -43,9 +43,8 @@
       <strong>What is the priority of your request?</strong>
       <div class="inner-container">
         <TdsButtonGroup
-          v-model="v.priority.$model"
+          v-model="priority"
           class="font-size-l"
-          :invalid="v.priority.$error"
           name="priority"
           :options="[
             { label: 'Standard', value: 'STANDARD' },
@@ -76,7 +75,8 @@
       <strong>When do you need the data by?</strong>
       <div class="inner-container mb-s">
         <DatePicker
-          v-model="dueDate"
+          v-model="v.dueDate.$model"
+          :invalid="v.dueDate.$error"
           mode="single"
           name="dueDate"
           :pane-width="480"
@@ -85,19 +85,34 @@
           v-bind="attrsDueDate">
         </DatePicker>
       </div>
+      <div
+        v-if="v.dueDate.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please select a due date for this request.
+        </p>
+      </div>
     </div>
     <div class="form-group mt-xl">
       <strong>What's the reason for your request?</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="v.reasons.$model"
-          class="font-size-l full-width"
-          :invalid="v.reasons.$invalid"
+          class="font-size-l full-width mb-m text-left"
+          :class="{
+            'tds-button-success': reasons.length > 0,
+          }"
+          :invalid="v.reasons.$error"
           name="reasons"
           :options="REASONS">
           <span>
             Reasons for Request
-            <span class="tds-badge">{{reasons.length}}</span>
+            <span
+              class="tds-badge"
+              :class="{
+                'tds-badge-success': reasons.length > 0,
+              }">{{reasons.length}}</span>
           </span>
         </TdsChecklistDropdown>
       </div>
@@ -210,6 +225,9 @@ export default {
           key: 'hasServiceRequestId',
           value: hasServiceRequestId,
         });
+        if (!hasServiceRequestId) {
+          this.serviceRequestId = null;
+        }
       },
     },
     priority: {
