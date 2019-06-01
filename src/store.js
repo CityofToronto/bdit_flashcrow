@@ -130,7 +130,7 @@ export default new Vuex.Store({
         priority: null,
         dueDate: null,
         reasons: [],
-        ccEmails: '',
+        ccEmails: [],
       };
       const items = studyTypes.map(makeStudyItem);
       Vue.set(state, 'studyRequest', { items, meta });

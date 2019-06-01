@@ -20,7 +20,7 @@ import { mapState } from 'vuex';
 
 import FcDetailsStudy from '@/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/components/FcDetailsStudyRequest.vue';
-// import validations from '@/lib/validation/ValidationsStudyRequest';
+import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
   name: 'FcRequestStudySchedule',
@@ -31,6 +31,7 @@ export default {
   computed: {
     ...mapState(['studyRequest']),
   },
+  validations: ValidationsStudyRequest.validations,
 };
 </script>
 
