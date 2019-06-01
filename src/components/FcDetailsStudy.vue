@@ -110,6 +110,7 @@
         <textarea
           ref="notes"
           v-model="notes"
+          class="full-width"
           :name="nameNotes"
           rows="4"></textarea>
       </div>

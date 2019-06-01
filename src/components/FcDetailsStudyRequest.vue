@@ -4,8 +4,9 @@
       <strong>Do you have a service request number?</strong>
       <div class="inner-container">
         <TdsButtonGroup
-          v-model="hasServiceRequestId"
+          v-model="v.hasServiceRequestId.$model"
           class="font-size-l"
+          :invalid="v.hasServiceRequestId.$error"
           name="hasServiceRequestId"
           :options="[
             { label: 'Yes', value: true },
@@ -19,19 +20,32 @@
         <span>Enter service request number:</span>
         <div class="inner-container">
           <input
-            v-model="serviceRequestId"
-            class="font-size-l full-width"
+            v-model="v.serviceRequestId.$model"
+            class="font-size-l full-width mb-m"
+            :class="{
+              invalid: v.serviceRequestId.$error,
+            }"
+            :disabled="!hasServiceRequestId"
             name="serviceRequestId"
             type="text" />
         </div>
       </label>
+      <div
+        v-if="v.serviceRequestId.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please enter your service request number.
+        </p>
+      </div>
     </div>
     <div class="form-group mt-xl">
       <strong>What is the priority of your request?</strong>
       <div class="inner-container">
         <TdsButtonGroup
-          v-model="priority"
+          v-model="v.priority.$model"
           class="font-size-l"
+          :invalid="v.priority.$error"
           name="priority"
           :options="[
             { label: 'Standard', value: 'STANDARD' },
@@ -76,8 +90,9 @@
       <strong>What's the reason for your request?</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
-          v-model="reasons"
+          v-model="v.reasons.$model"
           class="font-size-l full-width"
+          :invalid="v.reasons.$invalid"
           name="reasons"
           :options="REASONS">
           <span>
@@ -86,18 +101,38 @@
           </span>
         </TdsChecklistDropdown>
       </div>
+      <div
+        v-if="v.reasons.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please select one or more reasons for this request.
+        </p>
+      </div>
     </div>
     <div class="form-group mt-xl">
       <label>
         <span>Any staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
           <input
-            v-model.lazy="ccEmails"
-            class="font-size-l full-width"
+            v-model.lazy="v.ccEmails.$model"
+            class="font-size-l full-width mb-m"
+            :class="{
+              invalid: v.ccEmails.$error,
+            }"
             name="ccEmails"
             type="text" />
         </div>
       </label>
+      <div
+        v-if="v.ccEmails.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please enter a comma-separated list of valid
+          <strong>@toronto.ca</strong> email addresses.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -146,14 +181,9 @@ export default {
     },
     ccEmails: {
       get() {
-        return this.studyRequest.meta.ccEmails.join(', ');
+        return this.studyRequest.meta.ccEmails;
       },
-      set(value) {
-        const ccEmails = value
-          .trim()
-          .split(',')
-          .map(ccEmail => ccEmail.trim())
-          .filter(ccEmail => ccEmail !== '');
+      set(ccEmails) {
         this.setStudyRequestMeta({
           key: 'ccEmails',
           value: ccEmails,

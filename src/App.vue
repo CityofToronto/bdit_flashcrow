@@ -526,7 +526,8 @@ hr {
 }
 
 .my-m {
-  margin: var(--space-m) 0;
+  margin-top: var(--space-m);
+  margin-bottom: var(--space-m);
 }
 
 .mt-m {
@@ -792,24 +793,27 @@ textarea {
   border-radius: var(--space-s);
   font-family: var(--font-family);
   padding: var(--space-s) var(--space-m);
-  &:hover {
+  &:disabled {
+    background-color: var(--disabled-light);
+    border-color: var(--disabled-dark);
+    color: var(--disabled-dark);
+    cursor: not-allowed;
+  }
+  &:not(:disabled):hover {
     border-color: var(--base-darkest);
   }
   &:focus {
     box-shadow: var(--shadow-outline);
   }
-}
-input[type="text"] {
-  &.valid {
-    border-color: var(--success-darker);
-  }
   &.invalid {
-    border-color: var(--error-darker);
+    border-color: var(--error);
+    &:not(:disabled):hover {
+      border-color: var(--error-dark);
+    }
   }
 }
 textarea {
   resize: none;
-  width: 100%;
 }
 select {
   background-color: var(--base-lightest);
