@@ -92,7 +92,7 @@
         <span>Any staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
           <input
-            v-model="ccEmails"
+            v-model.lazy="ccEmails"
             class="font-size-l full-width"
             name="ccEmails"
             type="text" />
@@ -146,9 +146,14 @@ export default {
     },
     ccEmails: {
       get() {
-        return this.studyRequest.meta.ccEmails;
+        return this.studyRequest.meta.ccEmails.join(', ');
       },
-      set(ccEmails) {
+      set(value) {
+        const ccEmails = value
+          .trim()
+          .split(',')
+          .map(ccEmail => ccEmail.trim())
+          .filter(ccEmail => ccEmail !== '');
         this.setStudyRequestMeta({
           key: 'ccEmails',
           value: ccEmails,

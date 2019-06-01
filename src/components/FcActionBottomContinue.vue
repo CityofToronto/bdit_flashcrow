@@ -1,6 +1,7 @@
 <template>
   <button
     class="tds-button-primary"
+    :disabled="$v.$invalid"
     @click="onClickContinue">
     Continue
   </button>
@@ -9,13 +10,14 @@
 <script>
 import { mapState } from 'vuex';
 
-// import validations from '@/lib/validation/ValidationsStudyRequest';
+import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
   name: 'FcActionBottomContinue',
   computed: {
     ...mapState(['studyRequest']),
   },
+  validations: ValidationsStudyRequest.validations,
   methods: {
     onClickContinue() {
       this.$router.push({ name: 'requestStudyConfirm' });

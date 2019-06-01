@@ -799,6 +799,14 @@ textarea {
     box-shadow: var(--shadow-outline);
   }
 }
+input[type="text"] {
+  &.valid {
+    border-color: var(--success-darker);
+  }
+  &.invalid {
+    border-color: var(--error-darker);
+  }
+}
 textarea {
   resize: none;
   width: 100%;
