@@ -3,7 +3,7 @@
     v-model="internalValue"
     class="date-picker-control flex-container-row"
     :disabled-attribute="disabledAttribute"
-    popover-visibility="hover"
+    popover-visibility="focus"
     :show-caps="true"
     :show-day-popover="false"
     :theme-styles="themeStyles"
@@ -12,7 +12,10 @@
       <input
         type="text"
         class="input-date-picker flex-fill"
-        :class="'font-size-' + size"
+        :class="{
+          ['font-size-' + size]: true,
+          invalid
+        }"
         :disabled="disabled"
         :name="name"
         :placeholder="placeholder"
@@ -35,6 +38,10 @@ export default {
   name: 'FilterDate',
   props: {
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    invalid: {
       type: Boolean,
       default: false,
     },

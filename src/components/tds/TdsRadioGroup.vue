@@ -1,5 +1,7 @@
 <template>
-  <div class="tds-radio-group flex-container-row mb-s">
+  <div
+    class="tds-radio-group flex-container-row mb-s"
+    :class="{ invalid }">
     <label
       v-for="{ label, sublabel, value } in options"
       :key="value"
@@ -24,6 +26,10 @@
 export default {
   name: 'TdsRadioGroup',
   props: {
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
     name: String,
     options: {
       type: Array,

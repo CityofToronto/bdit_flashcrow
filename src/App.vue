@@ -323,9 +323,14 @@ hr {
   display: inline-block;
   min-width: calc(1em + var(--space-s) * 2);
   padding: var(--space-xs) var(--space-s);
+  text-align: center;
   &.tds-badge-primary {
     background-color: var(--primary-darker);
     color: var(--primary-lighter);
+  }
+  &.tds-badge-success {
+    background-color: var(--success-darker);
+    color: var(--success-lighter);
   }
 }
 

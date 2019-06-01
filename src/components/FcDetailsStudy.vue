@@ -18,8 +18,9 @@
       <div class="form-group flex-1">
         <strong>What days of the week should the study fall on?</strong>
         <TdsButtonGroup
-          v-model="daysOfWeek"
+          v-model="v.daysOfWeek.$model"
           class="font-size-l"
+          :invalid="v.daysOfWeek.$error"
           :name="nameDaysOfWeek"
           :options="[
             { label: 'Su', value: 0 },
@@ -37,7 +38,8 @@
       <div class="form-group flex-fill">
         <strong>What's the duration of your study?</strong>
         <TdsRadioGroup
-          v-model="duration"
+          v-model="v.duration.$model"
+          :invalid="v.duration.$error"
           :name="nameDuration"
           :options="[
             { label: '1 day', sublabel: '24 hours', value: 24 },
@@ -109,10 +111,22 @@
         <strong>Any additional notes you'd like to share?</strong>
         <textarea
           ref="notes"
-          v-model="notes"
+          v-model="v.notes.$model"
           class="full-width"
+          :class="{
+            invalid: v.notes.$error,
+          }"
           :name="nameNotes"
           rows="4"></textarea>
+        <div
+          v-if="v.notes.$error"
+          class="tds-panel tds-panel-error">
+          <i class="fa fa-times-circle"></i>
+          <p>
+            If you have selected Other hours above, please provide additional
+            notes to explain your requirements.
+          </p>
+        </div>
       </div>
     </div>
   </fieldset>
@@ -178,6 +192,7 @@ export default {
           key: 'daysOfWeek',
           value: daysOfWeek,
         });
+        this.v.duration.$touch();
       },
     },
     duration: {
@@ -190,6 +205,7 @@ export default {
           key: 'duration',
           value: duration,
         });
+        this.v.daysOfWeek.$touch();
       },
     },
     hours: {

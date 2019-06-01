@@ -33,9 +33,6 @@ const validations = {
       serviceRequestId: {
         requiredIfHasServiceRequestId: requiredIf(meta => meta.hasServiceRequestId),
       },
-      priority: {
-        required,
-      },
       dueDate: {
         required,
       },
