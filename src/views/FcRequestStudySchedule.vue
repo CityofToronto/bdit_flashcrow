@@ -5,11 +5,13 @@
     </header>
     <section class="flex-fill flex-container-row">
       <div class="flex-cross-scroll">
-        <FcDetailsStudyRequest />
+        <FcDetailsStudyRequest
+          :v="$v.studyRequest.meta" />
         <FcDetailsStudy
           v-for="({ item, meta }, i) in studyRequest.items"
           :key="i"
-          :index="i" />
+          :index="i"
+          :v="$v.studyRequest.items.$each[i].meta" />
       </div>
     </section>
   </div>

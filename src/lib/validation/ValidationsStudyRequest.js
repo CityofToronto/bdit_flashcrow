@@ -33,6 +33,9 @@ const validations = {
       serviceRequestId: {
         requiredIfHasServiceRequestId: requiredIf(meta => meta.hasServiceRequestId),
       },
+      priority: {
+        required,
+      },
       dueDate: {
         required,
       },
@@ -42,6 +45,10 @@ const validations = {
       ccEmails: {
         allTorontoInternal(ccEmails) {
           return ccEmails
+            .trim()
+            .split(',')
+            .map(ccEmail => ccEmail.trim())
+            .filter(ccEmail => ccEmail !== '')
             .every(ccEmail => ccEmail.endsWith('@toronto.ca'));
         },
       },
