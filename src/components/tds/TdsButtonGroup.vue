@@ -1,5 +1,7 @@
 <template>
-  <div class="tds-button-group flex-container-row mb-s">
+  <div
+    class="tds-button-group flex-container-row mb-s"
+    :class="{ invalid }">
     <label
       v-for="{ label, value } in options"
       :key="value"
@@ -19,6 +21,10 @@
 export default {
   name: 'TdsButtonGroup',
   props: {
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
     name: String,
     options: {
       type: Array,
@@ -72,6 +78,9 @@ export default {
       border-color: var(--base-darkest);
       color: var(--base-darkest);
     }
+  }
+  &.invalid > label > input + span {
+    border-color: var(--error);
   }
 }
 </style>

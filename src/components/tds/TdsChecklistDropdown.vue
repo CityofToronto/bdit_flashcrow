@@ -1,5 +1,7 @@
 <template>
-  <TdsButtonDropdown class="tds-checklist-dropdown">
+  <TdsButtonDropdown
+    class="tds-checklist-dropdown"
+    :invalid="invalid">
     <template v-slot:title>
       <slot></slot>
     </template>
@@ -34,6 +36,10 @@ export default {
     TdsButtonDropdown,
   },
   props: {
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
     name: String,
     options: {
       type: Array,
