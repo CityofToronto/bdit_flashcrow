@@ -38,6 +38,9 @@ export default {
     width: calc(100% + 2px);
     z-index: var(--z-index-controls);
   }
+  &.invalid > .dropdown {
+    border-color: var(--error);
+  }
 
   &:focus, &:active, &:hover {
     border-radius: var(--space-s) var(--space-s) 0 0;

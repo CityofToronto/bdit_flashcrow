@@ -73,10 +73,11 @@
     </div>
     <div class="form-group mt-xl">
       <strong>When do you need the data by?</strong>
-      <div class="inner-container mb-s">
+      <div class="inner-container">
         <DatePicker
           v-model="v.dueDate.$model"
           :invalid="v.dueDate.$error"
+          class="mb-m"
           mode="single"
           name="dueDate"
           :pane-width="480"
