@@ -18,8 +18,9 @@
       <div class="form-group flex-1">
         <strong>What days of the week should the study fall on?</strong>
         <TdsButtonGroup
-          v-model="daysOfWeek"
+          v-model="v.daysOfWeek.$model"
           class="font-size-l"
+          :invalid="v.daysOfWeek.$error"
           :name="nameDaysOfWeek"
           :options="[
             { label: 'Su', value: 0 },
@@ -31,13 +32,26 @@
             { label: 'Sa', value: 6 },
           ]"
           type="checkbox" />
+        <div
+          v-if="v.daysOfWeek.$error"
+          class="tds-panel tds-panel-error">
+          <i class="fa fa-times-circle"></i>
+          <p v-if="!v.daysOfWeek.required">
+            Please select one or more days of the week.
+          </p>
+          <p v-else-if="!v.daysOfWeek.needsValidDuration">
+            Please select {{duration / 24}} consecutive days for the study,
+            or reduce the requested duration.
+          </p>
+        </div>
       </div>
     </div>
     <div v-if="studyType.automatic" class="flex-container-row">
       <div class="form-group flex-fill">
         <strong>What's the duration of your study?</strong>
         <TdsRadioGroup
-          v-model="duration"
+          v-model="v.duration.$model"
+          :invalid="v.duration.$error"
           :name="nameDuration"
           :options="[
             { label: '1 day', sublabel: '24 hours', value: 24 },
@@ -47,6 +61,15 @@
             { label: '5 days', sublabel: '120 hours', value: 120 },
             { label: '1 week', sublabel: '168 hours', value: 168 },
           ]" />
+          <div
+            v-if="v.duration.$error"
+            class="tds-panel tds-panel-error">
+            <i class="fa fa-times-circle"></i>
+            <p>
+              Please select {{duration / 24}} consecutive days for the study,
+              or reduce the requested duration.
+            </p>
+          </div>
       </div>
     </div>
     <div v-else class="flex-container-row">
@@ -109,9 +132,22 @@
         <strong>Any additional notes you'd like to share?</strong>
         <textarea
           ref="notes"
-          v-model="notes"
+          v-model="v.notes.$model"
+          class="full-width"
+          :class="{
+            invalid: v.notes.$error,
+          }"
           :name="nameNotes"
           rows="4"></textarea>
+        <div
+          v-if="v.notes.$error"
+          class="tds-panel tds-panel-error">
+          <i class="fa fa-times-circle"></i>
+          <p>
+            If you have selected Other hours above, please provide additional
+            notes to explain your requirements.
+          </p>
+        </div>
       </div>
     </div>
   </fieldset>
@@ -177,6 +213,7 @@ export default {
           key: 'daysOfWeek',
           value: daysOfWeek,
         });
+        this.v.duration.$touch();
       },
     },
     duration: {
@@ -189,6 +226,7 @@ export default {
           key: 'duration',
           value: duration,
         });
+        this.v.daysOfWeek.$touch();
       },
     },
     hours: {

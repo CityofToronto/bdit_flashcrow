@@ -4,8 +4,9 @@
       <strong>Do you have a service request number?</strong>
       <div class="inner-container">
         <TdsButtonGroup
-          v-model="hasServiceRequestId"
+          v-model="v.hasServiceRequestId.$model"
           class="font-size-l"
+          :invalid="v.hasServiceRequestId.$error"
           name="hasServiceRequestId"
           :options="[
             { label: 'Yes', value: true },
@@ -19,12 +20,24 @@
         <span>Enter service request number:</span>
         <div class="inner-container">
           <input
-            v-model="serviceRequestId"
-            class="font-size-l full-width"
+            v-model="v.serviceRequestId.$model"
+            class="font-size-l full-width mb-m"
+            :class="{
+              invalid: v.serviceRequestId.$error,
+            }"
+            :disabled="!hasServiceRequestId"
             name="serviceRequestId"
             type="text" />
         </div>
       </label>
+      <div
+        v-if="v.serviceRequestId.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please enter your service request number.
+        </p>
+      </div>
     </div>
     <div class="form-group mt-xl">
       <strong>What is the priority of your request?</strong>
@@ -60,9 +73,11 @@
     </div>
     <div class="form-group mt-xl">
       <strong>When do you need the data by?</strong>
-      <div class="inner-container mb-s">
+      <div class="inner-container">
         <DatePicker
-          v-model="dueDate"
+          v-model="v.dueDate.$model"
+          :invalid="v.dueDate.$error"
+          class="mb-m"
           mode="single"
           name="dueDate"
           :pane-width="480"
@@ -71,20 +86,44 @@
           v-bind="attrsDueDate">
         </DatePicker>
       </div>
+      <div
+        v-if="v.dueDate.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please select a due date for this request.
+        </p>
+      </div>
     </div>
     <div class="form-group mt-xl">
       <strong>What's the reason for your request?</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
-          v-model="reasons"
-          class="font-size-l full-width"
+          v-model="v.reasons.$model"
+          class="font-size-l full-width mb-m text-left"
+          :class="{
+            'tds-button-success': reasons.length > 0,
+          }"
+          :invalid="v.reasons.$error"
           name="reasons"
           :options="REASONS">
           <span>
             Reasons for Request
-            <span class="tds-badge">{{reasons.length}}</span>
+            <span
+              class="tds-badge"
+              :class="{
+                'tds-badge-success': reasons.length > 0,
+              }">{{reasons.length}}</span>
           </span>
         </TdsChecklistDropdown>
+      </div>
+      <div
+        v-if="v.reasons.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please select one or more reasons for this request.
+        </p>
       </div>
     </div>
     <div class="form-group mt-xl">
@@ -92,12 +131,24 @@
         <span>Any staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
           <input
-            v-model="ccEmails"
-            class="font-size-l full-width"
+            v-model.lazy="v.ccEmails.$model"
+            class="font-size-l full-width mb-m"
+            :class="{
+              invalid: v.ccEmails.$error,
+            }"
             name="ccEmails"
             type="text" />
         </div>
       </label>
+      <div
+        v-if="v.ccEmails.$error"
+        class="inner-container tds-panel tds-panel-error">
+        <i class="fa fa-times-circle"></i>
+        <p>
+          Please enter a comma-separated list of valid
+          <strong>@toronto.ca</strong> email addresses.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -175,6 +226,9 @@ export default {
           key: 'hasServiceRequestId',
           value: hasServiceRequestId,
         });
+        if (!hasServiceRequestId) {
+          this.serviceRequestId = null;
+        }
       },
     },
     priority: {

@@ -1,5 +1,7 @@
 <template>
-  <button class="tds-button-dropdown">
+  <button
+    class="tds-button-dropdown"
+    :class="{ invalid }">
     <slot name="title"></slot>
     <div class="dropdown shadow-3 text-left">
       <slot name="dropdown"></slot>
@@ -10,6 +12,12 @@
 <script>
 export default {
   name: 'TdsButtonDropdown',
+  props: {
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 
@@ -29,6 +37,9 @@ export default {
     visibility: hidden;
     width: calc(100% + 2px);
     z-index: var(--z-index-controls);
+  }
+  &.invalid > .dropdown {
+    border-color: var(--error);
   }
 
   &:focus, &:active, &:hover {
