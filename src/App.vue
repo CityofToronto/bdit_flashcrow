@@ -756,6 +756,12 @@ button {
     border-color: var(--warning-darker);
     color: var(--warning-darker);
   }
+  &.invalid {
+    border-color: var(--error);
+    &:not(:disabled):hover {
+      border-color: var(--error-dark);
+    }
+  }
   &:disabled {
     background-color: var(--disabled-light);
     border-color: var(--disabled-dark);

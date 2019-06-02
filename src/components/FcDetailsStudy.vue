@@ -32,6 +32,18 @@
             { label: 'Sa', value: 6 },
           ]"
           type="checkbox" />
+        <div
+          v-if="v.daysOfWeek.$error"
+          class="tds-panel tds-panel-error">
+          <i class="fa fa-times-circle"></i>
+          <p v-if="!v.daysOfWeek.required">
+            Please select one or more days of the week.
+          </p>
+          <p v-else-if="!v.daysOfWeek.needsValidDuration">
+            Please select {{duration / 24}} consecutive days for the study,
+            or reduce the requested duration.
+          </p>
+        </div>
       </div>
     </div>
     <div v-if="studyType.automatic" class="flex-container-row">
@@ -49,6 +61,15 @@
             { label: '5 days', sublabel: '120 hours', value: 120 },
             { label: '1 week', sublabel: '168 hours', value: 168 },
           ]" />
+          <div
+            v-if="v.duration.$error"
+            class="tds-panel tds-panel-error">
+            <i class="fa fa-times-circle"></i>
+            <p>
+              Please select {{duration / 24}} consecutive days for the study,
+              or reduce the requested duration.
+            </p>
+          </div>
       </div>
     </div>
     <div v-else class="flex-container-row">

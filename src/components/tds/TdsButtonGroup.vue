@@ -79,5 +79,8 @@ export default {
       color: var(--base-darkest);
     }
   }
+  &.invalid > label > input + span {
+    border-color: var(--error);
+  }
 }
 </style>
