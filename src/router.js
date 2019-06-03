@@ -83,9 +83,17 @@ const router = new Router({
       }],
     },
     {
-      path: '/requests/study/track',
-      name: 'trackRequests',
-      component: () => import(/* webpackChunkName: "home" */ './views/LayoutTrackRequests.vue'),
+      path: '/requests/track',
+      name: 'requestsTrack',
+      redirect: { name: 'requestsTrackByType', params: { type: 'inReview' } },
+    }, {
+      path: '/requests/track/byType/:type',
+      name: 'requestsTrackByType',
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackByType.vue'),
+    }, {
+      path: '/byId/:id',
+      name: 'requestsTrackById',
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackById.vue'),
     },
   ],
 });

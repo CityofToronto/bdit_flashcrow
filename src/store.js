@@ -44,6 +44,8 @@ export default new Vuex.Store({
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
+    // FILTERING REQUESTS
+    filterRequestStatus: [...Constants.REQUEST_STATUS_META.keys()],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
@@ -111,6 +113,10 @@ export default new Vuex.Store({
     },
     setFilterDate(state, filterDate) {
       Vue.set(state, 'filterDate', filterDate);
+    },
+    // FILTERING REQUESTS
+    setFilterRequestStatus(state, filterRequestStatus) {
+      Vue.set(state, 'filterRequestStatus', filterRequestStatus);
     },
     // MAP MODE
     setShowMap(state, showMap) {
