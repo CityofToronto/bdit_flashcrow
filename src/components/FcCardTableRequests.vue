@@ -22,7 +22,7 @@
     <template v-slot:LOCATION="{ item }">
       <span>Kingston and Lee</span>
     </template>
-    <template v-slot:STUDY_TYPE="{ item, children }">
+    <template v-slot:STUDY_TYPES="{ item, children }">
       <span>TODO: item type</span>
     </template>
     <template v-slot:DATE="{ item }">
@@ -35,12 +35,16 @@
       <span>TODO: requester</span>
     </template>
     <template v-slot:STATUS="{ item }">
-      <span>TODO: status</span>
+      <span
+        class="full-width tds-label uppercase"
+        :class="'tds-label-' + REQUEST_STATUS_META[item.status].class">
+        {{REQUEST_STATUS_META[item.status].label}}
+      </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
         <button
-          class="tds-button-secondary font-size-l"
+          class="tds-button-secondary font-size-m"
           @click="$emit('action-item', {
             type: 'review',
             item,
@@ -48,7 +52,7 @@
           <i class="fa fa-eye"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l"
+          class="tds-button-secondary font-size-m"
           @click="$emit('action-item', {
             type: 'accept',
             item,
@@ -56,7 +60,7 @@
           <i class="fa fa-check-square"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l"
+          class="tds-button-secondary font-size-m"
           @click="$emit('action-item', {
             type: 'flag',
             item,
@@ -64,7 +68,7 @@
           <i class="fa fa-flag"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l"
+          class="tds-button-secondary font-size-m"
           @click="$emit('action-item', {
             type: 'assign',
             item,
@@ -72,7 +76,7 @@
           <i class="fa fa-user"></i>
         </button>
         <button
-          class="tds-button-secondary font-size-l"
+          class="tds-button-secondary font-size-m"
           @click="$emit('action-item', {
             type: 'export',
             item,
@@ -103,7 +107,7 @@ export default {
     }, {
       name: 'ID',
       sortable: true,
-      title: 'Ref ID#',
+      title: 'ID#',
     }, {
       icon: 'map-marker-alt',
       name: 'LOCATION',
@@ -135,9 +139,19 @@ export default {
       sortBy: 'PRIORITY',
       sortDirection: Constants.SortDirection.ASC,
       sortKeys: Constants.SortKeys.Requests,
-      Status: Constants.Status,
-      STATUS_META: Constants.STATUS_META,
+      RequestStatus: Constants.RequestStatus,
+      REQUEST_STATUS_META: Constants.REQUEST_STATUS_META,
     };
+  },
+  computed: {
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
+    },
   },
 };
 </script>

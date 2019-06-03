@@ -8,6 +8,7 @@ import SampleData from '@/lib/SampleData';
 Vue.use(Vuex);
 
 const COUNTS = SampleData.randomCounts();
+const REQUESTS = SampleData.randomRequests();
 
 function makeStudyItem(studyType) {
   return {
@@ -23,6 +24,7 @@ function makeStudyItem(studyType) {
 }
 
 export default new Vuex.Store({
+  // TODO: organize state below
   state: {
     // modal
     modal: null,
@@ -46,6 +48,8 @@ export default new Vuex.Store({
     filterDate: null,
     // FILTERING REQUESTS
     filterRequestStatus: [],
+    // REQUESTS
+    requests: REQUESTS,
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
