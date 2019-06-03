@@ -351,7 +351,7 @@ hr {
   color: var(--base-lighter);
   display: inline-block;
   min-width: calc(1em + var(--space-s) * 2);
-  padding: var(--space-xs) var(--space-s);
+  padding: 0 var(--space-s);
   text-align: center;
   &.tds-badge-primary {
     background-color: var(--primary-darker);
@@ -414,6 +414,9 @@ hr {
   position: absolute;
   width: 1px;
   word-wrap: normal;
+}
+.full-height {
+  height: 100%;
 }
 .full-width {
   width: 100%;
@@ -557,6 +560,11 @@ hr {
 }
 .py-xl {
   padding: var(--space-xl) 0;
+}
+
+.mx-m {
+  margin-left: var(--space-m);
+  margin-right: var(--space-m);
 }
 
 .my-m {
