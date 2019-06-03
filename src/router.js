@@ -96,12 +96,6 @@ const router = new Router({
       path: '/requests/track/byStatus',
       name: 'requestsTrackByStatus',
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackByStatus.vue'),
-      beforeEnter(to, from, next) {
-        let { status } = to.query;
-        status = status || [];
-        store.commit('setFilterRequestStatus', status);
-        next();
-      },
     }, {
       path: '/byId/:id',
       name: 'requestsTrackById',
