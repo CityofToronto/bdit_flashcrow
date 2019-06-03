@@ -273,10 +273,6 @@ export default {
 </script>
 
 <style lang="postcss">
-.inner-container {
-  width: 480px;
-  margin: 0 auto;
-}
 .fc-details-study-request {
   --outer-width: 640px;
   --inner-width: 480px;

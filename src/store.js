@@ -60,23 +60,20 @@ export default new Vuex.Store({
       return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
     },
     // ACTIVE STUDY REQUEST
-    studyTypesUnselectedFirst(state) {
+    studyTypesWarnDuplicates(state) {
       if (state.studyRequest === null) {
         return Constants.COUNT_TYPES;
       }
-      const studyTypesSelectedSet = new Set(
+      const studyTypesSelected = new Set(
         state.studyRequest.items.map(({ item }) => item),
       );
-      const studyTypesUnselected = [];
-      const studyTypesSelected = [];
-      Constants.COUNT_TYPES.forEach((countType) => {
-        if (studyTypesSelectedSet.has(countType.value)) {
-          studyTypesSelected.push(countType);
-        } else {
-          studyTypesUnselected.push(countType);
+      return Constants.COUNT_TYPES.map(({ label, value }) => {
+        const studyType = { label, value };
+        if (studyTypesSelected.has(studyType)) {
+          studyType.icon = 'exclamation-triangle';
         }
+        return studyType;
       });
-      return studyTypesUnselected.concat(studyTypesSelected);
     },
   },
   mutations: {

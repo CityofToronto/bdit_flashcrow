@@ -40,15 +40,11 @@
         N/A
       </span>
     </template>
-    <template v-slot:STATUS="{ item, isChild, children }">
-      <span v-if="isChild">Historical</span>
+    <template v-slot:STATUS="{ item }">
       <span
-        v-else
-        :class="{
-          'no-existing-count': item.status === Status.NO_EXISTING_COUNT,
-        }">
-        <i v-if="item.status === Status.NO_EXISTING_COUNT" class="fa fa-exclamation-triangle"></i>
-        <span> {{STATUS_META[item.status]}}</span>
+        class="full-width tds-label uppercase"
+        :class="'tds-label-' + STATUS_META[item.status].class">
+        {{STATUS_META[item.status].label}}
       </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
@@ -62,6 +58,15 @@
             options: { formats: ['CSV'] },
           })">
           <i class="fa fa-download"></i>
+        </button>
+        <button
+          class="tds-button-secondary font-size-l"
+          disabled
+          @click="$emit('action-item', {
+            type: 'print',
+            item,
+          })">
+          <i class="fa fa-print"></i>
         </button>
         <button
           class="tds-button-secondary font-size-l"
