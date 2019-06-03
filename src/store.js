@@ -45,7 +45,7 @@ export default new Vuex.Store({
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
     // FILTERING REQUESTS
-    filterRequestStatus: [...Constants.REQUEST_STATUS_META.keys()],
+    filterRequestStatus: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST

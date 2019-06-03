@@ -1,6 +1,7 @@
 <template>
   <TdsChecklistDropdown
     class="fc-filter-request-status"
+    :class="{ 'tds-button-success': active }"
     name="requestStatus"
     :options="options"
     v-model="filterRequestStatus">
@@ -8,9 +9,9 @@
       Request Status
       <span
         class="tds-badge"
-        :class="{
-          'tds-badge-success': filterRequestStatus.length > 0,
-        }">{{filterRequestStatus.length}}</span>
+        :class="{ 'tds-badge-success': active }">
+        {{filterRequestStatus.length}}
+      </span>
     </span>
   </TdsChecklistDropdown>
 </template>
@@ -23,6 +24,12 @@ export default {
   name: 'FcFilterRequestStatus',
   components: {
     TdsChecklistDropdown,
+  },
+  props: {
+    active: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     const options = Constants.REQUEST_STATUS_META
