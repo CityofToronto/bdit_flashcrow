@@ -4,7 +4,14 @@
     name="requestStatus"
     :options="options"
     v-model="filterRequestStatus">
-    <span>Request Status ({{filterRequestStatus.length}})</span>
+    <span>
+      Request Status
+      <span
+        class="tds-badge"
+        :class="{
+          'tds-badge-success': filterRequestStatus.length > 0,
+        }">{{filterRequestStatus.length}}</span>
+    </span>
   </TdsChecklistDropdown>
 </template>
 
