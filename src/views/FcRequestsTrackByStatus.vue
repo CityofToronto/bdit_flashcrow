@@ -105,10 +105,22 @@ export default {
     },
     ...mapState(['filterRequestStatus']),
   },
+  watch: {
+    filterRequestStatus() {
+      const status = this.filterRequestStatus;
+      this.$router.replace({
+        name: 'requestsTrackByStatus',
+        query: { status },
+      });
+    },
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.syncFromRoute(to);
+    });
+  },
   beforeRouteUpdate(to, from, next) {
-    let { status } = to.query;
-    status = status || [];
-    this.setFilterRequestStatus(status);
+    this.syncFromRoute(to);
     next();
   },
   methods: {
@@ -162,6 +174,15 @@ export default {
       } else {
         this.selection = this.selectableIds;
       }
+    },
+    syncFromRoute(to) {
+      let { status } = to.query;
+      status = status || [];
+      if (!Array.isArray(status)) {
+        status = [status];
+      }
+      status = status.map(i => parseInt(i, 10));
+      this.setFilterRequestStatus(status);
     },
     ...mapActions(['newStudyRequest']),
     ...mapMutations([
