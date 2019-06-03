@@ -15,7 +15,7 @@
             <td :colspan="numTableColumns - 1">
               <TdsActionDropdown
                 class="full-width font-size-l"
-                :options="studyTypesUnselectedFirst"
+                :options="studyTypesWarnDuplicates"
                 @action-selected="onAddStudy">
                 <span>Request another study</span>
               </TdsActionDropdown>
@@ -72,7 +72,7 @@ export default {
       });
     },
     ...mapGetters([
-      'studyTypesUnselectedFirst',
+      'studyTypesWarnDuplicates',
     ]),
     ...mapState([
       'counts',

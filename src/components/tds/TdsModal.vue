@@ -1,15 +1,15 @@
 <template>
   <div class="tds-modal-container">
     <div class="tds-modal-backdrop"></div>
-    <aside class="tds-modal shadow-2">
+    <aside class="tds-modal flex-container-column shadow-2">
       <label class="tds-modal-close" @click="$emit('modal-close')">&times;</label>
       <header>
         <slot name="header"></slot>
       </header>
-      <div class="tds-modal-content">
+      <div class="tds-modal-content flex-fill">
         <slot name="content"></slot>
       </div>
-      <footer>
+      <footer v-if="$scopedSlots.footer">
         <slot name="footer"></slot>
       </footer>
     </aside>
@@ -30,6 +30,8 @@ export default {
 
 <style lang="postcss">
 .tds-modal-container {
+  --modal-size-m: 480px;
+
   position: relative;
   .tds-modal-backdrop {
     background-color: var(--modal-backdrop);
@@ -45,8 +47,6 @@ export default {
   }
   .tds-modal {
     background-color: var(--base-lightest);
-    display: flex;
-    flex-direction: column;
     height: auto;
     left: 50%;
     max-height: 100%;
@@ -58,7 +58,7 @@ export default {
     top: 50%;
     transform: translate(-50%, -50%);
     visibility: visible;
-    width: 400px;
+    width: var(--modal-size-m);
     z-index: var(--z-index-modal-content);
     & > .tds-modal-close {
       color: var(--base);
@@ -76,14 +76,13 @@ export default {
       }
     }
     & > header {
-      border-bottom: 1px solid var(--base);
+      border-bottom: var(--border-default);
     }
     & > .tds-modal-content {
-      flex: 1;
       min-height: 120px;
     }
     & > footer {
-      border-top: 1px solid var(--base);
+      border-top: var(--border-default);
       display: flex;
       flex-direction: row;
       justify-content: space-between;

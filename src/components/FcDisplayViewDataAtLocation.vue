@@ -158,10 +158,11 @@ export default {
       if (counts.length === 0) {
         return;
       }
+      const [item] = items;
       this.setModal({
         component: 'FcModalShowReports',
         data: {
-          items,
+          item,
         },
       });
     },

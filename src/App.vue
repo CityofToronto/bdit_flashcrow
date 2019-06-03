@@ -293,6 +293,9 @@ hr {
   align-self: stretch;
   margin: var(--space-s) 0;
 }
+.uppercase {
+  text-transform: uppercase;
+}
 .font-size-xs {
   font-size: var(--font-size-xs);
 }
@@ -315,14 +318,40 @@ hr {
   color: var(--disabled-dark);
 }
 
+/* TEXT LABELS */
+.tds-label {
+  background-color: var(--base-light);
+  border-radius: var(--space-m);
+  color: var(--base-darker);
+  display: inline-block;
+  padding: var(--space-s) var(--space-m);
+  text-align: center;
+  &.tds-label-success {
+    background-color: var(--success-light);
+    color: var(--success-darker);
+  }
+  &.tds-label-info {
+    background-color: var(--info-light);
+    color: var(--info-darker);
+  }
+  &.tds-label-warning {
+    background-color: var(--warning-light);
+    color: var(--warning-darker);
+  }
+  &.tds-label-error {
+    background-color: var(--error-light);
+    color: var(--error-darker);
+  }
+}
+
 /* TEXT BADGES */
 .tds-badge {
   background-color: var(--base-darker);
   border-radius: var(--space-m);
-  color: var(--base-lightest);
+  color: var(--base-lighter);
   display: inline-block;
   min-width: calc(1em + var(--space-s) * 2);
-  padding: var(--space-xs) var(--space-s);
+  padding: 0 var(--space-s);
   text-align: center;
   &.tds-badge-primary {
     background-color: var(--primary-darker);
@@ -385,6 +414,9 @@ hr {
   position: absolute;
   width: 1px;
   word-wrap: normal;
+}
+.full-height {
+  height: 100%;
 }
 .full-width {
   width: 100%;
@@ -528,6 +560,11 @@ hr {
 }
 .py-xl {
   padding: var(--space-xl) 0;
+}
+
+.mx-m {
+  margin-left: var(--space-m);
+  margin-right: var(--space-m);
 }
 
 .my-m {
