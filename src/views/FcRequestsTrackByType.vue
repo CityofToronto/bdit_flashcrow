@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-container-column flex-fill">
-    <TdsTopBar>
+  <div class="fc-requests-track-by-type flex-container-column flex-fill">
+    <header class="flex-container-row">
       <label class="tds-checkbox">
         <input
           type="checkbox"
@@ -30,7 +30,7 @@
       <button class="tds-button-secondary">
         <i class="fa fa-external-link-square-alt"></i>
       </button>
-    </TdsTopBar>
+    </header>
     <FcCardTableRequests
       :sections="sections"
       v-model="selection"
@@ -43,14 +43,12 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
 import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
-import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
 export default {
   name: 'FcRequestsTrackByType',
   components: {
     FcCardTableRequests,
     FcFilterRequestStatus,
-    TdsTopBar,
   },
   data() {
     return {
@@ -136,5 +134,23 @@ export default {
 </script>
 
 <style lang="postcss">
-
+.fc-requests-track-by-type {
+  max-height: 100%;
+  overflow: auto;
+  padding: var(--space-m) var(--space-xl);
+  & > header {
+    align-items: center;
+    background-color: var(--base-lighter);
+    padding: var(--space-m) var(--space-l);
+    & > * {
+      margin-right: var(--space-m);
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    & > button.tds-button-secondary:not(:disabled):hover {
+      background-color: var(--base-light);
+    }
+  }
+}
 </style>
