@@ -1,6 +1,6 @@
 <template>
   <FcCardTable
-    class="fc-card-table-counts"
+    class="fc-card-table-requests"
     :columns="columns"
     expandable
     :sections="sections"
@@ -16,65 +16,68 @@
           v-model="internalValue" />
       </label>
     </template>
-    <template v-slot:STUDY_TYPE="{ item }">
-      <a
-        v-if="item.status !== Status.NO_EXISTING_COUNT"
-        href="#"
-        @click.prevent="$emit('action-item', {
-          type: 'show-reports',
-          item,
-        })">
-        {{item.type.label}}
-      </a>
-      <span v-else>{{item.type.label}}</span>
+    <template v-slot:ID="{ item }">
+      <span>{{item.id}}</span>
     </template>
-    <template v-slot:DATE="{ item, children }">
-      <span v-if="item.date">
-        <span>{{item.date | date}}</span>
-        <template v-if="children !== null && children.length > 0">
-          <br />
-          <small class="text-muted">+{{children.length}} older</small>
-        </template>
-      </span>
-      <span v-else class="text-muted">
-        N/A
-      </span>
+    <template v-slot:LOCATION="{ item }">
+      <span>Kingston and Lee</span>
+    </template>
+    <template v-slot:STUDY_TYPE="{ item, children }">
+      <span>TODO: item type</span>
+    </template>
+    <template v-slot:DATE="{ item }">
+      <span>{{item.dueDate | date}}</span>
+    </template>
+    <template v-slot:PRIORITY="{ item }">
+      <span>{{item.priority}}</span>
+    </template>
+    <template v-slot:REQUESTER="{ item }">
+      <span>TODO: requester</span>
     </template>
     <template v-slot:STATUS="{ item }">
-      <span
-        class="full-width tds-label uppercase"
-        :class="'tds-label-' + STATUS_META[item.status].class">
-        {{STATUS_META[item.status].label}}
-      </span>
+      <span>TODO: status</span>
     </template>
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          :disabled="item.status === Status.NO_EXISTING_COUNT"
           @click="$emit('action-item', {
-            type: 'download',
-            item,
-            options: { formats: ['CSV'] },
-          })">
-          <i class="fa fa-download"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          disabled
-          @click="$emit('action-item', {
-            type: 'print',
+            type: 'review',
             item,
           })">
-          <i class="fa fa-print"></i>
+          <i class="fa fa-eye"></i>
         </button>
         <button
           class="tds-button-secondary font-size-l"
           @click="$emit('action-item', {
-            type: 'request-study',
+            type: 'accept',
             item,
           })">
-          <i class="fa fa-plus-circle"></i>
+          <i class="fa fa-check-square"></i>
+        </button>
+        <button
+          class="tds-button-secondary font-size-l"
+          @click="$emit('action-item', {
+            type: 'flag',
+            item,
+          })">
+          <i class="fa fa-flag"></i>
+        </button>
+        <button
+          class="tds-button-secondary font-size-l"
+          @click="$emit('action-item', {
+            type: 'assign',
+            item,
+          })">
+          <i class="fa fa-user"></i>
+        </button>
+        <button
+          class="tds-button-secondary font-size-l"
+          @click="$emit('action-item', {
+            type: 'export',
+            item,
+          })">
+          <i class="fa fa-external-link-square-alt"></i>
         </button>
       </div>
     </template>
@@ -86,7 +89,7 @@ import FcCardTable from '@/components/FcCardTable.vue';
 import Constants from '@/lib/Constants';
 
 export default {
-  name: 'FcCardTableCounts',
+  name: 'FcCardTableRequests',
   components: {
     FcCardTable,
   },
@@ -98,13 +101,28 @@ export default {
     const columns = [{
       name: 'SELECTION',
     }, {
-      name: 'STUDY_TYPE',
+      name: 'ID',
       sortable: true,
-      title: 'Study Type',
+      title: 'Ref ID#',
+    }, {
+      icon: 'map-marker-alt',
+      name: 'LOCATION',
+      sortable: true,
+      title: 'Location',
     }, {
       name: 'DATE',
       sortable: true,
-      title: 'Date',
+      title: 'Due Date',
+    }, {
+      icon: 'exclamation',
+      name: 'PRIORITY',
+      sortable: true,
+      title: 'Priority',
+    }, {
+      icon: 'envelope',
+      name: 'REQUESTER',
+      sortable: true,
+      title: 'Requester',
     }, {
       name: 'STATUS',
       sortable: true,
@@ -114,28 +132,18 @@ export default {
     }];
     return {
       columns,
-      sortBy: 'STUDY_TYPE',
+      sortBy: 'PRIORITY',
       sortDirection: Constants.SortDirection.ASC,
-      sortKeys: Constants.SortKeys.Counts,
+      sortKeys: Constants.SortKeys.Requests,
       Status: Constants.Status,
       STATUS_META: Constants.STATUS_META,
     };
-  },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
   },
 };
 </script>
 
 <style lang="postcss">
-.fc-card-table-counts {
+.fc-card-table-requests {
   .cell-actions {
     opacity: 0;
     & > button:not(:last-child) {

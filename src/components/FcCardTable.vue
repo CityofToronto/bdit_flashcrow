@@ -16,7 +16,11 @@
           class="font-size-xl text-left"
           :class="column.headerClasses"
           @click="onClickColumnHeader(column)">
-          <span>{{column.title}}</span>
+          <i
+            v-if="column.icon !== null"
+            class="fa"
+            :class="'fa-' + column.icon"></i>
+          <span> {{column.title}}</span>
           <i
             v-if="column.sortable"
             class="fa"
@@ -144,7 +148,8 @@ export default {
     columnsNormalized() {
       return this.columns.map((column) => {
         const { name } = column;
-        let { title } = column;
+        let { icon, title } = column;
+        icon = icon || null;
         title = title || ' ';
 
         const sortKey = this.sortKeys[name] || null;
@@ -154,6 +159,7 @@ export default {
 
         return {
           headerClasses,
+          icon,
           name,
           sortable,
           sorted,
@@ -224,7 +230,7 @@ export default {
       & > span {
         vertical-align: bottom;
       }
-      & > i {
+      & > i:last-child {
         float: right;
         vertical-align: bottom;
       }
