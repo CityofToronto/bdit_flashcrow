@@ -26,8 +26,8 @@ const REASONS = [
 
 const RequestStatus = {
   REQUESTED: 0,
-  REVIEWED: 1,
-  FLAGGED: 2,
+  FLAGGED: 1,
+  REVIEWED: 2,
   SUBMITTED: 3,
   SCHEDULED: 4,
   DATA_READY: 5,

@@ -7,7 +7,7 @@
           name: 'requestsTrackByStatus',
           query: { status: [RequestStatus.REQUESTED, RequestStatus.FLAGGED] },
         }">In Review
-        <span class="tds-badge">10</span>
+        <span class="tds-badge">{{numInReview}}</span>
       </router-link>
       <router-link
         class="ml-xl py-s"
@@ -15,7 +15,7 @@
           name: 'requestsTrackByStatus',
           query: { status: [RequestStatus.REVIEWED] },
         }">To Submit
-        <span class="tds-badge">30</span>
+        <span class="tds-badge">{{numToSubmit}}</span>
       </router-link>
       <router-link
         class="ml-xl py-s"
@@ -23,7 +23,7 @@
           name: 'requestsTrackByStatus',
           query: { status: [RequestStatus.SUBMITTED, RequestStatus.SCHEDULED] },
         }">In Progress
-        <span class="tds-badge">50</span>
+        <span class="tds-badge">{{numInProgress}}</span>
       </router-link>
       <router-link
         class="ml-xl py-s"
@@ -75,6 +75,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
 import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
+import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
 export default {
@@ -90,8 +91,51 @@ export default {
     };
   },
   computed: {
+    numInProgress() {
+      const statii = [
+        Constants.RequestStatus.SUBMITTED,
+        Constants.RequestStatus.SCHEDULED,
+      ];
+      return this.requests
+        .filter(({ status }) => statii.includes(status))
+        .length;
+    },
+    numInReview() {
+      const statii = [
+        Constants.RequestStatus.REQUESTED,
+        Constants.RequestStatus.FLAGGED,
+      ];
+      return this.requests
+        .filter(({ status }) => statii.includes(status))
+        .length;
+    },
+    numToSubmit() {
+      const statii = [Constants.RequestStatus.REVIEWED];
+      return this.requests
+        .filter(({ status }) => statii.includes(status))
+        .length;
+    },
     sections() {
-      return [];
+      const sections = this.requests.map(({
+        id,
+        location,
+        dueDate,
+        priority,
+        requestedBy,
+        status,
+        counts,
+      }) => {
+        const item = {
+          id,
+          location,
+          dueDate,
+          priority,
+          requestedBy,
+          status,
+        };
+        return { item, children: counts };
+      });
+      return sections.filter(({ item }) => this.filterRequestStatus.includes(item.status));
     },
     selectableIds() {
       return this.sections.map(({ item }) => item.id);
@@ -103,11 +147,14 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
-    ...mapState(['filterRequestStatus']),
+    ...mapState([
+      'filterRequestStatus',
+      'requests',
+    ]),
   },
   watch: {
     filterRequestStatus() {
-      const status = this.filterRequestStatus;
+      const status = ArrayUtils.sortBy(this.filterRequestStatus, x => x);
       this.$router.replace({
         name: 'requestsTrackByStatus',
         query: { status },
