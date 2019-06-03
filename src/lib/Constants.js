@@ -46,11 +46,11 @@ const Status = {
 };
 
 const STATUS_META = [
-  'Recent',
-  '3 years+',
-  '5 years+',
-  'No existing count',
-  'Request in progress',
+  { label: 'Recent', class: 'success' },
+  { label: '3 years+', class: 'warning' },
+  { label: '5 years+', class: 'warning' },
+  { label: 'None existing', class: 'error' },
+  { label: 'In progress', class: 'info' },
 ];
 
 export default {
