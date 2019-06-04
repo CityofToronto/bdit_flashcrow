@@ -17,7 +17,10 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapState, mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
+
+import apiFetch from '@/lib/ApiFetch';
+import FunctionUtils from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -25,6 +28,7 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
 const ZOOM_TORONTO = 10;
+const ZOOM_MIN_COUNTS = 15;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
 
@@ -151,7 +155,7 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
-      this.map.on('move', this.updateCoordinates.bind(this));
+      this.map.on('move', this.onMapMove.bind(this));
       this.easeToLocation();
       this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
       this.map.on('mousemove', 'intersections', this.elementHover.bind(this));
@@ -188,6 +192,36 @@ export default {
         });
       }
     },
+    fetchVisibleCounts(bounds) {
+      const xmin = bounds.getWest();
+      const ymin = bounds.getSouth();
+      const xmax = bounds.getEast();
+      const ymax = bounds.getNorth();
+      const data = {
+        xmin,
+        ymin,
+        xmax,
+        ymax,
+      };
+      const options = { data };
+      return apiFetch('/counts/byBoundingBox', options)
+        .then(counts => counts.map((count) => {
+          const countResult = Object.assign({}, count);
+          countResult.date = new Date(countResult.date);
+          return countResult;
+        }));
+    },
+    onMapMove: FunctionUtils.debounce(function onMapMove() {
+      const { lat, lng } = this.map.getCenter();
+      const zoom = this.map.getZoom();
+      this.coordinates = { lat, lng, zoom };
+
+      if (zoom >= ZOOM_MIN_COUNTS) {
+        const bounds = this.map.getBounds();
+        this.fetchVisibleCounts(bounds)
+          .then(result => console.log(result));
+      }
+    }, 250),
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -195,11 +229,6 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
-    },
-    updateCoordinates() {
-      const { lat, lng } = this.map.getCenter();
-      const zoom = this.map.getZoom();
-      this.coordinates = { lat, lng, zoom };
     },
     intersectionPopup(e) {
       new mapboxgl.Popup()

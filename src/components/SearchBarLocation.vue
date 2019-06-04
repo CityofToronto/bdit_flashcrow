@@ -39,22 +39,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
-// TODO: move into separate library
-function debounce(func, wait) {
-  let timeout;
-  return function debounceWrapper(...args) {
-    const context = this;
-    const later = function later() {
-      timeout = null;
-      func.apply(context, args);
-    };
-    window.clearTimeout(timeout);
-    timeout = window.setTimeout(later, wait);
-    if (!timeout) {
-      func.apply(context, args);
-    }
-  };
-}
+import FunctionUtils from '@/lib/FunctionUtils';
 
 export default {
   name: 'SearchBarLocation',
@@ -69,7 +54,7 @@ export default {
     ...mapState(['location', 'locationSuggestions', 'locationQuery']),
   },
   watch: {
-    query: debounce(function fetchQuerySuggestions() {
+    query: FunctionUtils.debounce(function fetchQuerySuggestions() {
       if (!this.selectedSuggestion) {
         this.fetchLocationSuggestions(this.locationQuery);
       }
