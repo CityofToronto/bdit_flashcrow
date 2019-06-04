@@ -46,19 +46,29 @@
         <FcFilterRequestStatus
           :active="filterRequestStatus.length > 0"
           class="font-size-l" />
-        <button class="tds-button-secondary">
+        <button
+          class="tds-button-secondary"
+          disabled>
           <i class="fa fa-eye"></i>
         </button>
-        <button class="tds-button-secondary">
+        <button
+          class="tds-button-secondary"
+          disabled>
           <i class="fa fa-check-square"></i>
         </button>
-        <button class="tds-button-secondary">
+        <button
+          class="tds-button-secondary"
+          disabled>
           <i class="fa fa-flag"></i>
         </button>
-        <button class="tds-button-secondary">
+        <button
+          class="tds-button-secondary"
+          disabled>
           <i class="fa fa-user"></i>
         </button>
-        <button class="tds-button-secondary">
+        <button
+          class="tds-button-secondary"
+          disabled>
           <i class="fa fa-external-link-square-alt"></i>
         </button>
       </header>
