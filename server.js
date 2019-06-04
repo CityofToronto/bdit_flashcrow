@@ -2,12 +2,14 @@ const Blankie = require('blankie');
 const Boom = require('boom');
 const Hapi = require('hapi');
 const hapiAuthCookie = require('hapi-auth-cookie');
+const Joi = require('joi');
 const rp = require('request-promise-native');
 const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
 const OpenIDClient = require('./lib/auth/OpenIDClient');
+const CountDAO = require('./lib/db/CountDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
@@ -288,6 +290,33 @@ async function initServer() {
       return Boom.notFound(`could not locate key string: ${keyString}`);
     },
   });
+
+  // COUNT METADATA
+  server.route({
+    method: 'GET',
+    path: '/counts/byBoundingBox',
+    config: {
+      auth: { mode: 'try' },
+      validate: {
+        query: {
+          xmin: Joi.number().min(-180).max(180).required(),
+          ymin: Joi.number().min(-90).max(90).required(),
+          xmax: Joi.number().min(-180).max(180).greater(Joi.ref('xmin'))
+            .required(),
+          ymax: Joi.number().min(-90).max(90).greater(Joi.ref('ymin'))
+            .required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const {
+        xmin, ymin, xmax, ymax,
+      } = request.query;
+      return CountDAO.byBoundingBox(xmin, ymin, xmax, ymax);
+    },
+  });
+
+  // START SERVER
 
   const { ENV } = config;
 
