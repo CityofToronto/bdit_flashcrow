@@ -7,8 +7,8 @@
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
-    <template v-slot:SELECTION="{ item }">
-      <label class="tds-checkbox">
+    <template v-slot:SELECTION="{ item, isChild }">
+      <label v-if="!isChild" class="tds-checkbox">
         <input
           type="checkbox"
           name="selectionItems"
@@ -17,7 +17,11 @@
       </label>
     </template>
     <template v-slot:ID="{ item }">
-      <span>{{item.id}}</span>
+      <router-link
+        :to="{
+          name: 'requestsTrackById',
+          params: { id: item.id },
+        }">{{item.id}}</router-link>
     </template>
     <template v-slot:LOCATION="{ item }">
       <span>Kingston and Lee</span>
@@ -29,7 +33,15 @@
       <span>{{item.dueDate | date}}</span>
     </template>
     <template v-slot:PRIORITY="{ item }">
-      <span>{{item.priority}}</span>
+      <span
+        :class="{
+          'priority-urgent': item.priority === 'URGENT',
+        }">
+        <i
+          v-if="item.priority === 'URGENT'"
+          class="fa fa-exclamation"></i>
+        <span> {{item.priority}}</span>
+      </span>
     </template>
     <template v-slot:REQUESTER="{ item }">
       <span>TODO: requester</span>
@@ -45,6 +57,7 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-m"
+          disabled
           @click="$emit('action-item', {
             type: 'review',
             item,
@@ -53,6 +66,7 @@
         </button>
         <button
           class="tds-button-secondary font-size-m"
+          disabled
           @click="$emit('action-item', {
             type: 'accept',
             item,
@@ -61,6 +75,7 @@
         </button>
         <button
           class="tds-button-secondary font-size-m"
+          disabled
           @click="$emit('action-item', {
             type: 'flag',
             item,
@@ -69,6 +84,7 @@
         </button>
         <button
           class="tds-button-secondary font-size-m"
+          disabled
           @click="$emit('action-item', {
             type: 'assign',
             item,
@@ -77,6 +93,7 @@
         </button>
         <button
           class="tds-button-secondary font-size-m"
+          disabled
           @click="$emit('action-item', {
             type: 'export',
             item,
@@ -158,6 +175,9 @@ export default {
 
 <style lang="postcss">
 .fc-card-table-requests {
+  .priority-urgent {
+    color: var(--error);
+  }
   .cell-actions {
     opacity: 0;
     & > button:not(:last-child) {
