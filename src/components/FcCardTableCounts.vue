@@ -145,8 +145,5 @@ export default {
   tr:hover .cell-actions {
     opacity: 1;
   }
-  .no-existing-count {
-    color: var(--warning-darker);
-  }
 }
 </style>
