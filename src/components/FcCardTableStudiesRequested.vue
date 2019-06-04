@@ -102,8 +102,6 @@ export default {
 
 <style lang="postcss">
 .fc-card-table-studies-requested {
-  .no-existing-count {
-    color: var(--warning-darker);
-  }
+
 }
 </style>

@@ -24,6 +24,24 @@ const REASONS = [
   { label: 'Signal Timing', value: 'SIGNAL_TIMING' },
 ];
 
+const RequestStatus = {
+  REQUESTED: 0,
+  FLAGGED: 1,
+  REVIEWED: 2,
+  SUBMITTED: 3,
+  SCHEDULED: 4,
+  DATA_READY: 5,
+};
+
+const REQUEST_STATUS_META = [
+  { label: 'Requested' },
+  { label: 'Flagged', class: 'error' },
+  { label: 'Reviewed', class: 'warning' },
+  { label: 'Submitted', class: 'info' },
+  { label: 'Scheduled', class: 'info' },
+  { label: 'Data Ready', class: 'success' },
+];
+
 const SortDirection = {
   ASC: 1,
   DESC: -1,
@@ -34,6 +52,14 @@ const SortKeys = {
     DATE: c => (c.date === null ? -Infinity : c.date.valueOf()),
     STATUS: c => c.status,
     STUDY_TYPE: c => c.type.label,
+  },
+  Requests: {
+    DATE: r => r.dueDate.valueOf(),
+    ID: r => r.id,
+    LOCATION: r => r.location.name,
+    PRIORITY: r => (r.priority === 'STANDARD' ? 0 : 1),
+    REQUESTER: r => r.requestedBy.name,
+    STATUS: r => r.status,
   },
 };
 
@@ -57,6 +83,8 @@ export default {
   COUNT_TYPES,
   DAYS_OF_WEEK,
   REASONS,
+  RequestStatus,
+  REQUEST_STATUS_META,
   SortDirection,
   SortKeys,
   Status,

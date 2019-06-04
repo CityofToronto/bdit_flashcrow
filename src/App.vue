@@ -26,7 +26,7 @@
         <FcDashboardNavItem
           icon="clipboard-list"
           label="Track Requests"
-          :to="{ name: 'trackRequests' }" />
+          :to="{ name: 'requestsTrack' }" />
         <FcDashboardNavItem
           disabled
           icon="road"
@@ -583,6 +583,9 @@ hr {
 }
 .ml-m {
   margin-left: var(--space-m);
+}
+.ml-xl {
+  margin-left: var(--space-xl);
 }
 .mb-s {
   margin-bottom: var(--space-s);

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/store';
+import Constants from '@/lib/Constants';
 
 Vue.use(Router);
 
@@ -29,7 +30,7 @@ const router = new Router({
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
           display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
         },
-        beforeEnter: (to, from, next) => {
+        beforeEnter(to, from, next) {
           if (store.state.location === null) {
             const { keyString } = to.params;
             store.dispatch('fetchLocation', keyString)
@@ -83,9 +84,22 @@ const router = new Router({
       }],
     },
     {
-      path: '/requests/study/track',
-      name: 'trackRequests',
-      component: () => import(/* webpackChunkName: "home" */ './views/LayoutTrackRequests.vue'),
+      path: '/requests/track',
+      name: 'requestsTrack',
+      redirect: {
+        name: 'requestsTrackByStatus',
+        query: {
+          status: [Constants.RequestStatus.REQUESTED],
+        },
+      },
+    }, {
+      path: '/requests/track/byStatus',
+      name: 'requestsTrackByStatus',
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackByStatus.vue'),
+    }, {
+      path: '/byId/:id',
+      name: 'requestsTrackById',
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackById.vue'),
     },
   ],
 });
