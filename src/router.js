@@ -24,25 +24,33 @@ const router = new Router({
           display: null,
         },
       }, {
-        path: 'location/:keyString',
+        path: 'location/:centrelineType/:centrelineId',
         name: 'viewDataAtLocation',
         components: {
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
           display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
         },
         beforeEnter(to, from, next) {
+          const { centrelineId, centrelineType } = to.params;
+          const promiseCounts = store.dispatch(
+            'fetchCountsByCentreline',
+            { centrelineId, centrelineType },
+          );
+          const promises = [promiseCounts];
           if (store.state.location === null) {
-            const { keyString } = to.params;
-            store.dispatch('fetchLocation', keyString)
-              .then(() => {
-                next();
-              })
-              .catch((err) => {
-                next(err);
-              });
-          } else {
-            next();
+            const promiseLocation = store.dispatch(
+              'fetchLocationFromCentreline',
+              { centrelineId, centrelineType },
+            );
+            promises.push(promiseLocation);
           }
+          Promise.all(promises)
+            .then(() => {
+              next();
+            })
+            .catch((err) => {
+              next(err);
+            });
         },
       }],
     },

@@ -7,7 +7,6 @@ import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
-const COUNTS = SampleData.randomCounts();
 const REQUESTS = SampleData.randomRequests();
 
 function makeStudyItem(studyType) {
@@ -41,7 +40,7 @@ export default new Vuex.Store({
     location: null,
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
-    counts: COUNTS,
+    counts: [],
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
@@ -103,9 +102,14 @@ export default new Vuex.Store({
     },
     setLocation(state, location) {
       Vue.set(state, 'location', location);
+      Vue.set(state, 'locationQuery', location.description);
     },
     setLocationQuery(state, locationQuery) {
       Vue.set(state, 'locationQuery', locationQuery);
+    },
+    // COUNTS
+    setCounts(state, counts) {
+      Vue.set(state, 'counts', counts);
     },
     // FILTERING DATA
     clearFilters(state) {
@@ -164,11 +168,21 @@ export default new Vuex.Store({
           return auth;
         });
     },
-    fetchLocation({ commit }, keyString) {
+    fetchLocationByKeyString({ commit }, keyString) {
       const options = {
         data: { keyString },
       };
       return apiFetch('/cotgeocoder/findAddressCandidates', options)
+        .then((location) => {
+          commit('setLocation', location);
+          return location;
+        });
+    },
+    fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
+      const options = {
+        data: { centrelineId, centrelineType },
+      };
+      return apiFetch('/location/centreline', options)
         .then((location) => {
           commit('setLocation', location);
           return location;
@@ -186,6 +200,20 @@ export default new Vuex.Store({
         .then((locationSuggestions) => {
           commit('setLocationSuggestions', locationSuggestions);
           return locationSuggestions;
+        });
+    },
+    fetchCountsByCentreline({ commit }, { centrelineId, centrelineType }) {
+      const data = { centrelineId, centrelineType };
+      const options = { data };
+      return apiFetch('/counts/byCentreline', options)
+        .then((counts) => {
+          const countsNormalized = counts.map((count) => {
+            const countNormalized = Object.assign({}, count);
+            countNormalized.date = new Date(countNormalized.date);
+            return countNormalized;
+          });
+          commit('setCounts', countsNormalized);
+          return countsNormalized;
         });
     },
   },

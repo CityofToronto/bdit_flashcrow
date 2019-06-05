@@ -17,6 +17,7 @@ function randomDate() {
   return new Date(t);
 }
 
+// TODO: DRY with CountDAO
 function getStatus(count) {
   const now = new Date().valueOf();
   const threeYearsAgo = now - 3 * 365 * 24 * 60 * 60 * 1000;
