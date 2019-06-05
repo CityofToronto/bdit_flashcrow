@@ -7,7 +7,6 @@ import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
-const COUNTS = SampleData.randomCounts();
 const REQUESTS = SampleData.randomRequests();
 
 function makeStudyItem(studyType) {
@@ -41,7 +40,7 @@ export default new Vuex.Store({
     location: null,
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
-    counts: COUNTS,
+    counts: [],
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
@@ -106,6 +105,10 @@ export default new Vuex.Store({
     },
     setLocationQuery(state, locationQuery) {
       Vue.set(state, 'locationQuery', locationQuery);
+    },
+    // COUNTS
+    setCounts(state, counts) {
+      Vue.set(state, 'counts', counts);
     },
     // FILTERING DATA
     clearFilters(state) {
@@ -186,6 +189,15 @@ export default new Vuex.Store({
         .then((locationSuggestions) => {
           commit('setLocationSuggestions', locationSuggestions);
           return locationSuggestions;
+        });
+    },
+    fetchCountsByCentrelineId({ commit }, centrelineId) {
+      const data = { centrelineId };
+      const options = { data };
+      return apiFetch('/counts/byCentrelineId', options)
+        .then((counts) => {
+          commit('setCounts', counts);
+          return counts;
         });
     },
   },
