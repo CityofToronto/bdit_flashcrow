@@ -384,18 +384,22 @@ async function initServer() {
 
   server.route({
     method: 'GET',
-    path: '/counts/byCentrelineId',
+    path: '/counts/byCentreline',
     config: {
       auth: { mode: 'try' },
       validate: {
         query: {
           centrelineId: Joi.number().integer().positive().required(),
+          centrelineType: Joi.number().valid(
+            CentrelineType.SEGMENT,
+            CentrelineType.INTERSECTION,
+          ).required(),
         },
       },
     },
     handler: async (request) => {
-      const { centrelineId } = request.query;
-      return CountDAO.byCentrelineId(centrelineId);
+      const { centrelineId, centrelineType } = request.query;
+      return CountDAO.byCentreline(centrelineId, centrelineType);
     },
   });
 
