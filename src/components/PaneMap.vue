@@ -138,6 +138,10 @@ export default {
 
     Vue.nextTick(() => {
       this.loading = false;
+      this.dataCountsVisible = {
+        type: 'FeatureCollection',
+        features: [],
+      };
       this.map = new mapboxgl.Map({
         bounds,
         boxZoom: false,
@@ -155,7 +159,22 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
-      this.map.on('move', this.onMapMove.bind(this));
+      this.map.on('load', () => {
+        this.map.addSource('counts-visible', {
+          type: 'geojson',
+          data: this.dataCountsVisible,
+        });
+        this.map.addLayer({
+          id: 'counts-visible',
+          type: 'circle',
+          source: 'counts-visible',
+          paint: {
+            'circle-color': '#0050d8',
+            'circle-radius': 10,
+          },
+        });
+        this.map.on('move', this.onMapMove.bind(this));
+      });
       this.easeToLocation();
       this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
       this.map.on('mousemove', 'intersections', this.elementHover.bind(this));
@@ -205,11 +224,19 @@ export default {
       };
       const options = { data };
       return apiFetch('/counts/byBoundingBox', options)
-        .then(counts => counts.map((count) => {
-          const countResult = Object.assign({}, count);
-          countResult.date = new Date(countResult.date);
-          return countResult;
-        }));
+        .then((counts) => {
+          this.dataCountsVisible.features = counts.map((count) => {
+            const properties = Object.assign({}, count);
+            delete properties.geom;
+            return {
+              type: 'Feature',
+              geometry: count.geom,
+              properties,
+            };
+          });
+          this.map.getSource('counts-visible')
+            .setData(this.dataCountsVisible);
+        });
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
       const { lat, lng } = this.map.getCenter();
@@ -220,6 +247,10 @@ export default {
         const bounds = this.map.getBounds();
         this.fetchVisibleCounts(bounds)
           .then(result => console.log(result));
+      } else {
+        this.dataCountsVisible.features = [];
+        this.map.getSource('counts-visible')
+          .setData(this.dataCountsVisible);
       }
     }, 250),
     toggleSatellite() {
