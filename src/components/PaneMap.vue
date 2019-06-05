@@ -1,5 +1,10 @@
 <template>
   <div class="pane-map">
+    <div
+      v-if="loading"
+      class="pane-map-loading-spinner">
+      <TdsLoadingSpinner />
+    </div>
     <div class="pane-map-google-maps">
       <button class="font-size-l">
         <span v-if="coordinates === null">Google Maps</span>
@@ -19,7 +24,9 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
+import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
+import Constants from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
@@ -81,12 +88,16 @@ function injectCentrelineVectorTiles(style) {
 
 export default {
   name: 'PaneMap',
+  components: {
+    TdsLoadingSpinner,
+  },
   props: {
     cols: Number,
   },
   data() {
     return {
       coordinates: null,
+      loading: false,
       satellite: false,
     };
   },
@@ -259,25 +270,20 @@ export default {
       const xmax = bounds.getEast();
       const ymax = bounds.getNorth();
       const data = {
+        f: Constants.Format.GEOJSON,
         xmin,
         ymin,
         xmax,
         ymax,
       };
       const options = { data };
+      this.loading = true;
       return apiFetch('/counts/byBoundingBox', options)
-        .then((counts) => {
-          this.dataCountsVisible.features = counts.map((count) => {
-            const properties = Object.assign({}, count);
-            delete properties.geom;
-            return {
-              type: 'Feature',
-              geometry: count.geom,
-              properties,
-            };
-          });
+        .then((dataCountsVisible) => {
+          this.dataCountsVisible = dataCountsVisible;
           this.map.getSource('counts-visible')
             .setData(this.dataCountsVisible);
+          this.loading = false;
         });
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
@@ -359,6 +365,18 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  & > .pane-map-loading-spinner {
+    background-color: var(--white);
+    border: var(--border-default);
+    border-radius: var(--space-m);
+    height: calc(var(--space-xl) + var(--space-s) * 2);
+    padding: var(--space-s);
+    position: absolute;
+    right: 15px;
+    top: 8px;
+    width: calc(var(--space-xl) + var(--space-s) * 2);
+    z-index: var(--z-index-controls);
+  }
   & > .pane-map-google-maps {
     bottom: 8px;
     position: absolute;
