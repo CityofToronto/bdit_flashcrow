@@ -14,6 +14,12 @@ const router = new Router({
       redirect: { name: 'viewData' },
     },
     {
+      path: '/login',
+      name: 'login',
+      meta: { auth: false },
+      component: () => import(/* webpackChunkName: "home" */ './views/FcLogin.vue'),
+    },
+    {
       path: '/view',
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutViewData.vue'),
       children: [{
@@ -116,7 +122,7 @@ function routeMetaAuth(route) {
   if (route.meta && Object.prototype.hasOwnProperty.call(route.meta, 'auth')) {
     return route.meta.auth;
   }
-  return { mode: 'try' };
+  return true;
 }
 
 router.beforeEach((to, from, next) => {
@@ -127,7 +133,7 @@ router.beforeEach((to, from, next) => {
         if (loggedIn) {
           next();
         } else {
-          next({ name: 'home' });
+          next({ name: 'login' });
         }
       } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
         // this route requires an unauthenticated user

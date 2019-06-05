@@ -151,7 +151,10 @@ async function initServer() {
       const token = tokenSet.id_token;
       let user = await UserDAO.bySubject(sub);
       if (user === null) {
-        user = { subject: sub, email, token };
+        // TODO: get name as well (e.g. from email address?)
+        user = {
+          subject: sub, email, name: '', token,
+        };
         await UserDAO.create(user);
       } else {
         Object.assign(user, { email, token });
@@ -163,6 +166,37 @@ async function initServer() {
 
       // redirect to home
       return h.redirect(config.PUBLIC_PATH);
+    },
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/auth/stub',
+    config: {
+      auth: false,
+      validate: {
+        payload: {
+          email: Joi.string().email().required(),
+          name: Joi.string().required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const { email, name } = request.payload;
+      // upgrade to application session ID
+      let user = await UserDAO.byEmail(email);
+      if (user === null) {
+        user = {
+          subject: uuid(),
+          email,
+          name,
+          token: '',
+        };
+        await UserDAO.create(user);
+      }
+      const sessionId = uuid();
+      await request.server.app.cache.set(sessionId, { user }, 0);
+      request.cookieAuth.set({ sessionId });
     },
   });
 
@@ -179,8 +213,8 @@ async function initServer() {
       if (out.loggedIn) {
         const { sessionId } = request.state.session;
         const { user } = await request.server.app.cache.get(sessionId);
-        const { email } = user;
-        out.user = { email };
+        const { email, name } = user;
+        out.user = { email, name };
       }
       return out;
     },

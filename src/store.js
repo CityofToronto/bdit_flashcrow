@@ -161,6 +161,17 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    authStub({ commit }, { name, email }) {
+      const options = {
+        method: 'POST',
+        data: { name, email },
+      };
+      return apiFetch('/auth/stub', options)
+        .then((auth) => {
+          commit('setAuth', auth);
+          window.location.reload();
+        });
+    },
     checkAuth({ commit }) {
       return apiFetch('/auth')
         .then((auth) => {
