@@ -63,9 +63,14 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 10,
     maxZoom: 15,
     paint: {
+      'line-color': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        '#0050d8',
+        '#1b1b1b',
+      ],
       'line-width': 3,
-      'line-opacity': ['case',
-        ['boolean', ['feature-state', 'hover'], false], 0.5, 1],
+      'line-opacity': 0.8,
     },
   });
 
@@ -77,8 +82,13 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 11,
     maxZoom: 15,
     paint: {
-      'circle-opacity': ['case',
-        ['boolean', ['feature-state', 'hover'], false], 0.5, 1],
+      'circle-color': [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        '#0050d8',
+        '#1b1b1b',
+      ],
+      'circle-radius': 6,
     },
   });
 
@@ -186,9 +196,10 @@ export default {
             'circle-color': [
               'case',
               ['boolean', ['feature-state', 'hover'], false],
-              '#0050d8',
-              '#1a4480',
+              '#009ec1',
+              '#2e6276',
             ],
+            'circle-opacity': 0.8,
             'circle-radius': 20,
           },
         });
@@ -215,9 +226,10 @@ export default {
             'circle-color': [
               'case',
               ['boolean', ['feature-state', 'hover'], false],
-              '#0050d8',
-              '#1a4480',
+              '#009ec1',
+              '#2e6276',
             ],
+            'circle-opacity': 0.8,
             'circle-radius': 10,
           },
         });
@@ -296,7 +308,6 @@ export default {
         lng,
       };
       this.setLocation(elementInfo);
-      this.setLocationQuery(feature.properties.lf_name);
     },
     onCountsVisibleClustersClick(feature) {
       const clusterId = feature.properties.cluster_id;
@@ -310,8 +321,20 @@ export default {
         });
     },
     onCountsVisiblePointsClick(feature) {
-      // TODO: implement this
-      console.log(feature);
+      const [lng, lat] = feature.geometry.coordinates;
+      const {
+        centrelineId,
+        centrelineType,
+        locationDesc: description,
+      } = feature.properties;
+      const elementInfo = {
+        centrelineId,
+        centrelineType,
+        description,
+        lat,
+        lng,
+      };
+      this.setLocation(elementInfo);
     },
     onIntersectionsClick(feature) {
       // update location
@@ -324,7 +347,6 @@ export default {
         lng,
       };
       this.setLocation(elementInfo);
-      this.setLocationQuery(feature.properties.intersec5);
     },
     onMapClick(e) {
       const features = this.map.queryRenderedFeatures(e.point, {
@@ -362,6 +384,10 @@ export default {
       const canvas = this.map.getCanvas();
       if (features.length === 0) {
         canvas.style.cursor = '';
+        if (this.hoveredFeature !== null) {
+          this.map.setFeatureState(this.hoveredFeature, { hover: false });
+          this.hoveredFeature = null;
+        }
       } else {
         canvas.style.cursor = 'pointer';
 
@@ -403,7 +429,7 @@ export default {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
     },
-    ...mapMutations(['setLocation', 'setLocationQuery']),
+    ...mapMutations(['setLocation']),
   },
 };
 </script>

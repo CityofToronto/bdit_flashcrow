@@ -129,7 +129,7 @@ export default {
 .search-bar-location {
   position: relative;
   & input {
-    width: 320px;
+    width: 480px;
   }
   & > .suggestions {
     background-color: var(--base-lightest);

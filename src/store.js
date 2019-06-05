@@ -102,6 +102,7 @@ export default new Vuex.Store({
     },
     setLocation(state, location) {
       Vue.set(state, 'location', location);
+      Vue.set(state, 'locationQuery', location.description);
     },
     setLocationQuery(state, locationQuery) {
       Vue.set(state, 'locationQuery', locationQuery);
