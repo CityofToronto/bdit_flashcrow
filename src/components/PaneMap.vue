@@ -28,7 +28,7 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
 const ZOOM_TORONTO = 10;
-const ZOOM_MIN_COUNTS = 15;
+const ZOOM_MIN_COUNTS = 14;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
 
@@ -163,17 +163,59 @@ export default {
         this.map.addSource('counts-visible', {
           type: 'geojson',
           data: this.dataCountsVisible,
+          cluster: true,
+          clusterMaxZoom: ZOOM_MAX,
         });
         this.map.addLayer({
-          id: 'counts-visible',
+          id: 'counts-visible-clusters',
           type: 'circle',
           source: 'counts-visible',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#0050d8',
+            'circle-radius': 20,
+          },
+        });
+        this.map.addLayer({
+          id: 'counts-visible-cluster-counts',
+          type: 'symbol',
+          source: 'counts-visible',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Ubuntu Regular'],
+            'text-size': 18,
+          },
+          paint: {
+            'text-color': '#f0f0f0',
+          },
+        });
+        this.map.addLayer({
+          id: 'counts-visible-points',
+          type: 'circle',
+          source: 'counts-visible',
+          filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-color': '#0050d8',
             'circle-radius': 10,
           },
         });
         this.map.on('move', this.onMapMove.bind(this));
+        this.map.on('click', 'counts-visible-clusters', (e) => {
+          const features = this.map.queryRenderedFeatures(e.point, {
+            layers: ['counts-visible-clusters'],
+          });
+          const clusterId = features[0].properties.cluster_id;
+          this.map.getSource('counts-visible').getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) {
+              return;
+            }
+            this.map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom,
+            });
+          });
+        });
       });
       this.easeToLocation();
       this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
