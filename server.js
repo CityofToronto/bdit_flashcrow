@@ -14,6 +14,11 @@ const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
 
+const Format = {
+  GEOJSON: 'geojson',
+  JSON: 'json',
+};
+
 const options = {
   app: { config },
   debug: {
@@ -299,6 +304,10 @@ async function initServer() {
       auth: { mode: 'try' },
       validate: {
         query: {
+          f: Joi.string().valid(
+            Format.GEOJSON,
+            Format.JSON,
+          ).default(Format.JSON),
           xmin: Joi.number().min(-180).max(180).required(),
           ymin: Joi.number().min(-90).max(90).required(),
           xmax: Joi.number().min(-180).max(180).greater(Joi.ref('xmin'))
@@ -310,9 +319,30 @@ async function initServer() {
     },
     handler: async (request) => {
       const {
-        xmin, ymin, xmax, ymax,
+        f,
+        xmin,
+        ymin,
+        xmax,
+        ymax,
       } = request.query;
-      return CountDAO.byBoundingBox(xmin, ymin, xmax, ymax);
+      const counts = await CountDAO.byBoundingBox(xmin, ymin, xmax, ymax);
+      if (f === Format.JSON) {
+        return counts;
+      }
+      // convert to GeoJSON FeatureCollection
+      const features = counts.map((count) => {
+        const properties = Object.assign({}, count);
+        delete properties.geom;
+        return {
+          type: 'Feature',
+          geometry: count.geom,
+          properties,
+        };
+      });
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
     },
   });
 

@@ -16,6 +16,12 @@ const DAYS_OF_WEEK = [
   'Saturday',
 ];
 
+// TODO: DRY with server.js
+const Format = {
+  GEOJSON: 'geojson',
+  JSON: 'json',
+};
+
 const REASONS = [
   { label: 'Traffic Signal Control', value: 'TSC' },
   { label: 'Pedestrian Crossover (PXO)', value: 'PXO' },
@@ -82,6 +88,7 @@ const STATUS_META = [
 export default {
   COUNT_TYPES,
   DAYS_OF_WEEK,
+  Format,
   REASONS,
   RequestStatus,
   REQUEST_STATUS_META,
