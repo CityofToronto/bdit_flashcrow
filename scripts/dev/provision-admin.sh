@@ -10,14 +10,6 @@
 set -e
 set -o nounset
 
-# setup nginx
-amazon-linux-extras install nginx1.12
-cp /vagrant/flashcrow.conf /etc/nginx/default.d/flashcrow.conf
-chkconfig nginx on
-service nginx status && service nginx stop
-rm -rf /run/nginx.pid
-service nginx start
-
 # update existing packages
 yum update -y
 
