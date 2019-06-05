@@ -42,10 +42,10 @@ export default {
   },
   computed: {
     linkBackToData() {
-      const { keyString } = this.location;
+      const { centrelineId, centrelineType } = this.location;
       return {
         name: 'viewDataAtLocation',
-        params: { keyString },
+        params: { centrelineId, centrelineType },
       };
     },
     ...mapState(['location']),

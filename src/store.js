@@ -167,11 +167,21 @@ export default new Vuex.Store({
           return auth;
         });
     },
-    fetchLocation({ commit }, keyString) {
+    fetchLocationByKeyString({ commit }, keyString) {
       const options = {
         data: { keyString },
       };
       return apiFetch('/cotgeocoder/findAddressCandidates', options)
+        .then((location) => {
+          commit('setLocation', location);
+          return location;
+        });
+    },
+    fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
+      const options = {
+        data: { centrelineId, centrelineType },
+      };
+      return apiFetch('/location/centreline', options)
         .then((location) => {
           commit('setLocation', location);
           return location;

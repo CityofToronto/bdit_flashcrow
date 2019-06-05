@@ -24,7 +24,7 @@ const router = new Router({
           display: null,
         },
       }, {
-        path: 'location/:keyString',
+        path: 'location/:centrelineType/:centrelineId',
         name: 'viewDataAtLocation',
         components: {
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
@@ -32,8 +32,8 @@ const router = new Router({
         },
         beforeEnter(to, from, next) {
           if (store.state.location === null) {
-            const { keyString } = to.params;
-            store.dispatch('fetchLocation', keyString)
+            const { centrelineId, centrelineType } = to.params;
+            store.dispatch('fetchLocationFromCentreline', { centrelineId, centrelineType })
               .then(() => {
                 next();
               })

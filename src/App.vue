@@ -104,10 +104,10 @@ export default {
       if (this.location === null) {
         return;
       }
-      const { keyString } = this.location;
+      const { centrelineId, centrelineType } = this.location;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { keyString },
+        params: { centrelineId, centrelineType },
       });
     },
     profileComingSoon() {
