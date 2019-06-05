@@ -31,18 +31,26 @@ const router = new Router({
           display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
         },
         beforeEnter(to, from, next) {
+          const { centrelineId, centrelineType } = to.params;
+          const promiseCounts = store.dispatch(
+            'fetchCountsByCentreline',
+            { centrelineId, centrelineType },
+          );
+          const promises = [promiseCounts];
           if (store.state.location === null) {
-            const { centrelineId, centrelineType } = to.params;
-            store.dispatch('fetchLocationFromCentreline', { centrelineId, centrelineType })
-              .then(() => {
-                next();
-              })
-              .catch((err) => {
-                next(err);
-              });
-          } else {
-            next();
+            const promiseLocation = store.dispatch(
+              'fetchLocationFromCentreline',
+              { centrelineId, centrelineType },
+            );
+            promises.push(promiseLocation);
           }
+          Promise.all(promises)
+            .then(() => {
+              next();
+            })
+            .catch((err) => {
+              next(err);
+            });
         },
       }],
     },

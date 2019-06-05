@@ -202,13 +202,18 @@ export default new Vuex.Store({
           return locationSuggestions;
         });
     },
-    fetchCountsByCentrelineId({ commit }, centrelineId) {
-      const data = { centrelineId };
+    fetchCountsByCentreline({ commit }, { centrelineId, centrelineType }) {
+      const data = { centrelineId, centrelineType };
       const options = { data };
-      return apiFetch('/counts/byCentrelineId', options)
+      return apiFetch('/counts/byCentreline', options)
         .then((counts) => {
-          commit('setCounts', counts);
-          return counts;
+          const countsNormalized = counts.map((count) => {
+            const countNormalized = Object.assign({}, count);
+            countNormalized.date = new Date(countNormalized.date);
+            return countNormalized;
+          });
+          commit('setCounts', countsNormalized);
+          return countsNormalized;
         });
     },
   },
