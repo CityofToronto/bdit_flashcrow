@@ -1,7 +1,8 @@
 BEGIN;
 CREATE TABLE "users" (
-  "subject" VARCHAR(255) NOT NULL,
-  "email" TEXT NOT NULL,
+  "subject" VARCHAR NOT NULL,
+  "email" VARCHAR NOT NULL,
+  "name" VARCHAR NOT NULL,
   "token" TEXT NOT NULL,
   PRIMARY KEY ("subject"),
   UNIQUE ("email")
