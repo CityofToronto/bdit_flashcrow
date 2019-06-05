@@ -113,10 +113,13 @@ export default {
       this.selectedSuggestion = true;
       this.setLocationQuery(suggestion.ADDRESS);
       const keyString = suggestion.KEYSTRING;
-      this.fetchLocation(keyString);
+      this.fetchLocationByKeyString(keyString);
       this.clearLocationSuggestions();
     },
-    ...mapActions(['fetchLocation', 'fetchLocationSuggestions']),
+    ...mapActions([
+      'fetchLocationByKeyString',
+      'fetchLocationSuggestions',
+    ]),
     ...mapMutations(['clearLocation', 'clearLocationSuggestions', 'setLocationQuery']),
   },
 };

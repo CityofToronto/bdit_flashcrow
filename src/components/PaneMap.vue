@@ -223,25 +223,9 @@ export default {
         });
         this.map.on('move', this.onMapMove.bind(this));
         this.easeToLocation();
-        this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
-        this.map.on('click', 'centreline', this.centrelinePopup.bind(this));
+        this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
         this.map.on('mouseout', this.onMapMouseout.bind(this));
-        this.map.on('click', 'counts-visible-clusters', (e) => {
-          const features = this.map.queryRenderedFeatures(e.point, {
-            layers: ['counts-visible-clusters'],
-          });
-          const clusterId = features[0].properties.cluster_id;
-          this.map.getSource('counts-visible').getClusterExpansionZoom(clusterId, (err, zoom) => {
-            if (err) {
-              return;
-            }
-            this.map.easeTo({
-              center: features[0].geometry.coordinates,
-              zoom,
-            });
-          });
-        });
       });
     });
   },
@@ -294,6 +278,78 @@ export default {
           this.loading = false;
         });
     },
+    onCentrelineClick(feature) {
+      /*
+       * Estimate the point halfway along this line.
+       *
+       * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
+       * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
+       */
+      const { coordinates } = feature.geometry;
+      const i = Math.floor(coordinates.length / 2);
+      const [lng, lat] = coordinates[i];
+      const elementInfo = {
+        centrelineId: feature.properties.geo_id,
+        centrelineType: Constants.CentrelineType.SEGMENT,
+        description: feature.properties.lf_name,
+        lat,
+        lng,
+      };
+      this.setLocation(elementInfo);
+      this.setLocationQuery(feature.properties.lf_name);
+    },
+    onCountsVisibleClustersClick(feature) {
+      const clusterId = feature.properties.cluster_id;
+      this.map.getSource('counts-visible')
+        .getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) {
+            return;
+          }
+          const center = feature.geometry.coordinates;
+          this.map.easeTo({ center, zoom });
+        });
+    },
+    onCountsVisiblePointsClick(feature) {
+      // TODO: implement this
+      console.log(feature);
+    },
+    onIntersectionsClick(feature) {
+      // update location
+      const [lng, lat] = feature.geometry.coordinates;
+      const elementInfo = {
+        centrelineId: feature.properties.int_id,
+        centrelineType: Constants.CentrelineType.INTERSECTION,
+        description: feature.properties.intersec5,
+        lat,
+        lng,
+      };
+      this.setLocation(elementInfo);
+      this.setLocationQuery(feature.properties.intersec5);
+    },
+    onMapClick(e) {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: [
+          'centreline',
+          'counts-visible-clusters',
+          'counts-visible-points',
+          'intersections',
+        ],
+      });
+      if (features.length === 0) {
+        return;
+      }
+      const [feature] = features;
+      const layerId = feature.layer.id;
+      if (layerId === 'centreline') {
+        this.onCentrelineClick(feature);
+      } else if (layerId === 'counts-visible-clusters') {
+        this.onCountsVisibleClustersClick(feature);
+      } else if (layerId === 'counts-visible-points') {
+        this.onCountsVisiblePointsClick(feature);
+      } else if (layerId === 'intersections') {
+        this.onIntersectionsClick(feature);
+      }
+    },
     onMapMousemove(e) {
       const features = this.map.queryRenderedFeatures(e.point, {
         layers: [
@@ -303,7 +359,12 @@ export default {
           'intersections',
         ],
       });
-      if (features.length > 0) {
+      const canvas = this.map.getCanvas();
+      if (features.length === 0) {
+        canvas.style.cursor = '';
+      } else {
+        canvas.style.cursor = 'pointer';
+
         // unhighlight features that are currently highlighted
         if (this.hoveredFeature !== null) {
           this.map.setFeatureState(this.hoveredFeature, { hover: false });
@@ -341,37 +402,6 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
-    },
-    intersectionPopup(e) {
-      new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(JSON.stringify(e.features[0].properties.intersec5))
-        .addTo(this.map);
-      // update location
-      const elementInfo = {
-        description: e.features[0].properties.intersec5,
-        geoId: e.features[0].properties.int_id,
-        keystring: `INTERSECTION:geo_id:${e.features[0].properties.int_id}:rowid:`,
-        lat: e.lngLat.lat,
-        lng: e.lngLat.lng,
-      };
-      this.setLocation(elementInfo);
-      this.setLocationQuery(e.features[0].properties.intersec5);
-    },
-    centrelinePopup(e) {
-      new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setHTML(JSON.stringify(e.features[0].properties.lf_name))
-        .addTo(this.map);
-      const elementInfo = {
-        description: e.features[0].properties.lf_name,
-        geoId: e.features[0].properties.geo_id,
-        keystring: `INTERSECTION:geo_id:${e.features[0].properties.geo_id}:rowid:`,
-        lat: e.lngLat.lat,
-        lng: e.lngLat.lng,
-      };
-      this.setLocation(elementInfo);
-      this.setLocationQuery(e.features[0].properties.lf_name);
     },
     ...mapMutations(['setLocation', 'setLocationQuery']),
   },
