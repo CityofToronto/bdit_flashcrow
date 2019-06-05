@@ -1,3 +1,9 @@
+// TODO: DRY with server.js
+const CentrelineType = {
+  SEGMENT: 1,
+  INTERSECTION: 2,
+};
+
 const COUNT_TYPES = [
   { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
   { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
@@ -85,7 +91,10 @@ const STATUS_META = [
   { label: 'In progress', class: 'info' },
 ];
 
+// TODO: maybe export these without 'default' so that we can use
+// destructuring imports?
 export default {
+  CentrelineType,
   COUNT_TYPES,
   DAYS_OF_WEEK,
   Format,

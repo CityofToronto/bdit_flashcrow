@@ -9,10 +9,16 @@ const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
 const OpenIDClient = require('./lib/auth/OpenIDClient');
+const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
+
+const CentrelineType = {
+  SEGMENT: 1,
+  INTERSECTION: 2,
+};
 
 const Format = {
   GEOJSON: 'geojson',
@@ -285,14 +291,42 @@ async function initServer() {
           LONGITUDE,
         } = response.result.rows[0];
         return {
+          centrelineId: INT_GEO_ID,
+          centrelineType: CentrelineType.INTERSECTION,
           description: KEY_DESC,
-          geoId: INT_GEO_ID,
-          keyString,
           lat: LATITUDE,
           lng: LONGITUDE,
         };
       }
       return Boom.notFound(`could not locate key string: ${keyString}`);
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/location/centreline',
+    config: {
+      auth: { mode: 'try' },
+      validate: {
+        query: {
+          centrelineId: Joi.number().integer().positive().required(),
+          centrelineType: Joi.number().valid(
+            CentrelineType.SEGMENT,
+            CentrelineType.INTERSECTION,
+          ).required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const {
+        centrelineId,
+        centrelineType,
+      } = request.query;
+      const location = await CentrelineDAO.byIdAndType(centrelineId, centrelineType);
+      if (location === null) {
+        return Boom.notFound(`could not locate centreline ID ${centrelineId}`);
+      }
+      return location;
     },
   });
 
@@ -331,18 +365,41 @@ async function initServer() {
       }
       // convert to GeoJSON FeatureCollection
       const features = counts.map((count) => {
+        const { id } = count;
         const properties = Object.assign({}, count);
         delete properties.geom;
         return {
           type: 'Feature',
           geometry: count.geom,
           properties,
+          id,
         };
       });
       return {
         type: 'FeatureCollection',
         features,
       };
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/counts/byCentreline',
+    config: {
+      auth: { mode: 'try' },
+      validate: {
+        query: {
+          centrelineId: Joi.number().integer().positive().required(),
+          centrelineType: Joi.number().valid(
+            CentrelineType.SEGMENT,
+            CentrelineType.INTERSECTION,
+          ).required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const { centrelineId, centrelineType } = request.query;
+      return CountDAO.byCentreline(centrelineId, centrelineType);
     },
   });
 

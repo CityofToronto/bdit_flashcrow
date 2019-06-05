@@ -113,10 +113,13 @@ export default {
       this.selectedSuggestion = true;
       this.setLocationQuery(suggestion.ADDRESS);
       const keyString = suggestion.KEYSTRING;
-      this.fetchLocation(keyString);
+      this.fetchLocationByKeyString(keyString);
       this.clearLocationSuggestions();
     },
-    ...mapActions(['fetchLocation', 'fetchLocationSuggestions']),
+    ...mapActions([
+      'fetchLocationByKeyString',
+      'fetchLocationSuggestions',
+    ]),
     ...mapMutations(['clearLocation', 'clearLocationSuggestions', 'setLocationQuery']),
   },
 };
@@ -126,7 +129,7 @@ export default {
 .search-bar-location {
   position: relative;
   & input {
-    width: 320px;
+    width: 480px;
   }
   & > .suggestions {
     background-color: var(--base-lightest);
