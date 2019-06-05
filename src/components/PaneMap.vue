@@ -1,5 +1,10 @@
 <template>
   <div class="pane-map">
+    <div
+      v-if="loading"
+      class="pane-map-loading-spinner">
+      <TdsLoadingSpinner />
+    </div>
     <div class="pane-map-google-maps">
       <button class="font-size-l">
         <span v-if="coordinates === null">Google Maps</span>
@@ -17,7 +22,12 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapState, mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
+
+import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
+import apiFetch from '@/lib/ApiFetch';
+import Constants from '@/lib/Constants';
+import FunctionUtils from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -25,6 +35,7 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
 const ZOOM_TORONTO = 10;
+const ZOOM_MIN_COUNTS = 14;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
 
@@ -77,12 +88,16 @@ function injectCentrelineVectorTiles(style) {
 
 export default {
   name: 'PaneMap',
+  components: {
+    TdsLoadingSpinner,
+  },
   props: {
     cols: Number,
   },
   data() {
     return {
       coordinates: null,
+      loading: false,
       satellite: false,
     };
   },
@@ -134,6 +149,10 @@ export default {
 
     Vue.nextTick(() => {
       this.loading = false;
+      this.dataCountsVisible = {
+        type: 'FeatureCollection',
+        features: [],
+      };
       this.map = new mapboxgl.Map({
         bounds,
         boxZoom: false,
@@ -151,7 +170,64 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
-      this.map.on('move', this.updateCoordinates.bind(this));
+      this.map.on('load', () => {
+        this.map.addSource('counts-visible', {
+          type: 'geojson',
+          data: this.dataCountsVisible,
+          cluster: true,
+          clusterMaxZoom: ZOOM_MAX,
+        });
+        this.map.addLayer({
+          id: 'counts-visible-clusters',
+          type: 'circle',
+          source: 'counts-visible',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#0050d8',
+            'circle-radius': 20,
+          },
+        });
+        this.map.addLayer({
+          id: 'counts-visible-cluster-counts',
+          type: 'symbol',
+          source: 'counts-visible',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Ubuntu Regular'],
+            'text-size': 18,
+          },
+          paint: {
+            'text-color': '#f0f0f0',
+          },
+        });
+        this.map.addLayer({
+          id: 'counts-visible-points',
+          type: 'circle',
+          source: 'counts-visible',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#0050d8',
+            'circle-radius': 10,
+          },
+        });
+        this.map.on('move', this.onMapMove.bind(this));
+        this.map.on('click', 'counts-visible-clusters', (e) => {
+          const features = this.map.queryRenderedFeatures(e.point, {
+            layers: ['counts-visible-clusters'],
+          });
+          const clusterId = features[0].properties.cluster_id;
+          this.map.getSource('counts-visible').getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) {
+              return;
+            }
+            this.map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom,
+            });
+          });
+        });
+      });
       this.easeToLocation();
       this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
       this.map.on('mousemove', 'intersections', this.elementHover.bind(this));
@@ -188,6 +264,43 @@ export default {
         });
       }
     },
+    fetchVisibleCounts(bounds) {
+      const xmin = bounds.getWest();
+      const ymin = bounds.getSouth();
+      const xmax = bounds.getEast();
+      const ymax = bounds.getNorth();
+      const data = {
+        f: Constants.Format.GEOJSON,
+        xmin,
+        ymin,
+        xmax,
+        ymax,
+      };
+      const options = { data };
+      this.loading = true;
+      return apiFetch('/counts/byBoundingBox', options)
+        .then((dataCountsVisible) => {
+          this.dataCountsVisible = dataCountsVisible;
+          this.map.getSource('counts-visible')
+            .setData(this.dataCountsVisible);
+          this.loading = false;
+        });
+    },
+    onMapMove: FunctionUtils.debounce(function onMapMove() {
+      const { lat, lng } = this.map.getCenter();
+      const zoom = this.map.getZoom();
+      this.coordinates = { lat, lng, zoom };
+
+      if (zoom >= ZOOM_MIN_COUNTS) {
+        const bounds = this.map.getBounds();
+        this.fetchVisibleCounts(bounds)
+          .then(result => console.log(result));
+      } else {
+        this.dataCountsVisible.features = [];
+        this.map.getSource('counts-visible')
+          .setData(this.dataCountsVisible);
+      }
+    }, 250),
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -195,11 +308,6 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
-    },
-    updateCoordinates() {
-      const { lat, lng } = this.map.getCenter();
-      const zoom = this.map.getZoom();
-      this.coordinates = { lat, lng, zoom };
     },
     intersectionPopup(e) {
       new mapboxgl.Popup()
@@ -257,6 +365,18 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  & > .pane-map-loading-spinner {
+    background-color: var(--white);
+    border: var(--border-default);
+    border-radius: var(--space-m);
+    height: calc(var(--space-xl) + var(--space-s) * 2);
+    padding: var(--space-s);
+    position: absolute;
+    right: 15px;
+    top: 8px;
+    width: calc(var(--space-xl) + var(--space-s) * 2);
+    z-index: var(--z-index-controls);
+  }
   & > .pane-map-google-maps {
     bottom: 8px;
     position: absolute;

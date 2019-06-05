@@ -74,24 +74,3 @@ test('authentication works', async () => {
   response = await fcApi('/auth');
   expect(response.loggedIn).toBe(false);
 });
-
-test('counters work', async () => {
-  await fcLogin();
-  let response;
-
-  response = await fcApi('/counter', { method: 'DELETE' });
-  expect(response.counter).toBe(0);
-  response = await fcApi('/counter');
-  expect(response.counter).toBe(0);
-
-  response = await fcApi('/counter', { method: 'PUT' });
-  expect(response.counter).toBe(1);
-  response = await fcApi('/counter');
-  expect(response.counter).toBe(1);
-
-  await fcApi('/counter', { method: 'PUT' });
-  response = await fcApi('/counter', { method: 'PUT' });
-  expect(response.counter).toBe(3);
-  response = await fcApi('/counter');
-  expect(response.counter).toBe(3);
-});
