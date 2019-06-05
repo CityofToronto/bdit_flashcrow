@@ -183,7 +183,12 @@ export default {
           source: 'counts-visible',
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#0050d8',
+            'circle-color': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              '#0050d8',
+              '#1a4480',
+            ],
             'circle-radius': 20,
           },
         });
@@ -207,11 +212,21 @@ export default {
           source: 'counts-visible',
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': '#0050d8',
+            'circle-color': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              '#0050d8',
+              '#1a4480',
+            ],
             'circle-radius': 10,
           },
         });
         this.map.on('move', this.onMapMove.bind(this));
+        this.easeToLocation();
+        this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
+        this.map.on('click', 'centreline', this.centrelinePopup.bind(this));
+        this.map.on('mousemove', this.onMapMousemove.bind(this));
+        this.map.on('mouseout', this.onMapMouseout.bind(this));
         this.map.on('click', 'counts-visible-clusters', (e) => {
           const features = this.map.queryRenderedFeatures(e.point, {
             layers: ['counts-visible-clusters'],
@@ -228,13 +243,6 @@ export default {
           });
         });
       });
-      this.easeToLocation();
-      this.map.on('click', 'intersections', this.intersectionPopup.bind(this));
-      this.map.on('mousemove', 'intersections', this.elementHover.bind(this));
-      this.map.on('mouseout', 'intersections', this.elementLeaveHover.bind(this));
-      this.map.on('click', 'centreline', this.centrelinePopup.bind(this));
-      this.map.on('mousemove', 'centreline', this.elementHover.bind(this));
-      this.map.on('mouseout', 'centreline', this.elementLeaveHover.bind(this));
     });
   },
   beforeDestroy() {
@@ -285,6 +293,31 @@ export default {
             .setData(this.dataCountsVisible);
           this.loading = false;
         });
+    },
+    onMapMousemove(e) {
+      const features = this.map.queryRenderedFeatures(e.point, {
+        layers: [
+          'centreline',
+          'counts-visible-clusters',
+          'counts-visible-points',
+          'intersections',
+        ],
+      });
+      if (features.length > 0) {
+        // unhighlight features that are currently highlighted
+        if (this.hoveredFeature !== null) {
+          this.map.setFeatureState(this.hoveredFeature, { hover: false });
+        }
+        // highlight feature that is currently being hovered over
+        [this.hoveredFeature] = features;
+        this.map.setFeatureState(this.hoveredFeature, { hover: true });
+      }
+    },
+    onMapMouseout() {
+      if (this.hoveredFeature !== null) {
+        this.map.setFeatureState(this.hoveredFeature, { hover: false });
+        this.hoveredFeature = null;
+      }
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
       const { lat, lng } = this.map.getCenter();
@@ -339,23 +372,6 @@ export default {
       };
       this.setLocation(elementInfo);
       this.setLocationQuery(e.features[0].properties.lf_name);
-    },
-    elementHover(e) {
-      if (e.features.length > 0) {
-        // unhighlight features that are currently highlighted
-        if (this.hoveredFeature) {
-          this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        }
-        // highlight feature that is currently being hovered over
-        [this.hoveredFeature] = e.features;
-        this.map.setFeatureState(e.features[0], { hover: true });
-      }
-    },
-    elementLeaveHover() {
-      if (this.hoveredFeature) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-      }
-      this.hoveredFeature = null;
     },
     ...mapMutations(['setLocation', 'setLocationQuery']),
   },

@@ -331,18 +331,37 @@ async function initServer() {
       }
       // convert to GeoJSON FeatureCollection
       const features = counts.map((count) => {
+        const { id } = count;
         const properties = Object.assign({}, count);
         delete properties.geom;
         return {
           type: 'Feature',
           geometry: count.geom,
           properties,
+          id,
         };
       });
       return {
         type: 'FeatureCollection',
         features,
       };
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/counts/byCentrelineId',
+    config: {
+      auth: { mode: 'try' },
+      validate: {
+        query: {
+          centrelineId: Joi.number().integer().positive().required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const { centrelineId } = request.query;
+      return CountDAO.byCentrelineId(centrelineId);
     },
   });
 
