@@ -37,7 +37,8 @@
     <div class="fc-content flex-fill flex-container-column">
       <TdsTopBar>
         <template v-slot:left>
-          <search-bar-location />
+          <SearchBarLocation
+            :disabled="!auth.loggedIn" />
           <button
             @click="onViewData"
             :disabled="location === null">
@@ -46,9 +47,13 @@
           </button>
         </template>
         <template v-slot:right>
-          <a href="javascript:void(0);" @click="profileComingSoon">
+          <TdsActionDropdown
+            class="font-size-xl"
+            :options="userActions"
+            @action-selected="onUserAction">
+            <span>{{username}} </span>
             <i class="fa fa-user-circle"></i>
-          </a>
+          </TdsActionDropdown>
         </template>
       </TdsTopBar>
       <router-view></router-view>
@@ -69,6 +74,7 @@ import FcModalShowReports from '@/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/components/FcModalRequestStudyConfirmation.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
+import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
@@ -82,13 +88,21 @@ export default {
     FcModalRequestStudyConfirmation,
     ModalComingSoon,
     SearchBarLocation,
+    TdsActionDropdown,
     TdsConfirmDialog,
     TdsTopBar,
   },
   computed: {
+    userActions() {
+      if (this.auth.loggedIn) {
+        return [{ label: 'Log out', value: 'logout' }];
+      }
+      return [{ label: 'Log in', value: 'login' }];
+    },
     username() {
       if (this.auth.loggedIn) {
-        return this.auth.user.email;
+        const { email, name } = this.auth.user;
+        return name || email;
       }
       return 'Guest';
     },
@@ -98,6 +112,13 @@ export default {
     onModalToggle() {
       if (!this.$refs.modalToggle.checked) {
         this.clearModal();
+      }
+    },
+    onUserAction(action) {
+      if (action === 'login') {
+        this.$router.push({ name: 'login' });
+      } else if (action === 'logout') {
+        this.signOut();
       }
     },
     onViewData() {

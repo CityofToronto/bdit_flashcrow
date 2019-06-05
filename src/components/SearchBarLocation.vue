@@ -9,6 +9,7 @@
     <input
       v-model="query"
       class="font-size-xl"
+      :disabled="disabled"
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />
@@ -43,6 +44,12 @@ import FunctionUtils from '@/lib/FunctionUtils';
 
 export default {
   name: 'SearchBarLocation',
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       activeSuggestion: null,

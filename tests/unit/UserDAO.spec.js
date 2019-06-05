@@ -4,6 +4,7 @@ import UserDAO from '@/../lib/db/UserDAO';
 const USER = {
   subject: 'foo',
   email: 'foo@toronto.ca',
+  name: 'Foo Bar',
   token: 'tokenFoo',
 };
 
