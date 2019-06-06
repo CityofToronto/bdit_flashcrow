@@ -6,16 +6,12 @@
     <template v-slot:header>
       <div class="flex-container-row">
         <h2>
-          <span>{{item.type.label}} at </span>
+          <span>{{activeCount.type.label}} at </span>
           <i class="fa fa-map-marker-alt"></i>
-          <abbr
-            class="px-s"
-            :title="locationQuery">{{locationQuery}}</abbr>
+          <span class="px-s">{{locationQuery}}</span>
         </h2>
         <div class="flex-fill"></div>
-        <abbr
-          class="font-size-l px-xl"
-          :title="item.date | date">{{item.date | date}}</abbr>
+        <span class="font-size-xl px-xl">{{activeCount.date | date}}</span>
       </div>
     </template>
     <template v-slot:content>
@@ -27,6 +23,7 @@
             :class="{
               'tds-button-success': reports.length > 0,
             }"
+            :disabled="optionsReports.length === 0"
             name="reports"
             :options="optionsReports">
             <span>
@@ -38,18 +35,14 @@
                 }">{{reports.length}}</span>
             </span>
           </TdsChecklistDropdown>
-          <TdsChecklistDropdown
-            v-model="studies"
-            class="fc-filter-studies font-size-l ml-m"
-            :class="{
-              'tds-button-success': studies.length > 0,
-            }"
-            name="studies"
-            :options="optionsReports">
+          <TdsActionDropdown
+            class="font-size-l ml-m"
+            :options="optionsCounts"
+            @action-selected="onSelectActiveCount">
             <span>
-              Archived Studies
+              Available Counts
             </span>
-          </TdsChecklistDropdown>
+          </TdsActionDropdown>
         </div>
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill my-m">
           <div class="fc-modal-show-reports-master flex-container-column flex-1 px-m">
@@ -91,7 +84,7 @@
               <div class="flex-cross-scroll">
                 TODO: REPORT HERE
                 <p>
-                  <pre>{{JSON.stringify(countData, null, 2)}}</pre>
+                  <pre>{{JSON.stringify(activeCountData, null, 2)}}</pre>
                 </p>
               </div>
             </div>
@@ -105,43 +98,100 @@
 <script>
 import { mapState } from 'vuex';
 
+import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import apiFetch from '@/lib/ApiFetch';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+
+const OPTIONS_REPORTS = {
+  TMC: [
+    { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
+    { label: 'Illustrated TMC Summary Report', value: 'TMC_ILLUSTRATED' },
+  ],
+  ATR_VOLUME: [
+    { label: 'Graphical 24-Hour Summary Report', value: 'ATR_VOLUME_24H_GRAPH' },
+    { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY' },
+    { label: 'Detailed 24-Hour Summary Report', value: 'ATR_VOLUME_24H_DETAIL' },
+  ],
+  ATR_SPEED_VOLUME: [
+    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT' },
+  ],
+  PXO_OBSERVE: [],
+  PED_DELAY: [],
+};
 
 export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    TdsActionDropdown,
     TdsChecklistDropdown,
   },
   data() {
     return {
-      countData: {},
-      optionsReports: [
-        { label: 'Turning Movement Count Summary Report', value: 'TMC_SUMMARY_REPORT' },
-      ],
+      activeCountData: {},
+      loading: false,
       reports: [],
       studies: [],
     };
   },
-  mounted() {
-    const countInfoId = this.item.id;
-    const categoryId = this.item.type.id;
-    const options = {
-      method: 'GET',
-      data: { countInfoId, categoryId },
-    };
-    apiFetch('/counts/data', options)
-      .then((countData) => {
-        this.countData = countData;
-      });
-  },
   computed: {
-    item() {
-      return this.data.item;
+    activeCount() {
+      return this.counts[this.activeIndex];
+    },
+    activeIndex: {
+      get() {
+        return this.data.activeIndex;
+      },
+      set(activeIndex) {
+        this.data.activeIndex = activeIndex;
+      },
+    },
+    counts() {
+      return this.data.counts;
+    },
+    optionsCounts() {
+      return this.counts.map((count, i) => {
+        const label = TimeFormatters.formatDefault(count.date);
+        return { label, value: i };
+      });
+    },
+    optionsReports() {
+      const { value } = this.activeCount.type;
+      if (value === undefined) {
+        return [];
+      }
+      return OPTIONS_REPORTS[value];
     },
     ...mapState(['locationQuery']),
+  },
+  watch: {
+    activeCount: {
+      handler() {
+        const countInfoId = this.activeCount.id;
+        const categoryId = this.activeCount.type.id;
+        const options = {
+          method: 'GET',
+          data: { countInfoId, categoryId },
+        };
+        apiFetch('/counts/data', options)
+          .then((countData) => {
+            const countDataNormalized = countData.map((bucket) => {
+              const bucketNormalized = Object.assign({}, bucket);
+              bucketNormalized.t = new Date(bucketNormalized.t);
+              return bucketNormalized;
+            });
+            this.activeCountData = countDataNormalized;
+          });
+      },
+      immediate: true,
+    },
+  },
+  methods: {
+    onSelectActiveCount(i) {
+      this.activeIndex = i;
+    },
   },
 };
 </script>
@@ -158,9 +208,6 @@ export default {
       align-items: center;
       border-bottom: var(--border-default);
       & > .fc-filter-reports > .dropdown {
-        width: 400px;
-      }
-      & > .fc-filter-studies > .dropdown {
         width: 400px;
       }
     }
