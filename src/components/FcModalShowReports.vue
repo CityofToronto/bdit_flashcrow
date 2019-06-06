@@ -90,6 +90,9 @@
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
                 TODO: REPORT HERE
+                <p>
+                  <pre>{{JSON.stringify(countData, null, 2)}}</pre>
+                </p>
               </div>
             </div>
           </section>
@@ -104,6 +107,7 @@ import { mapState } from 'vuex';
 
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import apiFetch from '@/lib/ApiFetch';
 
 export default {
   name: 'FcModalShowReports',
@@ -113,12 +117,25 @@ export default {
   },
   data() {
     return {
+      countData: {},
       optionsReports: [
         { label: 'Turning Movement Count Summary Report', value: 'TMC_SUMMARY_REPORT' },
       ],
       reports: [],
       studies: [],
     };
+  },
+  mounted() {
+    const countInfoId = this.item.id;
+    const categoryId = this.item.type.id;
+    const options = {
+      method: 'GET',
+      data: { countInfoId, categoryId },
+    };
+    apiFetch('/counts/data', options)
+      .then((countData) => {
+        this.countData = countData;
+      });
   },
   computed: {
     item() {
