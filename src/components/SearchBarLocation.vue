@@ -63,7 +63,7 @@ export default {
   watch: {
     query: FunctionUtils.debounce(function fetchQuerySuggestions() {
       if (!this.selectedSuggestion) {
-        this.fetchLocationSuggestions(this.locationQuery);
+        this.fetchLocationSuggestions(this.query);
       }
     }, 250),
     locationQuery: function onSelectElement() {
