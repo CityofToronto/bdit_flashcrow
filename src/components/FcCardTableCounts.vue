@@ -16,13 +16,14 @@
           v-model="internalValue" />
       </label>
     </template>
-    <template v-slot:STUDY_TYPE="{ item }">
+    <template v-slot:STUDY_TYPE="{ item, children }">
       <a
         v-if="item.status !== Status.NO_EXISTING_COUNT"
         href="#"
-        @click.prevent="$emit('action-item', {
+        @click.prevent="$emit('action-card', {
           type: 'show-reports',
           item,
+          children,
         })">
         {{item.type.label}}
       </a>
