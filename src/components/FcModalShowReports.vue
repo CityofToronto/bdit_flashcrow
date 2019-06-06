@@ -60,42 +60,57 @@
                 </div>
                 <div
                   v-else
-                  v-for="{ label, value } in optionsReports"
+                  v-for="{ label, value, disabled } in optionsReports"
                   :key="value"
                   class="p-m">
                   <label class="tds-checkbox">
                     <input
                       v-model="reports"
                       type="checkbox"
+                      :disabled="disabled"
                       name="reports"
                       :value="value" />
                     <span>{{label}}</span>
+                    <span v-if="disabled"> (coming soon)</span>
                   </label>
                 </div>
               </div>
             </div>
           </div>
           <section class="fc-modal-show-reports-detail flex-container-column flex-2 px-m">
-            <header class="flex-container-row">
-              <h3>TODO: REPORT NAME HERE</h3>
-              <div class="flex-fill"></div>
-              <button
-                class="tds-button-secondary font-size-l"
-                disabled>
-                <i class="fa fa-download"></i>
-              </button>
-              <button
-                class="tds-button-secondary font-size-l ml-m"
-                disabled>
-                <i class="fa fa-print"></i>
-              </button>
-            </header>
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
-                TODO: REPORT HERE
-                <p>
-                  <pre>{{JSON.stringify(activeCountData, null, 2)}}</pre>
-                </p>
+                <div
+                  v-if="reports.length === 0"
+                  class="tds-panel tds-panel-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  <p>
+                    Select one or more report types from the list.
+                  </p>
+                </div>
+                <section
+                  v-for="{ label, value, reportComponent } in selection"
+                  :key="value"
+                  class="mb-xl">
+                  <header class="flex-container-row">
+                    <h3>{{label}}</h3>
+                    <div class="flex-fill"></div>
+                    <button
+                      class="tds-button-secondary font-size-l"
+                      disabled>
+                      <i class="fa fa-download"></i>
+                    </button>
+                    <button
+                      class="tds-button-secondary font-size-l ml-m"
+                      disabled>
+                      <i class="fa fa-print"></i>
+                    </button>
+                  </header>
+                  <component
+                    :is="reportComponent"
+                    :count="activeCount"
+                    :count-data="activeCountData" />
+                </section>
               </div>
             </div>
           </section>
@@ -107,7 +122,8 @@
 
 <script>
 import { mapState } from 'vuex';
-
+import FcReportAtrVolume24hGraph from '@/components/FcReportAtrVolume24hGraph.vue';
+import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import apiFetch from '@/lib/ApiFetch';
@@ -116,15 +132,15 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 const OPTIONS_REPORTS = {
   TMC: [
     { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
-    { label: 'Illustrated TMC Summary Report', value: 'TMC_ILLUSTRATED' },
+    { label: 'Illustrated TMC Summary Report', value: 'TMC_ILLUSTRATED', disabled: true },
   ],
   ATR_VOLUME: [
     { label: 'Graphical 24-Hour Summary Report', value: 'ATR_VOLUME_24H_GRAPH' },
-    { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY' },
-    { label: 'Detailed 24-Hour Summary Report', value: 'ATR_VOLUME_24H_DETAIL' },
+    { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
+    { label: 'Detailed 24-Hour Summary Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
   ],
   ATR_SPEED_VOLUME: [
-    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT' },
+    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT', disabled: true },
   ],
   PXO_OBSERVE: [],
   PED_DELAY: [],
@@ -134,6 +150,8 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    FcReportAtrVolume24hGraph,
+    FcReportTmcSummary,
     TdsActionDropdown,
   },
   data() {
@@ -171,9 +189,21 @@ export default {
       }
       return OPTIONS_REPORTS[value];
     },
+    selection() {
+      return this.reports.map((report) => {
+        const { label } = this.optionsReports
+          .find(({ value }) => report === value);
+        const suffix = report
+          .split('_')
+          .map(part => part[0] + part.slice(1).toLowerCase())
+          .join('');
+        const reportComponent = `FcReport${suffix}`;
+        return { label, value: report, reportComponent };
+      });
+    },
     selectionAll() {
       return this.optionsReports
-        .every(({ value }) => this.reports.includes(value));
+        .every(({ value, disabled }) => disabled || this.reports.includes(value));
     },
     selectionIndeterminate() {
       return this.reports.length > 0 && !this.selectionAll;
@@ -207,7 +237,9 @@ export default {
       if (this.selectionAll) {
         this.reports = [];
       } else {
-        this.reports = this.optionsReports.map(({ value }) => value);
+        this.reports = this.optionsReports
+          .filter(({ disabled }) => !disabled)
+          .map(({ value }) => value);
       }
     },
     onSelectActiveCount(i) {
