@@ -11,59 +11,68 @@
           <span class="px-s">{{locationQuery}}</span>
         </h2>
         <div class="flex-fill"></div>
-        <span class="font-size-xl px-xl">{{activeCount.date | date}}</span>
+        <TdsActionDropdown
+          class="font-size-l mr-xl"
+          :options="optionsCounts"
+          @action-selected="onSelectActiveCount">
+          <span>
+            {{activeCount.date | date}}
+          </span>
+        </TdsActionDropdown>
       </div>
     </template>
     <template v-slot:content>
       <div class="flex-container-column full-height">
-        <div class="fc-modal-show-reports-filters flex-container-row py-l">
-          <TdsChecklistDropdown
-            v-model="reports"
-            class="fc-filter-reports font-size-l"
-            :class="{
-              'tds-button-success': reports.length > 0,
-            }"
-            :disabled="optionsReports.length === 0"
-            name="reports"
-            :options="optionsReports">
-            <span>
-              Reports
-              <span
-                class="tds-badge"
-                :class="{
-                  'tds-badge-success': reports.length > 0,
-                }">{{reports.length}}</span>
-            </span>
-          </TdsChecklistDropdown>
-          <TdsActionDropdown
-            class="font-size-l ml-m"
-            :options="optionsCounts"
-            @action-selected="onSelectActiveCount">
-            <span>
-              Available Counts
-            </span>
-          </TdsActionDropdown>
-        </div>
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill my-m">
           <div class="fc-modal-show-reports-master flex-container-column flex-1 px-m">
-            <h3>Contents</h3>
-            <div class="flex-fill flex-container-row">
-              <div class="flex-cross-scroll">
-                TODO: MASTER HERE
-              </div>
-            </div>
-            <div class="fc-modal-show-reports-master-actions mx-m py-m text-center">
+            <div class="fc-modal-show-reports-master-actions flex-container-row mx-m py-m">
+              <label class="tds-checkbox">
+                <input
+                  type="checkbox"
+                  name="selectAll"
+                  :checked="selectionAll"
+                  :indeterminate.prop="selectionIndeterminate"
+                  @change="onChangeSelectAll" />
+                <span>All</span>
+              </label>
+              <div class="flex-fill"></div>
               <button
-                class="tds-button-secondary font-size-l">
+                class="tds-button-secondary font-size-l"
+                disabled>
                 <i class="fa fa-download"></i>
-                <span> Download All</span>
               </button>
               <button
                 class="tds-button-secondary font-size-l ml-m"
                 disabled>
                 <i class="fa fa-print"></i>
-                <span> Print All</span>
               </button>
+            </div>
+            <div class="flex-fill flex-container-row">
+              <div class="flex-cross-scroll mt-m">
+                <div
+                  v-if="optionsReports.length === 0"
+                  class="tds-panel tds-panel-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  <p>
+                    The alpha launch of Flashcrow doesn't yet support
+                    {{activeCount.type.label}} reports.
+                  </p>
+                </div>
+                <div
+                  v-else
+                  v-for="{ label, value } in optionsReports"
+                  :key="value"
+                  class="p-m">
+                  <label class="tds-checkbox">
+                    <input
+                      v-model="reports"
+                      type="checkbox"
+                      name="reports"
+                      :value="value" />
+                    <span>{{label}}</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           <section class="fc-modal-show-reports-detail flex-container-column flex-2 px-m">
@@ -71,7 +80,8 @@
               <h3>TODO: REPORT NAME HERE</h3>
               <div class="flex-fill"></div>
               <button
-                class="tds-button-secondary font-size-l">
+                class="tds-button-secondary font-size-l"
+                disabled>
                 <i class="fa fa-download"></i>
               </button>
               <button
@@ -99,7 +109,6 @@
 import { mapState } from 'vuex';
 
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import apiFetch from '@/lib/ApiFetch';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -126,12 +135,10 @@ export default {
   mixins: [TdsMixinModal],
   components: {
     TdsActionDropdown,
-    TdsChecklistDropdown,
   },
   data() {
     return {
-      activeCountData: {},
-      loading: false,
+      activeCountData: [],
       reports: [],
       studies: [],
     };
@@ -164,6 +171,13 @@ export default {
       }
       return OPTIONS_REPORTS[value];
     },
+    selectionAll() {
+      return this.optionsReports
+        .every(({ value }) => this.reports.includes(value));
+    },
+    selectionIndeterminate() {
+      return this.reports.length > 0 && !this.selectionAll;
+    },
     ...mapState(['locationQuery']),
   },
   watch: {
@@ -189,6 +203,13 @@ export default {
     },
   },
   methods: {
+    onChangeSelectAll() {
+      if (this.selectionAll) {
+        this.reports = [];
+      } else {
+        this.reports = this.optionsReports.map(({ value }) => value);
+      }
+    },
     onSelectActiveCount(i) {
       this.activeIndex = i;
     },
@@ -216,7 +237,8 @@ export default {
       & > .fc-modal-show-reports-master {
         border-right: var(--border-default);
         & > .fc-modal-show-reports-master-actions {
-          border-top: var(--border-default);
+          align-items: center;
+          background-color: var(--base-lighter);
         }
       }
       & > .fc-modal-show-reports-detail {
