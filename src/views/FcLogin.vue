@@ -3,6 +3,19 @@
     <h1>Log in</h1>
     <div class="flex-container-row">
       <div class="flex-1">
+        <div
+          class="tds-panel tds-panel-info font-size-l">
+          <i class="fa fa-info-circle"></i>
+          <p>
+            This is a test login page.  To log in, enter
+            your name and <strong>@toronto.ca</strong> email address.  If this is
+            your first time using Flashcrow, we'll automatically create your account.
+          </p>
+          <p>
+            Please use your actual name and email address!  That helps us transition to an
+            actual login mechanism later.
+          </p>
+        </div>
         <div class="form-group">
           <label>
             <span>Name</span>
