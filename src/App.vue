@@ -617,6 +617,9 @@ hr {
 .mb-xl {
   margin-bottom: var(--space-xl);
 }
+.mr-xl {
+  margin-right: var(--space-xl);
+}
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
 .tds-checkbox {
