@@ -28,8 +28,15 @@ mkdir -p "$HOME/log/airflow"
 # initdb, first time (to generate directory)
 airflow initdb
 
+# .pgpass entries: airflow, BDITTO
 # copy airflow.cfg over
 # run airflow_admin_user.py
+# install tippecanoe
+git clone https://github.com/mapbox/tippecanoe.git "$HOME/tippecanoe"
+cd "$HOME/tippecanoe"
+make -j
+sudo make install
+
 
 ln -s /home/ec2-user/flashcrow/scripts/airflow/dags /home/ec2-user/airflow/dags
 
