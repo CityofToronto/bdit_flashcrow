@@ -6,90 +6,111 @@
     <template v-slot:header>
       <div class="flex-container-row">
         <h2>
-          <span>{{item.type.label}} at </span>
+          <span>{{activeCount.type.label}} at </span>
           <i class="fa fa-map-marker-alt"></i>
-          <abbr
-            class="px-s"
-            :title="locationQuery">{{locationQuery}}</abbr>
+          <span class="px-s">{{locationQuery}}</span>
         </h2>
         <div class="flex-fill"></div>
-        <abbr
-          class="font-size-l px-xl"
-          :title="item.date | date">{{item.date | date}}</abbr>
+        <TdsActionDropdown
+          class="font-size-l mr-xl"
+          :options="optionsCounts"
+          @action-selected="onSelectActiveCount">
+          <span>
+            {{activeCount.date | date}}
+          </span>
+        </TdsActionDropdown>
       </div>
     </template>
     <template v-slot:content>
       <div class="flex-container-column full-height">
-        <div class="fc-modal-show-reports-filters flex-container-row py-l">
-          <TdsChecklistDropdown
-            v-model="reports"
-            class="fc-filter-reports font-size-l"
-            :class="{
-              'tds-button-success': reports.length > 0,
-            }"
-            name="reports"
-            :options="optionsReports">
-            <span>
-              Reports
-              <span
-                class="tds-badge"
-                :class="{
-                  'tds-badge-success': reports.length > 0,
-                }">{{reports.length}}</span>
-            </span>
-          </TdsChecklistDropdown>
-          <TdsChecklistDropdown
-            v-model="studies"
-            class="fc-filter-studies font-size-l ml-m"
-            :class="{
-              'tds-button-success': studies.length > 0,
-            }"
-            name="studies"
-            :options="optionsReports">
-            <span>
-              Archived Studies
-            </span>
-          </TdsChecklistDropdown>
-        </div>
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill my-m">
           <div class="fc-modal-show-reports-master flex-container-column flex-1 px-m">
-            <h3>Contents</h3>
-            <div class="flex-fill flex-container-row">
-              <div class="flex-cross-scroll">
-                TODO: MASTER HERE
-              </div>
-            </div>
-            <div class="fc-modal-show-reports-master-actions mx-m py-m text-center">
+            <div class="fc-modal-show-reports-master-actions flex-container-row mx-m py-m">
+              <label class="tds-checkbox">
+                <input
+                  type="checkbox"
+                  name="selectAll"
+                  :checked="selectionAll"
+                  :indeterminate.prop="selectionIndeterminate"
+                  @change="onChangeSelectAll" />
+                <span>All</span>
+              </label>
+              <div class="flex-fill"></div>
               <button
-                class="tds-button-secondary font-size-l">
+                class="tds-button-secondary font-size-l"
+                disabled>
                 <i class="fa fa-download"></i>
-                <span> Download All</span>
               </button>
               <button
                 class="tds-button-secondary font-size-l ml-m"
                 disabled>
                 <i class="fa fa-print"></i>
-                <span> Print All</span>
               </button>
+            </div>
+            <div class="flex-fill flex-container-row">
+              <div class="flex-cross-scroll mt-m">
+                <div
+                  v-if="optionsReports.length === 0"
+                  class="tds-panel tds-panel-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  <p>
+                    The alpha launch of Flashcrow doesn't yet support
+                    {{activeCount.type.label}} reports.
+                  </p>
+                </div>
+                <div
+                  v-else
+                  v-for="{ label, value, disabled } in optionsReports"
+                  :key="value"
+                  class="p-m">
+                  <label class="tds-checkbox">
+                    <input
+                      v-model="reports"
+                      type="checkbox"
+                      :disabled="disabled"
+                      name="reports"
+                      :value="value" />
+                    <span>{{label}}</span>
+                    <span v-if="disabled"> (coming soon)</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           <section class="fc-modal-show-reports-detail flex-container-column flex-2 px-m">
-            <header class="flex-container-row">
-              <h3>TODO: REPORT NAME HERE</h3>
-              <div class="flex-fill"></div>
-              <button
-                class="tds-button-secondary font-size-l">
-                <i class="fa fa-download"></i>
-              </button>
-              <button
-                class="tds-button-secondary font-size-l ml-m"
-                disabled>
-                <i class="fa fa-print"></i>
-              </button>
-            </header>
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
-                TODO: REPORT HERE
+                <div
+                  v-if="reports.length === 0"
+                  class="tds-panel tds-panel-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  <p>
+                    Select one or more report types from the list.
+                  </p>
+                </div>
+                <section
+                  v-for="{ label, value, reportComponent } in selection"
+                  :key="value"
+                  class="mb-xl">
+                  <header class="flex-container-row">
+                    <h3>{{label}}</h3>
+                    <div class="flex-fill"></div>
+                    <button
+                      class="tds-button-secondary font-size-l"
+                      disabled>
+                      <i class="fa fa-download"></i>
+                    </button>
+                    <button
+                      class="tds-button-secondary font-size-l ml-m"
+                      disabled>
+                      <i class="fa fa-print"></i>
+                    </button>
+                  </header>
+                  <component
+                    :is="reportComponent"
+                    :count="activeCount"
+                    :count-data="activeCountData" />
+                </section>
               </div>
             </div>
           </section>
@@ -101,30 +122,129 @@
 
 <script>
 import { mapState } from 'vuex';
-
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
+import FcReportAtrVolume24hGraph from '@/components/FcReportAtrVolume24hGraph.vue';
+import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
+import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import apiFetch from '@/lib/ApiFetch';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+
+const OPTIONS_REPORTS = {
+  TMC: [
+    { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
+    { label: 'Illustrated TMC Summary Report', value: 'TMC_ILLUSTRATED', disabled: true },
+  ],
+  ATR_VOLUME: [
+    { label: 'Graphical 24-Hour Summary Report', value: 'ATR_VOLUME_24H_GRAPH' },
+    { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
+    { label: 'Detailed 24-Hour Summary Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
+  ],
+  ATR_SPEED_VOLUME: [
+    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT', disabled: true },
+  ],
+  PXO_OBSERVE: [],
+  PED_DELAY: [],
+};
 
 export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
-    TdsChecklistDropdown,
+    FcReportAtrVolume24hGraph,
+    FcReportTmcSummary,
+    TdsActionDropdown,
   },
   data() {
     return {
-      optionsReports: [
-        { label: 'Turning Movement Count Summary Report', value: 'TMC_SUMMARY_REPORT' },
-      ],
+      activeCountData: [],
       reports: [],
       studies: [],
     };
   },
   computed: {
-    item() {
-      return this.data.item;
+    activeCount() {
+      return this.counts[this.activeIndex];
+    },
+    activeIndex: {
+      get() {
+        return this.data.activeIndex;
+      },
+      set(activeIndex) {
+        this.data.activeIndex = activeIndex;
+      },
+    },
+    counts() {
+      return this.data.counts;
+    },
+    optionsCounts() {
+      return this.counts.map((count, i) => {
+        const label = TimeFormatters.formatDefault(count.date);
+        return { label, value: i };
+      });
+    },
+    optionsReports() {
+      const { value } = this.activeCount.type;
+      if (value === undefined) {
+        return [];
+      }
+      return OPTIONS_REPORTS[value];
+    },
+    selection() {
+      return this.reports.map((report) => {
+        const { label } = this.optionsReports
+          .find(({ value }) => report === value);
+        const suffix = report
+          .split('_')
+          .map(part => part[0] + part.slice(1).toLowerCase())
+          .join('');
+        const reportComponent = `FcReport${suffix}`;
+        return { label, value: report, reportComponent };
+      });
+    },
+    selectionAll() {
+      return this.optionsReports
+        .every(({ value, disabled }) => disabled || this.reports.includes(value));
+    },
+    selectionIndeterminate() {
+      return this.reports.length > 0 && !this.selectionAll;
     },
     ...mapState(['locationQuery']),
+  },
+  watch: {
+    activeCount: {
+      handler() {
+        const countInfoId = this.activeCount.id;
+        const categoryId = this.activeCount.type.id;
+        const options = {
+          method: 'GET',
+          data: { countInfoId, categoryId },
+        };
+        apiFetch('/counts/data', options)
+          .then((countData) => {
+            const countDataNormalized = countData.map((bucket) => {
+              const bucketNormalized = Object.assign({}, bucket);
+              bucketNormalized.t = new Date(bucketNormalized.t);
+              return bucketNormalized;
+            });
+            this.activeCountData = countDataNormalized;
+          });
+      },
+      immediate: true,
+    },
+  },
+  methods: {
+    onChangeSelectAll() {
+      if (this.selectionAll) {
+        this.reports = [];
+      } else {
+        this.reports = this.optionsReports
+          .filter(({ disabled }) => !disabled)
+          .map(({ value }) => value);
+      }
+    },
+    onSelectActiveCount(i) {
+      this.activeIndex = i;
+    },
   },
 };
 </script>
@@ -143,16 +263,14 @@ export default {
       & > .fc-filter-reports > .dropdown {
         width: 400px;
       }
-      & > .fc-filter-studies > .dropdown {
-        width: 400px;
-      }
     }
     .fc-modal-show-reports-master-detail {
       align-items: stretch;
       & > .fc-modal-show-reports-master {
         border-right: var(--border-default);
         & > .fc-modal-show-reports-master-actions {
-          border-top: var(--border-default);
+          align-items: center;
+          background-color: var(--base-lighter);
         }
       }
       & > .fc-modal-show-reports-detail {
