@@ -28,6 +28,7 @@
       <FcCardTableCounts
         :sections="sections"
         v-model="selection"
+        @action-card="onActionCard"
         @action-item="onActionItem" />
     </div>
   </div>
@@ -153,17 +154,13 @@ export default {
       this.setShowMap(true);
     },
     actionShowReports(items) {
-      // TODO: we could use options here to load specific report types?
       const counts = items.filter(item => idIsCount(item.id));
       if (counts.length === 0) {
         return;
       }
-      const [item] = items;
       this.setModal({
         component: 'FcModalShowReports',
-        data: {
-          item,
-        },
+        data: { counts, activeIndex: 0 },
       });
     },
     onActionBulk(type, options) {
@@ -186,14 +183,24 @@ export default {
         this.actionRequestStudy(items, actionOptions);
       }
     },
+    onActionCard({
+      type,
+      item,
+      children,
+      options,
+    }) {
+      const actionOptions = options || {};
+      const items = [item].concat(children);
+      if (type === 'show-reports') {
+        this.actionShowReports(items, actionOptions);
+      }
+    },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
       if (type === 'download') {
         this.actionDownload([item], actionOptions);
       } else if (type === 'request-study') {
         this.actionRequestStudy([item], actionOptions);
-      } else if (type === 'show-reports') {
-        this.actionShowReports([item], actionOptions);
       }
     },
     onChangeSelectAll() {

@@ -11,6 +11,7 @@ const config = require('./lib/config');
 const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
+const CountDataDAO = require('./lib/db/CountDataDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const vueConfig = require('./vue.config');
@@ -434,6 +435,31 @@ async function initServer() {
     handler: async (request) => {
       const { centrelineId, centrelineType } = request.query;
       return CountDAO.byCentreline(centrelineId, centrelineType);
+    },
+  });
+
+  // COUNT DATA
+  server.route({
+    method: 'GET',
+    path: '/counts/data',
+    config: {
+      auth: { mode: 'try' },
+      validate: {
+        query: {
+          countInfoId: Joi.number().integer().positive().required(),
+          categoryId: Joi.number().integer().positive().required(),
+        },
+      },
+    },
+    handler: async (request) => {
+      const { countInfoId, categoryId } = request.query;
+      const count = await CountDAO.byIdAndCategory(countInfoId, categoryId);
+      if (count === null) {
+        return Boom.notFound(
+          `no count found with ID ${countInfoId} and category ${categoryId}`,
+        );
+      }
+      return CountDataDAO.byCount(count);
     },
   });
 
