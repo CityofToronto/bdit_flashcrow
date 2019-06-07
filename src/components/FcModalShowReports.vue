@@ -54,7 +54,7 @@
                   class="tds-panel tds-panel-warning">
                   <i class="fa fa-exclamation-triangle"></i>
                   <p>
-                    The alpha launch of Flashcrow doesn't yet support
+                    The alpha launch of Move doesn't yet support
                     {{activeCount.type.label}} reports.
                   </p>
                 </div>
