@@ -45,13 +45,13 @@ function injectCentrelineVectorTiles(style) {
 
   STYLE.sources.centreline = {
     type: 'vector',
-    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
   };
 
 
   STYLE.sources.intersections = {
     type: 'vector',
-    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
 
