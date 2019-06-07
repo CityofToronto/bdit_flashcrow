@@ -7,12 +7,13 @@
 #
 # This script should *not* contain any calls to sudo.
 #
-# TODO: DRY with scripts/dev/provision-admin.sh
+# TODO: DRY with other provision-admin scripts
 
 set -e
 set -o nounset
 
 cd "$(dirname "$0")"
+PROVISION_ENV="$1"
 
 # setup nginx
 amazon-linux-extras install nginx1.12
@@ -21,8 +22,8 @@ service nginx status && service nginx stop
 rm -rf /run/nginx.pid
 
 # install nginx configs
-cp nginx/nginx.conf /etc/nginx/
-cp nginx/default.d/*.conf /etc/nginx/default.d/
+cp "$PROVISION_ENV/nginx/nginx.conf" /etc/nginx/
+cp "$PROVISION_ENV/nginx/default.d/*.conf" /etc/nginx/default.d/
 service nginx start
 
 # install yum packages

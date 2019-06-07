@@ -1,4 +1,12 @@
 class ArrayUtils {
+  static range(lo, hi) {
+    if (hi === undefined) {
+      return [...Array(lo).keys()];
+    }
+    const n = hi - lo;
+    return [...Array(n).keys()].map(i => lo + i);
+  }
+
   static getMaxBy(xs, key) {
     const n = xs.length;
     if (n === 0) {

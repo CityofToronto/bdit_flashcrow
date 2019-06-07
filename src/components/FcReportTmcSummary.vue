@@ -1,10 +1,48 @@
 <template>
   <div class="fc-report-tmc-summary">
-    <pre>{{JSON.stringify(sum8Hour, null, 2)}}</pre>
+    <div class="flex-container-row">
+      <span>{{locationQuery}}</span>
+      <div class="flex-fill"></div>
+      <span>{{hoursHuman}}</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <td>
+        </tr>
+      </thead>
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+      <FcReportTmcSummarySection
+        :section-data="sumAmPeak" />
+    </table>
+    <footer class="flex-container-row">
+      <span>
+        Total 8 Hour Vehicle Volume: {{sum8Hour.VEHICLE_TOTAL}}
+      </span>
+      <span>
+        Total 8 Hour Bicycle Volume: {{sum8Hour.BIKE_TOTAL}}
+      </span>
+      <span>
+        Total 8 Hour Intersection Volume: {{sum8Hour.TOTAL}}
+      </span>
+    </footer>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+import ArrayUtils from '@/lib/ArrayUtils';
+
 function normalizeData(rawData) {
   const data = Object.assign({}, rawData);
 
@@ -61,6 +99,20 @@ function normalizeData(rawData) {
   return data;
 }
 
+function sumIndices(countData, is) {
+  const sum = this.countData[0].data;
+  const n = this.countData.length;
+  is.forEach((i, j) => {
+    Object.entries(this.countData[i].data).forEach(([key, value]) => {
+      if (j === 0) {
+        sum[key] = 0;
+      }
+      sum[key] += value;
+    });
+  });
+  return normalizeData(sum);
+}
+
 export default {
   name: 'FcReportTmcSummary',
   props: {
@@ -68,40 +120,56 @@ export default {
     countData: Array,
   },
   computed: {
-    indexAm2Hour() {
-      return 0;
+    hoursHuman() {
+      const { hours } = this.count;
+      if (hours === 'ROUTINE') {
+        return 'Routine Hours';
+      }
+      if (hours === 'SCHOOL') {
+        return 'School Hours';
+      }
+      return 'Other Hours';
     },
     indexAmPeak() {
+      // TODO: actually compute this
       return 2;
     },
-    indicesOffHour() {
-      const is = [];
+    indicesOffHours() {
       const n = this.countData.length;
-      for (let i = 0; i < n; i += 1) {
-        if (i < this.indexAmPeak
-            || (this.indexAmPeak + 4 <= i && i < this.indexPmPeak)
-            || this.indexPmPeak + 4 <= i) {
-          is.push(i);
-        }
-      }
-      return is;
-    },
-    indexPm2Hour() {
-      return 24;
+      return [].concat(
+        ArrayUtils.range(0, this.indexAmPeak),
+        ArrayUtils.range(this.indexAmPeak + 4, this.indexPmPeak),
+        ArrayUtils.range(this.indexPmPeak + 4, n),
+      );
     },
     indexPmPeak() {
+      // TODO: actually compute this
       return 27;
     },
     sum8Hour() {
-      const sum8Hour = this.countData[0].data;
-      const n = this.countData.length;
-      for (let i = 1; i < n; i += 1) {
-        Object.entries(this.countData[i].data).forEach(([key, value]) => {
-          sum8Hour[key] += value;
-        });
-      }
-      return normalizeData(sum8Hour);
+      const is = ArrayUtils.range(32);
+      return sumIndices(this.countData, is);
     },
+    sumAm2Hour() {
+      const is = ArrayUtils.range(0, 8);
+      return sumIndices(this.countData, is);
+    },
+    sumAmPeak() {
+      const is = ArrayUtils.range(this.indexAmPeak, this.indexAmPeak + 4);
+      return sumIndices(this.countData, is);
+    },
+    sumOffHours() {
+      return sumIndices(this.countData, this.indicesOffHours);
+    },
+    sumPm2Hour() {
+      const is = ArrayUtils.range(24, 32);
+      return sumIndices(this.countData, is);
+    },
+    sumPmPeak() {
+      const is = ArrayUtils.range(this.indexPmPeak, this.indexPmPeak + 4);
+      return sumIndices(this.countData, is);
+    },
+    ...mapState(['locationQuery']),
   },
 };
 </script>
