@@ -114,7 +114,7 @@ DIR_DAT="$DIR_ROOT/dat"
 CONFIG_FILE="$CONFIG.config.json"
 
 # email settings
-EMAIL_FROM="Flashcrow Replicator <replicator@flashcrow.intra.dev-toronto.ca>"
+EMAIL_FROM="Flashcrow Replicator <replicator@flashcrow-etl.intra.dev-toronto.ca>"
 EMAIL_SUBJECT_STATUS="[flashcrow] [replicator] Replication Status: $CONFIG"
 EMAIL_SUBJECT_ERROR="[flashcrow] [replicator] Replication Error: $CONFIG"
 EMAIL_SUBJECT_SUCCESS="[flashcrow] [replicator] Replication Success: $CONFIG"
