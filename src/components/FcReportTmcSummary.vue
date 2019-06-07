@@ -5,10 +5,15 @@
       <div class="flex-fill"></div>
       <span>{{hoursHuman}}</span>
     </div>
+    <pre>{{JSON.stringify(countData, null, 2)}}</pre>
+  </div>
+</template>
+
+<script>
+/*
     <table>
       <thead>
         <tr>
-          <td>
         </tr>
       </thead>
       <FcReportTmcSummarySection
@@ -35,10 +40,8 @@
         Total 8 Hour Intersection Volume: {{sum8Hour.TOTAL}}
       </span>
     </footer>
-  </div>
-</template>
+  */
 
-<script>
 import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
@@ -100,8 +103,7 @@ function normalizeData(rawData) {
 }
 
 function sumIndices(countData, is) {
-  const sum = this.countData[0].data;
-  const n = this.countData.length;
+  const sum = {};
   is.forEach((i, j) => {
     Object.entries(this.countData[i].data).forEach(([key, value]) => {
       if (j === 0) {
