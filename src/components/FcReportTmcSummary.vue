@@ -1,12 +1,13 @@
 <template>
   <section class="fc-report-tmc-summary">
-    <header class="flex-container-row">
-      <strong>{{locationQuery}}</strong>
-      <div class="flex-fill"></div>
-      <span>
+    <header>
+      <div>
+        <strong>{{locationQuery}}</strong>
+      </div>
+      <div>
         <strong>Survey Type: </strong>
         <span>{{hoursHuman}}</span>
-      </span>
+      </div>
     </header>
     <table>
       <thead>
@@ -42,6 +43,7 @@
         title="PM PEAK" />
       <FcReportTmcSummarySection
         :section-data="avgOffHours"
+        :time-range="timeRangeOffHours"
         title="OFF HOUR AVG" />
       <FcReportTmcSummarySection
         :section-data="sumAm2Hour"
@@ -56,16 +58,19 @@
         :time-range="timeRange8Hour"
         title="8 HR SUM" />
     </table>
-    <footer class="flex-container-row">
-      <span>
-        Total 8 Hour Vehicle Volume: {{sum8Hour.VEHICLE_TOTAL}}
-      </span>
-      <span>
-        Total 8 Hour Bicycle Volume: {{sum8Hour.BIKE_TOTAL}}
-      </span>
-      <span>
-        Total 8 Hour Intersection Volume: {{sum8Hour.TOTAL}}
-      </span>
+    <footer>
+      <div>
+        <strong>Total 8 Hour Vehicle Volume: </strong>
+        <span>{{sum8Hour.VEHICLE_TOTAL}}</span>
+      </div>
+      <div>
+        <strong>Total 8 Hour Bicycle Volume: </strong>
+        <span>{{sum8Hour.BIKE_TOTAL}}</span>
+      </div>
+      <div>
+        <strong>Total 8 Hour Intersection Volume: </strong>
+        <span>{{sum8Hour.TOTAL}}</span>
+      </div>
     </footer>
   </section>
 </template>
@@ -150,7 +155,7 @@ function avgIndices(countData, is) {
   const n = is.length;
   const avg = {};
   Object.entries(sum).forEach(([key, value]) => {
-    avg[key] = Math.floor(value / n);
+    avg[key] = Math.round(4 * value / n);
   });
   return normalizeData(avg);
 }
@@ -160,6 +165,25 @@ function sumIndices(countData, is) {
   return normalizeData(sum);
 }
 
+/*
+ * Compute the starting index of the peak hour between lo and hi.
+ * It is assumed that [lo, hi) defines a sequence of back-to-back
+ * 15-minute buckets.
+ */
+function peakIndex(countData, lo, hi) {
+  let peakVolume = -Infinity;
+  let peak = null;
+  for (let i = lo; i < hi - 4; i += 1) {
+    const is = ArrayUtils.range(i, i + 4);
+    const sum = sumIndices(countData, is);
+    if (sum.TOTAL > peakVolume) {
+      peakVolume = sum.TOTAL;
+      peak = i;
+    }
+  }
+  return peak;
+}
+
 function timeRange(countData, is) {
   const n = is.length;
   const indexStart = is[0];
@@ -167,7 +191,7 @@ function timeRange(countData, is) {
   let { t: start } = countData[indexStart];
   const { t: end } = countData[indexEnd];
   start = new Date(
-    start.getYear(),
+    start.getFullYear(),
     start.getMonth(),
     start.getDate(),
     start.getHours(),
@@ -198,20 +222,13 @@ export default {
       return 'Other Hours';
     },
     indexAmPeak() {
-      // TODO: actually compute this
-      return 2;
+      return peakIndex(this.countData, 0, 8);
     },
     indicesOffHours() {
-      const n = this.countData.length;
-      return [].concat(
-        ArrayUtils.range(0, this.indexAmPeak),
-        ArrayUtils.range(this.indexAmPeak + 4, this.indexPmPeak),
-        ArrayUtils.range(this.indexPmPeak + 4, n),
-      );
+      return ArrayUtils.range(8, 24);
     },
     indexPmPeak() {
-      // TODO: actually compute this
-      return 27;
+      return peakIndex(this.countData, 24, 32);
     },
     sum8Hour() {
       const is = ArrayUtils.range(32);
@@ -226,7 +243,8 @@ export default {
       return sumIndices(this.countData, is);
     },
     avgOffHours() {
-      return avgIndices(this.countData, this.indicesOffHours);
+      const is = ArrayUtils.range(8, 24);
+      return avgIndices(this.countData, is);
     },
     sumPm2Hour() {
       const is = ArrayUtils.range(24, 32);
@@ -246,6 +264,10 @@ export default {
     },
     timeRangeAmPeak() {
       const is = ArrayUtils.range(this.indexAmPeak, this.indexAmPeak + 4);
+      return timeRange(this.countData, is);
+    },
+    timeRangeOffHours() {
+      const is = ArrayUtils.range(8, 24);
       return timeRange(this.countData, is);
     },
     timeRangePm2Hour() {
