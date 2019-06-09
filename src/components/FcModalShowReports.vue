@@ -25,7 +25,19 @@
       <div class="flex-container-column full-height">
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill my-m">
           <div class="fc-modal-show-reports-master flex-container-column flex-1 px-m">
-            <div class="fc-modal-show-reports-master-actions flex-container-row mx-m py-m">
+            <div
+              v-if="optionsReportsEnabled.length === 0"
+              class="tds-panel tds-panel-warning">
+              <i class="fa fa-exclamation-triangle"></i>
+              <p>
+                The alpha launch of Move doesn't yet support
+                {{activeCount.type.label}} reports.  Try selecting an intersection
+                with Turning Movement Count data.
+              </p>
+            </div>
+            <div
+              v-else
+              class="fc-modal-show-reports-master-actions flex-container-row mx-m py-m">
               <label class="tds-checkbox">
                 <input
                   type="checkbox"
@@ -50,16 +62,6 @@
             <div class="flex-fill flex-container-row">
               <div class="flex-cross-scroll mt-m">
                 <div
-                  v-if="optionsReports.length === 0"
-                  class="tds-panel tds-panel-warning">
-                  <i class="fa fa-exclamation-triangle"></i>
-                  <p>
-                    The alpha launch of Move doesn't yet support
-                    {{activeCount.type.label}} reports.
-                  </p>
-                </div>
-                <div
-                  v-else
                   v-for="{ label, value, disabled } in optionsReports"
                   :key="value"
                   class="p-m">
@@ -81,7 +83,16 @@
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
                 <div
-                  v-if="reports.length === 0"
+                  v-if="optionsReportsEnabled.length === 0"
+                  class="tds-panel tds-panel-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  <p>
+                    When we release {{activeCount.type.label}} reports, you'll be able to
+                    view, download, and print them from here.
+                  </p>
+                </div>
+                <div
+                  v-else-if="reports.length === 0"
                   class="tds-panel tds-panel-warning">
                   <i class="fa fa-exclamation-triangle"></i>
                   <p>
@@ -92,7 +103,7 @@
                   v-for="{ label, value, reportComponent } in selection"
                   :key="value"
                   class="mb-xl">
-                  <header class="flex-container-row">
+                  <header class="flex-container-row mb-m">
                     <h3>{{label}}</h3>
                     <div class="flex-fill"></div>
                     <button
@@ -135,9 +146,9 @@ const OPTIONS_REPORTS = {
     { label: 'TMC Illustrated Report', value: 'TMC_ILLUSTRATED', disabled: true },
   ],
   ATR_VOLUME: [
-    { label: 'Graphical 24-Hour Summary Report', value: 'ATR_VOLUME_24H_GRAPH' },
+    { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH', disabled: true },
     { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
-    { label: 'Detailed 24-Hour Summary Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
+    { label: '24-Hour Detailed Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
   ],
   ATR_SPEED_VOLUME: [
     { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT', disabled: true },
@@ -188,6 +199,10 @@ export default {
         return [];
       }
       return OPTIONS_REPORTS[value];
+    },
+    optionsReportsEnabled() {
+      return this.optionsReports
+        .filter(({ disabled }) => !disabled);
     },
     selection() {
       return this.reports.map((report) => {

@@ -52,7 +52,7 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          :disabled="item.status === Status.NO_EXISTING_COUNT"
+          disabled
           @click="$emit('action-item', {
             type: 'download',
             item,
@@ -71,6 +71,7 @@
         </button>
         <button
           class="tds-button-secondary font-size-l"
+          disabled
           @click="$emit('action-item', {
             type: 'request-study',
             item,
