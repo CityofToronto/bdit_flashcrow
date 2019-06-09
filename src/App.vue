@@ -20,10 +20,12 @@
           label="View Data"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
+          disabled
           icon="folder-plus"
           label="Request Study"
           :to="{ name: 'requestStudy' }" />
         <FcDashboardNavItem
+          disabled
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
