@@ -14,15 +14,16 @@
         <tr>
           <th rowspan="2">Time Period</th>
           <th rowspan="2">Vehicle Type</th>
-          <th colspan="4">NORTHBOUND</th>
-          <th colspan="4">EASTBOUND</th>
-          <th colspan="4">SOUTHBOUND</th>
-          <th colspan="4">WESTBOUND</th>
+          <th colspan="5">NORTHBOUND</th>
+          <th colspan="5">EASTBOUND</th>
+          <th colspan="5">SOUTHBOUND</th>
+          <th colspan="5">WESTBOUND</th>
           <th rowspan="2"></th>
           <th colspan="3"></th>
         </tr>
         <tr>
           <template v-for="i in 4">
+            <th :key="i + '_EXITS'">Exits</th>
             <th :key="i + '_L'">Left</th>
             <th :key="i + '_T'">Thru</th>
             <th :key="i + '_R'">Right</th>
@@ -100,6 +101,22 @@ function normalizeData(rawData) {
   data.S_BUS_TOTAL = data.S_BUS_R + data.S_BUS_T + data.S_BUS_L;
   data.W_BUS_TOTAL = data.W_BUS_R + data.W_BUS_T + data.W_BUS_L;
 
+  // directional exits, by type of vehicle
+  data.N_CARS_EXITS = data.E_CARS_R + data.S_CARS_T + data.W_CARS_L;
+  data.E_CARS_EXITS = data.S_CARS_R + data.W_CARS_T + data.N_CARS_L;
+  data.S_CARS_EXITS = data.W_CARS_R + data.N_CARS_T + data.E_CARS_L;
+  data.W_CARS_EXITS = data.N_CARS_R + data.E_CARS_T + data.S_CARS_L;
+
+  data.N_TRUCK_EXITS = data.E_TRUCK_R + data.S_TRUCK_T + data.W_TRUCK_L;
+  data.E_TRUCK_EXITS = data.S_TRUCK_R + data.W_TRUCK_T + data.N_TRUCK_L;
+  data.S_TRUCK_EXITS = data.W_TRUCK_R + data.N_TRUCK_T + data.E_TRUCK_L;
+  data.W_TRUCK_EXITS = data.N_TRUCK_R + data.E_TRUCK_T + data.S_TRUCK_L;
+
+  data.N_BUS_EXITS = data.E_BUS_R + data.S_BUS_T + data.W_BUS_L;
+  data.E_BUS_EXITS = data.S_BUS_R + data.W_BUS_T + data.N_BUS_L;
+  data.S_BUS_EXITS = data.W_BUS_R + data.N_BUS_T + data.E_BUS_L;
+  data.W_BUS_EXITS = data.N_BUS_R + data.E_BUS_T + data.S_BUS_L;
+
   // turning movement totals, all vehicles combined
   data.N_VEHICLE_R = data.N_CARS_R + data.N_TRUCK_R + data.N_BUS_R;
   data.E_VEHICLE_R = data.E_CARS_R + data.E_TRUCK_R + data.E_BUS_R;
@@ -115,6 +132,12 @@ function normalizeData(rawData) {
   data.E_VEHICLE_L = data.E_CARS_L + data.E_TRUCK_L + data.E_BUS_L;
   data.S_VEHICLE_L = data.S_CARS_L + data.S_TRUCK_L + data.S_BUS_L;
   data.W_VEHICLE_L = data.W_CARS_L + data.W_TRUCK_L + data.W_BUS_L;
+
+  // directional exit totals, all vehicles combined
+  data.N_VEHICLE_EXITS = data.N_CARS_EXITS + data.N_TRUCK_EXITS + data.N_BUS_EXITS;
+  data.E_VEHICLE_EXITS = data.E_CARS_EXITS + data.E_TRUCK_EXITS + data.E_BUS_EXITS;
+  data.S_VEHICLE_EXITS = data.S_CARS_EXITS + data.S_TRUCK_EXITS + data.S_BUS_EXITS;
+  data.W_VEHICLE_EXITS = data.W_CARS_EXITS + data.W_TRUCK_EXITS + data.W_BUS_EXITS;
 
   // directional totals, all vehicles combined
   data.N_VEHICLE_TOTAL = data.N_CARS_TOTAL + data.N_TRUCK_TOTAL + data.N_BUS_TOTAL;
@@ -285,6 +308,8 @@ export default {
 
 <style lang="postcss">
 .fc-report-tmc-summary {
-
+  table {
+    width: 1600px;
+  }
 }
 </style>
