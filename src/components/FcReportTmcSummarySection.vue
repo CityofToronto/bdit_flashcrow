@@ -1,7 +1,7 @@
 <template>
   <tbody class="fc-report-tmc-summary-section">
     <tr>
-      <th rowspan="2">
+      <th class="br" rowspan="2">
         <span v-if="timeRange">
           {{timeRange.start | timeOfDay}}&ndash;{{timeRange.end | timeOfDay}}
         </span>
@@ -9,7 +9,8 @@
       <th>CAR</th>
       <template v-for="(dir, i) in dirs">
         <td
-          :key="dir + '_CARS_EXITS'">
+          :key="dir + '_CARS_EXITS'"
+          class="bl">
           {{sectionData[dir + '_CARS_EXITS']}}
         </td>
         <td
@@ -18,7 +19,7 @@
           {{sectionData[dirs[(i + 2) % 4] + '_CARS_' + turn]}}
         </td>
       </template>
-      <th>N</th>
+      <th class="bl">N</th>
       <td>{{sectionData.N_PEDS}}</td>
       <td>{{sectionData.N_BIKE}}</td>
       <td>{{sectionData.N_OTHER}}</td>
@@ -27,7 +28,8 @@
       <th>TRUCK</th>
       <template v-for="(dir, i) in dirs">
         <td
-          :key="dir + '_TRUCK_EXITS'">
+          :key="dir + '_TRUCK_EXITS'"
+          class="bl">
           {{sectionData[dir + '_TRUCK_EXITS']}}
         </td>
         <td
@@ -36,17 +38,18 @@
           {{sectionData[dirs[(i + 2) % 4] + '_TRUCK_' + turn]}}
         </td>
       </template>
-      <th>E</th>
-      <td>{{sectionData.E_PEDS}}</td>
-      <td>{{sectionData.E_BIKE}}</td>
-      <td>{{sectionData.E_OTHER}}</td>
+      <th class="bl">S</th>
+      <td>{{sectionData.S_PEDS}}</td>
+      <td>{{sectionData.S_BIKE}}</td>
+      <td>{{sectionData.S_OTHER}}</td>
     </tr>
     <tr>
-      <th>{{title}}</th>
+      <th class="br">{{title}}</th>
       <th>BUS</th>
       <template v-for="(dir, i) in dirs">
         <td
-          :key="dir + '_BUS_EXITS'">
+          :key="dir + '_BUS_EXITS'"
+          class="bl">
           {{sectionData[dir + '_BUS_EXITS']}}
         </td>
         <td
@@ -55,43 +58,47 @@
           {{sectionData[dirs[(i + 2) % 4] + '_BUS_' + turn]}}
         </td>
       </template>
-      <th>S</th>
-      <td>{{sectionData.S_PEDS}}</td>
-      <td>{{sectionData.S_BIKE}}</td>
-      <td>{{sectionData.S_OTHER}}</td>
+      <th class="bl">E</th>
+      <td>{{sectionData.E_PEDS}}</td>
+      <td>{{sectionData.E_BIKE}}</td>
+      <td>{{sectionData.E_OTHER}}</td>
     </tr>
     <tr>
-      <th></th>
+      <th class="br"></th>
       <th></th>
       <template v-for="dir in dirs">
-        <td :key="dir + '_EXITS'"></td>
+        <td
+          :key="dir + '_EXITS'"
+          class="bl"></td>
         <td
           v-for="turn in turns"
           :key="dir + '_' + turn"></td>
       </template>
-      <th>W</th>
+      <th class="bl">W</th>
       <td>{{sectionData.W_PEDS}}</td>
       <td>{{sectionData.W_BIKE}}</td>
       <td>{{sectionData.W_OTHER}}</td>
     </tr>
     <tr>
-      <th></th>
-      <th>TOTAL</th>
+      <th class="br"></th>
+      <th class="bt">TOTAL</th>
       <template v-for="(dir, i) in dirs">
         <td
-          :key="dir + '_VEHICLE_EXITS'">
+          :key="dir + '_VEHICLE_EXITS'"
+          class="bt bl">
           {{sectionData[dir + '_VEHICLE_EXITS']}}
         </td>
         <td
           v-for="turn in turns"
-          :key="dirs[(i + 2) % 4] + '_VEHICLE_' + turn">
+          :key="dirs[(i + 2) % 4] + '_VEHICLE_' + turn"
+          class="bt">
           {{sectionData[dirs[(i + 2) % 4] + '_VEHICLE_' + turn]}}
         </td>
       </template>
-      <th></th>
-      <td>{{sectionData.PEDS_TOTAL}}</td>
-      <td>{{sectionData.BIKE_TOTAL}}</td>
-      <td>{{sectionData.OTHER_TOTAL}}</td>
+      <th class="bt bl"></th>
+      <td class="bt">{{sectionData.PEDS_TOTAL}}</td>
+      <td class="bt">{{sectionData.BIKE_TOTAL}}</td>
+      <td class="bt">{{sectionData.OTHER_TOTAL}}</td>
     </tr>
   </tbody>
 </template>
@@ -127,5 +134,12 @@ export default {
 <style lang="postcss">
 .fc-report-tmc-summary-section {
   border-bottom: var(--border-default);
+  & > tr > td {
+    padding: var(--space-xs) var(--space-s);
+    text-align: right;
+  }
+  & > tr > th {
+    padding: var(--space-xs) var(--space-s);
+  }
 }
 </style>

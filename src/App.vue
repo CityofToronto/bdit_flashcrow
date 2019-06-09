@@ -536,6 +536,21 @@ hr {
   box-shadow: var(--shadow-5);
 }
 
+/* BORDERS */
+.bt {
+  border-top: var(--border-default);
+}
+.bl {
+  border-left: var(--border-default);
+}
+.bb {
+  border-bottom: var(--border-default);
+}
+.br {
+  border-right: var(--border-default);
+}
+
+
 /* PADDING */
 .p-xs {
   padding: var(--space-xs);

@@ -1,6 +1,6 @@
 <template>
   <section class="fc-report-tmc-summary">
-    <header>
+    <header class="py-m">
       <div>
         <strong>{{locationQuery}}</strong>
       </div>
@@ -9,21 +9,23 @@
         <span>{{hoursHuman}}</span>
       </div>
     </header>
-    <table>
+    <table class="my-m">
       <thead>
         <tr>
-          <th rowspan="2">Time Period</th>
+          <th class="br" rowspan="2">Time Period</th>
           <th rowspan="2">Vehicle Type</th>
-          <th colspan="5">NORTHBOUND</th>
-          <th colspan="5">EASTBOUND</th>
-          <th colspan="5">SOUTHBOUND</th>
-          <th colspan="5">WESTBOUND</th>
-          <th rowspan="2"></th>
+          <th class="bl" colspan="5">NORTHBOUND</th>
+          <th class="bl" colspan="5">EASTBOUND</th>
+          <th class="bl" colspan="5">SOUTHBOUND</th>
+          <th class="bl" colspan="5">WESTBOUND</th>
+          <th class="bl" rowspan="2"></th>
           <th colspan="3"></th>
         </tr>
         <tr>
           <template v-for="i in 4">
-            <th :key="i + '_EXITS'">Exits</th>
+            <th
+              :key="i + '_EXITS'"
+              class="bl">Exits</th>
             <th :key="i + '_L'">Left</th>
             <th :key="i + '_T'">Thru</th>
             <th :key="i + '_R'">Right</th>
@@ -38,22 +40,37 @@
         :section-data="sumAmPeak"
         :time-range="timeRangeAmPeak"
         title="AM PEAK" />
+      <tr class="fc-report-tmc-summary-spacer">
+        <td colspan="26"></td>
+      </tr>
       <FcReportTmcSummarySection
         :section-data="sumPmPeak"
         :time-range="timeRangePmPeak"
         title="PM PEAK" />
+      <tr class="fc-report-tmc-summary-spacer">
+        <td colspan="26"></td>
+      </tr>
       <FcReportTmcSummarySection
         :section-data="avgOffHours"
         :time-range="timeRangeOffHours"
         title="OFF HOUR AVG" />
+      <tr class="fc-report-tmc-summary-spacer">
+        <td colspan="26"></td>
+      </tr>
       <FcReportTmcSummarySection
         :section-data="sumAm2Hour"
         :time-range="timeRangeAm2Hour"
         title="2 HR AM" />
+      <tr class="fc-report-tmc-summary-spacer">
+        <td colspan="26"></td>
+      </tr>
       <FcReportTmcSummarySection
         :section-data="sumPm2Hour"
         :time-range="timeRangePm2Hour"
         title="2 HR PM" />
+      <tr class="fc-report-tmc-summary-spacer">
+        <td colspan="26"></td>
+      </tr>
       <FcReportTmcSummarySection
         :section-data="sum8Hour"
         :time-range="timeRange8Hour"
@@ -309,7 +326,21 @@ export default {
 <style lang="postcss">
 .fc-report-tmc-summary {
   table {
+    border-collapse: separate;
+    border-spacing: 0;
     width: 1600px;
+    & > thead {
+      background-color: var(--base-lighter);
+      & > tr > th {
+        padding: var(--space-xs) var(--space-s);
+      }
+    }
+    & > tbody:nth-child(4n) {
+      background-color: var(--base-lighter);
+    }
+    & > tr.fc-report-tmc-summary-spacer {
+      height: var(--space-l);
+    }
   }
 }
 </style>
