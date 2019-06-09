@@ -92,7 +92,15 @@ export default {
   },
   data() {
     return {
-      dirs: ['N', 'E', 'S', 'W'],
+      /*
+       * In the database, N_CARS_L means "left turn from the north leg of the
+       * intersection".  However, in the report, "Northbound Left" means "left
+       * turn going northbound", which would actually correspond to S_CARS_L.
+       *
+       * As such, we swap the directions here from their order in FcReportTmcSummary
+       * table headers.
+       */
+      dirs: ['S', 'W', 'N', 'E'],
       turns: ['L', 'T', 'R', 'TOTAL'],
     };
   },
