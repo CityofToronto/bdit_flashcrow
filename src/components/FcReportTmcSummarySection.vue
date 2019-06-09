@@ -7,11 +7,15 @@
         </span>
       </th>
       <th>CAR</th>
-      <template v-for="dir in dirs">
+      <template v-for="(dir, i) in dirs">
+        <td
+          :key="dir + '_CARS_EXITS'">
+          {{sectionData[dir + '_CARS_EXITS']}}
+        </td>
         <td
           v-for="turn in turns"
-          :key="dir + '_CARS_' + turn">
-          {{sectionData[dir + '_CARS_' + turn]}}
+          :key="dirs[(i + 2) % 4] + '_CARS_' + turn">
+          {{sectionData[dirs[(i + 2) % 4] + '_CARS_' + turn]}}
         </td>
       </template>
       <th>N</th>
@@ -21,11 +25,15 @@
     </tr>
     <tr>
       <th>TRUCK</th>
-      <template v-for="dir in dirs">
+      <template v-for="(dir, i) in dirs">
+        <td
+          :key="dir + '_TRUCK_EXITS'">
+          {{sectionData[dir + '_TRUCK_EXITS']}}
+        </td>
         <td
           v-for="turn in turns"
-          :key="dir + '_TRUCK_' + turn">
-          {{sectionData[dir + '_TRUCK_' + turn]}}
+          :key="dirs[(i + 2) % 4] + '_TRUCK_' + turn">
+          {{sectionData[dirs[(i + 2) % 4] + '_TRUCK_' + turn]}}
         </td>
       </template>
       <th>E</th>
@@ -36,11 +44,15 @@
     <tr>
       <th>{{title}}</th>
       <th>BUS</th>
-      <template v-for="dir in dirs">
+      <template v-for="(dir, i) in dirs">
+        <td
+          :key="dir + '_BUS_EXITS'">
+          {{sectionData[dir + '_BUS_EXITS']}}
+        </td>
         <td
           v-for="turn in turns"
-          :key="dir + '_BUS_' + turn">
-          {{sectionData[dir + '_BUS_' + turn]}}
+          :key="dirs[(i + 2) % 4] + '_BUS_' + turn">
+          {{sectionData[dirs[(i + 2) % 4] + '_BUS_' + turn]}}
         </td>
       </template>
       <th>S</th>
@@ -52,6 +64,7 @@
       <th></th>
       <th></th>
       <template v-for="dir in dirs">
+        <td :key="dir + '_EXITS'"></td>
         <td
           v-for="turn in turns"
           :key="dir + '_' + turn"></td>
@@ -64,11 +77,15 @@
     <tr>
       <th></th>
       <th>TOTAL</th>
-      <template v-for="dir in dirs">
+      <template v-for="(dir, i) in dirs">
+        <td
+          :key="dir + '_VEHICLE_EXITS'">
+          {{sectionData[dir + '_VEHICLE_EXITS']}}
+        </td>
         <td
           v-for="turn in turns"
-          :key="dir + '_VEHICLE_' + turn">
-          {{sectionData[dir + '_VEHICLE_' + turn]}}
+          :key="dirs[(i + 2) % 4] + '_VEHICLE_' + turn">
+          {{sectionData[dirs[(i + 2) % 4] + '_VEHICLE_' + turn]}}
         </td>
       </template>
       <th></th>
@@ -100,7 +117,7 @@ export default {
        * As such, we swap the directions here from their order in FcReportTmcSummary
        * table headers.
        */
-      dirs: ['S', 'W', 'N', 'E'],
+      dirs: ['N', 'E', 'S', 'W'],
       turns: ['L', 'T', 'R', 'TOTAL'],
     };
   },

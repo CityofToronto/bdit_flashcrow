@@ -77,7 +77,7 @@
               </div>
             </div>
           </div>
-          <section class="fc-modal-show-reports-detail flex-container-column flex-2 px-m">
+          <section class="fc-modal-show-reports-detail flex-container-column flex-3 px-m">
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
                 <div
@@ -132,7 +132,7 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 const OPTIONS_REPORTS = {
   TMC: [
     { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
-    { label: 'Illustrated TMC Summary Report', value: 'TMC_ILLUSTRATED', disabled: true },
+    { label: 'TMC Illustrated Report', value: 'TMC_ILLUSTRATED', disabled: true },
   ],
   ATR_VOLUME: [
     { label: 'Graphical 24-Hour Summary Report', value: 'ATR_VOLUME_24H_GRAPH' },
@@ -276,8 +276,12 @@ export default {
         }
       }
       & > .fc-modal-show-reports-detail {
-        & > header {
-          align-items: center;
+        max-width: 75%;
+        & > .flex-container-row > .flex-cross-scroll {
+          overflow: auto;
+          & > section > header {
+            align-items: center;
+          }
         }
       }
     }
