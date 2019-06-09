@@ -10,8 +10,19 @@ ssh -i ~\ssh\flashcrow-dev-key.pem ec2-user@flashcrow-etl.intra.dev-toronto.ca
 
 ## Provisioning
 
-TODO: write this
+```bash
+cd flashcrow
+./scripts/deployment/etl/provision-etl-ec2.sh
+```
 
 ## Deployment
 
-TODO: write this
+You can
+
+```bash
+cd flashcrow
+git fetch
+git merge origin/master
+```
+
+to bring Airflow jobs up to date.  It is, however, recommended that you instead write jobs on the ETL server, then test them via the Airflow CLI before turning on automatic scheduling.
