@@ -11,16 +11,16 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <button class="tds-button-secondary" :disabled="$v.$invalid">
+        <button class="tds-button-secondary" disabled>
           <i class="fa fa-download"></i>
         </button>
-        <button class="tds-button-secondary" :disabled="$v.$invalid">
+        <button class="tds-button-secondary" disabled>
           <i class="fa fa-print"></i>
         </button>
         <button
           class="tds-button-primary"
           @click="onActionBulk('request-study')"
-          :disabled="$v.$invalid">
+          disabled>
           <i class="fa fa-plus"></i>
           <span> Request Study</span>
         </button>

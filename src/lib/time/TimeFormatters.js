@@ -12,6 +12,14 @@ function formatDefault(d) {
   return new Intl.DateTimeFormat('en-US').format(d);
 }
 
+function formatTimeOfDay(d) {
+  return format(d, {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 function formatYearMonth(d) {
   return format(d, {
     year: 'numeric',
@@ -22,5 +30,6 @@ function formatYearMonth(d) {
 
 export default {
   formatDefault,
+  formatTimeOfDay,
   formatYearMonth,
 };

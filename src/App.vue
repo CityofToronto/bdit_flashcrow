@@ -20,10 +20,12 @@
           label="View Data"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
+          disabled
           icon="folder-plus"
           label="Request Study"
           :to="{ name: 'requestStudy' }" />
         <FcDashboardNavItem
+          disabled
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
@@ -533,6 +535,21 @@ hr {
 .shadow-5 {
   box-shadow: var(--shadow-5);
 }
+
+/* BORDERS */
+.bt {
+  border-top: var(--border-default);
+}
+.bl {
+  border-left: var(--border-default);
+}
+.bb {
+  border-bottom: var(--border-default);
+}
+.br {
+  border-right: var(--border-default);
+}
+
 
 /* PADDING */
 .p-xs {

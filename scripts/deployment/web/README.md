@@ -11,13 +11,13 @@ ssh -i ~\ssh\flashcrow-dev-key.pem ec2-user@10.160.7.249
 ## Provisioning
 
 ```bash
-cd git/bdit_flashcrow
+cd flashcrow
 ./scripts/deployment/web/provision-web-ec2.sh
 ```
 
 ## Deployment
 
 ```bash
-cd git/bdit_flashcrow
+cd flashcrow
 ./scripts/deployment/web/deploy-web-ec2.sh
 ```

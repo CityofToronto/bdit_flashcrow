@@ -1,6 +1,12 @@
 <template>
   <div class="fc-login mt-m px-xl">
-    <h1>Log in</h1>
+    <div class="hide">
+      <form
+        id="form_fc_login"
+        method="POST"
+        action="/flashcrow/api/auth/stub"></form>
+    </div>
+    <h1>Log in to Move</h1>
     <div class="flex-container-row">
       <div class="flex-1">
         <div
@@ -9,7 +15,7 @@
           <p>
             This is a test login page.  To log in, enter
             your name and <strong>@toronto.ca</strong> email address.  If this is
-            your first time using Flashcrow, we'll automatically create your account.
+            your first time using Move, we'll automatically create your account.
           </p>
           <p>
             Please use your actual name and email address!  That helps us transition to an
@@ -25,7 +31,9 @@
               :class="{
                 invalid: $v.name.$error,
               }"
+              form="form_fc_login"
               name="name"
+              tabindex="1"
               type="text" />
           </label>
           <div
@@ -46,7 +54,9 @@
               :class="{
                 invalid: $v.email.$error,
               }"
+              form="form_fc_login"
               name="email"
+              tabindex="2"
               type="text" />
           </label>
           <div
@@ -62,6 +72,9 @@
         <button
           class="tds-button-primary font-size-2xl"
           :disabled="loading || $v.$invalid"
+          form="form_fc_login"
+          tabindex="3"
+          type="submit"
           @click="onClickLogin">
           Log in
         </button>
