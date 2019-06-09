@@ -11,6 +11,7 @@ Vue.use(VueCalendar);
 Vue.use(Vuelidate);
 
 Vue.filter('date', TimeFormatters.formatDefault);
+Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 
 Vue.config.productionTip = false;
 

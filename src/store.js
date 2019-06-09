@@ -220,7 +220,9 @@ export default new Vuex.Store({
         .then((counts) => {
           const countsNormalized = counts.map((count) => {
             const countNormalized = Object.assign({}, count);
-            countNormalized.date = new Date(countNormalized.date);
+            countNormalized.date = new Date(
+              countNormalized.date.slice(0, -1),
+            );
             return countNormalized;
           });
           commit('setCounts', countsNormalized);

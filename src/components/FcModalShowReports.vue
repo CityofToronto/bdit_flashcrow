@@ -223,7 +223,9 @@ export default {
           .then((countData) => {
             const countDataNormalized = countData.map((bucket) => {
               const bucketNormalized = Object.assign({}, bucket);
-              bucketNormalized.t = new Date(bucketNormalized.t);
+              bucketNormalized.t = new Date(
+                bucketNormalized.t.slice(0, -1),
+              );
               return bucketNormalized;
             });
             this.activeCountData = countDataNormalized;
