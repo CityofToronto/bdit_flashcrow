@@ -3,7 +3,7 @@
   "append": true,
   "watch": false,
   "script": "server.js",
-  "sourceDir": "/home/ec2-user/git/bdit_flashcrow",
+  "sourceDir": "/home/ec2-user/flashcrow",
   "pidFile": "/home/ec2-user/log/flashcrow/forever.pid",
   "logFile": "/home/ec2-user/log/flashcrow/forever.log",
   "outFile": "/home/ec2-user/log/flashcrow/flashcrow.log",
