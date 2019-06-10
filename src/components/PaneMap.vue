@@ -35,7 +35,7 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
 const ZOOM_TORONTO = 10;
-const ZOOM_MIN_COUNTS = 14;
+const ZOOM_MIN_COUNTS = 15;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
 
@@ -45,13 +45,13 @@ function injectCentrelineVectorTiles(style) {
 
   STYLE.sources.centreline = {
     type: 'vector',
-    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
   };
 
 
   STYLE.sources.intersections = {
     type: 'vector',
-    tiles: ['https://flashcrow.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
 
@@ -60,8 +60,8 @@ function injectCentrelineVectorTiles(style) {
     source: 'centreline',
     'source-layer': 'centreline',
     type: 'line',
-    minzoom: 10,
-    maxZoom: 15,
+    minzoom: ZOOM_TORONTO,
+    maxZoom: ZOOM_MAX,
     paint: {
       'line-color': [
         'case',
@@ -79,8 +79,8 @@ function injectCentrelineVectorTiles(style) {
     source: 'intersections',
     'source-layer': 'centreline_intersection',
     type: 'circle',
-    minzoom: 11,
-    maxZoom: 15,
+    minzoom: 13,
+    maxZoom: ZOOM_MAX,
     paint: {
       'circle-color': [
         'case',
@@ -148,8 +148,8 @@ export default {
           id: 'gcc-ortho-webm',
           type: 'raster',
           source: 'gcc-ortho-webm',
-          minzoom: 0,
-          maxzoom: 23,
+          // minzoom: 0,
+          // maxzoom: 23,
         },
       ],
     });
@@ -169,8 +169,8 @@ export default {
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        maxZoom: ZOOM_MAX,
-        minZoom: ZOOM_TORONTO,
+        minZoom: 0,
+        maxZoom: 23,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
@@ -349,18 +349,57 @@ export default {
       this.setLocation(elementInfo);
     },
     onMapClick(e) {
-      const features = this.map.queryRenderedFeatures(e.point, {
-        layers: [
-          'centreline',
-          'counts-visible-clusters',
-          'counts-visible-points',
-          'intersections',
-        ],
-      });
+      let features = null;
+
+      const featuresClicked = this.map.queryRenderedFeatures(
+        e.point,
+        {
+          layers: [
+            'centreline',
+            'counts-visible-clusters',
+            'counts-visible-points',
+            'intersections',
+          ],
+        },
+      );
+
+      // see if a feature was clicked ... if so choose that one
+      // if a feature was not clicked then get features in a bounding box
+      if (featuresClicked.length !== 0) {
+        features = featuresClicked;
+      } else {
+        const bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
+        features = this.map.queryRenderedFeatures(
+          bbox,
+          {
+            layers: [
+              'centreline',
+              'counts-visible-clusters',
+              'counts-visible-points',
+              'intersections',
+            ],
+          },
+        );
+      }
+
       if (features.length === 0) {
         return;
       }
-      const [feature] = features;
+
+      // get all elements in the bounding box that are intersections
+      const intersectionsArray = features.filter(value => (value.layer.id === 'intersections'));
+
+      // feature -> feature to be selected
+      let feature = null;
+
+      // select intersection if there is one in the bounding box
+      // else select a centreline segment
+      if (intersectionsArray.length === 0) {
+        [feature] = features;
+      } else {
+        [feature] = intersectionsArray;
+      }
+
       const layerId = feature.layer.id;
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);

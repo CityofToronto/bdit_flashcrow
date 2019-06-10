@@ -95,7 +95,7 @@ async function initServer() {
 
   function getRedirectUri() {
     if (config.ENV === 'production') {
-      return 'https://flashcrow.intra.dev-toronto.ca/flashcrow/api/auth/openid-connect-callback';
+      return 'https://move.intra.dev-toronto.ca/flashcrow/api/auth/openid-connect-callback';
     }
     return 'https://lvh.me:8080/flashcrow/api/auth/openid-connect-callback';
   }
