@@ -45,7 +45,10 @@
       <span
         class="full-width tds-label uppercase"
         :class="'tds-label-' + STATUS_META[item.status].class">
-        {{STATUS_META[item.status].label}}
+        <i
+          class="fa"
+          :class="'fa-' + STATUS_META[item.status].icon"></i>
+        <span> {{STATUS_META[item.status].label}}</span>
       </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
