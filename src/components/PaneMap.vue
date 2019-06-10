@@ -204,7 +204,7 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
-    ...mapState(['location', 'locationQuery']),
+    ...mapState(['location', 'locationQuery', 'showMap']),
   },
   created() {
     this.map = null;
@@ -321,6 +321,18 @@ export default {
   watch: {
     location() {
       this.easeToLocation();
+    },
+    $route() {
+      Vue.nextTick(() => {
+        this.map.resize();
+      });
+    },
+    showMap() {
+      if (this.showMap === true) {
+        Vue.nextTick(() => {
+          this.map.resize();
+        });
+      }
     },
   },
   methods: {
