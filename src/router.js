@@ -36,28 +36,6 @@ const router = new Router({
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
           display: () => import(/* webpackChunkName: "home" */ './components/FcDisplayViewDataAtLocation.vue'),
         },
-        beforeEnter(to, from, next) {
-          const { centrelineId, centrelineType } = to.params;
-          const promiseCounts = store.dispatch(
-            'fetchCountsByCentreline',
-            { centrelineId, centrelineType },
-          );
-          const promises = [promiseCounts];
-          if (store.state.location === null) {
-            const promiseLocation = store.dispatch(
-              'fetchLocationFromCentreline',
-              { centrelineId, centrelineType },
-            );
-            promises.push(promiseLocation);
-          }
-          Promise.all(promises)
-            .then(() => {
-              next();
-            })
-            .catch((err) => {
-              next(err);
-            });
-        },
       }],
     },
     {

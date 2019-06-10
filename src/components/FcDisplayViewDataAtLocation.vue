@@ -117,6 +117,7 @@ export default {
       'counts',
       'filterCountTypes',
       'filterDate',
+      'location',
       'showMap',
     ]),
   },
@@ -124,6 +125,34 @@ export default {
     selection: {
       required,
     },
+  },
+  watch: {
+    location() {
+      if (this.location === null) {
+        this.$router.push({
+          name: 'viewData',
+        });
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      });
+    },
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.syncFromRoute(to);
+    });
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.syncFromRoute(to)
+      .then(() => {
+        next();
+      }).catch((err) => {
+        next(err);
+      });
   },
   methods: {
     actionDownload(items, { formats }) {
@@ -210,7 +239,27 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    ...mapActions(['newStudyRequest']),
+    syncFromRoute(to) {
+      const { centrelineId, centrelineType } = to.params;
+      const promiseCounts = this.fetchCountsByCentreline({
+        centrelineId,
+        centrelineType,
+      });
+      const promises = [promiseCounts];
+      if (this.location === null) {
+        const promiseLocation = this.fetchLocationFromCentreline({
+          centrelineId,
+          centrelineType,
+        });
+        promises.push(promiseLocation);
+      }
+      return Promise.all(promises);
+    },
+    ...mapActions([
+      'fetchCountsByCentreline',
+      'fetchLocationFromCentreline',
+      'newStudyRequest',
+    ]),
     ...mapMutations([
       'setNewStudyRequest',
       'setModal',
