@@ -288,6 +288,7 @@ export default {
           this.map.getSource('counts-visible')
             .setData(this.dataCountsVisible);
           this.loading = false;
+          return dataCountsVisible;
         });
     },
     onCentrelineClick(feature) {
@@ -413,8 +414,7 @@ export default {
 
       if (zoom >= ZOOM_MIN_COUNTS) {
         const bounds = this.map.getBounds();
-        this.fetchVisibleCounts(bounds)
-          .then(result => console.log(result));
+        this.fetchVisibleCounts(bounds);
       } else {
         this.dataCountsVisible.features = [];
         this.map.getSource('counts-visible')

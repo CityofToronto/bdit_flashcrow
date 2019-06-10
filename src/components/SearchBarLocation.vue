@@ -13,6 +13,12 @@
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />
+    <button
+      v-if="location !== null"
+      class="tds-button-secondary clear-location"
+      @click="onClickClearLocation">
+      <i class="fa fa-times-circle"></i>
+    </button>
     <div
       v-if="locationSuggestions !== null"
       class="suggestions"
@@ -72,6 +78,9 @@ export default {
     },
   },
   methods: {
+    onClickClearLocation() {
+      this.clearLocation();
+    },
     onInputQuery() {
       this.selectedSuggestion = false;
     },
@@ -137,6 +146,11 @@ export default {
   position: relative;
   & input {
     width: 480px;
+  }
+  & > .clear-location {
+    position: absolute;
+    right: 1px;
+    top: 1px;
   }
   & > .suggestions {
     background-color: var(--base-lightest);
