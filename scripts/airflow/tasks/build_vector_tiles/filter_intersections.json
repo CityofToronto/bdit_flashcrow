@@ -1,12 +1,20 @@
 {
   "*": [
     "any",
-    [ ">=", "$zoom", 13 ],
     [
       "all",
-      [ ">=", "$zoom", 12 ],
-      [ "in", "classifi6", "LSRML", "LSRSL" ]
+      [ ">=", "$zoom", 17 ],
+      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL", "LSRML", "LSRSL" ]
     ],
-    [ "in", "classifi6", "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL" ]
+    [
+      "all",
+      [ ">=", "$zoom", 15 ],
+      [ "in", "classifi6",   "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL" ]
+    ],
+    [
+      "all",
+      [ ">=", "$zoom", 13 ],
+      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL" ]
+    ]
   ]
 }
