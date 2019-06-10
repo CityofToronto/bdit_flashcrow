@@ -148,8 +148,8 @@ export default {
           id: 'gcc-ortho-webm',
           type: 'raster',
           source: 'gcc-ortho-webm',
-          // minzoom: 0,
-          // maxzoom: 23,
+          minzoom: 0,
+          maxzoom: 23,
         },
       ],
     });
