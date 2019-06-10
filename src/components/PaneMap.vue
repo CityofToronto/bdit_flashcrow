@@ -28,6 +28,7 @@ import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
 import Constants from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
+import StringFormatters from '@/lib/StringFormatters';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -38,6 +39,99 @@ const ZOOM_TORONTO = 10;
 const ZOOM_MIN_COUNTS = 14;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
+
+const PAINT_COLOR_CENTRELINE = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  '#00a91c',
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    '#e5a000',
+    // unhovered
+    '#dcdee0',
+  ],
+];
+const PAINT_COLOR_COUNTS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  '#00a91c',
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    '#e5a000',
+    // normal
+    '#00bde3',
+  ],
+];
+const PAINT_SIZE_CENTRELINE = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  5,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    5,
+    // normal
+    3,
+  ],
+];
+const PAINT_SIZE_INTERSECTIONS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  8,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    8,
+    // normal
+    6,
+  ],
+];
+const PAINT_SIZE_COUNT_POINTS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  12,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    12,
+    // normal
+    10,
+  ],
+];
+const PAINT_SIZE_COUNT_CLUSTERS = [
+  'case',
+  ['boolean', ['feature-state', 'hover'], false],
+  // hovered
+  22,
+  // normal
+  20,
+];
+const PAINT_OPACITY = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  0.9,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    0.9,
+    // normal
+    0.75,
+  ],
+];
 
 function injectCentrelineVectorTiles(style) {
   const STYLE = {};
@@ -54,7 +148,6 @@ function injectCentrelineVectorTiles(style) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
-
   STYLE.layers.push({
     id: 'centreline',
     source: 'centreline',
@@ -63,14 +156,9 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 10,
     maxZoom: 15,
     paint: {
-      'line-color': [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        '#0050d8',
-        '#1b1b1b',
-      ],
-      'line-width': 3,
-      'line-opacity': 0.8,
+      'line-color': PAINT_COLOR_CENTRELINE,
+      'line-width': PAINT_SIZE_CENTRELINE,
+      'line-opacity': PAINT_OPACITY,
     },
   });
 
@@ -82,13 +170,9 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 11,
     maxZoom: 15,
     paint: {
-      'circle-color': [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        '#0050d8',
-        '#1b1b1b',
-      ],
-      'circle-radius': 6,
+      'circle-color': PAINT_COLOR_CENTRELINE,
+      'circle-radius': PAINT_SIZE_INTERSECTIONS,
+      'circle-opacity': PAINT_OPACITY,
     },
   });
 
@@ -193,14 +277,9 @@ export default {
           source: 'counts-visible',
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#009ec1',
-              '#2e6276',
-            ],
-            'circle-opacity': 0.8,
-            'circle-radius': 20,
+            'circle-color': PAINT_COLOR_COUNTS,
+            'circle-opacity': PAINT_OPACITY,
+            'circle-radius': PAINT_SIZE_COUNT_CLUSTERS,
           },
         });
         this.map.addLayer({
@@ -214,7 +293,7 @@ export default {
             'text-size': 18,
           },
           paint: {
-            'text-color': '#f0f0f0',
+            'text-color': '#1b1b1b',
           },
         });
         this.map.addLayer({
@@ -223,14 +302,9 @@ export default {
           source: 'counts-visible',
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#009ec1',
-              '#2e6276',
-            ],
-            'circle-opacity': 0.8,
-            'circle-radius': 10,
+            'circle-color': PAINT_COLOR_COUNTS,
+            'circle-opacity': PAINT_OPACITY,
+            'circle-radius': PAINT_SIZE_COUNT_POINTS,
           },
         });
         this.map.on('move', this.onMapMove.bind(this));
@@ -326,8 +400,9 @@ export default {
       const {
         centrelineId,
         centrelineType,
-        locationDesc: description,
+        locationDesc,
       } = feature.properties;
+      const description = StringFormatters.formatCountLocationDescription(locationDesc);
       const elementInfo = {
         centrelineId,
         centrelineType,

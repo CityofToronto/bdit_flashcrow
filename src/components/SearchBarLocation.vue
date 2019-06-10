@@ -15,7 +15,7 @@
       @input="onInputQuery" />
     <button
       v-if="location !== null"
-      class="tds-button-secondary clear-location font-size-l"
+      class="clear-location font-size-l"
       @click="onClickClearLocation">
       <i class="fa fa-times-circle"></i>
     </button>
@@ -144,13 +144,12 @@ export default {
 <style lang="postcss">
 .search-bar-location {
   position: relative;
-  & input {
+  & input[type="text"] {
+    border-radius: var(--space-s) 0 0 var(--space-s);
     width: 480px;
   }
   & > .clear-location {
-    position: absolute;
-    right: 1px;
-    top: 1px;
+    border-radius: 0 var(--space-s) var(--space-s) 0;
   }
   & > .suggestions {
     background-color: var(--base-lightest);
