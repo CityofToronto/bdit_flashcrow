@@ -42,15 +42,16 @@
           <SearchBarLocation
             :disabled="!auth.loggedIn" />
           <button
-            @click="onViewData"
-            :disabled="location === null">
+            class="font-size-l"
+            :disabled="location === null"
+            @click="onViewData">
             <i class="fa fa-search"></i>
             <span> View Data</span>
           </button>
         </template>
         <template v-slot:right>
           <TdsActionDropdown
-            class="font-size-xl"
+            class="font-size-l"
             :options="userActions"
             @action-selected="onUserAction">
             <span>{{username}} </span>

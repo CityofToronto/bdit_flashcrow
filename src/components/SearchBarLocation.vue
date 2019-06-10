@@ -8,14 +8,14 @@
     @keydown.esc="onKeyEsc">
     <input
       v-model="query"
-      class="font-size-xl"
+      class="font-size-l"
       :disabled="disabled"
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />
     <button
       v-if="location !== null"
-      class="tds-button-secondary clear-location"
+      class="tds-button-secondary clear-location font-size-l"
       @click="onClickClearLocation">
       <i class="fa fa-times-circle"></i>
     </button>

@@ -1,27 +1,14 @@
 <template>
-  <div class="fc-login mt-m px-xl">
+  <div class="fc-login mt-m px-l">
     <div class="hide">
       <form
         id="form_fc_login"
         method="POST"
         action="/flashcrow/api/auth/stub"></form>
     </div>
-    <h1>Log in to Move</h1>
+    <h1>Log in to MOVE</h1>
     <div class="flex-container-row">
-      <div class="flex-1">
-        <div
-          class="tds-panel tds-panel-info font-size-l">
-          <i class="fa fa-info-circle"></i>
-          <p>
-            This is a test login page.  To log in, enter
-            your name and <strong>@toronto.ca</strong> email address.  If this is
-            your first time using Move, we'll automatically create your account.
-          </p>
-          <p>
-            Please use your actual name and email address!  That helps us transition to an
-            actual login mechanism later.
-          </p>
-        </div>
+      <div class="flex-1 px-l">
         <div class="form-group">
           <label>
             <span>Name</span>
@@ -79,7 +66,21 @@
           Log in
         </button>
       </div>
-      <div class="flex-1"></div>
+      <div class="flex-1 px-l">
+        <div
+          class="tds-panel tds-panel-info font-size-l">
+          <i class="fa fa-info-circle"></i>
+          <p>
+            This is a test login page.  To log in, enter
+            your name and <strong>@toronto.ca</strong> email address.  If this is
+            your first time using MOVE, we'll automatically create your account.
+          </p>
+          <p>
+            Please use your actual name and email address!  That helps us transition to an
+            actual login mechanism later.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>

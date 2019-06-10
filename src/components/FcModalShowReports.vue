@@ -30,7 +30,7 @@
               class="tds-panel tds-panel-warning">
               <i class="fa fa-exclamation-triangle"></i>
               <p>
-                The alpha launch of Move doesn't yet support
+                The alpha launch of MOVE doesn't yet support
                 {{activeCount.type.label}} reports.  Try selecting an intersection
                 with Turning Movement Count data.
               </p>
