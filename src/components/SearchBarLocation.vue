@@ -8,11 +8,17 @@
     @keydown.esc="onKeyEsc">
     <input
       v-model="query"
-      class="font-size-xl"
+      class="font-size-l"
       :disabled="disabled"
       type="text"
       placeholder="Try &quot;Kingston and Lee&quot;"
       @input="onInputQuery" />
+    <button
+      v-if="location !== null"
+      class="clear-location font-size-l"
+      @click="onClickClearLocation">
+      <i class="fa fa-times-circle"></i>
+    </button>
     <div
       v-if="locationSuggestions !== null"
       class="suggestions"
@@ -72,6 +78,9 @@ export default {
     },
   },
   methods: {
+    onClickClearLocation() {
+      this.clearLocation();
+    },
     onInputQuery() {
       this.selectedSuggestion = false;
     },
@@ -135,8 +144,12 @@ export default {
 <style lang="postcss">
 .search-bar-location {
   position: relative;
-  & input {
+  & input[type="text"] {
+    border-radius: var(--space-s) 0 0 var(--space-s);
     width: 480px;
+  }
+  & > .clear-location {
+    border-radius: 0 var(--space-s) var(--space-s) 0;
   }
   & > .suggestions {
     background-color: var(--base-lightest);

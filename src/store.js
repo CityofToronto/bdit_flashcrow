@@ -99,6 +99,7 @@ export default new Vuex.Store({
     },
     clearLocation(state) {
       Vue.set(state, 'location', null);
+      Vue.set(state, 'locationQuery', null);
     },
     setLocation(state, location) {
       Vue.set(state, 'location', location);

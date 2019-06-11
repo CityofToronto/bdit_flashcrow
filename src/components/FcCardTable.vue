@@ -13,7 +13,7 @@
         <th
           v-for="column in columnsNormalized"
           :key="column.name"
-          class="font-size-xl text-left"
+          class="font-size-l text-left"
           :class="column.headerClasses"
           @click="onClickColumnHeader(column)">
           <i
@@ -218,8 +218,7 @@ export default {
       &.sortable {
         cursor: pointer;
         &.sorted {
-          background-color: var(--success-light);
-          color: var(--success-darker);
+          background-color: var(--base-light);
         }
         &:hover {
           background-color: var(--primary-light);

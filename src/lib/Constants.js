@@ -84,11 +84,11 @@ const Status = {
 };
 
 const STATUS_META = [
-  { label: 'Recent', class: 'success' },
-  { label: '3 years+', class: 'warning' },
-  { label: '5 years+', class: 'warning' },
-  { label: 'None existing', class: 'error' },
-  { label: 'In progress', class: 'info' },
+  { label: 'Recent', class: 'success', icon: 'check' },
+  { label: '3 years+', class: 'warning', icon: 'history' },
+  { label: '5 years+', class: 'warning', icon: 'history' },
+  { label: 'None existing', class: 'error', icon: 'times' },
+  { label: 'In progress', class: 'info', icon: 'user-clock' },
 ];
 
 // TODO: maybe export these without 'default' so that we can use

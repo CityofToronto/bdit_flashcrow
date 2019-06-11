@@ -28,6 +28,7 @@ import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
 import Constants from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
+import StringFormatters from '@/lib/StringFormatters';
 import GeoStyle from '@/lib/geo/GeoStyle';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -38,6 +39,99 @@ const ZOOM_TORONTO = 10;
 const ZOOM_MIN_COUNTS = 14;
 const ZOOM_LOCATION = 17;
 const ZOOM_MAX = 19;
+
+const PAINT_COLOR_CENTRELINE = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  '#00a91c',
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    '#e5a000',
+    // unhovered
+    '#dcdee0',
+  ],
+];
+const PAINT_COLOR_COUNTS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  '#00a91c',
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    '#e5a000',
+    // normal
+    '#00bde3',
+  ],
+];
+const PAINT_SIZE_CENTRELINE = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  5,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    5,
+    // normal
+    3,
+  ],
+];
+const PAINT_SIZE_INTERSECTIONS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  8,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    8,
+    // normal
+    6,
+  ],
+];
+const PAINT_SIZE_COUNT_POINTS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  12,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    12,
+    // normal
+    10,
+  ],
+];
+const PAINT_SIZE_COUNT_CLUSTERS = [
+  'case',
+  ['boolean', ['feature-state', 'hover'], false],
+  // hovered
+  22,
+  // normal
+  20,
+];
+const PAINT_OPACITY = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  0.9,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    0.9,
+    // normal
+    0.75,
+  ],
+];
 
 function injectCentrelineVectorTiles(style) {
   const STYLE = {};
@@ -54,7 +148,6 @@ function injectCentrelineVectorTiles(style) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
-
   STYLE.layers.push({
     id: 'centreline',
     source: 'centreline',
@@ -63,14 +156,9 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 10,
     maxZoom: 15,
     paint: {
-      'line-color': [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        '#0050d8',
-        '#1b1b1b',
-      ],
-      'line-width': 3,
-      'line-opacity': 0.8,
+      'line-color': PAINT_COLOR_CENTRELINE,
+      'line-width': PAINT_SIZE_CENTRELINE,
+      'line-opacity': PAINT_OPACITY,
     },
   });
 
@@ -82,13 +170,9 @@ function injectCentrelineVectorTiles(style) {
     minzoom: 11,
     maxZoom: 15,
     paint: {
-      'circle-color': [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        '#0050d8',
-        '#1b1b1b',
-      ],
-      'circle-radius': 6,
+      'circle-color': PAINT_COLOR_CENTRELINE,
+      'circle-radius': PAINT_SIZE_INTERSECTIONS,
+      'circle-opacity': PAINT_OPACITY,
     },
   });
 
@@ -120,7 +204,7 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
-    ...mapState(['location', 'locationQuery']),
+    ...mapState(['location', 'locationQuery', 'showMap']),
   },
   created() {
     this.map = null;
@@ -156,6 +240,13 @@ export default {
 
     // keeps track of which feature we are currently hovering over
     this.hoveredFeature = null;
+
+    // keeps track of currently selected feature
+    this.selectedFeature = null;
+
+    // marker
+    this.selectedMarker = new mapboxgl.Marker()
+      .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
       this.loading = false;
@@ -193,14 +284,9 @@ export default {
           source: 'counts-visible',
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#009ec1',
-              '#2e6276',
-            ],
-            'circle-opacity': 0.8,
-            'circle-radius': 20,
+            'circle-color': PAINT_COLOR_COUNTS,
+            'circle-opacity': PAINT_OPACITY,
+            'circle-radius': PAINT_SIZE_COUNT_CLUSTERS,
           },
         });
         this.map.addLayer({
@@ -214,7 +300,7 @@ export default {
             'text-size': 18,
           },
           paint: {
-            'text-color': '#f0f0f0',
+            'text-color': '#1b1b1b',
           },
         });
         this.map.addLayer({
@@ -223,14 +309,9 @@ export default {
           source: 'counts-visible',
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#009ec1',
-              '#2e6276',
-            ],
-            'circle-opacity': 0.8,
-            'circle-radius': 10,
+            'circle-color': PAINT_COLOR_COUNTS,
+            'circle-opacity': PAINT_OPACITY,
+            'circle-radius': PAINT_SIZE_COUNT_POINTS,
           },
         });
         this.map.on('move', this.onMapMove.bind(this));
@@ -247,6 +328,20 @@ export default {
   watch: {
     location() {
       this.easeToLocation();
+      this.updateSelectedFeature();
+      this.updateSelectedMarker();
+    },
+    $route() {
+      Vue.nextTick(() => {
+        this.map.resize();
+      });
+    },
+    showMap() {
+      if (this.showMap === true) {
+        Vue.nextTick(() => {
+          this.map.resize();
+        });
+      }
     },
   },
   methods: {
@@ -262,9 +357,10 @@ export default {
         // zoom to location
         const { lat, lng } = this.location;
         const center = new mapboxgl.LngLat(lng, lat);
+        const zoom = Math.max(this.map.getZoom(), ZOOM_LOCATION);
         this.map.easeTo({
           center,
-          zoom: ZOOM_LOCATION,
+          zoom,
         });
       }
     },
@@ -288,6 +384,7 @@ export default {
           this.map.getSource('counts-visible')
             .setData(this.dataCountsVisible);
           this.loading = false;
+          return dataCountsVisible;
         });
     },
     onCentrelineClick(feature) {
@@ -297,16 +394,25 @@ export default {
        * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
        * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
        */
-      const { coordinates } = feature.geometry;
-      const i = Math.floor(coordinates.length / 2);
-      const [lng, lat] = coordinates[i];
       const elementInfo = {
         centrelineId: feature.properties.geo_id,
         centrelineType: Constants.CentrelineType.SEGMENT,
         description: feature.properties.lf_name,
-        lat,
-        lng,
       };
+      const { coordinates } = feature.geometry;
+      const n = coordinates.length;
+      if (n % 2 === 0) {
+        const i = n / 2;
+        const [lng0, lat0] = coordinates[i - 1];
+        const [lng1, lat1] = coordinates[i];
+        elementInfo.lng = (lng0 + lng1) / 2;
+        elementInfo.lat = (lat0 + lat1) / 2;
+      } else {
+        const i = (n - 1) / 2;
+        const [lng, lat] = coordinates[i];
+        elementInfo.lng = lng;
+        elementInfo.lat = lat;
+      }
       this.setLocation(elementInfo);
     },
     onCountsVisibleClustersClick(feature) {
@@ -325,8 +431,9 @@ export default {
       const {
         centrelineId,
         centrelineType,
-        locationDesc: description,
+        locationDesc,
       } = feature.properties;
+      const description = StringFormatters.formatCountLocationDescription(locationDesc);
       const elementInfo = {
         centrelineId,
         centrelineType,
@@ -413,8 +520,7 @@ export default {
 
       if (zoom >= ZOOM_MIN_COUNTS) {
         const bounds = this.map.getBounds();
-        this.fetchVisibleCounts(bounds)
-          .then(result => console.log(result));
+        this.fetchVisibleCounts(bounds);
       } else {
         this.dataCountsVisible.features = [];
         this.map.getSource('counts-visible')
@@ -427,6 +533,42 @@ export default {
         this.map.setStyle(this.satelliteStyle, { diff: false });
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
+      }
+    },
+    updateSelectedFeature() {
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
+      }
+      if (this.location === null) {
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      const features = this.map.queryRenderedFeatures({
+        layers: [
+          'centreline',
+          'counts-visible-points',
+          'intersections',
+        ],
+        filter: [
+          'all',
+          ['==', 'centrelineId', centrelineId],
+          ['==', 'centrelineType', centrelineType],
+        ],
+      });
+      if (features.length === 0) {
+        return;
+      }
+      [this.selectedFeature] = features;
+      this.map.setFeatureState(this.selectedFeature, { selected: true });
+    },
+    updateSelectedMarker() {
+      if (this.location === null) {
+        this.selectedMarker.remove();
+      } else {
+        const { lng, lat } = this.location;
+        this.selectedMarker
+          .setLngLat([lng, lat])
+          .addTo(this.map);
       }
     },
     ...mapMutations(['setLocation']),
