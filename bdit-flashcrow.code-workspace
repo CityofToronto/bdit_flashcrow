@@ -21,6 +21,8 @@
 		"files.watcherExclude": {
 			"**/dist/**": true
 		},
-		"terminal.integrated.cwd": "scripts\\dev"
+		"terminal.integrated.cwd": "scripts\\dev",
+		"telemetry.enableCrashReporter": false,
+		"telemetry.enableTelemetry": false
 	}
 }
