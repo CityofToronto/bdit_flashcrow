@@ -20,7 +20,7 @@ dag = DAG(
     'centreline_vector_tiles',
     default_args=default_args,
     max_active_runs=1,
-    schedule_interval='0 4 * * *')
+    schedule_interval='0 4 * * 6')
 
 copy_centreline_sh = os.path.join(AIRFLOW_TASKS, 'copy_centreline.sh')
 copy_centreline = BashOperator(

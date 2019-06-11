@@ -2,7 +2,7 @@
 
 set -eu
 
-"cd $(dirname "$0")"/build_vector_tiles
+cd $(dirname $0)/build_vector_tiles
 
 FC_PSQL_ARGS="-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
