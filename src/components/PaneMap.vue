@@ -241,6 +241,13 @@ export default {
     // keeps track of which feature we are currently hovering over
     this.hoveredFeature = null;
 
+    // keeps track of currently selected feature
+    this.selectedFeature = null;
+
+    // marker
+    this.selectedMarker = new mapboxgl.Marker()
+      .setLngLat(BOUNDS_TORONTO.getCenter());
+
     Vue.nextTick(() => {
       this.loading = false;
       this.dataCountsVisible = {
@@ -321,6 +328,8 @@ export default {
   watch: {
     location() {
       this.easeToLocation();
+      this.updateSelectedFeature();
+      this.updateSelectedMarker();
     },
     $route() {
       Vue.nextTick(() => {
@@ -348,9 +357,10 @@ export default {
         // zoom to location
         const { lat, lng } = this.location;
         const center = new mapboxgl.LngLat(lng, lat);
+        const zoom = Math.max(this.map.getZoom(), ZOOM_LOCATION);
         this.map.easeTo({
           center,
-          zoom: ZOOM_LOCATION,
+          zoom,
         });
       }
     },
@@ -514,6 +524,42 @@ export default {
         this.map.setStyle(this.satelliteStyle, { diff: false });
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
+      }
+    },
+    updateSelectedFeature() {
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
+      }
+      if (this.location === null) {
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      const features = this.map.queryRenderedFeatures({
+        layers: [
+          'centreline',
+          'counts-visible-points',
+          'intersections',
+        ],
+        filter: [
+          'all',
+          ['==', 'centrelineId', centrelineId],
+          ['==', 'centrelineType', centrelineType],
+        ],
+      });
+      if (features.length === 0) {
+        return;
+      }
+      [this.selectedFeature] = features;
+      this.map.setFeatureState(this.selectedFeature, { selected: true });
+    },
+    updateSelectedMarker() {
+      if (this.location === null) {
+        this.selectedMarker.remove();
+      } else {
+        const { lng, lat } = this.location;
+        this.selectedMarker
+          .setLngLat([lng, lat])
+          .addTo(this.map);
       }
     },
     ...mapMutations(['setLocation']),
