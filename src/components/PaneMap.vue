@@ -136,7 +136,7 @@ const PAINT_OPACITY = [
   ],
 ];
 
-function injectCentrelineVectorTiles(style) {
+function injectSourcesAndLayers(style, dataCountsVisible) {
   const STYLE = {};
   Object.assign(STYLE, style);
 
@@ -145,10 +145,16 @@ function injectCentrelineVectorTiles(style) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
   };
 
-
   STYLE.sources.intersections = {
     type: 'vector',
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+  };
+
+  STYLE.sources['counts-visible'] = {
+    type: 'geojson',
+    data: dataCountsVisible,
+    cluster: true,
+    clusterMaxZoom: ZOOM_MAX,
   };
 
   STYLE.layers.push({
@@ -179,9 +185,48 @@ function injectCentrelineVectorTiles(style) {
     },
   });
 
+  STYLE.layers.push({
+    id: 'counts-visible-clusters',
+    type: 'circle',
+    source: 'counts-visible',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': PAINT_COLOR_COUNTS,
+      'circle-opacity': PAINT_OPACITY,
+      'circle-radius': PAINT_SIZE_COUNT_CLUSTERS,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'counts-visible-cluster-counts',
+    type: 'symbol',
+    source: 'counts-visible',
+    filter: ['has', 'point_count'],
+    glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
+    layout: {
+      'text-field': '{point_count_abbreviated}',
+      'text-font': ['Ubuntu Regular'],
+      'text-size': 18,
+    },
+    paint: {
+      'text-color': '#1b1b1b',
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'counts-visible-points',
+    type: 'circle',
+    source: 'counts-visible',
+    filter: ['!', ['has', 'point_count']],
+    paint: {
+      'circle-color': PAINT_COLOR_COUNTS,
+      'circle-opacity': PAINT_OPACITY,
+      'circle-radius': PAINT_SIZE_COUNT_POINTS,
+    },
+  });
+
   return STYLE;
 }
-
 
 export default {
   name: 'PaneMap',
@@ -213,9 +258,13 @@ export default {
     this.map = null;
   },
   mounted() {
+    this.dataCountsVisible = {
+      type: 'FeatureCollection',
+      features: [],
+    };
     const bounds = BOUNDS_TORONTO;
-    this.mapStyle = injectCentrelineVectorTiles(GeoStyle.get());
-    this.satelliteStyle = injectCentrelineVectorTiles({
+    this.mapStyle = injectSourcesAndLayers(GeoStyle.get(), this.dataCountsVisible);
+    this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
       sources: {
         'gcc-ortho-webm': {
@@ -235,7 +284,7 @@ export default {
           maxzoom: ZOOM_MAX_BASEMAP,
         },
       ],
-    });
+    }, this.dataCountsVisible);
 
     // keeps track of which feature we are currently hovering over
     this.hoveredFeature = null;
@@ -249,10 +298,6 @@ export default {
 
     Vue.nextTick(() => {
       this.loading = false;
-      this.dataCountsVisible = {
-        type: 'FeatureCollection',
-        features: [],
-      };
       this.map = new mapboxgl.Map({
         bounds,
         boxZoom: false,
@@ -271,48 +316,6 @@ export default {
         'bottom-right',
       );
       this.map.on('load', () => {
-        this.map.addSource('counts-visible', {
-          type: 'geojson',
-          data: this.dataCountsVisible,
-          cluster: true,
-          clusterMaxZoom: ZOOM_MAX,
-        });
-        this.map.addLayer({
-          id: 'counts-visible-clusters',
-          type: 'circle',
-          source: 'counts-visible',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': PAINT_COLOR_COUNTS,
-            'circle-opacity': PAINT_OPACITY,
-            'circle-radius': PAINT_SIZE_COUNT_CLUSTERS,
-          },
-        });
-        this.map.addLayer({
-          id: 'counts-visible-cluster-counts',
-          type: 'symbol',
-          source: 'counts-visible',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['Ubuntu Regular'],
-            'text-size': 18,
-          },
-          paint: {
-            'text-color': '#1b1b1b',
-          },
-        });
-        this.map.addLayer({
-          id: 'counts-visible-points',
-          type: 'circle',
-          source: 'counts-visible',
-          filter: ['!', ['has', 'point_count']],
-          paint: {
-            'circle-color': PAINT_COLOR_COUNTS,
-            'circle-opacity': PAINT_OPACITY,
-            'circle-radius': PAINT_SIZE_COUNT_POINTS,
-          },
-        });
         this.map.on('move', this.onMapMove.bind(this));
         this.easeToLocation();
         this.map.on('click', this.onMapClick.bind(this));
@@ -386,6 +389,35 @@ export default {
           return dataCountsVisible;
         });
     },
+    getFeatureForPoint(point) {
+      const layers = [
+        'centreline',
+        'counts-visible-clusters',
+        'counts-visible-points',
+        'intersections',
+      ];
+      let features = this.map.queryRenderedFeatures(point, { layers });
+      if (features.length > 0) {
+        // see if a feature was clicked ... if so choose that one
+        // if a feature was not clicked then get features in a bounding box
+        return features[0];
+      }
+      const { x, y } = point;
+      const bbox = [[x - 10, y - 10], [x + 10, y + 10]];
+      features = this.map.queryRenderedFeatures(bbox, { layers });
+      if (features.length === 0) {
+        return null;
+      }
+
+      // get all elements in the bounding box that are intersections
+      let feature = features.find(value => value.layer.id === 'intersections');
+
+      // select first centreline segment if there are no intersections in the bounding box
+      if (feature === undefined) {
+        [feature] = features;
+      }
+      return feature;
+    },
     onCentrelineClick(feature) {
       /*
        * Estimate the point halfway along this line.
@@ -455,37 +487,10 @@ export default {
       this.setLocation(elementInfo);
     },
     onMapClick(e) {
-      let features = null;
-      const layers = [
-        'centreline',
-        'counts-visible-clusters',
-        'counts-visible-points',
-        'intersections',
-      ];
-      const featuresClicked = this.map.queryRenderedFeatures(e.point, { layers });
-
-      const { x, y } = e.point;
-      // see if a feature was clicked ... if so choose that one
-      // if a feature was not clicked then get features in a bounding box
-      if (featuresClicked.length !== 0) {
-        features = featuresClicked;
-      } else {
-        const bbox = [[x - 10, y - 10], [x + 10, y + 10]];
-        features = this.map.queryRenderedFeatures(bbox, { layers });
-      }
-
-      if (features.length === 0) {
+      const feature = this.getFeatureForPoint(e.point);
+      if (feature === null) {
         return;
       }
-
-      // get all elements in the bounding box that are intersections
-      let feature = features.find(value => value.layer.id === 'intersections');
-
-      // select first centreline segment if there are no intersections in the bounding box
-      if (feature === undefined) {
-        [feature] = features;
-      }
-
       const layerId = feature.layer.id;
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
@@ -498,15 +503,9 @@ export default {
       }
     },
     onMapMousemove(e) {
-      const layers = [
-        'centreline',
-        'counts-visible-clusters',
-        'counts-visible-points',
-        'intersections',
-      ];
-      const features = this.map.queryRenderedFeatures(e.point, { layers });
+      const feature = this.getFeatureForPoint(e.point);
       const canvas = this.map.getCanvas();
-      if (features.length === 0) {
+      if (feature === null) {
         canvas.style.cursor = '';
         if (this.hoveredFeature !== null) {
           this.map.setFeatureState(this.hoveredFeature, { hover: false });
@@ -520,7 +519,7 @@ export default {
           this.map.setFeatureState(this.hoveredFeature, { hover: false });
         }
         // highlight feature that is currently being hovered over
-        [this.hoveredFeature] = features;
+        this.hoveredFeature = feature;
         this.map.setFeatureState(this.hoveredFeature, { hover: true });
       }
     },
