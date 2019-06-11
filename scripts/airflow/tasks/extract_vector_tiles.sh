@@ -14,7 +14,7 @@ mb-util --image_format=pbf build_vector_tiles/intersections.mbtiles extract_vect
 gzip -d -r -S .pbf extract_vector_tiles/intersections
 find extract_vector_tiles/intersections -type f -exec mv '{}' '{}'.pbf \;
 
-sudo rm -rf /usr/share/nginx/html/tiles
-sudo mkdir -p /usr/share/nginx/html/tiles
-sudo mv extract_vector_tiles/centreline /usr/share/nginx/html/tiles
-sudo mv extract_vector_tiles/intersections /usr/share/nginx/html/tiles
+rm -rf /data/tiles
+mkdir -p /data/tiles
+mv extract_vector_tiles/centreline /data/tiles
+mv extract_vector_tiles/intersections /data/tiles
