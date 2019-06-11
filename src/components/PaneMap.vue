@@ -394,16 +394,25 @@ export default {
        * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
        * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
        */
-      const { coordinates } = feature.geometry;
-      const i = Math.floor(coordinates.length / 2);
-      const [lng, lat] = coordinates[i];
       const elementInfo = {
         centrelineId: feature.properties.geo_id,
         centrelineType: Constants.CentrelineType.SEGMENT,
         description: feature.properties.lf_name,
-        lat,
-        lng,
       };
+      const { coordinates } = feature.geometry;
+      const n = coordinates.length;
+      if (n % 2 === 0) {
+        const i = n / 2;
+        const [lng0, lat0] = coordinates[i - 1];
+        const [lng1, lat1] = coordinates[i];
+        elementInfo.lng = (lng0 + lng1) / 2;
+        elementInfo.lat = (lat0 + lat1) / 2;
+      } else {
+        const i = (n - 1) / 2;
+        const [lng, lat] = coordinates[i];
+        elementInfo.lng = lng;
+        elementInfo.lat = lat;
+      }
       this.setLocation(elementInfo);
     },
     onCountsVisibleClustersClick(feature) {

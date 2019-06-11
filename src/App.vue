@@ -806,8 +806,11 @@ button {
   font-size: var(--font-size-xl);
   padding: var(--space-s) var(--space-m);
   transition: border-color var(--transition-short);
-  &:not(:disabled):hover {
-    border-color: var(--base-darkest);
+  &:not(:disabled) {
+    box-shadow: var(--shadow-2);
+    &:hover {
+      border-color: var(--base-darkest);
+    }
   }
   &:focus {
     box-shadow: var(--shadow-outline);

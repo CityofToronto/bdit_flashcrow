@@ -11,6 +11,7 @@
       <label class="tds-checkbox">
         <input
           type="checkbox"
+          disabled
           name="selectionItems"
           :value="item.id"
           v-model="internalValue" />

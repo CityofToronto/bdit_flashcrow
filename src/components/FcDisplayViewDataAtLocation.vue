@@ -5,6 +5,7 @@
         <label class="tds-checkbox">
           <input
             type="checkbox"
+            disabled
             name="selectAll"
             :checked="selectionAll"
             :indeterminate.prop="selectionIndeterminate"
