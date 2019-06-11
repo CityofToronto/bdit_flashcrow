@@ -13,7 +13,8 @@ function buildStyle() {
     scheme: 'xyz',
     tilejson: metadata.tilejson || '2.0.0',
     format: (metadata.tileInfo && metadata.tileInfo.format) || 'pbf',
-    maxzoom: 15,
+    maxzoom: 23,
+    minzoom: 0,
     tiles: [
       `${style.sources.esri.url}${metadata.tiles[0]}`,
     ],
