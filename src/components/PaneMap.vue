@@ -140,6 +140,8 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
   const STYLE = {};
   Object.assign(STYLE, style);
 
+  STYLE.glyphs = 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf';
+
   STYLE.sources.centreline = {
     type: 'vector',
     tiles: ['https://move.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
@@ -202,7 +204,6 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     type: 'symbol',
     source: 'counts-visible',
     filter: ['has', 'point_count'],
-    glyphs: 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf',
     layout: {
       'text-field': '{point_count_abbreviated}',
       'text-font': ['Ubuntu Regular'],
