@@ -15,9 +15,11 @@
           class="font-size-l mr-xl"
           :options="optionsCounts"
           @action-selected="onSelectActiveCount">
-          <span>
-            {{activeCount.date | date}}
-          </span>
+          <template v-slot:default>
+            <span>
+              {{activeCount.date | date}}
+            </span>
+          </template>
         </TdsActionDropdown>
       </div>
     </template>
