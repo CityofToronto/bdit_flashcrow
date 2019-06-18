@@ -6,8 +6,8 @@ require 'yaml'
 provision_conf = YAML.load_file('provision.conf.yml')
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "winky/amazonlinux-2"
-  config.vm.box_version = "1.0"
+  config.vm.box = "cot-move/cot-move-dev"
+  config.vm.box_version = "0.0.1"
 
   if Vagrant.has_plugin?("vagrant-proxyconf")
     proxy_url = "http://#{provision_conf["proxy_user"]}:#{provision_conf["proxy_pass"]}@proxy.toronto.ca:8080"
@@ -39,11 +39,10 @@ Vagrant.configure("2") do |config|
 
   shell_script = <<-EOF
 /vagrant/provision-admin.sh
-sudo -u vagrant /vagrant/provision-user-noconf.sh
-#sudo -u vagrant /vagrant/provision-user.sh \
-#  --ghUser "#{provision_conf["gh_user"]}" \
-#  --ghPassword "#{provision_conf["gh_password"]}" \
-#  --pgPassword "#{provision_conf["pg_password"]}"
+sudo -u vagrant /vagrant/provision-user.sh \
+  --ghUser "#{provision_conf["gh_user"]}" \
+  --ghPassword "#{provision_conf["gh_password"]}" \
+  --pgPassword "#{provision_conf["pg_password"]}"
 EOF
   config.vm.provision "shell", privileged: true, inline: shell_script
 end

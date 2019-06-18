@@ -1,14 +1,22 @@
-# Developer Guide
+# MOVE Developer Guide
 
-New to Flashcrow development?  You're in the right place!  This guide walks you through the process of setting up your Flashcrow development environment at the City of Toronto.
+New to MOVE development?  You're in the right place!  This guide walks you through the process of setting up your MOVE development environment at the City of Toronto.
 
 ## Access and Permissions
 
+To get started with MOVE development at the City of Toronto, you'll need the right hardware, permissions, and approvals.  This may seem like a daunting process; don't worry!  From experience, all of this takes at most 1 week end-to-end, and several people on the Big Data Innovation Team can help you sort through any confusing steps.
+
 ### Computer and Network Access
 
-Before you do anything else, you will need a City of Toronto-issued desktop or notebook with access to the internal City network.  Onsite Ethernet access should always work.  For notebooks, it is recommended that you also install the certificates necessary to access COT-STAFF and the BIG-IP VPN; these will allow you to access the internal City network from any wifi access point.
+Before you do anything else, you will need a City of Toronto-issued desktop or notebook with access to the internal City network.  Onsite Ethernet access should always work.
 
 To test that you have internal City network access, visit [InsideTO](http://insideto.toronto.ca/index.htm) in your browser.
+
+For notebooks, it is recommended that you also install the certificates necessary to access COT-STAFF and the BIG-IP VPN; these will allow you to access the internal City network from any wifi access point.  You can do this by running `gpupdate` from a Command Prompt:
+
+```cmd
+gpupdate /Target:user
+```
 
 ### Elevated Access
 
@@ -29,7 +37,7 @@ cmd /c mklink foo\baz.txt foo\bar.txt
 
 ### Git Repository Access
 
-The Flashcrow repository is hosted on Github, under the [City of Toronto organization](https://github.com/orgs/CityofToronto).  To get permission to access it, you'll need to be a member of the [BigDataInnovationTeam team](https://github.com/orgs/CityofToronto/teams/bigdatainnovationteam).  The current point of contact here is [Raphael Dumas](mailto:Raphael.Dumas@toronto.ca).
+The MOVE repository is hosted on Github, under the [City of Toronto organization](https://github.com/orgs/CityofToronto).  To get permission to access it, you'll need to be a member of the [BigDataInnovationTeam team](https://github.com/orgs/CityofToronto/teams/bigdatainnovationteam).  The current point of contact here is [Raphael Dumas](mailto:Raphael.Dumas@toronto.ca).
 
 ### Communications Tools
 
@@ -43,29 +51,10 @@ Speak to other team members for a more detailed explanation of how to navigate t
 
 ### IDE
 
-It is highly recommended that you use [Visual Studio Code](https://code.visualstudio.com/).  The Flashcrow repo comes with a Visual Studio Code workspace configuration, and the rest of the team can help you set up extensions to integrate syntax highlighting and linting.
-
 ## Installation
 
-Now on to the fun part: installing the application itself!  There are a few broad steps here:
-
-- clone the Flashcrow repo;
-- set up Flashcrow config files;
-- install the Flashcrow development VM using [Vagrant](https://www.vagrantup.com/);
-- run!
-
-The remainder of this guide will assume you're developing on a Windows machine, which is the default OS installed for City of Toronto users.  That said, many of these steps are OS-agnostic!
 
 ### Install Dependencies
-
-We recommend installing packages through [Scoop](https://scoop.sh/).  Open a PowerShell window and:
-
-```powershell
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-scoop config proxy proxy.toronto.ca:8080
-.\scripts\dev\scoop-requirements.ps1
-```
 
 This will install `git`, as well as several other packages that are useful in Flashcrow development.
 
@@ -76,7 +65,112 @@ git config --global http.proxy http://proxy.toronto.ca:8080
 git clone https://github.com/CityofToronto/bdit_flashcrow.git
 ```
 
-### Set up Flashcrow config files
+## Install MOVE
+
+In this section, you will:
+
+- install system prerequisites;
+- clone the MOVE repository;
+- start up the MOVE development VM;
+- within the VM, add config files;
+- within the VM, run the application.
+
+Most of MOVE development takes place in a Vagrant VM.  This helps ensure that all developers have the same environment, and that this environment is as similar as possible to those in staging and production.
+
+The remainder of this guide will assume you're developing on a Windows machine, which is the default OS installed for City of Toronto users.  That said, many of these steps are OS-agnostic, with comparable packages for Mac OS X and Linux systems.
+
+### System Prerequisites
+
+#### PowerShell 5+
+
+You should have PowerShell 5 or later installed.  You can follow [Microsoft docs](https://docs.microsoft.com/en-us/skypeforbusiness/set-up-your-computer-for-windows-powershell/download-and-install-windows-powershell-5-1) for details on setting that up.
+
+#### Scoop
+
+We recommend installing packages through [Scoop](https://scoop.sh/).  Open a PowerShell window and:
+
+```powershell
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+scoop config proxy proxy.toronto.ca:8080
+.\scripts\dev\scoop-requirements.ps1
+```
+
+#### VirtualBox and Vagrant
+
+Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it.
+
+We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin:
+
+```powershell
+cd scripts\dev
+vagrant plugin install vagrant-proxyconf
+```
+
+### Clone the MOVE Repository
+
+Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that with:
+
+```powershell
+git clone https://github.com/CityofToronto/bdit_flashcrow.git
+```
+
+### Start up the VM
+
+MOVE provides a private base box image at `cot-move/cot-move-dev` on Vagrant Cloud, based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download).  This image will be downloaded by `vagrant`.
+
+If you have never set up MOVE before, you will first need to log in to Vagrant Cloud:
+
+```powershell
+cd scripts\dev
+vagrant login
+
+# enter username and password as provided by lead dev
+```
+
+This will allow you to install the private base box image, which you can then start up using:
+
+```powershell
+vagrant up
+```
+
+That's it!  This should install and run a working development environment.  The first time you run this, it will take about 20-30 minutes.
+
+### Set up IDE
+
+#### Install Visual Studio Code
+
+It is highly recommended that you use [Visual Studio Code](https://code.visualstudio.com/).  The MOVE repo comes with a Visual Studio Code workspace configuration; to work in other editors, you will have to roll your own configuration.
+
+In particular, make sure that you have Visual Studio Code version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
+
+Once that's installed, install the [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) extension pack using the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery).
+
+#### SSH Configuration
+
+We use the output of `vagrant ssh-config` to configure an OpenSSH-compatible version of `ssh`, which was installed previously by `scoop`.
+
+```powershell
+cd scripts\dev
+vagrant ssh-config | Out-File -Encoding utf8 ~\.ssh\config
+```
+
+From here, edit the first line of `~\.ssh\config` to read:
+
+```conf
+Host 127.0.0.1
+# instead of Host default
+```
+
+You can now follow step 2 on the [Remote Development using SSH](https://code.visualstudio.com/docs/remote/ssh) directions, using `vagrant@127.0.0.1` as the host.
+
+#### Open MOVE Workspace
+
+At this point, you'll be in a Visual Studio Code window with SSH access to the Vagrant VM, but you won't actually be in the MOVE workspace.
+
+Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit_flashcrow.code-workspace`.
+
+### Set up MOVE config files
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
 
@@ -115,54 +209,28 @@ This configuration will not work in production, but for development it's fine.  
 Next, take your database password `dbpassword` from above and create a file at `scripts/dev/provision.conf.yml` as follows:
 
 ```yaml
+gh_user: "{your Github username}"
+gh_password: "{your Github password}"
 pg_password: "{dbpassword from above}"
 proxy_user: "{your City of Toronto username}"
 proxy_pass: "{your City of Toronto password}"
 ```
 
-### Install Flashcrow development VM
-
- Install [Virtual Box](https://www.virtualbox.org/) if your machine does not already have it. Flashcrow provides a configuration based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download). This allows developers on any operating system to develop and test in an environment that closely mirrors our production environment. This image will be downloaded by `vagrant` by scripts that are in the flashcrow repository in the next set of instructions.
-
-We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin:
-
-```powershell
-cd scripts\dev
-vagrant plugin install vagrant-proxyconf
-```
-
-Now we can simply start up the Vagrant box:
-
-```powershell
-vagrant up
-```
-
-That's it!  This should install and run a working development environment.
+These files should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit these files into the repo!
 
 ### Run!
 
-To run Flashcrow, you need to start two services: `webpack-dev-server` to serve static files, `server.js` for the REST API.  Each of these should be run from within a `vagrant ssh` session, which means that you will need two such sessions.
+To run Flashcrow, you need to start two services: `webpack-dev-server` to serve static files, `server.js` for the REST API.  With the MOVE workspace open in Visual Studio Code, you can run each from a separate terminal.
 
-To start a `vagrant ssh` session:
-
-```powershell
-cd scripts\dev
-vagrant ssh
-```
-
-From the first `vagrant ssh` session:
+From the first terminal:
 
 ```bash
-cd git/bdit_flashcrow
-nvm use
 npm run serve
 ```
 
-From the second `vagrant ssh` session:
+From the second terminal:
 
 ```bash
-cd git/bdit_flashcrow
-nvm use
 node ./server.js
 ```
 
@@ -174,11 +242,9 @@ Congratulations!  You've installed Flashcrow, and you're ready to go.  Now what?
 
 ### Editing
 
-We use Visual Studio Code where possible.  It is highly recommended that you also use Visual Studio Code; with a small team, we have *very* low bandwidth to support alternate IDEs.
+We use Visual Studio Code.  It is highly recommended that you also use Visual Studio Code; with a small team, we have *very* low bandwidth to support alternate IDEs.
 
-Our `Vagrantfile` syncs the `bdit_flashcrow` repository root on the host machine to `~/git/bdit_flashcrow` within the guest VM.  We edit files from the host machine, but run the application and all `git` commands within the guest VM.
-
-That means that you should have three `vagrant ssh` sessions open: one for `npm run serve`, one for `node ./server.js`, and one to run `git` commands.
+Our `Vagrantfile` clones the `bdit_flashcrow` repository root into `~/git/bdit_flashcrow` within the Vagrant VM.  We *always* edit files on the Vagrant VM from Remote Development in Visual Studio Code, *not* on the host machines.  We also run all `git` commands from Remote Development.
 
 ### Git Workflow
 

@@ -57,6 +57,10 @@ function parse_args {
 
 parse_args "$@"
 
+# load bashrc to ensure that we have pyenv / pip / nvm access
+# shellcheck disable=SC1090
+. "$HOME/.bashrc"
+
 # clone git repository
 mkdir -p "$HOME/git"
 git clone "https://${GH_USER}:${GH_PASSWORD}@github.com/CityofToronto/bdit_flashcrow.git" "$HOME/git/bdit_flashcrow"
@@ -68,6 +72,11 @@ pip install -r requirements.txt
 nvm use
 npm config --global set proxy http://proxy.toronto.ca:8080
 npm install
+
+# make sure PostgreSQL is running
+PGLOG="$HOME/log/pgsql-9.6"
+pg_ctl status && pg_ctl stop
+pg_ctl -l "$PGLOG/pgsql.log" -w start
 
 # install application database
 echo "installing application database..."
