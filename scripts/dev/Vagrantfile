@@ -37,12 +37,13 @@ Vagrant.configure("2") do |config|
   # prevent surprises for developers.
   config.vm.box_check_update = false
 
-  # Map the repository root.
-  config.vm.synced_folder "../../", "/home/vagrant/git/bdit_flashcrow", create: true
-
   shell_script = <<-EOF
 /vagrant/provision-admin.sh
-sudo -u vagrant /vagrant/provision-user.sh --pgPassword "#{provision_conf["pg_password"]}"
+sudo -u vagrant /vagrant/provision-user-noconf.sh
+#sudo -u vagrant /vagrant/provision-user.sh \
+#  --ghUser "#{provision_conf["gh_user"]}" \
+#  --ghPassword "#{provision_conf["gh_password"]}" \
+#  --pgPassword "#{provision_conf["pg_password"]}"
 EOF
   config.vm.provision "shell", privileged: true, inline: shell_script
 end

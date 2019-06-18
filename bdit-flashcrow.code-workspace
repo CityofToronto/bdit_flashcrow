@@ -21,7 +21,16 @@
 		"files.watcherExclude": {
 			"**/dist/**": true
 		},
-		"terminal.integrated.cwd": "scripts\\dev",
+		"remote.SSH.defaultExtensions": [
+			"christian-kohler.npm-intellisense",
+			"dbaeumer.vscode-eslint",
+			"eg2.vscode-npm-script",
+			"ms-python.python",
+			"ms-vscode.powershell",
+			"octref.vetur",
+			"timonwong.shellcheck",
+			"Tyriar.sort-lines",
+		],
 		"telemetry.enableCrashReporter": false,
 		"telemetry.enableTelemetry": false
 	}
