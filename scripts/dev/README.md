@@ -231,7 +231,7 @@ npm run serve
 From the second terminal:
 
 ```bash
-node ./server.js
+npm run backend
 ```
 
 Once both are running, open [https://localhost:8080/flashcrow](https://localhost:8080/flashcrow) in your browser.

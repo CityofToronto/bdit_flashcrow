@@ -1,6 +1,11 @@
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
 module.exports = {
+  collectCoverageFrom: [
+    'src/lib/**/*.js',
+    '!**/node_modules/**',
+  ],
+  coverageDirectory: '<rootDir>/tests/coverage',
   moduleFileExtensions: [
     'js',
     'jsx',

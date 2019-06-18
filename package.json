@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "backend": "node server.js",
+    "backend:inspect": "node --inspect=0.0.0.0:9229 server.js",
+    "backend:inspect-brk": "node --inspect-brk=0.0.0.0:9229 server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "jest",
+    "test:unit-coverage": "jest --coverage",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "jest --changedSince=master",
     "ci:npm-audit": "npm audit"
