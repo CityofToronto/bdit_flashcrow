@@ -17,9 +17,7 @@ export default {
   margin-top: var(--space-l);
   & > ul {
     list-style: none;
-    margin-block-start: 0;
-    margin-block-end: 0;
-    padding-inline-start: 0;
+    padding-left: 0;
   }
 }
 </style>
