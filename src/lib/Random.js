@@ -1,5 +1,10 @@
 class Random {
   static uniform(lo, hi) {
+    if (lo >= hi) {
+      throw new Error(
+        `unexpected input to Random.uniform(): ${lo} >= ${hi}`,
+      );
+    }
     return lo + (hi - lo) * Math.random();
   }
 
@@ -21,6 +26,9 @@ class Random {
 
   static sample(xs, k) {
     const n = xs.length;
+    if (k === 0) {
+      return [];
+    }
     if (k >= n) {
       return xs;
     }

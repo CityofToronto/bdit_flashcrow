@@ -68,7 +68,7 @@ const SortKeys = {
   Requests: {
     DATE: r => r.dueDate.valueOf(),
     ID: r => r.id,
-    LOCATION: r => r.location.name,
+    LOCATION: r => r.location.description,
     PRIORITY: r => (r.priority === 'STANDARD' ? 0 : 1),
     REQUESTER: r => r.requestedBy.name,
     STATUS: r => r.status,
