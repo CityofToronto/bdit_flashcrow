@@ -241,13 +241,19 @@ async function initServer() {
       // "authenticate" test user
       const sub = '0123456789';
       const email = 'flashcrow.tester@gmail.com';
+      const name = 'Flashcrow Tester';
       const token = 'HEADER.PAYLOAD.SIGNATURE';
       let user = await UserDAO.bySubject(sub);
       if (user === null) {
-        user = { subject: sub, email, token };
+        user = {
+          subject: sub,
+          email,
+          name,
+          token,
+        };
         await UserDAO.create(user);
       } else {
-        Object.assign(user, { email, token });
+        Object.assign(user, { email, name, token });
         await UserDAO.update(user);
       }
       const sessionId = uuid();

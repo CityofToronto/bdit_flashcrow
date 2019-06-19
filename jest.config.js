@@ -12,6 +12,14 @@ module.exports = {
     '!**/node_modules/**',
   ],
   coverageDirectory: '<rootDir>/tests/coverage',
+  coverageThreshold: {
+    'src/lib/': {
+      branches: 50,
+      functions: 50,
+      lines: 50,
+      statements: 50,
+    },
+  },
   moduleFileExtensions: [
     'js',
     'json',

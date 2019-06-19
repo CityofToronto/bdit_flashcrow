@@ -7,7 +7,9 @@ const API_ROOT = '/flashcrow/api';
 let COOKIE_JAR = request.jar(null, {
   rejectPublicSuffixes: false,
 });
-const ca = fs.readFileSync(path.join(__dirname, '..', '..', 'ssl', 'localhost.crt'));
+const ca = fs.readFileSync(
+  path.join(__dirname, '..', '..', '..', 'ssl', 'localhost.crt'),
+);
 
 function fcApi(uri, options) {
   const requestOptions = {
