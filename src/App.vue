@@ -355,6 +355,8 @@ hr {
 .flex-container-row {
   display: flex;
   flex-direction: row;
+  min-height: 0;
+  min-width: 0;
   & > .flex-cross-scroll {
     flex: var(--flex-fill);
     max-height: 100%;
@@ -364,6 +366,8 @@ hr {
 .flex-container-column {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  min-width: 0;
   & > .flex-cross-scroll {
     flex: var(--flex-fill);
     max-width: 100%;

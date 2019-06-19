@@ -198,6 +198,8 @@ async function initServer() {
       const sessionId = uuid();
       await request.server.app.cache.set(sessionId, { user }, 0);
       request.cookieAuth.set({ sessionId });
+
+      // redirect to home
       return h.redirect(config.PUBLIC_PATH);
     },
   });

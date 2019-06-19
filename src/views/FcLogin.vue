@@ -2,6 +2,7 @@
   <div class="fc-login mt-m px-l">
     <div class="hide">
       <form
+        ref="form"
         id="form_fc_login"
         method="POST"
         action="/flashcrow/api/auth/stub"></form>
@@ -87,7 +88,6 @@
 
 <script>
 import { email, required } from 'vuelidate/lib/validators';
-import { mapActions } from 'vuex';
 
 export default {
   name: 'FcLogin',
@@ -113,12 +113,8 @@ export default {
   methods: {
     onClickLogin() {
       this.loading = true;
-      this.authStub({ name: this.name, email: this.email })
-        .then(() => {
-          this.loading = false;
-        });
+      this.$refs.form.submit();
     },
-    ...mapActions(['authStub']),
   },
 };
 </script>
