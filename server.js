@@ -182,7 +182,7 @@ async function initServer() {
         },
       },
     },
-    handler: async (request) => {
+    handler: async (request, h) => {
       const { email, name } = request.payload;
       // upgrade to application session ID
       let user = await UserDAO.byEmail(email);
@@ -198,6 +198,7 @@ async function initServer() {
       const sessionId = uuid();
       await request.server.app.cache.set(sessionId, { user }, 0);
       request.cookieAuth.set({ sessionId });
+      return h.redirect(config.PUBLIC_PATH);
     },
   });
 

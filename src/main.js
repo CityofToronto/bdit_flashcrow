@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueCalendar from 'v-calendar';
 import Vuelidate from 'vuelidate';
+// polyfill fetch()
+import 'whatwg-fetch';
 
 import App from '@/App.vue';
 import router from '@/router';
