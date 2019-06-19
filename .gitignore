@@ -4,6 +4,7 @@ node_modules
 /dist
 
 # testing output
+/tests/coverage/
 /tests/e2e/videos/
 /tests/e2e/screenshots/
 

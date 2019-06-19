@@ -1,10 +1,16 @@
 class ArrayUtils {
   static range(lo, hi) {
+    let loActual = lo;
+    let hiActual = hi;
     if (hi === undefined) {
-      return [...Array(lo).keys()];
+      hiActual = lo;
+      loActual = 0;
     }
-    const n = hi - lo;
-    return [...Array(n).keys()].map(i => lo + i);
+    const n = hiActual - loActual;
+    if (n < 0) {
+      return [];
+    }
+    return [...Array(n).keys()].map(i => loActual + i);
   }
 
   static getMaxBy(xs, key) {
