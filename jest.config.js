@@ -1,5 +1,11 @@
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
+
+let { TEST_DIR } = process.env;
+if (TEST_DIR === undefined) {
+  TEST_DIR = '**';
+}
+
 module.exports = {
   collectCoverageFrom: [
     'src/lib/**/*.js',
@@ -8,14 +14,13 @@ module.exports = {
   coverageDirectory: '<rootDir>/tests/coverage',
   moduleFileExtensions: [
     'js',
-    'jsx',
     'json',
     'vue',
   ],
   transform: {
     '^.+\\.vue$': 'vue-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
-    '^.+\\.jsx?$': 'babel-jest',
+    '^.+\\.js$': 'babel-jest',
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -27,7 +32,7 @@ module.exports = {
     'jest-serializer-vue',
   ],
   testMatch: [
-    '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)',
+    `**/tests/jest/${TEST_DIR}/*.spec.js`,
   ],
   testURL: 'https://localhost:8080/',
 };
