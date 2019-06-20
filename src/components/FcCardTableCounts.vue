@@ -33,9 +33,9 @@
     <template v-slot:DATE="{ item, children }">
       <span v-if="item.date">
         <span>{{item.date | date}}</span>
-        <template v-if="children !== null && children.length > 0">
+        <template v-if="children !== null && numPerCategory[item.type.value] > 1">
           <br />
-          <small class="text-muted">+{{children.length}} older</small>
+          <small class="text-muted">+{{numPerCategory[item.type.value] - 1}} older</small>
         </template>
       </span>
       <span v-else class="text-muted">
@@ -97,6 +97,7 @@ export default {
     FcCardTable,
   },
   props: {
+    numPerCategory: Object,
     sections: Array,
     value: Array,
   },
