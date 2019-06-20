@@ -147,6 +147,7 @@ const OPTIONS_REPORTS = {
     { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
     { label: 'TMC Illustrated Report', value: 'TMC_ILLUSTRATED', disabled: true },
   ],
+  RESCU: [],
   ATR_VOLUME: [
     { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH', disabled: true },
     { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
