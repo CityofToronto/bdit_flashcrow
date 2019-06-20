@@ -149,7 +149,7 @@ const OPTIONS_REPORTS = {
   ],
   RESCU: [],
   ATR_VOLUME: [
-    { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH', disabled: true },
+    { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH' },
     { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
     { label: '24-Hour Detailed Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
   ],
