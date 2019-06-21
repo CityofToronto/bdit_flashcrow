@@ -9,9 +9,16 @@
         <span>{{count.type.label}}</span>
       </div>
     </header>
-    <pre>{{JSON.stringify(volumeByHour, null, 2)}}</pre>
+    <FcChartAtrVolume24h
+      v-model="highlightedHour"
+      :aspect-ratio="2"
+      :chart-data="volumeByHour" />
     <footer>
-      <table>
+      <table
+        @mouseleave="highlightedHour = null">
+        <caption class="font-size-l mb-m text-left">
+          <strong>Start Hour by Hour Volume</strong>
+        </caption>
         <colgroup>
           <col
             v-for="(_, h) in volumeByHour"
@@ -19,14 +26,22 @@
         </colgroup>
         <thead>
           <tr>
-            <th v-for="(_, h) in volumeByHour" :key="'th_' + h">
+            <th
+              v-for="(_, h) in volumeByHour"
+              :key="'th_' + h"
+              :class="{ highlight: highlightedHour === h }"
+              @mouseenter="highlightedHour = h">
               {{h}}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td v-for="(n, h) in volumeByHour" :key="'td_' + h">
+            <td
+              v-for="(n, h) in volumeByHour"
+              :key="'td_' + h"
+              :class="{ highlight: highlightedHour === h }"
+              @mouseenter="highlightedHour = h">
               {{n}}
             </td>
           </tr>
@@ -39,11 +54,21 @@
 <script>
 import { mapState } from 'vuex';
 
+import FcChartAtrVolume24h from '@/components/FcChartAtrVolume24h.vue';
+
 export default {
   name: 'FcReportAtrVolume24hGraph',
+  components: {
+    FcChartAtrVolume24h,
+  },
   props: {
     count: Object,
     countData: Array,
+  },
+  data() {
+    return {
+      highlightedHour: null,
+    };
   },
   computed: {
     volumeByHour() {
@@ -61,6 +86,9 @@ export default {
 
 <style lang="postcss">
 .fc-report-atr-volume-24h-graph {
+  & > .fc-chart-atr-volume-24h {
+    height: 400px;
+  }
   & > footer {
     table {
       border-collapse: separate;
@@ -76,6 +104,11 @@ export default {
           &:nth-child(2n + 1) {
             background-color: var(--base-lighter);
           }
+          &.highlight {
+            background-color: var(--primary-light);
+            border-color: var(--primary-darker);
+            color: var(--primary-darker);
+          }
         }
       }
       & > tbody {
@@ -83,6 +116,11 @@ export default {
           padding: var(--space-xs) var(--space-s);
           &:nth-child(2n + 1) {
             background-color: var(--base-lighter);
+          }
+          &.highlight {
+            background-color: var(--primary-light);
+            border-color: var(--primary-darker);
+            color: var(--primary-darker);
           }
         }
       }
