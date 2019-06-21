@@ -5,6 +5,7 @@ const CentrelineType = {
 };
 
 const COUNT_TYPES = [
+  { label: 'Bicycle Volume ATR', value: 'ATR_VOLUME_BICYCLE', automatic: true },
   { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
   { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
   { label: 'RESCU', value: 'RESCU', automatic: true },
