@@ -135,6 +135,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import FcReportAtrSpeedVolumePct from '@/components/FcReportAtrSpeedVolumePct.vue';
 import FcReportAtrVolume24hGraph from '@/components/FcReportAtrVolume24hGraph.vue';
 import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -167,6 +168,7 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    FcReportAtrSpeedVolumePct,
     FcReportAtrVolume24hGraph,
     FcReportTmcSummary,
     TdsActionDropdown,
