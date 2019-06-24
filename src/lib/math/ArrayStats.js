@@ -47,6 +47,31 @@ class ArrayStats {
     }
     return buckets[n - 1][1];
   }
+
+  /**
+   * @param {Array<[Number, Number]} buckets
+   * @param {Array<Number>} counts
+   */
+  static histogramMean(buckets, counts) {
+    const n = buckets.length;
+    if (n === 0) {
+      throw new Error('cannot calculate histogram percentile of empty dataset!');
+    }
+    if (n !== counts.length) {
+      throw new Error('buckets and counts must have same length!');
+    }
+    const totalCount = ArrayStats.sum(counts);
+    if (totalCount === 0) {
+      throw new Error('cannot calculate histogram percentile of empty dataset!');
+    }
+    let mu = 0;
+    for (let i = 0; i < n; i++) {
+      const [min, max] = buckets[i];
+      const count = counts[i];
+      mu += ((min + max) / 2) * count / totalCount;
+    }
+    return mu;
+  }
 }
 
 export default ArrayStats;

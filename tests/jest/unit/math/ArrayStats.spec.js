@@ -154,3 +154,28 @@ test('ArrayStats.histogramPercentile() [Trax Pro right-skewed]', () => {
   // 156 in the report
   expect(Math.floor(p)).toEqual(155);
 });
+
+test('ArrayStats.histogramMean() [Trax Pro]', () => {
+  let p;
+
+  p = ArrayStats.histogramMean(
+    Constants.SPEED_CLASSES,
+    [33, 62, 152, 411, 1155, 2621, 4799, 5579, 3354, 1359, 459, 138, 38, 22],
+  );
+  // 51 in the report
+  expect(Math.floor(p)).toEqual(50);
+
+  p = ArrayStats.histogramMean(
+    Constants.SPEED_CLASSES,
+    [275, 421, 825, 2678, 3139, 4736, 7799, 8568, 5812, 2787, 862, 234, 79, 34],
+  );
+  // 49 in the report
+  expect(Math.floor(p)).toEqual(48);
+
+  p = ArrayStats.histogramMean(
+    Constants.SPEED_CLASSES,
+    [2, 0, 0, 1, 0, 2, 4, 1, 13, 33, 70, 266, 1240, 44491],
+  );
+  // 119 in the report
+  expect(Math.floor(p)).toEqual(118);
+});

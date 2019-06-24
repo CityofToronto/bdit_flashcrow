@@ -199,6 +199,32 @@
         </tr>
       </tbody>
     </table>
+    <footer class="flex-container-row mt-m">
+      <div>
+        <div>
+          <strong>15th Percentile: </strong>
+          <span>{{totalStats.pct15}} KPH</span>
+        </div>
+        <div>
+          <strong>50th Percentile: </strong>
+          <span>{{totalStats.pct50}} KPH</span>
+        </div>
+        <div>
+          <strong>85th Percentile: </strong>
+          <span>{{totalStats.pct85}} KPH</span>
+        </div>
+        <div>
+          <strong>95th Percentile: </strong>
+          <span>{{totalStats.pct95}} KPH</span>
+        </div>
+        <div>
+          <strong>Mean Speed (Average): </strong>
+          <span>{{totalStats.mu}} KPH</span>
+        </div>
+      </div>
+      <div class="flex-fill"></div>
+      <div></div>
+    </footer>
   </div>
 </template>
 
@@ -258,29 +284,46 @@ export default {
       });
     },
     hoursPeakAm() {
-      const volume = Constants.SPEED_CLASSES.map((_, s) => ArrayUtils.getMaxIndexBy(
-        this.countDataByHour.slice(0, 12),
-        ({ volume: v }) => v[s],
-      ));
-      const total = ArrayUtils.getMaxIndexBy(
+      const volume = Constants.SPEED_CLASSES.map((_, s) => {
+        const h = ArrayUtils.getMaxIndexBy(
+          this.countDataByHour.slice(0, 12),
+          ({ volume: v }) => v[s],
+        );
+        if (this.countDataByHour[h].volume[s] === 0) {
+          return null;
+        }
+        return h;
+      });
+      let total = ArrayUtils.getMaxIndexBy(
         this.countDataByHour.slice(0, 12),
         ({ total: t }) => t,
       );
+      if (this.countDataByHour[total].total === 0) {
+        total = null;
+      }
       return { volume, total };
     },
     hoursPeakPm() {
-      const volume = Constants.SPEED_CLASSES.map((_, s) => ArrayUtils.getMaxIndexBy(
-        this.countDataByHour.slice(12),
-        ({ volume: v }) => v[s],
-      ));
-      const total = ArrayUtils.getMaxIndexBy(
+      const volume = Constants.SPEED_CLASSES.map((_, s) => {
+        let h = ArrayUtils.getMaxIndexBy(
+          this.countDataByHour.slice(12),
+          ({ volume: v }) => v[s],
+        );
+        h += 12;
+        if (this.countDataByHour[h].volume[s] === 0) {
+          return null;
+        }
+        return h;
+      });
+      let total = ArrayUtils.getMaxIndexBy(
         this.countDataByHour.slice(12),
         ({ total: t }) => t,
       );
-      return {
-        volume: volume.map(h => h + 12),
-        total: total + 12,
-      };
+      total += 12;
+      if (this.countDataByHour[total].total === 0) {
+        total = null;
+      }
+      return { volume, total };
     },
     speedClassPercents() {
       return this.speedClassTotals
@@ -295,6 +338,39 @@ export default {
     },
     total() {
       return ArrayStats.sum(this.speedClassTotals);
+    },
+    totalStats() {
+      const pct15 = Math.floor(ArrayStats.histogramPercentile(
+        Constants.SPEED_CLASSES,
+        this.speedClassTotals,
+        0.15,
+      ));
+      const pct50 = Math.floor(ArrayStats.histogramPercentile(
+        Constants.SPEED_CLASSES,
+        this.speedClassTotals,
+        0.5,
+      ));
+      const pct85 = Math.floor(ArrayStats.histogramPercentile(
+        Constants.SPEED_CLASSES,
+        this.speedClassTotals,
+        0.85,
+      ));
+      const pct95 = Math.floor(ArrayStats.histogramPercentile(
+        Constants.SPEED_CLASSES,
+        this.speedClassTotals,
+        0.95,
+      ));
+      const mu = Math.floor(ArrayStats.histogramMean(
+        Constants.SPEED_CLASSES,
+        this.speedClassTotals,
+      ));
+      return {
+        pct15,
+        pct50,
+        pct85,
+        pct95,
+        mu,
+      };
     },
     ...mapState(['locationQuery']),
   },
