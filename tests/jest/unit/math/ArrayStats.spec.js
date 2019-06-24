@@ -134,3 +134,23 @@ test('ArrayStats.histogramPercentile() [Trax Pro]', () => {
   // 67 in the report
   expect(Math.floor(p)).toEqual(68);
 });
+
+test('ArrayStats.histogramPercentile() [Trax Pro right-skewed]', () => {
+  let p;
+
+  p = ArrayStats.histogramPercentile(
+    Constants.SPEED_CLASSES,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12, 728],
+    0.85,
+  );
+  // 148 in the report
+  expect(Math.floor(p)).toEqual(147);
+
+  p = ArrayStats.histogramPercentile(
+    Constants.SPEED_CLASSES,
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12, 728],
+    0.95,
+  );
+  // 156 in the report
+  expect(Math.floor(p)).toEqual(155);
+});

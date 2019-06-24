@@ -51,6 +51,30 @@ test('ArrayUtils.getMaxBy()', () => {
   expect(xMax).toBe(xs[2]);
 });
 
+test('ArrayUtils.getMaxIndexBy()', () => {
+  const xs = [
+    { foo: 42, bar: 'c' },
+    { foo: 1729, bar: 'b' },
+    { foo: 1234, bar: 'a' },
+  ];
+  let indexMax;
+
+  indexMax = ArrayUtils.getMaxIndexBy([], x => x.foo);
+  expect(indexMax).toBeNull();
+
+  indexMax = ArrayUtils.getMaxIndexBy([xs[0]], x => x.foo);
+  expect(indexMax).toBe(0);
+
+  indexMax = ArrayUtils.getMaxIndexBy(xs, x => x.foo);
+  expect(indexMax).toBe(1);
+
+  indexMax = ArrayUtils.getMaxIndexBy(xs, x => x.bar);
+  expect(indexMax).toBe(0);
+
+  indexMax = ArrayUtils.getMaxIndexBy(xs, x => -Math.abs(x.foo - 1111));
+  expect(indexMax).toBe(2);
+});
+
 test('ArrayUtils.sortBy()', () => {
   const xs = [
     { foo: 42, bar: 'c' },
