@@ -14,21 +14,29 @@ class ArrayUtils {
   }
 
   static getMaxBy(xs, key) {
+    const i = ArrayUtils.getMaxIndexBy(xs, key);
+    if (i === null) {
+      return null;
+    }
+    return xs[i];
+  }
+
+  static getMaxIndexBy(xs, key) {
     const n = xs.length;
     if (n === 0) {
       return null;
     }
-    let xMax = xs[0];
-    let kMax = key(xMax);
+    let indexMax = 0;
+    let kMax = key(xs[0]);
     for (let i = 1; i < n; i += 1) {
       const x = xs[i];
       const k = key(x);
       if (k > kMax) {
-        xMax = x;
+        indexMax = i;
         kMax = k;
       }
     }
-    return xMax;
+    return indexMax;
   }
 
   static sortBy(xs, key, direction = 1) {

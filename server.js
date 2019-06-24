@@ -438,12 +438,43 @@ async function initServer() {
             CentrelineType.SEGMENT,
             CentrelineType.INTERSECTION,
           ).required(),
+          end: Joi.date().min(Joi.ref('start')).optional(),
+          maxPerCategory: Joi
+            .number()
+            .integer()
+            .positive()
+            .max(100)
+            .default(10),
+          start: Joi.date().min('1-1-1985').optional(),
         },
       },
     },
     handler: async (request) => {
-      const { centrelineId, centrelineType } = request.query;
-      return CountDAO.byCentreline(centrelineId, centrelineType);
+      const {
+        centrelineId,
+        centrelineType,
+        end,
+        maxPerCategory,
+        start,
+      } = request.query;
+      let dateRange = null;
+      if (start !== undefined && end !== undefined) {
+        dateRange = { start, end };
+      }
+      const [counts, numPerCategory] = await Promise.all([
+        CountDAO.byCentreline(
+          centrelineId,
+          centrelineType,
+          dateRange,
+          maxPerCategory,
+        ),
+        CountDAO.byCentrelineNumPerCategory(
+          centrelineId,
+          centrelineType,
+          dateRange,
+        ),
+      ]);
+      return { counts, numPerCategory };
     },
   });
 

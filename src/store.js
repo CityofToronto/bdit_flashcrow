@@ -7,6 +7,7 @@ import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
+const MAX_PER_CATEGORY = 10;
 const REQUESTS = SampleData.randomRequests();
 
 function makeStudyItem(studyType) {
@@ -20,6 +21,14 @@ function makeStudyItem(studyType) {
       notes: '',
     },
   };
+}
+
+function makeNumPerCategory() {
+  const numPerCategory = {};
+  Constants.COUNT_TYPES.forEach(({ value }) => {
+    numPerCategory[value] = 0;
+  });
+  return numPerCategory;
 }
 
 export default new Vuex.Store({
@@ -41,6 +50,7 @@ export default new Vuex.Store({
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
     counts: [],
+    numPerCategory: makeNumPerCategory(),
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
@@ -109,8 +119,9 @@ export default new Vuex.Store({
       Vue.set(state, 'locationQuery', locationQuery);
     },
     // COUNTS
-    setCounts(state, counts) {
+    setCountsResult(state, { counts, numPerCategory }) {
       Vue.set(state, 'counts', counts);
+      Vue.set(state, 'numPerCategory', numPerCategory);
     },
     // FILTERING DATA
     clearFilters(state) {
@@ -203,11 +214,18 @@ export default new Vuex.Store({
           return locationSuggestions;
         });
     },
-    fetchCountsByCentreline({ commit }, { centrelineId, centrelineType }) {
-      const data = { centrelineId, centrelineType };
+    fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
+      const data = {
+        centrelineId,
+        centrelineType,
+        maxPerCategory: MAX_PER_CATEGORY,
+      };
+      if (state.dateRange !== null) {
+        Object.assign(data, state.dateRange);
+      }
       const options = { data };
       return apiFetch('/counts/byCentreline', options)
-        .then((counts) => {
+        .then(({ counts, numPerCategory }) => {
           const countsNormalized = counts.map((count) => {
             const countNormalized = Object.assign({}, count);
             countNormalized.date = new Date(
@@ -215,8 +233,17 @@ export default new Vuex.Store({
             );
             return countNormalized;
           });
-          commit('setCounts', countsNormalized);
-          return countsNormalized;
+          // TODO: possibly move this normalization to the backend?
+          const numPerCategoryNormalized = makeNumPerCategory();
+          numPerCategory.forEach(({ n, category: { value } }) => {
+            numPerCategoryNormalized[value] += n;
+          });
+          const result = {
+            counts: countsNormalized,
+            numPerCategory: numPerCategoryNormalized,
+          };
+          commit('setCountsResult', result);
+          return result;
         });
     },
   },

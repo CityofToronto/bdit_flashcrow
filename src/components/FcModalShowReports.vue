@@ -135,6 +135,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import FcReportAtrSpeedVolumePct from '@/components/FcReportAtrSpeedVolumePct.vue';
 import FcReportAtrVolume24hGraph from '@/components/FcReportAtrVolume24hGraph.vue';
 import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -142,18 +143,22 @@ import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import apiFetch from '@/lib/ApiFetch';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+const OPTIONS_REPORTS_ATR_VOLUME = [
+  { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH' },
+  { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
+  { label: '24-Hour Detailed Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
+];
 const OPTIONS_REPORTS = {
+  ATR_VOLUME_BICYCLE: OPTIONS_REPORTS_ATR_VOLUME,
   TMC: [
     { label: 'TMC Summary Report', value: 'TMC_SUMMARY' },
     { label: 'TMC Illustrated Report', value: 'TMC_ILLUSTRATED', disabled: true },
   ],
-  ATR_VOLUME: [
-    { label: '24-Hour Graphical Report', value: 'ATR_VOLUME_24H_GRAPH', disabled: true },
-    { label: '24-Hour Summary Report', value: 'ATR_VOLUME_24H_SUMMARY', disabled: true },
-    { label: '24-Hour Detailed Report', value: 'ATR_VOLUME_24H_DETAIL', disabled: true },
-  ],
+  RESCU: OPTIONS_REPORTS_ATR_VOLUME,
+  ATR_VOLUME: OPTIONS_REPORTS_ATR_VOLUME,
   ATR_SPEED_VOLUME: [
-    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT', disabled: true },
+    { label: 'Speed Percentile Report', value: 'ATR_SPEED_VOLUME_PCT' },
+    ...OPTIONS_REPORTS_ATR_VOLUME,
   ],
   PXO_OBSERVE: [],
   PED_DELAY: [],
@@ -163,6 +168,7 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    FcReportAtrSpeedVolumePct,
     FcReportAtrVolume24hGraph,
     FcReportTmcSummary,
     TdsActionDropdown,

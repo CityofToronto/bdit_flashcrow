@@ -27,6 +27,7 @@
         </button>
       </header>
       <FcCardTableCounts
+        :num-per-category="numPerCategory"
         :sections="sections"
         v-model="selection"
         @action-card="onActionCard"
@@ -119,6 +120,7 @@ export default {
       'filterCountTypes',
       'filterDate',
       'location',
+      'numPerCategory',
       'showMap',
     ]),
   },

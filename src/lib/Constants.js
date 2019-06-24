@@ -5,8 +5,10 @@ const CentrelineType = {
 };
 
 const COUNT_TYPES = [
+  { label: 'Bicycle Volume ATR', value: 'ATR_VOLUME_BICYCLE', automatic: true },
   { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
   { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
+  { label: 'RESCU', value: 'RESCU', automatic: true },
   { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME', automatic: true },
   { label: 'Turning Movement Count', value: 'TMC', automatic: false },
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
@@ -75,6 +77,29 @@ const SortKeys = {
   },
 };
 
+
+// TODO: put this in a database somewhere!
+/*
+ * These are *half-open intervals*, i.e. `[min, max)` covers all speeds
+ * `min <= speed && speed < max`.
+ */
+const SPEED_CLASSES = [
+  [0, 19],
+  [19, 25],
+  [25, 30],
+  [30, 35],
+  [35, 40],
+  [40, 45],
+  [45, 50],
+  [50, 55],
+  [55, 60],
+  [60, 65],
+  [65, 70],
+  [70, 75],
+  [75, 80],
+  [80, 160],
+];
+
 const Status = {
   RECENT: 0,
   OLD_3: 1,
@@ -103,6 +128,7 @@ export default {
   REQUEST_STATUS_META,
   SortDirection,
   SortKeys,
+  SPEED_CLASSES,
   Status,
   STATUS_META,
 };
