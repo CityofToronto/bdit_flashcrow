@@ -17,17 +17,24 @@
       </label>
     </template>
     <template v-slot:STUDY_TYPE="{ item, children }">
-      <a
-        v-if="item.status !== Status.NO_EXISTING_COUNT"
-        href="#"
-        @click.prevent="$emit('action-card', {
-          type: 'show-reports',
-          item,
-          children,
-        })">
-        {{item.type.label}}
-      </a>
-      <span v-else>{{item.type.label}}</span>
+      <div
+        class="cell-study-type flex-container-row"
+        :class="{
+          'no-existing': item.status === Status.NO_EXISTING_COUNT,
+        }"
+        @click.prevent="onActionShowReports(item, children)">
+        <u v-if="item.status !== Status.NO_EXISTING_COUNT">
+          {{item.type.label}}
+        </u>
+        <span v-else>{{item.type.label}}</span>
+        <div class="flex-fill"></div>
+        <button
+          class="font-size-m ml-m"
+          :disabled="item.status === Status.NO_EXISTING_COUNT">
+          <span>View </span>
+          <i class="fa fa-expand"></i>
+        </button>
+      </div>
     </template>
     <template v-slot:DATE="{ item, children }">
       <span v-if="item.date">
@@ -105,7 +112,7 @@ export default {
     }, {
       name: 'STUDY_TYPE',
       sortable: true,
-      title: 'Study Type',
+      title: 'Study Reports',
     }, {
       name: 'DATE',
       sortable: true,
@@ -136,11 +143,41 @@ export default {
       },
     },
   },
+  methods: {
+    onActionShowReports(item, children) {
+      if (item.status === Constants.Status.NO_EXISTING_COUNT) {
+        return;
+      }
+      this.$emit('action-card', {
+        type: 'show-reports',
+        item,
+        children,
+      });
+    },
+  },
 };
 </script>
 
 <style lang="postcss">
 .fc-card-table-counts {
+  .cell-study-type {
+    align-items: center;
+    cursor: pointer;
+    &.no-existing {
+      cursor: not-allowed;
+    }
+    & > u {
+      color: var(--primary-vivid);
+    }
+    & > button {
+      opacity: 0;
+    }
+    &:hover {
+      & > button {
+        opacity: 1;
+      }
+    }
+  }
   .cell-actions {
     opacity: 0;
     & > button:not(:last-child) {
