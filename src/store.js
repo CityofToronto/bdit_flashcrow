@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
 import Constants from '@/lib/Constants';
+import FunctionUtils from '@/lib/FunctionUtils';
 import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
@@ -31,11 +32,16 @@ function makeNumPerCategory() {
   return numPerCategory;
 }
 
+const clearToastDebounced = FunctionUtils.debounce((commit) => {
+  commit('clearToast');
+}, 5000);
+
 export default new Vuex.Store({
   // TODO: organize state below
   state: {
     // modal
     modal: null,
+    toast: null,
     // time
     now: new Date(),
     // authentication
@@ -97,6 +103,12 @@ export default new Vuex.Store({
     },
     setModal(state, modal) {
       Vue.set(state, 'modal', modal);
+    },
+    clearToast(state) {
+      Vue.set(state, 'toast', null);
+    },
+    setToast(state, toast) {
+      Vue.set(state, 'toast', toast);
     },
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
@@ -173,6 +185,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    setToast({ commit }, toast) {
+      commit('setToast', toast);
+      clearToastDebounced(commit);
+    },
     checkAuth({ commit }) {
       return apiFetch('/auth')
         .then((auth) => {

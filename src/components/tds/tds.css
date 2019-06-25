@@ -102,6 +102,7 @@
   --transition-short: .15s ease-in-out;
 
   --z-index-controls: 99;
+  --z-index-toast: 999;
   --z-index-modal-backdrop: 1000;
   --z-index-modal-content: 1001;
 }

@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import store from '@/store';
 import Constants from '@/lib/Constants';
+import Messages from '@/lib/i18n/Messages';
 
 Vue.use(Router);
 
@@ -43,7 +44,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         if (store.state.location === null) {
-          // TODO: warn user that this requires location
+          store.dispatch('setToast', Messages.REQUEST_STUDY_REQUIRES_LOCATION);
           next({ name: 'home' });
         } else {
           if (store.state.studyRequest === null) {

@@ -20,7 +20,6 @@
           label="View Data"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
-          disabled
           icon="folder-plus"
           label="Request Study"
           :to="{ name: 'requestStudy' }" />
@@ -37,8 +36,13 @@
       </FcDashboardNav>
     </div>
     <div class="fc-content flex-fill flex-container-column">
-      <TdsTopBar>
+      <TdsTopBar class="fc-topbar">
         <template v-slot:left>
+          <FcToast
+            v-if="toast"
+            :variant="toast.variant">
+            <span>{{toast.text}}</span>
+          </FcToast>
           <SearchBarLocation
             :disabled="!auth.loggedIn" />
           <button
@@ -76,6 +80,7 @@ import FcDashboardNav from '@/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/components/FcModalRequestStudyConfirmation.vue';
+import FcToast from '@/components/FcToast.vue';
 import ModalComingSoon from '@/components/ModalComingSoon.vue';
 import SearchBarLocation from '@/components/SearchBarLocation.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -90,6 +95,7 @@ export default {
     FcDashboardNavItem,
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
+    FcToast,
     ModalComingSoon,
     SearchBarLocation,
     TdsActionDropdown,
@@ -110,7 +116,12 @@ export default {
       }
       return 'Guest';
     },
-    ...mapState(['auth', 'modal', 'location']),
+    ...mapState([
+      'auth',
+      'location',
+      'modal',
+      'toast',
+    ]),
   },
   methods: {
     onModalToggle() {
@@ -183,6 +194,13 @@ body {
   background-color: var(--base-darker);
   color: var(--base-lighter);
   width: var(--space-3xl);
+}
+.fc-topbar {
+  position: relative;
+  & > .fc-toast {
+    left: 0;
+    top: 100%;
+  }
 }
 
 /* TYPOGRAPHY */
