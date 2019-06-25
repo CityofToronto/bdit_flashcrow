@@ -37,7 +37,12 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
@@ -64,7 +69,7 @@ export default {
         let countsOfType = this.counts
           .filter(c => c.type.value === type.value);
         if (countsOfType.length === 0) {
-          if (this.filterDate !== null) {
+          if (this.filterDate !== null || this.hasFilterDayOfWeek) {
             return null;
           }
           return {
@@ -81,9 +86,11 @@ export default {
           const { start, end } = this.filterDate;
           countsOfType = countsOfType
             .filter(c => start <= c.date && c.date <= end);
-          if (countsOfType.length === 0) {
-            return null;
-          }
+        }
+        countsOfType = countsOfType
+          .filter(c => this.filterDayOfWeek.includes(c.date.getDay()));
+        if (countsOfType.length === 0) {
+          return null;
         }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
@@ -114,10 +121,14 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
+    ...mapGetters([
+      'hasFilterDayOfWeek',
+    ]),
     ...mapState([
       'counts',
       'filterCountTypes',
       'filterDate',
+      'filterDayOfWeek',
       'location',
       'numPerCategory',
       'showMap',

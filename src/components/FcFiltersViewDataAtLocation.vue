@@ -22,6 +22,11 @@
         'tds-button-success': filterDate !== null,
       }"
       size="l" />
+    <FcFilterDayOfWeek
+      class="font-size-l"
+      :class="{
+        'tds-button-success': hasFilterDayOfWeek,
+      }" />
   </template>
   <template v-slot:right>
     <ToggleShowMap />
@@ -34,6 +39,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcFilterCountTypes from '@/components/FcFilterCountTypes.vue';
 import FcFilterDate from '@/components/FcFilterDate.vue';
+import FcFilterDayOfWeek from '@/components/FcFilterDayOfWeek.vue';
 import ToggleShowMap from '@/components/ToggleShowMap.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
@@ -42,12 +48,13 @@ export default {
   components: {
     FcFilterCountTypes,
     FcFilterDate,
+    FcFilterDayOfWeek,
     TdsTopBar,
     ToggleShowMap,
   },
   computed: {
-    ...mapGetters(['hasFilters', 'hasFilterCountTypes']),
-    ...mapState(['filterCountTypes', 'filterDate']),
+    ...mapGetters(['hasFilters', 'hasFilterCountTypes', 'hasFilterDayOfWeek']),
+    ...mapState(['filterCountTypes', 'filterDate', 'filterDayOfWeek']),
   },
   methods: {
     ...mapMutations(['clearFilters']),

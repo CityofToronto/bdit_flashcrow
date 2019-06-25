@@ -61,6 +61,7 @@ export default new Vuex.Store({
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
+    filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
     filterRequestStatus: [],
     // REQUESTS
@@ -75,10 +76,15 @@ export default new Vuex.Store({
   getters: {
     // FILTERING DATA
     hasFilters(state, getters) {
-      return getters.hasFilterCountTypes || state.filterDate !== null;
+      return getters.hasFilterCountTypes
+        || state.filterDate !== null
+        || getters.hasFilterDayOfWeek;
     },
     hasFilterCountTypes(state) {
       return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+    },
+    hasFilterDayOfWeek(state) {
+      return state.filterDayOfWeek.length !== 7;
     },
     // ACTIVE STUDY REQUEST
     studyTypesWarnDuplicates(state) {
@@ -139,12 +145,16 @@ export default new Vuex.Store({
     clearFilters(state) {
       Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
       Vue.set(state, 'filterDate', null);
+      Vue.set(state, 'filterDayOfWeek', [...Array(7).keys()]);
     },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
     },
     setFilterDate(state, filterDate) {
       Vue.set(state, 'filterDate', filterDate);
+    },
+    setFilterDayOfWeek(state, filterDayOfWeek) {
+      Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
     },
     // FILTERING REQUESTS
     setFilterRequestStatus(state, filterRequestStatus) {
