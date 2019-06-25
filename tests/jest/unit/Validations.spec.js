@@ -1,6 +1,6 @@
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
-test('ValidationsStudyRequest', () => {
+test('ValidationsStudyRequest.numConsecutiveDaysOfWeek()', () => {
   // Simple use cases.
   expect(ValidationsStudyRequest.numConsecutiveDaysOfWeek([])).toBe(0);
   expect(ValidationsStudyRequest.numConsecutiveDaysOfWeek([2, 3, 4])).toBe(3);
@@ -26,5 +26,61 @@ test('ValidationsStudyRequest', () => {
     const k = ValidationsStudyRequest.numConsecutiveDaysOfWeek(randomDaysOfWeek);
     expect(k).toBeGreaterThanOrEqual(0);
     expect(k).toBeLessThanOrEqual(randomDaysOfWeek.length);
+  }
+});
+
+test('ValidationsStudyRequest.allTorontoInternal()', () => {
+  const { allTorontoInternal } = ValidationsStudyRequest.validations.studyRequest.meta.ccEmails;
+
+  expect(allTorontoInternal('')).toBeTruthy();
+  expect(allTorontoInternal(',,,,,,')).toBeTruthy();
+  expect(allTorontoInternal(',  ,, ,\t,')).toBeTruthy();
+  expect(allTorontoInternal('foo.bar@gmail.com')).toBeFalsy();
+  expect(allTorontoInternal('Evan.Savage@toronto.ca')).toBeTruthy();
+  expect(allTorontoInternal('Evan.Savage@toronto.ca,')).toBeTruthy();
+  expect(allTorontoInternal('Evan.Savage@toronto.ca,foo.bar@gmail.com')).toBeFalsy();
+  expect(allTorontoInternal('Evan.Savage@toronto.ca, foo.bar@gmail.com')).toBeFalsy();
+  expect(allTorontoInternal('Evan.Savage@toronto.ca, Aakash.Harpalani@toronto.ca')).toBeTruthy();
+});
+
+test('ValidationsStudyRequest.needsValidDuration()', () => {
+  const { studyRequest } = ValidationsStudyRequest.validations;
+  const { needsValidDuration } = studyRequest.items.$each.meta.daysOfWeek;
+
+  expect(needsValidDuration([], { duration: 24 })).toBeFalsy();
+  expect(needsValidDuration([2, 3, 4], { duration: 24 })).toBeTruthy();
+  expect(needsValidDuration([2, 3, 4], { duration: 48 })).toBeTruthy();
+  expect(needsValidDuration([2, 3, 4], { duration: 72 })).toBeTruthy();
+  expect(needsValidDuration([2, 3, 4], { duration: 96 })).toBeFalsy();
+  let i;
+  for (i = 0; i < 7; i += 1) {
+    expect(needsValidDuration([i], { duration: 24 })).toBeTruthy();
+    expect(needsValidDuration([i], { duration: 48 })).toBeFalsy();
+    expect(needsValidDuration([i, (i + 3) % 7], { duration: 24 })).toBeTruthy();
+    expect(needsValidDuration([i, (i + 3) % 7], { duration: 48 })).toBeFalsy();
+    expect(needsValidDuration([i, (i + 1) % 7], { duration: 24 })).toBeTruthy();
+    expect(needsValidDuration([i, (i + 1) % 7], { duration: 48 })).toBeTruthy();
+    expect(needsValidDuration([i, (i + 1) % 7], { duration: 72 })).toBeFalsy();
+  }
+});
+
+test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
+  const { studyRequest } = ValidationsStudyRequest.validations;
+  const { needsValidDaysOfWeek } = studyRequest.items.$each.meta.duration;
+
+  expect(needsValidDaysOfWeek(24, { daysOfWeek: [] })).toBeFalsy();
+  expect(needsValidDaysOfWeek(24, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
+  expect(needsValidDaysOfWeek(48, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
+  expect(needsValidDaysOfWeek(72, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
+  expect(needsValidDaysOfWeek(96, { daysOfWeek: [2, 3, 4] })).toBeFalsy();
+  let i;
+  for (i = 0; i < 7; i += 1) {
+    expect(needsValidDaysOfWeek(24, { daysOfWeek: [i] })).toBeTruthy();
+    expect(needsValidDaysOfWeek(48, { daysOfWeek: [i] })).toBeFalsy();
+    expect(needsValidDaysOfWeek(24, { daysOfWeek: [i, (i + 3) % 7] })).toBeTruthy();
+    expect(needsValidDaysOfWeek(48, { daysOfWeek: [i, (i + 3) % 7] })).toBeFalsy();
+    expect(needsValidDaysOfWeek(24, { daysOfWeek: [i, (i + 1) % 7] })).toBeTruthy();
+    expect(needsValidDaysOfWeek(48, { daysOfWeek: [i, (i + 1) % 7] })).toBeTruthy();
+    expect(needsValidDaysOfWeek(72, { daysOfWeek: [i, (i + 1) % 7] })).toBeFalsy();
   }
 });

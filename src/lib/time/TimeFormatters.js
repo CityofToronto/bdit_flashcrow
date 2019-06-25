@@ -6,10 +6,7 @@ function format(d, options) {
 }
 
 function formatDefault(d) {
-  if (!d) {
-    return '';
-  }
-  return new Intl.DateTimeFormat('en-US').format(d);
+  return format(d);
 }
 
 function formatTimeOfDay(d) {
