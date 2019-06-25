@@ -14,6 +14,7 @@ Vue.use(VueCalendar);
 Vue.use(Vuelidate);
 
 Vue.filter('date', TimeFormatters.formatDefault);
+Vue.filter('dayOfWeek', TimeFormatters.formatDayOfWeek);
 Vue.filter('d3Format', (value, formatSpec) => format(formatSpec)(value));
 Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 

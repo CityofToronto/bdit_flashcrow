@@ -213,6 +213,9 @@ export default {
   border-spacing: 0;
   margin: var(--space-l) 0;
   width: 100%;
+  & > colgroup > .fc-card-table-col-expand {
+    width: var(--space-xl);
+  }
   & > thead {
     & > tr > th {
       &.sortable {

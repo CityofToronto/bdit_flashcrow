@@ -48,6 +48,12 @@
         N/A
       </span>
     </template>
+    <template v-slot:DAY="{ item, children }">
+      <span v-if="item.date">{{item.date | dayOfWeek}}</span>
+      <span v-else class="text-muted">
+        N/A
+      </span>
+    </template>
     <template v-slot:STATUS="{ item }">
       <span
         class="full-width tds-label uppercase"
@@ -117,6 +123,10 @@ export default {
       name: 'DATE',
       sortable: true,
       title: 'Date',
+    }, {
+      name: 'DAY',
+      sortable: true,
+      title: 'Day',
     }, {
       name: 'STATUS',
       sortable: true,

@@ -9,6 +9,12 @@ function formatDefault(d) {
   return format(d);
 }
 
+function formatDayOfWeek(d) {
+  return format(d, {
+    weekday: 'short',
+  });
+}
+
 function formatTimeOfDay(d) {
   return format(d, {
     hour12: false,
@@ -26,6 +32,7 @@ function formatYearMonth(d) {
 
 
 export default {
+  formatDayOfWeek,
   formatDefault,
   formatTimeOfDay,
   formatYearMonth,
