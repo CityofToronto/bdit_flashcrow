@@ -157,6 +157,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     data: dataCountsVisible,
     cluster: true,
     clusterMaxZoom: ZOOM_MAX,
+    clusterProperties: { sum: ['+', ['get', 'cnt']] },
   };
 
   STYLE.layers.push({
@@ -205,7 +206,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     source: 'counts-visible',
     filter: ['has', 'point_count'],
     layout: {
-      'text-field': '{point_count_abbreviated}',
+      'text-field': '{sum}',
       'text-font': ['Ubuntu Regular'],
       'text-size': 18,
     },
@@ -460,16 +461,11 @@ export default {
     },
     onCountsVisiblePointsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
-      const {
-        centrelineId,
-        centrelineType,
-        locationDesc,
-      } = feature.properties;
-      const description = StringFormatters.formatCountLocationDescription(locationDesc);
       const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
+        centrelineId: feature.properties.centrelineid,
+        centrelineType: feature.properties.centrelinetype,
+        description:
+          StringFormatters.formatCountLocationDescription(feature.properties.locationdesc),
         lat,
         lng,
       };
