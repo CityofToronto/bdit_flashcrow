@@ -65,7 +65,14 @@ const router = new Router({
         name: 'requestStudySchedule',
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinue.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToSpecify.vue'),
+        },
+      }, {
+        path: 'specify',
+        name: 'requestStudySpecify',
+        components: {
+          default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySpecify.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToConfirm.vue'),
         },
       }, {
         path: 'confirm',

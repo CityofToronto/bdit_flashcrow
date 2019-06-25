@@ -1,12 +1,15 @@
 <template>
   <div class="fc-request-study-schedule flex-fill flex-container-column">
     <header>
-      <h2>Schedule Your Request</h2>
+      <h2>Specify Your Study Details</h2>
     </header>
     <section class="flex-fill flex-container-row">
       <div class="flex-cross-scroll">
-        <FcDetailsStudyRequest
-          :v="$v.studyRequest.meta" />
+        <FcDetailsStudy
+          v-for="({ item, meta }, i) in studyRequest.items"
+          :key="i"
+          :index="i"
+          :v="$v.studyRequest.items.$each[i].meta" />
       </div>
     </section>
   </div>
@@ -15,18 +18,18 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcDetailsStudyRequest from '@/components/FcDetailsStudyRequest.vue';
+import FcDetailsStudy from '@/components/FcDetailsStudy.vue';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
-  name: 'FcRequestStudySchedule',
+  name: 'FcRequestStudySpecify',
   components: {
-    FcDetailsStudyRequest,
+    FcDetailsStudy,
   },
   computed: {
     ...mapState(['studyRequest']),
   },
-  validations: ValidationsStudyRequest.validationsMeta,
+  validations: ValidationsStudyRequest.validations,
 };
 </script>
 

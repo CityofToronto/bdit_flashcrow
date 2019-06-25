@@ -75,7 +75,14 @@ const validations = {
   },
 };
 
+const validationsMeta = {
+  studyRequest: {
+    meta: validations.studyRequest.meta,
+  },
+};
+
 export default {
   numConsecutiveDaysOfWeek,
   validations,
+  validationsMeta,
 };

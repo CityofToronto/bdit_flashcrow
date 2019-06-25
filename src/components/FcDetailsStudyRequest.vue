@@ -15,7 +15,9 @@
           type="radio" />
       </div>
     </div>
-    <div class="form-group mt-xl">
+    <div
+      v-if="hasServiceRequestId"
+      class="form-group mt-xl">
       <label>
         <span>Enter service request number:</span>
         <div class="inner-container">
@@ -96,7 +98,7 @@
       </div>
     </div>
     <div class="form-group mt-xl">
-      <strong>What's the reason for your request?</strong>
+      <strong>What reasons are there for your request?</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="v.reasons.$model"
@@ -279,7 +281,7 @@ export default {
 
   width: var(--outer-width);
   margin: 0 auto var(--space-xl) auto;
-  & > .form-group > .inner-container {
+  & > .form-group .inner-container {
     width: var(--inner-width);
     margin: 0 auto;
   }

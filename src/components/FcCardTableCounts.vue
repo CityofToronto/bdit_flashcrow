@@ -11,7 +11,6 @@
       <label class="tds-checkbox">
         <input
           type="checkbox"
-          disabled
           name="selectionItems"
           :value="item.id"
           v-model="internalValue" />
@@ -56,6 +55,14 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
+          @click="$emit('action-item', {
+            type: 'request-study',
+            item,
+          })">
+          <i class="fa fa-plus-circle"></i>
+        </button>
+        <button
+          class="tds-button-secondary font-size-l"
           disabled
           @click="$emit('action-item', {
             type: 'download',
@@ -72,15 +79,6 @@
             item,
           })">
           <i class="fa fa-print"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          disabled
-          @click="$emit('action-item', {
-            type: 'request-study',
-            item,
-          })">
-          <i class="fa fa-plus-circle"></i>
         </button>
       </div>
     </template>

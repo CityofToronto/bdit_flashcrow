@@ -44,10 +44,10 @@
             <span>{{toast.text}}</span>
           </FcToast>
           <SearchBarLocation
-            :disabled="!auth.loggedIn" />
+            :disabled="searchBarDisabled || !auth.loggedIn" />
           <button
             class="font-size-l"
-            :disabled="location === null"
+            :disabled="location === null || searchBarDisabled || !auth.loggedIn"
             @click="onViewData">
             <i class="fa fa-search"></i>
             <span> View Data</span>
@@ -87,6 +87,11 @@ import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
 
+const SEARCH_BAR_ROUTES = [
+  'viewData',
+  'viewDataAtLocation',
+];
+
 export default {
   name: 'App',
   components: {
@@ -103,6 +108,9 @@ export default {
     TdsTopBar,
   },
   computed: {
+    searchBarDisabled() {
+      return !SEARCH_BAR_ROUTES.includes(this.$route.name);
+    },
     userActions() {
       if (this.auth.loggedIn) {
         return [{ label: 'Log out', value: 'logout' }];
@@ -845,7 +853,7 @@ label {
   margin-bottom: var(--space-l);
   & > strong {
     display: inline-block;
-    margin-bottom: var(--space-s);
+    margin-bottom: var(--space-m);
   }
 }
 </style>
