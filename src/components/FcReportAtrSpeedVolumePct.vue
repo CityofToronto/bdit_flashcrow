@@ -95,12 +95,14 @@
           <td
             class="text-right"
             :class="{ bt: h === 12 }">
-            <span>{{pct85}}</span>
+            <span v-if="pct85 !== null">{{pct85}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td
             class="text-right"
             :class="{ bt: h === 12 }">
-            <span>{{pct95}}</span>
+            <span v-if="pct95 !== null">{{pct95}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
         </tr>
         <tr>
@@ -142,10 +144,14 @@
             v-for="(h, s) in hoursPeakAm.volume"
             :key="'td_peak_am_time_' + s"
             class="bt text-right">
-            <span>{{countDataByHour[h].time}}</span>
+            <span v-if="h !== null">{{countDataByHour[h].time}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bl bt text-right">
-            <span>{{countDataByHour[hoursPeakAm.total].time}}</span>
+            <span v-if="hoursPeakAm.total !== null">
+              {{countDataByHour[hoursPeakAm.total].time}}
+            </span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bt" colspan="2">&nbsp;</td>
         </tr>
@@ -158,10 +164,14 @@
             v-for="(h, s) in hoursPeakAm.volume"
             :key="'td_peak_am_volume_' + s"
             class="text-right">
-            <span>{{countDataByHour[h].volume[s]}}</span>
+            <span v-if="h !== null">{{countDataByHour[h].volume[s]}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bl text-right">
-            <span>{{countDataByHour[hoursPeakAm.total].total}}</span>
+            <span v-if="hoursPeakAm.total !== null">
+              {{countDataByHour[hoursPeakAm.total].total}}
+            </span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td colspan="2">&nbsp;</td>
         </tr>
@@ -174,10 +184,14 @@
             v-for="(h, s) in hoursPeakPm.volume"
             :key="'td_peak_pm_time_' + s"
             class="bt text-right">
-            <span>{{countDataByHour[h].time}}</span>
+            <span v-if="h !== null">{{countDataByHour[h].time}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bl bt text-right">
-            <span>{{countDataByHour[hoursPeakPm.total].time}}</span>
+            <span v-if="hoursPeakPm.total !== null">
+              {{countDataByHour[hoursPeakPm.total].time}}
+            </span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bt" colspan="2">&nbsp;</td>
         </tr>
@@ -190,17 +204,21 @@
             v-for="(h, s) in hoursPeakPm.volume"
             :key="'td_peak_pm_volume_' + s"
             class="text-right">
-            <span>{{countDataByHour[h].volume[s]}}</span>
+            <span v-if="h !== null">{{countDataByHour[h].volume[s]}}</span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td class="bl text-right">
-            <span>{{countDataByHour[hoursPeakPm.total].total}}</span>
+            <span v-if="hoursPeakPm.total !== null">
+              {{countDataByHour[hoursPeakPm.total].total}}
+            </span>
+            <span v-else class="text-muted">N/A</span>
           </td>
           <td colspan="2">&nbsp;</td>
         </tr>
       </tbody>
     </table>
-    <footer class="flex-container-row mt-m">
-      <div>
+    <footer class="mt-m">
+      <template v-if="totalStats !== null">
         <div>
           <strong>15th Percentile: </strong>
           <span>{{totalStats.pct15}} KPH</span>
@@ -221,9 +239,12 @@
           <strong>Mean Speed (Average): </strong>
           <span>{{totalStats.mu}} KPH</span>
         </div>
+      </template>
+      <div v-else>
+        <strong class="text-muted">
+          No statistics available for empty count data.
+        </strong>
       </div>
-      <div class="flex-fill"></div>
-      <div></div>
     </footer>
   </div>
 </template>
@@ -264,16 +285,20 @@ export default {
       });
       return countDataByHour.map(({ time, volume }) => {
         const total = ArrayStats.sum(volume);
-        const pct85 = Math.floor(ArrayStats.histogramPercentile(
-          Constants.SPEED_CLASSES,
-          volume,
-          0.85,
-        ));
-        const pct95 = Math.floor(ArrayStats.histogramPercentile(
-          Constants.SPEED_CLASSES,
-          volume,
-          0.95,
-        ));
+        let pct85 = null;
+        let pct95 = null;
+        if (total > 0) {
+          pct85 = Math.floor(ArrayStats.histogramPercentile(
+            Constants.SPEED_CLASSES,
+            volume,
+            0.85,
+          ));
+          pct95 = Math.floor(ArrayStats.histogramPercentile(
+            Constants.SPEED_CLASSES,
+            volume,
+            0.95,
+          ));
+        }
         return {
           time,
           volume,
@@ -340,6 +365,9 @@ export default {
       return ArrayStats.sum(this.speedClassTotals);
     },
     totalStats() {
+      if (this.total === 0) {
+        return null;
+      }
       const pct15 = Math.floor(ArrayStats.histogramPercentile(
         Constants.SPEED_CLASSES,
         this.speedClassTotals,
