@@ -495,6 +495,7 @@ export default {
           this.map.setFeatureState(this.selectedFeature, { selected: false });
           this.selectedFeature = null;
         }
+        return;
       }
       const layerId = feature.layer.id;
       if (layerId !== 'counts-visible-clusters') {
@@ -524,17 +525,17 @@ export default {
           this.map.setFeatureState(this.hoveredFeature, { hover: false });
           this.hoveredFeature = null;
         }
-      } else {
-        canvas.style.cursor = 'pointer';
-
-        // unhighlight features that are currently highlighted
-        if (this.hoveredFeature !== null) {
-          this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        }
-        // highlight feature that is currently being hovered over
-        this.hoveredFeature = feature;
-        this.map.setFeatureState(this.hoveredFeature, { hover: true });
+        return;
       }
+      canvas.style.cursor = 'pointer';
+
+      // unhighlight features that are currently highlighted
+      if (this.hoveredFeature !== null) {
+        this.map.setFeatureState(this.hoveredFeature, { hover: false });
+      }
+      // highlight feature that is currently being hovered over
+      this.hoveredFeature = feature;
+      this.map.setFeatureState(this.hoveredFeature, { hover: true });
     },
     onMapMouseout() {
       if (this.hoveredFeature !== null) {

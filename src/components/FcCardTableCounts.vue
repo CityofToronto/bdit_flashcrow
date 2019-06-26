@@ -227,10 +227,11 @@ export default {
       });
     },
     optionsCounts(item) {
-      return item.counts.map((count, i) => {
+      const options = item.counts.map((count, i) => {
         const label = TimeFormatters.formatDefault(count.date);
         return { label, value: i };
       });
+      return options;
     },
     ...mapMutations(['setItemsCountsActive']),
   },
@@ -260,6 +261,11 @@ export default {
       & > button {
         opacity: 1;
       }
+    }
+  }
+  .cell-DATE {
+    & > button.tds-action-dropdown > .dropdown {
+      width: 120px;
     }
   }
   .cell-ACTIONS {
