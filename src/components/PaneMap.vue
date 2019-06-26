@@ -35,12 +35,14 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
-const ZOOM_TORONTO = 10;
-const ZOOM_MIN_COUNTS = 15;
-const ZOOM_LOCATION = 17;
-const ZOOM_MAX = 19;
-const ZOOM_MIN_INTERSECTIONS = 13;
+
 const ZOOM_MIN_BASEMAP = 0;
+const ZOOM_TORONTO = 10;
+const ZOOM_MIN_INTERSECTIONS = 12;
+const ZOOM_MIN_COUNTS = 14;
+const ZOOM_LOCATION = 17;
+const ZOOM_MAX_COUNTS_CLUSTERED = 17;
+const ZOOM_MAX = 19;
 const ZOOM_MAX_BASEMAP = 23;
 
 const PAINT_COLOR_CENTRELINE = [
@@ -156,7 +158,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     type: 'geojson',
     data: dataCountsVisible,
     cluster: true,
-    clusterMaxZoom: ZOOM_MAX,
+    clusterMaxZoom: ZOOM_MAX_COUNTS_CLUSTERED,
   };
 
   STYLE.layers.push({
@@ -165,7 +167,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     'source-layer': 'centreline',
     type: 'line',
     minzoom: ZOOM_TORONTO,
-    maxZoom: ZOOM_MAX,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
       'line-color': PAINT_COLOR_CENTRELINE,
       'line-width': PAINT_SIZE_CENTRELINE,
@@ -179,7 +181,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     'source-layer': 'centreline_intersection',
     type: 'circle',
     minzoom: ZOOM_MIN_INTERSECTIONS,
-    maxZoom: ZOOM_MAX,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
       'circle-color': PAINT_COLOR_CENTRELINE,
       'circle-radius': PAINT_SIZE_INTERSECTIONS,
