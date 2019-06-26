@@ -91,14 +91,14 @@ const PAINT_SIZE_INTERSECTIONS = [
   'case',
   ['boolean', ['feature-state', 'selected'], false],
   // selected
-  8,
+  10,
   [
     'case',
     ['boolean', ['feature-state', 'hover'], false],
     // hovered
-    8,
+    10,
     // normal
-    6,
+    8,
   ],
 ];
 const PAINT_SIZE_COUNT_POINTS = [
@@ -333,7 +333,6 @@ export default {
   watch: {
     location() {
       this.easeToLocation();
-      this.updateSelectedFeature();
       this.updateSelectedMarker();
     },
     $route() {
@@ -492,9 +491,20 @@ export default {
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
       if (feature === null) {
-        return;
+        if (this.selectedFeature !== null) {
+          this.map.setFeatureState(this.selectedFeature, { selected: false });
+          this.selectedFeature = null;
+        }
       }
       const layerId = feature.layer.id;
+      if (layerId !== 'counts-visible-clusters') {
+        if (this.selectedFeature !== null) {
+          this.map.setFeatureState(this.selectedFeature, { selected: false });
+        }
+        // select clicked feature
+        this.selectedFeature = feature;
+        this.map.setFeatureState(this.selectedFeature, { selected: true });
+      }
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
       } else if (layerId === 'counts-visible-clusters') {
@@ -553,32 +563,6 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
-    },
-    updateSelectedFeature() {
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-      }
-      if (this.location === null) {
-        return;
-      }
-      const { centrelineId, centrelineType } = this.location;
-      const features = this.map.queryRenderedFeatures({
-        layers: [
-          'centreline',
-          'counts-visible-points',
-          'intersections',
-        ],
-        filter: [
-          'all',
-          ['==', 'centrelineId', centrelineId],
-          ['==', 'centrelineType', centrelineType],
-        ],
-      });
-      if (features.length === 0) {
-        return;
-      }
-      [this.selectedFeature] = features;
-      this.map.setFeatureState(this.selectedFeature, { selected: true });
     },
     updateSelectedMarker() {
       if (this.location === null) {
