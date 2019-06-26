@@ -68,6 +68,21 @@ export default {
       });
       return selectableIds;
     },
+    selectedCounts() {
+      return this.selection
+        .filter(idIsCount)
+        .map(id => this.counts.find(c => c.id === id));
+    },
+    selectedTypes() {
+      const studyTypes = new Set(this.selection.map((id) => {
+        if (idIsCount(id)) {
+          const count = this.counts.find(c => c.id);
+          return count.type.value;
+        }
+        return id;
+      }));
+      return Array.from(studyTypes);
+    },
     selectionAll() {
       return this.selectableIds
         .every(id => this.selection.includes(id));
@@ -118,9 +133,8 @@ export default {
       });
   },
   methods: {
-    actionDownload(items, { formats }) {
+    actionDownload(counts, { formats }) {
       const downloadFormats = formats || ['CSV'];
-      const counts = items.filter(item => idIsCount(item.id));
       if (counts.length === 0) {
         return;
       }
@@ -136,8 +150,7 @@ export default {
         },
       });
     },
-    actionRequestStudy(items) {
-      const studyTypes = new Set(items.map(item => item.type.value));
+    actionRequestStudy(studyTypes) {
       if (studyTypes.size === 0) {
         return;
       }
@@ -145,42 +158,39 @@ export default {
       this.$router.push({ name: 'requestStudy' });
       this.setShowMap(true);
     },
-    actionShowReports(items) {
-      const counts = items.filter(item => idIsCount(item.id));
-      if (counts.length === 0) {
+    actionShowReports(item) {
+      if (item.counts.length === 0) {
+        return;
+      }
+      const [count] = item.counts;
+      if (count.status === Constants.Status.NO_EXISTING_COUNT) {
         return;
       }
       this.setModal({
         component: 'FcModalShowReports',
-        data: { counts, activeIndex: 0 },
+        data: item,
       });
     },
     onActionBulk(type, options) {
-      const items = this.selection.map((id) => {
-        if (idIsCount(id)) {
-          return this.counts.find(count => count.id === id);
-        }
-        const countType = Constants.COUNT_TYPES.find(({ value }) => value === id);
-        return {
-          id: countType.value,
-          type: countType,
-          date: null,
-          status: Constants.Status.NO_EXISTING_COUNT,
-        };
-      });
       const actionOptions = options || {};
       if (type === 'download') {
-        this.actionDownload(items, actionOptions);
+        const counts = this.selectedCounts;
+        this.actionDownload(counts, actionOptions);
       } else if (type === 'request-study') {
-        this.actionRequestStudy(items, actionOptions);
+        const studyTypes = this.selectedTypes;
+        this.actionRequestStudy(studyTypes, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
       if (type === 'download') {
-        this.actionDownload([item], actionOptions);
+        const count = item.counts[item.activeIndex];
+        this.actionDownload([count], actionOptions);
       } else if (type === 'request-study') {
-        this.actionRequestStudy([item], actionOptions);
+        const studyType = item.id;
+        this.actionRequestStudy([studyType], actionOptions);
+      } else if (type === 'show-reports') {
+        this.actionShowReports(item, actionOptions);
       }
     },
     onChangeSelectAll() {
