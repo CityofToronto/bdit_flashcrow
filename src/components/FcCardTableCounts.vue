@@ -3,7 +3,7 @@
     class="fc-card-table-counts"
     :columns="columns"
     expandable
-    :sections="sections"
+    :items="itemsCounts"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
@@ -12,44 +12,50 @@
         <input
           type="checkbox"
           name="selectionItems"
-          :value="item.id"
+          :value="item.counts[item.activeIndex].id"
           v-model="internalValue" />
       </label>
     </template>
-    <template v-slot:STUDY_TYPE="{ item, children }">
+    <template v-slot:STUDY_TYPE="{ item }">
       <div
         class="cell-study-type flex-container-row"
         :class="{
-          'no-existing': item.status === Status.NO_EXISTING_COUNT,
+          'no-existing': item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT,
         }"
-        @click.prevent="onActionShowReports(item, children)">
-        <u v-if="item.status !== Status.NO_EXISTING_COUNT">
-          {{item.type.label}}
+        @click.prevent="onActionShowReports(item)">
+        <u v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT">
+          {{item.counts[item.activeIndex].type.label}}
         </u>
-        <span v-else>{{item.type.label}}</span>
+        <span v-else>{{item.counts[item.activeIndex].type.label}}</span>
         <div class="flex-fill"></div>
         <button
           class="font-size-m ml-m"
-          :disabled="item.status === Status.NO_EXISTING_COUNT">
+          :disabled="item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT">
           <span>View </span>
           <i class="fa fa-expand"></i>
         </button>
       </div>
     </template>
-    <template v-slot:DATE="{ item, children }">
-      <span v-if="item.date">
-        <span>{{item.date | date}}</span>
-        <template v-if="children !== null && numPerCategory[item.type.value] > 1">
-          <br />
-          <small class="text-muted">+{{numPerCategory[item.type.value] - 1}} older</small>
+    <template v-slot:DATE="{ item }">
+      <TdsActionDropdown
+        v-if="item.counts[item.activeIndex].date"
+        class="font-size-m"
+        :options="optionsCounts(item)"
+        @action-selected="activeIndex => onSelectActiveIndex(item, activeIndex)">
+        <template v-slot:default>
+          <span>
+            {{item.counts[item.activeIndex].date | date}}
+          </span>
         </template>
-      </span>
+      </TdsActionDropdown>
       <span v-else class="text-muted">
         N/A
       </span>
     </template>
-    <template v-slot:DAY="{ item, children }">
-      <span v-if="item.date">{{item.date | dayOfWeek}}</span>
+    <template v-slot:DAY="{ item }">
+      <span v-if="item.counts[item.activeIndex].date">
+        {{item.counts[item.activeIndex].date | dayOfWeek}}
+      </span>
       <span v-else class="text-muted">
         N/A
       </span>
@@ -57,11 +63,11 @@
     <template v-slot:STATUS="{ item }">
       <span
         class="full-width tds-label uppercase"
-        :class="'tds-label-' + STATUS_META[item.status].class">
+        :class="'tds-label-' + STATUS_META[item.counts[item.activeIndex].status].class">
         <i
           class="fa"
-          :class="'fa-' + STATUS_META[item.status].icon"></i>
-        <span> {{STATUS_META[item.status].label}}</span>
+          :class="'fa-' + STATUS_META[item.counts[item.activeIndex].status].icon"></i>
+        <span> {{STATUS_META[item.counts[item.activeIndex].status].label}}</span>
       </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
@@ -93,21 +99,70 @@
         <i class="fa fa-print"></i>
       </button>
     </template>
+    <template v-slot:__expanded="{ item }">
+      <div class="mb-m text-muted">
+        <strong>Request # not known</strong>
+      </div>
+      <div class="flex-container-row">
+        <div class="flex-1">
+          <strong>Requested By:</strong><br />
+          <span class="text-muted">N/A</span>
+        </div>
+        <div class="flex-1">
+          <strong>Days:</strong><br />
+          <span>
+            {{item.counts[item.activeIndex].date | dayOfWeek}}
+          </span>
+        </div>
+        <div
+          v-if="item.counts[item.activeIndex].type.automatic"
+          class="flex-1">
+          <strong>Duration:</strong><br />
+          <span>
+            {{item.counts[item.activeIndex].duration}}
+          </span>
+        </div>
+        <div
+          v-else
+          class="flex-1">
+          <strong>Hours:</strong><br />
+          <span>
+            {{item.counts[item.activeIndex].hours}}
+          </span>
+        </div>
+        <div
+          v-if="item.counts[item.activeIndex].notes"
+          class="flex-1">
+          <strong>Additional Notes:</strong><br />
+          <span>
+            {{item.counts[item.activeIndex].notes}}
+          </span>
+        </div>
+        <div
+          v-else
+          class="flex-1">
+          <span class="text-muted">No additional notes</span>
+        </div>
+      </div>
+    </template>
   </FcCardTable>
 </template>
 
 <script>
+import { mapGetters, mapMutations, mapState } from 'vuex';
+
 import FcCardTable from '@/components/FcCardTable.vue';
+import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import Constants from '@/lib/Constants';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'FcCardTableCounts',
   components: {
     FcCardTable,
+    TdsActionDropdown,
   },
   props: {
-    numPerCategory: Object,
-    sections: Array,
     value: Array,
   },
   data() {
@@ -132,11 +187,16 @@ export default {
     }, {
       name: 'ACTIONS',
     }];
+    const sortKeys = {};
+    Object.entries(Constants.SortKeys.Counts)
+      .forEach(([name, sortKey]) => {
+        sortKeys[name] = ({ activeIndex, counts }) => sortKey(counts[activeIndex]);
+      });
     return {
       columns,
       sortBy: 'STUDY_TYPE',
       sortDirection: Constants.SortDirection.ASC,
-      sortKeys: Constants.SortKeys.Counts,
+      sortKeys,
       Status: Constants.Status,
       STATUS_META: Constants.STATUS_META,
     };
@@ -150,18 +210,29 @@ export default {
         this.$emit('input', value);
       },
     },
+    ...mapGetters(['itemsCounts']),
+    ...mapState(['numPerCategory']),
   },
   methods: {
-    onActionShowReports(item, children) {
+    onActionShowReports(item) {
       if (item.status === Constants.Status.NO_EXISTING_COUNT) {
         return;
       }
-      this.$emit('action-card', {
-        type: 'show-reports',
-        item,
-        children,
+      this.$emit('action-item', { type: 'show-reports', item });
+    },
+    onSelectActiveIndex(item, activeIndex) {
+      this.setItemsCountsActive({
+        value: item.id,
+        activeIndex,
       });
     },
+    optionsCounts(item) {
+      return item.counts.map((count, i) => {
+        const label = TimeFormatters.formatDefault(count.date);
+        return { label, value: i };
+      });
+    },
+    ...mapMutations(['setItemsCountsActive']),
   },
 };
 </script>

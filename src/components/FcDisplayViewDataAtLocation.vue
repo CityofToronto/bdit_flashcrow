@@ -26,10 +26,7 @@
         </button>
       </header>
       <FcCardTableCounts
-        :num-per-category="numPerCategory"
-        :sections="sections"
         v-model="selection"
-        @action-card="onActionCard"
         @action-item="onActionItem" />
     </div>
   </div>
@@ -45,7 +42,6 @@ import {
 } from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
 function idIsCount(id) {
@@ -63,48 +59,12 @@ export default {
     };
   },
   computed: {
-    sections() {
-      return this.filterCountTypes.map((i) => {
-        const type = Constants.COUNT_TYPES[i];
-        let countsOfType = this.counts
-          .filter(c => c.type.value === type.value);
-        if (this.filterDate !== null) {
-          const { start, end } = this.filterDate;
-          countsOfType = countsOfType
-            .filter(c => start <= c.date && c.date <= end);
-        }
-        countsOfType = countsOfType
-          .filter(c => this.filterDayOfWeek.includes(c.date.getDay()));
-        if (countsOfType.length === 0) {
-          return {
-            item: {
-              id: type.value,
-              type,
-              date: null,
-              status: Constants.Status.NO_EXISTING_COUNT,
-            },
-            children: null,
-          };
-        }
-        const countsOfTypeSorted = ArrayUtils.sortBy(
-          countsOfType,
-          Constants.SortKeys.Counts.DATE,
-          Constants.SortDirection.DESC,
-        );
-        const item = countsOfTypeSorted[0];
-        const children = countsOfTypeSorted.slice(1);
-        return { item, children };
-      });
-    },
     selectableIds() {
       const selectableIds = [];
-      this.sections.forEach(({ item, children }) => {
-        selectableIds.push(item.id);
-        if (children !== null) {
-          children.forEach(({ id }) => {
-            selectableIds.push(id);
-          });
-        }
+      this.itemsCounts.forEach(({ counts }) => {
+        counts.forEach(({ id }) => {
+          selectableIds.push(id);
+        });
       });
       return selectableIds;
     },
@@ -116,15 +76,11 @@ export default {
       return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapGetters([
-      'hasFilterDayOfWeek',
+      'itemsCounts',
     ]),
     ...mapState([
       'counts',
-      'filterCountTypes',
-      'filterDate',
-      'filterDayOfWeek',
       'location',
-      'numPerCategory',
       'showMap',
     ]),
   },
@@ -217,18 +173,6 @@ export default {
         this.actionDownload(items, actionOptions);
       } else if (type === 'request-study') {
         this.actionRequestStudy(items, actionOptions);
-      }
-    },
-    onActionCard({
-      type,
-      item,
-      children,
-      options,
-    }) {
-      const actionOptions = options || {};
-      const items = [item].concat(children);
-      if (type === 'show-reports') {
-        this.actionShowReports(items, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {

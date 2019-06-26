@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
+import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import SampleData from '@/lib/SampleData';
@@ -23,6 +24,14 @@ function makeStudyItem(studyType) {
       notes: '',
     },
   };
+}
+
+function makeItemsCountsActive() {
+  const itemsCountsActive = {};
+  Constants.COUNT_TYPES.forEach(({ value }) => {
+    itemsCountsActive[value] = 0;
+  });
+  return itemsCountsActive;
 }
 
 function makeNumPerCategory() {
@@ -57,6 +66,7 @@ export default new Vuex.Store({
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
     counts: [],
+    itemsCountsActive: makeItemsCountsActive(),
     numPerCategory: makeNumPerCategory(),
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
@@ -86,6 +96,47 @@ export default new Vuex.Store({
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
+    },
+    // TABLE ITEMS: COUNTS
+    itemsCounts(state) {
+      return state.filterCountTypes.map((i) => {
+        const type = Constants.COUNT_TYPES[i];
+        const activeIndex = state.itemsCountsActive[type.value];
+        let countsOfType = state.counts
+          .filter(c => c.type.value === type.value);
+        if (state.filterDate !== null) {
+          const { start, end } = state.filterDate;
+          countsOfType = countsOfType
+            .filter(c => start <= c.date && c.date <= end);
+        }
+        countsOfType = countsOfType
+          .filter(c => state.filterDayOfWeek.includes(c.date.getDay()));
+        if (countsOfType.length === 0) {
+          const noExistingCount = {
+            id: type.value,
+            type,
+            date: null,
+            status: Constants.Status.NO_EXISTING_COUNT,
+          };
+          return {
+            activeIndex,
+            counts: [noExistingCount],
+            expandable: false,
+            id: type.value,
+          };
+        }
+        const countsOfTypeSorted = ArrayUtils.sortBy(
+          countsOfType,
+          Constants.SortKeys.Counts.DATE,
+          Constants.SortDirection.DESC,
+        );
+        return {
+          activeIndex,
+          counts: countsOfTypeSorted,
+          expandable: true,
+          id: type.value,
+        };
+      });
     },
     // ACTIVE STUDY REQUEST
     studyTypesWarnDuplicates(state) {
@@ -140,7 +191,11 @@ export default new Vuex.Store({
     // COUNTS
     setCountsResult(state, { counts, numPerCategory }) {
       Vue.set(state, 'counts', counts);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
       Vue.set(state, 'numPerCategory', numPerCategory);
+    },
+    setItemsCountsActive(state, { value, activeIndex }) {
+      Vue.set(state.itemsCountsActive, value, activeIndex);
     },
     // FILTERING DATA
     clearFilters(state) {
@@ -150,12 +205,15 @@ export default new Vuex.Store({
     },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     setFilterDate(state, filterDate) {
       Vue.set(state, 'filterDate', filterDate);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     setFilterDayOfWeek(state, filterDayOfWeek) {
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     // FILTERING REQUESTS
     setFilterRequestStatus(state, filterRequestStatus) {
