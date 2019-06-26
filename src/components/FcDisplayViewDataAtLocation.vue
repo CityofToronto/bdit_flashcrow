@@ -68,10 +68,14 @@ export default {
         const type = Constants.COUNT_TYPES[i];
         let countsOfType = this.counts
           .filter(c => c.type.value === type.value);
+        if (this.filterDate !== null) {
+          const { start, end } = this.filterDate;
+          countsOfType = countsOfType
+            .filter(c => start <= c.date && c.date <= end);
+        }
+        countsOfType = countsOfType
+          .filter(c => this.filterDayOfWeek.includes(c.date.getDay()));
         if (countsOfType.length === 0) {
-          if (this.filterDate !== null || this.hasFilterDayOfWeek) {
-            return null;
-          }
           return {
             item: {
               id: type.value,
@@ -82,16 +86,6 @@ export default {
             children: null,
           };
         }
-        if (this.filterDate !== null) {
-          const { start, end } = this.filterDate;
-          countsOfType = countsOfType
-            .filter(c => start <= c.date && c.date <= end);
-        }
-        countsOfType = countsOfType
-          .filter(c => this.filterDayOfWeek.includes(c.date.getDay()));
-        if (countsOfType.length === 0) {
-          return null;
-        }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
           Constants.SortKeys.Counts.DATE,
@@ -100,7 +94,7 @@ export default {
         const item = countsOfTypeSorted[0];
         const children = countsOfTypeSorted.slice(1);
         return { item, children };
-      }).filter(section => section !== null);
+      });
     },
     selectableIds() {
       const selectableIds = [];

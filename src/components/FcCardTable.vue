@@ -3,9 +3,12 @@
     <caption v-if="caption">{{caption}}</caption>
     <colgroup>
       <!-- DATA COLUMNS -->
-      <col :span="columnsNormalized.length" class="fc-card-table-col-data">
+      <col
+        v-for="column in columnsNormalized"
+        :key="'col-' + column.name"
+        :class="'col-' + column.name">
       <!-- EXPAND TOGGLE -->
-      <col v-if="expandable" class="fc-card-table-col-expand">
+      <col v-if="expandable" class="col-expand">
     </colgroup>
     <thead>
       <tr>
@@ -53,7 +56,8 @@
           <!-- DATA COLUMNS -->
           <td
             v-for="column in columnsNormalized"
-            :key="column.name">
+            :key="column.name"
+            :class="'cell-' + column.name">
             <slot
               :name="column.name"
               v-bind="{
@@ -213,7 +217,7 @@ export default {
   border-spacing: 0;
   margin: var(--space-l) 0;
   width: 100%;
-  & > colgroup > .fc-card-table-col-expand {
+  & > colgroup > .col-expand {
     width: var(--space-xl);
   }
   & > thead {

@@ -65,35 +65,33 @@
       </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
-      <div class="cell-actions">
-        <button
-          class="tds-button-secondary font-size-l"
-          @click="$emit('action-item', {
-            type: 'request-study',
-            item,
-          })">
-          <i class="fa fa-plus-circle"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          disabled
-          @click="$emit('action-item', {
-            type: 'download',
-            item,
-            options: { formats: ['CSV'] },
-          })">
-          <i class="fa fa-download"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-l"
-          disabled
-          @click="$emit('action-item', {
-            type: 'print',
-            item,
-          })">
-          <i class="fa fa-print"></i>
-        </button>
-      </div>
+      <button
+        class="tds-button-secondary font-size-l"
+        @click="$emit('action-item', {
+          type: 'request-study',
+          item,
+        })">
+        <i class="fa fa-plus-circle"></i>
+      </button>
+      <button
+        class="tds-button-secondary font-size-l"
+        disabled
+        @click="$emit('action-item', {
+          type: 'download',
+          item,
+          options: { formats: ['CSV'] },
+        })">
+        <i class="fa fa-download"></i>
+      </button>
+      <button
+        class="tds-button-secondary font-size-l"
+        disabled
+        @click="$emit('action-item', {
+          type: 'print',
+          item,
+        })">
+        <i class="fa fa-print"></i>
+      </button>
     </template>
   </FcCardTable>
 </template>
@@ -170,6 +168,11 @@ export default {
 
 <style lang="postcss">
 .fc-card-table-counts {
+  & > colgroup {
+    & > .col-SELECTION {
+      width: var(--space-xl);
+    }
+  }
   .cell-study-type {
     align-items: center;
     cursor: pointer;
@@ -188,13 +191,15 @@ export default {
       }
     }
   }
-  .cell-actions {
-    opacity: 0;
-    & > button:not(:last-child) {
-      margin-right: var(--space-s);
+  .cell-ACTIONS {
+    & > button {
+      opacity: 0;
+      &:not(:last-child) {
+        margin-right: var(--space-s);
+      }
     }
   }
-  tr:hover .cell-actions {
+  tr:hover > .cell-ACTIONS > button {
     opacity: 1;
   }
 }
