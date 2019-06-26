@@ -100,6 +100,8 @@
   --shadow-outline: 0 0 0 3px var(--primary-light);
 
   --transition-short: .15s ease-in-out;
+  --transition-medium: .3s ease-in-out;
+  --transition-long: .5s ease-in-out;
 
   --z-index-controls: 99;
   --z-index-toast: 999;

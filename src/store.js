@@ -10,6 +10,7 @@ Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
 const REQUESTS = SampleData.randomRequests();
+const TIMEOUT_TOAST = 10000;
 
 function makeStudyItem(studyType) {
   return {
@@ -34,7 +35,7 @@ function makeNumPerCategory() {
 
 const clearToastDebounced = FunctionUtils.debounce((commit) => {
   commit('clearToast');
-}, 5000);
+}, TIMEOUT_TOAST);
 
 export default new Vuex.Store({
   // TODO: organize state below

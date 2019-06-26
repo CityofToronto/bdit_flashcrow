@@ -1,15 +1,25 @@
 <template>
-  <div
-    class="fc-toast flex-container-row font-size-xl full-width"
-    :class="'fc-toast-' + variant">
-    <i
-      class="fa"
-      :class="'fa-' + icon"></i>
-    <slot></slot>
-  </div>
+  <transition name="open-down">
+    <div
+      class="fc-toast flex-container-row font-size-xl full-width"
+      :class="'fc-toast-' + variant">
+      <i
+        class="fa"
+        :class="'fa-' + icon"></i>
+      <slot></slot>
+      <div class="flex-fill"></div>
+      <button
+        class="tds-button-secondary"
+        @click="clearToast">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+  </transition>
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 const ICONS = {
   success: 'check-circle',
   warning: 'exclamation-triangle',
@@ -28,6 +38,9 @@ export default {
     icon() {
       return ICONS[this.variant];
     },
+  },
+  methods: {
+    ...mapMutations(['clearToast']),
   },
 };
 </script>
@@ -59,5 +72,20 @@ export default {
     border-color: var(--error-darker);
     color: var(--error-darker);
   }
+}
+
+.open-down-enter-active, .open-down-leave-active {
+  transition: var(--transition-medium);
+}
+
+.open-down-enter-to, .open-down-leave {
+  max-height: calc(var(--space-xl) + var(--space-l));
+  overflow: hidden;
+}
+
+.open-down-enter, .open-down-leave-to {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
 }
 </style>
