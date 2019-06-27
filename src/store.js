@@ -17,7 +17,6 @@ function makeStudyItem(studyType) {
   return {
     item: studyType,
     meta: {
-      dateRange: null,
       daysOfWeek: [2, 3, 4],
       duration: 24,
       hours: 'ROUTINE',

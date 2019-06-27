@@ -787,15 +787,15 @@ fieldset {
       border-radius: 50%;
       color: var(--ink);
       display: inline-block;
-      font-size: var(--font-size-l);
+      font-size: var(--font-size-xl);
       font-weight: var(--font-weight-bold);
-      height: calc(var(--font-size-l) * 1.25);
-      line-height: calc(var(--font-size-l) - 2px);
+      height: calc(var(--font-size-xl) * 1.25);
+      line-height: calc(var(--font-size-xl) - 2px);
       margin-right: var(--space-xs);
       padding: var(--space-xs);
       text-align: center;
       vertical-align: middle;
-      width: calc(var(--font-size-l) * 1.25);
+      width: calc(var(--font-size-xl) * 1.25);
     }
   }
   & > .flex-container-row {

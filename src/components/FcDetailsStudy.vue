@@ -1,21 +1,11 @@
 <template>
   <fieldset class="fc-details-study mb-m">
-    <legend>
+    <legend class="font-size-l">
       <span class="number-icon">{{indexHuman}}</span>
       {{studyType.label}}
     </legend>
-    <div class="flex-container-row">
-      <div class="form-group flex-1">
-        <strong>When do you want your study to be conducted?</strong>
-        <DatePicker
-          v-model="dateRange"
-          mode="range"
-          :name="nameDateRange"
-          show-icon
-          size="l"
-          v-bind="attrsDueDate" />
-      </div>
-      <div class="form-group flex-1">
+    <div class="mt-m px-m">
+      <div class="form-group">
         <strong>What days of the week should the study fall on?</strong>
         <TdsButtonGroup
           v-model="v.daysOfWeek.$model"
@@ -45,9 +35,9 @@
           </p>
         </div>
       </div>
-    </div>
-    <div v-if="studyType.automatic" class="flex-container-row">
-      <div class="form-group flex-fill">
+      <div
+        v-if="studyType.automatic"
+        class="form-group">
         <strong>What's the duration of your study?</strong>
         <TdsRadioGroup
           v-model="v.duration.$model"
@@ -61,19 +51,19 @@
             { label: '5 days', sublabel: '120 hours', value: 120 },
             { label: '1 week', sublabel: '168 hours', value: 168 },
           ]" />
-          <div
-            v-if="v.duration.$error"
-            class="tds-panel tds-panel-error">
-            <i class="fa fa-times-circle"></i>
-            <p>
-              Please select {{duration / 24}} consecutive days for the study,
-              or reduce the requested duration.
-            </p>
-          </div>
+        <div
+          v-if="v.duration.$error"
+          class="tds-panel tds-panel-error">
+          <i class="fa fa-times-circle"></i>
+          <p>
+            Please select {{duration / 24}} consecutive days for the study,
+            or reduce the requested duration.
+          </p>
+        </div>
       </div>
-    </div>
-    <div v-else class="flex-container-row">
-      <div class="form-group flex-1">
+      <div
+        v-else
+        class="form-group">
         <strong>What type of hours should we use?</strong>
         <TdsRadioGroup
           v-model="hours"
@@ -125,10 +115,7 @@
           </p>
         </div>
       </div>
-      <div class="form-group flex-1"></div>
-    </div>
-    <div class="flex-container-row">
-      <div class="form-group flex-fill">
+      <div class="form-group">
         <strong>Any additional notes you'd like to share?</strong>
         <textarea
           ref="notes"
@@ -156,7 +143,6 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import DatePicker from '@/components/DatePicker.vue';
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
 import TdsRadioGroup from '@/components/tds/TdsRadioGroup.vue';
 import Constants from '@/lib/Constants';
@@ -164,7 +150,6 @@ import Constants from '@/lib/Constants';
 export default {
   name: 'FcDetailsStudy',
   components: {
-    DatePicker,
     TdsButtonGroup,
     TdsRadioGroup,
   },
