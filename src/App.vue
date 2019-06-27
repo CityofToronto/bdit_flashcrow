@@ -554,6 +554,9 @@ hr {
 .mb-m {
   margin-bottom: var(--space-m);
 }
+.mb-l {
+  margin-bottom: var(--space-l);
+}
 .mb-xl {
   margin-bottom: var(--space-xl);
 }

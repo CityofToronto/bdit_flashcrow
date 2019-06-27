@@ -1,81 +1,65 @@
 <template>
-  <fieldset class="fc-details-study mb-m">
+  <fieldset class="fc-details-study mb-l">
     <legend>
       <span class="number-icon">{{indexHuman}}</span>
       {{studyType.label}}
     </legend>
-    <div class="flex-container-row">
-      <div class="flex-1">
-        <p>We'll conduct the study between:</p>
-        <p class="font-size-l">
-          <strong v-if="dateRange">
-            {{dateRange.start | date}} &ndash; {{dateRange.end | date}}
-          </strong>
-          <span v-else class="text-muted">N/A</span>
-        </p>
-      </div>
-      <div class="flex-1">
+    <div class="flex-container-row mb-l">
+      <div class="flex-1 px-m">
         <p>The study will fall on these days of the week:</p>
-        <p class="font-size-l">
+        <p class="font-size-l mb-xl">
           <strong>{{daysOfWeekHuman}}</strong>
         </p>
-      </div>
-    </div>
-    <div v-if="studyType.automatic" class="flex-container-row">
-      <div class="flex-fill">
-        <p>The duration of the study will be:</p>
-        <p class="font-size-l">
-          <strong>{{durationHuman}}</strong><br />
-          <small>{{duration}} hours</small>
-        </p>
-      </div>
-    </div>
-    <div v-else class="flex-container-row">
-      <div class="flex-1">
-        <p>We'll use these hours:</p>
-        <p class="font-size-l">
-          <strong>{{hoursHuman}}</strong>
-        </p>
-        <div
-          v-if="hours === 'SCHOOL'"
-          class="tds-panel tds-panel-info">
-          <i class="fa fa-clock"></i>
-          <p>
-            <small>
-            07:30&ndash;09:30,
-            10:00&ndash;11:00,
-            12:00&ndash;13:30,
-            14:15&ndash;15:45,
-            16:00&ndash;18:00
-            </small>
+        <template v-if="studyType.automatic">
+          <p>The duration of the study will be:</p>
+          <p class="font-size-l">
+            <strong>{{durationHuman}}</strong><br />
+            <small>{{duration}} hours</small>
           </p>
-        </div>
-        <div
-          v-else-if="hours === 'ROUTINE'"
-          class="tds-panel tds-panel-info">
-          <i class="fa fa-clock"></i>
-          <p>
-            <small>
-            07:30&ndash;09:30,
-            10:00&ndash;12:00,
-            13:00&ndash;15:00,
-            16:00&ndash;18:00
-            </small>
+        </template>
+        <template v-else>
+          <p>We'll use these hours:</p>
+          <p class="font-size-l">
+            <strong>{{hoursHuman}}</strong>
           </p>
-        </div>
-        <div
-          v-else-if="hours === 'OTHER'"
-          class="tds-panel tds-panel-warning">
-          <i class="fa fa-clock"></i>
-          <p>
-            Schedule specified in additional notes.
-          </p>
-        </div>
+          <div
+            v-if="hours === 'SCHOOL'"
+            class="tds-panel tds-panel-info">
+            <i class="fa fa-clock"></i>
+            <p>
+              <small>
+              07:30&ndash;09:30,
+              10:00&ndash;11:00,
+              12:00&ndash;13:30,
+              14:15&ndash;15:45,
+              16:00&ndash;18:00
+              </small>
+            </p>
+          </div>
+          <div
+            v-else-if="hours === 'ROUTINE'"
+            class="tds-panel tds-panel-info">
+            <i class="fa fa-clock"></i>
+            <p>
+              <small>
+              07:30&ndash;09:30,
+              10:00&ndash;12:00,
+              13:00&ndash;15:00,
+              16:00&ndash;18:00
+              </small>
+            </p>
+          </div>
+          <div
+            v-else-if="hours === 'OTHER'"
+            class="tds-panel tds-panel-warning">
+            <i class="fa fa-clock"></i>
+            <p>
+              Schedule specified in additional notes.
+            </p>
+          </div>
+        </template>
       </div>
-      <div class="flex-1"></div>
-    </div>
-    <div class="flex-container-row">
-      <div class="flex-fill">
+      <div class="flex-1 px-m">
         <template v-if="notes">
           <p>Additional notes:</p>
           <p class="font-size-l">

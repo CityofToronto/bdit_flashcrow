@@ -153,6 +153,33 @@ export default new Vuex.Store({
         return studyType;
       });
     },
+    studyRequestEstimatedDeliveryDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      const { dueDate, priority } = state.studyRequest.meta;
+      if (dueDate === null || priority === null) {
+        return null;
+      }
+      if (priority === 'URGENT') {
+        return dueDate;
+      }
+      const oneWeekBeforeDueDate = new Date(
+        dueDate.getFullYear(),
+        dueDate.getMonth(),
+        dueDate.getDate() - 7,
+      );
+      const twoMonthsOut = new Date(
+        now.getFullYear(),
+        now.getMonth() + 2,
+        now.getDate(),
+      );
+      if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
+        return twoMonthsOut;
+      }
+      return oneWeekBeforeDueDate;
+    },
   },
   mutations: {
     clearModal(state) {

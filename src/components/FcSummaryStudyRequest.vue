@@ -1,14 +1,14 @@
 <template>
   <section class="fc-summary-study-request">
     <div class="flex-container-row">
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Service Request Number:</p>
         <p class="font-size-l mb-xl">
           <strong v-if="hasServiceRequestId">{{serviceRequestId}}</strong>
           <span v-else class="text-muted">N/A</span>
         </p>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Due Date:</p>
         <p class="font-size-l mb-xl">
           <strong>{{dueDate | date}}</strong>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="flex-container-row">
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>
           <span v-if="reasons.length === 1">Reason for request:</span>
           <span v-else>Reasons for request:</span>
@@ -44,7 +44,7 @@
           </div>
         </div>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Priority:</p>
         <p class="font-size-l">
           <strong>{{priorityHuman}}</strong>
@@ -55,7 +55,7 @@
           <i class="fa fa-calendar-check"></i>
           <p>
             Standard times to request counts are 2-3 months.
-            Estimated Delivery Date: July 5, 2019
+            Estimated Delivery Date: {{studyRequestEstimatedDeliveryDate | date}}
           </p>
         </div>
         <div
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import Constants from '@/lib/Constants';
 
@@ -118,6 +118,7 @@ export default {
     serviceRequestId() {
       return this.studyRequest.meta.serviceRequestId;
     },
+    ...mapGetters(['studyRequestEstimatedDeliveryDate']),
     ...mapState(['studyRequest']),
   },
 };
