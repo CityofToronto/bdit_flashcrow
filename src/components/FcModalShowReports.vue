@@ -10,59 +10,74 @@
           <i class="fa fa-map-marker-alt"></i>
           <span class="px-s">{{locationQuery}}</span>
         </h2>
-        <div class="flex-fill"></div>
-        <TdsActionDropdown
-          class="font-size-l mr-xl"
-          :options="optionsCounts"
-          @action-selected="onSelectActiveCount">
-          <template v-slot:default>
-            <span>
-              {{activeCount.date | date}}
-            </span>
-          </template>
-        </TdsActionDropdown>
       </div>
     </template>
     <template v-slot:content>
       <div class="flex-container-column full-height">
-        <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill my-m">
-          <div class="fc-modal-show-reports-master flex-container-column flex-1 px-m">
+        <header class="my-m">
+          <div class="fc-modal-show-reports-filters flex-container-row">
+            <TdsActionDropdown
+              class="font-size-l mb-m"
+              :options="optionsCounts"
+              @action-selected="onSelectActiveCount">
+              <template v-slot:default>
+                <span>
+                  {{activeCount.date | date}}
+                </span>
+              </template>
+            </TdsActionDropdown>
+            <span class="font-size-l mb-m ml-m">
+              {{activeCount.date | dayOfWeek}}
+            </span>
+            <div class="flex-fill"></div>
+            <span
+              class="font-size-l mb-m tds-label uppercase"
+              :class="'tds-label-' + STATUS_META[activeCount.status].class">
+              <i
+                class="fa"
+                :class="'fa-' + STATUS_META[activeCount.status].icon"></i>
+              <span> {{STATUS_META[activeCount.status].label}}</span>
+            </span>
+          </div>
+          <div class="fc-modal-show-reports-actions flex-container-row">
+            <label class="tds-checkbox">
+              <input
+                type="checkbox"
+                name="selectAll"
+                :checked="selectionAll"
+                :disabled="optionsReportsEnabled.length === 0"
+                :indeterminate.prop="selectionIndeterminate"
+                @change="onChangeSelectAll" />
+              <span>All</span>
+            </label>
+            <div class="flex-fill"></div>
+            <button
+              class="tds-button-secondary font-size-l"
+              disabled>
+              <i class="fa fa-download"></i>
+            </button>
+            <button
+              class="tds-button-secondary font-size-l ml-m"
+              disabled>
+              <i class="fa fa-print"></i>
+            </button>
+          </div>
+        </header>
+        <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill">
+          <div class="fc-modal-show-reports-master flex-1 px-m">
             <div
               v-if="optionsReportsEnabled.length === 0"
               class="tds-panel tds-panel-warning">
               <i class="fa fa-exclamation-triangle"></i>
               <p>
                 The alpha launch of MOVE doesn't yet support
-                {{activeCount.type.label}} reports.  Try selecting an intersection
-                with Turning Movement Count data.
+                {{activeCount.type.label}} reports.
               </p>
             </div>
             <div
               v-else
-              class="fc-modal-show-reports-master-actions flex-container-row mx-m py-m">
-              <label class="tds-checkbox">
-                <input
-                  type="checkbox"
-                  name="selectAll"
-                  :checked="selectionAll"
-                  :indeterminate.prop="selectionIndeterminate"
-                  @change="onChangeSelectAll" />
-                <span>All</span>
-              </label>
-              <div class="flex-fill"></div>
-              <button
-                class="tds-button-secondary font-size-l"
-                disabled>
-                <i class="fa fa-download"></i>
-              </button>
-              <button
-                class="tds-button-secondary font-size-l ml-m"
-                disabled>
-                <i class="fa fa-print"></i>
-              </button>
-            </div>
-            <div class="flex-fill flex-container-row">
-              <div class="flex-cross-scroll mt-m">
+              class="flex-fill flex-container-row">
+              <div class="flex-cross-scroll">
                 <div
                   v-for="{ label, value, disabled } in optionsReports"
                   :key="value"
@@ -90,7 +105,8 @@
                   <i class="fa fa-exclamation-triangle"></i>
                   <p>
                     When we release {{activeCount.type.label}} reports, you'll be able to
-                    view, download, and print them from here.
+                    view them from here.  We're also working on download and print
+                    functionality for reports.
                   </p>
                 </div>
                 <div
@@ -105,19 +121,8 @@
                   v-for="{ label, value, reportComponent } in selection"
                   :key="value"
                   class="mb-xl">
-                  <header class="flex-container-row mb-m">
+                  <header class="mb-m">
                     <h3>{{label}}</h3>
-                    <div class="flex-fill"></div>
-                    <button
-                      class="tds-button-secondary font-size-l"
-                      disabled>
-                      <i class="fa fa-download"></i>
-                    </button>
-                    <button
-                      class="tds-button-secondary font-size-l ml-m"
-                      disabled>
-                      <i class="fa fa-print"></i>
-                    </button>
                   </header>
                   <component
                     :is="reportComponent"
@@ -141,6 +146,7 @@ import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import apiFetch from '@/lib/ApiFetch';
+import Constants from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
@@ -177,6 +183,7 @@ export default {
     return {
       activeCountData: [],
       reports: [],
+      STATUS_META: Constants.STATUS_META,
       studies: [],
     };
   },
@@ -289,14 +296,15 @@ export default {
         width: 400px;
       }
     }
+    .fc-modal-show-reports-actions {
+      align-items: center;
+      background-color: var(--base-lighter);
+      padding: var(--space-s) var(--space-l);
+    }
     .fc-modal-show-reports-master-detail {
       align-items: stretch;
       & > .fc-modal-show-reports-master {
         border-right: var(--border-default);
-        & > .fc-modal-show-reports-master-actions {
-          align-items: center;
-          background-color: var(--base-lighter);
-        }
       }
       & > .fc-modal-show-reports-detail {
         max-width: 75%;
