@@ -2,7 +2,8 @@
   <FcCardTable
     class="fc-card-table-studies-requested"
     :columns="columns"
-    :sections="sections"
+    :expandable="false"
+    :items="items"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
@@ -68,7 +69,7 @@ export default {
     FcCardTable,
   },
   props: {
-    sections: Array,
+    items: Array,
   },
   data() {
     const columns = [{

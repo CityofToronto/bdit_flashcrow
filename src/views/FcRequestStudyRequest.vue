@@ -1,7 +1,7 @@
 <template>
   <div class="fc-request-study-request flex-fill flex-container-column">
     <FcCardTableStudiesRequested
-      :sections="sections"
+      :items="items"
       @remove-study="onRemoveStudy">
       <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
         <tr
@@ -64,11 +64,10 @@ export default {
     TdsActionDropdown,
   },
   computed: {
-    sections() {
+    items() {
       return this.studyRequest.items.map(({ item: studyType }) => {
         const type = Constants.COUNT_TYPES.find(({ value }) => value === studyType);
-        const item = getStudyTypeItem(this.counts, type);
-        return { item, children: null };
+        return getStudyTypeItem(this.counts, type);
       });
     },
     ...mapGetters([
