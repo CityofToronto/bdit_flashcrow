@@ -10,17 +10,7 @@
 
 <script>
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-
-// TODO: clean this up, move to Constants or TimeFormatters
-const DAYS_OF_WEEK = [
-  'Sun',
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-];
+import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'FcFilterDayOfWeek',
@@ -37,7 +27,7 @@ export default {
       },
     },
     options() {
-      return DAYS_OF_WEEK.map((label, i) => ({ label, value: i }));
+      return TimeFormatters.DAYS_OF_WEEK.map((label, i) => ({ label, value: i }));
     },
   },
 };

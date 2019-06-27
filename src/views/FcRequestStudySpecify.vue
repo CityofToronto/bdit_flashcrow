@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-request-study-schedule flex-fill flex-container-column">
+  <div class="fc-request-study-specify flex-fill flex-container-column">
     <header>
       <h2>Specify Your Study Details</h2>
     </header>
@@ -34,7 +34,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-request-study-schedule {
+.fc-request-study-specify {
 
 }
 </style>

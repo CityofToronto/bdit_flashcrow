@@ -328,6 +328,10 @@ export default {
     });
   },
   beforeDestroy() {
+    /*
+     * If the user navigates to a page that doesn't include `PaneMap` between `created()`
+     * and `mounted()`, it can happen that `this.map === null`.
+     */
     if (this.map !== null) {
       this.map.remove();
     }

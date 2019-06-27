@@ -1,3 +1,5 @@
+import ArrayUtils from '@/lib/ArrayUtils';
+
 function format(d, options) {
   if (!d) {
     return '';
@@ -30,8 +32,12 @@ function formatYearMonth(d) {
   });
 }
 
+// see https://stackoverflow.com/questions/30437134/how-to-get-the-weekday-names-using-intl
+const DAYS_OF_WEEK = ArrayUtils.range(5, 12)
+  .map(date => formatDayOfWeek(new Date(1970, 0, date)));
 
 export default {
+  DAYS_OF_WEEK,
   formatDayOfWeek,
   formatDefault,
   formatTimeOfDay,

@@ -77,6 +77,7 @@ import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'CountDetailsSummary',
@@ -99,7 +100,7 @@ export default {
       }
       return ArrayUtils
         .sortBy(this.daysOfWeek, i => i)
-        .map(i => Constants.DAYS_OF_WEEK[i])
+        .map(i => TimeFormatters.DAYS_OF_WEEK[i])
         .join(', ');
     },
     duration() {

@@ -14,16 +14,6 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
-const DAYS_OF_WEEK = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-
 // TODO: DRY with server.js
 const Format = {
   GEOJSON: 'geojson',
@@ -122,7 +112,6 @@ const STATUS_META = [
 export default {
   CentrelineType,
   COUNT_TYPES,
-  DAYS_OF_WEEK,
   Format,
   REASONS,
   RequestStatus,
