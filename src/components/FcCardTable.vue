@@ -85,7 +85,7 @@
         </template>
       </tbody>
     </template>
-    <slot name="__footer" v-bind="{ numTableColumns, itemsNormalized }"></slot>
+    <slot name="__footer" v-bind="{ numTableColumns, items: itemsNormalized }"></slot>
   </table>
 </template>
 

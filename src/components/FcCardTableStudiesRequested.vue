@@ -51,10 +51,10 @@
         </button>
       </div>
     </template>
-    <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
+    <template v-slot:__footer="{ numTableColumns, items }">
       <slot
         name="__footer"
-        v-bind="{ numTableColumns, sectionsNormalized }"></slot>
+        v-bind="{ numTableColumns, items }"></slot>
     </template>
   </FcCardTable>
 </template>

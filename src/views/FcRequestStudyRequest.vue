@@ -3,9 +3,9 @@
     <FcCardTableStudiesRequested
       :items="items"
       @remove-study="onRemoveStudy">
-      <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
+      <template v-slot:__footer="{ numTableColumns, items }">
         <tr
-          v-if="sectionsNormalized.length > 0"
+          v-if="items.length > 0"
           class="fc-card-table-spacer">
           <td :colspan="numTableColumns"></td>
         </tr>
@@ -39,6 +39,7 @@ function getStudyTypeItem(counts, type) {
   const countsOfType = counts.filter(c => c.type.value === type.value);
   if (countsOfType.length === 0) {
     return {
+      expandable: false,
       id: type.value,
       type,
       date: null,
@@ -50,6 +51,7 @@ function getStudyTypeItem(counts, type) {
     Constants.SortKeys.Counts.DATE,
   );
   return {
+    expandable: false,
     id: type.value,
     type,
     date,

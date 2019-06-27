@@ -307,8 +307,8 @@ export default {
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        minZoom: ZOOM_MIN_BASEMAP,
-        maxZoom: ZOOM_MAX_BASEMAP,
+        minZoom: ZOOM_TORONTO,
+        maxZoom: ZOOM_MAX,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
@@ -328,7 +328,9 @@ export default {
     });
   },
   beforeDestroy() {
-    this.map.remove();
+    if (this.map !== null) {
+      this.map.remove();
+    }
   },
   watch: {
     location() {
