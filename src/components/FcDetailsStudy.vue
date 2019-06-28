@@ -75,29 +75,14 @@
             { label: 'Other', value: 'OTHER' },
           ]" />
         <div
-          v-if="hours === 'SCHOOL'"
+          v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
           class="tds-panel tds-panel-info">
           <i class="fa fa-clock"></i>
           <p>
             <small>
-            07:30&ndash;09:30,
-            10:00&ndash;11:00,
-            12:00&ndash;13:30,
-            14:15&ndash;15:45,
-            16:00&ndash;18:00
-            </small>
-          </p>
-        </div>
-        <div
-          v-else-if="hours === 'ROUTINE'"
-          class="tds-panel tds-panel-info">
-          <i class="fa fa-clock"></i>
-          <p>
-            <small>
-            07:30&ndash;09:30,
-            10:00&ndash;12:00,
-            13:00&ndash;15:00,
-            16:00&ndash;18:00
+              <span
+                v-for="([start, end], i) in CountHours[hours]"
+                :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
             </small>
           </p>
         </div>
@@ -145,7 +130,7 @@ import { mapMutations, mapState } from 'vuex';
 
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
 import TdsRadioGroup from '@/components/tds/TdsRadioGroup.vue';
-import Constants from '@/lib/Constants';
+import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 
 export default {
   name: 'FcDetailsStudy',
@@ -156,6 +141,11 @@ export default {
   props: {
     index: Number,
     v: Object,
+  },
+  data() {
+    return {
+      CountHours,
+    };
   },
   computed: {
     attrsDueDate() {
@@ -265,8 +255,7 @@ export default {
     },
     studyType() {
       const studyType = this.studyRequest.items[this.index].item;
-      return Constants.COUNT_TYPES
-        .find(({ value }) => value === studyType);
+      return COUNT_TYPES.find(({ value }) => value === studyType);
     },
     ...mapState(['studyRequest']),
   },

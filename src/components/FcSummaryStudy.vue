@@ -13,7 +13,7 @@
         <template v-if="studyType.automatic">
           <p>The duration of the study will be:</p>
           <p class="font-size-l">
-            <strong>{{durationHuman}}</strong><br />
+            <strong>{{duration | durationHuman}}</strong><br />
             <small>{{duration}} hours</small>
           </p>
         </template>
@@ -23,29 +23,14 @@
             <strong>{{hoursHuman}}</strong>
           </p>
           <div
-            v-if="hours === 'SCHOOL'"
+            v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
             class="tds-panel tds-panel-info">
             <i class="fa fa-clock"></i>
             <p>
               <small>
-              07:30&ndash;09:30,
-              10:00&ndash;11:00,
-              12:00&ndash;13:30,
-              14:15&ndash;15:45,
-              16:00&ndash;18:00
-              </small>
-            </p>
-          </div>
-          <div
-            v-else-if="hours === 'ROUTINE'"
-            class="tds-panel tds-panel-info">
-            <i class="fa fa-clock"></i>
-            <p>
-              <small>
-              07:30&ndash;09:30,
-              10:00&ndash;12:00,
-              13:00&ndash;15:00,
-              16:00&ndash;18:00
+                <span
+                  v-for="([start, end], i) in CountHours[hours]"
+                  :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
               </small>
             </p>
           </div>
@@ -66,7 +51,7 @@
             <strong>{{notes}}</strong>
           </p>
         </template>
-        <p v-else>No additional notes.</p>
+        <p v-else>{{COUNT_NO_ADDITIONAL_NOTES.text}}</p>
       </div>
     </div>
   </fieldset>
@@ -76,13 +61,20 @@
 import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import { CountHours, COUNT_TYPES } from '@/lib/Constants';
+import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'CountDetailsSummary',
   props: {
     index: Number,
+  },
+  data() {
+    return {
+      CountHours,
+      COUNT_NO_ADDITIONAL_NOTES,
+    };
   },
   computed: {
     count() {
@@ -105,16 +97,6 @@ export default {
     },
     duration() {
       return this.meta.duration;
-    },
-    durationHuman() {
-      const days = this.duration / 24;
-      if (days === 1) {
-        return '1 day';
-      }
-      if (days === 7) {
-        return '1 week';
-      }
-      return `${days} days`;
     },
     hours() {
       return this.meta.hours;
@@ -139,8 +121,7 @@ export default {
     },
     studyType() {
       const studyType = this.studyRequest.items[this.index].item;
-      return Constants.COUNT_TYPES
-        .find(({ value }) => value === studyType);
+      return COUNT_TYPES.find(({ value }) => value === studyType);
     },
     ...mapState(['studyRequest']),
   },

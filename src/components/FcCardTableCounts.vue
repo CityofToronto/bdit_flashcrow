@@ -101,47 +101,52 @@
     </template>
     <template v-slot:__expanded="{ item }">
       <div class="mb-m text-muted">
-        <strong>Request # not known</strong>
+        <span>Request # not known</span>
       </div>
       <div class="flex-container-row">
         <div class="flex-1">
-          <strong>Requested By:</strong><br />
-          <span class="text-muted">N/A</span>
+          <span>Requested By:</span>
+          <p class="font-size-l">
+            <span class="text-muted">N/A</span>
+          </p>
         </div>
         <div class="flex-1">
-          <strong>Days:</strong><br />
-          <span>
-            {{item.counts[item.activeIndex].date | dayOfWeek}}
-          </span>
+          <span>Days:</span>
+          <p class="font-size-l">
+            <strong>{{item.counts[item.activeIndex].date | dayOfWeek}}</strong>
+          </p>
         </div>
         <div
           v-if="item.counts[item.activeIndex].type.automatic"
           class="flex-1">
-          <strong>Duration:</strong><br />
-          <span>
-            {{item.counts[item.activeIndex].duration}}
-          </span>
+          <span>Duration:</span>
+          <p class="font-size-l">
+            <strong>{{item.counts[item.activeIndex].duration | durationHuman}}</strong><br />
+            <small>{{item.counts[item.activeIndex].duration}} hours</small>
+          </p>
         </div>
         <div
           v-else
           class="flex-1">
-          <strong>Hours:</strong><br />
-          <span>
-            {{item.counts[item.activeIndex].hours}}
-          </span>
+          <span>Hours:</span>
+          <p class="font-size-l">
+            <strong>{{item.counts[item.activeIndex].hours}}</strong>
+          </p>
         </div>
         <div
           v-if="item.counts[item.activeIndex].notes"
           class="flex-1">
-          <strong>Additional Notes:</strong><br />
-          <span>
-            {{item.counts[item.activeIndex].notes}}
-          </span>
+          <span>Additional Notes:</span>
+          <p class="font-size-l">
+            <strong>
+              {{item.counts[item.activeIndex].notes}}
+            </strong>
+          </p>
         </div>
         <div
           v-else
           class="flex-1">
-          <span class="text-muted">No additional notes</span>
+          <span>{{COUNT_NO_ADDITIONAL_NOTES.text}}</span>
         </div>
       </div>
     </template>
@@ -153,7 +158,13 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcCardTable from '@/components/FcCardTable.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
-import Constants from '@/lib/Constants';
+import {
+  SortDirection,
+  SortKeys,
+  Status,
+  STATUS_META,
+} from '@/lib/Constants';
+import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
@@ -188,17 +199,18 @@ export default {
       name: 'ACTIONS',
     }];
     const sortKeys = {};
-    Object.entries(Constants.SortKeys.Counts)
+    Object.entries(SortKeys.Counts)
       .forEach(([name, sortKey]) => {
         sortKeys[name] = ({ activeIndex, counts }) => sortKey(counts[activeIndex]);
       });
     return {
       columns,
+      COUNT_NO_ADDITIONAL_NOTES,
       sortBy: 'STUDY_TYPE',
-      sortDirection: Constants.SortDirection.ASC,
+      sortDirection: SortDirection.ASC,
       sortKeys,
-      Status: Constants.Status,
-      STATUS_META: Constants.STATUS_META,
+      Status,
+      STATUS_META,
     };
   },
   computed: {
@@ -215,7 +227,7 @@ export default {
   },
   methods: {
     onActionShowReports(item) {
-      if (item.status === Constants.Status.NO_EXISTING_COUNT) {
+      if (item.status === Status.NO_EXISTING_COUNT) {
         return;
       }
       this.$emit('action-item', { type: 'show-reports', item });

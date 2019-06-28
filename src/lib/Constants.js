@@ -4,6 +4,22 @@ const CentrelineType = {
   INTERSECTION: 2,
 };
 
+const CountHours = {
+  ROUTINE: [
+    ['07:30', '09:30'],
+    ['10:00', '12:00'],
+    ['13:00', '15:00'],
+    ['16:00', '18:00'],
+  ],
+  SCHOOL: [
+    ['07:30', '09:30'],
+    ['10:00', '11:00'],
+    ['12:00', '13:30'],
+    ['14:15', '15:45'],
+    ['16:00', '18:00'],
+  ],
+};
+
 const COUNT_TYPES = [
   { label: 'Bicycle Volume ATR', value: 'ATR_VOLUME_BICYCLE', automatic: true },
   { label: 'Ped Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
@@ -107,10 +123,24 @@ const STATUS_META = [
   { label: 'In progress', class: 'info', icon: 'user-clock' },
 ];
 
-// TODO: maybe export these without 'default' so that we can use
-// destructuring imports?
-export default {
+const Constants = {
   CentrelineType,
+  CountHours,
+  COUNT_TYPES,
+  Format,
+  REASONS,
+  RequestStatus,
+  REQUEST_STATUS_META,
+  SortDirection,
+  SortKeys,
+  SPEED_CLASSES,
+  Status,
+  STATUS_META,
+};
+export {
+  Constants as default,
+  CentrelineType,
+  CountHours,
   COUNT_TYPES,
   Format,
   REASONS,

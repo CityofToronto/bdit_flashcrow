@@ -2,8 +2,10 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/store';
-import Constants from '@/lib/Constants';
-import Messages from '@/lib/i18n/Messages';
+import {
+  RequestStatus,
+} from '@/lib/Constants';
+import { REQUEST_STUDY_REQUIRES_LOCATION } from '@/lib/i18n/Strings';
 
 Vue.use(Router);
 
@@ -44,7 +46,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         if (store.state.location === null) {
-          store.dispatch('setToast', Messages.REQUEST_STUDY_REQUIRES_LOCATION);
+          store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
           next({ name: 'home' });
         } else {
           if (store.state.studyRequest === null) {
@@ -89,7 +91,7 @@ const router = new Router({
       redirect: {
         name: 'requestsTrackByStatus',
         query: {
-          status: [Constants.RequestStatus.REQUESTED],
+          status: [RequestStatus.REQUESTED],
         },
       },
     }, {
