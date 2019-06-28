@@ -3,17 +3,22 @@
     "any",
     [
       "all",
-      [ ">=", "$zoom", 17 ],
+      [ ">=", "$zoom", 15 ],
+      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL", "LSRML", "LSRSL", "CDSSL" ]
+    ],
+    [
+      "all",
+      [ ">=", "$zoom", 14 ],
       [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL", "LSRML", "LSRSL" ]
     ],
     [
       "all",
-      [ ">=", "$zoom", 15 ],
+      [ ">=", "$zoom", 13 ],
       [ "in", "classifi6",   "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL" ]
     ],
     [
       "all",
-      [ ">=", "$zoom", 13 ],
+      [ ">=", "$zoom", 12 ],
       [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL" ]
     ]
   ]

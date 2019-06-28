@@ -34,6 +34,7 @@
 const steps = [
   { name: 'requestStudy', label: 'Request' },
   { name: 'requestStudySchedule', label: 'Schedule' },
+  { name: 'requestStudySpecify', label: 'Specify' },
   { name: 'requestStudyConfirm', label: 'Confirm' },
 ];
 

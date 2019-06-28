@@ -5,31 +5,28 @@
         <label class="tds-checkbox">
           <input
             type="checkbox"
-            disabled
             name="selectAll"
             :checked="selectionAll"
             :indeterminate.prop="selectionIndeterminate"
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
+        <button
+          class="tds-button-primary"
+          @click="onActionBulk('request-study')"
+          :disabled="$v.$invalid">
+          <i class="fa fa-plus"></i>
+          <span> Request Study</span>
+        </button>
         <button class="tds-button-secondary" disabled>
           <i class="fa fa-download"></i>
         </button>
         <button class="tds-button-secondary" disabled>
           <i class="fa fa-print"></i>
         </button>
-        <button
-          class="tds-button-primary"
-          @click="onActionBulk('request-study')"
-          disabled>
-          <i class="fa fa-plus"></i>
-          <span> Request Study</span>
-        </button>
       </header>
       <FcCardTableCounts
-        :sections="sections"
         v-model="selection"
-        @action-card="onActionCard"
         @action-item="onActionItem" />
     </div>
   </div>
@@ -37,10 +34,14 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
 
 function idIsCount(id) {
@@ -58,54 +59,29 @@ export default {
     };
   },
   computed: {
-    sections() {
-      return this.filterCountTypes.map((i) => {
-        const type = Constants.COUNT_TYPES[i];
-        let countsOfType = this.counts
-          .filter(c => c.type.value === type.value);
-        if (countsOfType.length === 0) {
-          if (this.filterDate !== null) {
-            return null;
-          }
-          return {
-            item: {
-              id: type.value,
-              type,
-              date: null,
-              status: Constants.Status.NO_EXISTING_COUNT,
-            },
-            children: null,
-          };
-        }
-        if (this.filterDate !== null) {
-          const { start, end } = this.filterDate;
-          countsOfType = countsOfType
-            .filter(c => start <= c.date && c.date <= end);
-          if (countsOfType.length === 0) {
-            return null;
-          }
-        }
-        const countsOfTypeSorted = ArrayUtils.sortBy(
-          countsOfType,
-          Constants.SortKeys.Counts.DATE,
-          Constants.SortDirection.DESC,
-        );
-        const item = countsOfTypeSorted[0];
-        const children = countsOfTypeSorted.slice(1);
-        return { item, children };
-      }).filter(section => section !== null);
-    },
     selectableIds() {
       const selectableIds = [];
-      this.sections.forEach(({ item, children }) => {
-        selectableIds.push(item.id);
-        if (children !== null) {
-          children.forEach(({ id }) => {
-            selectableIds.push(id);
-          });
-        }
+      this.itemsCounts.forEach(({ counts }) => {
+        counts.forEach(({ id }) => {
+          selectableIds.push(id);
+        });
       });
       return selectableIds;
+    },
+    selectedCounts() {
+      return this.selection
+        .filter(idIsCount)
+        .map(id => this.counts.find(c => c.id === id));
+    },
+    selectedTypes() {
+      const studyTypes = new Set(this.selection.map((id) => {
+        if (idIsCount(id)) {
+          const count = this.counts.find(c => c.id);
+          return count.type.value;
+        }
+        return id;
+      }));
+      return Array.from(studyTypes);
     },
     selectionAll() {
       return this.selectableIds
@@ -114,10 +90,11 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
+    ...mapGetters([
+      'itemsCounts',
+    ]),
     ...mapState([
       'counts',
-      'filterCountTypes',
-      'filterDate',
       'location',
       'showMap',
     ]),
@@ -156,9 +133,8 @@ export default {
       });
   },
   methods: {
-    actionDownload(items, { formats }) {
+    actionDownload(counts, { formats }) {
       const downloadFormats = formats || ['CSV'];
-      const counts = items.filter(item => idIsCount(item.id));
       if (counts.length === 0) {
         return;
       }
@@ -174,8 +150,7 @@ export default {
         },
       });
     },
-    actionRequestStudy(items) {
-      const studyTypes = new Set(items.map(item => item.type.value));
+    actionRequestStudy(studyTypes) {
       if (studyTypes.size === 0) {
         return;
       }
@@ -183,54 +158,39 @@ export default {
       this.$router.push({ name: 'requestStudy' });
       this.setShowMap(true);
     },
-    actionShowReports(items) {
-      const counts = items.filter(item => idIsCount(item.id));
-      if (counts.length === 0) {
+    actionShowReports(item) {
+      if (item.counts.length === 0) {
+        return;
+      }
+      const [count] = item.counts;
+      if (count.status === Constants.Status.NO_EXISTING_COUNT) {
         return;
       }
       this.setModal({
         component: 'FcModalShowReports',
-        data: { counts, activeIndex: 0 },
+        data: item,
       });
     },
     onActionBulk(type, options) {
-      const items = this.selection.map((id) => {
-        if (idIsCount(id)) {
-          return this.counts.find(count => count.id === id);
-        }
-        const countType = Constants.COUNT_TYPES.find(({ value }) => value === id);
-        return {
-          id: countType.value,
-          type: countType,
-          date: null,
-          status: Constants.Status.NO_EXISTING_COUNT,
-        };
-      });
       const actionOptions = options || {};
       if (type === 'download') {
-        this.actionDownload(items, actionOptions);
+        const counts = this.selectedCounts;
+        this.actionDownload(counts, actionOptions);
       } else if (type === 'request-study') {
-        this.actionRequestStudy(items, actionOptions);
-      }
-    },
-    onActionCard({
-      type,
-      item,
-      children,
-      options,
-    }) {
-      const actionOptions = options || {};
-      const items = [item].concat(children);
-      if (type === 'show-reports') {
-        this.actionShowReports(items, actionOptions);
+        const studyTypes = this.selectedTypes;
+        this.actionRequestStudy(studyTypes, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
       if (type === 'download') {
-        this.actionDownload([item], actionOptions);
+        const count = item.counts[item.activeIndex];
+        this.actionDownload([count], actionOptions);
       } else if (type === 'request-study') {
-        this.actionRequestStudy([item], actionOptions);
+        const studyType = item.id;
+        this.actionRequestStudy([studyType], actionOptions);
+      } else if (type === 'show-reports') {
+        this.actionShowReports(item, actionOptions);
       }
     },
     onChangeSelectAll() {

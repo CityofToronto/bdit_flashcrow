@@ -1,14 +1,14 @@
 <template>
   <section class="fc-summary-study-request">
     <div class="flex-container-row">
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Service Request Number:</p>
         <p class="font-size-l mb-xl">
           <strong v-if="hasServiceRequestId">{{serviceRequestId}}</strong>
           <span v-else class="text-muted">N/A</span>
         </p>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Due Date:</p>
         <p class="font-size-l mb-xl">
           <strong>{{dueDate | date}}</strong>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="flex-container-row">
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>
           <span v-if="reasons.length === 1">Reason for request:</span>
           <span v-else>Reasons for request:</span>
@@ -44,41 +44,47 @@
           </div>
         </div>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 px-m">
         <p>Priority:</p>
         <p class="font-size-l">
           <strong>{{priorityHuman}}</strong>
         </p>
-        <div
+        <TdsPanel
           v-if="priority === 'STANDARD'"
-          class="tds-panel tds-panel-info mb-xl">
+          class="mb-xl"
+          icon="calendar-check"
+          variant="info">
           <i class="fa fa-calendar-check"></i>
           <p>
             Standard times to request counts are 2-3 months.
-            Estimated Delivery Date: July 5, 2019
+            Estimated Delivery Date: {{studyRequestEstimatedDeliveryDate | date}}
           </p>
-        </div>
-        <div
+        </TdsPanel>
+        <TdsPanel
           v-else-if="priority === 'URGENT'"
-          class="tds-panel tds-panel-warning mb-xl">
-          <i class="fa fa-exclamation-triangle"></i>
+          class="mb-xl"
+          variant="warning">
           <p>
             You've marked this request urgent, which will mean reshuffling the request queue.
             The Traffic Safety Unit will contact you to make adjustments to the schedule.
           </p>
-        </div>
+        </TdsPanel>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
-import Constants from '@/lib/Constants';
+import TdsPanel from '@/components/tds/TdsPanel.vue';
+import { REASONS } from '@/lib/Constants';
 
 export default {
   name: 'FcSummaryStudyRequest',
+  components: {
+    TdsPanel,
+  },
   computed: {
     ccEmails() {
       return this.studyRequest.meta.ccEmails;
@@ -110,14 +116,14 @@ export default {
     },
     reasonsHuman() {
       return this.reasons.map((reasonValue) => {
-        const { label } = Constants.REASONS
-          .find(({ value }) => value === reasonValue);
+        const { label } = REASONS.find(({ value }) => value === reasonValue);
         return label;
       });
     },
     serviceRequestId() {
       return this.studyRequest.meta.serviceRequestId;
     },
+    ...mapGetters(['studyRequestEstimatedDeliveryDate']),
     ...mapState(['studyRequest']),
   },
 };

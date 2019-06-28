@@ -7,7 +7,7 @@
       <p>Thank you for your request!</p>
       <p>
         You should receive your data by
-        <strong>{{dueDate | date}}</strong>.
+        <strong>{{studyRequestEstimatedDeliveryDate | date}}</strong>.
       </p>
       <p v-if="priority === 'URGENT'">
         You've marked this request urgent.  The Traffic Safety Unit will
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 
@@ -36,16 +36,17 @@ export default {
   mixins: [TdsMixinModal],
   computed: {
     dueDate() {
-      return this.data.meta.dueDate;
+      return this.studyRequest.meta.dueDate;
     },
     priority() {
-      return this.data.meta.priority;
+      return this.studyRequest.meta.priority;
     },
+    ...mapGetters(['studyRequestEstimatedDeliveryDate']),
+    ...mapState(['studyRequest']),
   },
   methods: {
     onClickOk() {
       this.clearModal();
-      // TODO: clear location, query as well
       this.setShowMap(true);
     },
     ...mapMutations([

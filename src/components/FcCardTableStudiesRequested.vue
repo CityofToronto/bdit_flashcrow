@@ -2,7 +2,8 @@
   <FcCardTable
     class="fc-card-table-studies-requested"
     :columns="columns"
-    :sections="sections"
+    :expandable="false"
+    :items="items"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
@@ -50,10 +51,10 @@
         </button>
       </div>
     </template>
-    <template v-slot:__footer="{ numTableColumns, sectionsNormalized }">
+    <template v-slot:__footer="{ numTableColumns, items }">
       <slot
         name="__footer"
-        v-bind="{ numTableColumns, sectionsNormalized }"></slot>
+        v-bind="{ numTableColumns, items }"></slot>
     </template>
   </FcCardTable>
 </template>
@@ -68,7 +69,7 @@ export default {
     FcCardTable,
   },
   props: {
-    sections: Array,
+    items: Array,
   },
   data() {
     const columns = [{

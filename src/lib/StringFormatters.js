@@ -36,6 +36,18 @@ function formatCountLocationDescription(description) {
     .join(' ');
 }
 
+function formatDuration(duration) {
+  const days = duration / 24;
+  if (days === 1) {
+    return '1 day';
+  }
+  if (days === 7) {
+    return '1 week';
+  }
+  return `${days} days`;
+}
+
 export default {
   formatCountLocationDescription,
+  formatDuration,
 };

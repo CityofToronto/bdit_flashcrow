@@ -16,6 +16,7 @@
     <button
       v-if="location !== null"
       class="clear-location font-size-l"
+      :disabled="disabled"
       @click="onClickClearLocation">
       <i class="fa fa-times-circle"></i>
     </button>
