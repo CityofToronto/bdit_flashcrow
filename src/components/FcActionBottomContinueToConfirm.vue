@@ -2,32 +2,26 @@
   <button
     class="tds-button-primary"
     :disabled="$v.$invalid"
-    @click="onClickConfirm">
-    Confirm
+    @click="onClickContinue">
+    Continue
   </button>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
-  name: 'FcActionBottomConfirm',
+  name: 'FcActionBottomContinueToConfirm',
   computed: {
     ...mapState(['studyRequest']),
   },
   validations: ValidationsStudyRequest.validations,
   methods: {
-    onClickConfirm() {
-      // TODO: save request, send confirmation email
-      this.$router.push({ name: 'viewData' });
-      this.setModal({
-        component: 'FcModalRequestStudyConfirmation',
-        data: {},
-      });
+    onClickContinue() {
+      this.$router.push({ name: 'requestStudyConfirm' });
     },
-    ...mapMutations(['setModal']),
   },
 };
 </script>

@@ -7,11 +7,6 @@
       <div class="flex-cross-scroll">
         <FcDetailsStudyRequest
           :v="$v.studyRequest.meta" />
-        <FcDetailsStudy
-          v-for="({ item, meta }, i) in studyRequest.items"
-          :key="i"
-          :index="i"
-          :v="$v.studyRequest.items.$each[i].meta" />
       </div>
     </section>
   </div>
@@ -20,20 +15,18 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcDetailsStudy from '@/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/components/FcDetailsStudyRequest.vue';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
   name: 'FcRequestStudySchedule',
   components: {
-    FcDetailsStudy,
     FcDetailsStudyRequest,
   },
   computed: {
     ...mapState(['studyRequest']),
   },
-  validations: ValidationsStudyRequest.validations,
+  validations: ValidationsStudyRequest.validationsMeta,
 };
 </script>
 

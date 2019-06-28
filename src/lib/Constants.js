@@ -4,24 +4,30 @@ const CentrelineType = {
   INTERSECTION: 2,
 };
 
+const CountHours = {
+  ROUTINE: [
+    ['07:30', '09:30'],
+    ['10:00', '12:00'],
+    ['13:00', '15:00'],
+    ['16:00', '18:00'],
+  ],
+  SCHOOL: [
+    ['07:30', '09:30'],
+    ['10:00', '11:00'],
+    ['12:00', '13:30'],
+    ['14:15', '15:45'],
+    ['16:00', '18:00'],
+  ],
+};
+
 const COUNT_TYPES = [
   { label: 'Bicycle Volume ATR', value: 'ATR_VOLUME_BICYCLE', automatic: true },
-  { label: 'Pedestrian Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
-  { label: 'Pedestrian Delay and Classification', value: 'PED_DELAY', automatic: false },
+  { label: 'Ped Crossover Observation', value: 'PXO_OBSERVE', automatic: false },
+  { label: 'Ped Delay and Classification', value: 'PED_DELAY', automatic: false },
   { label: 'RESCU', value: 'RESCU', automatic: true },
   { label: 'Speed / Volume ATR', value: 'ATR_SPEED_VOLUME', automatic: true },
   { label: 'Turning Movement Count', value: 'TMC', automatic: false },
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
-];
-
-const DAYS_OF_WEEK = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
 ];
 
 // TODO: DRY with server.js
@@ -64,6 +70,7 @@ const SortDirection = {
 const SortKeys = {
   Counts: {
     DATE: c => (c.date === null ? -Infinity : c.date.valueOf()),
+    DAY: c => (c.date === null ? -Infinity : c.date.getDay()),
     STATUS: c => c.status,
     STUDY_TYPE: c => c.type.label,
   },
@@ -116,12 +123,25 @@ const STATUS_META = [
   { label: 'In progress', class: 'info', icon: 'user-clock' },
 ];
 
-// TODO: maybe export these without 'default' so that we can use
-// destructuring imports?
-export default {
+const Constants = {
   CentrelineType,
+  CountHours,
   COUNT_TYPES,
-  DAYS_OF_WEEK,
+  Format,
+  REASONS,
+  RequestStatus,
+  REQUEST_STATUS_META,
+  SortDirection,
+  SortKeys,
+  SPEED_CLASSES,
+  Status,
+  STATUS_META,
+};
+export {
+  Constants as default,
+  CentrelineType,
+  CountHours,
+  COUNT_TYPES,
   Format,
   REASONS,
   RequestStatus,

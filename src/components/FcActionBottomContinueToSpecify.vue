@@ -17,10 +17,10 @@ export default {
   computed: {
     ...mapState(['studyRequest']),
   },
-  validations: ValidationsStudyRequest.validations,
+  validations: ValidationsStudyRequest.validationsMeta,
   methods: {
     onClickContinue() {
-      this.$router.push({ name: 'requestStudyConfirm' });
+      this.$router.push({ name: 'requestStudySpecify' });
     },
   },
 };

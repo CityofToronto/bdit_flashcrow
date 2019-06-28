@@ -2,25 +2,35 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
+import ArrayUtils from '@/lib/ArrayUtils';
 import Constants from '@/lib/Constants';
+import FunctionUtils from '@/lib/FunctionUtils';
 import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
 const REQUESTS = SampleData.randomRequests();
+const TIMEOUT_TOAST = 10000;
 
 function makeStudyItem(studyType) {
   return {
     item: studyType,
     meta: {
-      dateRange: null,
       daysOfWeek: [2, 3, 4],
       duration: 24,
       hours: 'ROUTINE',
       notes: '',
     },
   };
+}
+
+function makeItemsCountsActive() {
+  const itemsCountsActive = {};
+  Constants.COUNT_TYPES.forEach(({ value }) => {
+    itemsCountsActive[value] = 0;
+  });
+  return itemsCountsActive;
 }
 
 function makeNumPerCategory() {
@@ -31,11 +41,16 @@ function makeNumPerCategory() {
   return numPerCategory;
 }
 
+const clearToastDebounced = FunctionUtils.debounce((commit) => {
+  commit('clearToast');
+}, TIMEOUT_TOAST);
+
 export default new Vuex.Store({
   // TODO: organize state below
   state: {
     // modal
     modal: null,
+    toast: null,
     // time
     now: new Date(),
     // authentication
@@ -50,11 +65,13 @@ export default new Vuex.Store({
     // data for selected locations
     // TODO: in searching / selecting phase, generalize to collisions and other layers
     counts: [],
+    itemsCountsActive: makeItemsCountsActive(),
     numPerCategory: makeNumPerCategory(),
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...Constants.COUNT_TYPES.keys()],
     filterDate: null,
+    filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
     filterRequestStatus: [],
     // REQUESTS
@@ -69,10 +86,56 @@ export default new Vuex.Store({
   getters: {
     // FILTERING DATA
     hasFilters(state, getters) {
-      return getters.hasFilterCountTypes || state.filterDate !== null;
+      return getters.hasFilterCountTypes
+        || state.filterDate !== null
+        || getters.hasFilterDayOfWeek;
     },
     hasFilterCountTypes(state) {
       return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+    },
+    hasFilterDayOfWeek(state) {
+      return state.filterDayOfWeek.length !== 7;
+    },
+    // TABLE ITEMS: COUNTS
+    itemsCounts(state) {
+      return state.filterCountTypes.map((i) => {
+        const type = Constants.COUNT_TYPES[i];
+        const activeIndex = state.itemsCountsActive[type.value];
+        let countsOfType = state.counts
+          .filter(c => c.type.value === type.value);
+        if (state.filterDate !== null) {
+          const { start, end } = state.filterDate;
+          countsOfType = countsOfType
+            .filter(c => start <= c.date && c.date <= end);
+        }
+        countsOfType = countsOfType
+          .filter(c => state.filterDayOfWeek.includes(c.date.getDay()));
+        if (countsOfType.length === 0) {
+          const noExistingCount = {
+            id: type.value,
+            type,
+            date: null,
+            status: Constants.Status.NO_EXISTING_COUNT,
+          };
+          return {
+            activeIndex,
+            counts: [noExistingCount],
+            expandable: false,
+            id: type.value,
+          };
+        }
+        const countsOfTypeSorted = ArrayUtils.sortBy(
+          countsOfType,
+          Constants.SortKeys.Counts.DATE,
+          Constants.SortDirection.DESC,
+        );
+        return {
+          activeIndex,
+          counts: countsOfTypeSorted,
+          expandable: true,
+          id: type.value,
+        };
+      });
     },
     // ACTIVE STUDY REQUEST
     studyTypesWarnDuplicates(state) {
@@ -90,6 +153,33 @@ export default new Vuex.Store({
         return studyType;
       });
     },
+    studyRequestEstimatedDeliveryDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      const { dueDate, priority } = state.studyRequest.meta;
+      if (dueDate === null || priority === null) {
+        return null;
+      }
+      if (priority === 'URGENT') {
+        return dueDate;
+      }
+      const oneWeekBeforeDueDate = new Date(
+        dueDate.getFullYear(),
+        dueDate.getMonth(),
+        dueDate.getDate() - 7,
+      );
+      const twoMonthsOut = new Date(
+        now.getFullYear(),
+        now.getMonth() + 2,
+        now.getDate(),
+      );
+      if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
+        return twoMonthsOut;
+      }
+      return oneWeekBeforeDueDate;
+    },
   },
   mutations: {
     clearModal(state) {
@@ -97,6 +187,12 @@ export default new Vuex.Store({
     },
     setModal(state, modal) {
       Vue.set(state, 'modal', modal);
+    },
+    clearToast(state) {
+      Vue.set(state, 'toast', null);
+    },
+    setToast(state, toast) {
+      Vue.set(state, 'toast', toast);
     },
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
@@ -121,18 +217,29 @@ export default new Vuex.Store({
     // COUNTS
     setCountsResult(state, { counts, numPerCategory }) {
       Vue.set(state, 'counts', counts);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
       Vue.set(state, 'numPerCategory', numPerCategory);
+    },
+    setItemsCountsActive(state, { value, activeIndex }) {
+      Vue.set(state.itemsCountsActive, value, activeIndex);
     },
     // FILTERING DATA
     clearFilters(state) {
       Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
       Vue.set(state, 'filterDate', null);
+      Vue.set(state, 'filterDayOfWeek', [...Array(7).keys()]);
     },
     setFilterCountTypes(state, filterCountTypes) {
       Vue.set(state, 'filterCountTypes', filterCountTypes);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     setFilterDate(state, filterDate) {
       Vue.set(state, 'filterDate', filterDate);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
+    },
+    setFilterDayOfWeek(state, filterDayOfWeek) {
+      Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
+      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     // FILTERING REQUESTS
     setFilterRequestStatus(state, filterRequestStatus) {
@@ -153,7 +260,7 @@ export default new Vuex.Store({
         priority: 'STANDARD',
         dueDate: null,
         reasons: [],
-        ccEmails: [],
+        ccEmails: '',
       };
       const items = studyTypes.map(makeStudyItem);
       Vue.set(state, 'studyRequest', { items, meta });
@@ -173,6 +280,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    setToast({ commit }, toast) {
+      commit('setToast', toast);
+      clearToastDebounced(commit);
+    },
     checkAuth({ commit }) {
       return apiFetch('/auth')
         .then((auth) => {

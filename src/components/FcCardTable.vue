@@ -3,9 +3,12 @@
     <caption v-if="caption">{{caption}}</caption>
     <colgroup>
       <!-- DATA COLUMNS -->
-      <col :span="columnsNormalized.length" class="fc-card-table-col-data">
+      <col
+        v-for="column in columnsNormalized"
+        :key="'col-' + column.name"
+        :class="'col-' + column.name">
       <!-- EXPAND TOGGLE -->
-      <col v-if="expandable" class="fc-card-table-col-expand">
+      <col v-if="expandable" class="col-expand">
     </colgroup>
     <thead>
       <tr>
@@ -37,7 +40,7 @@
       </tr>
     </thead>
     <template
-      v-for="({ item, children }, i) in sectionsNormalized">
+      v-for="(item, i) in itemsNormalized">
       <tr
         :key="'spacer-' + i"
         v-if="i > 0"
@@ -53,16 +56,11 @@
           <!-- DATA COLUMNS -->
           <td
             v-for="column in columnsNormalized"
-            :key="column.name">
+            :key="column.name"
+            :class="'cell-' + column.name">
             <slot
               :name="column.name"
-              v-bind="{
-                column,
-                index: i,
-                item,
-                isChild: false,
-                children,
-              }"></slot>
+              v-bind="{ column, index: i, item }"></slot>
           </td>
           <!-- EXPAND TOGGLE -->
           <td
@@ -70,39 +68,24 @@
             class="cell-expand">
             <button
               class="tds-button-secondary font-size-l"
-              @click="onClickItemExpand(item)"
-              :disabled="children === null || children.length === 0">
-              <i class="fa fa-ellipsis-h"></i>
+              :disabled="!item.expandable"
+              @click="onClickItemExpand(item)">
+              <i class="fa fa-chevron-circle-down"></i>
             </button>
           </td>
         </tr>
         <template v-if="expandable && expanded === item.id">
-          <tr
-            v-for="child in children"
-            :key="child.id">
-            <!-- DATA COLUMNS -->
-            <td
-              v-for="column in columnsNormalized"
-              :key="column.name">
+          <tr>
+            <td :colspan="numTableColumns">
               <slot
-                :name="column.name"
-                v-bind="{
-                  column,
-                  item: child,
-                  isChild: true,
-                  children: null,
-                }"></slot>
+                name="__expanded"
+                v-bind="{ item }"></slot>
             </td>
-            <!-- EXPAND PLACEHOLDER -->
-            <td v-if="expandable">&nbsp;</td>
           </tr>
         </template>
       </tbody>
     </template>
-    <slot name="__footer" v-bind="{
-      numTableColumns,
-      sectionsNormalized,
-    }"></slot>
+    <slot name="__footer" v-bind="{ numTableColumns, items: itemsNormalized }"></slot>
   </table>
 </template>
 
@@ -122,7 +105,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    sections: Array,
+    items: Array,
     sortBy: {
       type: String,
       default: null,
@@ -168,20 +151,20 @@ export default {
         };
       });
     },
-    numTableColumns() {
-      const n = this.columns.length;
-      return this.expandable ? n + 1 : n;
-    },
-    sectionsNormalized() {
+    itemsNormalized() {
       if (this.internalSortBy === null) {
-        return this.sections;
+        return this.items;
       }
       const sortKey = this.sortKeys[this.internalSortBy];
       return ArrayUtils.sortBy(
-        this.sections,
-        ({ item }) => sortKey(item),
+        this.items,
+        item => sortKey(item),
         this.internalSortDirection,
       );
+    },
+    numTableColumns() {
+      const n = this.columns.length;
+      return this.expandable ? n + 1 : n;
     },
   },
   methods: {
@@ -213,6 +196,9 @@ export default {
   border-spacing: 0;
   margin: var(--space-l) 0;
   width: 100%;
+  & > colgroup > .col-expand {
+    width: var(--space-xl);
+  }
   & > thead {
     & > tr > th {
       &.sortable {

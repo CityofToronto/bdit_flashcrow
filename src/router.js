@@ -2,7 +2,10 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/store';
-import Constants from '@/lib/Constants';
+import {
+  RequestStatus,
+} from '@/lib/Constants';
+import { REQUEST_STUDY_REQUIRES_LOCATION } from '@/lib/i18n/Strings';
 
 Vue.use(Router);
 
@@ -43,7 +46,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         if (store.state.location === null) {
-          // TODO: warn user that this requires location
+          store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
           next({ name: 'home' });
         } else {
           if (store.state.studyRequest === null) {
@@ -64,7 +67,14 @@ const router = new Router({
         name: 'requestStudySchedule',
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinue.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToSpecify.vue'),
+        },
+      }, {
+        path: 'specify',
+        name: 'requestStudySpecify',
+        components: {
+          default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySpecify.vue'),
+          actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToConfirm.vue'),
         },
       }, {
         path: 'confirm',
@@ -81,7 +91,7 @@ const router = new Router({
       redirect: {
         name: 'requestsTrackByStatus',
         query: {
-          status: [Constants.RequestStatus.REQUESTED],
+          status: [RequestStatus.REQUESTED],
         },
       },
     }, {

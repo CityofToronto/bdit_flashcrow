@@ -10,14 +10,14 @@
     "ci:npm-audit": "npm audit",
     "ci:test-api": "TEST_DIR=api jest",
     "ci:test-db": "TEST_DIR=db jest",
-    "ci:test-e2e": "vue-cli-service test:e2e",
     "ci:test-unit": "TEST_DIR=unit jest",
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "TEST_DIR=unit jest --changedSince=master",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "test-e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "blankie": "^4.1.0",

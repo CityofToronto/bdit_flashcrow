@@ -1,3 +1,5 @@
+import ArrayUtils from '@/lib/ArrayUtils';
+
 function format(d, options) {
   if (!d) {
     return '';
@@ -6,10 +8,13 @@ function format(d, options) {
 }
 
 function formatDefault(d) {
-  if (!d) {
-    return '';
-  }
-  return new Intl.DateTimeFormat('en-US').format(d);
+  return format(d);
+}
+
+function formatDayOfWeek(d) {
+  return format(d, {
+    weekday: 'short',
+  });
 }
 
 function formatTimeOfDay(d) {
@@ -27,8 +32,13 @@ function formatYearMonth(d) {
   });
 }
 
+// see https://stackoverflow.com/questions/30437134/how-to-get-the-weekday-names-using-intl
+const DAYS_OF_WEEK = ArrayUtils.range(5, 12)
+  .map(date => formatDayOfWeek(new Date(1970, 0, date)));
 
 export default {
+  DAYS_OF_WEEK,
+  formatDayOfWeek,
   formatDefault,
   formatTimeOfDay,
   formatYearMonth,
