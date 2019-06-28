@@ -1,5 +1,5 @@
 <template>
-  <transition name="open-down">
+  <transition name="fc-open-down">
     <div
       class="fc-toast flex-container-row font-size-xl full-width"
       :class="'fc-toast-' + variant">
@@ -72,20 +72,5 @@ export default {
     border-color: var(--error-darker);
     color: var(--error-darker);
   }
-}
-
-.open-down-enter-active, .open-down-leave-active {
-  transition: var(--transition-medium);
-}
-
-.open-down-enter-to, .open-down-leave {
-  max-height: calc(var(--space-xl) + var(--space-l));
-  overflow: hidden;
-}
-
-.open-down-enter, .open-down-leave-to {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
 }
 </style>
