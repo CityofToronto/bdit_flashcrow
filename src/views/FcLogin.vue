@@ -24,14 +24,13 @@
               tabindex="1"
               type="text" />
           </label>
-          <div
+          <TdsPanel
             v-if="$v.name.$error"
-            class="tds-panel tds-panel-error">
-            <i class="fa fa-times-circle"></i>
+            variant="error">
             <p>
               Please enter your name.
             </p>
-          </div>
+          </TdsPanel>
         </div>
         <div class="form-group">
           <label>
@@ -47,15 +46,14 @@
               tabindex="2"
               type="text" />
           </label>
-          <div
+          <TdsPanel
             v-if="$v.email.$error"
-            class="tds-panel tds-panel-error">
-            <i class="fa fa-times-circle"></i>
+            variant="error">
             <p>
               Please enter a valid
               <strong>@toronto.ca</strong> email address.
             </p>
-          </div>
+          </TdsPanel>
         </div>
         <button
           class="tds-button-primary font-size-2xl"
@@ -68,9 +66,9 @@
         </button>
       </div>
       <div class="flex-1 px-l">
-        <div
-          class="tds-panel tds-panel-info font-size-l">
-          <i class="fa fa-info-circle"></i>
+        <TdsPanel
+          class="font-size-l"
+          variant="info">
           <p>
             This is a test login page.  To log in, enter
             your name and <strong>@toronto.ca</strong> email address.  If this is
@@ -80,7 +78,7 @@
             Please use your actual name and email address!  That helps us transition to an
             actual login mechanism later.
           </p>
-        </div>
+        </TdsPanel>
       </div>
     </div>
   </div>
@@ -89,8 +87,13 @@
 <script>
 import { email, required } from 'vuelidate/lib/validators';
 
+import TdsPanel from '@/components/tds/TdsPanel.vue';
+
 export default {
   name: 'FcLogin',
+  components: {
+    TdsPanel,
+  },
   data() {
     return {
       name: '',

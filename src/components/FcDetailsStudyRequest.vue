@@ -32,14 +32,14 @@
             type="text" />
         </div>
       </label>
-      <div
+      <TdsPanel
         v-if="v.serviceRequestId.$error"
-        class="inner-container tds-panel tds-panel-error">
-        <i class="fa fa-times-circle"></i>
+        class="inner-container"
+        variant="error">
         <p>
           Please enter your service request number.
         </p>
-      </div>
+      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
       <strong>What is the priority of your request?</strong>
@@ -54,24 +54,23 @@
           ]"
           type="radio" />
       </div>
-      <div
+      <TdsPanel
         v-if="priority === 'STANDARD'"
-        class="tds-panel tds-panel-info">
-        <i class="fa fa-calendar-check"></i>
+        icon="calendar-check"
+        variant="info">
         <p>
           Standard times to request counts are 2-3 months.
           Peak times are April-June and September-November.
         </p>
-      </div>
-      <div
+      </TdsPanel>
+      <TdsPanel
         v-else-if="priority === 'URGENT'"
-        class="tds-panel tds-panel-warning">
-        <i class="fa fa-exclamation-triangle"></i>
+        variant="warning">
         <p>
           You've marked this request urgent, which will mean reshuffling the request queue.
           The Traffic Safety Unit will contact you to make adjustments to the schedule.
         </p>
-      </div>
+      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
       <strong>When do you need the data by?</strong>
@@ -88,14 +87,14 @@
           v-bind="attrsDueDate">
         </DatePicker>
       </div>
-      <div
+      <TdsPanel
         v-if="v.dueDate.$error"
-        class="inner-container tds-panel tds-panel-error">
-        <i class="fa fa-times-circle"></i>
+        class="inner-container"
+        variant="error">
         <p>
           Please select a due date for this request.
         </p>
-      </div>
+      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
       <strong>What reasons are there for your request?</strong>
@@ -119,14 +118,14 @@
           </span>
         </TdsChecklistDropdown>
       </div>
-      <div
+      <TdsPanel
         v-if="v.reasons.$error"
-        class="inner-container tds-panel tds-panel-error">
-        <i class="fa fa-times-circle"></i>
+        class="inner-container"
+        variant="error">
         <p>
           Please select one or more reasons for this request.
         </p>
-      </div>
+      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
       <label>
@@ -142,15 +141,15 @@
             type="text" />
         </div>
       </label>
-      <div
+      <TdsPanel
         v-if="v.ccEmails.$error"
-        class="inner-container tds-panel tds-panel-error">
-        <i class="fa fa-times-circle"></i>
+        class="inner-container"
+        variant="error">
         <p>
           Please enter a comma-separated list of valid
           <strong>@toronto.ca</strong> email addresses.
         </p>
-      </div>
+      </TdsPanel>
     </div>
   </div>
 </template>
@@ -161,7 +160,8 @@ import { mapMutations, mapState } from 'vuex';
 import DatePicker from '@/components/DatePicker.vue';
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import Constants from '@/lib/Constants';
+import TdsPanel from '@/components/tds/TdsPanel.vue';
+import { REASONS } from '@/lib/Constants';
 
 export default {
   name: 'FcDetailsStudyRequest',
@@ -169,13 +169,14 @@ export default {
     DatePicker,
     TdsButtonGroup,
     TdsChecklistDropdown,
+    TdsPanel,
   },
   props: {
     v: Object,
   },
   data() {
     return {
-      REASONS: Constants.REASONS,
+      REASONS,
     };
   },
   computed: {

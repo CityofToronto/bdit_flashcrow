@@ -65,15 +65,14 @@
         </header>
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill">
           <div class="fc-modal-show-reports-master flex-1 px-m">
-            <div
+            <TdsPanel
               v-if="optionsReportsEnabled.length === 0"
-              class="tds-panel tds-panel-warning">
-              <i class="fa fa-exclamation-triangle"></i>
+              variant="warning">
               <p>
                 The alpha launch of MOVE doesn't yet support
                 {{activeCount.type.label}} reports.
               </p>
-            </div>
+            </TdsPanel>
             <div
               v-else
               class="flex-fill flex-container-row">
@@ -99,24 +98,22 @@
           <section class="fc-modal-show-reports-detail flex-container-column flex-3 px-m">
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
-                <div
+                <TdsPanel
                   v-if="optionsReportsEnabled.length === 0"
-                  class="tds-panel tds-panel-warning">
-                  <i class="fa fa-exclamation-triangle"></i>
+                  variant="warning">
                   <p>
                     When we release {{activeCount.type.label}} reports, you'll be able to
                     view them from here.  We're also working on download and print
                     functionality for reports.
                   </p>
-                </div>
-                <div
+                </TdsPanel>
+                <TdsPanel
                   v-else-if="reports.length === 0"
-                  class="tds-panel tds-panel-warning">
-                  <i class="fa fa-exclamation-triangle"></i>
+                  variant="warning">
                   <p>
                     Select one or more report types from the list.
                   </p>
-                </div>
+                </TdsPanel>
                 <section
                   v-for="{ label, value, reportComponent } in selection"
                   :key="value"
@@ -145,8 +142,9 @@ import FcReportAtrVolume24hGraph from '@/components/FcReportAtrVolume24hGraph.vu
 import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import TdsPanel from '@/components/tds/TdsPanel.vue';
 import apiFetch from '@/lib/ApiFetch';
-import Constants from '@/lib/Constants';
+import { STATUS_META } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
@@ -178,12 +176,13 @@ export default {
     FcReportAtrVolume24hGraph,
     FcReportTmcSummary,
     TdsActionDropdown,
+    TdsPanel,
   },
   data() {
     return {
       activeCountData: [],
       reports: [],
-      STATUS_META: Constants.STATUS_META,
+      STATUS_META,
       studies: [],
     };
   },

@@ -22,10 +22,10 @@
           <p class="font-size-l">
             <strong>{{hoursHuman}}</strong>
           </p>
-          <div
+          <TdsPanel
             v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
-            class="tds-panel tds-panel-info">
-            <i class="fa fa-clock"></i>
+            icon="clock"
+            variant="info">
             <p>
               <small>
                 <span
@@ -33,15 +33,15 @@
                   :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
               </small>
             </p>
-          </div>
-          <div
+          </TdsPanel>
+          <TdsPanel
             v-else-if="hours === 'OTHER'"
-            class="tds-panel tds-panel-warning">
-            <i class="fa fa-clock"></i>
+            icon="clock"
+            variant="warning">
             <p>
               Schedule specified in additional notes.
             </p>
-          </div>
+          </TdsPanel>
         </template>
       </div>
       <div class="flex-1 px-m">
@@ -60,6 +60,7 @@
 <script>
 import { mapState } from 'vuex';
 
+import TdsPanel from '@/components/tds/TdsPanel.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
@@ -67,6 +68,9 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'CountDetailsSummary',
+  components: {
+    TdsPanel,
+  },
   props: {
     index: Number,
   },

@@ -20,11 +20,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
-const ICONS = {
-  success: 'check-circle',
-  warning: 'exclamation-triangle',
-  error: 'times-circle',
-};
+import { VARIANT_ICONS } from '@/components/tds/TdsConstants';
 
 export default {
   name: 'FcToast',
@@ -36,7 +32,7 @@ export default {
   },
   computed: {
     icon() {
-      return ICONS[this.variant];
+      return VARIANT_ICONS[this.variant];
     },
   },
   methods: {

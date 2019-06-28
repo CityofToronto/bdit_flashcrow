@@ -22,10 +22,9 @@
             { label: 'Sa', value: 6 },
           ]"
           type="checkbox" />
-        <div
+        <TdsPanel
           v-if="v.daysOfWeek.$error"
-          class="tds-panel tds-panel-error">
-          <i class="fa fa-times-circle"></i>
+          variant="error">
           <p v-if="!v.daysOfWeek.required">
             Please select one or more days of the week.
           </p>
@@ -33,7 +32,7 @@
             Please select {{duration / 24}} consecutive days for the study,
             or reduce the requested duration.
           </p>
-        </div>
+        </TdsPanel>
       </div>
       <div
         v-if="studyType.automatic"
@@ -51,15 +50,14 @@
             { label: '5 days', sublabel: '120 hours', value: 120 },
             { label: '1 week', sublabel: '168 hours', value: 168 },
           ]" />
-        <div
+        <TdsPanel
           v-if="v.duration.$error"
-          class="tds-panel tds-panel-error">
-          <i class="fa fa-times-circle"></i>
+          variant="error">
           <p>
             Please select {{duration / 24}} consecutive days for the study,
             or reduce the requested duration.
           </p>
-        </div>
+        </TdsPanel>
       </div>
       <div
         v-else
@@ -74,10 +72,10 @@
             { label: 'Routine', value: 'ROUTINE' },
             { label: 'Other', value: 'OTHER' },
           ]" />
-        <div
+        <TdsPanel
           v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
-          class="tds-panel tds-panel-info">
-          <i class="fa fa-clock"></i>
+          icon="clock"
+          variant="info">
           <p>
             <small>
               <span
@@ -85,11 +83,11 @@
                 :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
             </small>
           </p>
-        </div>
-        <div
+        </TdsPanel>
+        <TdsPanel
           v-else-if="hours === 'OTHER'"
-          class="tds-panel tds-panel-warning">
-          <i class="fa fa-clock"></i>
+          icon="clock"
+          variant="warning">
           <p>
             Please specify your desired schedule in
             <a
@@ -98,7 +96,7 @@
               additional notes.
             </a>
           </p>
-        </div>
+        </TdsPanel>
       </div>
       <div class="form-group">
         <strong>Any additional notes you'd like to share?</strong>
@@ -111,15 +109,14 @@
           }"
           :name="nameNotes"
           rows="4"></textarea>
-        <div
+        <TdsPanel
           v-if="v.notes.$error"
-          class="tds-panel tds-panel-error">
-          <i class="fa fa-times-circle"></i>
+          variant="error">
           <p>
             If you have selected Other hours above, please provide additional
             notes to explain your requirements.
           </p>
-        </div>
+        </TdsPanel>
       </div>
     </div>
   </fieldset>
@@ -129,6 +126,7 @@
 import { mapMutations, mapState } from 'vuex';
 
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
+import TdsPanel from '@/components/tds/TdsPanel.vue';
 import TdsRadioGroup from '@/components/tds/TdsRadioGroup.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 
@@ -136,6 +134,7 @@ export default {
   name: 'FcDetailsStudy',
   components: {
     TdsButtonGroup,
+    TdsPanel,
     TdsRadioGroup,
   },
   props: {
