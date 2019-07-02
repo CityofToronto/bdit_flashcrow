@@ -32,15 +32,19 @@ function getFetchUrl(url, apiOptions) {
 function getFetchOptions(options) {
   const defaultOptions = {
     credentials: 'include',
+    headers: {},
     method: 'GET',
   };
   const apiOptions = Object.assign(defaultOptions, options);
-  const { data } = apiOptions;
-  if (data !== undefined && apiOptions.method !== 'GET') {
-    apiOptions.headers = {
-      'Content-Type': 'application/json',
-    };
-    apiOptions.body = JSON.stringify(data);
+  const { csrf, data } = apiOptions;
+  if (apiOptions.method !== 'GET') {
+    if (csrf !== undefined) {
+      apiOptions.headers['X-CSRF-Token'] = csrf;
+    }
+    if (data !== undefined) {
+      apiOptions.headers['Content-Type'] = 'application/json';
+      apiOptions.body = JSON.stringify(data);
+    }
   }
   return apiOptions;
 }
@@ -48,6 +52,7 @@ function getFetchOptions(options) {
 function apiFetch(url, options) {
   const apiOptions = getFetchOptions(options);
   const apiUrl = getFetchUrl(url, apiOptions);
+  delete apiOptions.csrf;
   delete apiOptions.data;
   return fetch(apiUrl, apiOptions)
     .then(response => response.json());

@@ -1,9 +1,11 @@
-const Blankie = require('blankie');
 const Boom = require('@hapi/boom');
+const Crumb = require('@hapi/crumb');
 const hapiAuthCookie = require('@hapi/cookie');
+const Good = require('@hapi/good');
 const Hapi = require('@hapi/hapi');
 const Joi = require('@hapi/joi');
 const Scooter = require('@hapi/scooter');
+const Blankie = require('blankie');
 const rp = require('request-promise-native');
 const uuid = require('uuid/v4');
 
@@ -26,12 +28,19 @@ const Format = {
   JSON: 'json',
 };
 
+const LogTag = {
+  DEBUG: 'debug',
+  ERROR: 'error',
+  INFO: 'info',
+  INIT: 'init',
+};
+
 async function failAction(request, h, err) {
-  if (config.NODE_ENV === 'production') {
-    console.error('ValidationError:', err.message);
+  if (config.ENV === 'production') {
+    request.log(LogTag.ERROR, `ValidationError: ${err.message}`);
     throw Boom.badRequest('Invalid request payload input');
   } else {
-    console.error(err);
+    request.log(LogTag.ERROR, err);
     throw err;
   }
 }
@@ -71,6 +80,39 @@ if (config.ENV === 'development') {
 const server = Hapi.server(options);
 
 async function initServer() {
+  // LOGGING
+  await server.register({
+    plugin: Good,
+    options: {
+      reporters: {
+        console: [
+          {
+            module: '@hapi/good-squeeze',
+            name: 'Squeeze',
+            args: [{
+              error: '*',
+              log: '*',
+              response: '*',
+            }],
+          },
+          {
+            module: '@hapi/good-console',
+          },
+          'stdout',
+        ],
+      },
+    },
+  });
+  server.events.on('route', (route) => {
+    server.log(LogTag.INIT, `registered route: ${route.method.toUpperCase()} ${route.path}`);
+  });
+
+  // START
+  server.log(LogTag.INIT, `starting MOVE web application server in ${config.ENV} mode...`);
+
+  // PLUGINS
+  server.log(LogTag.INIT, 'registering server plugins...');
+
   await server.register({
     plugin: hapiAuthCookie,
   });
@@ -80,11 +122,31 @@ async function initServer() {
     options: {},
   }]);
 
+  await server.register({
+    plugin: Crumb,
+    options: {
+      cookieOptions: {
+        isHttpOnly: true,
+        isSameSite: 'Lax',
+        isSecure: true,
+        path: vueConfig.publicPath,
+        ...config.session,
+      },
+      key: 'csrf',
+      restful: true,
+    },
+  });
+
+  // SESSION CACHE
+  server.log(LogTag.INIT, 'configuring session cache...');
   const cache = server.cache({
     segment: 'sessions',
     expiresIn: 3 * 24 * 60 * 60 * 1000,
   });
   server.app.cache = cache;
+
+  // AUTH STRATEGY
+  server.log(LogTag.INIT, 'configuring auth strategy...');
   server.auth.strategy('session', 'cookie', {
     cookie: {
       clearInvalid: true,
@@ -110,6 +172,9 @@ async function initServer() {
   });
   server.auth.default('session');
 
+  // ROUTES
+  server.log(LogTag.INIT, 'registering routes...');
+
   // AUTH
 
   function getRedirectUri() {
@@ -128,17 +193,17 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth/openid-connect',
-    config: {
+    options: {
       auth: false,
-    },
-    handler: async (request, h) => {
-      const client = await OpenIDClient.get();
-      const authorizationUrl = client.authorizationUrl({
-        redirect_uri: getRedirectUri(),
-        scope: 'openid email',
-      });
-      console.log(authorizationUrl);
-      return h.redirect(authorizationUrl);
+      handler: async (request, h) => {
+        const client = await OpenIDClient.get();
+        const authorizationUrl = client.authorizationUrl({
+          redirect_uri: getRedirectUri(),
+          scope: 'openid email',
+        });
+        request.log(LogTag.DEBUG, `redirecting to: ${authorizationUrl}`);
+        return h.redirect(authorizationUrl);
+      },
     },
   });
 
@@ -150,11 +215,11 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth/openid-connect-callback',
-    config: {
+    options: {
       auth: false,
     },
     handler: async (request, h) => {
-      console.log(request.query);
+      request.log(LogTag.DEBUG, request.query);
 
       // retrieve token set from OpenID Connect provider
       const client = await OpenIDClient.get();
@@ -162,8 +227,8 @@ async function initServer() {
         getRedirectUri(),
         request.query,
       );
-      console.log('received and validated tokens %j', tokenSet);
-      console.log('validated id_token claims %j', tokenSet.claims);
+      request.log(LogTag.DEBUG, `received and validated tokens ${JSON.stringify(tokenSet)}`);
+      request.log(LogTag.DEBUG, `validated id_token claims ${JSON.stringify(tokenSet.claims)}`);
 
       // upgrade to application session ID
       const { sub, email } = tokenSet.claims;
@@ -191,8 +256,13 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/stub',
-    config: {
+    options: {
       auth: false,
+      plugins: {
+        crumb: {
+          restful: false,
+        },
+      },
       validate: {
         payload: {
           email: Joi.string().email().required(),
@@ -225,11 +295,13 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
-    handler: async (request) => {
+    handler: async (request, h) => {
+      const csrf = server.plugins.crumb.generate(request, h);
       const out = {
+        csrf,
         loggedIn: request.auth.isAuthenticated,
       };
       if (out.loggedIn) {
@@ -251,7 +323,7 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/test-login',
-    config: {
+    options: {
       auth: false,
     },
     handler: async (request) => {
@@ -291,7 +363,7 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/logout',
-    config: {
+    options: {
       handler: async (request, h) => {
         // clear session
         const { sessionId } = request.state.session;
@@ -309,7 +381,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/cotgeocoder/suggest',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
     handler: async (request) => {
@@ -332,7 +404,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/cotgeocoder/findAddressCandidates',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
     handler: async (request) => {
@@ -367,7 +439,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/location/centreline',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -396,7 +468,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/byBoundingBox',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -447,7 +519,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/byCentreline',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -500,7 +572,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/data',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -525,7 +597,7 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/requests/study',
-    config: {
+    options: {
       validate: {
         payload: {
           serviceRequestId: Joi.string().allow(null).required(),
@@ -581,17 +653,14 @@ async function initServer() {
       },
     },
     handler: async (request) => {
-      console.log(request.payload);
+      request.log(LogTag.DEBUG, request.payload);
       return request.payload;
     },
   });
 
   // START SERVER
-
-  const { ENV } = config;
-
   await server.start();
-  console.log(`[${ENV}] Server started at: ${server.info.uri}...`);
+  server.log(LogTag.INIT, `Server started at: ${server.info.uri}...`);
 }
 
 initServer();

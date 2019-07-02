@@ -60,6 +60,7 @@ export default new Vuex.Store({
     now: new Date(),
     // authentication
     auth: {
+      csrf: '',
       loggedIn: false,
     },
     // searching locations
@@ -404,6 +405,7 @@ export default new Vuex.Store({
       };
       const options = {
         method: 'POST',
+        csrf: state.auth.csrf,
         data,
       };
       return apiFetch('/requests/study', options)

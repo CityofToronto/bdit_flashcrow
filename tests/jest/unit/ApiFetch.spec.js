@@ -8,6 +8,7 @@ test('getFetchOptions()', () => {
   expect(getFetchOptions()).toEqual({
     credentials: 'include',
     method: 'GET',
+    headers: {},
   });
   expect(getFetchOptions({
     data: { a: '1', b: ['2', '3'] },
@@ -15,6 +16,7 @@ test('getFetchOptions()', () => {
     credentials: 'include',
     method: 'GET',
     data: { a: '1', b: ['2', '3'] },
+    headers: {},
   });
   expect(getFetchOptions({
     data: { a: '1', b: ['2', '3'] },
@@ -25,6 +27,31 @@ test('getFetchOptions()', () => {
     data: { a: '1', b: ['2', '3'] },
     headers: {
       'Content-Type': 'application/json',
+    },
+    body: '{"a":"1","b":["2","3"]}',
+  });
+  expect(getFetchOptions({
+    csrf: 'f00bar',
+    data: { a: '1', b: ['2', '3'] },
+  })).toEqual({
+    credentials: 'include',
+    method: 'GET',
+    csrf: 'f00bar',
+    data: { a: '1', b: ['2', '3'] },
+    headers: {},
+  });
+  expect(getFetchOptions({
+    csrf: 'f00bar',
+    data: { a: '1', b: ['2', '3'] },
+    method: 'POST',
+  })).toEqual({
+    credentials: 'include',
+    method: 'POST',
+    csrf: 'f00bar',
+    data: { a: '1', b: ['2', '3'] },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': 'f00bar',
     },
     body: '{"a":"1","b":["2","3"]}',
   });
