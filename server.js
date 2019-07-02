@@ -1,10 +1,10 @@
 const Blankie = require('blankie');
-const Boom = require('boom');
-const Hapi = require('hapi');
-const hapiAuthCookie = require('hapi-auth-cookie');
-const Joi = require('joi');
+const Boom = require('@hapi/boom');
+const hapiAuthCookie = require('@hapi/cookie');
+const Hapi = require('@hapi/hapi');
+const Joi = require('@hapi/joi');
+const Scooter = require('@hapi/scooter');
 const rp = require('request-promise-native');
-const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
@@ -86,14 +86,16 @@ async function initServer() {
   });
   server.app.cache = cache;
   server.auth.strategy('session', 'cookie', {
-    ...config.session,
-    clearInvalid: true,
-    cookie: 'session',
-    isHttpOnly: true,
-    isSameSite: 'Lax',
-    isSecure: true,
-    path: vueConfig.publicPath,
-    ttl: 24 * 60 * 60 * 1000,
+    cookie: {
+      clearInvalid: true,
+      isHttpOnly: true,
+      isSameSite: 'Lax',
+      isSecure: true,
+      name: 'session',
+      path: vueConfig.publicPath,
+      ttl: 24 * 60 * 60 * 1000,
+      ...config.session,
+    },
     validateFunc: async (request, session) => {
       const { sessionId } = session;
       const cached = await cache.get(sessionId);
@@ -572,7 +574,7 @@ async function initServer() {
               ).required(),
               duration: Joi.number().integer().multiple(24).optional(),
               hours: Joi.string().valid('ROUTINE', 'SCHOOL', 'OTHER').optional(),
-              notes: Joi.string().required(),
+              notes: Joi.string().allow('').required(),
             }).required(),
           ).required(),
         },
