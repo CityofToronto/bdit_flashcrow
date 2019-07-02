@@ -3,7 +3,12 @@ import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import {
+  COUNT_TYPES,
+  SortKeys,
+  SortDirection,
+  Status,
+} from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import SampleData from '@/lib/SampleData';
 
@@ -27,7 +32,7 @@ function makeStudyItem(studyType) {
 
 function makeItemsCountsActive() {
   const itemsCountsActive = {};
-  Constants.COUNT_TYPES.forEach(({ value }) => {
+  COUNT_TYPES.forEach(({ value }) => {
     itemsCountsActive[value] = 0;
   });
   return itemsCountsActive;
@@ -35,7 +40,7 @@ function makeItemsCountsActive() {
 
 function makeNumPerCategory() {
   const numPerCategory = {};
-  Constants.COUNT_TYPES.forEach(({ value }) => {
+  COUNT_TYPES.forEach(({ value }) => {
     numPerCategory[value] = 0;
   });
   return numPerCategory;
@@ -69,7 +74,7 @@ export default new Vuex.Store({
     numPerCategory: makeNumPerCategory(),
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
-    filterCountTypes: [...Constants.COUNT_TYPES.keys()],
+    filterCountTypes: [...COUNT_TYPES.keys()],
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
@@ -91,7 +96,7 @@ export default new Vuex.Store({
         || getters.hasFilterDayOfWeek;
     },
     hasFilterCountTypes(state) {
-      return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+      return state.filterCountTypes.length !== COUNT_TYPES.length;
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
@@ -99,7 +104,7 @@ export default new Vuex.Store({
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
       return state.filterCountTypes.map((i) => {
-        const type = Constants.COUNT_TYPES[i];
+        const type = COUNT_TYPES[i];
         const activeIndex = state.itemsCountsActive[type.value];
         let countsOfType = state.counts
           .filter(c => c.type.value === type.value);
@@ -115,7 +120,7 @@ export default new Vuex.Store({
             id: type.value,
             type,
             date: null,
-            status: Constants.Status.NO_EXISTING_COUNT,
+            status: Status.NO_EXISTING_COUNT,
           };
           return {
             activeIndex,
@@ -126,8 +131,8 @@ export default new Vuex.Store({
         }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
-          Constants.SortKeys.Counts.DATE,
-          Constants.SortDirection.DESC,
+          SortKeys.Counts.DATE,
+          SortDirection.DESC,
         );
         return {
           activeIndex,
@@ -140,12 +145,12 @@ export default new Vuex.Store({
     // ACTIVE STUDY REQUEST
     studyTypesWarnDuplicates(state) {
       if (state.studyRequest === null) {
-        return Constants.COUNT_TYPES;
+        return COUNT_TYPES;
       }
       const studyTypesSelected = new Set(
         state.studyRequest.items.map(({ item }) => item),
       );
-      return Constants.COUNT_TYPES.map(({ label, value }) => {
+      return COUNT_TYPES.map(({ label, value }) => {
         const studyType = { label, value };
         if (studyTypesSelected.has(studyType)) {
           studyType.icon = 'exclamation-triangle';
@@ -225,7 +230,7 @@ export default new Vuex.Store({
     },
     // FILTERING DATA
     clearFilters(state) {
-      Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
+      Vue.set(state, 'filterCountTypes', [...COUNT_TYPES.keys()]);
       Vue.set(state, 'filterDate', null);
       Vue.set(state, 'filterDayOfWeek', [...Array(7).keys()]);
     },
@@ -355,6 +360,58 @@ export default new Vuex.Store({
           };
           commit('setCountsResult', result);
           return result;
+        });
+    },
+    // STUDY REQUESTS
+    saveActiveStudyRequest({ commit, state }) {
+      const { location, studyRequest } = state;
+      const {
+        hasServiceRequestId,
+        serviceRequestId,
+        priority,
+        dueDate,
+        reasons,
+        ccEmails: ccEmailsStr,
+      } = studyRequest.meta;
+      const ccEmails = ccEmailsStr
+        .trim()
+        .split(',')
+        .map(ccEmail => ccEmail.trim())
+        .filter(ccEmail => ccEmail !== '');
+      const items = studyRequest.items.map(({
+        item: studyType,
+        meta: {
+          daysOfWeek,
+          duration,
+          hours,
+          notes,
+        },
+      }) => ({
+        studyType,
+        daysOfWeek,
+        duration,
+        hours,
+        notes,
+      }));
+      const data = {
+        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
+        priority,
+        dueDate,
+        reasons,
+        ccEmails,
+        location,
+        items,
+      };
+      const options = {
+        method: 'POST',
+        data,
+      };
+      return apiFetch('/requests/study', options)
+        .then(() => {
+          commit('setModal', {
+            component: 'FcModalRequestStudyConfirmation',
+            data: {},
+          });
         });
     },
   },
