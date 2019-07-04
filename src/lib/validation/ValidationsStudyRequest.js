@@ -1,5 +1,6 @@
 import { required, requiredIf } from 'vuelidate/lib/validators';
 
+// TODO: rework this
 function numConsecutiveDaysOfWeek(daysOfWeek) {
   const days = new Array(15).fill(false);
   daysOfWeek.forEach((i) => {
@@ -24,60 +25,57 @@ function numConsecutiveDaysOfWeek(daysOfWeek) {
   return max === 14 ? 7 : max;
 }
 
-const validations = {
+const validationsMeta = {
   studyRequest: {
-    meta: {
-      hasServiceRequestId: {
-        required,
-      },
-      serviceRequestId: {
-        requiredIfHasServiceRequestId: requiredIf(meta => meta.hasServiceRequestId),
-      },
-      dueDate: {
-        required,
-      },
-      reasons: {
-        required,
-      },
-      ccEmails: {
-        allTorontoInternal(ccEmails) {
-          return ccEmails
-            .trim()
-            .split(',')
-            .map(ccEmail => ccEmail.trim())
-            .filter(ccEmail => ccEmail !== '')
-            .every(ccEmail => ccEmail.endsWith('@toronto.ca'));
-        },
-      },
+    hasServiceRequestId: {
+      required,
     },
-    items: {
-      $each: {
-        meta: {
-          daysOfWeek: {
-            required,
-            needsValidDuration(daysOfWeek, { duration }) {
-              const k = numConsecutiveDaysOfWeek(daysOfWeek);
-              return k * 24 >= duration;
-            },
-          },
-          duration: {
-            needsValidDaysOfWeek(duration, { daysOfWeek }) {
-              const k = numConsecutiveDaysOfWeek(daysOfWeek);
-              return k * 24 >= duration;
-            },
-          },
-          notes: {
-            requiredIfOtherHours: requiredIf(meta => meta.hours === 'OTHER'),
-          },
-        },
+    serviceRequestId: {
+      requiredIfHasServiceRequestId: requiredIf(meta => meta.hasServiceRequestId),
+    },
+    dueDate: {
+      required,
+    },
+    reasons: {
+      required,
+    },
+    ccEmails: {
+      allTorontoInternal(ccEmails) {
+        return ccEmails
+          .trim()
+          .split(',')
+          .map(ccEmail => ccEmail.trim())
+          .filter(ccEmail => ccEmail !== '')
+          .every(ccEmail => ccEmail.endsWith('@toronto.ca'));
       },
     },
   },
 };
 
-const validationsMeta = {
+
+const validations = {
   studyRequest: {
-    meta: validations.studyRequest.meta,
+    ...validationsMeta.studyRequest,
+    items: {
+      $each: {
+        daysOfWeek: {
+          required,
+          needsValidDuration(daysOfWeek, { duration }) {
+            const k = numConsecutiveDaysOfWeek(daysOfWeek);
+            return k * 24 >= duration;
+          },
+        },
+        duration: {
+          needsValidDaysOfWeek(duration, { daysOfWeek }) {
+            const k = numConsecutiveDaysOfWeek(daysOfWeek);
+            return k * 24 >= duration;
+          },
+        },
+        notes: {
+          requiredIfOtherHours: requiredIf(meta => meta.hours === 'OTHER'),
+        },
+      },
+    },
   },
 };
 

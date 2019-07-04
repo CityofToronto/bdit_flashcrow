@@ -42,11 +42,11 @@
         {{STATUS_META[item.status].label}}
       </span>
     </template>
-    <template v-slot:ACTIONS="{ index }">
+    <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-l"
-          @click="$emit('remove-study', index)">
+          @click="$emit('remove-study', item)">
           <i class="fa fa-trash-alt"></i>
         </button>
       </div>
@@ -61,7 +61,12 @@
 
 <script>
 import FcCardTable from '@/components/FcCardTable.vue';
-import Constants from '@/lib/Constants';
+import {
+  SortDirection,
+  SortKeys,
+  Status,
+  STATUS_META,
+} from '@/lib/Constants';
 
 export default {
   name: 'FcCardTableStudiesRequested',
@@ -92,10 +97,10 @@ export default {
     return {
       columns,
       sortBy: 'STUDY_TYPE',
-      sortDirection: Constants.SortDirection.ASC,
-      sortKeys: Constants.SortKeys.Counts,
-      Status: Constants.Status,
-      STATUS_META: Constants.STATUS_META,
+      sortDirection: SortDirection.ASC,
+      sortKeys: SortKeys.Counts,
+      Status,
+      STATUS_META,
     };
   },
 };

@@ -200,7 +200,7 @@ export default {
     },
     ccEmails: {
       get() {
-        return this.studyRequest.meta.ccEmails;
+        return this.studyRequest.ccEmails;
       },
       set(ccEmails) {
         this.setStudyRequestMeta({
@@ -211,7 +211,7 @@ export default {
     },
     dueDate: {
       get() {
-        return this.studyRequest.meta.dueDate;
+        return this.studyRequest.dueDate;
       },
       set(dueDate) {
         this.setStudyRequestMeta({
@@ -222,7 +222,7 @@ export default {
     },
     hasServiceRequestId: {
       get() {
-        return this.studyRequest.meta.hasServiceRequestId;
+        return this.studyRequest.hasServiceRequestId;
       },
       set(hasServiceRequestId) {
         this.setStudyRequestMeta({
@@ -236,7 +236,7 @@ export default {
     },
     priority: {
       get() {
-        return this.studyRequest.meta.priority;
+        return this.studyRequest.priority;
       },
       set(priority) {
         this.setStudyRequestMeta({
@@ -247,7 +247,7 @@ export default {
     },
     reasons: {
       get() {
-        return this.studyRequest.meta.reasons;
+        return this.studyRequest.reasons;
       },
       set(reasons) {
         this.setStudyRequestMeta({
@@ -258,7 +258,7 @@ export default {
     },
     serviceRequestId: {
       get() {
-        return this.studyRequest.meta.serviceRequestId;
+        return this.studyRequest.serviceRequestId;
       },
       set(serviceRequestId) {
         this.setStudyRequestMeta({

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
@@ -20,14 +20,10 @@ export default {
   validations: ValidationsStudyRequest.validations,
   methods: {
     onClickConfirm() {
-      // TODO: save request, send confirmation email
-      this.$router.push({ name: 'viewData' });
-      this.setModal({
-        component: 'FcModalRequestStudyConfirmation',
-        data: {},
-      });
+      this.saveActiveStudyRequest();
+      // this.$router.push({ name: 'home' });
     },
-    ...mapMutations(['setModal']),
+    ...mapActions(['saveActiveStudyRequest']),
   },
 };
 </script>

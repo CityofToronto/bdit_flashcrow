@@ -3,7 +3,12 @@ import Vuex from 'vuex';
 
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import {
+  COUNT_TYPES,
+  SortKeys,
+  SortDirection,
+  Status,
+} from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import SampleData from '@/lib/SampleData';
 
@@ -15,19 +20,17 @@ const TIMEOUT_TOAST = 10000;
 
 function makeStudyItem(studyType) {
   return {
-    item: studyType,
-    meta: {
-      daysOfWeek: [2, 3, 4],
-      duration: 24,
-      hours: 'ROUTINE',
-      notes: '',
-    },
+    studyType,
+    daysOfWeek: [2, 3, 4],
+    duration: 24,
+    hours: 'ROUTINE',
+    notes: '',
   };
 }
 
 function makeItemsCountsActive() {
   const itemsCountsActive = {};
-  Constants.COUNT_TYPES.forEach(({ value }) => {
+  COUNT_TYPES.forEach(({ value }) => {
     itemsCountsActive[value] = 0;
   });
   return itemsCountsActive;
@@ -35,7 +38,7 @@ function makeItemsCountsActive() {
 
 function makeNumPerCategory() {
   const numPerCategory = {};
-  Constants.COUNT_TYPES.forEach(({ value }) => {
+  COUNT_TYPES.forEach(({ value }) => {
     numPerCategory[value] = 0;
   });
   return numPerCategory;
@@ -55,6 +58,7 @@ export default new Vuex.Store({
     now: new Date(),
     // authentication
     auth: {
+      csrf: '',
       loggedIn: false,
     },
     // searching locations
@@ -69,7 +73,7 @@ export default new Vuex.Store({
     numPerCategory: makeNumPerCategory(),
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
-    filterCountTypes: [...Constants.COUNT_TYPES.keys()],
+    filterCountTypes: [...COUNT_TYPES.keys()],
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
@@ -91,7 +95,7 @@ export default new Vuex.Store({
         || getters.hasFilterDayOfWeek;
     },
     hasFilterCountTypes(state) {
-      return state.filterCountTypes.length !== Constants.COUNT_TYPES.length;
+      return state.filterCountTypes.length !== COUNT_TYPES.length;
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
@@ -99,7 +103,7 @@ export default new Vuex.Store({
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
       return state.filterCountTypes.map((i) => {
-        const type = Constants.COUNT_TYPES[i];
+        const type = COUNT_TYPES[i];
         const activeIndex = state.itemsCountsActive[type.value];
         let countsOfType = state.counts
           .filter(c => c.type.value === type.value);
@@ -115,7 +119,7 @@ export default new Vuex.Store({
             id: type.value,
             type,
             date: null,
-            status: Constants.Status.NO_EXISTING_COUNT,
+            status: Status.NO_EXISTING_COUNT,
           };
           return {
             activeIndex,
@@ -126,8 +130,8 @@ export default new Vuex.Store({
         }
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
-          Constants.SortKeys.Counts.DATE,
-          Constants.SortDirection.DESC,
+          SortKeys.Counts.DATE,
+          SortDirection.DESC,
         );
         return {
           activeIndex,
@@ -138,14 +142,47 @@ export default new Vuex.Store({
       });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestModel(state, getters) {
+      const { studyRequest } = state;
+      const {
+        hasServiceRequestId,
+        serviceRequestId,
+        priority,
+        dueDate,
+        reasons,
+        ccEmails: ccEmailsStr,
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
+      } = studyRequest;
+      const ccEmails = ccEmailsStr
+        .trim()
+        .split(',')
+        .map(ccEmail => ccEmail.trim())
+        .filter(ccEmail => ccEmail !== '');
+      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
+      return {
+        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
+        priority,
+        dueDate,
+        estimatedDeliveryDate,
+        reasons,
+        ccEmails,
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
+      };
+    },
     studyTypesWarnDuplicates(state) {
       if (state.studyRequest === null) {
-        return Constants.COUNT_TYPES;
+        return COUNT_TYPES;
       }
       const studyTypesSelected = new Set(
-        state.studyRequest.items.map(({ item }) => item),
+        state.studyRequest.items.map(({ studyType }) => studyType),
       );
-      return Constants.COUNT_TYPES.map(({ label, value }) => {
+      return COUNT_TYPES.map(({ label, value }) => {
         const studyType = { label, value };
         if (studyTypesSelected.has(studyType)) {
           studyType.icon = 'exclamation-triangle';
@@ -158,7 +195,7 @@ export default new Vuex.Store({
       if (studyRequest === null) {
         return null;
       }
-      const { dueDate, priority } = state.studyRequest.meta;
+      const { dueDate, priority } = state.studyRequest;
       if (dueDate === null || priority === null) {
         return null;
       }
@@ -225,7 +262,7 @@ export default new Vuex.Store({
     },
     // FILTERING DATA
     clearFilters(state) {
-      Vue.set(state, 'filterCountTypes', [...Constants.COUNT_TYPES.keys()]);
+      Vue.set(state, 'filterCountTypes', [...COUNT_TYPES.keys()]);
       Vue.set(state, 'filterDate', null);
       Vue.set(state, 'filterDayOfWeek', [...Array(7).keys()]);
     },
@@ -254,16 +291,31 @@ export default new Vuex.Store({
       Vue.set(state, 'studyRequest', null);
     },
     setNewStudyRequest(state, studyTypes) {
-      const meta = {
+      const { location } = state;
+      const {
+        centrelineId,
+        centrelineType,
+        lng,
+        lat,
+      } = location;
+      const geom = {
+        type: 'Point',
+        coordinates: [lng, lat],
+      };
+      const items = studyTypes.map(makeStudyItem);
+      const studyRequest = {
         hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
         dueDate: null,
         reasons: [],
         ccEmails: '',
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
       };
-      const items = studyTypes.map(makeStudyItem);
-      Vue.set(state, 'studyRequest', { items, meta });
+      Vue.set(state, 'studyRequest', studyRequest);
     },
     addStudyToStudyRequest(state, studyType) {
       const item = makeStudyItem(studyType);
@@ -273,10 +325,10 @@ export default new Vuex.Store({
       state.studyRequest.items.splice(i, 1);
     },
     setStudyRequestMeta(state, { key, value }) {
-      Vue.set(state.studyRequest.meta, key, value);
+      Vue.set(state.studyRequest, key, value);
     },
     setStudyMeta(state, { i, key, value }) {
-      Vue.set(state.studyRequest.items[i].meta, key, value);
+      Vue.set(state.studyRequest.items[i], key, value);
     },
   },
   actions: {
@@ -355,6 +407,23 @@ export default new Vuex.Store({
           };
           commit('setCountsResult', result);
           return result;
+        });
+    },
+    // STUDY REQUESTS
+    saveActiveStudyRequest({ commit, getters, state }) {
+      const data = getters.studyRequestModel;
+      const options = {
+        method: 'POST',
+        csrf: state.auth.csrf,
+        data,
+      };
+      return apiFetch('/requests/study', options)
+        .then((response) => {
+          commit('setModal', {
+            component: 'FcModalRequestStudyConfirmation',
+            data: {},
+          });
+          return response;
         });
     },
   },

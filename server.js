@@ -1,10 +1,12 @@
+const Boom = require('@hapi/boom');
+const Crumb = require('@hapi/crumb');
+const hapiAuthCookie = require('@hapi/cookie');
+const Good = require('@hapi/good');
+const Hapi = require('@hapi/hapi');
+const Joi = require('@hapi/joi');
+const Scooter = require('@hapi/scooter');
 const Blankie = require('blankie');
-const Boom = require('boom');
-const Hapi = require('hapi');
-const hapiAuthCookie = require('hapi-auth-cookie');
-const Joi = require('joi');
 const rp = require('request-promise-native');
-const Scooter = require('scooter');
 const uuid = require('uuid/v4');
 
 const config = require('./lib/config');
@@ -12,8 +14,11 @@ const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
+const StudyRequestDAO = require('./lib/db/StudyRequestDAO');
+const StudyRequestItemDAO = require('./lib/db/StudyRequestItemDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
+const StudyRequest = require('./lib/model/StudyRequest');
 const vueConfig = require('./vue.config');
 
 const CentrelineType = {
@@ -26,6 +31,23 @@ const Format = {
   JSON: 'json',
 };
 
+const LogTag = {
+  DEBUG: 'debug',
+  ERROR: 'error',
+  INFO: 'info',
+  INIT: 'init',
+};
+
+async function failAction(request, h, err) {
+  if (config.ENV === 'production') {
+    request.log(LogTag.ERROR, `ValidationError: ${err.message}`);
+    throw Boom.badRequest('Invalid request payload input');
+  } else {
+    request.log(LogTag.ERROR, err);
+    throw err;
+  }
+}
+
 const options = {
   app: { config },
   debug: {
@@ -34,6 +56,9 @@ const options = {
   host: config.host,
   port: config.port,
   routes: {
+    response: {
+      failAction,
+    },
     security: {
       hsts: {
         maxAge: 2592000,
@@ -46,6 +71,9 @@ const options = {
       noSniff: true,
       referrer: false,
     },
+    validate: {
+      failAction,
+    },
   },
 };
 if (config.ENV === 'development') {
@@ -55,6 +83,39 @@ if (config.ENV === 'development') {
 const server = Hapi.server(options);
 
 async function initServer() {
+  // LOGGING
+  await server.register({
+    plugin: Good,
+    options: {
+      reporters: {
+        console: [
+          {
+            module: '@hapi/good-squeeze',
+            name: 'Squeeze',
+            args: [{
+              error: '*',
+              log: '*',
+              response: '*',
+            }],
+          },
+          {
+            module: '@hapi/good-console',
+          },
+          'stdout',
+        ],
+      },
+    },
+  });
+  server.events.on('route', (route) => {
+    server.log(LogTag.INIT, `registered route: ${route.method.toUpperCase()} ${route.path}`);
+  });
+
+  // START
+  server.log(LogTag.INIT, `starting MOVE web application server in ${config.ENV} mode...`);
+
+  // PLUGINS
+  server.log(LogTag.INIT, 'registering server plugins...');
+
   await server.register({
     plugin: hapiAuthCookie,
   });
@@ -64,20 +125,42 @@ async function initServer() {
     options: {},
   }]);
 
+  await server.register({
+    plugin: Crumb,
+    options: {
+      cookieOptions: {
+        isHttpOnly: true,
+        isSameSite: 'Lax',
+        isSecure: true,
+        path: vueConfig.publicPath,
+        ...config.session,
+      },
+      key: 'csrf',
+      restful: true,
+    },
+  });
+
+  // SESSION CACHE
+  server.log(LogTag.INIT, 'configuring session cache...');
   const cache = server.cache({
     segment: 'sessions',
     expiresIn: 3 * 24 * 60 * 60 * 1000,
   });
   server.app.cache = cache;
+
+  // AUTH STRATEGY
+  server.log(LogTag.INIT, 'configuring auth strategy...');
   server.auth.strategy('session', 'cookie', {
-    ...config.session,
-    clearInvalid: true,
-    cookie: 'session',
-    isHttpOnly: true,
-    isSameSite: 'Lax',
-    isSecure: true,
-    path: vueConfig.publicPath,
-    ttl: 24 * 60 * 60 * 1000,
+    cookie: {
+      clearInvalid: true,
+      isHttpOnly: true,
+      isSameSite: 'Lax',
+      isSecure: true,
+      name: 'session',
+      path: vueConfig.publicPath,
+      ttl: 24 * 60 * 60 * 1000,
+      ...config.session,
+    },
     validateFunc: async (request, session) => {
       const { sessionId } = session;
       const cached = await cache.get(sessionId);
@@ -91,6 +174,9 @@ async function initServer() {
     },
   });
   server.auth.default('session');
+
+  // ROUTES
+  server.log(LogTag.INIT, 'registering routes...');
 
   // AUTH
 
@@ -110,7 +196,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth/openid-connect',
-    config: {
+    options: {
       auth: false,
     },
     handler: async (request, h) => {
@@ -119,7 +205,7 @@ async function initServer() {
         redirect_uri: getRedirectUri(),
         scope: 'openid email',
       });
-      console.log(authorizationUrl);
+      request.log(LogTag.DEBUG, `redirecting to: ${authorizationUrl}`);
       return h.redirect(authorizationUrl);
     },
   });
@@ -132,11 +218,11 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth/openid-connect-callback',
-    config: {
+    options: {
       auth: false,
     },
     handler: async (request, h) => {
-      console.log(request.query);
+      request.log(LogTag.DEBUG, request.query);
 
       // retrieve token set from OpenID Connect provider
       const client = await OpenIDClient.get();
@@ -144,8 +230,8 @@ async function initServer() {
         getRedirectUri(),
         request.query,
       );
-      console.log('received and validated tokens %j', tokenSet);
-      console.log('validated id_token claims %j', tokenSet.claims);
+      request.log(LogTag.DEBUG, `received and validated tokens ${JSON.stringify(tokenSet)}`);
+      request.log(LogTag.DEBUG, `validated id_token claims ${JSON.stringify(tokenSet.claims)}`);
 
       // upgrade to application session ID
       const { sub, email } = tokenSet.claims;
@@ -173,8 +259,13 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/stub',
-    config: {
+    options: {
       auth: false,
+      plugins: {
+        crumb: {
+          restful: false,
+        },
+      },
       validate: {
         payload: {
           email: Joi.string().email().required(),
@@ -207,17 +298,18 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/auth',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
-    handler: async (request) => {
+    handler: async (request, h) => {
+      const csrf = server.plugins.crumb.generate(request, h);
       const out = {
+        csrf,
         loggedIn: request.auth.isAuthenticated,
+        user: null,
       };
       if (out.loggedIn) {
-        const { sessionId } = request.state.session;
-        const { user } = await request.server.app.cache.get(sessionId);
-        const { email, name } = user;
+        const { email, name } = request.auth.credentials;
         out.user = { email, name };
       }
       return out;
@@ -233,7 +325,7 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/test-login',
-    config: {
+    options: {
       auth: false,
     },
     handler: async (request) => {
@@ -273,7 +365,7 @@ async function initServer() {
   server.route({
     method: 'POST',
     path: '/auth/logout',
-    config: {
+    options: {
       handler: async (request, h) => {
         // clear session
         const { sessionId } = request.state.session;
@@ -291,7 +383,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/cotgeocoder/suggest',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
     handler: async (request) => {
@@ -314,7 +406,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/cotgeocoder/findAddressCandidates',
-    config: {
+    options: {
       auth: { mode: 'try' },
     },
     handler: async (request) => {
@@ -349,7 +441,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/location/centreline',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -378,7 +470,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/byBoundingBox',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -429,7 +521,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/byCentreline',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -482,7 +574,7 @@ async function initServer() {
   server.route({
     method: 'GET',
     path: '/counts/data',
-    config: {
+    options: {
       auth: { mode: 'try' },
       validate: {
         query: {
@@ -503,12 +595,37 @@ async function initServer() {
     },
   });
 
+  // REQUESTS: STUDY
+  server.route({
+    method: 'POST',
+    path: '/requests/study',
+    options: {
+      response: {
+        schema: StudyRequest.persisted,
+      },
+      validate: {
+        payload: StudyRequest.transient,
+      },
+    },
+    handler: async (request) => {
+      const { subject } = request.auth.credentials;
+      const studyRequest = await StudyRequestDAO.create({
+        userSubject: subject,
+        ...request.payload,
+      });
+      const itemPromises = studyRequest.items.map(item => StudyRequestItemDAO.create({
+        userSubject: subject,
+        studyRequestId: studyRequest.id,
+        ...item,
+      }));
+      studyRequest.items = await Promise.all(itemPromises);
+      return studyRequest;
+    },
+  });
+
   // START SERVER
-
-  const { ENV } = config;
-
   await server.start();
-  console.log(`[${ENV}] Server started at: ${server.info.uri}...`);
+  server.log(LogTag.INIT, `Server started at: ${server.info.uri}...`);
 }
 
 initServer();

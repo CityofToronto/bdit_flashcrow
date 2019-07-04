@@ -30,7 +30,7 @@ test('ValidationsStudyRequest.numConsecutiveDaysOfWeek()', () => {
 });
 
 test('ValidationsStudyRequest.allTorontoInternal()', () => {
-  const { allTorontoInternal } = ValidationsStudyRequest.validations.studyRequest.meta.ccEmails;
+  const { allTorontoInternal } = ValidationsStudyRequest.validations.studyRequest.ccEmails;
 
   expect(allTorontoInternal('')).toBeTruthy();
   expect(allTorontoInternal(',,,,,,')).toBeTruthy();
@@ -45,7 +45,7 @@ test('ValidationsStudyRequest.allTorontoInternal()', () => {
 
 test('ValidationsStudyRequest.needsValidDuration()', () => {
   const { studyRequest } = ValidationsStudyRequest.validations;
-  const { needsValidDuration } = studyRequest.items.$each.meta.daysOfWeek;
+  const { needsValidDuration } = studyRequest.items.$each.daysOfWeek;
 
   expect(needsValidDuration([], { duration: 24 })).toBeFalsy();
   expect(needsValidDuration([2, 3, 4], { duration: 24 })).toBeTruthy();
@@ -66,7 +66,7 @@ test('ValidationsStudyRequest.needsValidDuration()', () => {
 
 test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
   const { studyRequest } = ValidationsStudyRequest.validations;
-  const { needsValidDaysOfWeek } = studyRequest.items.$each.meta.duration;
+  const { needsValidDaysOfWeek } = studyRequest.items.$each.duration;
 
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [] })).toBeFalsy();
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
