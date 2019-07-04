@@ -144,6 +144,9 @@ export default new Vuex.Store({
     // ACTIVE STUDY REQUEST
     studyRequestModel(state, getters) {
       const { studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
       const {
         hasServiceRequestId,
         serviceRequestId,

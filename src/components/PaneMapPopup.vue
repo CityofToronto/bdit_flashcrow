@@ -1,16 +1,20 @@
 <template>
   <div class="pane-map-popup">
-  Location: "{{descriptionFormatted}}" <br> Type: "{{layerId}}"
-  <button
-    class="font-size-l"
-    @click="onViewData">
-    View Data
+    <div class="mb-m pr-xl">
+      <i class="fa fa-map-marker-alt"></i>
+      <strong> {{descriptionFormatted}}</strong>
+    </div>
+    <button
+      class="font-size-l"
+      @click="onViewData">
+      View Data
     </button>
   </div>
 </template>
 
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
@@ -67,10 +71,19 @@ export default {
     },
   },
   mounted() {
-    this.popup = new mapboxgl.Popup()
-      .setLngLat(this.coordinates)
-      .setDOMContent(this.$el)
-      .addTo(this.map);
+    Vue.nextTick(() => {
+      this.popup = new mapboxgl.Popup()
+        .setLngLat(this.coordinates)
+        .setDOMContent(this.$el)
+        .addTo(this.map);
+    });
+  },
+  updated() {
+    Vue.nextTick(() => {
+      this.popup
+        .setLngLat(this.coordinates)
+        .setDOMContent(this.$el);
+    });
   },
   beforeDestroy() {
     if (this.map) {

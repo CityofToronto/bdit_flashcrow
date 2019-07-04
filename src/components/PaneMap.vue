@@ -18,6 +18,9 @@
       <PaneMapPopup
         v-if="hoveredFeature"
         :feature="hoveredFeature" />
+      <PaneMapPopup
+        v-if="selectedFeature"
+        :feature="selectedFeature" />
     </div>
   </div>
 </template>
@@ -142,13 +145,6 @@ const PAINT_OPACITY = [
     0.75,
   ],
 ];
-
-// hover popup for centreline segments or intersections
-const hoverPopup = new mapboxgl.Popup();
-
-// hover popup for clusters
-// const hoverClusterPopup = new mapboxgl.Popup();
-
 
 function injectSourcesAndLayers(style, dataCountsVisible) {
   const STYLE = {};
@@ -346,7 +342,6 @@ export default {
         this.easeToLocation();
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
-        this.map.on('mouseout', this.onMapMouseout.bind(this));
       });
     });
   },
@@ -496,61 +491,6 @@ export default {
       };
       this.setLocation(elementInfo);
     },
-    onIntersectionsHover(feature) {
-      const popupHTML = `<div <p> {0} </p> <button
-          class="font-size-l" :disabled="location === null"
-          onclick="onViewData();">
-          <span> View Data</span>
-          </button>
-          </div>`.replace('{0}', feature.properties.intersec5);
-      hoverPopup.setLngLat(feature.geometry.coordinates)
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    onCentrelineHover(feature) {
-      const popupHTML = `<div <p> {0} </p> <button
-          class="font-size-l" :disabled="location === null"
-          @click="onViewData">
-          <span> View Data</span>
-          </button>
-          </div>`.replace('{0}', feature.properties.lf_name);
-      const { coordinates } = feature.geometry;
-      const [lng, lat] = getLineStringMidpoint(coordinates);
-      hoverPopup.setLngLat([lng, lat])
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    onCountsVisiblePointsHover(feature) {
-      const [lng, lat] = feature.geometry.coordinates;
-      const centrelineTypeInt = feature.properties.centrelinetype;
-      let centrelineType = 'N/A';
-      if (centrelineTypeInt === 1) {
-        centrelineType = 'Intersection';
-      } else {
-        centrelineType = 'Street Segment';
-      }
-      const description = StringFormatters.formatCountLocationDescription(
-        feature.properties.locationdesc,
-      );
-      const popupHTML = `<div <p> {0} <br />
-        Centreline Type: {1} </p>
-        <button
-          class="font-size-l" :disabled="location === null"
-          @click="onViewData">
-          <span> View Data</span>
-          </button>
-        </div>`.replace('{0}', description).replace('{1}', centrelineType);
-      hoverPopup.setLngLat([lng, lat])
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    /*
-    onCountsVisibleClustersHover(feature) {
-      const clusterId = feature.properties.cluster_id;
-      const source = this.map.getSource('counts-visible');
-      // comment
-    },
-    */
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
       if (feature === null) {
@@ -599,24 +539,6 @@ export default {
       // highlight feature that is currently being hovered over
       this.hoveredFeature = feature;
       this.map.setFeatureState(this.hoveredFeature, { hover: true });
-
-      const layerId = feature.layer.id;
-      if (layerId === 'intersections') {
-        this.onIntersectionsHover(this.hoveredFeature);
-      } else if (layerId === 'centreline') {
-        this.onCentrelineHover(this.hoveredFeature);
-      } else if (layerId === 'counts-visible-points') {
-        this.onCountsVisiblePointsHover(this.hoveredFeature);
-      } /* else if (layerId === 'counts-visible-clusters') {
-        this.onCountsVisibleClustersHover(feature);
-      }
-      */
-    },
-    onMapMouseout() {
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        this.hoveredFeature = null;
-      }
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
       const { lat, lng } = this.map.getCenter();
