@@ -16,6 +16,7 @@ const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
+const StudyRequest = require('./lib/model/StudyRequest');
 const vueConfig = require('./vue.config');
 
 const CentrelineType = {
@@ -599,57 +600,7 @@ async function initServer() {
     path: '/requests/study',
     options: {
       validate: {
-        payload: {
-          serviceRequestId: Joi.string().allow(null).required(),
-          priority: Joi.string().valid('STANDARD', 'URGENT').required(),
-          dueDate: Joi.date().min('now').required(),
-          reasons: Joi.array().items(
-            Joi.string().valid(
-              // TODO: DRY with Constants.REASONS
-              'TSC',
-              'PXO',
-              'EXPIRED',
-              'PED_SAFETY',
-              'SIGNAL_TIMING',
-            ).required(),
-          ).required(),
-          ccEmails: Joi.array().items(
-            Joi.string().email(),
-          ).required(),
-          location: Joi.object({
-            centrelineId: Joi.number().integer().positive().required(),
-            // DRY with Constants.CentrelineType
-            centrelineType: Joi.number().valid(1, 2).required(),
-            description: Joi.string().optional(),
-            lng: Joi.number().min(-180).max(180).required(),
-            lat: Joi.number().min(-90).max(90).required(),
-          }).required(),
-          items: Joi.array().items(
-            Joi.object({
-              studyType: Joi.string().valid(
-                // TODO: DRY with Constants.COUNT_TYPES
-                'ATR_VOLUME_BICYCLE',
-                'PXO_OBSERVE',
-                'PED_DELAY',
-                'RESCU',
-                'ATR_SPEED_VOLUME',
-                'TMC',
-                'ATR_VOLUME',
-              ).required(),
-              daysOfWeek: Joi.array().items(
-                Joi
-                  .number()
-                  .integer()
-                  .min(0)
-                  .max(6)
-                  .required(),
-              ).required(),
-              duration: Joi.number().integer().multiple(24).optional(),
-              hours: Joi.string().valid('ROUTINE', 'SCHOOL', 'OTHER').optional(),
-              notes: Joi.string().allow('').required(),
-            }).required(),
-          ).required(),
-        },
+        payload: StudyRequest,
       },
     },
     handler: async (request) => {

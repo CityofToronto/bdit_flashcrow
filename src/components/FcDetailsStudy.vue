@@ -167,7 +167,7 @@ export default {
     },
     dateRange: {
       get() {
-        return this.meta.dateRange;
+        return this.item.dateRange;
       },
       set(dateRange) {
         this.setStudyMeta({
@@ -179,7 +179,7 @@ export default {
     },
     daysOfWeek: {
       get() {
-        return this.meta.daysOfWeek;
+        return this.item.daysOfWeek;
       },
       set(daysOfWeek) {
         this.setStudyMeta({
@@ -192,7 +192,7 @@ export default {
     },
     duration: {
       get() {
-        return this.meta.duration;
+        return this.item.duration;
       },
       set(duration) {
         this.setStudyMeta({
@@ -205,7 +205,7 @@ export default {
     },
     hours: {
       get() {
-        return this.meta.hours;
+        return this.item.hours;
       },
       set(hours) {
         this.setStudyMeta({
@@ -219,8 +219,8 @@ export default {
     indexHuman() {
       return this.index + 1;
     },
-    meta() {
-      return this.studyRequest.items[this.index].meta;
+    item() {
+      return this.studyRequest.items[this.index];
     },
     nameDateRange() {
       return `dateRange_${this.indexHuman}`;
@@ -239,7 +239,7 @@ export default {
     },
     notes: {
       get() {
-        return this.meta.notes;
+        return this.item.notes;
       },
       set(notes) {
         this.setStudyMeta({
@@ -250,10 +250,10 @@ export default {
       },
     },
     priority() {
-      return this.studyRequest.meta.priority;
+      return this.studyRequest.priority;
     },
     studyType() {
-      const studyType = this.studyRequest.items[this.index].item;
+      const { studyType } = this.item;
       return COUNT_TYPES.find(({ value }) => value === studyType);
     },
     ...mapState(['studyRequest']),

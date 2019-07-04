@@ -20,13 +20,11 @@ const TIMEOUT_TOAST = 10000;
 
 function makeStudyItem(studyType) {
   return {
-    item: studyType,
-    meta: {
-      daysOfWeek: [2, 3, 4],
-      duration: 24,
-      hours: 'ROUTINE',
-      notes: '',
-    },
+    studyType,
+    daysOfWeek: [2, 3, 4],
+    duration: 24,
+    hours: 'ROUTINE',
+    notes: '',
   };
 }
 
@@ -144,12 +142,45 @@ export default new Vuex.Store({
       });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestModel(state, getters) {
+      const { studyRequest } = state;
+      const {
+        hasServiceRequestId,
+        serviceRequestId,
+        priority,
+        dueDate,
+        reasons,
+        ccEmails: ccEmailsStr,
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
+      } = studyRequest;
+      const ccEmails = ccEmailsStr
+        .trim()
+        .split(',')
+        .map(ccEmail => ccEmail.trim())
+        .filter(ccEmail => ccEmail !== '');
+      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
+      return {
+        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
+        priority,
+        dueDate,
+        estimatedDeliveryDate,
+        reasons,
+        ccEmails,
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
+      };
+    },
     studyTypesWarnDuplicates(state) {
       if (state.studyRequest === null) {
         return COUNT_TYPES;
       }
       const studyTypesSelected = new Set(
-        state.studyRequest.items.map(({ item }) => item),
+        state.studyRequest.items.map(({ studyType }) => studyType),
       );
       return COUNT_TYPES.map(({ label, value }) => {
         const studyType = { label, value };
@@ -164,7 +195,7 @@ export default new Vuex.Store({
       if (studyRequest === null) {
         return null;
       }
-      const { dueDate, priority } = state.studyRequest.meta;
+      const { dueDate, priority } = state.studyRequest;
       if (dueDate === null || priority === null) {
         return null;
       }
@@ -260,16 +291,31 @@ export default new Vuex.Store({
       Vue.set(state, 'studyRequest', null);
     },
     setNewStudyRequest(state, studyTypes) {
-      const meta = {
+      const { location } = state;
+      const {
+        centrelineId,
+        centrelineType,
+        lng,
+        lat,
+      } = location;
+      const geom = {
+        type: 'Point',
+        coordinates: [lng, lat],
+      };
+      const items = studyTypes.map(makeStudyItem);
+      const studyRequest = {
         hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
         dueDate: null,
         reasons: [],
         ccEmails: '',
+        centrelineId,
+        centrelineType,
+        geom,
+        items,
       };
-      const items = studyTypes.map(makeStudyItem);
-      Vue.set(state, 'studyRequest', { items, meta });
+      Vue.set(state, 'studyRequest', studyRequest);
     },
     addStudyToStudyRequest(state, studyType) {
       const item = makeStudyItem(studyType);
@@ -279,10 +325,10 @@ export default new Vuex.Store({
       state.studyRequest.items.splice(i, 1);
     },
     setStudyRequestMeta(state, { key, value }) {
-      Vue.set(state.studyRequest.meta, key, value);
+      Vue.set(state.studyRequest, key, value);
     },
     setStudyMeta(state, { i, key, value }) {
-      Vue.set(state.studyRequest.items[i].meta, key, value);
+      Vue.set(state.studyRequest.items[i], key, value);
     },
   },
   actions: {
@@ -364,45 +410,8 @@ export default new Vuex.Store({
         });
     },
     // STUDY REQUESTS
-    saveActiveStudyRequest({ commit, state }) {
-      const { location, studyRequest } = state;
-      const {
-        hasServiceRequestId,
-        serviceRequestId,
-        priority,
-        dueDate,
-        reasons,
-        ccEmails: ccEmailsStr,
-      } = studyRequest.meta;
-      const ccEmails = ccEmailsStr
-        .trim()
-        .split(',')
-        .map(ccEmail => ccEmail.trim())
-        .filter(ccEmail => ccEmail !== '');
-      const items = studyRequest.items.map(({
-        item: studyType,
-        meta: {
-          daysOfWeek,
-          duration,
-          hours,
-          notes,
-        },
-      }) => ({
-        studyType,
-        daysOfWeek,
-        duration,
-        hours,
-        notes,
-      }));
-      const data = {
-        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
-        priority,
-        dueDate,
-        reasons,
-        ccEmails,
-        location,
-        items,
-      };
+    saveActiveStudyRequest({ commit, getters, state }) {
+      const data = getters.studyRequestModel;
       const options = {
         method: 'POST',
         csrf: state.auth.csrf,

@@ -85,10 +85,10 @@ export default {
       return this.dataSelection.items[this.index].item;
     },
     dateRange() {
-      return this.meta.dateRange;
+      return this.item.dateRange;
     },
     daysOfWeek() {
-      return this.meta.daysOfWeek;
+      return this.item.daysOfWeek;
     },
     daysOfWeekHuman() {
       if (this.daysOfWeek.length === 7) {
@@ -100,10 +100,10 @@ export default {
         .join(', ');
     },
     duration() {
-      return this.meta.duration;
+      return this.item.duration;
     },
     hours() {
-      return this.meta.hours;
+      return this.item.hours;
     },
     hoursHuman() {
       if (this.hours === 'ROUTINE') {
@@ -117,14 +117,14 @@ export default {
     indexHuman() {
       return this.index + 1;
     },
-    meta() {
-      return this.studyRequest.items[this.index].meta;
+    item() {
+      return this.studyRequest.items[this.index];
     },
     notes() {
-      return this.meta.notes;
+      return this.item.notes;
     },
     studyType() {
-      const studyType = this.studyRequest.items[this.index].item;
+      const { studyType } = this.item;
       return COUNT_TYPES.find(({ value }) => value === studyType);
     },
     ...mapState(['studyRequest']),

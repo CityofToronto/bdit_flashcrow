@@ -36,10 +36,10 @@ export default {
   mixins: [TdsMixinModal],
   computed: {
     dueDate() {
-      return this.studyRequest.meta.dueDate;
+      return this.studyRequest.dueDate;
     },
     priority() {
-      return this.studyRequest.meta.priority;
+      return this.studyRequest.priority;
     },
     ...mapGetters(['studyRequestEstimatedDeliveryDate']),
     ...mapState(['studyRequest']),
