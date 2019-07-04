@@ -15,13 +15,9 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
-      <PaneMapPopup v-if="hoveredFeature"
-        :lng="hoveredLngLat[0]"
-        :lat="hoveredLngLat[1]"
-        :description="hoveredInfo[0]"
-        :centrelineDesc="hoveredInfo[1]"
-        :centrelineType="hoveredInfo[2]"
-        :centrelineId="hoveredInfo[3]"/>
+      <PaneMapPopup
+        v-if="hoveredFeature"
+        :feature="hoveredFeature" />
     </div>
   </div>
 </template>
@@ -36,6 +32,7 @@ import apiFetch from '@/lib/ApiFetch';
 import { CentrelineType, Format } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
+import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/components/PaneMapPopup.vue';
 
@@ -287,35 +284,6 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
-    hoveredLngLat() {
-      if (this.hoveredFeature === null) {
-        return null;
-      }
-      // get layer ID
-      // based on layer ID, compute lng / lat
-      if (this.hoveredFeature.layer.id === 'centreline') {
-        const [lng, lat] = this.getCentrelineMidpoint(this.hoveredFeature.geometry.coordinates);
-        return [lng, lat];
-      }
-      return this.hoveredFeature.geometry.coordinates;
-    },
-    hoveredInfo() {
-      if (this.hoveredFeature === null) {
-        return null;
-      } if (this.hoveredFeature.layer.id === 'centreline') {
-        return [this.hoveredFeature.properties.lf_name, this.hoveredFeature.layer.id,
-          CentrelineType.SEGMENT, this.hoveredFeature.properties.geo_id];
-      } if (this.hoveredFeature.layer.id === 'intersections') {
-        return [this.hoveredFeature.properties.intersec5, this.hoveredFeature.layer.id,
-          CentrelineType.INTERSECTION, this.hoveredFeature.properties.geo_id];
-      } if (this.hoveredFeature.layer.id === 'counts-visible-points') {
-        return [StringFormatters.formatCountLocationDescription(
-          this.hoveredFeature.properties.locationdesc,
-        ), this.hoveredFeature.layer.id, this.hoveredFeature.properties.centrelineType,
-        this.hoveredFeature.properties.centrelineId];
-      }
-      return [null, null];
-    },
     ...mapState(['location', 'locationQuery', 'showMap']),
   },
   created() {
@@ -481,26 +449,9 @@ export default {
       }
       return feature;
     },
-    getCentrelineMidpoint(coordinates) {
-      /*
-      * Estimate the point halfway along this line.
-      *
-      * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
-      * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
-      */
-      const n = coordinates.length;
-      if (n % 2 === 0) {
-        const i = n / 2;
-        const [lng0, lat0] = coordinates[i - 1];
-        const [lng1, lat1] = coordinates[i];
-        return [(lng0 + lng1) / 2, (lat0 + lat1) / 2];
-      }
-      const i = (n - 1) / 2;
-      return coordinates[i];
-    },
     onCentrelineClick(feature) {
       const { coordinates } = feature.geometry;
-      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
+      const [lng, lat] = getLineStringMidpoint(coordinates);
       const elementInfo = {
         centrelineId: feature.properties.geo_id,
         centrelineType: CentrelineType.SEGMENT,
@@ -564,7 +515,7 @@ export default {
           </button>
           </div>`.replace('{0}', feature.properties.lf_name);
       const { coordinates } = feature.geometry;
-      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
+      const [lng, lat] = getLineStringMidpoint(coordinates);
       hoverPopup.setLngLat([lng, lat])
         .setHTML(popupHTML)
         .addTo(this.map);
