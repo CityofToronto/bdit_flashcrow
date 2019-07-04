@@ -9,7 +9,7 @@
           v-for="({ item, meta }, i) in studyRequest.items"
           :key="i"
           :index="i"
-          :v="$v.studyRequest.items.$each[i].meta" />
+          :v="$v.studyRequest.items.$each[i]" />
       </div>
     </section>
   </div>

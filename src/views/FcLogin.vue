@@ -5,7 +5,9 @@
         ref="form"
         id="form_fc_login"
         method="POST"
-        action="/flashcrow/api/auth/stub"></form>
+        action="/flashcrow/api/auth/stub">
+        <input type="hidden" name="csrf" :value="auth.csrf" />
+      </form>
     </div>
     <h1>Log in to MOVE</h1>
     <div class="flex-container-row">
@@ -86,6 +88,7 @@
 
 <script>
 import { email, required } from 'vuelidate/lib/validators';
+import { mapState } from 'vuex';
 
 import TdsPanel from '@/components/tds/TdsPanel.vue';
 
@@ -100,6 +103,9 @@ export default {
       email: '',
       loading: false,
     };
+  },
+  computed: {
+    ...mapState(['auth']),
   },
   validations: {
     email: {

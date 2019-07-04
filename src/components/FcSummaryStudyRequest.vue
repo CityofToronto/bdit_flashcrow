@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     ccEmails() {
-      return this.studyRequest.meta.ccEmails;
+      return this.studyRequest.ccEmails;
     },
     ccEmailsHuman() {
       return this.ccEmails
@@ -97,13 +97,13 @@ export default {
         .filter(ccEmail => !!ccEmail);
     },
     dueDate() {
-      return this.studyRequest.meta.dueDate;
+      return this.studyRequest.dueDate;
     },
     hasServiceRequestId() {
-      return this.studyRequest.meta.hasServiceRequestId;
+      return this.studyRequest.hasServiceRequestId;
     },
     priority() {
-      return this.studyRequest.meta.priority;
+      return this.studyRequest.priority;
     },
     priorityHuman() {
       if (this.priority === 'URGENT') {
@@ -112,7 +112,7 @@ export default {
       return 'Standard';
     },
     reasons() {
-      return this.studyRequest.meta.reasons;
+      return this.studyRequest.reasons;
     },
     reasonsHuman() {
       return this.reasons.map((reasonValue) => {
@@ -121,7 +121,7 @@ export default {
       });
     },
     serviceRequestId() {
-      return this.studyRequest.meta.serviceRequestId;
+      return this.studyRequest.serviceRequestId;
     },
     ...mapGetters(['studyRequestEstimatedDeliveryDate']),
     ...mapState(['studyRequest']),

@@ -6,7 +6,7 @@
     <section class="flex-fill flex-container-row">
       <div class="flex-cross-scroll">
         <FcDetailsStudyRequest
-          :v="$v.studyRequest.meta" />
+          :v="$v.studyRequest" />
       </div>
     </section>
   </div>

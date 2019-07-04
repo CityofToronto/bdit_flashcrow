@@ -11,6 +11,7 @@
     <template slot-scope="{ inputValue, updateValue }">
       <input
         type="text"
+        autocomplete="off"
         class="input-date-picker flex-fill"
         :class="{
           ['font-size-' + size]: true,
