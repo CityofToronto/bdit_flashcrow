@@ -15,6 +15,13 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
+      <PaneMapPopup v-if="hoveredFeature"
+        :lng="hoveredLngLat[0]"
+        :lat="hoveredLngLat[1]"
+        :description="hoveredInfo[0]"
+        :centrelineDesc="hoveredInfo[1]"
+        :centrelineType="hoveredInfo[2]"
+        :centrelineId="hoveredInfo[3]"/>
     </div>
   </div>
 </template>
@@ -26,10 +33,11 @@ import { mapMutations, mapState } from 'vuex';
 
 import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
-import Constants from '@/lib/Constants';
+import { CentrelineType, Format } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
 import GeoStyle from '@/lib/geo/GeoStyle';
+import PaneMapPopup from '@/components/PaneMapPopup.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -138,6 +146,13 @@ const PAINT_OPACITY = [
   ],
 ];
 
+// hover popup for centreline segments or intersections
+const hoverPopup = new mapboxgl.Popup();
+
+// hover popup for clusters
+// const hoverClusterPopup = new mapboxgl.Popup();
+
+
 function injectSourcesAndLayers(style, dataCountsVisible) {
   const STYLE = {};
   Object.assign(STYLE, style);
@@ -159,6 +174,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     data: dataCountsVisible,
     cluster: true,
     clusterMaxZoom: ZOOM_MAX_COUNTS_CLUSTERED,
+    clusterProperties: { sum: ['+', ['get', 'cnt']] },
   };
 
   STYLE.layers.push({
@@ -207,7 +223,7 @@ function injectSourcesAndLayers(style, dataCountsVisible) {
     source: 'counts-visible',
     filter: ['has', 'point_count'],
     layout: {
-      'text-field': '{point_count_abbreviated}',
+      'text-field': '{sum}',
       'text-font': ['Ubuntu Regular'],
       'text-size': 18,
     },
@@ -235,15 +251,31 @@ export default {
   name: 'PaneMap',
   components: {
     TdsLoadingSpinner,
+    PaneMapPopup,
   },
   props: {
     cols: Number,
+
   },
+
+  provide() {
+    const self = this;
+    return {
+      get map() {
+        return self.map;
+      },
+    };
+  },
+
   data() {
     return {
       coordinates: null,
       loading: false,
       satellite: false,
+      // keeps track of which feature we are currently hovering over
+      hoveredFeature: null,
+      // keeps track of currently selected feature
+      selectedFeature: null,
     };
   },
   computed: {
@@ -254,6 +286,35 @@ export default {
       const { lat, lng, zoom } = this.coordinates;
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
+    },
+    hoveredLngLat() {
+      if (this.hoveredFeature === null) {
+        return null;
+      }
+      // get layer ID
+      // based on layer ID, compute lng / lat
+      if (this.hoveredFeature.layer.id === 'centreline') {
+        const [lng, lat] = this.getCentrelineMidpoint(this.hoveredFeature.geometry.coordinates);
+        return [lng, lat];
+      }
+      return this.hoveredFeature.geometry.coordinates;
+    },
+    hoveredInfo() {
+      if (this.hoveredFeature === null) {
+        return null;
+      } if (this.hoveredFeature.layer.id === 'centreline') {
+        return [this.hoveredFeature.properties.lf_name, this.hoveredFeature.layer.id,
+          CentrelineType.SEGMENT, this.hoveredFeature.properties.geo_id];
+      } if (this.hoveredFeature.layer.id === 'intersections') {
+        return [this.hoveredFeature.properties.intersec5, this.hoveredFeature.layer.id,
+          CentrelineType.INTERSECTION, this.hoveredFeature.properties.geo_id];
+      } if (this.hoveredFeature.layer.id === 'counts-visible-points') {
+        return [StringFormatters.formatCountLocationDescription(
+          this.hoveredFeature.properties.locationdesc,
+        ), this.hoveredFeature.layer.id, this.hoveredFeature.properties.centrelineType,
+        this.hoveredFeature.properties.centrelineId];
+      }
+      return [null, null];
     },
     ...mapState(['location', 'locationQuery', 'showMap']),
   },
@@ -288,12 +349,6 @@ export default {
         },
       ],
     }, this.dataCountsVisible);
-
-    // keeps track of which feature we are currently hovering over
-    this.hoveredFeature = null;
-
-    // keeps track of currently selected feature
-    this.selectedFeature = null;
 
     // marker
     this.selectedMarker = new mapboxgl.Marker()
@@ -380,7 +435,7 @@ export default {
       const xmax = bounds.getEast();
       const ymax = bounds.getNorth();
       const data = {
-        f: Constants.Format.GEOJSON,
+        f: Format.GEOJSON,
         xmin,
         ymin,
         xmax,
@@ -426,32 +481,33 @@ export default {
       }
       return feature;
     },
-    onCentrelineClick(feature) {
+    getCentrelineMidpoint(coordinates) {
       /*
-       * Estimate the point halfway along this line.
-       *
-       * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
-       * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
-       */
-      const elementInfo = {
-        centrelineId: feature.properties.geo_id,
-        centrelineType: Constants.CentrelineType.SEGMENT,
-        description: feature.properties.lf_name,
-      };
-      const { coordinates } = feature.geometry;
+      * Estimate the point halfway along this line.
+      *
+      * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
+      * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
+      */
       const n = coordinates.length;
       if (n % 2 === 0) {
         const i = n / 2;
         const [lng0, lat0] = coordinates[i - 1];
         const [lng1, lat1] = coordinates[i];
-        elementInfo.lng = (lng0 + lng1) / 2;
-        elementInfo.lat = (lat0 + lat1) / 2;
-      } else {
-        const i = (n - 1) / 2;
-        const [lng, lat] = coordinates[i];
-        elementInfo.lng = lng;
-        elementInfo.lat = lat;
+        return [(lng0 + lng1) / 2, (lat0 + lat1) / 2];
       }
+      const i = (n - 1) / 2;
+      return coordinates[i];
+    },
+    onCentrelineClick(feature) {
+      const { coordinates } = feature.geometry;
+      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
+      const elementInfo = {
+        centrelineId: feature.properties.geo_id,
+        centrelineType: CentrelineType.SEGMENT,
+        description: feature.properties.lf_name,
+        lng,
+        lat,
+      };
       this.setLocation(elementInfo);
     },
     onCountsVisibleClustersClick(feature) {
@@ -467,16 +523,11 @@ export default {
     },
     onCountsVisiblePointsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
-      const {
-        centrelineId,
-        centrelineType,
-        locationDesc,
-      } = feature.properties;
-      const description = StringFormatters.formatCountLocationDescription(locationDesc);
       const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
+        centrelineId: feature.properties.centrelineId,
+        centrelineType: feature.properties.centrelineType,
+        description:
+          StringFormatters.formatCountLocationDescription(feature.properties.locationdesc),
         lat,
         lng,
       };
@@ -487,13 +538,68 @@ export default {
       const [lng, lat] = feature.geometry.coordinates;
       const elementInfo = {
         centrelineId: feature.properties.int_id,
-        centrelineType: Constants.CentrelineType.INTERSECTION,
+        centrelineType: CentrelineType.INTERSECTION,
         description: feature.properties.intersec5,
         lat,
         lng,
       };
       this.setLocation(elementInfo);
     },
+    onIntersectionsHover(feature) {
+      const popupHTML = `<div <p> {0} </p> <button
+          class="font-size-l" :disabled="location === null"
+          onclick="onViewData();">
+          <span> View Data</span>
+          </button>
+          </div>`.replace('{0}', feature.properties.intersec5);
+      hoverPopup.setLngLat(feature.geometry.coordinates)
+        .setHTML(popupHTML)
+        .addTo(this.map);
+    },
+    onCentrelineHover(feature) {
+      const popupHTML = `<div <p> {0} </p> <button
+          class="font-size-l" :disabled="location === null"
+          @click="onViewData">
+          <span> View Data</span>
+          </button>
+          </div>`.replace('{0}', feature.properties.lf_name);
+      const { coordinates } = feature.geometry;
+      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
+      hoverPopup.setLngLat([lng, lat])
+        .setHTML(popupHTML)
+        .addTo(this.map);
+    },
+    onCountsVisiblePointsHover(feature) {
+      const [lng, lat] = feature.geometry.coordinates;
+      const centrelineTypeInt = feature.properties.centrelinetype;
+      let centrelineType = 'N/A';
+      if (centrelineTypeInt === 1) {
+        centrelineType = 'Intersection';
+      } else {
+        centrelineType = 'Street Segment';
+      }
+      const description = StringFormatters.formatCountLocationDescription(
+        feature.properties.locationdesc,
+      );
+      const popupHTML = `<div <p> {0} <br />
+        Centreline Type: {1} </p>
+        <button
+          class="font-size-l" :disabled="location === null"
+          @click="onViewData">
+          <span> View Data</span>
+          </button>
+        </div>`.replace('{0}', description).replace('{1}', centrelineType);
+      hoverPopup.setLngLat([lng, lat])
+        .setHTML(popupHTML)
+        .addTo(this.map);
+    },
+    /*
+    onCountsVisibleClustersHover(feature) {
+      const clusterId = feature.properties.cluster_id;
+      const source = this.map.getSource('counts-visible');
+      // comment
+    },
+    */
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
       if (feature === null) {
@@ -542,6 +648,18 @@ export default {
       // highlight feature that is currently being hovered over
       this.hoveredFeature = feature;
       this.map.setFeatureState(this.hoveredFeature, { hover: true });
+
+      const layerId = feature.layer.id;
+      if (layerId === 'intersections') {
+        this.onIntersectionsHover(this.hoveredFeature);
+      } else if (layerId === 'centreline') {
+        this.onCentrelineHover(this.hoveredFeature);
+      } else if (layerId === 'counts-visible-points') {
+        this.onCountsVisiblePointsHover(this.hoveredFeature);
+      } /* else if (layerId === 'counts-visible-clusters') {
+        this.onCountsVisibleClustersHover(feature);
+      }
+      */
     },
     onMapMouseout() {
       if (this.hoveredFeature !== null) {
