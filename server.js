@@ -14,6 +14,8 @@ const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
+const StudyRequestDAO = require('./lib/db/StudyRequestDAO');
+const StudyRequestItemDAO = require('./lib/db/StudyRequestItemDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const StudyRequest = require('./lib/model/StudyRequest');
@@ -304,11 +306,10 @@ async function initServer() {
       const out = {
         csrf,
         loggedIn: request.auth.isAuthenticated,
+        user: null,
       };
       if (out.loggedIn) {
-        const { sessionId } = request.state.session;
-        const { user } = await request.server.app.cache.get(sessionId);
-        const { email, name } = user;
+        const { email, name } = request.auth.credentials;
         out.user = { email, name };
       }
       return out;
@@ -599,13 +600,26 @@ async function initServer() {
     method: 'POST',
     path: '/requests/study',
     options: {
+      response: {
+        schema: StudyRequest.persisted,
+      },
       validate: {
-        payload: StudyRequest,
+        payload: StudyRequest.transient,
       },
     },
     handler: async (request) => {
-      request.log(LogTag.DEBUG, request.payload);
-      return request.payload;
+      const { subject } = request.auth.credentials;
+      const studyRequest = await StudyRequestDAO.create({
+        userSubject: subject,
+        ...request.payload,
+      });
+      const itemPromises = studyRequest.items.map(item => StudyRequestItemDAO.create({
+        userSubject: subject,
+        studyRequestId: studyRequest.id,
+        ...item,
+      }));
+      studyRequest.items = await Promise.all(itemPromises);
+      return studyRequest;
     },
   });
 
