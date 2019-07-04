@@ -198,15 +198,15 @@ async function initServer() {
     path: '/auth/openid-connect',
     options: {
       auth: false,
-      handler: async (request, h) => {
-        const client = await OpenIDClient.get();
-        const authorizationUrl = client.authorizationUrl({
-          redirect_uri: getRedirectUri(),
-          scope: 'openid email',
-        });
-        request.log(LogTag.DEBUG, `redirecting to: ${authorizationUrl}`);
-        return h.redirect(authorizationUrl);
-      },
+    },
+    handler: async (request, h) => {
+      const client = await OpenIDClient.get();
+      const authorizationUrl = client.authorizationUrl({
+        redirect_uri: getRedirectUri(),
+        scope: 'openid email',
+      });
+      request.log(LogTag.DEBUG, `redirecting to: ${authorizationUrl}`);
+      return h.redirect(authorizationUrl);
     },
   });
 
