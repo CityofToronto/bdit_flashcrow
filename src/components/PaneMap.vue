@@ -15,6 +15,13 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
+      <PaneMapPopup v-if="hoveredFeature"
+        :lng="hoveredLngLat[0]"
+        :lat="hoveredLngLat[1]"
+        :description="hoveredInfo[0]"
+        :centrelineDesc="hoveredInfo[1]"
+        :centrelineType="hoveredInfo[2]"
+        :centrelineId="hoveredInfo[3]"/>
     </div>
   </div>
 </template>
@@ -26,10 +33,11 @@ import { mapMutations, mapState } from 'vuex';
 
 import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
-import Constants from '@/lib/Constants';
+import { CentrelineType, Format } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
 import GeoStyle from '@/lib/geo/GeoStyle';
+import PaneMapPopup from '@/components/PaneMapPopup.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -243,15 +251,31 @@ export default {
   name: 'PaneMap',
   components: {
     TdsLoadingSpinner,
+    PaneMapPopup,
   },
   props: {
     cols: Number,
+
   },
+
+  provide() {
+    const self = this;
+    return {
+      get map() {
+        return self.map;
+      },
+    };
+  },
+
   data() {
     return {
       coordinates: null,
       loading: false,
       satellite: false,
+      // keeps track of which feature we are currently hovering over
+      hoveredFeature: null,
+      // keeps track of currently selected feature
+      selectedFeature: null,
     };
   },
   computed: {
@@ -262,6 +286,35 @@ export default {
       const { lat, lng, zoom } = this.coordinates;
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
+    },
+    hoveredLngLat() {
+      if (this.hoveredFeature === null) {
+        return null;
+      }
+      // get layer ID
+      // based on layer ID, compute lng / lat
+      if (this.hoveredFeature.layer.id === 'centreline') {
+        const [lng, lat] = this.getCentrelineMidpoint(this.hoveredFeature.geometry.coordinates);
+        return [lng, lat];
+      }
+      return this.hoveredFeature.geometry.coordinates;
+    },
+    hoveredInfo() {
+      if (this.hoveredFeature === null) {
+        return null;
+      } if (this.hoveredFeature.layer.id === 'centreline') {
+        return [this.hoveredFeature.properties.lf_name, this.hoveredFeature.layer.id,
+          CentrelineType.SEGMENT, this.hoveredFeature.properties.geo_id];
+      } if (this.hoveredFeature.layer.id === 'intersections') {
+        return [this.hoveredFeature.properties.intersec5, this.hoveredFeature.layer.id,
+          CentrelineType.INTERSECTION, this.hoveredFeature.properties.geo_id];
+      } if (this.hoveredFeature.layer.id === 'counts-visible-points') {
+        return [StringFormatters.formatCountLocationDescription(
+          this.hoveredFeature.properties.locationdesc,
+        ), this.hoveredFeature.layer.id, this.hoveredFeature.properties.centrelineType,
+        this.hoveredFeature.properties.centrelineId];
+      }
+      return [null, null];
     },
     ...mapState(['location', 'locationQuery', 'showMap']),
   },
@@ -296,12 +349,6 @@ export default {
         },
       ],
     }, this.dataCountsVisible);
-
-    // keeps track of which feature we are currently hovering over
-    this.hoveredFeature = null;
-
-    // keeps track of currently selected feature
-    this.selectedFeature = null;
 
     // marker
     this.selectedMarker = new mapboxgl.Marker()
@@ -388,7 +435,7 @@ export default {
       const xmax = bounds.getEast();
       const ymax = bounds.getNorth();
       const data = {
-        f: Constants.Format.GEOJSON,
+        f: Format.GEOJSON,
         xmin,
         ymin,
         xmax,
@@ -442,38 +489,25 @@ export default {
       * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
       */
       const n = coordinates.length;
-      let [lng, lat] = [null, null];
       if (n % 2 === 0) {
         const i = n / 2;
         const [lng0, lat0] = coordinates[i - 1];
         const [lng1, lat1] = coordinates[i];
-        [lng, lat] = [(lng0 + lng1) / 2, (lat0 + lat1) / 2];
-      } else {
-        const i = (n - 1) / 2;
-        [lng, lat] = coordinates[i];
+        return [(lng0 + lng1) / 2, (lat0 + lat1) / 2];
       }
-      return [lng, lat];
-    },
-    onViewData() {
-      if (this.hoveredFeature === null) {
-        return;
-      }
-      const { centrelineId, centrelineType } = this.hoveredFeature;
-      this.$router.push({
-        name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
-      });
+      const i = (n - 1) / 2;
+      return coordinates[i];
     },
     onCentrelineClick(feature) {
-      const elementInfo = {
-        centrelineId: feature.properties.geo_id,
-        centrelineType: Constants.CentrelineType.SEGMENT,
-        description: feature.properties.lf_name,
-      };
       const { coordinates } = feature.geometry;
       const [lng, lat] = this.getCentrelineMidpoint(coordinates);
-      elementInfo.lng = lng;
-      elementInfo.lat = lat;
+      const elementInfo = {
+        centrelineId: feature.properties.geo_id,
+        centrelineType: CentrelineType.SEGMENT,
+        description: feature.properties.lf_name,
+        lng,
+        lat,
+      };
       this.setLocation(elementInfo);
     },
     onCountsVisibleClustersClick(feature) {
@@ -490,8 +524,8 @@ export default {
     onCountsVisiblePointsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
       const elementInfo = {
-        centrelineId: feature.properties.centrelineid,
-        centrelineType: feature.properties.centrelinetype,
+        centrelineId: feature.properties.centrelineId,
+        centrelineType: feature.properties.centrelineType,
         description:
           StringFormatters.formatCountLocationDescription(feature.properties.locationdesc),
         lat,
@@ -504,7 +538,7 @@ export default {
       const [lng, lat] = feature.geometry.coordinates;
       const elementInfo = {
         centrelineId: feature.properties.int_id,
-        centrelineType: Constants.CentrelineType.INTERSECTION,
+        centrelineType: CentrelineType.INTERSECTION,
         description: feature.properties.intersec5,
         lat,
         lng,
@@ -631,7 +665,6 @@ export default {
       if (this.hoveredFeature !== null) {
         this.map.setFeatureState(this.hoveredFeature, { hover: false });
         this.hoveredFeature = null;
-        hoverPopup.remove();
       }
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
