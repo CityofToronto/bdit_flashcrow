@@ -18,7 +18,7 @@ const MAX_PER_CATEGORY = 10;
 const REQUESTS = SampleData.randomRequests();
 const TIMEOUT_TOAST = 10000;
 
-function makeStudyItem(studyType) {
+function makeStudy(studyType) {
   return {
     studyType,
     daysOfWeek: [2, 3, 4],
@@ -302,7 +302,7 @@ export default new Vuex.Store({
         type: 'Point',
         coordinates: [lng, lat],
       };
-      const items = studyTypes.map(makeStudyItem);
+      const studies = studyTypes.map(makeStudy);
       const studyRequest = {
         hasServiceRequestId: null,
         serviceRequestId: null,
@@ -313,22 +313,22 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       };
       Vue.set(state, 'studyRequest', studyRequest);
     },
     addStudyToStudyRequest(state, studyType) {
-      const item = makeStudyItem(studyType);
-      state.studyRequest.items.push(item);
+      const item = makeStudy(studyType);
+      state.studyRequest.studies.push(item);
     },
     removeStudyFromStudyRequest(state, i) {
-      state.studyRequest.items.splice(i, 1);
+      state.studyRequest.studies.splice(i, 1);
     },
     setStudyRequestMeta(state, { key, value }) {
       Vue.set(state.studyRequest, key, value);
     },
     setStudyMeta(state, { i, key, value }) {
-      Vue.set(state.studyRequest.items[i], key, value);
+      Vue.set(state.studyRequest.studies[i], key, value);
     },
   },
   actions: {

@@ -14,8 +14,8 @@ const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
+const StudyDAO = require('./lib/db/StudyDAO');
 const StudyRequestDAO = require('./lib/db/StudyRequestDAO');
-const StudyRequestItemDAO = require('./lib/db/StudyRequestItemDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const StudyRequest = require('./lib/model/StudyRequest');
@@ -613,13 +613,29 @@ async function initServer() {
         userSubject: subject,
         ...request.payload,
       });
-      const itemPromises = studyRequest.items.map(item => StudyRequestItemDAO.create({
+      const studyPromises = studyRequest.studies.map(study => StudyDAO.create({
         userSubject: subject,
         studyRequestId: studyRequest.id,
-        ...item,
+        ...study,
       }));
-      studyRequest.items = await Promise.all(itemPromises);
+      studyRequest.studies = await Promise.all(studyPromises);
       return studyRequest;
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/requests/study',
+    options: {
+      response: {
+        schema: Joi.array().items(StudyRequest.persisted),
+      },
+    },
+    handler: async (request) => {
+      // TODO: pagination
+      // TODO: admin fetching for TSU
+      const user = request.auth.credentials;
+      return StudyRequestDAO.byUser(user);
     },
   });
 
