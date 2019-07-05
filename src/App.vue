@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
@@ -131,6 +131,9 @@ export default {
       'toast',
     ]),
   },
+  created() {
+    this.webInit();
+  },
   methods: {
     onModalToggle() {
       if (!this.$refs.modalToggle.checked) {
@@ -165,6 +168,7 @@ export default {
     signOut() {
       this.$refs.formSignOut.submit();
     },
+    ...mapActions(['webInit']),
     ...mapMutations(['clearModal', 'setModal']),
   },
 };

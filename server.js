@@ -16,6 +16,8 @@ const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
 const StudyDAO = require('./lib/db/StudyDAO');
 const StudyRequestDAO = require('./lib/db/StudyRequestDAO');
+const StudyRequestReasonDAO = require('./lib/db/StudyRequestReasonDAO');
+const StudyRequestStatusDAO = require('./lib/db/StudyRequestStatusDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const StudyRequest = require('./lib/model/StudyRequest');
@@ -177,6 +179,34 @@ async function initServer() {
 
   // ROUTES
   server.log(LogTag.INIT, 'registering routes...');
+
+  // WEB INIT
+
+  /**
+   * GET /web/init
+   *
+   * Provides all data required to initialize the web application interface.
+   * This should NOT return any user-specific data.
+   */
+  server.route({
+    method: 'GET',
+    path: '/web/init',
+    options: {
+      auth: { mode: 'try' },
+    },
+    handler: async () => {
+      let [reasons, statii] = await Promise.all([
+        StudyRequestReasonDAO.all(),
+        StudyRequestStatusDAO.all(),
+      ]);
+      reasons = Array.from(reasons.values());
+      statii = Array.from(statii.values());
+      return {
+        reasons,
+        statii,
+      };
+    },
+  });
 
   // AUTH
 

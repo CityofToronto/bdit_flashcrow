@@ -2,9 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/store';
-import {
-  RequestStatus,
-} from '@/lib/Constants';
 import { REQUEST_STUDY_REQUIRES_LOCATION } from '@/lib/i18n/Strings';
 
 Vue.use(Router);
@@ -90,9 +87,6 @@ const router = new Router({
       name: 'requestsTrack',
       redirect: {
         name: 'requestsTrackByStatus',
-        query: {
-          status: [RequestStatus.REQUESTED],
-        },
       },
     }, {
       path: '/requests/track/byStatus',

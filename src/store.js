@@ -10,12 +10,10 @@ import {
   Status,
 } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
-import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
-const REQUESTS = SampleData.randomRequests();
 const TIMEOUT_TOAST = 10000;
 
 function makeStudy(studyType) {
@@ -79,7 +77,8 @@ export default new Vuex.Store({
     // FILTERING REQUESTS
     filterRequestStatus: [],
     // REQUESTS
-    requests: REQUESTS,
+    requests: [],
+    requestReasons: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
@@ -219,6 +218,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    webInit(state, { reasons }) {
+      Vue.set(state, 'requestReasons', reasons);
+    },
     clearModal(state) {
       Vue.set(state, 'modal', null);
     },
@@ -332,6 +334,13 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    webInit({ commit }) {
+      return apiFetch('/web/init')
+        .then((response) => {
+          commit('webInit', response);
+          return response;
+        });
+    },
     setToast({ commit }, toast) {
       commit('setToast', toast);
       clearToastDebounced(commit);
