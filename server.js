@@ -14,8 +14,10 @@ const OpenIDClient = require('./lib/auth/OpenIDClient');
 const CentrelineDAO = require('./lib/db/CentrelineDAO');
 const CountDAO = require('./lib/db/CountDAO');
 const CountDataDAO = require('./lib/db/CountDataDAO');
+const StudyDAO = require('./lib/db/StudyDAO');
 const StudyRequestDAO = require('./lib/db/StudyRequestDAO');
-const StudyRequestItemDAO = require('./lib/db/StudyRequestItemDAO');
+const StudyRequestReasonDAO = require('./lib/db/StudyRequestReasonDAO');
+const StudyRequestStatusDAO = require('./lib/db/StudyRequestStatusDAO');
 const UserDAO = require('./lib/db/UserDAO');
 const db = require('./lib/db/db');
 const StudyRequest = require('./lib/model/StudyRequest');
@@ -177,6 +179,34 @@ async function initServer() {
 
   // ROUTES
   server.log(LogTag.INIT, 'registering routes...');
+
+  // WEB INIT
+
+  /**
+   * GET /web/init
+   *
+   * Provides all data required to initialize the web application interface.
+   * This should NOT return any user-specific data.
+   */
+  server.route({
+    method: 'GET',
+    path: '/web/init',
+    options: {
+      auth: { mode: 'try' },
+    },
+    handler: async () => {
+      let [reasons, statii] = await Promise.all([
+        StudyRequestReasonDAO.all(),
+        StudyRequestStatusDAO.all(),
+      ]);
+      reasons = Array.from(reasons.values());
+      statii = Array.from(statii.values());
+      return {
+        reasons,
+        statii,
+      };
+    },
+  });
 
   // AUTH
 
@@ -611,15 +641,41 @@ async function initServer() {
       const { subject } = request.auth.credentials;
       const studyRequest = await StudyRequestDAO.create({
         userSubject: subject,
+        status: 'REQUESTED',
         ...request.payload,
       });
-      const itemPromises = studyRequest.items.map(item => StudyRequestItemDAO.create({
+      const studyPromises = studyRequest.studies.map(study => StudyDAO.create({
         userSubject: subject,
         studyRequestId: studyRequest.id,
-        ...item,
+        ...study,
       }));
-      studyRequest.items = await Promise.all(itemPromises);
+      studyRequest.studies = await Promise.all(studyPromises);
       return studyRequest;
+    },
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/requests/study',
+    options: {
+      response: {
+        schema: Joi.array().items(StudyRequest.persisted),
+      },
+    },
+    handler: async (request) => {
+      // TODO: pagination
+      // TODO: admin fetching for TSU
+      const user = request.auth.credentials;
+      const studyRequests = await StudyRequestDAO.byUser(user);
+      const studies = await StudyDAO.byStudyRequests(studyRequests);
+      return studyRequests.map((studyRequest) => {
+        const { id } = studyRequest;
+        const studiesForRequest = studies.filter(({ studyRequestId }) => studyRequestId === id);
+        return {
+          ...studyRequest,
+          studies: studiesForRequest,
+        };
+      });
     },
   });
 

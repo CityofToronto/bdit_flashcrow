@@ -107,7 +107,7 @@
           }"
           :invalid="v.reasons.$error"
           name="reasons"
-          :options="REASONS">
+          :options="requestReasons">
           <span>
             Reasons for Request
             <span
@@ -161,7 +161,6 @@ import DatePicker from '@/components/DatePicker.vue';
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
 import TdsPanel from '@/components/tds/TdsPanel.vue';
-import { REASONS } from '@/lib/Constants';
 
 export default {
   name: 'FcDetailsStudyRequest',
@@ -173,11 +172,6 @@ export default {
   },
   props: {
     v: Object,
-  },
-  data() {
-    return {
-      REASONS,
-    };
   },
   computed: {
     attrsDueDate() {
@@ -267,7 +261,7 @@ export default {
         });
       },
     },
-    ...mapState(['studyRequest']),
+    ...mapState(['requestReasons', 'studyRequest']),
   },
   methods: {
     ...mapMutations(['setStudyRequestMeta']),

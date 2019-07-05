@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     items() {
-      return this.studyRequest.items.map(({ studyType }, id) => {
+      return this.studyRequest.studies.map(({ studyType }, id) => {
         const type = COUNT_TYPES.find(({ value }) => value === studyType);
         return getStudyTypeItem(this.counts, type, id);
       });
@@ -83,7 +83,7 @@ export default {
   methods: {
     onAddStudy(studyType) {
       const studyTypesSelected = new Set(
-        this.studyRequest.items.map(({ studyType: value }) => value),
+        this.studyRequest.studies.map(({ studyType: value }) => value),
       );
       if (studyTypesSelected.has(studyType)) {
         const { label } = COUNT_TYPES.find(({ value }) => value === studyType);

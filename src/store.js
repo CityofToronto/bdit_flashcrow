@@ -10,15 +10,13 @@ import {
   Status,
 } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
-import SampleData from '@/lib/SampleData';
 
 Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
-const REQUESTS = SampleData.randomRequests();
 const TIMEOUT_TOAST = 10000;
 
-function makeStudyItem(studyType) {
+function makeStudy(studyType) {
   return {
     studyType,
     daysOfWeek: [2, 3, 4],
@@ -79,7 +77,8 @@ export default new Vuex.Store({
     // FILTERING REQUESTS
     filterRequestStatus: [],
     // REQUESTS
-    requests: REQUESTS,
+    requests: [],
+    requestReasons: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
@@ -154,7 +153,7 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       } = studyRequest;
       const ccEmails = ccEmailsStr
         .trim()
@@ -172,7 +171,7 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       };
     },
     studyTypesWarnDuplicates(state) {
@@ -180,7 +179,7 @@ export default new Vuex.Store({
         return COUNT_TYPES;
       }
       const studyTypesSelected = new Set(
-        state.studyRequest.items.map(({ studyType }) => studyType),
+        state.studyRequest.studies.map(({ studyType }) => studyType),
       );
       return COUNT_TYPES.map(({ label, value }) => {
         const studyType = { label, value };
@@ -219,6 +218,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    webInit(state, { reasons }) {
+      Vue.set(state, 'requestReasons', reasons);
+    },
     clearModal(state) {
       Vue.set(state, 'modal', null);
     },
@@ -302,7 +304,7 @@ export default new Vuex.Store({
         type: 'Point',
         coordinates: [lng, lat],
       };
-      const items = studyTypes.map(makeStudyItem);
+      const studies = studyTypes.map(makeStudy);
       const studyRequest = {
         hasServiceRequestId: null,
         serviceRequestId: null,
@@ -313,25 +315,32 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       };
       Vue.set(state, 'studyRequest', studyRequest);
     },
     addStudyToStudyRequest(state, studyType) {
-      const item = makeStudyItem(studyType);
-      state.studyRequest.items.push(item);
+      const item = makeStudy(studyType);
+      state.studyRequest.studies.push(item);
     },
     removeStudyFromStudyRequest(state, i) {
-      state.studyRequest.items.splice(i, 1);
+      state.studyRequest.studies.splice(i, 1);
     },
     setStudyRequestMeta(state, { key, value }) {
       Vue.set(state.studyRequest, key, value);
     },
     setStudyMeta(state, { i, key, value }) {
-      Vue.set(state.studyRequest.items[i], key, value);
+      Vue.set(state.studyRequest.studies[i], key, value);
     },
   },
   actions: {
+    webInit({ commit }) {
+      return apiFetch('/web/init')
+        .then((response) => {
+          commit('webInit', response);
+          return response;
+        });
+    },
     setToast({ commit }, toast) {
       commit('setToast', toast);
       clearToastDebounced(commit);

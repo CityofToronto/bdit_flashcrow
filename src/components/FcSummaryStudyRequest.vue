@@ -78,7 +78,6 @@
 import { mapGetters, mapState } from 'vuex';
 
 import TdsPanel from '@/components/tds/TdsPanel.vue';
-import { REASONS } from '@/lib/Constants';
 
 export default {
   name: 'FcSummaryStudyRequest',
@@ -115,8 +114,8 @@ export default {
       return this.studyRequest.reasons;
     },
     reasonsHuman() {
-      return this.reasons.map((reasonValue) => {
-        const { label } = REASONS.find(({ value }) => value === reasonValue);
+      return this.studyRequest.reasons.map((reasonValue) => {
+        const { label } = this.requestReasons.find(({ value }) => value === reasonValue);
         return label;
       });
     },
@@ -124,7 +123,7 @@ export default {
       return this.studyRequest.serviceRequestId;
     },
     ...mapGetters(['studyRequestEstimatedDeliveryDate']),
-    ...mapState(['studyRequest']),
+    ...mapState(['requestReasons', 'studyRequest']),
   },
 };
 </script>

@@ -36,31 +36,15 @@ const Format = {
   JSON: 'json',
 };
 
-const REASONS = [
-  { label: 'Traffic Signal Control', value: 'TSC' },
-  { label: 'Pedestrian Crossover (PXO)', value: 'PXO' },
-  { label: 'Updated count (3 years expired)', value: 'EXPIRED' },
-  { label: 'Pedestrian Safety', value: 'PED_SAFETY' },
-  { label: 'Signal Timing', value: 'SIGNAL_TIMING' },
-];
-
-const RequestStatus = {
-  REQUESTED: 0,
-  FLAGGED: 1,
-  REVIEWED: 2,
-  SUBMITTED: 3,
-  SCHEDULED: 4,
-  DATA_READY: 5,
+const REQUEST_STATUS_VARIANTS = {
+  REQUESTED: 'warning',
+  FLAGGED: 'error',
+  REVIEWED: 'warning',
+  SUBMITTED: 'info',
+  SCHEDULED: 'info',
+  DATA_READY: 'success',
+  COMPLETED: 'success',
 };
-
-const REQUEST_STATUS_META = [
-  { label: 'Requested' },
-  { label: 'Flagged', class: 'error' },
-  { label: 'Reviewed', class: 'warning' },
-  { label: 'Submitted', class: 'info' },
-  { label: 'Scheduled', class: 'info' },
-  { label: 'Data Ready', class: 'success' },
-];
 
 const SortDirection = {
   ASC: 1,
@@ -128,9 +112,7 @@ const Constants = {
   CountHours,
   COUNT_TYPES,
   Format,
-  REASONS,
-  RequestStatus,
-  REQUEST_STATUS_META,
+  REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
@@ -143,9 +125,7 @@ export {
   CountHours,
   COUNT_TYPES,
   Format,
-  REASONS,
-  RequestStatus,
-  REQUEST_STATUS_META,
+  REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
