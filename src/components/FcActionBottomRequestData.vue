@@ -4,7 +4,7 @@
     @click="onClickRequestData"
     :disabled="$v.$invalid">
     <span>Request Data </span>
-    <span class="tds-badge tds-badge-primary">{{studyRequest.items.length}}</span>
+    <span class="tds-badge tds-badge-primary">{{studyRequest.studies.length}}</span>
   </button>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   },
   validations: {
     studyRequest: {
-      notEmpty: value => value.items.length > 0,
+      notEmpty: value => value.studies.length > 0,
     },
   },
   methods: {

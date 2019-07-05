@@ -3,8 +3,6 @@ DROP INDEX IF EXISTS "studies_studyRequestId";
 DROP INDEX IF EXISTS "studies_userSubject";
 DROP TABLE IF EXISTS "studies";
 
-DROP TABLE IF EXISTS "study_types";
-
 DROP INDEX IF EXISTS "study_requests_geom";
 DROP INDEX IF EXISTS "study_requests_centreline";
 DROP INDEX IF EXISTS "study_requests_userSubject";

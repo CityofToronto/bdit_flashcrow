@@ -47,29 +47,12 @@ CREATE INDEX "study_requests_userSubject" ON "study_requests" ("userSubject");
 CREATE INDEX "study_requests_centreline" ON "study_requests" ("centrelineId", "centrelineType");
 CREATE INDEX "study_requests_geom" ON "study_requests" USING GIST ("geom");
 
-CREATE TABLE "study_types" (
-  "value" VARCHAR PRIMARY KEY NOT NULL,
-  "categoryName" VARCHAR,
-  "label" VARCHAR NOT NULL,
-  "automatic" BOOLEAN NOT NULL
-);
-INSERT INTO "study_types"
-  ("value", "categoryName", "label", "automatic")
-VALUES
-  ('ATR_VOLUME_BICYCLE', 'BICYCLE', 'Bicycle Volume ATR', TRUE),
-  ('PXO_OBSERVE', NULL, 'Ped Crossover Observation', FALSE),
-  ('PED_DELAY', NULL, 'Ped Delay and Classification', FALSE),
-  ('RESCU', 'RESCU', 'RESCU', TRUE),
-  ('ATR_SPEED_VOLUME', 'SPEED', 'Speed / Volume ATR', TRUE),
-  ('TMC', 'MANUAL', 'Turning Movement Count', FALSE),
-  ('ATR_VOLUME', 'PERM STN', 'Volume ATR', TRUE);
-
 CREATE TABLE "studies" (
   "id" BIGSERIAL PRIMARY KEY NOT NULL,
   "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   "userSubject" VARCHAR NOT NULL REFERENCES "users" ("subject"),
   "studyRequestId" BIGINT NOT NULL REFERENCES "study_requests" ("id"),
-  "studyType" VARCHAR NOT NULL REFERENCES "study_types" ("value"),
+  "studyType" VARCHAR NOT NULL,
   "daysOfWeek" SMALLINT[] NOT NULL,
   "duration" SMALLINT DEFAULT NULL,
   "hours" VARCHAR DEFAULT NULL,

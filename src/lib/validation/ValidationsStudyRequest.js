@@ -56,7 +56,7 @@ const validationsMeta = {
 const validations = {
   studyRequest: {
     ...validationsMeta.studyRequest,
-    items: {
+    studies: {
       $each: {
         daysOfWeek: {
           required,

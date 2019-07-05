@@ -154,7 +154,7 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       } = studyRequest;
       const ccEmails = ccEmailsStr
         .trim()
@@ -172,7 +172,7 @@ export default new Vuex.Store({
         centrelineId,
         centrelineType,
         geom,
-        items,
+        studies,
       };
     },
     studyTypesWarnDuplicates(state) {
@@ -180,7 +180,7 @@ export default new Vuex.Store({
         return COUNT_TYPES;
       }
       const studyTypesSelected = new Set(
-        state.studyRequest.items.map(({ studyType }) => studyType),
+        state.studyRequest.studies.map(({ studyType }) => studyType),
       );
       return COUNT_TYPES.map(({ label, value }) => {
         const studyType = { label, value };

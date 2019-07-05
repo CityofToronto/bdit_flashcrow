@@ -6,10 +6,10 @@
     <section class="flex-fill flex-container-row">
       <div class="flex-cross-scroll">
         <FcDetailsStudy
-          v-for="({ item, meta }, i) in studyRequest.items"
+          v-for="(_, i) in studyRequest.studies"
           :key="i"
           :index="i"
-          :v="$v.studyRequest.items.$each[i]" />
+          :v="$v.studyRequest.studies.$each[i]" />
       </div>
     </section>
   </div>

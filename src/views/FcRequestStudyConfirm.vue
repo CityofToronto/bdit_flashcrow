@@ -7,7 +7,7 @@
       <div class="flex-cross-scroll">
         <FcSummaryStudyRequest />
         <FcSummaryStudy
-          v-for="({ item, meta }, i) in studyRequest.items"
+          v-for="(_, i) in studyRequest.studies"
           :key="i"
           :index="i" />
       </div>

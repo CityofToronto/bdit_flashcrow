@@ -611,6 +611,7 @@ async function initServer() {
       const { subject } = request.auth.credentials;
       const studyRequest = await StudyRequestDAO.create({
         userSubject: subject,
+        status: 'REQUESTED',
         ...request.payload,
       });
       const studyPromises = studyRequest.studies.map(study => StudyDAO.create({
