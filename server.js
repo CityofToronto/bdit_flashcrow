@@ -666,7 +666,16 @@ async function initServer() {
       // TODO: pagination
       // TODO: admin fetching for TSU
       const user = request.auth.credentials;
-      return StudyRequestDAO.byUser(user);
+      const studyRequests = await StudyRequestDAO.byUser(user);
+      const studies = await StudyDAO.byStudyRequests(studyRequests);
+      return studyRequests.map((studyRequest) => {
+        const { id } = studyRequest;
+        const studiesForRequest = studies.filter(({ studyRequestId }) => studyRequestId === id);
+        return {
+          ...studyRequest,
+          studies: studiesForRequest,
+        };
+      });
     },
   });
 
