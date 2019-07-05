@@ -2,7 +2,8 @@
   <div class="pane-map-popup">
     <div class="mb-m pr-xl">
       <i class="fa fa-map-marker-alt"></i>
-      <strong> {{descriptionFormatted}}</strong>
+      <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
+      <span v-else class="text-muted"> name unknown</span>
     </div>
     <button
       class="font-size-l"
@@ -33,8 +34,11 @@ export default {
   },
   computed: {
     centrelineId() {
-      if (this.layerId === 'centreline' || this.layerId === 'intersections') {
+      if (this.layerId === 'centreline') {
         return this.feature.properties.geo_id;
+      }
+      if (this.layerId === 'intersections') {
+        return this.feature.properties.int_id;
       }
       return this.feature.properties.centrelineId;
     },
@@ -64,26 +68,26 @@ export default {
       return this.feature.properties.locationdesc;
     },
     descriptionFormatted() {
-      return StringFormatters.formatCountLocationDescription(this.description);
+      if (this.description) {
+        return StringFormatters.formatCountLocationDescription(this.description);
+      }
+      return null;
     },
     layerId() {
       return this.feature.layer.id;
     },
   },
-  mounted() {
-    Vue.nextTick(() => {
-      this.popup = new mapboxgl.Popup()
-        .setLngLat(this.coordinates)
-        .setDOMContent(this.$el)
-        .addTo(this.map);
+  created() {
+    this.popup = new mapboxgl.Popup({
+      closeOnClick: false,
+      maxWidth: 'none',
     });
   },
+  mounted() {
+    Vue.nextTick(this.refreshPopup.bind(this));
+  },
   updated() {
-    Vue.nextTick(() => {
-      this.popup
-        .setLngLat(this.coordinates)
-        .setDOMContent(this.$el);
-    });
+    Vue.nextTick(this.refreshPopup.bind(this));
   },
   beforeDestroy() {
     if (this.map) {
@@ -112,6 +116,12 @@ export default {
         name: 'viewDataAtLocation',
         params: routerParameters,
       });
+    },
+    refreshPopup() {
+      this.popup
+        .setLngLat(this.coordinates)
+        .setDOMContent(this.$el)
+        .addTo(this.map);
     },
     ...mapMutations(['setLocation']),
   },

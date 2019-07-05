@@ -339,7 +339,7 @@ export default {
       );
       this.map.on('load', () => {
         this.map.on('move', this.onMapMove.bind(this));
-        this.easeToLocation();
+        this.easeToLocation(null, null);
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
@@ -355,8 +355,8 @@ export default {
     }
   },
   watch: {
-    location() {
-      this.easeToLocation();
+    location(location, oldLocation) {
+      this.easeToLocation(location, oldLocation);
       this.updateSelectedMarker();
     },
     $route() {
@@ -373,22 +373,26 @@ export default {
     },
   },
   methods: {
-    easeToLocation() {
-      if (this.location === null) {
-        // zoom to Toronto
-        const center = BOUNDS_TORONTO.getCenter();
-        this.map.easeTo({
-          center,
-          zoom: ZOOM_TORONTO,
-        });
-      } else {
+    easeToLocation(location, oldLocation) {
+      if (location !== null) {
         // zoom to location
-        const { lat, lng } = this.location;
+        const { lat, lng } = location;
         const center = new mapboxgl.LngLat(lng, lat);
         const zoom = Math.max(this.map.getZoom(), ZOOM_LOCATION);
         this.map.easeTo({
           center,
           zoom,
+        });
+      } else if (oldLocation === null) {
+        /*
+         * If the user is first loading the map, we want to show all of Toronto.
+         * Otherwise, the user has just cleared the location, and we want to keep
+         * them in the same place to avoid confusion.
+         */
+        const center = BOUNDS_TORONTO.getCenter();
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_TORONTO,
         });
       }
     },
@@ -564,6 +568,7 @@ export default {
     },
     updateSelectedMarker() {
       if (this.location === null) {
+        this.selectedFeature = null;
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;
