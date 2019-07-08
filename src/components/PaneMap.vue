@@ -15,13 +15,12 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
-      <PaneMapPopup v-if="hoveredFeature"
-        :lng="hoveredLngLat[0]"
-        :lat="hoveredLngLat[1]"
-        :description="hoveredInfo[0]"
-        :centrelineDesc="hoveredInfo[1]"
-        :centrelineType="hoveredInfo[2]"
-        :centrelineId="hoveredInfo[3]"/>
+      <PaneMapPopup
+        v-if="hoveredFeature"
+        :feature="hoveredFeature" />
+      <PaneMapPopup
+        v-if="selectedFeature"
+        :feature="selectedFeature" />
     </div>
   </div>
 </template>
@@ -36,6 +35,7 @@ import apiFetch from '@/lib/ApiFetch';
 import { CentrelineType, Format } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
+import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/components/PaneMapPopup.vue';
 
@@ -145,13 +145,6 @@ const PAINT_OPACITY = [
     0.75,
   ],
 ];
-
-// hover popup for centreline segments or intersections
-const hoverPopup = new mapboxgl.Popup();
-
-// hover popup for clusters
-// const hoverClusterPopup = new mapboxgl.Popup();
-
 
 function injectSourcesAndLayers(style, dataCountsVisible) {
   const STYLE = {};
@@ -287,35 +280,6 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
-    hoveredLngLat() {
-      if (this.hoveredFeature === null) {
-        return null;
-      }
-      // get layer ID
-      // based on layer ID, compute lng / lat
-      if (this.hoveredFeature.layer.id === 'centreline') {
-        const [lng, lat] = this.getCentrelineMidpoint(this.hoveredFeature.geometry.coordinates);
-        return [lng, lat];
-      }
-      return this.hoveredFeature.geometry.coordinates;
-    },
-    hoveredInfo() {
-      if (this.hoveredFeature === null) {
-        return null;
-      } if (this.hoveredFeature.layer.id === 'centreline') {
-        return [this.hoveredFeature.properties.lf_name, this.hoveredFeature.layer.id,
-          CentrelineType.SEGMENT, this.hoveredFeature.properties.geo_id];
-      } if (this.hoveredFeature.layer.id === 'intersections') {
-        return [this.hoveredFeature.properties.intersec5, this.hoveredFeature.layer.id,
-          CentrelineType.INTERSECTION, this.hoveredFeature.properties.geo_id];
-      } if (this.hoveredFeature.layer.id === 'counts-visible-points') {
-        return [StringFormatters.formatCountLocationDescription(
-          this.hoveredFeature.properties.locationdesc,
-        ), this.hoveredFeature.layer.id, this.hoveredFeature.properties.centrelineType,
-        this.hoveredFeature.properties.centrelineId];
-      }
-      return [null, null];
-    },
     ...mapState(['location', 'locationQuery', 'showMap']),
   },
   created() {
@@ -375,10 +339,9 @@ export default {
       );
       this.map.on('load', () => {
         this.map.on('move', this.onMapMove.bind(this));
-        this.easeToLocation();
+        this.easeToLocation(null, null);
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
-        this.map.on('mouseout', this.onMapMouseout.bind(this));
       });
     });
   },
@@ -392,8 +355,8 @@ export default {
     }
   },
   watch: {
-    location() {
-      this.easeToLocation();
+    location(location, oldLocation) {
+      this.easeToLocation(location, oldLocation);
       this.updateSelectedMarker();
     },
     $route() {
@@ -410,22 +373,26 @@ export default {
     },
   },
   methods: {
-    easeToLocation() {
-      if (this.location === null) {
-        // zoom to Toronto
-        const center = BOUNDS_TORONTO.getCenter();
-        this.map.easeTo({
-          center,
-          zoom: ZOOM_TORONTO,
-        });
-      } else {
+    easeToLocation(location, oldLocation) {
+      if (location !== null) {
         // zoom to location
-        const { lat, lng } = this.location;
+        const { lat, lng } = location;
         const center = new mapboxgl.LngLat(lng, lat);
         const zoom = Math.max(this.map.getZoom(), ZOOM_LOCATION);
         this.map.easeTo({
           center,
           zoom,
+        });
+      } else if (oldLocation === null) {
+        /*
+         * If the user is first loading the map, we want to show all of Toronto.
+         * Otherwise, the user has just cleared the location, and we want to keep
+         * them in the same place to avoid confusion.
+         */
+        const center = BOUNDS_TORONTO.getCenter();
+        this.map.easeTo({
+          center,
+          zoom: ZOOM_TORONTO,
         });
       }
     },
@@ -481,26 +448,9 @@ export default {
       }
       return feature;
     },
-    getCentrelineMidpoint(coordinates) {
-      /*
-      * Estimate the point halfway along this line.
-      *
-      * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
-      * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
-      */
-      const n = coordinates.length;
-      if (n % 2 === 0) {
-        const i = n / 2;
-        const [lng0, lat0] = coordinates[i - 1];
-        const [lng1, lat1] = coordinates[i];
-        return [(lng0 + lng1) / 2, (lat0 + lat1) / 2];
-      }
-      const i = (n - 1) / 2;
-      return coordinates[i];
-    },
     onCentrelineClick(feature) {
       const { coordinates } = feature.geometry;
-      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
+      const [lng, lat] = getLineStringMidpoint(coordinates);
       const elementInfo = {
         centrelineId: feature.properties.geo_id,
         centrelineType: CentrelineType.SEGMENT,
@@ -545,61 +495,6 @@ export default {
       };
       this.setLocation(elementInfo);
     },
-    onIntersectionsHover(feature) {
-      const popupHTML = `<div <p> {0} </p> <button
-          class="font-size-l" :disabled="location === null"
-          onclick="onViewData();">
-          <span> View Data</span>
-          </button>
-          </div>`.replace('{0}', feature.properties.intersec5);
-      hoverPopup.setLngLat(feature.geometry.coordinates)
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    onCentrelineHover(feature) {
-      const popupHTML = `<div <p> {0} </p> <button
-          class="font-size-l" :disabled="location === null"
-          @click="onViewData">
-          <span> View Data</span>
-          </button>
-          </div>`.replace('{0}', feature.properties.lf_name);
-      const { coordinates } = feature.geometry;
-      const [lng, lat] = this.getCentrelineMidpoint(coordinates);
-      hoverPopup.setLngLat([lng, lat])
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    onCountsVisiblePointsHover(feature) {
-      const [lng, lat] = feature.geometry.coordinates;
-      const centrelineTypeInt = feature.properties.centrelinetype;
-      let centrelineType = 'N/A';
-      if (centrelineTypeInt === 1) {
-        centrelineType = 'Intersection';
-      } else {
-        centrelineType = 'Street Segment';
-      }
-      const description = StringFormatters.formatCountLocationDescription(
-        feature.properties.locationdesc,
-      );
-      const popupHTML = `<div <p> {0} <br />
-        Centreline Type: {1} </p>
-        <button
-          class="font-size-l" :disabled="location === null"
-          @click="onViewData">
-          <span> View Data</span>
-          </button>
-        </div>`.replace('{0}', description).replace('{1}', centrelineType);
-      hoverPopup.setLngLat([lng, lat])
-        .setHTML(popupHTML)
-        .addTo(this.map);
-    },
-    /*
-    onCountsVisibleClustersHover(feature) {
-      const clusterId = feature.properties.cluster_id;
-      const source = this.map.getSource('counts-visible');
-      // comment
-    },
-    */
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
       if (feature === null) {
@@ -648,24 +543,6 @@ export default {
       // highlight feature that is currently being hovered over
       this.hoveredFeature = feature;
       this.map.setFeatureState(this.hoveredFeature, { hover: true });
-
-      const layerId = feature.layer.id;
-      if (layerId === 'intersections') {
-        this.onIntersectionsHover(this.hoveredFeature);
-      } else if (layerId === 'centreline') {
-        this.onCentrelineHover(this.hoveredFeature);
-      } else if (layerId === 'counts-visible-points') {
-        this.onCountsVisiblePointsHover(this.hoveredFeature);
-      } /* else if (layerId === 'counts-visible-clusters') {
-        this.onCountsVisibleClustersHover(feature);
-      }
-      */
-    },
-    onMapMouseout() {
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        this.hoveredFeature = null;
-      }
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
       const { lat, lng } = this.map.getCenter();
@@ -691,6 +568,7 @@ export default {
     },
     updateSelectedMarker() {
       if (this.location === null) {
+        this.selectedFeature = null;
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;

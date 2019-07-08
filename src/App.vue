@@ -17,7 +17,7 @@
       <FcDashboardNav>
         <FcDashboardNavItem
           icon="map-marked-alt"
-          label="View Data"
+          label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
           icon="folder-plus"
@@ -45,13 +45,6 @@
           </FcToast>
           <SearchBarLocation
             :disabled="searchBarDisabled || !auth.loggedIn" />
-          <button
-            class="font-size-l"
-            :disabled="location === null || searchBarDisabled || !auth.loggedIn"
-            @click="onViewData">
-            <i class="fa fa-search"></i>
-            <span> View Data</span>
-          </button>
         </template>
         <template v-slot:right>
           <TdsActionDropdown
