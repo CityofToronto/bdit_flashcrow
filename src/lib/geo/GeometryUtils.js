@@ -4,6 +4,7 @@
  * TODO: make this do the same thing as ST_Closest(geom, ST_Centroid(geom)), which we
  * use in our Airflow jobs and backend API as a (better) estimate of halfway points.
  *
+ * @memberof GeometryUtils
  * @param {Array<Array<number>>} coordinates - GeoJSON LineString coordinates
  * @returns {Array<number>} [lng, lat] coordinates of estimated halfway point
  */
@@ -19,6 +20,10 @@ function getLineStringMidpoint(coordinates) {
   return coordinates[i];
 }
 
+/**
+ * `GeometryUtils` contains helper methods for handling GeoJSON geometries, such as `LineString`
+ * and `Point`.
+ */
 const GeometryUtils = {
   getLineStringMidpoint,
 };

@@ -2,6 +2,8 @@
   "name": "bdit_flashcrow",
   "version": "0.1.0",
   "private": true,
+  "description": "An integrated data platform for City of Toronto transportation data",
+  "homepage": "https://move.intra.dev-toronto.ca/flashcrow",
   "scripts": {
     "backend": "node server.js",
     "backend:inspect": "node --inspect=0.0.0.0:9229 server.js",
@@ -61,6 +63,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.1.0",
+    "documentation": "^11.0.1",
     "eslint": "^5.13.0",
     "eslint-plugin-vue": "^5.1.0",
     "jest": "^24.1.0",

@@ -1,6 +1,5 @@
 import { required, requiredIf } from 'vuelidate/lib/validators';
 
-// TODO: rework this
 function numConsecutiveDaysOfWeek(daysOfWeek) {
   const days = new Array(15).fill(false);
   daysOfWeek.forEach((i) => {
