@@ -15,6 +15,7 @@
     "ci:test-unit": "TEST_DIR=unit jest",
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
+    "frontend:docs": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch src/lib/**",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "TEST_DIR=unit jest --changedSince=master",
     "serve": "vue-cli-service serve",
