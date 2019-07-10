@@ -30,12 +30,6 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
-// TODO: DRY with server.js
-const Format = {
-  GEOJSON: 'geojson',
-  JSON: 'json',
-};
-
 const REQUEST_STATUS_VARIANTS = {
   REQUESTED: 'warning',
   FLAGGED: 'error',
@@ -111,7 +105,6 @@ const Constants = {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
-  Format,
   REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
@@ -124,7 +117,6 @@ export {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
-  Format,
   REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
