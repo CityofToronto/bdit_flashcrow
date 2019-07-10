@@ -1,7 +1,13 @@
+/**
+ * `ArrayStats` contains utility methods for computing aggregate statistics on
+ * numeric arrays.
+ */
 class ArrayStats {
   /**
+   * Compute the sum of the given numbers.
    *
-   * @param {Array<Number>} xs
+   * @param {Array<Number>} xs - array of numbers
+   * @returns {Number} sum of `xs`
    */
   static sum(xs) {
     let sum = 0;
@@ -12,9 +18,16 @@ class ArrayStats {
   }
 
   /**
-   * @param {Array<[Number, Number]} buckets
-   * @param {Array<Number>} counts
-   * @param {Number} p
+   * Estimate the given percentile of histogram-bucketed data.  This estimate
+   * assumes that data is evenly distributed across each histogram bucket.
+   *
+   * @param {Array<[Number, Number]>} buckets - array of `[min, max]` intervals
+   * corresponding to histogram buckets
+   * @param {Array<Number>} counts - array of counts, such that `counts[i]` is the
+   * number of items in the interval `buckets[i]`
+   * @param {Number} p - quantile, as a value on the interval `[0, 1]` where
+   * 0 = 0th percentile (min), 1 = 100th percentile (max)
+   * @returns {Number} the value at quantile `p`
    */
   static histogramPercentile(buckets, counts, p) {
     const n = buckets.length;
@@ -40,6 +53,10 @@ class ArrayStats {
       const [min, max] = buckets[i];
       const count = counts[i];
       if (curCount + count >= cutoffCount) {
+        /*
+         * `t` here represents the proportion of the bucket that is less than the
+         * estimated value.
+         */
         const t = (cutoffCount - curCount) / count;
         return (min + t * (max - min));
       }
@@ -49,8 +66,13 @@ class ArrayStats {
   }
 
   /**
-   * @param {Array<[Number, Number]} buckets
-   * @param {Array<Number>} counts
+   * Estimate the average (mean) of histogram-bucketed data.  This estimate
+   * assumes that data is evenly distributed across each histogram bucket.
+   *
+   * @param {Array<[Number, Number]>} buckets - array of `[min, max]` intervals
+   * corresponding to histogram buckets
+   * @param {Array<Number>} counts - array of counts, such that `counts[i]` is the
+   * number of items in the interval `buckets[i]`
    */
   static histogramMean(buckets, counts) {
     const n = buckets.length;
@@ -68,6 +90,10 @@ class ArrayStats {
     for (let i = 0; i < n; i++) {
       const [min, max] = buckets[i];
       const count = counts[i];
+      /*
+       * The "centre of mass" of a bucket `[min, max]` is at the bucket
+       * midpoint, so we use that midpoint to form the weighted average.
+       */
       mu += ((min + max) / 2) * count / totalCount;
     }
     return mu;

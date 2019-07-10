@@ -36,6 +36,8 @@ import { CentrelineType, Format } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import style from '@/lib/geo/root.json';
+import metadata from '@/lib/geo/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/components/PaneMapPopup.vue';
 
@@ -146,9 +148,9 @@ const PAINT_OPACITY = [
   ],
 ];
 
-function injectSourcesAndLayers(style, dataCountsVisible) {
+function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
   const STYLE = {};
-  Object.assign(STYLE, style);
+  Object.assign(STYLE, rawStyle);
 
   STYLE.glyphs = 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf';
 
@@ -291,7 +293,8 @@ export default {
       features: [],
     };
     const bounds = BOUNDS_TORONTO;
-    this.mapStyle = injectSourcesAndLayers(GeoStyle.get(), this.dataCountsVisible);
+    const mapStyle = new GeoStyle(style, metadata).get();
+    this.mapStyle = injectSourcesAndLayers(mapStyle, this.dataCountsVisible);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
       sources: {

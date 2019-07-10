@@ -1,9 +1,26 @@
+/**
+ * Encodes the given key-value pair as part of a URL query string.  These are
+ * concatenated by `getQueryString()` below.
+ *
+ * @param {String} key - key to be encoded
+ * @param {*} value - value to be encoded
+ * @returns {String} URL-encoded key-value pair
+ */
 function getQueryStringPart(key, value) {
   const keyEncoded = encodeURIComponent(key);
   const valueEncoded = encodeURIComponent(value);
   return `${keyEncoded}=${valueEncoded}`;
 }
 
+/**
+ * Encodes an object mapping keys to values into a query string using `getQueryStringPart()`.
+ *
+ * Any key with an array of values is encoded as multiple key-value pairs, one for each value
+ * in the array.
+ *
+ * @param {Object} data - key-value pairs to be encoded
+ * @returns {String} URL-encoded query string, without the leading `?`
+ */
 function getQueryString(data) {
   const qsParts = [];
   Object.entries(data).forEach(([key, value]) => {
@@ -20,6 +37,14 @@ function getQueryString(data) {
   return qsParts.join('&');
 }
 
+/**
+ * Builds the URL to be passed to `fetch()`.  For GET requests, this involves
+ * using `getQueryString()` to URL-encode `apiOptions.data`.
+ *
+ * @param {String} url - path of API endpoint to call
+ * @param {Object} apiOptions - options to be passed to `fetch()`
+ * @returns {String} full URL to pass to `fetch()`
+ */
 function getFetchUrl(url, apiOptions) {
   let apiUrl = `/flashcrow/api${url}`;
   if (apiOptions.data && apiOptions.method === 'GET') {
@@ -29,6 +54,13 @@ function getFetchUrl(url, apiOptions) {
   return apiUrl;
 }
 
+/**
+ * Normalizes API options to be passed to `fetch()`.  For non-GET requests, this
+ * involves setting the CSRF token and JSON-encoding data into the request body.
+ *
+ * @param {Object} options - options to be normalized
+ * @returns {Object} normalized options
+ */
 function getFetchOptions(options) {
   const defaultOptions = {
     credentials: 'include',
@@ -49,6 +81,15 @@ function getFetchOptions(options) {
   return apiOptions;
 }
 
+/**
+ * Fetch the REST API resource at the given path, using the given options.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+ * @param {String} url - path of REST API resource to fetch
+ * @param {Object} options - options to fetch with
+ * @param {String} options.method - HTTP method to call the REST API resource with
+ * @returns {Promise<(Object|Array)>} promise that resolves to JSON response body
+ */
 function apiFetch(url, options) {
   const apiOptions = getFetchOptions(options);
   const apiUrl = getFetchUrl(url, apiOptions);

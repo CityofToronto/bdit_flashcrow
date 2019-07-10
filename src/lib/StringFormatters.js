@@ -16,6 +16,13 @@ const UPPERCASE_WORDS = [
   'w/b',
   'px',
 ];
+
+/**
+ * Normalizes location descriptions.
+ *
+ * @param {String} description - raw description from centreline / FLOW
+ * @returns {String} normalized description
+ */
 function formatCountLocationDescription(description) {
   return description
     .toLowerCase()
@@ -36,6 +43,14 @@ function formatCountLocationDescription(description) {
     .join(' ');
 }
 
+/**
+ * Formats the given duration in hours in a human-readable manner.  This is primarily
+ * used for automatic traffic study durations, especially in the "Request Data" user
+ * flow.
+ *
+ * @param {Number} duration - duration, in hours
+ * @returns {String} human-readable duration
+ */
 function formatDuration(duration) {
   const days = duration / 24;
   if (days === 1) {
