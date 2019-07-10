@@ -9,6 +9,7 @@ const Blankie = require('blankie');
 const config = require('./lib/config');
 const AuthController = require('./lib/controller/AuthController');
 const CountController = require('./lib/controller/CountController');
+const EmailController = require('./lib/controller/EmailController');
 const LocationController = require('./lib/controller/LocationController');
 const StudyRequestController = require('./lib/controller/StudyRequestController');
 const WebInitController = require('./lib/controller/WebInitController');
@@ -172,6 +173,7 @@ async function initServer() {
   server.log(LogTag.INIT, 'registering routes...');
   server.route(AuthController);
   server.route(CountController);
+  server.route(EmailController);
   server.route(LocationController);
   server.route(StudyRequestController);
   server.route(WebInitController);
