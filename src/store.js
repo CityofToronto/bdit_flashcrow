@@ -430,12 +430,12 @@ export default new Vuex.Store({
         data,
       };
       return apiFetch('/requests/study', options)
-        .then((response) => {
+        .then((studyRequest) => {
           commit('setModal', {
             component: 'FcModalRequestStudyConfirmation',
-            data: {},
+            data: { studyRequest },
           });
-          return response;
+          return studyRequest;
         });
     },
   },
