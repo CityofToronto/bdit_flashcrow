@@ -430,7 +430,14 @@ export default new Vuex.Store({
         data,
       };
       return apiFetch('/requests/study', options)
-        .then((studyRequest) => {
+        .then((response) => {
+          const studyRequest = Object.assign({}, response);
+          studyRequest.dueDate = new Date(
+            studyRequest.dueDate.slice(0, -1),
+          );
+          studyRequest.estimatedDeliveryDate = new Date(
+            studyRequest.estimatedDeliveryDate.slice(0, -1),
+          );
           commit('setModal', {
             component: 'FcModalRequestStudyConfirmation',
             data: { studyRequest },
