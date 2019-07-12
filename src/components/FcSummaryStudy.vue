@@ -61,7 +61,6 @@
 import { mapState } from 'vuex';
 
 import TdsPanel from '@/components/tds/TdsPanel.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -88,13 +87,7 @@ export default {
       return this.study.daysOfWeek;
     },
     daysOfWeekHuman() {
-      if (this.daysOfWeek.length === 7) {
-        return 'Any day';
-      }
-      return ArrayUtils
-        .sortBy(this.daysOfWeek, i => i)
-        .map(i => TimeFormatters.DAYS_OF_WEEK[i])
-        .join(', ');
+      return TimeFormatters.formatDaysOfWeek(this.daysOfWeek);
     },
     duration() {
       return this.study.duration;

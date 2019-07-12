@@ -85,17 +85,12 @@ const router = new Router({
     {
       path: '/requests/track',
       name: 'requestsTrack',
-      redirect: {
-        name: 'requestsTrackByStatus',
-      },
-    }, {
-      path: '/requests/track/byStatus',
-      name: 'requestsTrackByStatus',
-      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackByStatus.vue'),
-    }, {
-      path: '/byId/:id',
-      name: 'requestsTrackById',
-      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrackById.vue'),
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrack.vue'),
+    },
+    {
+      path: 'requests/study/:id',
+      name: 'requestStudyView',
+      component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyView.vue'),
     },
   ],
 });

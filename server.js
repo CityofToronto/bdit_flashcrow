@@ -78,6 +78,7 @@ async function initServer() {
               args: [{
                 error: '*',
                 log: '*',
+                request: '*',
                 response: '*',
               }],
             },
