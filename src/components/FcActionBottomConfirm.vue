@@ -21,7 +21,7 @@ export default {
   methods: {
     onClickConfirm() {
       this.saveActiveStudyRequest();
-      // this.$router.push({ name: 'home' });
+      this.$router.push({ name: 'viewData' });
     },
     ...mapActions(['saveActiveStudyRequest']),
   },

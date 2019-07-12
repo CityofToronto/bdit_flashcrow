@@ -11,7 +11,7 @@
  */
 class GeoStyle {
   constructor(style, metadata) {
-    this.style = style;
+    this.style = JSON.parse(JSON.stringify(style));
     this.style.sources.esri = {
       type: 'vector',
       scheme: 'xyz',

@@ -48,6 +48,40 @@ class TimeFormatters {
   }
 
   /**
+   * Returns a human-readable description of the days of the week.
+   *
+   * @param {Array<Number>} daysOfWeek - array of unique days of week (0-6), in ascending order
+   * @returns {String} human-readable description of the days of the week
+   */
+  static formatDaysOfWeek(daysOfWeek) {
+    /*
+     * For ease of comparison, we convert `daysOfWeek` to a 7-bit bitmask,
+     * where bit `d` is set iff `daysOfWeek.includes(d)`.
+     *
+     * This allows us to quickly test against certain "special" bitmasks
+     * below.
+     */
+    let bitMask = 0;
+    daysOfWeek.forEach((d) => {
+      /* eslint-disable no-bitwise */
+      bitMask |= 1 << d;
+    });
+    if (bitMask === 0x7f) { // 1111111
+      return 'any day';
+    }
+    if (bitMask === 0x3e) { // 0111110
+      return 'weekdays';
+    }
+    if (bitMask === 0x41) { // 1000001
+      return 'weekends';
+    }
+    return ArrayUtils
+      .sortBy(daysOfWeek, i => i)
+      .map(i => TimeFormatters.DAYS_OF_WEEK[i])
+      .join(', ');
+  }
+
+  /**
    * Extract the time of day from `d` in 24-hour `HH:MM` format.
    *
    * @param {Date} d - date to format

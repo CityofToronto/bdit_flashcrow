@@ -32,7 +32,7 @@ import { mapMutations, mapState } from 'vuex';
 
 import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import apiFetch from '@/lib/ApiFetch';
-import { CentrelineType, Format } from '@/lib/Constants';
+import { CentrelineType } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
@@ -405,7 +405,6 @@ export default {
       const xmax = bounds.getEast();
       const ymax = bounds.getNorth();
       const data = {
-        f: Format.GEOJSON,
         xmin,
         ymin,
         xmax,

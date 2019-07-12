@@ -51,19 +51,28 @@ export default {
     ...mapState(['location']),
   },
   beforeRouteLeave(to, from, next) {
-    this.setModal({
-      component: 'TdsConfirmDialog',
-      data: {
-        title: 'Cancel Request?',
-        prompt: 'If you cancel your request now, your selection will be lost.',
-        textCancel: 'No, continue',
-        textOk: 'Yes, cancel',
-        action: next,
-        actionCancel: () => {
-          next(false);
+    if (from.name === 'requestStudyConfirm' && to.name === 'viewData') {
+      /*
+       * In this case, we don't want to gate navigation - otherwise, the "Cancel Request?"
+       * confirm dialog is set, only to be immediately replaced by the "Confirmation: Request #"
+       * modal.
+       */
+      next();
+    } else {
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title: 'Cancel Request?',
+          prompt: 'If you cancel your request now, your selection will be lost.',
+          textCancel: 'No, continue',
+          textOk: 'Yes, cancel',
+          action: next,
+          actionCancel: () => {
+            next(false);
+          },
         },
-      },
-    });
+      });
+    }
   },
   methods: {
     ...mapMutations(['setModal']),

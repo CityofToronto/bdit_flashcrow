@@ -1,13 +1,13 @@
 <template>
   <TdsModal :data="data">
     <template v-slot:header>
-      <h2>Confirmation: Request #1234567890</h2>
+      <h2>Confirmation: Request #{{studyRequestId}}</h2>
     </template>
     <template v-slot:content>
       <p>Thank you for your request!</p>
       <p>
         You should receive your data by
-        <strong>{{studyRequestEstimatedDeliveryDate | date}}</strong>.
+        <strong>{{estimatedDeliveryDate | date}}</strong>.
       </p>
       <p v-if="priority === 'URGENT'">
         You've marked this request urgent.  The Traffic Safety Unit will
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import { mapMutations } from 'vuex';
 
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 
@@ -35,14 +35,15 @@ export default {
   name: 'FcModalRequestStudyConfirmation',
   mixins: [TdsMixinModal],
   computed: {
-    dueDate() {
-      return this.studyRequest.dueDate;
+    estimatedDeliveryDate() {
+      return this.data.studyRequest.estimatedDeliveryDate;
     },
     priority() {
-      return this.studyRequest.priority;
+      return this.data.studyRequest.priority;
     },
-    ...mapGetters(['studyRequestEstimatedDeliveryDate']),
-    ...mapState(['studyRequest']),
+    studyRequestId() {
+      return this.data.studyRequest.id;
+    },
   },
   methods: {
     onClickOk() {
