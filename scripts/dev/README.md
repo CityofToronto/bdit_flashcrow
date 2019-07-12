@@ -29,6 +29,31 @@ We recommend installing packages through [Scoop](https://scoop.sh/).  Open a Pow
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 scoop config proxy proxy.toronto.ca:8080
+```
+
+### Git
+
+Now we'll install Git using Scoop:
+```powershell
+scoop install git
+```
+
+Now, you'll have to create a new SSH key and connect it to GitHub. You can follow the instructions here: TODO
+
+### Clone the MOVE Repository
+
+Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that with:
+
+```powershell
+git clone https://github.com/CityofToronto/bdit_flashcrow.git
+```
+
+### Install the rest of the Scoop requirements
+
+Now that we've got Scoop installed, and we've got MOVE cloned, we can read the Scoop requirements and install them:
+
+```powershell
+cd bdit_flashcrow
 .\scripts\dev\scoop-requirements.ps1
 ```
 
@@ -43,13 +68,7 @@ cd scripts\dev
 vagrant plugin install vagrant-proxyconf
 ```
 
-## Clone the MOVE Repository
 
-Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that with:
-
-```powershell
-git clone https://github.com/CityofToronto/bdit_flashcrow.git
-```
 ## Set up MOVE config files on Host Machine
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
