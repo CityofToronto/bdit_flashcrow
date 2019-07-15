@@ -65,7 +65,7 @@ Now you should be ready to rock!
 
 ### VirtualBox and Vagrant
 
-Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it.
+Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it - you'll need version 5.2 if yours is a 32-bit machine.
 
 We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin to allow us to use it with a proxy, and, hilariously, we'll first have to configure Vagrant to use our proxy to download the proxy plugin:
 
