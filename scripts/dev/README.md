@@ -80,7 +80,7 @@ vagrant plugin install vagrant-proxyconf
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
 
-First, create a file at `lib\config.js`, and generate your own passwords as needed.  A minimal config file is as follows:
+First, create a file at `lib\config.js`, and generate your own passwords as needed.  A minimal config file is as follows -- replace the three `TODO` items in here with your own info:
 
 ```js
 const path = require('path');
