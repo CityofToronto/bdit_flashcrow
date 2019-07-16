@@ -1,37 +1,5 @@
 <template>
   <div class="fc-requests-track-by-type flex-container-column flex-fill">
-    <header class="mb-m">
-      <router-link
-        class="py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.REQUESTED, RequestStatus.FLAGGED] },
-        }">In Review
-        <span class="tds-badge">{{numInReview}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.REVIEWED] },
-        }">To Submit
-        <span class="tds-badge">{{numToSubmit}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.SUBMITTED, RequestStatus.SCHEDULED] },
-        }">In Progress
-        <span class="tds-badge">{{numInProgress}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.DATA_READY] },
-        }">Complete</router-link>
-    </header>
     <section>
       <header class="flex-container-row">
         <label class="tds-checkbox">
@@ -44,8 +12,10 @@
         </label>
         <div class="flex-fill"></div>
         <FcFilterRequestStatus
-          :active="filterRequestStatus.length > 0"
-          class="font-size-l" />
+          class="font-size-l"
+          :class="{
+            'tds-button-success': hasFilterRequestStatus,
+          }" />
         <button
           class="tds-button-secondary"
           disabled>
@@ -73,7 +43,6 @@
         </button>
       </header>
       <FcCardTableRequests
-        :sections="sections"
         v-model="selection"
         @action-item="onActionItem" />
     </section>
@@ -81,12 +50,16 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
 import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
 
 export default {
   name: 'FcRequestsTrackByStatus',
@@ -96,59 +69,12 @@ export default {
   },
   data() {
     return {
-      RequestStatus: Constants.RequestStatus,
       selection: [],
     };
   },
   computed: {
-    numInProgress() {
-      const statii = [
-        Constants.RequestStatus.SUBMITTED,
-        Constants.RequestStatus.SCHEDULED,
-      ];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    numInReview() {
-      const statii = [
-        Constants.RequestStatus.REQUESTED,
-        Constants.RequestStatus.FLAGGED,
-      ];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    numToSubmit() {
-      const statii = [Constants.RequestStatus.REVIEWED];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    sections() {
-      const sections = this.requests.map(({
-        id,
-        location,
-        dueDate,
-        priority,
-        requestedBy,
-        status,
-        counts,
-      }) => {
-        const item = {
-          id,
-          location,
-          dueDate,
-          priority,
-          requestedBy,
-          status,
-        };
-        return { item, children: counts };
-      });
-      return sections.filter(({ item }) => this.filterRequestStatus.includes(item.status));
-    },
     selectableIds() {
-      return this.sections.map(({ item }) => item.id);
+      return this.itemsStudyRequests.map(({ id }) => id);
     },
     selectionAll() {
       return this.selectableIds
@@ -157,9 +83,13 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
+    ...mapGetters([
+      'hasFilterRequestStatus',
+      'itemsStudyRequests',
+    ]),
     ...mapState([
       'filterRequestStatus',
-      'requests',
+      'studyRequests',
     ]),
   },
   watch: {
@@ -177,8 +107,12 @@ export default {
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.syncFromRoute(to);
-    next();
+    this.syncFromRoute(to)
+      .then(() => {
+        next();
+      }).catch((err) => {
+        next(err);
+      });
   },
   methods: {
     actionAccept(/* items */) {
@@ -232,20 +166,11 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    syncFromRoute(to) {
-      let { status } = to.query;
-      status = status || [];
-      if (!Array.isArray(status)) {
-        status = [status];
-      }
-      status = status.map(i => parseInt(i, 10));
-      this.setFilterRequestStatus(status);
+    syncFromRoute() {
+      this.fetchAllStudyRequests();
     },
-    ...mapActions(['newStudyRequest']),
-    ...mapMutations([
-      'setFilterRequestStatus',
-      'setModal',
-    ]),
+    ...mapActions(['fetchAllStudyRequests']),
+    ...mapMutations(['setFilterRequestStatus']),
   },
 };
 </script>

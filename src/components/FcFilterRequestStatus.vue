@@ -1,15 +1,12 @@
 <template>
   <TdsChecklistDropdown
     class="fc-filter-request-status"
-    :class="{ 'tds-button-success': active }"
     name="requestStatus"
     :options="options"
     v-model="filterRequestStatus">
     <span>
       Request Status
-      <span
-        class="tds-badge"
-        :class="{ 'tds-badge-success': active }">
+      <span class="tds-badge">
         {{filterRequestStatus.length}}
       </span>
     </span>
@@ -18,22 +15,16 @@
 
 <script>
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import Constants from '@/lib/Constants';
+import { REQUEST_STATUS_VARIANTS } from '@/lib/Constants';
 
 export default {
   name: 'FcFilterRequestStatus',
   components: {
     TdsChecklistDropdown,
   },
-  props: {
-    active: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
-    const options = Constants.REQUEST_STATUS_META
-      .map((meta, i) => Object.assign({ value: i }, meta));
+    const options = Object.keys(REQUEST_STATUS_VARIANTS)
+      .map(value => ({ label: value, value }));
     return { options };
   },
   computed: {

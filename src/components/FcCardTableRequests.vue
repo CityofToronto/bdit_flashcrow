@@ -2,8 +2,7 @@
   <FcCardTable
     class="fc-card-table-requests"
     :columns="columns"
-    expandable
-    :sections="sections"
+    :items="itemsStudyRequests"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
@@ -19,12 +18,12 @@
     <template v-slot:ID="{ item }">
       <router-link
         :to="{
-          name: 'requestsTrackById',
+          name: 'requestStudyView',
           params: { id: item.id },
         }">{{item.id}}</router-link>
     </template>
     <template v-slot:LOCATION="{ item }">
-      <span>Kingston and Lee</span>
+      <span>TODO</span>
     </template>
     <template v-slot:STUDY_TYPES="{ item, children }">
       <span>TODO: item type</span>
@@ -47,11 +46,10 @@
       <span>TODO: requester</span>
     </template>
     <template v-slot:STATUS="{ item }">
-      <span
-        class="full-width tds-label uppercase"
-        :class="'tds-label-' + REQUEST_STATUS_META[item.status].class">
-        {{REQUEST_STATUS_META[item.status].label}}
-      </span>
+      <TdsLabel
+        :variant="REQUEST_STATUS_VARIANTS[item.status]">
+        {{item.status}}
+      </TdsLabel>
     </template>
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
@@ -106,16 +104,23 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 import FcCardTable from '@/components/FcCardTable.vue';
-import Constants from '@/lib/Constants';
+import TdsLabel from '@/components/tds/TdsLabel.vue';
+import {
+  REQUEST_STATUS_VARIANTS,
+  SortDirection,
+  SortKeys,
+} from '@/lib/Constants';
 
 export default {
   name: 'FcCardTableRequests',
   components: {
     FcCardTable,
+    TdsLabel,
   },
   props: {
-    sections: Array,
     value: Array,
   },
   data() {
@@ -126,7 +131,6 @@ export default {
       sortable: true,
       title: 'ID#',
     }, {
-      icon: 'map-marker-alt',
       name: 'LOCATION',
       sortable: true,
       title: 'Location',
@@ -135,12 +139,10 @@ export default {
       sortable: true,
       title: 'Due Date',
     }, {
-      icon: 'exclamation',
       name: 'PRIORITY',
       sortable: true,
       title: 'Priority',
     }, {
-      icon: 'envelope',
       name: 'REQUESTER',
       sortable: true,
       title: 'Requester',
@@ -154,10 +156,9 @@ export default {
     return {
       columns,
       sortBy: 'PRIORITY',
-      sortDirection: Constants.SortDirection.ASC,
-      sortKeys: Constants.SortKeys.Requests,
-      RequestStatus: Constants.RequestStatus,
-      REQUEST_STATUS_META: Constants.REQUEST_STATUS_META,
+      sortDirection: SortDirection.ASC,
+      sortKeys: SortKeys.Requests,
+      REQUEST_STATUS_VARIANTS,
     };
   },
   computed: {
@@ -169,6 +170,7 @@ export default {
         this.$emit('input', value);
       },
     },
+    ...mapGetters(['itemsStudyRequests']),
   },
 };
 </script>

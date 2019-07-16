@@ -5,6 +5,7 @@ import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
   COUNT_TYPES,
+  REQUEST_STATUS_VARIANTS,
   SortKeys,
   SortDirection,
   Status,
@@ -75,9 +76,9 @@ export default new Vuex.Store({
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
-    filterRequestStatus: [],
+    filterRequestStatus: Object.keys(REQUEST_STATUS_VARIANTS),
     // REQUESTS
-    requests: [],
+    studyRequests: [],
     requestReasons: [],
     // map mode
     showMap: true,
@@ -98,6 +99,9 @@ export default new Vuex.Store({
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
+    },
+    hasFilterRequestStatus(state) {
+      return state.filterRequestStatus.length !== Object.keys(REQUEST_STATUS_VARIANTS).length;
     },
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
@@ -139,6 +143,11 @@ export default new Vuex.Store({
           id: type.value,
         };
       });
+    },
+    // TABLE ITEMS: STUDY REQUESTS
+    itemsStudyRequests(state) {
+      return state.studyRequests
+        .filter(({ status }) => state.filterRequestStatus.includes(status));
     },
     // ACTIVE STUDY REQUEST
     studyRequestModel(state, getters) {
@@ -298,6 +307,13 @@ export default new Vuex.Store({
     setShowMap(state, showMap) {
       Vue.set(state, 'showMap', showMap);
     },
+    // STUDY REQUESTS
+    clearStudyRequests(state) {
+      Vue.set(state, 'studyRequests', []);
+    },
+    setStudyRequests(state, studyRequests) {
+      Vue.set(state, 'studyRequests', studyRequests);
+    },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
       Vue.set(state, 'studyRequest', null);
@@ -432,6 +448,24 @@ export default new Vuex.Store({
       );
       commit('setStudyRequest', studyRequest);
       return studyRequest;
+    },
+    async fetchAllStudyRequests({ commit }) {
+      let studyRequests = await apiFetch('/requests/study');
+      studyRequests = studyRequests.map((studyRequest) => {
+        const dueDate = new Date(
+          studyRequest.dueDate.slice(0, -1),
+        );
+        const estimatedDeliveryDate = new Date(
+          studyRequest.estimatedDeliveryDate.slice(0, -1),
+        );
+        return {
+          ...studyRequest,
+          dueDate,
+          estimatedDeliveryDate,
+        };
+      });
+      commit('setStudyRequests', studyRequests);
+      return studyRequests;
     },
     async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;

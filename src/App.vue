@@ -24,7 +24,6 @@
           label="Request Study"
           :to="{ name: 'requestStudy' }" />
         <FcDashboardNavItem
-          disabled
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
