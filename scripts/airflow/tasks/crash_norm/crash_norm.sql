@@ -44,7 +44,9 @@ SELECT z.collision_id,
     a.accdate AS collision_date,
     a.acctime AS collision_time,
     a.day_no,
-    a.px
+    a.px, 
+    a.latitude, 
+    a.longitude
    FROM col_events_raw a
      JOIN events_id_data z ON z.accnb::text = a.accnb::text AND z.accdate = a.accdate AND z.acctime::text = a.acctime::text
   ORDER BY z.collision_id
