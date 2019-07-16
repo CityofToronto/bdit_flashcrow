@@ -1,6 +1,8 @@
-DROP TABLE IF EXISTS "TRAFFIC".collision_events;
+CREATE SCHEMA IF NOT EXISTS collisions; 
 
-CREATE TABLE IF NOT EXISTS "TRAFFIC".collision_events AS (
+DROP TABLE IF EXISTS collisions.events;
+
+CREATE TABLE collisions.events AS (
     WITH col_events_raw AS (
         SELECT acc."ACCNB" AS accnb,
             acc."ACCDATE" AS accdate,
@@ -17,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "TRAFFIC".collision_events AS (
             max(acc."DIR3") AS dir3,
             max(acc."LOCCOORD") AS loccoord,
             min(acc."ACCLASS") AS acclass,
-            min(acc."ACCLOC") AS accloc,
+            min(acc."ACCLOC") AS location_class,
             max(acc."IMPACTYPE") AS impactype,
             max(acc."LONGITUDE") AS longitude,
             max(acc."LATITUDE") AS latitude,
@@ -42,34 +44,8 @@ SELECT z.collision_id,
     a.accdate AS collision_date,
     a.acctime AS collision_time,
     a.day_no,
-    a.px,
-    upper(btrim(a.stname1)) AS street_1,
-    upper(btrim(a.streetype1)) AS street_type_1,
-    upper(btrim(a.dir1)) AS direction_1,
-    upper(btrim(a.stname2)) AS street_2,
-    upper(btrim(a.streetype2)) AS street_type_2,
-    upper(btrim(a.dir2)) AS direction_2,
-    upper(btrim(a.stname3)) AS street_3,
-    upper(btrim(a.streetype3)) AS street_type_3,
-    upper(btrim(a.dir3)) AS direction_3,
-    upper(btrim(d.description)) AS location_class,
-    upper(btrim(b.description)) AS location_desc,
-    upper(btrim(c.description)) AS collision_type,
-    upper(btrim(e.description)) AS impact_type,
-    upper(btrim(a.road_class)) AS road_class,
-    upper(btrim(h.description)) AS visibility,
-    upper(btrim(i.description)) AS light,
-    upper(btrim(j.description)) AS road_surface_cond,
-    a.longitude,
-    a.latitude
+    a.px
    FROM col_events_raw a
      JOIN events_id_data z ON z.accnb::text = a.accnb::text AND z.accdate = a.accdate AND z.acctime::text = a.acctime::text
-     LEFT JOIN collision_factors.loccoord b USING (loccoord)
-     LEFT JOIN collision_factors.acclass c USING (acclass)
-     LEFT JOIN collision_factors.accloc d USING (accloc)
-     LEFT JOIN collision_factors.impactype e USING (impactype)
-     LEFT JOIN collision_factors.visible h USING (visible)
-     LEFT JOIN collision_factors.light i USING (light)
-     LEFT JOIN collision_factors.rdsfcond j USING (rdsfcond)
   ORDER BY z.collision_id
 ); 

@@ -19,7 +19,7 @@ DEFAULT_ARGS = {
     'task_concurrency': 1
 }
 
-DAG = DAG(
+CRASH_NORM_DAG = DAG(
     'crash_norm',
     default_args=DEFAULT_ARGS,
     max_active_runs=1,
@@ -29,12 +29,12 @@ COPY_COLLISION_FACTORS_SH = os.path.join(AIRFLOW_TASKS, 'copy_collision_factors.
 COPY_COLLISION_FACTORS = BashOperator(
     task_id='copy_collision_factors',
     bash_command='{0} '.format(COPY_COLLISION_FACTORS_SH),
-    dag=DAG)
+    dag=CRASH_NORM_DAG)
 
 CRASH_NORM_SH = os.path.join(AIRFLOW_TASKS, 'crash_norm.sh')
 CRASH_NORM = BashOperator(
     task_id='crash_norm',
     bash_command='{0} '.format(CRASH_NORM_SH),
-    dag=DAG)
+    dag=CRASH_NORM_DAG)
 
 CRASH_NORM.set_downstream(COPY_COLLISION_FACTORS)
