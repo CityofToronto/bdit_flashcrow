@@ -90,13 +90,17 @@ function getFetchOptions(options) {
  * @param {String} options.method - HTTP method to call the REST API resource with
  * @returns {Promise<(Object|Array)>} promise that resolves to JSON response body
  */
-function apiFetch(url, options) {
+async function apiFetch(url, options) {
   const apiOptions = getFetchOptions(options);
   const apiUrl = getFetchUrl(url, apiOptions);
   delete apiOptions.csrf;
   delete apiOptions.data;
-  return fetch(apiUrl, apiOptions)
-    .then(response => response.json());
+  const response = await fetch(apiUrl, apiOptions);
+  const responseBody = await response.json();
+  if (response.ok) {
+    return responseBody;
+  }
+  throw responseBody;
 }
 
 export {

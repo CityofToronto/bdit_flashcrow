@@ -1,6 +1,6 @@
 <template>
 <div class="fc-request-study-view">
-  <h2>TRACK BY ID!</h2>
+  <pre>{{JSON.stringify(studyRequest, null, 2)}}</pre>
 </div>
 </template>
 
@@ -51,6 +51,7 @@ export default {
         .catch((err) => {
           const toast = getToast(err);
           this.setToast(toast);
+          this.$router.push({ name: 'viewData' });
         });
     },
     ...mapActions(['fetchStudyRequest', 'setToast']),
