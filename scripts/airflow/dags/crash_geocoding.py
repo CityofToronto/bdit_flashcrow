@@ -17,7 +17,7 @@ DEFAULT_ARGS = {
     'email_on_failure': True,
     'email_on_retry': True,
     'owner': 'ec2-user',
-    'start_date': datetime(2019, 5, 6),
+    'start_date': datetime(2019, 7, 17),
     'task_concurrency': 1
 }
 
