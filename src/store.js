@@ -5,7 +5,7 @@ import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
   COUNT_TYPES,
-  REQUEST_STATUS_VARIANTS,
+  RequestStatus,
   SortKeys,
   SortDirection,
   Status,
@@ -76,7 +76,7 @@ export default new Vuex.Store({
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
-    filterRequestStatus: Object.keys(REQUEST_STATUS_VARIANTS),
+    filterRequestStatus: Object.keys(RequestStatus),
     // REQUESTS
     studyRequests: [],
     requestReasons: [],
@@ -101,7 +101,7 @@ export default new Vuex.Store({
       return state.filterDayOfWeek.length !== 7;
     },
     hasFilterRequestStatus(state) {
-      return state.filterRequestStatus.length !== Object.keys(REQUEST_STATUS_VARIANTS).length;
+      return state.filterRequestStatus.length !== Object.keys(RequestStatus).length;
     },
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {

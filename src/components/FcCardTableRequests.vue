@@ -47,21 +47,12 @@
     </template>
     <template v-slot:STATUS="{ item }">
       <TdsLabel
-        :variant="REQUEST_STATUS_VARIANTS[item.status]">
+        v-bind="RequestStatus[item.status]">
         {{item.status}}
       </TdsLabel>
     </template>
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
-            type: 'review',
-            item,
-          })">
-          <i class="fa fa-eye"></i>
-        </button>
         <button
           class="tds-button-secondary font-size-m"
           disabled
@@ -84,19 +75,10 @@
           class="tds-button-secondary font-size-m"
           disabled
           @click="$emit('action-item', {
-            type: 'assign',
-            item,
-          })">
-          <i class="fa fa-user"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
             type: 'export',
             item,
           })">
-          <i class="fa fa-external-link-square-alt"></i>
+          <i class="fa fa-download"></i>
         </button>
       </div>
     </template>
@@ -109,7 +91,7 @@ import { mapGetters } from 'vuex';
 import FcCardTable from '@/components/FcCardTable.vue';
 import TdsLabel from '@/components/tds/TdsLabel.vue';
 import {
-  REQUEST_STATUS_VARIANTS,
+  RequestStatus,
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
@@ -158,7 +140,7 @@ export default {
       sortBy: 'PRIORITY',
       sortDirection: SortDirection.ASC,
       sortKeys: SortKeys.Requests,
-      REQUEST_STATUS_VARIANTS,
+      RequestStatus,
     };
   },
   computed: {

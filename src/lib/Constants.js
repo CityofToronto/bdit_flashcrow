@@ -38,14 +38,39 @@ const HttpStatus = {
   },
 };
 
-const REQUEST_STATUS_VARIANTS = {
-  REQUESTED: 'warning',
-  FLAGGED: 'error',
-  REVIEWED: 'warning',
-  SUBMITTED: 'info',
-  SCHEDULED: 'info',
-  DATA_READY: 'success',
-  COMPLETED: 'success',
+const RequestStatus = {
+  REQUESTED: {
+    icon: 'concierge-bell',
+    variant: 'info',
+  },
+  FLAGGED: {
+    icon: 'flag',
+    variant: 'warning',
+  },
+  REVIEWED: {
+    icon: 'check-square',
+    variant: 'info',
+  },
+  SUBMITTED: {
+    icon: 'hourglass-start',
+    variant: 'info',
+  },
+  SCHEDULED: {
+    icon: 'calendar-check',
+    variant: 'info',
+  },
+  DATA_READY: {
+    icon: 'file-archive',
+    variant: 'warning',
+  },
+  COMPLETED: {
+    icon: 'check',
+    variant: 'success',
+  },
+  CANCELLED: {
+    icon: 'times-circle',
+    variant: 'error',
+  },
 };
 
 const SortDirection = {
@@ -114,7 +139,7 @@ const Constants = {
   CountHours,
   COUNT_TYPES,
   HttpStatus,
-  REQUEST_STATUS_VARIANTS,
+  RequestStatus,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
@@ -127,7 +152,7 @@ export {
   CountHours,
   COUNT_TYPES,
   HttpStatus,
-  REQUEST_STATUS_VARIANTS,
+  RequestStatus,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,

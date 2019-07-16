@@ -15,7 +15,7 @@
 
 <script>
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import { REQUEST_STATUS_VARIANTS } from '@/lib/Constants';
+import { RequestStatus } from '@/lib/Constants';
 
 export default {
   name: 'FcFilterRequestStatus',
@@ -23,7 +23,7 @@ export default {
     TdsChecklistDropdown,
   },
   data() {
-    const options = Object.keys(REQUEST_STATUS_VARIANTS)
+    const options = Object.keys(RequestStatus)
       .map(value => ({ label: value, value }));
     return { options };
   },

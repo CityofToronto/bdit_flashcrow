@@ -19,7 +19,7 @@
           <div class="flex-fill"></div>
           <TdsLabel
             class="font-size-l uppercase"
-            :variant="REQUEST_STATUS_VARIANTS[studyRequest.status]">
+            v-bind="RequestStatus[studyRequest.status]">
             {{studyRequest.status}}
           </TdsLabel>
         </header>
@@ -44,7 +44,7 @@ import FcSummaryStudy from '@/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/components/FcSummaryStudyRequest.vue';
 import TdsLabel from '@/components/tds/TdsLabel.vue';
 import TdsTopBar from '@/components/tds/TdsTopBar.vue';
-import { HttpStatus, REQUEST_STATUS_VARIANTS } from '@/lib/Constants';
+import { HttpStatus, RequestStatus } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
@@ -73,7 +73,7 @@ export default {
   },
   data() {
     return {
-      REQUEST_STATUS_VARIANTS,
+      RequestStatus,
     };
   },
   computed: {

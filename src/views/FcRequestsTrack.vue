@@ -19,11 +19,6 @@
         <button
           class="tds-button-secondary"
           disabled>
-          <i class="fa fa-eye"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
           <i class="fa fa-check-square"></i>
         </button>
         <button
@@ -34,12 +29,7 @@
         <button
           class="tds-button-secondary"
           disabled>
-          <i class="fa fa-user"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-external-link-square-alt"></i>
+          <i class="fa fa-download"></i>
         </button>
       </header>
       <FcCardTableRequests
@@ -59,7 +49,6 @@ import {
 
 import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
 import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
 
 export default {
   name: 'FcRequestsTrackByStatus',
@@ -75,6 +64,10 @@ export default {
   computed: {
     selectableIds() {
       return this.itemsStudyRequests.map(({ id }) => id);
+    },
+    selectedStudyRequests() {
+      return this.selection
+        .map(id => this.studyRequests.find(r => r.id === id));
     },
     selectionAll() {
       return this.selectableIds
@@ -92,15 +85,6 @@ export default {
       'studyRequests',
     ]),
   },
-  watch: {
-    filterRequestStatus() {
-      const status = ArrayUtils.sortBy(this.filterRequestStatus, x => x);
-      this.$router.replace({
-        name: 'requestsTrackByStatus',
-        query: { status },
-      });
-    },
-  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.syncFromRoute(to);
@@ -115,46 +99,32 @@ export default {
       });
   },
   methods: {
-    actionAccept(/* items */) {
-      // TODO: implement this
+    actionAccept(studyRequests) {
+      console.log('accept', studyRequests);
     },
-    actionAssign(/* items */) {
-      // TODO: implement this
+    actionExport(studyRequests) {
+      console.log('export', studyRequests);
     },
-    actionExport(/* items */) {
-      // TODO: implement this
-    },
-    actionFlag(/* items */) {
-      // TODO: implement this
-    },
-    actionReview(/* items */) {
-      // TODO: implement this
+    actionFlag(studyRequests) {
+      console.log('flag', studyRequests);
     },
     onActionBulk(type, options) {
-      const items = this.selection.map(id => ({ id }));
+      const studyRequests = this.selectedStudyRequests;
       const actionOptions = options || {};
-      if (type === 'review') {
-        this.actionReview(items, actionOptions);
-      } else if (type === 'accept') {
-        this.actionAccept(items, actionOptions);
+      if (type === 'accept') {
+        this.actionAccept(studyRequests, actionOptions);
       } else if (type === 'flag') {
-        this.actionFlag(items, actionOptions);
-      } else if (type === 'assign') {
-        this.actionAssign(items, actionOptions);
+        this.actionFlag(studyRequests, actionOptions);
       } else if (type === 'export') {
-        this.actionExport(items, actionOptions);
+        this.actionExport(studyRequests, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
-      if (type === 'review') {
-        this.actionReview([item], actionOptions);
-      } else if (type === 'accept') {
+      if (type === 'accept') {
         this.actionAccept([item], actionOptions);
       } else if (type === 'flag') {
         this.actionFlag([item], actionOptions);
-      } else if (type === 'assign') {
-        this.actionAssign([item], actionOptions);
       } else if (type === 'export') {
         this.actionExport([item], actionOptions);
       }
