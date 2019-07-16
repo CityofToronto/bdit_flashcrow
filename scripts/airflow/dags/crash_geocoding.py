@@ -25,7 +25,7 @@ CRASH_GEOCODING_DAG = DAG(
     'crash_geocoding',
     default_args=DEFAULT_ARGS,
     max_active_runs=1,
-    schedule_interval='30 4 * * *')
+    schedule_interval='0 0 * * *')
 
 CRASH_GEOCODING_SH = os.path.join(AIRFLOW_TASKS, 'crash_geocoding.sh')
 CRASH_GEOCODING = BashOperator(
