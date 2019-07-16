@@ -88,7 +88,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrack.vue'),
     },
     {
-      path: 'requests/study/:id',
+      path: '/requests/study/:id',
       name: 'requestStudyView',
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyView.vue'),
     },

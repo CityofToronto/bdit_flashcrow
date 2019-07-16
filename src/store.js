@@ -295,6 +295,9 @@ export default new Vuex.Store({
     clearStudyRequest(state) {
       Vue.set(state, 'studyRequest', null);
     },
+    setStudyRequest(state, studyRequest) {
+      Vue.set(state, 'studyRequest', studyRequest);
+    },
     setNewStudyRequest(state, studyTypes) {
       const { location } = state;
       const {
@@ -337,59 +340,50 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    webInit({ commit }) {
-      return apiFetch('/web/init')
-        .then((response) => {
-          commit('webInit', response);
-          return response;
-        });
+    async webInit({ commit }) {
+      const response = await apiFetch('/web/init');
+      commit('webInit', response);
+      return response;
     },
-    setToast({ commit }, toast) {
+    async setToast({ commit }, toast) {
       commit('setToast', toast);
       clearToastDebounced(commit);
+      return toast;
     },
-    checkAuth({ commit }) {
-      return apiFetch('/auth')
-        .then((auth) => {
-          commit('setAuth', auth);
-          return auth;
-        });
+    async checkAuth({ commit }) {
+      const auth = await apiFetch('/auth');
+      commit('setAuth', auth);
+      return auth;
     },
-    fetchLocationByKeyString({ commit }, keyString) {
+    async fetchLocationByKeyString({ commit }, keyString) {
       const options = {
         data: { keyString },
       };
-      return apiFetch('/cotgeocoder/findAddressCandidates', options)
-        .then((location) => {
-          commit('setLocation', location);
-          return location;
-        });
+      const location = await apiFetch('/cotgeocoder/findAddressCandidates', options);
+      commit('setLocation', location);
+      return location;
     },
-    fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
+    async fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
       const options = {
         data: { centrelineId, centrelineType },
       };
-      return apiFetch('/location/centreline', options)
-        .then((location) => {
-          commit('setLocation', location);
-          return location;
-        });
+      const location = await apiFetch('/location/centreline', options);
+      commit('setLocation', location);
+      return location;
     },
-    fetchLocationSuggestions({ commit }, query) {
+    async fetchLocationSuggestions({ commit }, query) {
       if (query.length < 3) {
         commit('clearLocationSuggestions');
-        return Promise.resolve(null);
+        return null;
       }
       const options = {
         data: { q: query },
       };
-      return apiFetch('/cotgeocoder/suggest', options)
-        .then((locationSuggestions) => {
-          commit('setLocationSuggestions', locationSuggestions);
-          return locationSuggestions;
-        });
+      const locationSuggestions = await apiFetch('/cotgeocoder/suggest', options);
+      commit('setLocationSuggestions', locationSuggestions);
+      return locationSuggestions;
     },
-    fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
+    async fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
       const data = {
         centrelineId,
         centrelineType,
@@ -399,51 +393,58 @@ export default new Vuex.Store({
         Object.assign(data, state.dateRange);
       }
       const options = { data };
-      return apiFetch('/counts/byCentreline', options)
-        .then(({ counts, numPerCategory }) => {
-          const countsNormalized = counts.map((count) => {
-            const countNormalized = Object.assign({}, count);
-            countNormalized.date = new Date(
-              countNormalized.date.slice(0, -1),
-            );
-            return countNormalized;
-          });
-          // TODO: possibly move this normalization to the backend?
-          const numPerCategoryNormalized = makeNumPerCategory();
-          numPerCategory.forEach(({ n, category: { value } }) => {
-            numPerCategoryNormalized[value] += n;
-          });
-          const result = {
-            counts: countsNormalized,
-            numPerCategory: numPerCategoryNormalized,
-          };
-          commit('setCountsResult', result);
-          return result;
-        });
+      const { counts, numPerCategory } = await apiFetch('/counts/byCentreline', options);
+      const countsNormalized = counts.map((count) => {
+        const countNormalized = Object.assign({}, count);
+        countNormalized.date = new Date(
+          countNormalized.date.slice(0, -1),
+        );
+        return countNormalized;
+      });
+      // TODO: possibly move this normalization to the backend?
+      const numPerCategoryNormalized = makeNumPerCategory();
+      numPerCategory.forEach(({ n, category: { value } }) => {
+        numPerCategoryNormalized[value] += n;
+      });
+      const result = {
+        counts: countsNormalized,
+        numPerCategory: numPerCategoryNormalized,
+      };
+      commit('setCountsResult', result);
+      return result;
     },
     // STUDY REQUESTS
-    saveActiveStudyRequest({ commit, getters, state }) {
+    async fetchStudyRequest({ commit }, id) {
+      const url = `/requests/study/${id}`;
+      const studyRequest = await apiFetch(url);
+      studyRequest.dueDate = new Date(
+        studyRequest.dueDate.slice(0, -1),
+      );
+      studyRequest.estimatedDeliveryDate = new Date(
+        studyRequest.estimatedDeliveryDate.slice(0, -1),
+      );
+      commit('setStudyRequest', studyRequest);
+      return studyRequest;
+    },
+    async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;
       const options = {
         method: 'POST',
         csrf: state.auth.csrf,
         data,
       };
-      return apiFetch('/requests/study', options)
-        .then((response) => {
-          const studyRequest = Object.assign({}, response);
-          studyRequest.dueDate = new Date(
-            studyRequest.dueDate.slice(0, -1),
-          );
-          studyRequest.estimatedDeliveryDate = new Date(
-            studyRequest.estimatedDeliveryDate.slice(0, -1),
-          );
-          commit('setModal', {
-            component: 'FcModalRequestStudyConfirmation',
-            data: { studyRequest },
-          });
-          return studyRequest;
-        });
+      const studyRequest = await apiFetch('/requests/study', options);
+      studyRequest.dueDate = new Date(
+        studyRequest.dueDate.slice(0, -1),
+      );
+      studyRequest.estimatedDeliveryDate = new Date(
+        studyRequest.estimatedDeliveryDate.slice(0, -1),
+      );
+      commit('setModal', {
+        component: 'FcModalRequestStudyConfirmation',
+        data: { studyRequest },
+      });
+      return studyRequest;
     },
   },
 });

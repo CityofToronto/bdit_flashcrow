@@ -30,6 +30,14 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
+const HttpStatus = {
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  isOk(statusCode) {
+    return statusCode >= 200 && statusCode <= 299;
+  },
+};
+
 const REQUEST_STATUS_VARIANTS = {
   REQUESTED: 'warning',
   FLAGGED: 'error',
@@ -105,6 +113,7 @@ const Constants = {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
+  HttpStatus,
   REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
@@ -117,6 +126,7 @@ export {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
+  HttpStatus,
   REQUEST_STATUS_VARIANTS,
   SortDirection,
   SortKeys,
