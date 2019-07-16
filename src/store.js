@@ -146,6 +146,13 @@ export default new Vuex.Store({
       if (studyRequest === null) {
         return null;
       }
+      if (studyRequest.id !== undefined) {
+        /*
+         * This study request instance has already been persisted to database, so we
+         * don't need to normalize it in the same way.
+         */
+        return studyRequest;
+      }
       const {
         hasServiceRequestId,
         serviceRequestId,

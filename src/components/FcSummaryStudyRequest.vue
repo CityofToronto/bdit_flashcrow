@@ -89,6 +89,9 @@ export default {
       return this.studyRequest.ccEmails;
     },
     ccEmailsHuman() {
+      if (Array.isArray(this.ccEmails)) {
+        return this.ccEmails;
+      }
       return this.ccEmails
         .trim()
         .split(',')

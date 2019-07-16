@@ -1,13 +1,50 @@
 <template>
-<div class="fc-request-study-view">
-  <pre>{{JSON.stringify(studyRequest, null, 2)}}</pre>
-</div>
+  <main class="fc-request-study-view flex-fill flex-container-column">
+    <TdsTopBar class="nav-links text-size-l">
+      <template v-slot:left>
+        <router-link
+          :to="{ name: 'requestsTrack' }">
+          <i class="fa fa-chevron-left"></i>
+          <span> Back to All</span>
+        </router-link>
+      </template>
+    </TdsTopBar>
+    <div class="px-xl flex-fill flex-container-column">
+      <hr />
+      <div
+        v-if="studyRequest !== null"
+        class="flex-fill flex-container-column">
+        <header class="flex-container-row">
+          <h2>Request #{{studyRequest.id}}</h2>
+          <div class="flex-fill"></div>
+          <TdsLabel
+            class="font-size-l uppercase"
+            :variant="REQUEST_STATUS_VARIANTS[studyRequest.status]">
+            {{studyRequest.status}}
+          </TdsLabel>
+        </header>
+        <section class="flex-fill flex-container-row">
+          <div class="flex-cross-scroll">
+            <FcSummaryStudyRequest />
+            <FcSummaryStudy
+              v-for="(_, i) in studyRequest.studies"
+              :key="i"
+              :index="i" />
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
 
-import { HttpStatus } from '@/lib/Constants';
+import FcSummaryStudy from '@/components/FcSummaryStudy.vue';
+import FcSummaryStudyRequest from '@/components/FcSummaryStudyRequest.vue';
+import TdsLabel from '@/components/tds/TdsLabel.vue';
+import TdsTopBar from '@/components/tds/TdsTopBar.vue';
+import { HttpStatus, REQUEST_STATUS_VARIANTS } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
@@ -28,6 +65,17 @@ function getToast(err) {
 
 export default {
   name: 'FcRequestStudyView',
+  components: {
+    FcSummaryStudy,
+    FcSummaryStudyRequest,
+    TdsLabel,
+    TdsTopBar,
+  },
+  data() {
+    return {
+      REQUEST_STATUS_VARIANTS,
+    };
+  },
   computed: {
     ...mapState(['studyRequest']),
   },
@@ -60,5 +108,16 @@ export default {
 </script>
 
 <style lang="postcss">
-
+.fc-request-study-view {
+  & > .nav-links {
+    padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
+    text-transform: uppercase;
+    & > a {
+      text-decoration: none;
+    }
+  }
+  header {
+    align-items: center;
+  }
+}
 </style>
