@@ -137,7 +137,7 @@ export default {
       }
     },
     syncFromRoute() {
-      this.fetchAllStudyRequests();
+      return this.fetchAllStudyRequests();
     },
     ...mapActions(['fetchAllStudyRequests']),
     ...mapMutations(['setFilterRequestStatus']),

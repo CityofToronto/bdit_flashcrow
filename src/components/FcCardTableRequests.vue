@@ -23,7 +23,22 @@
         }">{{item.id}}</router-link>
     </template>
     <template v-slot:LOCATION="{ item }">
-      <span>TODO</span>
+      <span
+        v-if="item.location === null"
+        >
+        N/A
+      </span>
+      <router-link
+        v-else
+        :to="{
+          name: 'viewDataAtLocation',
+          params: {
+            centrelineId: item.centrelineId,
+            centrelineType: item.centrelineType,
+          }
+        }">
+        {{item.location.description}}
+      </router-link>
     </template>
     <template v-slot:STUDY_TYPES="{ item, children }">
       <span>TODO: item type</span>
@@ -41,9 +56,6 @@
           class="fa fa-exclamation"></i>
         <span> {{item.priority}}</span>
       </span>
-    </template>
-    <template v-slot:REQUESTER="{ item }">
-      <span>TODO: requester</span>
     </template>
     <template v-slot:STATUS="{ item }">
       <TdsLabel
@@ -124,10 +136,6 @@ export default {
       name: 'PRIORITY',
       sortable: true,
       title: 'Priority',
-    }, {
-      name: 'REQUESTER',
-      sortable: true,
-      title: 'Requester',
     }, {
       name: 'STATUS',
       sortable: true,

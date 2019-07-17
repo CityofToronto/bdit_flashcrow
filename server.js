@@ -34,6 +34,14 @@ const options = {
   host: config.host,
   port: config.port,
   routes: {
+    json: {
+      replacer(key, value) {
+        if (value instanceof Map || value instanceof Set) {
+          return [...value];
+        }
+        return value;
+      },
+    },
     response: {
       failAction,
     },

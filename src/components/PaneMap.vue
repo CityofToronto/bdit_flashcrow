@@ -342,7 +342,7 @@ export default {
       );
       this.map.on('load', () => {
         this.map.on('move', this.onMapMove.bind(this));
-        this.easeToLocation(null, null);
+        this.easeToLocation(this.location, null);
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });

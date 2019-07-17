@@ -17,6 +17,11 @@ Vue.use(Vuex);
 const MAX_PER_CATEGORY = 10;
 const TIMEOUT_TOAST = 10000;
 
+// TODO: DRY with CentrelineDAO.js
+function centrelineKey(centrelineType, centrelineId) {
+  return `${centrelineType}/${centrelineId}`;
+}
+
 function makeStudy(studyType) {
   return {
     studyType,
@@ -79,6 +84,7 @@ export default new Vuex.Store({
     filterRequestStatus: Object.keys(RequestStatus),
     // REQUESTS
     studyRequests: [],
+    studyRequestLocations: new Map(),
     requestReasons: [],
     // map mode
     showMap: true,
@@ -147,7 +153,19 @@ export default new Vuex.Store({
     // TABLE ITEMS: STUDY REQUESTS
     itemsStudyRequests(state) {
       return state.studyRequests
-        .filter(({ status }) => state.filterRequestStatus.includes(status));
+        .filter(({ status }) => state.filterRequestStatus.includes(status))
+        .map((studyRequest) => {
+          const { centrelineId, centrelineType } = studyRequest;
+          const key = centrelineKey(centrelineType, centrelineId);
+          let location = null;
+          if (state.studyRequestLocations.has(key)) {
+            location = state.studyRequestLocations.get(key);
+          }
+          return {
+            ...studyRequest,
+            location,
+          };
+        });
     },
     // ACTIVE STUDY REQUEST
     studyRequestModel(state, getters) {
@@ -310,9 +328,13 @@ export default new Vuex.Store({
     // STUDY REQUESTS
     clearStudyRequests(state) {
       Vue.set(state, 'studyRequests', []);
+      Vue.set(state, 'studyRequestLocations', new Map());
     },
     setStudyRequests(state, studyRequests) {
       Vue.set(state, 'studyRequests', studyRequests);
+    },
+    setStudyRequestLocations(state, studyRequestLocations) {
+      Vue.set(state, 'studyRequestLocations', studyRequestLocations);
     },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
@@ -390,9 +412,28 @@ export default new Vuex.Store({
       const options = {
         data: { centrelineId, centrelineType },
       };
-      const location = await apiFetch('/location/centreline', options);
+      const locations = await apiFetch('/location/centreline', options);
+      const locationsMap = new Map(locations);
+      const key = centrelineKey(centrelineType, centrelineId);
+      if (!locationsMap.has(key)) {
+        // TODO: better error handling here
+        throw new Error('not found!');
+      }
+      const location = locationsMap.get(key);
       commit('setLocation', location);
       return location;
+    },
+    async fetchLocationsFromCentreline(_, centrelineTypesAndIds) {
+      const centrelineIds = centrelineTypesAndIds.map(({ centrelineId: id }) => id);
+      const centrelineTypes = centrelineTypesAndIds.map(({ centrelineType: type }) => type);
+      const options = {
+        data: {
+          centrelineId: centrelineIds,
+          centrelineType: centrelineTypes,
+        },
+      };
+      const locations = await apiFetch('/location/centreline', options);
+      return new Map(locations);
     },
     async fetchLocationSuggestions({ commit }, query) {
       if (query.length < 3) {
@@ -449,7 +490,7 @@ export default new Vuex.Store({
       commit('setStudyRequest', studyRequest);
       return studyRequest;
     },
-    async fetchAllStudyRequests({ commit }) {
+    async fetchAllStudyRequests({ commit, dispatch }) {
       let studyRequests = await apiFetch('/requests/study');
       studyRequests = studyRequests.map((studyRequest) => {
         const dueDate = new Date(
@@ -465,7 +506,17 @@ export default new Vuex.Store({
         };
       });
       commit('setStudyRequests', studyRequests);
-      return studyRequests;
+      const centrelineIdsAndTypes = studyRequests
+        .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
+      const studyRequestLocations = await dispatch(
+        'fetchLocationsFromCentreline',
+        centrelineIdsAndTypes,
+      );
+      commit('setStudyRequestLocations', studyRequestLocations);
+      return {
+        studyRequests,
+        studyRequestLocations,
+      };
     },
     async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;
