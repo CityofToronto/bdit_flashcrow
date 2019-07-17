@@ -1,4 +1,6 @@
 DROP TYPE IF EXISTS gid_type CASCADE;
+-- where I got inpsiration for how to implement the composite type: 
+-- https://stackoverflow.com/questions/4284762/postgresql-select-from-function-that-returns-composite-type
 CREATE TYPE gid_type AS (
 	intersection_gid NUMERIC, 
 	centreline_gid NUMERIC
@@ -56,10 +58,11 @@ CREATE TABLE collisions.events_geocoded AS (
 SELECT *
 	FROM 
 	(
-		SELECT DISTINCT ON (collision_id, collision_accnb, day_no, collision_time) *
+		SELECT DISTINCT ON (collision_id, collision_accnb, day_no, collision_time) 
+		e.*, (CASE WHEN intersection_gid IS NOT NULL THEN intersection_gid ELSE centreline_gid END) AS gid, 
+		(CASE WHEN intersection_gid IS NOT NULL THEN 'gis.centreline_intersection'::TEXT ELSE 'gis.centreline'::TEXT END) AS table_name 
 		FROM 
-			collisions.events
-			-- where I go inpsiration for the composite type: https://stackoverflow.com/questions/4284762/postgresql-select-from-function-that-returns-composite-type
+			collisions.events e
 			JOIN LATERAL collisions.get_intersection(latitude::NUMERIC, longitude::NUMERIC, 'gis.centreline_intersection'::TEXT, 'gis.centreline'::TEXT) AS gids ON TRUE
 		WHERE longitude IS NOT NULL AND latitude IS NOT NULL and collision_accnb IS NOT NULL AND latitude > 43 AND longitude < -79
 		) x
