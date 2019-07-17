@@ -10,6 +10,7 @@ const config = require('./lib/config');
 const AuthController = require('./lib/controller/AuthController');
 const CountController = require('./lib/controller/CountController');
 const LocationController = require('./lib/controller/LocationController');
+const StudyController = require('./lib/controller/StudyController');
 const StudyRequestController = require('./lib/controller/StudyRequestController');
 const WebInitController = require('./lib/controller/WebInitController');
 const db = require('./lib/db/db');
@@ -182,6 +183,7 @@ async function initServer() {
   server.route(AuthController);
   server.route(CountController);
   server.route(LocationController);
+  server.route(StudyController);
   server.route(StudyRequestController);
   server.route(WebInitController);
 

@@ -45,7 +45,9 @@
                 type="checkbox"
                 name="selectAll"
                 :checked="selectionAll"
-                :disabled="optionsReportsEnabled.length === 0"
+                :disabled="
+                  activeCount.status === Status.REQUEST_IN_PROGRESS ||
+                  optionsReportsEnabled.length === 0"
                 :indeterminate.prop="selectionIndeterminate"
                 @change="onChangeSelectAll" />
               <span>All</span>
@@ -85,7 +87,7 @@
                     <input
                       v-model="reports"
                       type="checkbox"
-                      :disabled="disabled"
+                      :disabled="activeCount.status === Status.REQUEST_IN_PROGRESS || disabled"
                       name="reports"
                       :value="value" />
                     <span>{{label}}</span>
@@ -99,7 +101,23 @@
             <div class="flex-container-row flex-fill">
               <div class="flex-cross-scroll">
                 <TdsPanel
-                  v-if="optionsReportsEnabled.length === 0"
+                  v-if="activeCount.status === Status.REQUEST_IN_PROGRESS"
+                  variant="info">
+                  <p>
+                    This study is in progress.  You will be notified when data is available
+                    for viewing.  You can also keep updated on its progress
+                    <router-link
+                      :to="{
+                        name: 'requestStudyView',
+                        params: { id: activeCount.studyRequestId }
+                      }"
+                      @click.native="clearModal">
+                      here.
+                    </router-link>
+                  </p>
+                </TdsPanel>
+                <TdsPanel
+                  v-else-if="optionsReportsEnabled.length === 0"
                   variant="warning">
                   <p>
                     When we release {{activeCount.type.label}} reports, you'll be able to
@@ -115,6 +133,7 @@
                   </p>
                 </TdsPanel>
                 <section
+                  v-else
                   v-for="{ label, value, reportComponent } in selection"
                   :key="value"
                   class="mb-xl">
@@ -144,7 +163,7 @@ import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import TdsPanel from '@/components/tds/TdsPanel.vue';
 import apiFetch from '@/lib/ApiFetch';
-import { STATUS_META } from '@/lib/Constants';
+import { Status, STATUS_META } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
@@ -182,6 +201,7 @@ export default {
     return {
       activeCountData: [],
       reports: [],
+      Status,
       STATUS_META,
       studies: [],
     };

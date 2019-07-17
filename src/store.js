@@ -75,6 +75,7 @@ export default new Vuex.Store({
     counts: [],
     itemsCountsActive: makeItemsCountsActive(),
     numPerCategory: makeNumPerCategory(),
+    studies: [],
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...COUNT_TYPES.keys()],
@@ -116,14 +117,27 @@ export default new Vuex.Store({
         const activeIndex = state.itemsCountsActive[type.value];
         let countsOfType = state.counts
           .filter(c => c.type.value === type.value);
+        let studiesOfType = state.studies
+          .filter(s => s.studyType === type.value);
         if (state.filterDate !== null) {
           const { start, end } = state.filterDate;
           countsOfType = countsOfType
             .filter(c => start <= c.date && c.date <= end);
+          /*
+           * TODO: determine if we should instead filter by estimated date here (e.g. from
+           * the study request).
+           */
+          studiesOfType = studiesOfType
+            .filter(c => start <= c.createdAt && c.createdAt <= end);
         }
         countsOfType = countsOfType
           .filter(c => state.filterDayOfWeek.includes(c.date.getDay()));
-        if (countsOfType.length === 0) {
+        studiesOfType = studiesOfType
+          .filter(({ daysOfWeek }) => daysOfWeek.some(d => state.filterDayOfWeek.includes(d)));
+
+        const expandable = countsOfType.length > 0;
+
+        if (countsOfType.length === 0 && studiesOfType.length === 0) {
           const noExistingCount = {
             id: type.value,
             type,
@@ -133,10 +147,25 @@ export default new Vuex.Store({
           return {
             activeIndex,
             counts: [noExistingCount],
-            expandable: false,
+            expandable,
             id: type.value,
           };
         }
+        studiesOfType = studiesOfType.map((study) => {
+          const {
+            id,
+            createdAt,
+            studyRequestId,
+          } = study;
+          return {
+            id: `STUDY:${id}`,
+            type,
+            date: createdAt,
+            status: Status.REQUEST_IN_PROGRESS,
+            studyRequestId,
+          };
+        });
+        countsOfType = studiesOfType.concat(countsOfType);
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
           SortKeys.Counts.DATE,
@@ -145,7 +174,7 @@ export default new Vuex.Store({
         return {
           activeIndex,
           counts: countsOfTypeSorted,
-          expandable: true,
+          expandable,
           id: type.value,
         };
       });
@@ -291,10 +320,11 @@ export default new Vuex.Store({
       Vue.set(state, 'locationQuery', locationQuery);
     },
     // COUNTS
-    setCountsResult(state, { counts, numPerCategory }) {
+    setCountsResult(state, { counts, numPerCategory, studies }) {
       Vue.set(state, 'counts', counts);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
       Vue.set(state, 'numPerCategory', numPerCategory);
+      Vue.set(state, 'studies', studies);
     },
     setItemsCountsActive(state, { value, activeIndex }) {
       Vue.set(state.itemsCountsActive, value, activeIndex);
@@ -448,31 +478,51 @@ export default new Vuex.Store({
       return locationSuggestions;
     },
     async fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
-      const data = {
+      const dataStudies = {
+        centrelineId,
+        centrelineType,
+      };
+      const optionsStudies = { data: dataStudies };
+
+      const dataCounts = {
         centrelineId,
         centrelineType,
         maxPerCategory: MAX_PER_CATEGORY,
       };
       if (state.dateRange !== null) {
-        Object.assign(data, state.dateRange);
+        Object.assign(dataCounts, state.dateRange);
       }
-      const options = { data };
-      const { counts, numPerCategory } = await apiFetch('/counts/byCentreline', options);
-      const countsNormalized = counts.map((count) => {
-        const countNormalized = Object.assign({}, count);
-        countNormalized.date = new Date(
-          countNormalized.date.slice(0, -1),
-        );
-        return countNormalized;
-      });
+      const optionsCounts = { data: dataCounts };
+
+      const [
+        studies,
+        { counts, numPerCategory },
+      ] = await Promise.all([
+        apiFetch('/studies/byCentreline', optionsStudies),
+        apiFetch('/counts/byCentreline', optionsCounts),
+      ]);
+
       // TODO: possibly move this normalization to the backend?
+      const studiesNormalized = studies.map((study) => {
+        const createdAt = new Date(study.createdAt);
+        return { ...study, createdAt };
+      });
+      const countsNormalized = counts.map((count) => {
+        const date = new Date(count.date);
+        return { ...count, date };
+      });
       const numPerCategoryNormalized = makeNumPerCategory();
       numPerCategory.forEach(({ n, category: { value } }) => {
         numPerCategoryNormalized[value] += n;
       });
+      studiesNormalized.forEach(({ studyType: value }) => {
+        numPerCategoryNormalized[value] += 1;
+      });
+
       const result = {
         counts: countsNormalized,
         numPerCategory: numPerCategoryNormalized,
+        studies: studiesNormalized,
       };
       commit('setCountsResult', result);
       return result;

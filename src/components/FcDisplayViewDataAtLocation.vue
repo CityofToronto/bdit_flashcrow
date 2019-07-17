@@ -42,7 +42,7 @@ import {
 } from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
-import Constants from '@/lib/Constants';
+import { Status } from '@/lib/Constants';
 
 function idIsCount(id) {
   return Number.isInteger(id);
@@ -163,7 +163,7 @@ export default {
         return;
       }
       const [count] = item.counts;
-      if (count.status === Constants.Status.NO_EXISTING_COUNT) {
+      if (count.status === Status.NO_EXISTING_COUNT) {
         return;
       }
       this.setModal({
@@ -206,15 +206,11 @@ export default {
         centrelineId,
         centrelineType,
       });
-      const promises = [promiseCounts];
-      if (this.location === null) {
-        const promiseLocation = this.fetchLocationFromCentreline({
-          centrelineId,
-          centrelineType,
-        });
-        promises.push(promiseLocation);
-      }
-      return Promise.all(promises);
+      const promiseLocation = this.fetchLocationFromCentreline({
+        centrelineId,
+        centrelineType,
+      });
+      return Promise.all([promiseCounts, promiseLocation]);
     },
     ...mapActions([
       'fetchCountsByCentreline',
