@@ -11,7 +11,7 @@
 
 <script>
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import Constants from '@/lib/Constants';
+import { COUNT_TYPES } from '@/lib/Constants';
 
 export default {
   name: 'FilterCountTypes',
@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      countTypes: Constants.COUNT_TYPES,
+      countTypes: COUNT_TYPES,
     };
   },
   computed: {

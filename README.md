@@ -56,35 +56,28 @@ This repository consists of:
 
 These scripts are listed in [package.json](package.json), as per the [`npm-run-script`](https://docs.npmjs.com/cli/run-script) documentation.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+- `backend`: runs the REST API server at `server.js`;
+- `backend:inspect`: runs `server.js`, but also opens debugging on port 9229;
+- `backend:inspect-brk`: like `backend:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
+- `ci:jest-coverage`: compute test coverage;
+- `ci:npm-audit`: run `npm audit` to scan for known vulnerabilities in our `npm` dependencies;
+- `ci:test-api`: test our REST API layer;
+- `ci:test-db`: test our database layer;
+- `ci:test-unit`: run unit tests;
+- `frontend`: runs `webpack-dev-server` to serve frontend static resources, with hot-reloading for changes;
+- `frontend:build`: builds a production-ready version of our frontend static resources;
+- `frontend:docs`: generates frontend JSDoc-based documentation and serves it on port 9080, with hot-reloading for changes;
+- `pre-commit:lint-staged`: run linters on any files changed in the current commit;
+- `pre-commit:test-unit-staged`: run unit tests for any files changed since latest `master`.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run-all ci:*`, `npx npm-run-all pre-commit:*`.
 
-### Run your tests
-```
-npm run test
-```
+### Deprecated
 
-### Lints and fixes files
-```
-npm run lint
-```
+These are provided for backwards compatibility with CD pipelines as set up by Cloud Services, as well as to support reverts to older versions.
 
-### Run your end-to-end tests
-```
-npm run test:e2e -- --mode=development
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
+- `serve`: same as `frontend`;
+- `build`: same as `frontend:build`.
 
 ## Vue CLI configuration
 
@@ -103,7 +96,6 @@ This web application was originally generated from the following [Vue CLI preset
       ]
     },
     "@vue/cli-plugin-unit-jest": {},
-    "@vue/cli-plugin-e2e-cypress": {}
   },
   "router": true,
   "routerHistoryMode": false,

@@ -91,7 +91,7 @@
 
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import { SortDirection } from '@/lib/Constants';
 
 export default {
   name: 'FcCardTable',
@@ -112,7 +112,7 @@ export default {
     },
     sortDirection: {
       type: Number,
-      default: Constants.SortDirection.ASC,
+      default: SortDirection.ASC,
     },
     sortKeys: {
       type: Object,
@@ -124,7 +124,7 @@ export default {
       expanded: null,
       internalSortBy: this.sortBy,
       internalSortDirection: this.sortDirection,
-      SortDirection: Constants.SortDirection,
+      SortDirection,
     };
   },
   computed: {
@@ -174,7 +174,7 @@ export default {
       }
       if (this.internalSortBy !== column.name) {
         this.internalSortBy = column.name;
-        this.internalSortDirection = Constants.SortDirection.ASC;
+        this.internalSortDirection = SortDirection.ASC;
       } else {
         this.internalSortDirection = -this.internalSortDirection;
       }

@@ -19,8 +19,7 @@
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "TEST_DIR=unit jest --changedSince=master",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "test-e2e": "vue-cli-service test:e2e"
+    "build": "vue-cli-service build"
   },
   "dependencies": {
     "@hapi/boom": "^7.4.2",
@@ -59,7 +58,6 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-e2e-cypress": "^3.9.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-service": "^3.6.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
