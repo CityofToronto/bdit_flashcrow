@@ -30,14 +30,47 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
-const REQUEST_STATUS_VARIANTS = {
-  REQUESTED: 'warning',
-  FLAGGED: 'error',
-  REVIEWED: 'warning',
-  SUBMITTED: 'info',
-  SCHEDULED: 'info',
-  DATA_READY: 'success',
-  COMPLETED: 'success',
+const HttpStatus = {
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  isOk(statusCode) {
+    return statusCode >= 200 && statusCode <= 299;
+  },
+};
+
+const RequestStatus = {
+  REQUESTED: {
+    icon: 'concierge-bell',
+    variant: 'info',
+  },
+  FLAGGED: {
+    icon: 'flag',
+    variant: 'warning',
+  },
+  REVIEWED: {
+    icon: 'check-square',
+    variant: 'info',
+  },
+  SUBMITTED: {
+    icon: 'hourglass-start',
+    variant: 'info',
+  },
+  SCHEDULED: {
+    icon: 'calendar-check',
+    variant: 'info',
+  },
+  DATA_READY: {
+    icon: 'file-archive',
+    variant: 'warning',
+  },
+  COMPLETED: {
+    icon: 'check',
+    variant: 'success',
+  },
+  CANCELLED: {
+    icon: 'times-circle',
+    variant: 'error',
+  },
 };
 
 const SortDirection = {
@@ -59,6 +92,9 @@ const SortKeys = {
     PRIORITY: r => (r.priority === 'STANDARD' ? 0 : 1),
     REQUESTER: r => r.requestedBy.name,
     STATUS: r => r.status,
+  },
+  Studies: {
+    CREATED_AT: s => s.createdAt.valueOf(),
   },
 };
 
@@ -105,7 +141,8 @@ const Constants = {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
-  REQUEST_STATUS_VARIANTS,
+  HttpStatus,
+  RequestStatus,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
@@ -117,7 +154,8 @@ export {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
-  REQUEST_STATUS_VARIANTS,
+  HttpStatus,
+  RequestStatus,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,

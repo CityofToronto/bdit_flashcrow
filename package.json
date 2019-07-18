@@ -59,7 +59,7 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-e2e-cypress": "^3.4.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.9.0",
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-service": "^3.6.0",
     "@vue/eslint-config-airbnb": "^4.0.0",

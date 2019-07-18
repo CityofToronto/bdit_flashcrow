@@ -88,7 +88,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrack.vue'),
     },
     {
-      path: 'requests/study/:id',
+      path: '/requests/study/:id',
       name: 'requestStudyView',
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyView.vue'),
     },
@@ -124,8 +124,15 @@ router.beforeEach((to, from, next) => {
         next();
       }
     })
-    .catch((err) => {
-      next(err);
+    .catch(() => {
+      /*
+       * We couldn't authenticate the user, so we should assume that they're logged out.
+       */
+      if (to.name === 'login') {
+        next();
+      } else {
+        next({ name: 'login' });
+      }
     });
 });
 

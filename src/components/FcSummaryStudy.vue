@@ -66,7 +66,7 @@ import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
-  name: 'CountDetailsSummary',
+  name: 'FcSummaryStudy',
   components: {
     TdsPanel,
   },

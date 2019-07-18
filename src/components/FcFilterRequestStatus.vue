@@ -1,7 +1,9 @@
 <template>
   <TdsChecklistDropdown
     class="fc-filter-request-status"
-    :class="{ 'tds-button-success': active }"
+    :class="{
+      'tds-button-success': hasFilterRequestStatus,
+    }"
     name="requestStatus"
     :options="options"
     v-model="filterRequestStatus">
@@ -9,7 +11,9 @@
       Request Status
       <span
         class="tds-badge"
-        :class="{ 'tds-badge-success': active }">
+        :class="{
+          'tds-badge-success': hasFilterRequestStatus,
+        }">
         {{filterRequestStatus.length}}
       </span>
     </span>
@@ -17,23 +21,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import Constants from '@/lib/Constants';
+import { RequestStatus } from '@/lib/Constants';
 
 export default {
   name: 'FcFilterRequestStatus',
   components: {
     TdsChecklistDropdown,
   },
-  props: {
-    active: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
-    const options = Constants.REQUEST_STATUS_META
-      .map((meta, i) => Object.assign({ value: i }, meta));
+    const options = Object.keys(RequestStatus)
+      .map(value => ({ label: value, value }));
     return { options };
   },
   computed: {
@@ -45,6 +45,7 @@ export default {
         this.$store.commit('setFilterRequestStatus', filterRequestStatus);
       },
     },
+    ...mapGetters(['hasFilterRequestStatus']),
   },
 };
 </script>

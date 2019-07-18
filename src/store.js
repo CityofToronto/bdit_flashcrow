@@ -5,6 +5,7 @@ import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
   COUNT_TYPES,
+  RequestStatus,
   SortKeys,
   SortDirection,
   Status,
@@ -15,6 +16,39 @@ Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
 const TIMEOUT_TOAST = 10000;
+
+function normalizeCount(count) {
+  /*
+   * Due to a bug in our replication process, count timestamps are stored in
+   * PostgreSQL in Toronto-local time, as opposed to UTC - this means we
+   * should ignore the "Z" at the end of the stringified timestamp.
+   */
+  const date = new Date(count.date.slice(0, -1));
+  return {
+    ...count,
+    date,
+  };
+}
+
+function normalizeStudy(study) {
+  const createdAt = new Date(study.createdAt);
+  return { ...study, createdAt };
+}
+
+function normalizeStudyRequest(studyRequest) {
+  const dueDate = new Date(studyRequest.dueDate);
+  const estimatedDeliveryDate = new Date(studyRequest.estimatedDeliveryDate);
+  return {
+    ...studyRequest,
+    dueDate,
+    estimatedDeliveryDate,
+  };
+}
+
+// TODO: DRY with CentrelineDAO.js
+function centrelineKey(centrelineType, centrelineId) {
+  return `${centrelineType}/${centrelineId}`;
+}
 
 function makeStudy(studyType) {
   return {
@@ -69,20 +103,23 @@ export default new Vuex.Store({
     counts: [],
     itemsCountsActive: makeItemsCountsActive(),
     numPerCategory: makeNumPerCategory(),
+    studies: [],
     // FILTERING DATA
     // TODO: in searching / selecting phase, bring this under one "filter" key
     filterCountTypes: [...COUNT_TYPES.keys()],
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // FILTERING REQUESTS
-    filterRequestStatus: [],
+    filterRequestStatus: Object.keys(RequestStatus),
     // REQUESTS
-    requests: [],
+    studyRequests: [],
+    studyRequestLocations: new Map(),
     requestReasons: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+    studyRequestLocation: null,
     // query that will appear in the search bar
     locationQuery: '',
   },
@@ -99,6 +136,9 @@ export default new Vuex.Store({
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
     },
+    hasFilterRequestStatus(state) {
+      return state.filterRequestStatus.length !== Object.keys(RequestStatus).length;
+    },
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
       return state.filterCountTypes.map((i) => {
@@ -106,14 +146,27 @@ export default new Vuex.Store({
         const activeIndex = state.itemsCountsActive[type.value];
         let countsOfType = state.counts
           .filter(c => c.type.value === type.value);
+        let studiesOfType = state.studies
+          .filter(s => s.studyType === type.value);
         if (state.filterDate !== null) {
           const { start, end } = state.filterDate;
           countsOfType = countsOfType
             .filter(c => start <= c.date && c.date <= end);
+          /*
+           * TODO: determine if we should instead filter by estimated date here (e.g. from
+           * the study request).
+           */
+          studiesOfType = studiesOfType
+            .filter(c => start <= c.createdAt && c.createdAt <= end);
         }
         countsOfType = countsOfType
           .filter(c => state.filterDayOfWeek.includes(c.date.getDay()));
-        if (countsOfType.length === 0) {
+        studiesOfType = studiesOfType
+          .filter(({ daysOfWeek }) => daysOfWeek.some(d => state.filterDayOfWeek.includes(d)));
+
+        const expandable = countsOfType.length > 0;
+
+        if (countsOfType.length === 0 && studiesOfType.length === 0) {
           const noExistingCount = {
             id: type.value,
             type,
@@ -123,10 +176,25 @@ export default new Vuex.Store({
           return {
             activeIndex,
             counts: [noExistingCount],
-            expandable: false,
+            expandable,
             id: type.value,
           };
         }
+        studiesOfType = studiesOfType.map((study) => {
+          const {
+            id,
+            createdAt,
+            studyRequestId,
+          } = study;
+          return {
+            id: `STUDY:${id}`,
+            type,
+            date: createdAt,
+            status: Status.REQUEST_IN_PROGRESS,
+            studyRequestId,
+          };
+        });
+        countsOfType = studiesOfType.concat(countsOfType);
         const countsOfTypeSorted = ArrayUtils.sortBy(
           countsOfType,
           SortKeys.Counts.DATE,
@@ -135,16 +203,40 @@ export default new Vuex.Store({
         return {
           activeIndex,
           counts: countsOfTypeSorted,
-          expandable: true,
+          expandable,
           id: type.value,
         };
       });
+    },
+    // TABLE ITEMS: STUDY REQUESTS
+    itemsStudyRequests(state) {
+      return state.studyRequests
+        .filter(({ status }) => state.filterRequestStatus.includes(status))
+        .map((studyRequest) => {
+          const { centrelineId, centrelineType } = studyRequest;
+          const key = centrelineKey(centrelineType, centrelineId);
+          let location = null;
+          if (state.studyRequestLocations.has(key)) {
+            location = state.studyRequestLocations.get(key);
+          }
+          return {
+            ...studyRequest,
+            location,
+          };
+        });
     },
     // ACTIVE STUDY REQUEST
     studyRequestModel(state, getters) {
       const { studyRequest } = state;
       if (studyRequest === null) {
         return null;
+      }
+      if (studyRequest.id !== undefined) {
+        /*
+         * This study request instance has already been persisted to database, so we
+         * don't need to normalize it in the same way.
+         */
+        return studyRequest;
       }
       const {
         hasServiceRequestId,
@@ -257,10 +349,11 @@ export default new Vuex.Store({
       Vue.set(state, 'locationQuery', locationQuery);
     },
     // COUNTS
-    setCountsResult(state, { counts, numPerCategory }) {
+    setCountsResult(state, { counts, numPerCategory, studies }) {
       Vue.set(state, 'counts', counts);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
       Vue.set(state, 'numPerCategory', numPerCategory);
+      Vue.set(state, 'studies', studies);
     },
     setItemsCountsActive(state, { value, activeIndex }) {
       Vue.set(state.itemsCountsActive, value, activeIndex);
@@ -291,9 +384,26 @@ export default new Vuex.Store({
     setShowMap(state, showMap) {
       Vue.set(state, 'showMap', showMap);
     },
+    // STUDY REQUESTS
+    clearStudyRequests(state) {
+      Vue.set(state, 'studyRequests', []);
+      Vue.set(state, 'studyRequestLocations', new Map());
+    },
+    setStudyRequests(state, studyRequests) {
+      Vue.set(state, 'studyRequests', studyRequests);
+    },
+    setStudyRequestLocations(state, studyRequestLocations) {
+      Vue.set(state, 'studyRequestLocations', studyRequestLocations);
+    },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
       Vue.set(state, 'studyRequest', null);
+    },
+    setStudyRequest(state, studyRequest) {
+      Vue.set(state, 'studyRequest', studyRequest);
+    },
+    setStudyRequestLocation(state, studyRequestLocation) {
+      Vue.set(state, 'studyRequestLocation', studyRequestLocation);
     },
     setNewStudyRequest(state, studyTypes) {
       const { location } = state;
@@ -337,113 +447,163 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    webInit({ commit }) {
-      return apiFetch('/web/init')
-        .then((response) => {
-          commit('webInit', response);
-          return response;
-        });
+    async webInit({ commit }) {
+      const response = await apiFetch('/web/init');
+      commit('webInit', response);
+      return response;
     },
-    setToast({ commit }, toast) {
+    async setToast({ commit }, toast) {
       commit('setToast', toast);
       clearToastDebounced(commit);
+      return toast;
     },
-    checkAuth({ commit }) {
-      return apiFetch('/auth')
-        .then((auth) => {
-          commit('setAuth', auth);
-          return auth;
-        });
+    async checkAuth({ commit }) {
+      const auth = await apiFetch('/auth');
+      commit('setAuth', auth);
+      return auth;
     },
-    fetchLocationByKeyString({ commit }, keyString) {
+    async fetchLocationByKeyString({ commit }, keyString) {
       const options = {
         data: { keyString },
       };
-      return apiFetch('/cotgeocoder/findAddressCandidates', options)
-        .then((location) => {
-          commit('setLocation', location);
-          return location;
-        });
+      const location = await apiFetch('/cotgeocoder/findAddressCandidates', options);
+      commit('setLocation', location);
+      return location;
     },
-    fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
+    async fetchLocationFromCentreline(_, { centrelineId, centrelineType }) {
       const options = {
         data: { centrelineId, centrelineType },
       };
-      return apiFetch('/location/centreline', options)
-        .then((location) => {
-          commit('setLocation', location);
-          return location;
-        });
+      const locations = await apiFetch('/location/centreline', options);
+      const locationsMap = new Map(locations);
+      const key = centrelineKey(centrelineType, centrelineId);
+      if (!locationsMap.has(key)) {
+        // TODO: better error handling here
+        throw new Error('not found!');
+      }
+      return locationsMap.get(key);
     },
-    fetchLocationSuggestions({ commit }, query) {
+    async fetchLocationsFromCentreline(_, centrelineTypesAndIds) {
+      const centrelineIds = centrelineTypesAndIds.map(({ centrelineId: id }) => id);
+      const centrelineTypes = centrelineTypesAndIds.map(({ centrelineType: type }) => type);
+      const options = {
+        data: {
+          centrelineId: centrelineIds,
+          centrelineType: centrelineTypes,
+        },
+      };
+      const locations = await apiFetch('/location/centreline', options);
+      return new Map(locations);
+    },
+    async fetchLocationSuggestions({ commit }, query) {
       if (query.length < 3) {
         commit('clearLocationSuggestions');
-        return Promise.resolve(null);
+        return null;
       }
       const options = {
         data: { q: query },
       };
-      return apiFetch('/cotgeocoder/suggest', options)
-        .then((locationSuggestions) => {
-          commit('setLocationSuggestions', locationSuggestions);
-          return locationSuggestions;
-        });
+      const locationSuggestions = await apiFetch('/cotgeocoder/suggest', options);
+      commit('setLocationSuggestions', locationSuggestions);
+      return locationSuggestions;
     },
-    fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
-      const data = {
+    async fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
+      const dataStudies = {
+        centrelineId,
+        centrelineType,
+      };
+      const optionsStudies = { data: dataStudies };
+
+      const dataCounts = {
         centrelineId,
         centrelineType,
         maxPerCategory: MAX_PER_CATEGORY,
       };
       if (state.dateRange !== null) {
-        Object.assign(data, state.dateRange);
+        Object.assign(dataCounts, state.dateRange);
       }
-      const options = { data };
-      return apiFetch('/counts/byCentreline', options)
-        .then(({ counts, numPerCategory }) => {
-          const countsNormalized = counts.map((count) => {
-            const countNormalized = Object.assign({}, count);
-            countNormalized.date = new Date(
-              countNormalized.date.slice(0, -1),
-            );
-            return countNormalized;
-          });
-          // TODO: possibly move this normalization to the backend?
-          const numPerCategoryNormalized = makeNumPerCategory();
-          numPerCategory.forEach(({ n, category: { value } }) => {
-            numPerCategoryNormalized[value] += n;
-          });
-          const result = {
-            counts: countsNormalized,
-            numPerCategory: numPerCategoryNormalized,
-          };
-          commit('setCountsResult', result);
-          return result;
-        });
+      const optionsCounts = { data: dataCounts };
+
+      const [
+        studies,
+        { counts, numPerCategory },
+      ] = await Promise.all([
+        apiFetch('/studies/byCentreline', optionsStudies),
+        apiFetch('/counts/byCentreline', optionsCounts),
+      ]);
+
+      const studiesNormalized = studies.map(normalizeStudy);
+      const countsNormalized = counts.map(normalizeCount);
+      const numPerCategoryNormalized = makeNumPerCategory();
+      numPerCategory.forEach(({ n, category: { value } }) => {
+        numPerCategoryNormalized[value] += n;
+      });
+      studiesNormalized.forEach(({ studyType: value }) => {
+        numPerCategoryNormalized[value] += 1;
+      });
+
+      const result = {
+        counts: countsNormalized,
+        numPerCategory: numPerCategoryNormalized,
+        studies: studiesNormalized,
+      };
+      commit('setCountsResult', result);
+      return result;
     },
     // STUDY REQUESTS
-    saveActiveStudyRequest({ commit, getters, state }) {
+    async fetchStudyRequest({ commit, dispatch }, id) {
+      const url = `/requests/study/${id}`;
+      let studyRequest = await apiFetch(url);
+      studyRequest = normalizeStudyRequest(studyRequest);
+      commit('setStudyRequest', studyRequest);
+
+      const { centrelineId, centrelineType } = studyRequest;
+      const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
+      const studyRequestLocations = await dispatch(
+        'fetchLocationsFromCentreline',
+        centrelineIdsAndTypes,
+      );
+      const key = centrelineKey(centrelineType, centrelineId);
+      const studyRequestLocation = studyRequestLocations.get(key);
+      commit('setStudyRequestLocation', studyRequestLocation);
+
+      return {
+        studyRequest,
+        studyRequestLocation,
+      };
+    },
+    async fetchAllStudyRequests({ commit, dispatch }) {
+      let studyRequests = await apiFetch('/requests/study');
+      studyRequests = studyRequests.map(normalizeStudyRequest);
+      commit('setStudyRequests', studyRequests);
+
+      const centrelineIdsAndTypes = studyRequests
+        .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
+      const studyRequestLocations = await dispatch(
+        'fetchLocationsFromCentreline',
+        centrelineIdsAndTypes,
+      );
+      commit('setStudyRequestLocations', studyRequestLocations);
+
+      return {
+        studyRequests,
+        studyRequestLocations,
+      };
+    },
+    async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;
       const options = {
         method: 'POST',
         csrf: state.auth.csrf,
         data,
       };
-      return apiFetch('/requests/study', options)
-        .then((response) => {
-          const studyRequest = Object.assign({}, response);
-          studyRequest.dueDate = new Date(
-            studyRequest.dueDate.slice(0, -1),
-          );
-          studyRequest.estimatedDeliveryDate = new Date(
-            studyRequest.estimatedDeliveryDate.slice(0, -1),
-          );
-          commit('setModal', {
-            component: 'FcModalRequestStudyConfirmation',
-            data: { studyRequest },
-          });
-          return studyRequest;
-        });
+      let studyRequest = await apiFetch('/requests/study', options);
+      studyRequest = normalizeStudyRequest(studyRequest);
+      commit('setModal', {
+        component: 'FcModalRequestStudyConfirmation',
+        data: { studyRequest },
+      });
+      return studyRequest;
     },
   },
 });

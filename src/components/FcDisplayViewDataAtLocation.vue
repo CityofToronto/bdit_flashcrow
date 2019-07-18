@@ -42,10 +42,14 @@ import {
 } from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
-import Constants from '@/lib/Constants';
+import { Status } from '@/lib/Constants';
 
 function idIsCount(id) {
   return Number.isInteger(id);
+}
+
+function idIsStudy(id) {
+  return id.indexOf('STUDY:') === 0;
 }
 
 export default {
@@ -79,6 +83,11 @@ export default {
           const count = this.counts.find(c => c.id);
           return count.type.value;
         }
+        if (idIsStudy(id)) {
+          const studyId = parseInt(id.slice('STUDY:'.length), 10);
+          const study = this.studies.find(s => s.id === studyId);
+          return study.studyType;
+        }
         return id;
       }));
       return Array.from(studyTypes);
@@ -97,6 +106,7 @@ export default {
       'counts',
       'location',
       'showMap',
+      'studies',
     ]),
   },
   validations: {
@@ -163,7 +173,7 @@ export default {
         return;
       }
       const [count] = item.counts;
-      if (count.status === Constants.Status.NO_EXISTING_COUNT) {
+      if (count.status === Status.NO_EXISTING_COUNT) {
         return;
       }
       this.setModal({
@@ -200,21 +210,23 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    syncFromRoute(to) {
+    async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
       const promiseCounts = this.fetchCountsByCentreline({
         centrelineId,
         centrelineType,
       });
-      const promises = [promiseCounts];
-      if (this.location === null) {
-        const promiseLocation = this.fetchLocationFromCentreline({
-          centrelineId,
-          centrelineType,
-        });
-        promises.push(promiseLocation);
+      const promiseLocation = this.fetchLocationFromCentreline({
+        centrelineId,
+        centrelineType,
+      });
+      const result = await Promise.all([promiseCounts, promiseLocation]);
+      const location = result[1];
+      if (this.location === null
+          || location.centrelineId !== this.location.centrelineId
+          || location.centrelineType !== this.location.centrelineType) {
+        this.setLocation(location);
       }
-      return Promise.all(promises);
     },
     ...mapActions([
       'fetchCountsByCentreline',
@@ -222,8 +234,9 @@ export default {
       'newStudyRequest',
     ]),
     ...mapMutations([
-      'setNewStudyRequest',
+      'setLocation',
       'setModal',
+      'setNewStudyRequest',
       'setShowMap',
     ]),
   },

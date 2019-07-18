@@ -1,37 +1,5 @@
 <template>
   <div class="fc-requests-track-by-type flex-container-column flex-fill">
-    <header class="mb-m">
-      <router-link
-        class="py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.REQUESTED, RequestStatus.FLAGGED] },
-        }">In Review
-        <span class="tds-badge">{{numInReview}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.REVIEWED] },
-        }">To Submit
-        <span class="tds-badge">{{numToSubmit}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.SUBMITTED, RequestStatus.SCHEDULED] },
-        }">In Progress
-        <span class="tds-badge">{{numInProgress}}</span>
-      </router-link>
-      <router-link
-        class="ml-xl py-s"
-        :to="{
-          name: 'requestsTrackByStatus',
-          query: { status: [RequestStatus.DATA_READY] },
-        }">Complete</router-link>
-    </header>
     <section>
       <header class="flex-container-row">
         <label class="tds-checkbox">
@@ -43,14 +11,7 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <FcFilterRequestStatus
-          :active="filterRequestStatus.length > 0"
-          class="font-size-l" />
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-eye"></i>
-        </button>
+        <FcFilterRequestStatus class="font-size-l" />
         <button
           class="tds-button-secondary"
           disabled>
@@ -64,16 +25,10 @@
         <button
           class="tds-button-secondary"
           disabled>
-          <i class="fa fa-user"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-external-link-square-alt"></i>
+          <i class="fa fa-download"></i>
         </button>
       </header>
       <FcCardTableRequests
-        :sections="sections"
         v-model="selection"
         @action-item="onActionItem" />
     </section>
@@ -81,12 +36,15 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
 import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
-import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
 
 export default {
   name: 'FcRequestsTrackByStatus',
@@ -96,59 +54,16 @@ export default {
   },
   data() {
     return {
-      RequestStatus: Constants.RequestStatus,
       selection: [],
     };
   },
   computed: {
-    numInProgress() {
-      const statii = [
-        Constants.RequestStatus.SUBMITTED,
-        Constants.RequestStatus.SCHEDULED,
-      ];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    numInReview() {
-      const statii = [
-        Constants.RequestStatus.REQUESTED,
-        Constants.RequestStatus.FLAGGED,
-      ];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    numToSubmit() {
-      const statii = [Constants.RequestStatus.REVIEWED];
-      return this.requests
-        .filter(({ status }) => statii.includes(status))
-        .length;
-    },
-    sections() {
-      const sections = this.requests.map(({
-        id,
-        location,
-        dueDate,
-        priority,
-        requestedBy,
-        status,
-        counts,
-      }) => {
-        const item = {
-          id,
-          location,
-          dueDate,
-          priority,
-          requestedBy,
-          status,
-        };
-        return { item, children: counts };
-      });
-      return sections.filter(({ item }) => this.filterRequestStatus.includes(item.status));
-    },
     selectableIds() {
-      return this.sections.map(({ item }) => item.id);
+      return this.itemsStudyRequests.map(({ id }) => id);
+    },
+    selectedStudyRequests() {
+      return this.selection
+        .map(id => this.studyRequests.find(r => r.id === id));
     },
     selectionAll() {
       return this.selectableIds
@@ -157,19 +72,11 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
+    ...mapGetters(['itemsStudyRequests']),
     ...mapState([
       'filterRequestStatus',
-      'requests',
+      'studyRequests',
     ]),
-  },
-  watch: {
-    filterRequestStatus() {
-      const status = ArrayUtils.sortBy(this.filterRequestStatus, x => x);
-      this.$router.replace({
-        name: 'requestsTrackByStatus',
-        query: { status },
-      });
-    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -177,50 +84,40 @@ export default {
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.syncFromRoute(to);
-    next();
+    this.syncFromRoute(to)
+      .then(() => {
+        next();
+      }).catch((err) => {
+        next(err);
+      });
   },
   methods: {
-    actionAccept(/* items */) {
-      // TODO: implement this
+    actionAccept(studyRequests) {
+      console.log('accept', studyRequests);
     },
-    actionAssign(/* items */) {
-      // TODO: implement this
+    actionExport(studyRequests) {
+      console.log('export', studyRequests);
     },
-    actionExport(/* items */) {
-      // TODO: implement this
-    },
-    actionFlag(/* items */) {
-      // TODO: implement this
-    },
-    actionReview(/* items */) {
-      // TODO: implement this
+    actionFlag(studyRequests) {
+      console.log('flag', studyRequests);
     },
     onActionBulk(type, options) {
-      const items = this.selection.map(id => ({ id }));
+      const studyRequests = this.selectedStudyRequests;
       const actionOptions = options || {};
-      if (type === 'review') {
-        this.actionReview(items, actionOptions);
-      } else if (type === 'accept') {
-        this.actionAccept(items, actionOptions);
+      if (type === 'accept') {
+        this.actionAccept(studyRequests, actionOptions);
       } else if (type === 'flag') {
-        this.actionFlag(items, actionOptions);
-      } else if (type === 'assign') {
-        this.actionAssign(items, actionOptions);
+        this.actionFlag(studyRequests, actionOptions);
       } else if (type === 'export') {
-        this.actionExport(items, actionOptions);
+        this.actionExport(studyRequests, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
-      if (type === 'review') {
-        this.actionReview([item], actionOptions);
-      } else if (type === 'accept') {
+      if (type === 'accept') {
         this.actionAccept([item], actionOptions);
       } else if (type === 'flag') {
         this.actionFlag([item], actionOptions);
-      } else if (type === 'assign') {
-        this.actionAssign([item], actionOptions);
       } else if (type === 'export') {
         this.actionExport([item], actionOptions);
       }
@@ -232,20 +129,11 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    syncFromRoute(to) {
-      let { status } = to.query;
-      status = status || [];
-      if (!Array.isArray(status)) {
-        status = [status];
-      }
-      status = status.map(i => parseInt(i, 10));
-      this.setFilterRequestStatus(status);
+    syncFromRoute() {
+      return this.fetchAllStudyRequests();
     },
-    ...mapActions(['newStudyRequest']),
-    ...mapMutations([
-      'setFilterRequestStatus',
-      'setModal',
-    ]),
+    ...mapActions(['fetchAllStudyRequests']),
+    ...mapMutations(['setFilterRequestStatus']),
   },
 };
 </script>

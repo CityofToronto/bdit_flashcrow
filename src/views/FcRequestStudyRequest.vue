@@ -35,27 +35,41 @@ import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
 import { COUNT_TYPES, SortKeys, Status } from '@/lib/Constants';
 
-function getStudyTypeItem(counts, type, id) {
-  const countsOfType = counts.filter(c => c.type.value === type.value);
-  if (countsOfType.length === 0) {
+function getStudyTypeItem(counts, studies, type, id) {
+  const studiesOfType = studies.filter(s => s.studyType === type.value);
+  if (studiesOfType.length > 0) {
+    const { createdAt } = ArrayUtils.getMaxBy(
+      studiesOfType,
+      SortKeys.Studies.CREATED_AT,
+    );
     return {
       expandable: false,
       id,
       type,
-      date: null,
-      status: Status.NO_EXISTING_COUNT,
+      date: createdAt,
+      status: Status.REQUEST_IN_PROGRESS,
     };
   }
-  const { date, status } = ArrayUtils.getMaxBy(
-    countsOfType,
-    SortKeys.Counts.DATE,
-  );
+  const countsOfType = counts.filter(c => c.type.value === type.value);
+  if (countsOfType.length > 0) {
+    const { date, status } = ArrayUtils.getMaxBy(
+      countsOfType,
+      SortKeys.Counts.DATE,
+    );
+    return {
+      expandable: false,
+      id,
+      type,
+      date,
+      status,
+    };
+  }
   return {
     expandable: false,
     id,
     type,
-    date,
-    status,
+    date: null,
+    status: Status.NO_EXISTING_COUNT,
   };
 }
 
@@ -69,7 +83,7 @@ export default {
     items() {
       return this.studyRequest.studies.map(({ studyType }, id) => {
         const type = COUNT_TYPES.find(({ value }) => value === studyType);
-        return getStudyTypeItem(this.counts, type, id);
+        return getStudyTypeItem(this.counts, this.studies, type, id);
       });
     },
     ...mapGetters([
@@ -77,6 +91,7 @@ export default {
     ]),
     ...mapState([
       'counts',
+      'studies',
       'studyRequest',
     ]),
   },
