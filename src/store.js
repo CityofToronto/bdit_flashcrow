@@ -17,6 +17,34 @@ Vue.use(Vuex);
 const MAX_PER_CATEGORY = 10;
 const TIMEOUT_TOAST = 10000;
 
+function normalizeCount(count) {
+  /*
+   * Due to a bug in our replication process, count timestamps are stored in
+   * PostgreSQL in Toronto-local time, as opposed to UTC - this means we
+   * should ignore the "Z" at the end of the stringified timestamp.
+   */
+  const date = new Date(count.date.slice(0, -1));
+  return {
+    ...count,
+    date,
+  };
+}
+
+function normalizeStudy(study) {
+  const createdAt = new Date(study.createdAt);
+  return { ...study, createdAt };
+}
+
+function normalizeStudyRequest(studyRequest) {
+  const dueDate = new Date(studyRequest.dueDate);
+  const estimatedDeliveryDate = new Date(studyRequest.estimatedDeliveryDate);
+  return {
+    ...studyRequest,
+    dueDate,
+    estimatedDeliveryDate,
+  };
+}
+
 // TODO: DRY with CentrelineDAO.js
 function centrelineKey(centrelineType, centrelineId) {
   return `${centrelineType}/${centrelineId}`;
@@ -502,15 +530,8 @@ export default new Vuex.Store({
         apiFetch('/counts/byCentreline', optionsCounts),
       ]);
 
-      // TODO: possibly move this normalization to the backend?
-      const studiesNormalized = studies.map((study) => {
-        const createdAt = new Date(study.createdAt);
-        return { ...study, createdAt };
-      });
-      const countsNormalized = counts.map((count) => {
-        const date = new Date(count.date);
-        return { ...count, date };
-      });
+      const studiesNormalized = studies.map(normalizeStudy);
+      const countsNormalized = counts.map(normalizeCount);
       const numPerCategoryNormalized = makeNumPerCategory();
       numPerCategory.forEach(({ n, category: { value } }) => {
         numPerCategoryNormalized[value] += n;
@@ -530,31 +551,14 @@ export default new Vuex.Store({
     // STUDY REQUESTS
     async fetchStudyRequest({ commit }, id) {
       const url = `/requests/study/${id}`;
-      const studyRequest = await apiFetch(url);
-      studyRequest.dueDate = new Date(
-        studyRequest.dueDate.slice(0, -1),
-      );
-      studyRequest.estimatedDeliveryDate = new Date(
-        studyRequest.estimatedDeliveryDate.slice(0, -1),
-      );
+      let studyRequest = await apiFetch(url);
+      studyRequest = normalizeStudyRequest(studyRequest);
       commit('setStudyRequest', studyRequest);
       return studyRequest;
     },
     async fetchAllStudyRequests({ commit, dispatch }) {
       let studyRequests = await apiFetch('/requests/study');
-      studyRequests = studyRequests.map((studyRequest) => {
-        const dueDate = new Date(
-          studyRequest.dueDate.slice(0, -1),
-        );
-        const estimatedDeliveryDate = new Date(
-          studyRequest.estimatedDeliveryDate.slice(0, -1),
-        );
-        return {
-          ...studyRequest,
-          dueDate,
-          estimatedDeliveryDate,
-        };
-      });
+      studyRequests = studyRequests.map(normalizeStudyRequest);
       commit('setStudyRequests', studyRequests);
       const centrelineIdsAndTypes = studyRequests
         .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
@@ -575,13 +579,8 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequest = await apiFetch('/requests/study', options);
-      studyRequest.dueDate = new Date(
-        studyRequest.dueDate.slice(0, -1),
-      );
-      studyRequest.estimatedDeliveryDate = new Date(
-        studyRequest.estimatedDeliveryDate.slice(0, -1),
-      );
+      let studyRequest = await apiFetch('/requests/study', options);
+      studyRequest = normalizeStudyRequest(studyRequest);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
         data: { studyRequest },

@@ -11,11 +11,7 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <FcFilterRequestStatus
-          class="font-size-l"
-          :class="{
-            'tds-button-success': hasFilterRequestStatus,
-          }" />
+        <FcFilterRequestStatus class="font-size-l" />
         <button
           class="tds-button-secondary"
           disabled>
@@ -76,10 +72,7 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
-    ...mapGetters([
-      'hasFilterRequestStatus',
-      'itemsStudyRequests',
-    ]),
+    ...mapGetters(['itemsStudyRequests']),
     ...mapState([
       'filterRequestStatus',
       'studyRequests',

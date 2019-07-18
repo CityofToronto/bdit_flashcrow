@@ -89,6 +89,10 @@ export default {
       return this.studyRequest.ccEmails;
     },
     ccEmailsHuman() {
+      /*
+       * TODO: this is a workaround to handle previously persisted study requests, until such
+       * time as we can get a proper ORM / validation layer in place here.
+       */
       if (Array.isArray(this.ccEmails)) {
         return this.ccEmails;
       }

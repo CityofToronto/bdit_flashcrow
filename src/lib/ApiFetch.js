@@ -89,6 +89,7 @@ function getFetchOptions(options) {
  * @param {Object} options - options to fetch with
  * @param {String} options.method - HTTP method to call the REST API resource with
  * @returns {Promise<(Object|Array)>} promise that resolves to JSON response body
+ * @throws {Object} if `fetch()` results in an HTTP 4xx or HTTP 5xx error
  */
 async function apiFetch(url, options) {
   const apiOptions = getFetchOptions(options);
@@ -96,10 +97,40 @@ async function apiFetch(url, options) {
   delete apiOptions.csrf;
   delete apiOptions.data;
   const response = await fetch(apiUrl, apiOptions);
+  if (response.status >= 400) {
+    // HTTP 4xx / 5xx
+    try {
+      const responseBody = await response.json();
+      throw responseBody;
+    } catch (err) {
+      /*
+       * Create JSON response that looks similar to one returned by @hapi/boom - except
+       * that there's (probably) no backend to return it!
+       */
+      /* eslint-disable no-throw-literal */
+      throw {
+        statusCode: response.status,
+        error: response.statusText,
+        message: response.statusText,
+      };
+    }
+  }
+  if (response.redirected) {
+    // HTTP 3xx
+    /*
+     * In this case, the frontend should not be depending on the response here;
+     * instead, it will be redirected.
+     */
+    return {
+      __redirect: response.url,
+    };
+  }
   const responseBody = await response.json();
   if (response.ok) {
+    // HTTP 2xx
     return responseBody;
   }
+  // ???
   throw responseBody;
 }
 

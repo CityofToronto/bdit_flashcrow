@@ -124,7 +124,13 @@ export default {
     ]),
   },
   created() {
-    this.webInit();
+    this.webInit()
+      .catch((err) => {
+        this.setToast({
+          variant: 'error',
+          text: err.message,
+        });
+      });
   },
   methods: {
     onModalToggle() {
@@ -160,7 +166,7 @@ export default {
     signOut() {
       this.$refs.formSignOut.submit();
     },
-    ...mapActions(['webInit']),
+    ...mapActions(['setToast', 'webInit']),
     ...mapMutations(['clearModal', 'setModal']),
   },
 };

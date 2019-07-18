@@ -25,7 +25,7 @@
     <template v-slot:LOCATION="{ item }">
       <span
         v-if="item.location === null"
-        >
+        class="text-muted">
         N/A
       </span>
       <router-link

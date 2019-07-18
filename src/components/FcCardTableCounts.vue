@@ -22,7 +22,7 @@
         :class="{
           'no-existing': item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT,
         }"
-        @click.prevent="onActionShow(item)">
+        @click.prevent="onActionShowReports(item)">
         <u v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT">
           {{item.counts[item.activeIndex].type.label}}
         </u>
@@ -226,7 +226,7 @@ export default {
     ...mapState(['numPerCategory']),
   },
   methods: {
-    onActionShow(item) {
+    onActionShowReports(item) {
       if (item.status === Status.NO_EXISTING_COUNT) {
         return;
       }
