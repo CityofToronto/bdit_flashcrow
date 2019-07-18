@@ -14,9 +14,9 @@ export default {
 
 <style lang="postcss">
 .fc-dashboard-nav {
-  margin-top: var(--space-l);
   & > ul {
     list-style: none;
+    margin: 0;
     padding-left: 0;
   }
 }
