@@ -46,7 +46,7 @@ function getQueryString(data) {
  * @returns {String} full URL to pass to `fetch()`
  */
 function getFetchUrl(url, apiOptions) {
-  let apiUrl = `/flashcrow/api${url}`;
+  let apiUrl = `/api${url}`;
   if (apiOptions.data && apiOptions.method === 'GET') {
     const qs = getQueryString(apiOptions.data);
     apiUrl = `${apiUrl}?${qs}`;

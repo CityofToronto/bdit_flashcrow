@@ -5,7 +5,7 @@
         v-if="auth.loggedIn"
         ref="formSignOut"
         method="POST"
-        action="/flashcrow/api/auth/logout"></form>
+        action="/api/auth/logout"></form>
     </div>
     <component
       v-if="modal !== null"
