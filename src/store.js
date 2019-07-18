@@ -119,6 +119,7 @@ export default new Vuex.Store({
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+    studyRequestLocation: null,
     // query that will appear in the search bar
     locationQuery: '',
   },
@@ -401,6 +402,9 @@ export default new Vuex.Store({
     setStudyRequest(state, studyRequest) {
       Vue.set(state, 'studyRequest', studyRequest);
     },
+    setStudyRequestLocation(state, studyRequestLocation) {
+      Vue.set(state, 'studyRequestLocation', studyRequestLocation);
+    },
     setNewStudyRequest(state, studyTypes) {
       const { location } = state;
       const {
@@ -466,7 +470,7 @@ export default new Vuex.Store({
       commit('setLocation', location);
       return location;
     },
-    async fetchLocationFromCentreline({ commit }, { centrelineId, centrelineType }) {
+    async fetchLocationFromCentreline(_, { centrelineId, centrelineType }) {
       const options = {
         data: { centrelineId, centrelineType },
       };
@@ -477,9 +481,7 @@ export default new Vuex.Store({
         // TODO: better error handling here
         throw new Error('not found!');
       }
-      const location = locationsMap.get(key);
-      commit('setLocation', location);
-      return location;
+      return locationsMap.get(key);
     },
     async fetchLocationsFromCentreline(_, centrelineTypesAndIds) {
       const centrelineIds = centrelineTypesAndIds.map(({ centrelineId: id }) => id);
@@ -549,17 +551,32 @@ export default new Vuex.Store({
       return result;
     },
     // STUDY REQUESTS
-    async fetchStudyRequest({ commit }, id) {
+    async fetchStudyRequest({ commit, dispatch }, id) {
       const url = `/requests/study/${id}`;
       let studyRequest = await apiFetch(url);
       studyRequest = normalizeStudyRequest(studyRequest);
       commit('setStudyRequest', studyRequest);
-      return studyRequest;
+
+      const { centrelineId, centrelineType } = studyRequest;
+      const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
+      const studyRequestLocations = await dispatch(
+        'fetchLocationsFromCentreline',
+        centrelineIdsAndTypes,
+      );
+      const key = centrelineKey(centrelineType, centrelineId);
+      const studyRequestLocation = studyRequestLocations.get(key);
+      commit('setStudyRequestLocation', studyRequestLocation);
+
+      return {
+        studyRequest,
+        studyRequestLocation,
+      };
     },
     async fetchAllStudyRequests({ commit, dispatch }) {
       let studyRequests = await apiFetch('/requests/study');
       studyRequests = studyRequests.map(normalizeStudyRequest);
       commit('setStudyRequests', studyRequests);
+
       const centrelineIdsAndTypes = studyRequests
         .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
       const studyRequestLocations = await dispatch(
@@ -567,6 +584,7 @@ export default new Vuex.Store({
         centrelineIdsAndTypes,
       );
       commit('setStudyRequestLocations', studyRequestLocations);
+
       return {
         studyRequests,
         studyRequestLocations,

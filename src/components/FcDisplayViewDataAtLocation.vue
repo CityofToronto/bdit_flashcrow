@@ -48,6 +48,10 @@ function idIsCount(id) {
   return Number.isInteger(id);
 }
 
+function idIsStudy(id) {
+  return id.indexOf('STUDY:') === 0;
+}
+
 export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
@@ -79,6 +83,11 @@ export default {
           const count = this.counts.find(c => c.id);
           return count.type.value;
         }
+        if (idIsStudy(id)) {
+          const studyId = parseInt(id.slice('STUDY:'.length), 10);
+          const study = this.studies.find(s => s.id === studyId);
+          return study.studyType;
+        }
         return id;
       }));
       return Array.from(studyTypes);
@@ -97,6 +106,7 @@ export default {
       'counts',
       'location',
       'showMap',
+      'studies',
     ]),
   },
   validations: {
@@ -200,7 +210,7 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    syncFromRoute(to) {
+    async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
       const promiseCounts = this.fetchCountsByCentreline({
         centrelineId,
@@ -210,7 +220,13 @@ export default {
         centrelineId,
         centrelineType,
       });
-      return Promise.all([promiseCounts, promiseLocation]);
+      const result = await Promise.all([promiseCounts, promiseLocation]);
+      const location = result[1];
+      if (this.location === null
+          || location.centrelineId !== this.location.centrelineId
+          || location.centrelineType !== this.location.centrelineType) {
+        this.setLocation(location);
+      }
     },
     ...mapActions([
       'fetchCountsByCentreline',
@@ -218,8 +234,9 @@ export default {
       'newStudyRequest',
     ]),
     ...mapMutations([
-      'setNewStudyRequest',
+      'setLocation',
       'setModal',
+      'setNewStudyRequest',
       'setShowMap',
     ]),
   },

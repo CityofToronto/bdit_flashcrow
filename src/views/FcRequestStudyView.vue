@@ -15,7 +15,23 @@
         v-if="studyRequest !== null"
         class="flex-fill flex-container-column">
         <header class="flex-container-row">
-          <h2>Request #{{studyRequest.id}}</h2>
+          <h2>
+            Request #{{studyRequest.id}}
+            <span
+              v-if="studyRequestLocation !== null">
+              at
+              <router-link
+                :to="{
+                  name: 'viewDataAtLocation',
+                  params: {
+                    centrelineId: studyRequest.centrelineId,
+                    centrelineType: studyRequest.centrelineType,
+                  }
+                }">
+                <span> {{studyRequestLocation.description}}</span>
+              </router-link>
+            </span>
+          </h2>
           <div class="flex-fill"></div>
           <TdsLabel
             class="font-size-l uppercase"
@@ -73,11 +89,12 @@ export default {
   },
   data() {
     return {
+      location: null,
       RequestStatus,
     };
   },
   computed: {
-    ...mapState(['studyRequest']),
+    ...mapState(['studyRequest', 'studyRequestLocation']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {

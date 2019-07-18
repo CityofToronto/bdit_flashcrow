@@ -93,6 +93,9 @@ const SortKeys = {
     REQUESTER: r => r.requestedBy.name,
     STATUS: r => r.status,
   },
+  Studies: {
+    CREATED_AT: s => s.createdAt.valueOf(),
+  },
 };
 
 
