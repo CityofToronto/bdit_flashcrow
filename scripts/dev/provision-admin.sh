@@ -20,8 +20,4 @@ cd /home/vagrant/postgis/postgis-2.4.7
 make
 make install
 
-# for Cypress end-to-end testing
-# TODO: we should eventually enable this, but it feels like overkill for now.
-# yum install -y alsa-lib-devel GConf2-devel gtk-devel libXScrnSaver-devel libXtst-devel xorg-x11-server-Xvfb
-
 chown vagrant:vagrant -R /var/run/postgresql

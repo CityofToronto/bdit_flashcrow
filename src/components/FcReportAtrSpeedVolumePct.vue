@@ -253,7 +253,7 @@
 import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import { SPEED_CLASSES } from '@/lib/Constants';
 import ArrayStats from '@/lib/math/ArrayStats';
 
 export default {
@@ -264,7 +264,7 @@ export default {
   },
   data() {
     return {
-      SPEED_CLASSES: Constants.SPEED_CLASSES,
+      SPEED_CLASSES,
     };
   },
   computed: {
@@ -272,7 +272,7 @@ export default {
       const countDataByHour = [];
       for (let h = 0; h < 24; h++) {
         const time = h < 10 ? `0${h}:00` : `${h}:00`;
-        const volume = new Array(Constants.SPEED_CLASSES.length).fill(0);
+        const volume = new Array(SPEED_CLASSES.length).fill(0);
         const data = {
           time,
           volume,
@@ -289,12 +289,12 @@ export default {
         let pct95 = null;
         if (total > 0) {
           pct85 = Math.floor(ArrayStats.histogramPercentile(
-            Constants.SPEED_CLASSES,
+            SPEED_CLASSES,
             volume,
             0.85,
           ));
           pct95 = Math.floor(ArrayStats.histogramPercentile(
-            Constants.SPEED_CLASSES,
+            SPEED_CLASSES,
             volume,
             0.95,
           ));
@@ -309,7 +309,7 @@ export default {
       });
     },
     hoursPeakAm() {
-      const volume = Constants.SPEED_CLASSES.map((_, s) => {
+      const volume = SPEED_CLASSES.map((_, s) => {
         const h = ArrayUtils.getMaxIndexBy(
           this.countDataByHour.slice(0, 12),
           ({ volume: v }) => v[s],
@@ -329,7 +329,7 @@ export default {
       return { volume, total };
     },
     hoursPeakPm() {
-      const volume = Constants.SPEED_CLASSES.map((_, s) => {
+      const volume = SPEED_CLASSES.map((_, s) => {
         let h = ArrayUtils.getMaxIndexBy(
           this.countDataByHour.slice(12),
           ({ volume: v }) => v[s],
@@ -355,7 +355,7 @@ export default {
         .map(speedClassTotal => speedClassTotal / this.total);
     },
     speedClassTotals() {
-      return Constants.SPEED_CLASSES.map((_, s) => {
+      return SPEED_CLASSES.map((_, s) => {
         const speedClassVolumes = this.countDataByHour
           .map(({ volume }) => volume[s]);
         return ArrayStats.sum(speedClassVolumes);
@@ -369,27 +369,27 @@ export default {
         return null;
       }
       const pct15 = Math.floor(ArrayStats.histogramPercentile(
-        Constants.SPEED_CLASSES,
+        SPEED_CLASSES,
         this.speedClassTotals,
         0.15,
       ));
       const pct50 = Math.floor(ArrayStats.histogramPercentile(
-        Constants.SPEED_CLASSES,
+        SPEED_CLASSES,
         this.speedClassTotals,
         0.5,
       ));
       const pct85 = Math.floor(ArrayStats.histogramPercentile(
-        Constants.SPEED_CLASSES,
+        SPEED_CLASSES,
         this.speedClassTotals,
         0.85,
       ));
       const pct95 = Math.floor(ArrayStats.histogramPercentile(
-        Constants.SPEED_CLASSES,
+        SPEED_CLASSES,
         this.speedClassTotals,
         0.95,
       ));
       const mu = Math.floor(ArrayStats.histogramMean(
-        Constants.SPEED_CLASSES,
+        SPEED_CLASSES,
         this.speedClassTotals,
       ));
       return {
