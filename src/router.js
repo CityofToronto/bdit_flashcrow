@@ -7,6 +7,7 @@ import { REQUEST_STUDY_REQUIRES_LOCATION } from '@/lib/i18n/Strings';
 Vue.use(Router);
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -91,6 +92,10 @@ const router = new Router({
       path: '/requests/study/:id',
       name: 'requestStudyView',
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyView.vue'),
+    },
+    {
+      path: '*',
+      component: () => import(/* webpackChunkName: "home" */ './views/Fc404.vue'),
     },
   ],
 });

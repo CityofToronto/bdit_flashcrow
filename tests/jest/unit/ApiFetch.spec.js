@@ -61,20 +61,20 @@ test('getFetchUrl()', () => {
   expect(getFetchUrl(
     '/foo',
     getFetchOptions(),
-  )).toEqual('/flashcrow/api/foo');
+  )).toEqual('/api/foo');
   expect(getFetchUrl(
     '/foo',
     getFetchOptions({
       data: { a: '1', b: ['2', '3'] },
     }),
-  )).toEqual('/flashcrow/api/foo?a=1&b=2&b=3');
+  )).toEqual('/api/foo?a=1&b=2&b=3');
   expect(getFetchUrl(
     '/foo',
     getFetchOptions({
       data: { a: '1', b: ['2', '3'] },
       method: 'POST',
     }),
-  )).toEqual('/flashcrow/api/foo');
+  )).toEqual('/api/foo');
 });
 
 test('getQueryString()', () => {

@@ -3,7 +3,7 @@ import path from 'path';
 import request from 'request-promise-native';
 
 const HOST = 'https://localhost:8080';
-const API_ROOT = '/flashcrow/api';
+const API_ROOT = '/api';
 let COOKIE_JAR = request.jar(null, {
   rejectPublicSuffixes: false,
 });

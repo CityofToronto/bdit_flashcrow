@@ -190,7 +190,7 @@ From the second terminal:
 npm run backend
 ```
 
-Once both are running, open [https://localhost:8080/flashcrow](https://localhost:8080/flashcrow) in your browser.
+Once both are running, open [https://localhost:8080](https://localhost:8080) in your browser.
 
 ## Celebrate!
 

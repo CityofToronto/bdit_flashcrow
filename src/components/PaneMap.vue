@@ -137,14 +137,14 @@ const PAINT_OPACITY = [
   'case',
   ['boolean', ['feature-state', 'selected'], false],
   // selected
-  0.9,
+  0.6,
   [
     'case',
     ['boolean', ['feature-state', 'hover'], false],
     // hovered
-    0.9,
+    0.6,
     // normal
-    0.75,
+    0.45,
   ],
 ];
 

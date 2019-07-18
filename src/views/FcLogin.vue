@@ -5,7 +5,7 @@
         ref="form"
         id="form_fc_login"
         method="POST"
-        action="/flashcrow/api/auth/stub">
+        action="/api/auth/stub">
         <input type="hidden" name="csrf" :value="auth.csrf" />
       </form>
     </div>
