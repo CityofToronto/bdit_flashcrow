@@ -5,7 +5,9 @@
         v-if="auth.loggedIn"
         ref="formSignOut"
         method="POST"
-        action="/api/auth/logout"></form>
+        action="/api/auth/logout">
+        <input type="hidden" name="csrf" :value="auth.csrf" />
+      </form>
     </div>
     <component
       v-if="modal !== null"
