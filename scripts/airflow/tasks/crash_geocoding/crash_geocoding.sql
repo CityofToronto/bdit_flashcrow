@@ -58,12 +58,12 @@ CREATE TABLE collisions.events_geocoded AS (
 SELECT *
 	FROM 
 	(
-		SELECT DISTINCT ON (collision_id, collision_accnb, day_no, collision_time) 
+		SELECT 
 		e.*, (CASE WHEN intersection_gid IS NOT NULL THEN intersection_gid ELSE centreline_gid END) AS gid, 
 		(CASE WHEN intersection_gid IS NOT NULL THEN 'gis.centreline_intersection'::TEXT ELSE 'gis.centreline'::TEXT END) AS table_name 
 		FROM 
 			collisions.events e
 			JOIN LATERAL collisions.get_intersection(latitude::NUMERIC, longitude::NUMERIC, 'gis.centreline_intersection'::TEXT, 'gis.centreline'::TEXT) AS gids ON TRUE
-		WHERE longitude IS NOT NULL AND latitude IS NOT NULL and collision_accnb IS NOT NULL AND latitude > 43 AND longitude < -79
+		WHERE latitude > 43 AND longitude < -79
 		) x
 );
