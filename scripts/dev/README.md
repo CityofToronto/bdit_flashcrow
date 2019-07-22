@@ -28,33 +28,59 @@ We recommend installing packages through [Scoop](https://scoop.sh/).  Open a Pow
 ```powershell
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-scoop config proxy proxy.toronto.ca:8080
-.\scripts\dev\scoop-requirements.ps1
+scoop config proxy currentuser:proxy.toronto.ca:8080
 ```
 
-### VirtualBox and Vagrant
+### Git
 
-Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it.
-
-We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin:
-
+Now we'll install Git using Scoop, and set up the proxy:
 ```powershell
-cd scripts\dev
-vagrant plugin install vagrant-proxyconf
+scoop install git
+git config --global http.proxy http://proxy.toronto.ca:8080
 ```
 
-## Clone the MOVE Repository
+### Clone the MOVE Repository
 
-Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that with:
+Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that once you clone the repo:
 
 ```powershell
 git clone https://github.com/CityofToronto/bdit_flashcrow.git
 ```
+That's when a window will pop up and ask you what credential manager you want to use. Select `manager`, and tell it to remember that setting. Then enter your GitHub credentials.
+
+### Install the rest of the Scoop requirements
+
+Now that we've got Scoop installed, and we've got MOVE cloned, we can read the Scoop requirements and install them:
+
+```powershell
+cd bdit_flashcrow
+.\scripts\dev\scoop-requirements.ps1
+```
+
+If you run into a `Out-File : Could not find a part of the path 'C:\Users\akonoff\AppData\Roaming\pip\pip.ini'` error, simply create the pip folder:
+```powershell
+New-Item -Path $env:APPDATA -Name "pip" -ItemType "directory"
+```
+Now you should be ready to rock!
+
+### VirtualBox and Vagrant
+
+Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it - you'll need version 5.2 if yours is a 32-bit machine.
+
+We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin to allow us to use it with a proxy, and, hilariously, we'll first have to configure Vagrant to use our proxy to download the proxy plugin:
+
+```powershell
+cd scripts\dev
+$env:http_proxy="http://proxy.toronto.ca:8080" 
+vagrant plugin install vagrant-proxyconf
+```
+
+
 ## Set up MOVE config files on Host Machine
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
 
-First, create a file at `lib\config.js`, and generate your own passwords as needed.  A minimal config file is as follows:
+First, create a file at `lib\config.js`, and generate your own passwords as needed.  A minimal config file is as follows -- replace the three `TODO` items in here with your own info:
 
 ```js
 const path = require('path');
