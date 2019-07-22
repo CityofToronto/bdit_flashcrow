@@ -1,5 +1,11 @@
 #!/bin/bash
+
+set -e
+# Normally we would set -o nounset here, but that conflicts with /etc/bashrc
+# and /etc/profile.d scripts.
+
 export HOME=/home/ec2-user
+# shellcheck disable=SC1091
 source /home/ec2-user/.bash_profile
 
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/nginx.conf /etc/nginx/
@@ -8,7 +14,6 @@ cp /home/ec2-user/flashcrow/scripts/deployment/web/forever.json /home/ec2-user/
 
 cd /home/ec2-user/flashcrow
 pip install -r requirements.txt
-#NODE_ENV=production npm start > /dev/null 2> /dev/null < /dev/null &
 #copy config file:
 cp /home/ec2-user/flashcrow.config.js /home/ec2-user/flashcrow/lib/config.js
 
@@ -19,8 +24,11 @@ npm install
 # build static files into dist
 npm run build
 
-# copy static files
+# copy to web root
 sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
+
+# update database
+/home/ec2-user/flashcrow/scripts/db/db-update.sh --psqlArgs "-U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
 
 # start flashcrow
 NODE_ENV=production forever start "/home/ec2-user/forever.json"
