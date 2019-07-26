@@ -4,14 +4,20 @@ import request from 'request-promise-native';
 
 const HOST = 'https://localhost:8080';
 const API_ROOT = '/api';
-let COOKIE_JAR = request.jar(null, {
-  rejectPublicSuffixes: false,
-});
 const ca = fs.readFileSync(
   path.join(__dirname, '..', '..', '..', 'ssl', 'localhost.crt'),
 );
 
-function fcApi(uri, options) {
+let CSRF = null;
+let COOKIE_JAR;
+function resetCookieJar() {
+  COOKIE_JAR = request.jar();
+  /* eslint-disable no-underscore-dangle */
+  COOKIE_JAR._jar.rejectPublicSuffixes = false;
+}
+resetCookieJar();
+
+async function fcApi(uri, options) {
   const requestOptions = {
     ca,
     jar: COOKIE_JAR,
@@ -19,47 +25,46 @@ function fcApi(uri, options) {
     method: 'GET',
     uri: `${HOST}${API_ROOT}${uri}`,
   };
+  if (CSRF !== null) {
+    requestOptions.headers = {
+      'X-CSRF-Token': CSRF,
+    };
+  }
   if (options !== undefined) {
     Object.assign(requestOptions, options);
   }
   return request(requestOptions);
 }
 
-function fcTransformGetCookie(body, response) {
+function fcTransformGetCookies(body, response) {
   const setCookie = response.headers['set-cookie'];
-  if (setCookie === undefined || setCookie.length === 0) {
-    return null;
+  if (setCookie === undefined) {
+    return [];
   }
-  return setCookie[0];
+  return setCookie;
 }
 
-function fcLogin() {
-  const options = {
+async function fcLogin() {
+  const { csrf } = await fcApi('/auth');
+  CSRF = csrf;
+  const setCookie = await fcApi('/auth/test-login', {
     json: false,
     method: 'POST',
     simple: false,
-    transform: fcTransformGetCookie,
-  };
-  return fcApi('/auth/test-login', options)
-    .then((cookie) => {
-      if (cookie !== null) {
-        COOKIE_JAR.setCookie(cookie, HOST);
-      }
-    });
+    transform: fcTransformGetCookies,
+  });
+  setCookie.forEach((cookie) => {
+    COOKIE_JAR.setCookie(cookie, HOST);
+  });
 }
 
-function fcLogout() {
-  const options = {
+async function fcLogout() {
+  await fcApi('/auth/logout', {
     json: false,
     simple: false,
-    transform: fcTransformGetCookie,
-  };
-  return fcApi('/auth/logout', options)
-    .then(() => {
-      COOKIE_JAR = request.jar(null, {
-        rejectPublicSuffixes: false,
-      });
-    });
+    transform: fcTransformGetCookies,
+  });
+  resetCookieJar();
 }
 
 test('authentication works', async () => {
