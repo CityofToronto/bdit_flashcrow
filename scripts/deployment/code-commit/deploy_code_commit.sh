@@ -8,5 +8,7 @@ if ! git ls-remote --exit-code code-commit; then
   exit 1
 fi
 git checkout master
+git fetch
+git merge origin/master
 npx npm-run-all ci:*
 git push code-commit master
