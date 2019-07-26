@@ -34,7 +34,7 @@ function parse_args {
 parse_args "$@"
 
 # paths to important folders / files
-DIR_ROOT=$(git rev-parse --show-toplevel)
+DIR_ROOT=$(realpath "$(dirname "$0")"/../..)
 DIR_LIB_GEO="$DIR_ROOT/src/lib/geo"
 STYLE_FILE="$DIR_LIB_GEO/root.json"
 METADATA_FILE="$DIR_LIB_GEO/metadata.json"

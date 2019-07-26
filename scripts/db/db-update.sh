@@ -43,7 +43,7 @@ function parse_args {
 
 parse_args "$@"
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(realpath "$(dirname "$0")"/../..)
 DIR_SCRIPTS="$GIT_ROOT/scripts"
 DIR_DB="$DIR_SCRIPTS/db"
 

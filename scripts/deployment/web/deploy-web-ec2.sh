@@ -8,7 +8,7 @@
 set -e
 set -o nounset
 
-GIT_ROOT=$(git rev-parse --show-toplevel)
+GIT_ROOT=$(realpath "$(dirname "$0")"/../../..)
 WEB_ROOT=/usr/share/nginx/html/flashcrow
 FOREVER_ID=flashcrow-api
 
