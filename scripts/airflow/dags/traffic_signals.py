@@ -25,13 +25,6 @@ TRAFFIC_SIGNAL_DAG = DAG(
     max_active_runs=1,
     schedule_interval='10 6-22 * * 1-5')
 
-CREATE_TRAFFIC_SIGNAL_TABLES_SH = os.path.join(AIRFLOW_TASKS, 'create_traffic_signal_tables.sh')
-CREATE_TRAFFIC_SIGNAL_TABLES = BashOperator(
-    task_id='create_traffic_signal_tables',
-    bash_command='{0} '.format(CREATE_TRAFFIC_SIGNAL_TABLES_SH),
-    dag=TRAFFIC_SIGNAL_DAG)
-
-
 PULL_TRAFFIC_SIGNALS_SH = os.path.join(AIRFLOW_TASKS, 'pull_traffic_signals.sh')
 PULL_TRAFFIC_SIGNALS = BashOperator(
     task_id='pull_traffic_signals',
