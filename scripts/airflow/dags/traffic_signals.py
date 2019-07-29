@@ -29,4 +29,12 @@ PULL_TRAFFIC_SIGNALS_SH = os.path.join(AIRFLOW_TASKS, 'pull_traffic_signals.sh')
 PULL_TRAFFIC_SIGNALS = BashOperator(
     task_id='pull_traffic_signals',
     bash_command='{0} '.format(PULL_TRAFFIC_SIGNALS_SH),
-    dag=TRAFFIC_SIGNAL_DAG)
+    dag=TRAFFIC_SIGNAL_DAG
+)
+
+CREATE_SIGNAL_QUERY_TABLES_SH = os.path.join(AIRFLOW_TASKS, 'create_signal_query_tables.sh')
+CREATE_SIGNAL_QUERY_TABLES = BashOperator(
+    task_id='create_signal_query_tables',
+    bash_command='{0} '.format(CREATE_SIGNAL_QUERY_TABLES_SH),
+    dag=TRAFFIC_SIGNAL_DAG
+)
