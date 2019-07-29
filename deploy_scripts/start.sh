@@ -28,7 +28,8 @@ npm run build
 sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 
 # update database
-/home/ec2-user/flashcrow/scripts/db/db-update.sh --psqlArgs "-U flashcrow -h fr18csa9mq4yg2r.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow"
+. /home/ec2-user/psqlArgs.config
+/home/ec2-user/flashcrow/scripts/db/db-update.sh --psqlArgs "$psqlArgs"
 
 # start flashcrow
 NODE_ENV=production forever start "/home/ec2-user/forever.json"
