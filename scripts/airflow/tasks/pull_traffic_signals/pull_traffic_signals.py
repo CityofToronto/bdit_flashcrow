@@ -56,7 +56,6 @@ def create_tables():
             DROP TABLE IF EXISTS %s;
             CREATE TABLE %s
             (
-                id NUMERIC,
                 px TEXT,
                 main TEXT,
                 midblock TEXT,
@@ -96,6 +95,34 @@ def insert_into_table(output_table, file_id, name):
     with CONN.cursor() as cur:
       execute_values(cur, insert, rows)
 
+
+
+def add_geometry(update_table):
+  """
+  Add geometry columns to the traffic signal tables
+  """
+  curr = CONN.cursor()
+
+  create_column = """
+  ALTER TABLE %s ADD COLUMN geom geometry;
+  """ % update_table
+
+  add_geom = """
+  UPDATE %s 
+  SET geom = ST_SetSRID(ST_MakePoint(long, lat), 4326);
+  """ % update_table
+
+  add_index = """
+  CREATE INDEX IF NOT EXISTS traffic_signal_geom ON %s USING GIST (geom);
+  """ % update_table
+
+  curr.execute(create_column)
+  curr.execute(add_geom)
+  curr.execute(add_index)
+
+  CONN.commit()
+
+
 if __name__ == "__main__":
   DB_NAME = 'flashcrow'
   USERNAME = 'flashcrow'
@@ -111,8 +138,12 @@ if __name__ == "__main__":
                     "656fdd0a-f5a2-4936-a02c-62c5a250d38e",
                     "traffic-signals-all-version-2-json.json"
                     )
-  insert_into_table("gis.traffic_signals",
+  insert_into_table("gis.pedestrian_crossings",
                     "17d0fd03-c1b5-410f-9dd0-7837d28ac0a7",
                     "pedestrian-crossovers-version-2-json.json"
                     )
+
+  add_geometry("gis.traffic_signals")
+  add_geometry("gis.pedestrian_crossings")
+
   CONN.close()
