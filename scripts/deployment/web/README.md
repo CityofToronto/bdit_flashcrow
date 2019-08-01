@@ -1,6 +1,6 @@
 # Web Stack Deployment Guide
 
-This guide is **deprecated**.  We previously managed deployments via this process, but have moved to an AWS CodeCommit / CodeDeploy-backed process.
+This guide is **deprecated**.  We previously managed deployments via this process, but have moved to an AWS CodeCommit / CodeDeploy-backed process.  Some of the scripts in this folder are used by the new process, while others have had bits and pieces borrowed for various machine images and deployment configurations.
 
 ## Accessing the Web Stack
 
