@@ -111,3 +111,22 @@ This web application was originally generated from the following [Vue CLI preset
 ```
 
 For more information on configuring Vue CLI-based projects, see the [Vue CLI Configuration Reference](https://cli.vuejs.org/config/).
+
+## Config Files
+
+These files configure various tools used in MOVE:
+
+- `.editorconfig`: enforces simple code conventions for all VSCode users;
+- `.eslintrc.js`: ESLint rules for style-checking JavaScript;
+- `.nvmrc`: target version of node.js;
+- `.pylintrc`: Pylint rules for style-checking Python;
+- `.python-version`: target version of Python;
+- `appspec.yml`: used in conjunction with `deploy_scripts` for AWS CodeDeploy-managed deployments of MOVE;
+- `babel.config.js`: Babel configuration for transpiling JavaScript;
+- `bdit-flashcrow.code-workspace`: VSCode workspace configuration;
+- `jest.config.js`: Jest configuration for unit, database, and REST API tests;
+- `LICENSE`: open-source license that MOVE is released under;
+- `package.json`: `npm` package configuration and dependencies;
+- `postcss.config.js`: PostCSS configuration for preprocessing CSS;
+- `requirements.txt`: Python dependencies;
+- `vue.config.js`: Vue project configuration, including webpack configuration for `webpack-dev-server` in development.
