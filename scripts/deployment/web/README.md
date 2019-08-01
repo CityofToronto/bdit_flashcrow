@@ -1,5 +1,7 @@
 # Web Stack Deployment Guide
 
+This guide is **deprecated**.  We previously managed deployments via this process, but have moved to an AWS CodeCommit / CodeDeploy-backed process.
+
 ## Accessing the Web Stack
 
 You will first need the `flashcrow-dev-key.pem` file, as provided by Cloud Services.  The rest of this guide assumes you have that file at `~\ssh\flashcrow-dev-key.pem`.

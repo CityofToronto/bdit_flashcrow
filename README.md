@@ -22,7 +22,7 @@ We will try to respond to any questions within 48 hours.  However, given the sma
 
 ## New Developer?
 
-See the [Developer's Guide](scripts/dev/README.md).  This guide will help you:
+See the [MOVE Developer Handbook](https://www.notion.so/bditto/MOVE-Developer-Handbook-182de05ad8a94888b52ccc68093a497a).  This guide will help you:
 
 - request the necessary permissions from City of Toronto IT and the Big Data Innovation Team;
 - install Flashcrow prerequisites on your City of Toronto computer;
@@ -31,11 +31,17 @@ See the [Developer's Guide](scripts/dev/README.md).  This guide will help you:
 
 ## Deployment
 
-To deploy the Flashcrow web application, follow the [Web Stack Deployment Guide](scripts/deployment/web/README.md).
+To deploy the Flashcrow web application, you will need access to the AWS CodeCommit repository.  Once you have that:
 
-We are currently working with Cloud Services to create CI / CD pipelines around integration testing and deployment.  The Deployment Guide will be updated as that work proceeds.
+```
+git remote add code-commit https://git-codecommit.us-east-1.amazonaws.com/v1/repos/bdit_flashcrow
 
-As part of that, the [ETL Stack Deployment Guide](scripts/deployment/etl/README.md) is a work in progress.
+./scripts/deployment/code-commit/deploy_code_commit.sh
+```
+
+For now, please use the `deploy_code_commit.sh` script for all deployments to AWS CodeCommit!  We're working with Cloud Services on a deployment process that includes continuous integration (CI) testing; in the meantime, that script runs our CI tests before pushing to AWS CodeCommit.
+
+Any versions pushed to AWS CodeCommit are automatically deployed to [`web-dev`](https://move.intra.dev-toronto.ca).
 
 ## Code Documentation
 
@@ -98,9 +104,9 @@ This web application was originally generated from the following [Vue CLI preset
     "@vue/cli-plugin-unit-jest": {},
   },
   "router": true,
-  "routerHistoryMode": false,
+  "routerHistoryMode": true,
   "vuex": true,
-  "cssPreprocessor": "less"
+  "cssPreprocessor": "postcss"
 }
 ```
 
