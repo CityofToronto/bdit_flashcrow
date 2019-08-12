@@ -504,7 +504,7 @@ export default new Vuex.Store({
       if (signalRegex.test(query)) {
         const pxNum = query.split('signal:')[1].trim();
         const pxOptions = {
-          data: { q: pxNum },
+          data: { px: pxNum },
         };
         locationSuggestions = await apiFetch('/px/suggest', pxOptions);
       } else {

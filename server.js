@@ -6,8 +6,7 @@ const Hapi = require('@hapi/hapi');
 const Scooter = require('@hapi/scooter');
 const Blankie = require('blankie');
 
-// const config = require('./lib/config');
-const config = null;
+const config = require('./lib/config');
 const AuthController = require('./lib/controller/AuthController');
 const CountController = require('./lib/controller/CountController');
 const LocationController = require('./lib/controller/LocationController');
