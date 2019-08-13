@@ -502,7 +502,15 @@ export default new Vuex.Store({
       const signalRegex = RegExp('^signal:');
       let locationSuggestions = null;
       if (signalRegex.test(query)) {
-        const pxNum = query.split('signal:')[1].trim();
+        let pxNum = query.split('signal:')[1].trim();
+        if (pxNum.length === 0) {
+          commit('clearLocationSuggestions');
+          return null;
+        }
+        // sometimes px numbers are values such as 0002
+        if (pxNum.startsWith('0') && pxNum.endsWith('0')) {
+          pxNum = '0';
+        }
         const pxOptions = {
           data: { px: pxNum },
         };
