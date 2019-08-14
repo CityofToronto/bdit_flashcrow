@@ -498,14 +498,10 @@ export default new Vuex.Store({
       let locationSuggestions = null;
       if (query.startsWith('signal:')) {
         const pxStr = query.split('signal:')[1].trim();
-        let pxNum = parseInt(pxStr, 10);
+        const pxNum = parseInt(pxStr, 10);
         if (Number.isNaN(pxNum)) {
           commit('clearLocationSuggestions');
           return null;
-        }
-        // sometimes px numbers are values such as 0002
-        if (pxStr.startsWith('0') && pxStr.endsWith('0')) {
-          pxNum = 0;
         }
         const pxOptions = {
           data: { px: pxNum },
