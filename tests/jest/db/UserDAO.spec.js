@@ -1,9 +1,6 @@
-import childProcess from 'child_process';
-import path from 'path';
-import util from 'util';
-
 import db from '@/../lib/db/db';
 import UserDAO from '@/../lib/db/UserDAO';
+import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
 
 const USER = {
   subject: 'foo',
@@ -15,21 +12,8 @@ const USER = {
 const NEW_EMAIL = 'foo2@toronto.ca';
 const NEW_TOKEN = 'tokenFoo2';
 
-// TODO: move this to some common superclass
-const execFile = util.promisify(childProcess.execFile);
-const GIT_ROOT = path.resolve(__dirname, '../../..');
-
-beforeAll(async () => {
-  const scriptStartup = path.resolve(GIT_ROOT, 'scripts/db/test/startup.sh');
-  const { stdout } = await execFile(scriptStartup);
-  console.log(stdout);
-});
-
-afterAll(async () => {
-  const scriptShutdown = path.resolve(GIT_ROOT, 'scripts/db/test/shutdown.sh');
-  const { stdout } = await execFile(scriptShutdown);
-  console.log(stdout);
-});
+beforeAll(DAOTestUtils.startup);
+afterAll(DAOTestUtils.shutdown);
 
 test('UserDAO works properly', async () => {
   await expect(UserDAO.bySubject(USER.subject)).resolves.toBeNull();
