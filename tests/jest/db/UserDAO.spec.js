@@ -1,3 +1,7 @@
+import childProcess from 'child_process';
+import path from 'path';
+import util from 'util';
+
 import db from '@/../lib/db/db';
 import UserDAO from '@/../lib/db/UserDAO';
 
@@ -11,10 +15,23 @@ const USER = {
 const NEW_EMAIL = 'foo2@toronto.ca';
 const NEW_TOKEN = 'tokenFoo2';
 
-test('UserDAO works properly', async () => {
-  // TODO: remove this once we have standalone DB testing harness
-  await UserDAO.delete(USER);
+// TODO: move this to some common superclass
+const execFile = util.promisify(childProcess.execFile);
+const GIT_ROOT = path.resolve(__dirname, '../../..');
 
+beforeAll(async () => {
+  const scriptStartup = path.resolve(GIT_ROOT, 'scripts/db/test/startup.sh');
+  const { stdout } = await execFile(scriptStartup);
+  console.log(stdout);
+});
+
+afterAll(async () => {
+  const scriptShutdown = path.resolve(GIT_ROOT, 'scripts/db/test/shutdown.sh');
+  const { stdout } = await execFile(scriptShutdown);
+  console.log(stdout);
+});
+
+test('UserDAO works properly', async () => {
   await expect(UserDAO.bySubject(USER.subject)).resolves.toBeNull();
   await expect(UserDAO.delete(USER)).resolves.toEqual(false);
   await expect(UserDAO.update(USER)).resolves.toEqual(false);

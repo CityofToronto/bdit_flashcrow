@@ -5,9 +5,9 @@ set -euo pipefail
 GIT_ROOT=$(realpath "$(dirname "$0")"/../../..)
 RAMDISK_NAME=ramdisk_move_test
 RAMDISK_MOUNT_POINT=/mnt/${RAMDISK_NAME}
-RAMDISK_DEVICE_FILE="${RAMDISK_MOUNT_POINT}/pg.${RAMDISK_NAME}.device"
-RAMDISK_PWFILE="${RAMDISK_MOUNT_POINT}/pg.${RAMDISK_NAME}.pwfile"
-RAMDISK_PGPASS="${RAMDISK_MOUNT_POINT}/pg.${RAMDISK_NAME}.pgpass"
+RAMDISK_DEVICE_FILE="${RAMDISK_MOUNT_POINT}/.device"
+RAMDISK_PWFILE="${RAMDISK_MOUNT_POINT}/.pwfile"
+RAMDISK_PGPASS="${RAMDISK_MOUNT_POINT}/.pgpass"
 RAMDISK_DATA_DIR="${RAMDISK_MOUNT_POINT}/pg_data_dir"
 
 # cleanup existing ramdisk (if any)
