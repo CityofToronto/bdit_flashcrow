@@ -1,5 +1,6 @@
 import db from '@/../lib/db/db';
 import UserDAO from '@/../lib/db/UserDAO';
+import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
 
 const USER = {
   subject: 'foo',
@@ -11,10 +12,10 @@ const USER = {
 const NEW_EMAIL = 'foo2@toronto.ca';
 const NEW_TOKEN = 'tokenFoo2';
 
-test('UserDAO works properly', async () => {
-  // TODO: remove this once we have standalone DB testing harness
-  await UserDAO.delete(USER);
+beforeAll(DAOTestUtils.startup);
+afterAll(DAOTestUtils.shutdown);
 
+test('UserDAO works properly', async () => {
   await expect(UserDAO.bySubject(USER.subject)).resolves.toBeNull();
   await expect(UserDAO.delete(USER)).resolves.toEqual(false);
   await expect(UserDAO.update(USER)).resolves.toEqual(false);
