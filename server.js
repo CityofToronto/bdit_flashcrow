@@ -6,7 +6,7 @@ const Hapi = require('@hapi/hapi');
 const Scooter = require('@hapi/scooter');
 const Blankie = require('blankie');
 
-const config = require('./lib/config');
+const config = require('./lib/config/MoveConfig');
 const AuthController = require('./lib/controller/AuthController');
 const CountController = require('./lib/controller/CountController');
 const LocationController = require('./lib/controller/LocationController');
@@ -64,7 +64,7 @@ const options = {
     },
   },
 };
-if (config.ENV === 'development') {
+if (config.https !== null) {
   const tls = config.https;
   Object.assign(options, { tls });
 }
