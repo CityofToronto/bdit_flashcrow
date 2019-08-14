@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
@@ -496,14 +495,28 @@ export default new Vuex.Store({
       return new Map(locations);
     },
     async fetchLocationSuggestions({ commit }, query) {
-      if (query.length < 3) {
-        commit('clearLocationSuggestions');
-        return null;
+      let locationSuggestions = null;
+      if (query.startsWith('signal:')) {
+        const pxStr = query.split('signal:')[1].trim();
+        const pxNum = parseInt(pxStr, 10);
+        if (Number.isNaN(pxNum)) {
+          commit('clearLocationSuggestions');
+          return null;
+        }
+        const pxOptions = {
+          data: { px: pxNum },
+        };
+        locationSuggestions = await apiFetch('/px/suggest', pxOptions);
+      } else {
+        if (query.length < 3) {
+          commit('clearLocationSuggestions');
+          return null;
+        }
+        const options = {
+          data: { q: query },
+        };
+        locationSuggestions = await apiFetch('/cotgeocoder/suggest', options);
       }
-      const options = {
-        data: { q: query },
-      };
-      const locationSuggestions = await apiFetch('/cotgeocoder/suggest', options);
       commit('setLocationSuggestions', locationSuggestions);
       return locationSuggestions;
     },

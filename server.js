@@ -13,6 +13,7 @@ const LocationController = require('./lib/controller/LocationController');
 const StudyController = require('./lib/controller/StudyController');
 const StudyRequestController = require('./lib/controller/StudyRequestController');
 const WebInitController = require('./lib/controller/WebInitController');
+const SignalSuggestionController = require('./lib/controller/SignalSuggestionController');
 const db = require('./lib/db/db');
 const LogTag = require('./lib/log/LogTag');
 const vueConfig = require('./vue.config');
@@ -186,6 +187,7 @@ async function initServer() {
   server.route(StudyController);
   server.route(StudyRequestController);
   server.route(WebInitController);
+  server.route(SignalSuggestionController);
 
   // START SERVER
   await server.start();
