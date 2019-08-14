@@ -71,53 +71,22 @@ We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll nee
 
 ```powershell
 cd scripts\dev
-$env:http_proxy="http://proxy.toronto.ca:8080" 
+$env:http_proxy="http://proxy.toronto.ca:8080"
 vagrant plugin install vagrant-proxyconf
 ```
-
 
 ## Set up MOVE config files on Host Machine
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
 
-First, create a file at `lib\config.js`, and generate your own passwords as needed.  A minimal config file is as follows -- replace the three `TODO` items in here with your own info:
+Get a copy of `lib/config/private.js` from [Evan Savage](mailto:Evan.Savage@toronto.ca).
 
-```js
-const path = require('path');
-const vueConfig = require('../vue.config');
-
-const DEV = 'development';
-const { NODE_ENV } = process.env;
-const ENV = NODE_ENV || DEV;
-
-const config = {
-  credentials: {
-    username: 'some username',  // TODO: choose 'some username'
-    password: 'some password'   // TODO: generate 'some password'
-  },
-  host: 'localhost',
-  https: vueConfig.devServer.https,
-  port: 8081,
-  session: {
-    password: 'session secret',
-  },
-  db: 'postgres://flashcrow:dbpassword@localhost:5432/flashcrow',  // TODO: generate 'dbpassword'
-  BASE_DIR: path.resolve(__dirname, '..'),
-  ENV,
-  PUBLIC_PATH: vueConfig.publicPath,
-};
-
-module.exports = config;
-```
-
-This configuration will not work in production, but for development it's fine.  To set up a working production configuration, talk to [Evan Savage](mailto:Evan.Savage@toronto.ca).
-
-Next, take your database password `dbpassword` from above and create a file at `scripts\dev\provision.conf.yml` as follows:
+Next, generate a random database password and create a file at `scripts\dev\provision.conf.yml` as follows:
 
 ```yaml
 gh_user: "{your Github username}"
 gh_password: "{your Github password}"
-pg_password: "{dbpassword from above}"
+pg_password: "{database password}"
 proxy_user: "{your City of Toronto username}"
 proxy_pass: "{your City of Toronto password}"
 ```
@@ -150,7 +119,7 @@ That's it!  This should install and run a working development environment.  The 
 You will need to `scp` your config files from your host machine to the VM:
 
 ```powershell
-scp lib\config.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config.js
+scp lib\config\private.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config/private.js
 scp scripts\dev\provision.conf.yml vagrant@127.0.0.1:git/bdit_flashcrow/scripts/dev/provision.conf.yml
 ```
 
