@@ -79,7 +79,7 @@ vagrant plugin install vagrant-proxyconf
 
 Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
 
-Get a copy of `lib/config/private.js` from [Evan Savage](mailto:Evan.Savage@toronto.ca).
+Copy-paste `lib/config/private.js` from [Accounts](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3).
 
 Next, generate a random database password and create a file at `scripts\dev\provision.conf.yml` as follows:
 
@@ -102,9 +102,9 @@ If you have never set up MOVE before, you will first need to log in to Vagrant C
 ```powershell
 cd scripts\dev
 vagrant login
-
-# enter username and password as provided by lead dev
 ```
+
+See [Accounts](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3) for Vagrant Cloud credentials.
 
 This will allow you to install the private base box image, which you can then start up using:
 
@@ -116,11 +116,10 @@ That's it!  This should install and run a working development environment.  The 
 
 ## Copy configs to VM
 
-You will need to `scp` your config files from your host machine to the VM:
+You will need to `scp` the private config file from your host machine to the VM:
 
 ```powershell
 scp lib\config\private.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config/private.js
-scp scripts\dev\provision.conf.yml vagrant@127.0.0.1:git/bdit_flashcrow/scripts/dev/provision.conf.yml
 ```
 
 Again: these files should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit these files into the repo!
