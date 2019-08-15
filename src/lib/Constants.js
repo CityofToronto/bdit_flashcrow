@@ -1,4 +1,7 @@
-// TODO: DRY with server.js
+function centrelineKey(centrelineType, centrelineId) {
+  return `${centrelineType}/${centrelineId}`;
+}
+
 const CentrelineType = {
   SEGMENT: 1,
   INTERSECTION: 2,
@@ -138,6 +141,7 @@ const STATUS_META = [
 ];
 
 const Constants = {
+  centrelineKey,
   CentrelineType,
   CountHours,
   COUNT_TYPES,
@@ -151,6 +155,7 @@ const Constants = {
 };
 export {
   Constants as default,
+  centrelineKey,
   CentrelineType,
   CountHours,
   COUNT_TYPES,

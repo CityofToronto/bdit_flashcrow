@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
+  centrelineKey,
   COUNT_TYPES,
   RequestStatus,
   SortKeys,
@@ -42,11 +43,6 @@ function normalizeStudyRequest(studyRequest) {
     dueDate,
     estimatedDeliveryDate,
   };
-}
-
-// TODO: DRY with CentrelineDAO.js
-function centrelineKey(centrelineType, centrelineId) {
-  return `${centrelineType}/${centrelineId}`;
 }
 
 function makeStudy(studyType) {
