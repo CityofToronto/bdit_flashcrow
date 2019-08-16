@@ -498,21 +498,21 @@ export default new Vuex.Store({
       let locationSuggestions = null;
       if (query.startsWith('pxo:') || query.startsWith('px:')) {
         let pxStr = null;
-        let signalId = null;
+        let signalType = null;
         if (query.startsWith('px:')) {
           pxStr = query.split('px:')[1].trim();
-          signalId = 1;
+          signalType = 1;
         } else {
           pxStr = query.split('pxo:')[1].trim();
-          signalId = 2;
+          signalType = 2;
         }
-        const pxNum = parseInt(pxStr, 10);
-        if (Number.isNaN(pxNum)) {
+        const px = parseInt(pxStr, 10);
+        if (Number.isNaN(px)) {
           commit('clearLocationSuggestions');
           return null;
         }
         const pxOptions = {
-          data: { px: pxNum, signalType: signalId },
+          data: { px, signalType },
         };
         locationSuggestions = await apiFetch('/px/suggest', pxOptions);
       } else {
