@@ -1,4 +1,6 @@
 import CategoryDAO from '@/../lib/db/CategoryDAO';
+import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
+import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/../lib/db/UserDAO';
 import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
 
@@ -17,12 +19,45 @@ afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
 
 test('CategoryDAO', async () => {
   expect(CategoryDAO.isInited()).toBe(false);
-  const category = await CategoryDAO.byId(1);
+
+  let category = await CategoryDAO.byId(1);
   expect(category.id).toBe(1);
   expect(category.value).toBe('ATR_VOLUME');
   expect(category.automatic).toBe(true);
   expect(CategoryDAO.isInited()).toBe(true);
+
+  category = await CategoryDAO.byId(-1);
+  expect(category).toBeUndefined();
+
   await expect(CategoryDAO.all()).resolves.toBeInstanceOf(Map);
+});
+
+test('StudyRequestReasonDAO', async () => {
+  expect(StudyRequestReasonDAO.isInited()).toBe(false);
+
+  let reason = await StudyRequestReasonDAO.byValue('TSC');
+  expect(reason.value).toBe('TSC');
+  expect(reason.label).toBe('Traffic Signal Control');
+  expect(StudyRequestReasonDAO.isInited()).toBe(true);
+
+  reason = await StudyRequestReasonDAO.byValue('FOOBAR');
+  expect(reason).toBeUndefined();
+
+  await expect(StudyRequestReasonDAO.all()).resolves.toBeInstanceOf(Map);
+});
+
+test('StudyRequestStatusDAO', async () => {
+  expect(StudyRequestStatusDAO.isInited()).toBe(false);
+
+  let status = await StudyRequestStatusDAO.byValue('REQUESTED');
+  expect(status.value).toBe('REQUESTED');
+  expect(status.label).toBe('Requested');
+  expect(StudyRequestStatusDAO.isInited()).toBe(true);
+
+  status = await StudyRequestStatusDAO.byValue('FOOBAR');
+  expect(status).toBeUndefined();
+
+  await expect(StudyRequestStatusDAO.all()).resolves.toBeInstanceOf(Map);
 });
 
 test('UserDAO', async () => {
