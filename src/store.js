@@ -496,15 +496,23 @@ export default new Vuex.Store({
     },
     async fetchLocationSuggestions({ commit }, query) {
       let locationSuggestions = null;
-      if (query.startsWith('signal:')) {
-        const pxStr = query.split('signal:')[1].trim();
-        const pxNum = parseInt(pxStr, 10);
-        if (Number.isNaN(pxNum)) {
+      if (query.startsWith('pxo:') || query.startsWith('px:')) {
+        let pxStr = null;
+        let signalType = null;
+        if (query.startsWith('px:')) {
+          pxStr = query.split('px:')[1].trim();
+          signalType = 1;
+        } else {
+          pxStr = query.split('pxo:')[1].trim();
+          signalType = 2;
+        }
+        const px = parseInt(pxStr, 10);
+        if (Number.isNaN(px)) {
           commit('clearLocationSuggestions');
           return null;
         }
         const pxOptions = {
-          data: { px: pxNum },
+          data: { px, signalType },
         };
         locationSuggestions = await apiFetch('/px/suggest', pxOptions);
       } else {
