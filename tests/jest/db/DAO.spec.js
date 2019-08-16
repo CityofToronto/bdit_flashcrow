@@ -1,4 +1,5 @@
 import CategoryDAO from '@/../lib/db/CategoryDAO';
+import CentrelineDAO from '@/../lib/db/CentrelineDAO';
 import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/../lib/db/UserDAO';
@@ -30,6 +31,11 @@ test('CategoryDAO', async () => {
   expect(category).toBeUndefined();
 
   await expect(CategoryDAO.all()).resolves.toBeInstanceOf(Map);
+});
+
+test('CentrelineDAO.byIdsAndTypes()', async () => {
+  const results = await CentrelineDAO.byIdsAndTypes([]);
+  expect(results.size).toBe(0);
 });
 
 test('StudyRequestReasonDAO', async () => {
