@@ -76,6 +76,11 @@ const RequestStatus = {
   },
 };
 
+const SignalType = {
+  NORMAL: 1,
+  PEDCROSS: 2,
+};
+
 const SortDirection = {
   ASC: 1,
   DESC: -1,
@@ -147,6 +152,7 @@ const Constants = {
   COUNT_TYPES,
   HttpStatus,
   RequestStatus,
+  SignalType,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
@@ -161,6 +167,7 @@ export {
   COUNT_TYPES,
   HttpStatus,
   RequestStatus,
+  SignalType,
   SortDirection,
   SortKeys,
   SPEED_CLASSES,
