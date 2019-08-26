@@ -8,11 +8,18 @@ if (TEST_DIR === undefined) {
 
 module.exports = {
   collectCoverageFrom: [
+    'lib/db/**/*.js',
     'src/lib/**/*.js',
     '!**/node_modules/**',
   ],
   coverageDirectory: '<rootDir>/tests/coverage',
   coverageThreshold: {
+    'lib/db': {
+      branches: 25,
+      functions: 25,
+      lines: 25,
+      statements: 25,
+    },
     'src/lib/': {
       branches: 60,
       functions: 60,
