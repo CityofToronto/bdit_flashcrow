@@ -1,22 +1,22 @@
-const Boom = require('@hapi/boom');
-const Crumb = require('@hapi/crumb');
-const hapiAuthCookie = require('@hapi/cookie');
-const Good = require('@hapi/good');
-const Hapi = require('@hapi/hapi');
-const Scooter = require('@hapi/scooter');
-const Blankie = require('blankie');
+import Boom from '@hapi/boom';
+import Crumb from '@hapi/crumb';
+import hapiAuthCookie from '@hapi/cookie';
+import Good from '@hapi/good';
+import Hapi from '@hapi/hapi';
+import Scooter from '@hapi/scooter';
+import Blankie from 'blankie';
 
-const config = require('./lib/config/MoveConfig');
-const AuthController = require('./lib/controller/AuthController');
-const CountController = require('./lib/controller/CountController');
-const LocationController = require('./lib/controller/LocationController');
-const StudyController = require('./lib/controller/StudyController');
-const StudyRequestController = require('./lib/controller/StudyRequestController');
-const WebInitController = require('./lib/controller/WebInitController');
-const SignalSuggestionController = require('./lib/controller/SignalSuggestionController');
-const db = require('./lib/db/db');
-const LogTag = require('./lib/log/LogTag');
-const vueConfig = require('./vue.config');
+import config from './lib/config/MoveConfig';
+import AuthController from './lib/controller/AuthController';
+import CountController from './lib/controller/CountController';
+import LocationController from './lib/controller/LocationController';
+import StudyController from './lib/controller/StudyController';
+import StudyRequestController from './lib/controller/StudyRequestController';
+import WebInitController from './lib/controller/WebInitController';
+import SignalSuggestionController from './lib/controller/SignalSuggestionController';
+import db from './lib/db/db';
+import LogTag from './lib/log/LogTag';
+import vueConfig from './vue.config';
 
 async function failAction(request, h, err) {
   if (config.ENV === 'production') {

@@ -2,6 +2,7 @@
   "id": "flashcrow-api",
   "append": true,
   "watch": false,
+  "command": "node -r esm",
   "script": "server.js",
   "sourceDir": "/home/ec2-user/flashcrow",
   "pidFile": "/home/ec2-user/log/flashcrow/forever.pid",
