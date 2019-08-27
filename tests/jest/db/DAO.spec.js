@@ -1,19 +1,11 @@
+import uuid from 'uuid/v4';
+
 import CategoryDAO from '@/../lib/db/CategoryDAO';
 import CentrelineDAO from '@/../lib/db/CentrelineDAO';
 import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/../lib/db/UserDAO';
 import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
-
-const USER = {
-  subject: 'foo',
-  email: 'foo@toronto.ca',
-  name: 'Foo Bar',
-  token: 'tokenFoo',
-};
-
-const NEW_EMAIL = 'foo2@toronto.ca';
-const NEW_TOKEN = 'tokenFoo2';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
@@ -67,18 +59,19 @@ test('StudyRequestStatusDAO', async () => {
 });
 
 test('UserDAO', async () => {
-  await expect(UserDAO.bySubject(USER.subject)).resolves.toBeNull();
-  await expect(UserDAO.delete(USER)).resolves.toEqual(false);
-  await expect(UserDAO.update(USER)).resolves.toEqual(false);
-  const userCreated = await UserDAO.create(USER);
-  expect(userCreated.subject).toEqual(USER.subject);
-  await expect(UserDAO.bySubject(USER.subject)).resolves.toEqual(USER);
-  Object.assign(USER, {
-    email: NEW_EMAIL,
-    token: NEW_TOKEN,
-  });
-  await expect(UserDAO.update(USER)).resolves.toEqual(true);
-  await expect(UserDAO.bySubject(USER.subject)).resolves.toEqual(USER);
-  await expect(UserDAO.delete(USER)).resolves.toEqual(true);
-  await expect(UserDAO.bySubject(USER.subject)).resolves.toBeNull();
+  const user = DAOTestUtils.randomUser();
+  await expect(UserDAO.bySubject(user.subject)).resolves.toBeNull();
+  await expect(UserDAO.delete(user)).resolves.toEqual(false);
+  await expect(UserDAO.update(user)).resolves.toEqual(false);
+  const userCreated = await UserDAO.create(user);
+  expect(userCreated.subject).toEqual(user.subject);
+  await expect(UserDAO.bySubject(user.subject)).resolves.toEqual(user);
+  const name = DAOTestUtils.randomUserName();
+  const email = DAOTestUtils.randomUserEmail(name);
+  const token = uuid();
+  Object.assign(user, { name: name.full, email, token });
+  await expect(UserDAO.update(user)).resolves.toEqual(true);
+  await expect(UserDAO.bySubject(user.subject)).resolves.toEqual(user);
+  await expect(UserDAO.delete(user)).resolves.toEqual(true);
+  await expect(UserDAO.bySubject(user.subject)).resolves.toBeNull();
 });
