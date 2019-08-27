@@ -6,6 +6,10 @@ import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/../lib/db/UserDAO';
 import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
+import {
+  centrelineKey,
+  CentrelineType,
+} from '@/lib/Constants';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
@@ -25,9 +29,90 @@ test('CategoryDAO', async () => {
   await expect(CategoryDAO.all()).resolves.toBeInstanceOf(Map);
 });
 
+test('CentrelineDAO.byIdAndType()', async () => {
+  // intersection
+  let result = await CentrelineDAO.byIdAndType(30000549, CentrelineType.INTERSECTION);
+  expect(result).not.toBeNull();
+  expect(result.centrelineId).toEqual(30000549);
+  expect(result.centrelineType).toEqual(CentrelineType.INTERSECTION);
+
+  // segment
+  result = await CentrelineDAO.byIdAndType(111569, CentrelineType.SEGMENT);
+  expect(result).not.toBeNull();
+  expect(result.centrelineId).toEqual(111569);
+  expect(result.centrelineType).toEqual(CentrelineType.SEGMENT);
+
+  // invalid
+  result = await CentrelineDAO.byIdAndType(-1, -1);
+  expect(result).toBeNull();
+});
+
+function expectIdsAndTypesResult(results, { centrelineId, centrelineType }) {
+  const key = centrelineKey(centrelineType, centrelineId);
+  expect(results.has(key)).toBe(true);
+  const result = results.get(key);
+  expect(result).not.toBeNull();
+  expect(result.centrelineId).toBe(centrelineId);
+  expect(result.centrelineType).toBe(centrelineType);
+}
+
+function expectIdsAndTypesResults(results, expected) {
+  expect(results.size).toBe(expected.length);
+  expected.forEach((expectedResult) => {
+    expectIdsAndTypesResult(results, expectedResult);
+  });
+}
+
 test('CentrelineDAO.byIdsAndTypes()', async () => {
-  const results = await CentrelineDAO.byIdsAndTypes([]);
-  expect(results.size).toBe(0);
+  // empty
+  let query = [];
+  let results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, query);
+
+  // only invalid
+  query = [
+    { centrelineId: -1, centrelineType: -1 },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, []);
+
+  // single valid intersection
+  query = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, query);
+
+  // single valid segment
+  query = [
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, query);
+
+  // duplicate value
+  query = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, [query[0]]);
+
+  // single value + invalid
+  query = [
+    { centrelineId: -1, centrelineType: -1 },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, [query[1]]);
+
+  // intersection + segment
+  query = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  results = await CentrelineDAO.byIdsAndTypes(query);
+  expectIdsAndTypesResults(results, query);
 });
 
 test('StudyRequestReasonDAO', async () => {
