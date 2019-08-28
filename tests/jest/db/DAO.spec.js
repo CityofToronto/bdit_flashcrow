@@ -6,7 +6,7 @@ import CountDAO from '@/../lib/db/CountDAO';
 import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/../lib/db/UserDAO';
-import DAOTestUtils from '@/../lib/db/test/DAOTestUtils';
+import DAOTestUtils from '@/../lib/test/DAOTestUtils';
 import {
   centrelineKey,
   CentrelineType,
