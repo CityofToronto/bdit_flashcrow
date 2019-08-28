@@ -5,7 +5,7 @@
   "description": "An integrated data platform for City of Toronto transportation data",
   "homepage": "https://move.intra.dev-toronto.ca",
   "scripts": {
-    "backend": "node -r esm server.js",
+    "backend": "node -r esm -r module-alias/register server.js",
     "backend:inspect": "node --inspect=0.0.0.0:9229 server.js",
     "backend:inspect-brk": "node --inspect-brk=0.0.0.0:9229 server.js",
     "ci:jest-coverage": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage",
@@ -41,6 +41,7 @@
     "d3-selection-multi": "^1.0.1",
     "esm": "^3.2.25",
     "mapbox-gl": "^0.53.1",
+    "module-alias": "^2.2.1",
     "mustache": "^3.0.1",
     "nodemailer": "^6.2.1",
     "openid-client": "^2.4.5",
@@ -98,6 +99,9 @@
       "shellcheck --shell=bash",
       "git add"
     ]
+  },
+  "_moduleAliases": {
+    "@": "src"
   },
   "browserslist": [
     "last 1 Firefox version",
