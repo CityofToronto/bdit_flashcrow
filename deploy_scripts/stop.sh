@@ -10,7 +10,7 @@ source /home/ec2-user/.bash_profile
 cd /home/ec2-user
 
 #NODE_ENV=production forever stop 0 || echo "forever is not running"
-if NODE_ENV=production forever list | grep 'No forever' &> /dev/null; then
+if NODE_ENV=production forever list | grep 'No forever'; then
     echo "forever is not running."
 else
     NODE_ENV=production forever stop 0
