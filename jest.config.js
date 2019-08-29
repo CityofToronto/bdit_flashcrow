@@ -15,10 +15,10 @@ module.exports = {
   coverageDirectory: '<rootDir>/tests/coverage',
   coverageThreshold: {
     'lib/db': {
-      branches: 25,
-      functions: 25,
-      lines: 25,
-      statements: 25,
+      branches: 60,
+      functions: 60,
+      lines: 60,
+      statements: 60,
     },
     'src/lib/': {
       branches: 60,
