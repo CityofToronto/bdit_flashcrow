@@ -6,8 +6,9 @@
   "homepage": "https://move.intra.dev-toronto.ca",
   "scripts": {
     "backend": "node -r esm -r module-alias/register server.js",
-    "backend:inspect": "node --inspect=0.0.0.0:9229 server.js",
-    "backend:inspect-brk": "node --inspect-brk=0.0.0.0:9229 server.js",
+    "backend:inspect": "node -r esm -r module-alias/register --inspect=0.0.0.0:9229 server.js",
+    "backend:inspect-brk": "node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9229 server.js",
+    "backend:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node -r esm -r module-alias/register server.js",
     "ci:jest-coverage": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage",
     "ci:npm-audit": "npm audit",
     "ci:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=api jest --runInBand",

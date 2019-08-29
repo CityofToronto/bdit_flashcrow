@@ -15,7 +15,7 @@ cp /home/ec2-user/flashcrow/scripts/deployment/web/forever.json /home/ec2-user/
 cd /home/ec2-user/flashcrow
 pip install -r requirements.txt
 #copy config file:
-cp /data/config/private.js /home/ec2-user/flashcrow/lib/config/private.js
+cp /home/ec2-user/flashcrow.config.js /home/ec2-user/flashcrow/lib/config/private.js
 
 #?? fix issues with running "npm run build" (using codebuild node_modules): Error: Cannot find module '../package.json'
 rm -rf node_modules
