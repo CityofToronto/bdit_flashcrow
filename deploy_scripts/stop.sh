@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set +e
 # Normally we would set -o nounset here, but that conflicts with /etc/bashrc
 # and /etc/profile.d scripts.
 
