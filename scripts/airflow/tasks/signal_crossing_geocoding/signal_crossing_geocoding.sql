@@ -72,3 +72,23 @@ FROM
 		JOIN LATERAL gis.signal_crossing_get_intersection(lat::NUMERIC, long::NUMERIC, 'gis.centreline_intersection'::TEXT, 'gis.centreline'::TEXT) AS gids ON TRUE
   ) subquery
 WHERE ts.px=subquery.px; 
+
+
+-- add column 
+ALTER TABLE gis.pedestrian_crossings  ADD COLUMN IF NOT EXISTS gid_centreline_table TEXT; 
+ALTER TABLE gis.pedestrian_crossings  ADD COLUMN IF NOT EXISTS gid INT;
+
+-- CREATE TABLE OR SOMETHING 
+UPDATE gis.pedestrian_crossings ts
+SET gid_centreline_table=subquery.table_name, 
+gid=subquery.gid
+FROM 
+  (
+	SELECT 
+	e.px, (CASE WHEN intersection_gid IS NOT NULL THEN intersection_gid ELSE centreline_gid END) AS gid, 
+	(CASE WHEN intersection_gid IS NOT NULL THEN 'gis.centreline_intersection'::TEXT ELSE 'gis.centreline'::TEXT END) AS table_name 
+	FROM 
+		gis.pedestrian_crossings e
+		JOIN LATERAL gis.signal_crossing_get_intersection(lat::NUMERIC, long::NUMERIC, 'gis.centreline_intersection'::TEXT, 'gis.centreline'::TEXT) AS gids ON TRUE
+  ) subquery
+WHERE ts.px=subquery.px; 
