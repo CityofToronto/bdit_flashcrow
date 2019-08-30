@@ -252,6 +252,13 @@ export default {
     &.expanded > tr:first-child {
       background-color: var(--base-lighter);
     }
+
+    &:hover {
+      background-color: var(--primary-lighter);
+      & > tr > td {
+        border-color: var(--primary-darker);
+      }
+    }
   }
 }
 </style>
