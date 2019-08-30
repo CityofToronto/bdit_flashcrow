@@ -249,8 +249,16 @@ export default {
         border-bottom: var(--border-default);
       }
     }
-    &.expanded > tr:first-child {
-      background-color: var(--base-lighter);
+    &.expanded {
+      &:hover {
+        background-color: var(--white);
+        & > tr:first-child {
+          background-color: var(--primary-lighter);
+        }
+      }
+      & > tr:first-child {
+        background-color: var(--base-lighter);
+      }
     }
 
     &:hover {
