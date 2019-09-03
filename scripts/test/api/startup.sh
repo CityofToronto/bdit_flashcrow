@@ -10,13 +10,17 @@ PID_FILE="${GIT_ROOT}/scripts/test/api/.pid"
 
 rm -f "${PID_FILE}"
 
-if ! lsof -t -i :8080 -s TCP:LISTEN; then
-  echo "backend not running, starting new instance..."
-  npm run backend:test-api > /dev/null 2>&1 &
-  while ! lsof -t -i :8080 -s TCP:LISTEN; do
-    echo "waiting for backend..."
-    sleep 1
-  done
-  lsof -t -i :8080 -s TCP:LISTEN > "${PID_FILE}"
-  echo "backend started."
+if lsof -t -i :8080 -s TCP:LISTEN; then
+  echo "port 8080 in use, killing..."
+  PID_PORT_8080=$(lsof -t -i :8080 -s TCP:LISTEN)
+  kill "${PID_PORT_8080}"
 fi
+
+echo "starting backend in API_TEST_HEADLESS mode..."
+npm run backend:test-api > /dev/null 2>&1 &
+while ! lsof -t -i :8080 -s TCP:LISTEN; do
+  echo "waiting for backend..."
+  sleep 1
+done
+lsof -t -i :8080 -s TCP:LISTEN > "${PID_FILE}"
+echo "backend started."
