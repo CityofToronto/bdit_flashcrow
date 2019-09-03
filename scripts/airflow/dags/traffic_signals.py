@@ -74,9 +74,18 @@ PULL_TRAFFIC_SIGNALS = PythonOperator(
     dag=TRAFFIC_SIGNAL_DAG
 )
 
+SIGNAL_CROSSING_GEOCODING_SH = os.path.join(AIRFLOW_TASKS, 'signal_crossing_geocoding.sh')
+SIGNAL_CROSSING_GEOCODING = BashOperator(
+    task_id='signal_crossing_geocoding',
+    bash_command='{0} '.format(SIGNAL_CROSSING_GEOCODING_SH),
+    dag=TRAFFIC_SIGNAL_DAG
+)
+
 CREATE_SIGNAL_QUERY_TABLES_SH = os.path.join(AIRFLOW_TASKS, 'create_signal_query_tables.sh')
 CREATE_SIGNAL_QUERY_TABLES = BashOperator(
     task_id='create_signal_query_tables',
     bash_command='{0} '.format(CREATE_SIGNAL_QUERY_TABLES_SH),
     dag=TRAFFIC_SIGNAL_DAG
 )
+
+CREATE_SIGNAL_QUERY_TABLES.set_downstream(PULL_TRAFFIC_SIGNALS)
