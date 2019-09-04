@@ -221,6 +221,20 @@ export default new Vuex.Store({
         });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestMinDueDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      if (studyRequest.priority === 'URGENT') {
+        return now;
+      }
+      return new Date(
+        now.getFullYear(),
+        now.getMonth() + 2,
+        now.getDate(),
+      );
+    },
     studyRequestModel(state, getters) {
       const { studyRequest } = state;
       if (studyRequest === null) {
@@ -401,7 +415,12 @@ export default new Vuex.Store({
       Vue.set(state, 'studyRequestLocation', studyRequestLocation);
     },
     setNewStudyRequest(state, studyTypes) {
-      const { location } = state;
+      const { location, now } = state;
+      const dueDate = new Date(
+        now.getFullYear(),
+        now.getMonth() + 3,
+        now.getDate(),
+      );
       const {
         centrelineId,
         centrelineType,
@@ -417,7 +436,7 @@ export default new Vuex.Store({
         hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
-        dueDate: null,
+        dueDate,
         reasons: [],
         ccEmails: '',
         centrelineId,

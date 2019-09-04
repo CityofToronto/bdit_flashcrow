@@ -56,6 +56,7 @@
       </div>
       <TdsPanel
         v-if="priority === 'STANDARD'"
+        class="inner-container"
         icon="calendar-check"
         variant="info">
         <p>
@@ -65,6 +66,7 @@
       </TdsPanel>
       <TdsPanel
         v-else-if="priority === 'URGENT'"
+        class="inner-container"
         variant="warning">
         <p>
           You've marked this request urgent, which will mean reshuffling the request queue.
@@ -93,6 +95,15 @@
         variant="error">
         <p>
           Please select a due date for this request.
+        </p>
+      </TdsPanel>
+      <TdsPanel
+        v-else-if="!v.dueDate.$dirty"
+        class="inner-container"
+        variant="info">
+        <p>
+          By default, we've selected a date 3 months from now.  If this meets your
+          needs, you don't need to change this due date.
         </p>
       </TdsPanel>
     </div>
@@ -155,7 +166,8 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import Vue from 'vue';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import DatePicker from '@/components/DatePicker.vue';
 import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
@@ -173,23 +185,24 @@ export default {
   props: {
     v: Object,
   },
+  data() {
+    return {
+      /*
+       * Cache the due date in each priority state, in case the user switches
+       * back and forth between priorities.
+       */
+      dueDateCached: {
+        STANDARD: null,
+        URGENT: null,
+      },
+    };
+  },
   computed: {
     attrsDueDate() {
-      const { now } = this.$store.state;
-      if (this.priority === 'URGENT') {
-        return {
-          disabledDates: { start: null, end: now },
-          minDate: now,
-        };
-      }
-      const twoMonthsOut = new Date(
-        now.getFullYear(),
-        now.getMonth() + 2,
-        now.getDate(),
-      );
+      const minDate = this.studyRequestMinDueDate;
       return {
-        disabledDates: { start: null, end: twoMonthsOut },
-        minDate: twoMonthsOut,
+        disabledDates: { start: null, end: minDate },
+        minDate,
       };
     },
     ccEmails: {
@@ -261,7 +274,19 @@ export default {
         });
       },
     },
+    ...mapGetters(['studyRequestMinDueDate']),
     ...mapState(['requestReasons', 'studyRequest']),
+  },
+  watch: {
+    dueDate: {
+      handler() {
+        Vue.set(this.dueDateCached, this.priority, this.dueDate);
+      },
+      immediate: true,
+    },
+    priority() {
+      this.dueDate = this.dueDateCached[this.priority];
+    },
   },
   methods: {
     ...mapMutations(['setStudyRequestMeta']),
