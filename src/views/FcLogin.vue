@@ -6,6 +6,11 @@
         id="form_fc_login"
         method="POST"
         action="/api/auth/stub">
+        <input
+          v-if="$route.query.path"
+          type="hidden"
+          name="path"
+          :value="$route.query.path" />
         <input type="hidden" name="csrf" :value="auth.csrf" />
       </form>
     </div>

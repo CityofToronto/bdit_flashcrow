@@ -2,7 +2,10 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/store';
-import { REQUEST_STUDY_REQUIRES_LOCATION } from '@/lib/i18n/Strings';
+import {
+  REQUEST_STUDY_REQUIRES_LOCATION,
+  ROUTE_NOT_LOGGED_IN,
+} from '@/lib/i18n/Strings';
 
 Vue.use(Router);
 
@@ -144,7 +147,12 @@ async function beforeEachCheckAuth(to) {
     const metaAuth = routeMetaKey(to, 'auth', true);
     if (metaAuth === true) {
       // this route requires an authenticated user
-      return loggedIn ? false : { name: 'login' };
+      if (loggedIn) {
+        return false;
+      }
+      store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
+      const { path } = to;
+      return { name: 'login', query: { path } };
     }
     if (metaAuth === false) {
       // this route requires an unauthenticated user
@@ -158,23 +166,26 @@ async function beforeEachCheckAuth(to) {
   }
 }
 
-function beforeEachSetTitle(to) {
-  const title = routeMetaKey(to, 'title', undefined);
-  if (title !== undefined) {
-    document.title = title;
-  }
-}
-
 router.beforeEach((to, from, next) => {
   beforeEachCheckAuth(to)
     .then((redirect) => {
       if (redirect) {
         next(redirect);
       } else {
-        beforeEachSetTitle(to);
         next();
       }
     });
+});
+
+function afterEachSetTitle(to) {
+  const title = routeMetaKey(to, 'title', undefined);
+  if (title !== undefined) {
+    document.title = title;
+  }
+}
+
+router.afterEach((to) => {
+  afterEachSetTitle(to);
 });
 
 export default router;

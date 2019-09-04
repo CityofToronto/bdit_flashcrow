@@ -27,6 +27,11 @@ const REQUEST_STUDY_REQUIRES_LOCATION = {
   text: 'Please select a location before requesting a study.',
 };
 
+const ROUTE_NOT_LOGGED_IN = {
+  variant: 'warning',
+  text: 'You must be logged in to view that page.',
+};
+
 /**
  * `Strings` is effectively a manifest of strings (messages) used in MOVE.
  * @type {object<string, StringMessage>}
@@ -36,6 +41,7 @@ const Strings = {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
   REQUEST_STUDY_REQUIRES_LOCATION,
+  ROUTE_NOT_LOGGED_IN,
 };
 
 export {
@@ -44,4 +50,5 @@ export {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
   REQUEST_STUDY_REQUIRES_LOCATION,
+  ROUTE_NOT_LOGGED_IN,
 };
