@@ -20,11 +20,15 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      meta: { auth: false },
+      meta: {
+        auth: false,
+        title: 'Log in',
+      },
       component: () => import(/* webpackChunkName: "home" */ './views/FcLogin.vue'),
     },
     {
       path: '/view',
+      meta: { title: 'View Map' },
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutViewData.vue'),
       children: [{
         path: '',
@@ -35,6 +39,7 @@ const router = new Router({
         },
       }, {
         path: 'location/:centrelineType/:centrelineId',
+        meta: { title: 'View Data' },
         name: 'viewDataAtLocation',
         components: {
           filters: () => import(/* webpackChunkName: "home" */ './components/FcFiltersViewDataAtLocation.vue'),
@@ -44,6 +49,7 @@ const router = new Router({
     },
     {
       path: '/requests/study/new',
+      meta: { title: 'New Study' },
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         if (store.state.location === null) {
@@ -59,6 +65,7 @@ const router = new Router({
       children: [{
         path: '',
         name: 'requestStudy',
+        meta: { title: 'New Study: Request' },
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyRequest.vue'),
           actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomRequestData.vue'),
@@ -66,6 +73,7 @@ const router = new Router({
       }, {
         path: 'schedule',
         name: 'requestStudySchedule',
+        meta: { title: 'New Study: Schedule' },
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySchedule.vue'),
           actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToSpecify.vue'),
@@ -73,6 +81,7 @@ const router = new Router({
       }, {
         path: 'specify',
         name: 'requestStudySpecify',
+        meta: { title: 'New Study: Specify' },
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudySpecify.vue'),
           actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomContinueToConfirm.vue'),
@@ -80,6 +89,7 @@ const router = new Router({
       }, {
         path: 'confirm',
         name: 'requestStudyConfirm',
+        meta: { title: 'New Study: Confirm' },
         components: {
           default: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyConfirm.vue'),
           actionBottom: () => import(/* webpackChunkName: "home" */ './components/FcActionBottomConfirm.vue'),
@@ -89,11 +99,17 @@ const router = new Router({
     {
       path: '/requests/track',
       name: 'requestsTrack',
+      meta: { title: 'Track Requests' },
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestsTrack.vue'),
     },
     {
       path: '/requests/study/:id',
       name: 'requestStudyView',
+      meta: {
+        title({ params: { id } }) {
+          return `View Request #${id}`;
+        },
+      },
       component: () => import(/* webpackChunkName: "home" */ './views/FcRequestStudyView.vue'),
     },
     {
@@ -178,10 +194,16 @@ router.beforeEach((to, from, next) => {
 });
 
 function afterEachSetTitle(to) {
-  const title = routeMetaKey(to, 'title', undefined);
-  if (title !== undefined) {
-    document.title = title;
+  let title = routeMetaKey(to, 'title', undefined);
+  if (title === undefined) {
+    document.title = 'MOVE';
+    return;
   }
+  if (title instanceof Function) {
+    title = title(to);
+  }
+  title = `MOVE \u00b7 ${title}`;
+  document.title = title;
 }
 
 router.afterEach((to) => {
