@@ -52,11 +52,16 @@ const router = new Router({
       meta: { title: 'New Study' },
       component: () => import(/* webpackChunkName: "home" */ './views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
-        if (store.state.location === null) {
+        const { location, studyRequest } = store.state;
+        if (location === null) {
           store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
-          next({ name: 'home' });
+          next({ name: 'viewData' });
         } else {
-          if (store.state.studyRequest === null) {
+          if (
+            studyRequest === null
+            || studyRequest.centrelineType !== location.centrelineType
+            || studyRequest.centrelineId !== location.centrelineId
+          ) {
             store.commit('setNewStudyRequest', []);
           }
           next();
