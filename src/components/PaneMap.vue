@@ -372,8 +372,12 @@ export default {
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
+      this.map.on('dataloading', () => {
+        this.loading = true;
+      });
       this.map.on('idle', () => {
         this.updateSelectedFeature();
+        this.loading = false;
       });
     });
   },
@@ -440,13 +444,11 @@ export default {
         ymax,
       };
       const options = { data };
-      this.loading = true;
       return apiFetch('/counts/byBoundingBox', options)
         .then((dataCountsVisible) => {
           this.dataCountsVisible = dataCountsVisible;
           this.map.getSource('counts-visible')
             .setData(this.dataCountsVisible);
-          this.loading = false;
           return dataCountsVisible;
         });
     },
