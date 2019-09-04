@@ -95,48 +95,84 @@ const router = new Router({
     },
     {
       path: '*',
+      name: '404',
+      meta: { auth: { mode: 'try' } },
       component: () => import(/* webpackChunkName: "home" */ './views/Fc404.vue'),
     },
   ],
 });
 
-function routeMetaAuth(route) {
-  if (route.meta && Object.prototype.hasOwnProperty.call(route.meta, 'auth')) {
-    return route.meta.auth;
+/**
+ * Returns the value of `meta[key]` from the most specific route matched above
+ * that defines such a value.
+ *
+ * @param {Array<Object>} to - routes matched from `router` above
+ * @param {String} key - key to fetch from `meta`
+ * @param {}
+ * @returns {*} value of `meta[key]` from most specific matched route, or
+ * `defaultValue` if no such route defines `meta[key]`.
+ */
+function routeMetaKey(to, key, defaultValue) {
+  /*
+   * The `hasOwnProperty()` call here is essential: some `meta` keys can take falsy values
+   * (e.g. `false`, `0`, etc.), which would fail a simple `route.meta && route.meta[key]`
+   * check in `find()`.
+   */
+  const routeWithKey = to.matched.slice().reverse()
+    .find(route => route.meta && Object.prototype.hasOwnProperty.call(route.meta, key));
+  if (routeWithKey === undefined) {
+    return defaultValue;
   }
-  return true;
+  return routeWithKey.meta[key];
+}
+
+/**
+ * Determines if the user has necessary permissions to view `to`.
+ *
+ * @param to {Object} - route to check permissions for
+ * @returns {Boolean|Object} false if user has necessary permissions (i.e. no redirect needed),
+ * otherwise the route to redirect to (e.g. for login)
+ */
+async function beforeEachCheckAuth(to) {
+  try {
+    const { loggedIn } = await store.dispatch('checkAuth');
+    /*
+     * As part of "security by design", our default assumption is that a route
+     * requires authentication.  A route must manually override this to specify
+     * different behaviour.
+     */
+    const metaAuth = routeMetaKey(to, 'auth', true);
+    if (metaAuth === true) {
+      // this route requires an authenticated user
+      return loggedIn ? false : { name: 'login' };
+    }
+    if (metaAuth === false) {
+      // this route requires an unauthenticated user
+      return loggedIn ? { name: 'home' } : false;
+    }
+    return false;
+  } catch (err) {
+    console.log(err);
+    // prevent infinite redirect to login
+    return to.name === 'login' ? false : { name: 'login' };
+  }
+}
+
+function beforeEachSetTitle(to) {
+  const title = routeMetaKey(to, 'title', undefined);
+  if (title !== undefined) {
+    document.title = title;
+  }
 }
 
 router.beforeEach((to, from, next) => {
-  store.dispatch('checkAuth')
-    .then(({ loggedIn }) => {
-      if (to.matched.some(route => routeMetaAuth(route) === true)) {
-        // this route requires an authenticated user
-        if (loggedIn) {
-          next();
-        } else {
-          next({ name: 'login' });
-        }
-      } else if (to.matched.some(route => routeMetaAuth(route) === false)) {
-        // this route requires an unauthenticated user
-        if (loggedIn) {
-          next({ name: 'home' });
-        } else {
-          next();
-        }
+  beforeEachCheckAuth(to)
+    .then((redirect) => {
+      if (redirect) {
+        next(redirect);
       } else {
-        // this route accepts both authenticated and unauthenticated users
+        beforeEachSetTitle(to);
         next();
-      }
-    })
-    .catch(() => {
-      /*
-       * We couldn't authenticate the user, so we should assume that they're logged out.
-       */
-      if (to.name === 'login') {
-        next();
-      } else {
-        next({ name: 'login' });
       }
     });
 });
