@@ -19,9 +19,6 @@
     <template v-slot:STUDY_TYPE="{ item }">
       <div
         class="cell-study-type flex-container-row"
-        :class="{
-          'no-existing': item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT,
-        }"
         @click.prevent="onActionShowReports(item)">
         <u v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT">
           {{item.counts[item.activeIndex].type.label}}
@@ -154,7 +151,12 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import FcCardTable from '@/components/FcCardTable.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -227,7 +229,13 @@ export default {
   },
   methods: {
     onActionShowReports(item) {
-      if (item.status === Status.NO_EXISTING_COUNT) {
+      const activeCount = item.counts[item.activeIndex];
+      if (activeCount.status === Status.NO_EXISTING_COUNT) {
+        const { label } = activeCount.type;
+        this.setToast({
+          variant: 'warning',
+          text: `No existing ${label} count(s) to view.`,
+        });
         return;
       }
       this.$emit('action-item', { type: 'show-reports', item });
@@ -245,6 +253,7 @@ export default {
       });
       return options;
     },
+    ...mapActions(['setToast']),
     ...mapMutations(['setItemsCountsActive']),
   },
 };
@@ -257,21 +266,23 @@ export default {
       width: var(--space-xl);
     }
   }
-  .cell-study-type {
-    align-items: center;
-    cursor: pointer;
-    &.no-existing {
-      cursor: not-allowed;
-    }
-    & > u {
-      color: var(--primary-vivid);
-    }
-    & > button {
-      opacity: 0;
-    }
+  .cell-STUDY_TYPE {
     &:hover {
+      background-color: var(--primary-light);
+    }
+    & > div {
+      align-items: center;
+      cursor: pointer;
+      & > u {
+        color: var(--primary-vivid);
+      }
       & > button {
-        opacity: 1;
+        opacity: 0;
+      }
+      &:hover {
+        & > button {
+          opacity: 1;
+        }
       }
     }
   }

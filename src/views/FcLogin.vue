@@ -6,12 +6,24 @@
         id="form_fc_login"
         method="POST"
         action="/api/auth/stub">
+        <input
+          v-if="$route.query.path"
+          type="hidden"
+          name="path"
+          :value="$route.query.path" />
         <input type="hidden" name="csrf" :value="auth.csrf" />
       </form>
     </div>
     <h1>Log in to MOVE</h1>
     <div class="flex-container-row">
       <div class="flex-1 px-l">
+        <TdsPanel
+          class="font-size-l"
+          variant="info">
+          <p>
+            To log in, enter your name and <strong>@toronto.ca</strong> email address.
+          </p>
+        </TdsPanel>
         <div class="form-group">
           <label>
             <span>Name</span>
@@ -67,21 +79,7 @@
           Log in
         </button>
       </div>
-      <div class="flex-1 px-l">
-        <TdsPanel
-          class="font-size-l"
-          variant="info">
-          <p>
-            This is a test login page.  To log in, enter
-            your name and <strong>@toronto.ca</strong> email address.  If this is
-            your first time using MOVE, we'll automatically create your account.
-          </p>
-          <p>
-            Please use your actual name and email address!  That helps us transition to an
-            actual login mechanism later.
-          </p>
-        </TdsPanel>
-      </div>
+      <div class="flex-1 px-l"></div>
     </div>
   </div>
 </template>

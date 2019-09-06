@@ -282,6 +282,12 @@ export default {
       },
       immediate: true,
     },
+    activeCountData() {
+      if (this.optionsReports.length > 0 && this.reports.length === 0) {
+        const { value } = this.optionsReports[0];
+        this.reports = [value];
+      }
+    },
   },
   methods: {
     onChangeSelectAll() {

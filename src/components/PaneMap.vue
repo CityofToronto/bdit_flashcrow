@@ -282,6 +282,32 @@ export default {
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
     },
+    selectedFeatureNeedsUpdate() {
+      if (this.location === null) {
+        return this.selectedFeature !== null;
+      }
+      if (this.selectedFeature === null) {
+        return true;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      const layerId = this.selectedFeature.layer.id;
+      if (centrelineType === CentrelineType.SEGMENT) {
+        if (layerId === 'centreline') {
+          return this.selectedFeature.properties.geo_id !== centrelineId;
+        }
+        return true;
+      }
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        if (layerId === 'counts-visible-points') {
+          return this.selectedFeature.properties.centrelineId !== centrelineId;
+        }
+        if (layerId === 'intersections') {
+          return this.selectedFeature.properties.int_id !== centrelineId;
+        }
+        return true;
+      }
+      return false;
+    },
     ...mapState(['location', 'locationQuery', 'showMap']),
   },
   created() {
@@ -340,11 +366,18 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+      this.easeToLocation(this.location, null);
       this.map.on('load', () => {
         this.map.on('move', this.onMapMove.bind(this));
-        this.easeToLocation(this.location, null);
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
+      });
+      this.map.on('dataloading', () => {
+        this.loading = true;
+      });
+      this.map.on('idle', () => {
+        this.updateSelectedFeature();
+        this.loading = false;
       });
     });
   },
@@ -411,16 +444,78 @@ export default {
         ymax,
       };
       const options = { data };
-      this.loading = true;
       return apiFetch('/counts/byBoundingBox', options)
         .then((dataCountsVisible) => {
           this.dataCountsVisible = dataCountsVisible;
           this.map.getSource('counts-visible')
             .setData(this.dataCountsVisible);
-          this.loading = false;
           return dataCountsVisible;
         });
     },
+    getFeatureForLayerAndProperty(layer, key, value) {
+      const features = this.map.queryRenderedFeatures({
+        layers: [layer],
+        filter: ['==', ['get', key], value],
+      });
+      if (features.length === 0) {
+        return null;
+      }
+      return features[0];
+    },
+    /**
+     * Fetches the vector tile feature for the given location, as stored in the Vuex store.
+     *
+     * @param {Object?} location - location to get feature for, or `null`
+     * @returns {Object?} the matched feature, or `null` if no such feature
+     */
+    getFeatureForLocation(location) {
+      if (location === null) {
+        return null;
+      }
+      const { centrelineId, centrelineType } = location;
+      if (centrelineType === CentrelineType.SEGMENT) {
+        return this.getFeatureForLayerAndProperty(
+          'centreline',
+          'geo_id',
+          centrelineId,
+        );
+      }
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        let feature = this.getFeatureForLayerAndProperty(
+          'counts-visible-points',
+          'centrelineId',
+          centrelineId,
+        );
+        if (feature === null) {
+          feature = this.getFeatureForLayerAndProperty(
+            'intersections',
+            'int_id',
+            centrelineId,
+          );
+        }
+        return feature;
+      }
+      return null;
+    },
+    /**
+     * Fetches the vector tile feature for the given mouse location, usually from a mouse
+     * event on the map.
+     *
+     * For usability, this matching is somewhat fuzzy: it will find the highest-priority
+     * feature within a 20x20 bounding box centered on `point`.  Layers in descending
+     * priority order:
+     *
+     * - intersections
+     * - counts-visible-points
+     * - counts-visible-clusters
+     * - centreline
+     *
+     * TODO: within layers, rank by closest to `point`
+     * TODO: don't depend on rendering order of layers
+     *
+     * @param {Object} point - `(x, y)` coordinates of mouse
+     * @returns {Object?} the matched feature, or `null` if no such feature
+     */
     getFeatureForPoint(point) {
       const layers = [
         'centreline',
@@ -566,6 +661,18 @@ export default {
         this.map.setStyle(this.satelliteStyle, { diff: false });
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
+      }
+    },
+    updateSelectedFeature() {
+      if (!this.selectedFeatureNeedsUpdate) {
+        return;
+      }
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
+      }
+      this.selectedFeature = this.getFeatureForLocation(this.location);
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: true });
       }
     },
     updateSelectedMarker() {
