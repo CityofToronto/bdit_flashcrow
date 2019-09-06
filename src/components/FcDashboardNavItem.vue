@@ -53,7 +53,6 @@ export default {
     margin-bottom: var(--space-m);
   }
   &.disabled {
-    cursor: not-allowed;
     color: var(--disabled);
     opacity: var(--opacity-50);
   }

@@ -167,7 +167,6 @@ export default {
         color: var(--primary-darker);
       }
       &.disabled {
-        cursor: not-allowed;
         color: var(--base);
       }
     }
