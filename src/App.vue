@@ -35,6 +35,10 @@
           label="Run Warrant"
           :to="{ name: 'runWarrant' }" />
       </FcDashboardNav>
+      <button class="tds-button-primary fc-help">
+        <i class="fa fa-question-circle"></i>
+        <a href="mailto:move-team@toronto.ca?subject=MOVE%20Help%20Request" target="_blank">Help</a>
+      </button>
     </div>
     <div class="fc-content flex-fill flex-container-column">
       <TdsTopBar class="fc-topbar">
@@ -179,7 +183,13 @@ export default {
 .fc-sidebar {
   background-color: var(--base-darker);
   color: var(--base-lighter);
+  position: relative;
   width: var(--space-3xl);
+  & > .fc-help {
+    bottom: var(--space-m);
+    left: var(--space-l);
+    position: absolute;
+  }
 }
 .fc-topbar {
   position: relative;
