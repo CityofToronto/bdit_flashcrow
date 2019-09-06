@@ -1,16 +1,37 @@
 #!/bin/bash
+#
+# startup.sh [--withDevData]
+#
+# This is called by `DAOTestUtils.startup()` to initialize a PostgreSQL database that
+# is specifically designed for testing.  This database resides on an in-memory filesystem
+# that is unmounted at end of test.
 
 set -euo pipefail
 
+# Path to development data file.
 FLASHCROW_DEV_DATA="$HOME/flashcrow-dev-data.sql"
 GIT_ROOT=$(realpath "$(dirname "$0")"/../../..)
+
+# Directory under `/mnt` that is used for our in-memory filesystem.
 RAMDISK_NAME=ramdisk_move_test
 RAMDISK_MOUNT_POINT=/mnt/${RAMDISK_NAME}
+
+# Used to store the device identifier for easy unmounting later.
 RAMDISK_DEVICE_FILE="${RAMDISK_MOUNT_POINT}/.device"
+
+# This file is used by `initdb` to initialize the PostgreSQL admin password.
 RAMDISK_PWFILE="${RAMDISK_MOUNT_POINT}/.pwfile"
+
+# This file is used by `psql`, `pg-promise` to load database credentials.
 RAMDISK_PGPASS="${RAMDISK_MOUNT_POINT}/.pgpass"
+
+# This directory stores database data.
 RAMDISK_DATA_DIR="${RAMDISK_MOUNT_POINT}/pg_data_dir"
 
+# Should we load the development data file?
+#
+# TODO: we pretty much always want to do this; remove for simplicity, or
+# find a compelling reason to maintain it.
 WITH_DEV_DATA=false
 
 function parse_args {
@@ -31,6 +52,7 @@ function parse_args {
 parse_args "$@"
 
 if $WITH_DEV_DATA; then
+  # ensure that required data file is present
   if [ ! -f "${FLASHCROW_DEV_DATA}" ]; then
     # TODO: in this case, we should scp it from ETL directly!
     # However, that requires the SSH key to be provided.
@@ -39,7 +61,8 @@ if $WITH_DEV_DATA; then
   fi
 fi
 
-# cleanup existing ramdisk (if any)
+# cleanup existing ramdisk (if any), in case `shutdown.sh` wasn't run (e.g.
+# test was killed before it could tear down properly)
 if [ -f "$RAMDISK_DEVICE_FILE" ]; then
   echo "Device file $RAMDISK_DEVICE_FILE found; shutting down existing instance..."
   "$(dirname "$0")"/shutdown.sh
@@ -58,13 +81,13 @@ chmod -R g+rw ${RAMDISK_MOUNT_POINT}
 touch "${RAMDISK_PGPASS}"
 chmod 0600 "${RAMDISK_PGPASS}"
 
-# generate admin password
+# generate secure random admin password using `openssl`
 echo "Generating PostgreSQL admin password..."
 PG_ADMIN_PASSWORD=$(openssl rand -base64 32)
 echo "${PG_ADMIN_PASSWORD}" > ${RAMDISK_PWFILE}
 echo "localhost:5433:postgres:flashcrow_dba:${PG_ADMIN_PASSWORD}" >> ${RAMDISK_PGPASS}
 
-# install PostgreSQL database files
+# install PostgreSQL database files with PostgreSQL utility `initdb`
 echo "Installing PostgreSQL database files..."
 initdb \
   -U flashcrow_dba \
@@ -76,6 +99,9 @@ initdb \
 # NOTE: we use -F here to start PostgreSQL without fsync for test performance.
 # Do NOT do this outside the test environment!  It *will* lead to unrecoverable
 # data corruption.
+#
+# NOTE: we start this on port 5433 to avoid port collisions with the development
+# PostgreSQL server.
 echo "Starting PostgreSQL..."
 pg_ctl \
   -D ${RAMDISK_DATA_DIR} \
@@ -84,18 +110,20 @@ pg_ctl \
   -w \
   start
 
-# generate user password
+# generate secure random user password using `openssl`, and write to `.pgpass`
 echo "Generating PostgreSQL user password..."
 PG_USER_PASSWORD=$(openssl rand -base64 32)
 echo "localhost:5433:flashcrow:flashcrow:${PG_USER_PASSWORD}" >> ${RAMDISK_PGPASS}
 
-# install MOVE database
+# install MOVE database: we create the database with its own user, set up PostGIS extensions,
+# and run any database migrations
 echo "Setting up MOVE application database..."
 psql -h localhost -p 5433 -U flashcrow_dba postgres -v pgPassword="'$PG_USER_PASSWORD'" < "${GIT_ROOT}/scripts/dev/provision-db-vagrant.sql"
 psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/db/db-update-install.sql"
 "${GIT_ROOT}/scripts/db/db-update.sh" --psqlArgs "-h localhost -p 5433 -U flashcrow flashcrow"
 
 if $WITH_DEV_DATA; then
+  # load dev dataset as produced by our `dev_data` Airflow job
   psql -h localhost -p 5433 -U flashcrow flashcrow < "${FLASHCROW_DEV_DATA}"
 fi
 

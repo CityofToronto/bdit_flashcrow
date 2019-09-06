@@ -132,7 +132,7 @@ const router = new Router({
  *
  * @param {Array<Object>} to - routes matched from `router` above
  * @param {String} key - key to fetch from `meta`
- * @param {}
+ * @param {*} defaultValue - default value to use if `meta[key]` does not exist
  * @returns {*} value of `meta[key]` from most specific matched route, or
  * `defaultValue` if no such route defines `meta[key]`.
  */

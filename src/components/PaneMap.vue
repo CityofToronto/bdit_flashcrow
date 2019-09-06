@@ -462,6 +462,12 @@ export default {
       }
       return features[0];
     },
+    /**
+     * Fetches the vector tile feature for the given location, as stored in the Vuex store.
+     *
+     * @param {Object?} location - location to get feature for, or `null`
+     * @returns {Object?} the matched feature, or `null` if no such feature
+     */
     getFeatureForLocation(location) {
       if (location === null) {
         return null;
@@ -491,6 +497,25 @@ export default {
       }
       return null;
     },
+    /**
+     * Fetches the vector tile feature for the given mouse location, usually from a mouse
+     * event on the map.
+     *
+     * For usability, this matching is somewhat fuzzy: it will find the highest-priority
+     * feature within a 20x20 bounding box centered on `point`.  Layers in descending
+     * priority order:
+     *
+     * - intersections
+     * - counts-visible-points
+     * - counts-visible-clusters
+     * - centreline
+     *
+     * TODO: within layers, rank by closest to `point`
+     * TODO: don't depend on rendering order of layers
+     *
+     * @param {Object} point - `(x, y)` coordinates of mouse
+     * @returns {Object?} the matched feature, or `null` if no such feature
+     */
     getFeatureForPoint(point) {
       const layers = [
         'centreline',
