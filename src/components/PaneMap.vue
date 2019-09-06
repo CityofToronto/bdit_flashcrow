@@ -6,9 +6,10 @@
       <TdsLoadingSpinner />
     </div>
     <div class="pane-map-google-maps">
-      <button class="font-size-l">
-        <span v-if="coordinates === null">Google Maps</span>
-        <a v-else :href="hrefGoogleMaps" target="_blank">Google Maps</a>
+      <button
+        class="font-size-l"
+        :disabled="coordinates === null">
+        <a :href="hrefGoogleMaps" target="_blank">Google Maps</a>
       </button>
     </div>
     <div class="pane-map-mode">
@@ -364,6 +365,7 @@ export default {
         style: this.mapStyle,
         zoom: ZOOM_TORONTO,
       });
+      this.updateCoordinates();
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
@@ -644,10 +646,8 @@ export default {
       this.map.setFeatureState(this.hoveredFeature, { hover: true });
     },
     onMapMove: FunctionUtils.debounce(function onMapMove() {
-      const { lat, lng } = this.map.getCenter();
+      this.updateCoordinates();
       const zoom = this.map.getZoom();
-      this.coordinates = { lat, lng, zoom };
-
       if (zoom >= ZOOM_MIN_COUNTS) {
         const bounds = this.map.getBounds();
         this.fetchVisibleCounts(bounds);
@@ -664,6 +664,11 @@ export default {
       } else {
         this.map.setStyle(this.mapStyle, { diff: false });
       }
+    },
+    updateCoordinates() {
+      const { lat, lng } = this.map.getCenter();
+      const zoom = this.map.getZoom();
+      this.coordinates = { lat, lng, zoom };
     },
     updateSelectedFeature() {
       if (!this.selectedFeatureNeedsUpdate) {
