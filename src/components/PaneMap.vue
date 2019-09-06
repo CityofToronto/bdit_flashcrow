@@ -17,10 +17,12 @@
       </button>
       <PaneMapPopup
         v-if="hoveredFeature"
-        :feature="hoveredFeature" />
+        :feature="hoveredFeature"
+        @zoom-in="onCountsVisibleClustersClick" />
       <PaneMapPopup
         v-if="selectedFeature"
-        :feature="selectedFeature" />
+        :feature="selectedFeature"
+        @zoom-in="onCountsVisibleClustersClick" />
     </div>
   </div>
 </template>

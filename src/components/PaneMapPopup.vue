@@ -6,6 +6,12 @@
       <span v-else class="text-muted"> name unknown</span>
     </div>
     <button
+      v-if="layerId === 'counts-visible-clusters'"
+      @click="onZoomIn">
+      Zoom In
+    </button>
+    <button
+      v-else
       class="font-size-l"
       @click="onViewData">
       View Data
@@ -65,6 +71,10 @@ export default {
       if (this.layerId === 'intersections') {
         return this.feature.properties.intersec5;
       }
+      if (this.layerId === 'counts-visible-clusters') {
+        const n = this.feature.properties.point_count_abbreviated;
+        return `${n} locations`;
+      }
       return this.feature.properties.locationdesc;
     },
     descriptionFormatted() {
@@ -116,6 +126,9 @@ export default {
         name: 'viewDataAtLocation',
         params: routerParameters,
       });
+    },
+    onZoomIn() {
+      this.$emit('zoom-in', this.feature);
     },
     refreshPopup() {
       this.popup
