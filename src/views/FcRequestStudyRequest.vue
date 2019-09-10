@@ -15,7 +15,7 @@
             <td :colspan="numTableColumns - 1">
               <TdsActionDropdown
                 class="full-width font-size-l"
-                :options="studyTypesWarnDuplicates"
+                :options="studyTypesWithWarnings"
                 @action-selected="onAddStudy">
                 <span>Request another study</span>
               </TdsActionDropdown>
@@ -87,7 +87,7 @@ export default {
       });
     },
     ...mapGetters([
-      'studyTypesWarnDuplicates',
+      'studyTypesWithWarnings',
     ]),
     ...mapState([
       'counts',
@@ -97,28 +97,15 @@ export default {
   },
   methods: {
     onAddStudy(studyType) {
-      const studyTypesSelected = new Set(
-        this.studyRequest.studies.map(({ studyType: value }) => value),
-      );
-      if (studyTypesSelected.has(studyType)) {
-        const { label } = COUNT_TYPES.find(({ value }) => value === studyType);
-        // TODO: maybe wrap this into a vuex action?
-        this.setModal({
-          component: 'TdsConfirmDialog',
-          data: {
-            title: 'Add Duplicate Study?',
-            prompt: `
-              You've already added a ${label}.
-              Do you want to add another study of that type?`,
-            textCancel: 'No, don\'t add it',
-            textOk: 'Yes, add it',
-            action: () => {
-              this.addStudyToStudyRequest(studyType);
-            },
-          },
-        });
-      } else {
+      const { warning } = this.studyTypesWithWarnings
+        .find(({ value }) => value === studyType);
+      if (warning === null) {
         this.addStudyToStudyRequest(studyType);
+      } else {
+        warning.data.action = () => {
+          this.addStudyToStudyRequest(studyType);
+        };
+        this.setModal(warning);
       }
     },
     onRemoveStudy(item) {

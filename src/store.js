@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
@@ -13,6 +14,7 @@ import {
   Status,
 } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
+import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 Vue.use(Vuex);
 
@@ -302,17 +304,21 @@ export default new Vuex.Store({
       return countTypesAll
         .filter(value => value !== 'TMC' && value !== 'RESCU');
     },
-    studyTypesWarnDuplicates(state, getters) {
+    studyTypesWithWarnings(state, getters) {
       const studyTypesSelected = new Set();
       if (state.studyRequest !== null) {
-        state.studyRequest.studies.forEach(({ studyType: { value } }) => {
+        state.studyRequest.studies.forEach(({ studyType: value }) => {
           studyTypesSelected.add(value);
         });
       }
-      return getters.studyTypesRelevantToLocation.map((value) => {
-        const { label } = COUNT_TYPES.find(({ value: typeValue }) => typeValue === value);
-        const duplicate = studyTypesSelected.has(value);
-        return { label, value, duplicate };
+      return COUNT_TYPES.map(({ label, value }) => {
+        let warning = null;
+        if (studyTypesSelected.has(value)) {
+          warning = STUDY_DUPLICATE.getModalOptions({ label });
+        } else if (!getters.studyTypesRelevantToLocation.includes(value)) {
+          warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
+        }
+        return { label, value, warning };
       });
     },
     studyRequestEstimatedDeliveryDate(state) {
