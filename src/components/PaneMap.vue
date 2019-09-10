@@ -556,6 +556,7 @@ export default {
         centrelineId: feature.properties.geo_id,
         centrelineType: CentrelineType.SEGMENT,
         description: feature.properties.lf_name,
+        featureCode: feature.properties.fcode,
         lng,
         lat,
       };
@@ -579,6 +580,7 @@ export default {
         centrelineType: feature.properties.centrelineType,
         description:
           StringFormatters.formatCountLocationDescription(feature.properties.locationdesc),
+        featureCode: null,
         lat,
         lng,
       };
@@ -591,6 +593,7 @@ export default {
         centrelineId: feature.properties.int_id,
         centrelineType: CentrelineType.INTERSECTION,
         description: feature.properties.intersec5,
+        featureCode: feature.properties.elevatio9,
         lat,
         lng,
       };

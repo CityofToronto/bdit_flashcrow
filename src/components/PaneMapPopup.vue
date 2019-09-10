@@ -83,6 +83,15 @@ export default {
       }
       return null;
     },
+    featureCode() {
+      if (this.layerId === 'centreline') {
+        return this.feature.properties.fcode;
+      }
+      if (this.layerId === 'intersections') {
+        return this.feature.properties.elevatio9;
+      }
+      return null;
+    },
     layerId() {
       return this.feature.layer.id;
     },
@@ -112,6 +121,7 @@ export default {
         centrelineId: this.centrelineId,
         centrelineType: this.centrelineType,
         description: this.description,
+        featureCode: this.featureCode,
         lng,
         lat,
       };
