@@ -133,10 +133,13 @@ export default {
         params: { centrelineId, centrelineType },
       });
     },
-    studyTypesRelevantToLocation() {
-      const studyTypesIndices = this.studyTypesRelevantToLocation
-        .map(value => COUNT_TYPES.findIndex(({ value: typeValue }) => typeValue === value));
-      this.setFilterCountTypes(studyTypesIndices);
+    studyTypesRelevantToLocation: {
+      handler() {
+        const studyTypesIndices = this.studyTypesRelevantToLocation
+          .map(value => COUNT_TYPES.findIndex(({ value: typeValue }) => typeValue === value));
+        this.setFilterCountTypes(studyTypesIndices);
+      },
+      immediate: true,
     },
   },
   beforeRouteEnter(to, from, next) {

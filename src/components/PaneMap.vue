@@ -575,15 +575,25 @@ export default {
     },
     onCountsVisiblePointsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
+      const { centrelineId, centrelineType, locationdesc } = feature.properties;
       const elementInfo = {
-        centrelineId: feature.properties.centrelineId,
-        centrelineType: feature.properties.centrelineType,
-        description:
-          StringFormatters.formatCountLocationDescription(feature.properties.locationdesc),
+        centrelineId,
+        centrelineType,
+        description: StringFormatters.formatCountLocationDescription(locationdesc),
+        /*
+         * The backend doesn't provide these feature codes, so we have to fetch it from
+         * the visible layer.
+         */
         featureCode: null,
         lat,
         lng,
       };
+      // get feature code from the visible layer, if possible
+      const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
+      if (locationFeature !== null) {
+        const { featureCode } = locationFeature;
+        elementInfo.featureCode = featureCode;
+      }
       this.setLocation(elementInfo);
     },
     onIntersectionsClick(feature) {
