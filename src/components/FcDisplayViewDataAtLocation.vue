@@ -42,7 +42,7 @@ import {
 } from 'vuex';
 
 import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
-import { Status } from '@/lib/Constants';
+import { COUNT_TYPES, Status } from '@/lib/Constants';
 
 function idIsCount(id) {
   return Number.isInteger(id);
@@ -101,6 +101,7 @@ export default {
     },
     ...mapGetters([
       'itemsCounts',
+      'studyTypesRelevantToLocation',
     ]),
     ...mapState([
       'counts',
@@ -123,10 +124,19 @@ export default {
         return;
       }
       const { centrelineId, centrelineType } = this.location;
+      /*
+       * Update the URL to match the new location.  This allows the user to navigate between
+       * recently selected locations with the back / forward browser buttons.
+       */
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { centrelineId, centrelineType },
       });
+    },
+    studyTypesRelevantToLocation() {
+      const studyTypesIndices = this.studyTypesRelevantToLocation
+        .map(value => COUNT_TYPES.findIndex(({ value: typeValue }) => typeValue === value));
+      this.setFilterCountTypes(studyTypesIndices);
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -234,6 +244,7 @@ export default {
       'newStudyRequest',
     ]),
     ...mapMutations([
+      'setFilterCountTypes',
       'setLocation',
       'setModal',
       'setNewStudyRequest',

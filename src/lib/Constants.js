@@ -33,6 +33,12 @@ const COUNT_TYPES = [
   { label: 'Volume ATR', value: 'ATR_VOLUME', automatic: true },
 ];
 
+const FeatureCode = {
+  EXPRESSWAY: 201100,
+  EXPRESSWAY_RAMP: 201101,
+  MAJOR_ARTERIAL: 201200,
+};
+
 const HttpStatus = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
@@ -150,6 +156,7 @@ const Constants = {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
+  FeatureCode,
   HttpStatus,
   RequestStatus,
   SignalType,
@@ -165,6 +172,7 @@ export {
   CentrelineType,
   CountHours,
   COUNT_TYPES,
+  FeatureCode,
   HttpStatus,
   RequestStatus,
   SignalType,
