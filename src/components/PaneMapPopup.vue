@@ -83,6 +83,19 @@ export default {
       }
       return null;
     },
+    featureCode() {
+      if (this.layerId === 'centreline') {
+        return this.feature.properties.fcode;
+      }
+      if (this.layerId === 'intersections') {
+        return this.feature.properties.elevatio9;
+      }
+      /*
+       * In this case, we don't have a reliable feature code we can use.  Eventually, we should
+       * change `CountDAO` to provide this when returning counts.
+       */
+      return null;
+    },
     layerId() {
       return this.feature.layer.id;
     },
@@ -112,6 +125,7 @@ export default {
         centrelineId: this.centrelineId,
         centrelineType: this.centrelineType,
         description: this.description,
+        featureCode: this.featureCode,
         lng,
         lat,
       };

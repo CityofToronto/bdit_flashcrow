@@ -1,16 +1,20 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 import apiFetch from '@/lib/ApiFetch';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
   centrelineKey,
+  CentrelineType,
   COUNT_TYPES,
+  FeatureCode,
   RequestStatus,
   SortKeys,
   SortDirection,
   Status,
 } from '@/lib/Constants';
 import FunctionUtils from '@/lib/FunctionUtils';
+import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 Vue.use(Vuex);
 
@@ -278,19 +282,43 @@ export default new Vuex.Store({
         studies,
       };
     },
-    studyTypesWarnDuplicates(state) {
-      if (state.studyRequest === null) {
-        return COUNT_TYPES;
+    studyTypesRelevantToLocation(state) {
+      const countTypesAll = COUNT_TYPES.map(({ value }) => value);
+      if (state.location === null) {
+        return countTypesAll;
       }
-      const studyTypesSelected = new Set(
-        state.studyRequest.studies.map(({ studyType }) => studyType),
-      );
+      const { centrelineType, featureCode } = state.location;
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        return ['TMC'];
+      }
+      if (featureCode === null) {
+        return countTypesAll;
+      }
+      if (featureCode === FeatureCode.EXPRESSWAY || featureCode === FeatureCode.EXPRESSWAY_RAMP) {
+        return ['RESCU'];
+      }
+      if (featureCode === FeatureCode.MAJOR_ARTERIAL) {
+        return countTypesAll
+          .filter(value => value !== 'TMC');
+      }
+      return countTypesAll
+        .filter(value => value !== 'TMC' && value !== 'RESCU');
+    },
+    studyTypesWithWarnings(state, getters) {
+      const studyTypesSelected = new Set();
+      if (state.studyRequest !== null) {
+        state.studyRequest.studies.forEach(({ studyType: value }) => {
+          studyTypesSelected.add(value);
+        });
+      }
       return COUNT_TYPES.map(({ label, value }) => {
-        const studyType = { label, value };
-        if (studyTypesSelected.has(studyType)) {
-          studyType.icon = 'exclamation-triangle';
+        let warning = null;
+        if (studyTypesSelected.has(value)) {
+          warning = STUDY_DUPLICATE.getModalOptions({ label });
+        } else if (!getters.studyTypesRelevantToLocation.includes(value)) {
+          warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
         }
-        return studyType;
+        return { label, value, warning };
       });
     },
     studyRequestEstimatedDeliveryDate(state) {
