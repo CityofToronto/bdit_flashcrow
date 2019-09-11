@@ -6,8 +6,8 @@
  *
  * @see https://docs.mapbox.com/mapbox-gl-js/style-spec/
  * @see http://bl.ocks.org/jgravois/51e2b30e3d6cf6c00f06b263a29108a2
- * @param {object} style - ArcGIS / ESRI map style
- * @param {object} metadata - ArcGIS / ESRI map style metadata
+ * @param {Object} style - ArcGIS / ESRI map style
+ * @param {Object} metadata - ArcGIS / ESRI map style metadata
  */
 class GeoStyle {
   constructor(style, metadata) {

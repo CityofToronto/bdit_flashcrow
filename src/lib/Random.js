@@ -11,9 +11,9 @@ class Random {
   /**
    * Generate a random number uniformly on the interval `[lo, hi)`.
    *
-   * @param {Number} lo - minimum value (inclusive)
-   * @param {Number} hi - maximum value (exclusive)
-   * @returns {Number} random number uniformly selected from `[lo, hi)`
+   * @param {number} lo - minimum value (inclusive)
+   * @param {number} hi - maximum value (exclusive)
+   * @returns {number} random number uniformly selected from `[lo, hi)`
    */
   static uniform(lo, hi) {
     if (lo >= hi) {
@@ -29,9 +29,9 @@ class Random {
    * This is very similar to `Random.uniform()`, except that it returns
    * an integer.
    *
-   * @param {Number} lo - minimum value (inclusive)
-   * @param {Number} hi - maximum value (exclusive)
-   * @returns {Number} random integer uniformly selected from `[lo, hi)`
+   * @param {number} lo - minimum value (inclusive)
+   * @param {number} hi - maximum value (exclusive)
+   * @returns {number} random integer uniformly selected from `[lo, hi)`
    */
   static range(lo, hi) {
     if (hi === undefined) {
@@ -60,7 +60,7 @@ class Random {
    * without replacement.
    *
    * @param {Array} xs - array to choose randomly from
-   * @param {Number} k - number of items to choose
+   * @param {number} k - number of items to choose
    * @returns {*} up to `k` random items from `xs`, length permitting
    */
   static sample(xs, k) {
