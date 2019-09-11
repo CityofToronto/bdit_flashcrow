@@ -11,10 +11,10 @@
     "backend:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node -r esm -r module-alias/register server.js",
     "ci:jest-coverage": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage",
     "ci:npm-audit": "npm audit",
+    "ci:npm-outdated": "npm outdated",
     "docs:js": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch server.js src/** lib/**",
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
-    "pre-commit:lint-docs": "documentation lint src/lib/** lib/**",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=unit jest --changedSince=master",
     "test:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=api jest --runInBand",
@@ -88,26 +88,27 @@
     "pre-commit": "npm-run-all pre-commit:*"
   },
   "lint-staged": {
+    "src/lib/**/*.js": [
+      "documentation lint"
+    ],
+    "lib/**/*.js": [
+      "documentation lint"
+    ],
     "*.js": [
-      "vue-cli-service lint",
-      "git add"
+      "vue-cli-service lint"
     ],
     "*.postcss": [
-      "stylelint",
-      "git add"
+      "stylelint"
     ],
     "*.py": [
-      "pylint",
-      "git add"
+      "pylint"
     ],
     "*.sh": [
-      "shellcheck --shell=bash",
-      "git add"
+      "shellcheck --shell=bash"
     ],
     "*.vue": [
       "vue-cli-service lint",
-      "stylelint",
-      "git add"
+      "stylelint"
     ]
   },
   "_moduleAliases": {
