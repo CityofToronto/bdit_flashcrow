@@ -9,6 +9,7 @@
 			"ms-vscode.powershell",
 			"ms-vscode-remote.vscode-remote-extensionpack",
 			"octref.vetur",
+			"shinnn.stylelint",
 			"timonwong.shellcheck",
 			"Tyriar.sort-lines",
 		]

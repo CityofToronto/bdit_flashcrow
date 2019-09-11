@@ -99,9 +99,9 @@
   --shadow-5: 0 16px 32px 0 rgba(0, 0, 0, 0.1);
   --shadow-outline: 0 0 0 3px var(--primary-light);
 
-  --transition-short: .15s ease-in-out;
-  --transition-medium: .3s ease-in-out;
-  --transition-long: .5s ease-in-out;
+  --transition-short: 0.15s ease-in-out;
+  --transition-medium: 0.3s ease-in-out;
+  --transition-long: 0.5s ease-in-out;
 
   --z-index-controls: 99;
   --z-index-toast: 999;
@@ -110,12 +110,15 @@
 }
 
 /* BOX SIZING */
-*, *:before, *:after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* LAYOUT */
-html, body {
+html,
+body {
   background-color: var(--base-lightest);
   color: var(--ink);
   font-family: var(--font-family);
@@ -207,7 +210,9 @@ body {
 }
 
 /* TYPOGRAPHY */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: var(--font-weight-bold);
   margin: var(--space-m) 0;
 }
@@ -299,7 +304,6 @@ hr {
 .shadow-5 {
   box-shadow: var(--shadow-5);
 }
-
 
 /* PADDING */
 .p-xs {
@@ -565,6 +569,32 @@ hr {
 }
 
 /* FORMS */
+textarea {
+  resize: none;
+}
+select {
+  background-color: var(--base-lightest);
+  display: block;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xl);
+  padding: var(--space-s) var(--space-m);
+  width: 100%;
+}
+label {
+  font-weight: var(--font-weight-bold);
+  vertical-align: middle;
+  & > span {
+    display: inline-block;
+    margin-bottom: var(--space-s);
+  }
+}
+.form-group {
+  margin-bottom: var(--space-l);
+  & > strong {
+    display: inline-block;
+    margin-bottom: var(--space-m);
+  }
+}
 fieldset {
   border: var(--border-default);
   & > legend {
@@ -603,11 +633,11 @@ textarea {
     border-color: var(--disabled-dark);
     color: var(--disabled-dark);
   }
-  &:not(:disabled):hover {
-    border-color: var(--base-darkest);
-  }
   &:focus {
     box-shadow: var(--shadow-outline);
+  }
+  &:not(:disabled):hover {
+    border-color: var(--base-darkest);
   }
   &.invalid {
     border-color: var(--error);
@@ -616,33 +646,6 @@ textarea {
     }
   }
 }
-textarea {
-  resize: none;
-}
-select {
-  background-color: var(--base-lightest);
-  display: block;
-  font-family: var(--font-family);
-  font-size: var(--font-size-xl);
-  padding: var(--space-s) var(--space-m);
-  width: 100%;
-}
-label {
-  font-weight: var(--font-weight-bold);
-  vertical-align: middle;
-  & > span {
-    display: inline-block;
-    margin-bottom: var(--space-s);
-  }
-}
-.form-group {
-  margin-bottom: var(--space-l);
-  & > strong {
-    display: inline-block;
-    margin-bottom: var(--space-m);
-  }
-}
-
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
 .tds-checkbox {
@@ -654,7 +657,7 @@ label {
     outline: none;
     position: relative;
     vertical-align: middle;
-    &:after {
+    &::after {
       background-color: var(--white);
       border: var(--border-default);
       border-radius: var(--space-s);
@@ -671,22 +674,22 @@ label {
       vertical-align: middle;
       width: var(--font-size-l);
     }
-    &:checked:after {
+    &:checked::after {
       content: '\f00c';
     }
-    &:indeterminate:after {
+    &:indeterminate::after {
       content: '\f068';
     }
-    &:focus:after {
+    &:focus::after {
       box-shadow: var(--shadow-outline);
     }
-    &:disabled:after {
+    &:disabled::after {
       background-color: var(--disabled-light);
       border-color: var(--disabled-dark);
       color: var(--disabled-dark);
     }
   }
-  &:hover > input[type="checkbox"]:not(:disabled):after {
+  &:hover > input[type="checkbox"]:not(:disabled)::after {
     border-color: var(--base-darkest);
     color: var(--base-darkest);
   }
@@ -705,7 +708,7 @@ label {
     outline: none;
     position: relative;
     vertical-align: middle;
-    &:after {
+    &::after {
       background-color: var(--white);
       border: var(--border-default);
       border-radius: 50%;
@@ -723,19 +726,19 @@ label {
       vertical-align: middle;
       width: var(--font-size-l);
     }
-    &:checked:after {
+    &:checked::after {
       content: '\f111';
     }
-    &:focus:after {
+    &:focus::after {
       box-shadow: var(--shadow-outline);
     }
-    &:disabled:after {
+    &:disabled::after {
       background-color: var(--disabled-light);
       border-color: var(--disabled-dark);
       color: var(--disabled-dark);
     }
   }
-  &:hover > input[type="radio"]:not(:disabled):after {
+  &:hover > input[type="radio"]:not(:disabled)::after {
     border-color: var(--base-darkest);
     color: var(--base-darkest);
   }
@@ -779,21 +782,21 @@ label {
       box-shadow: inset 2em 0 0 0 var(--disabled);
     }
   }
+  & > span {
+    vertical-align: middle;
+  }
+  & > span + input[type="checkbox"] { /* stylelint-disable-line */
+    margin-left: var(--space-s);
+  }
+  & > input[type="checkbox"] + span {
+    padding-left: var(--space-s);
+  }
   &:hover > input[type="checkbox"]:not(:disabled) {
     box-shadow: inset -2em 0 0 0 var(--base-light);
   }
   &:hover > input[type="checkbox"]:not(:disabled):checked {
     border-color: var(--success);
     box-shadow: inset 2em 0 0 0 var(--success-light);
-  }
-  & > span {
-    vertical-align: middle;
-  }
-  & > span + input[type="checkbox"] {
-    margin-left: var(--space-s);
-  }
-  & > input[type="checkbox"] + span {
-    padding-left: var(--space-s);
   }
 }
 
@@ -808,14 +811,19 @@ button {
   font-size: var(--font-size-xl);
   padding: var(--space-s) var(--space-m);
   transition: border-color var(--transition-short);
+  &:focus {
+    box-shadow: var(--shadow-outline);
+  }
+  &:disabled {
+    background-color: var(--disabled-light);
+    border-color: var(--disabled-dark);
+    color: var(--disabled-dark);
+  }
   &:not(:disabled) {
     box-shadow: var(--shadow-2);
     &:hover {
       border-color: var(--base-darkest);
     }
-  }
-  &:focus {
-    box-shadow: var(--shadow-outline);
   }
   &.tds-button-primary {
     background-color: var(--primary-light);
@@ -825,12 +833,12 @@ button {
   &.tds-button-secondary {
     background-color: transparent;
     border: 0;
-    &:not(:disabled):hover {
-      background-color: var(--base-lighter);
-    }
     &:disabled {
       background-color: transparent;
       color: var(--disabled-dark);
+    }
+    &:not(:disabled):hover {
+      background-color: var(--base-lighter);
     }
   }
   &.tds-button-success {
@@ -849,13 +857,7 @@ button {
       border-color: var(--error-dark);
     }
   }
-  &:disabled {
-    background-color: var(--disabled-light);
-    border-color: var(--disabled-dark);
-    color: var(--disabled-dark);
-  }
 }
-
 
 /* TEXT LABELS */
 .tds-label {
