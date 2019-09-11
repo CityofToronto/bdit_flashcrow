@@ -13,7 +13,7 @@ export default {
   display: inline-block;
   width: 100%;
   height: 100%;
-  &:after {
+  &::after {
     content: " ";
     display: block;
     width: 100%;

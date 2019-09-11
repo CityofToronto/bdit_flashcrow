@@ -60,12 +60,9 @@ export default {
       padding: var(--space-s) var(--space-m);
       text-align: center;
     }
-    & > input:focus + span {
-      box-shadow: var(--shadow-outline);
-    }
-    & > input:checked + span {
-      background-color: var(--success-light);
-      color: var(--success-darker);
+    &:hover > span {
+      border-color: var(--base-darkest);
+      color: var(--base-darkest);
     }
     &:first-child > span {
       border-radius: var(--space-s) 0 0 var(--space-s);
@@ -74,9 +71,12 @@ export default {
       border-radius: 0 var(--space-s) var(--space-s) 0;
       margin-right: 0;
     }
-    &:hover > span {
-      border-color: var(--base-darkest);
-      color: var(--base-darkest);
+    & > input:focus + span {
+      box-shadow: var(--shadow-outline);
+    }
+    & > input:checked + span {
+      background-color: var(--success-light);
+      color: var(--success-darker);
     }
   }
   &.invalid > label > input + span {

@@ -53,7 +53,7 @@ export default {
       padding: 0;
 
       /* see https://developer.mozilla.org/en-US/docs/Web/CSS/list-style */
-      &:before {
+      &::before {
         content: '\200B';
         float: left;
       }
