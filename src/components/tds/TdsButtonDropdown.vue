@@ -42,7 +42,9 @@ export default {
     border-color: var(--error);
   }
 
-  &:focus, &:active, &:hover {
+  &:focus,
+  &:active,
+  &:hover {
     border-radius: var(--space-s) var(--space-s) 0 0;
   }
   &:focus > .dropdown,

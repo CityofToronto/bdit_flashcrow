@@ -14,7 +14,7 @@ function normalizeAndCall(value, params) {
  * string in a function.
  *
  * @callback TemplateCallback
- * @param {object} params - object containing named parameters to be used in template
+ * @param {Object} params - object containing named parameters to be used in template
  * @returns {string} templated string
  */
 
@@ -24,18 +24,17 @@ function normalizeAndCall(value, params) {
  * This should be used when presenting the user with a choice, such as whether or not to
  * confirm an action.  If you're just showing a message and don't need input from the user,
  * consider using {@link Strings} instead.
+ *
+ * Note that `title` and `prompt` can take a {@link TemplateCallback}, which allows
+ * them to render dynamic text.
+ *
+ * @param {Object} options - options for the confirmation dialog
+ * @param {string|TemplateCallback} options.title - title of dialog
+ * @param {string|TemplateCallback} options.prompt - prompt in body of dialog
+ * @param {string?} options.textCancel - text on Cancel button
+ * @param {string?} options.textOk - text on OK button
  */
 class ConfirmDialog {
-  /**
-   * Note that `title` and `prompt` can take a {@link TemplateCallback}, which allows
-   * them to render dynamic text.
-   *
-   * @param {object} options - options for the confirmation dialog
-   * @param {string|TemplateCallback} options.title - title of dialog
-   * @param {string|TemplateCallback} options.prompt - prompt in body of dialog
-   * @param {string?} options.textCancel - text on Cancel button
-   * @param {string?} options.textOk - text on OK button
-   */
   constructor({
     title,
     prompt,
@@ -51,7 +50,7 @@ class ConfirmDialog {
   /**
    * Returns modal options to be used in `setModal()`.
    *
-   * @param {object} params - object containing named parameters to be used in template
+   * @param {Object} params - object containing named parameters to be used in template
    * @example
    * const options = ConfirmDialog.STUDY_DUPLICATE.getModalOptions();
    * this.setModal(options);

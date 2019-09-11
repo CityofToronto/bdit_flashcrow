@@ -2,9 +2,9 @@
  * Encodes the given key-value pair as part of a URL query string.  These are
  * concatenated by `getQueryString()` below.
  *
- * @param {String} key - key to be encoded
+ * @param {string} key - key to be encoded
  * @param {*} value - value to be encoded
- * @returns {String} URL-encoded key-value pair
+ * @returns {string} URL-encoded key-value pair
  */
 function getQueryStringPart(key, value) {
   const keyEncoded = encodeURIComponent(key);
@@ -19,7 +19,7 @@ function getQueryStringPart(key, value) {
  * in the array.
  *
  * @param {Object} data - key-value pairs to be encoded
- * @returns {String} URL-encoded query string, without the leading `?`
+ * @returns {string} URL-encoded query string, without the leading `?`
  */
 function getQueryString(data) {
   const qsParts = [];
@@ -41,9 +41,9 @@ function getQueryString(data) {
  * Builds the URL to be passed to `fetch()`.  For GET requests, this involves
  * using `getQueryString()` to URL-encode `apiOptions.data`.
  *
- * @param {String} url - path of API endpoint to call
+ * @param {string} url - path of API endpoint to call
  * @param {Object} apiOptions - options to be passed to `fetch()`
- * @returns {String} full URL to pass to `fetch()`
+ * @returns {string} full URL to pass to `fetch()`
  */
 function getFetchUrl(url, apiOptions) {
   let apiUrl = `/api${url}`;
@@ -85,9 +85,9 @@ function getFetchOptions(options) {
  * Fetch the REST API resource at the given path, using the given options.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
- * @param {String} url - path of REST API resource to fetch
+ * @param {string} url - path of REST API resource to fetch
  * @param {Object} options - options to fetch with
- * @param {String} options.method - HTTP method to call the REST API resource with
+ * @param {string} options.method - HTTP method to call the REST API resource with
  * @returns {Promise<(Object|Array)>} promise that resolves to JSON response body
  * @throws {Object} if `fetch()` results in an HTTP 4xx or HTTP 5xx error
  */

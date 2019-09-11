@@ -4,7 +4,7 @@
  *
  * TODO: several of these could use parameterized versions!
  *
- * @typedef {object} StringMessage
+ * @typedef {Object} StringMessage
  * @property {string} variant - `success`, `info`, `warning`, `error` depending on severity
  * @property {string} text - text of the message
  */

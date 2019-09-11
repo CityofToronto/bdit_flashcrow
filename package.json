@@ -11,95 +11,104 @@
     "backend:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node -r esm -r module-alias/register server.js",
     "ci:jest-coverage": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage",
     "ci:npm-audit": "npm audit",
-    "ci:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=api jest --runInBand",
-    "ci:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=db jest --runInBand",
-    "ci:test-unit": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=unit jest",
+    "ci:npm-outdated": "npm outdated || true",
+    "docs:js": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch server.js src/** lib/**",
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
-    "frontend:docs": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch src/lib/**",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=unit jest --changedSince=master",
+    "test:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=api jest --runInBand",
+    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=db jest --runInBand",
+    "test:test-unit": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=unit jest",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@hapi/boom": "^7.4.2",
-    "@hapi/cookie": "^10.1.0",
-    "@hapi/crumb": "^7.3.0",
-    "@hapi/good": "^8.2.0",
-    "@hapi/good-console": "^8.1.0",
-    "@hapi/good-squeeze": "^5.2.0",
-    "@hapi/hapi": "^18.3.1",
-    "@hapi/joi": "^15.1.0",
+    "@hapi/boom": "^7.4.3",
+    "@hapi/cookie": "^10.1.1",
+    "@hapi/crumb": "^7.3.1",
+    "@hapi/good": "^8.2.1",
+    "@hapi/good-console": "^8.1.1",
+    "@hapi/good-squeeze": "^5.2.1",
+    "@hapi/hapi": "^18.3.2",
+    "@hapi/joi": "^15.1.1",
     "@hapi/scooter": "^5.1.0",
     "@sendgrid/mail": "^6.4.0",
-    "aws-sdk": "^2.521.0",
+    "aws-sdk": "^2.526.0",
     "blankie": "^4.1.1",
-    "d3-array": "^2.2.0",
+    "d3-array": "^2.3.1",
     "d3-axis": "^1.0.12",
-    "d3-format": "^1.3.2",
-    "d3-scale": "^3.0.0",
+    "d3-format": "^1.4.1",
+    "d3-scale": "^3.1.0",
     "d3-selection": "^1.4.0",
     "d3-selection-multi": "^1.0.1",
     "esm": "^3.2.25",
-    "mapbox-gl": "^0.53.1",
+    "mapbox-gl": "^1.3.1",
     "module-alias": "^2.2.1",
-    "mustache": "^3.0.1",
+    "mustache": "^3.0.3",
     "nodemailer": "^6.2.1",
     "openid-client": "^2.4.5",
-    "pg-promise": "^8.5.5",
+    "pg-promise": "^8.7.5",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "uuid": "^3.3.2",
+    "uuid": "^3.3.3",
     "v-calendar": "^0.9.7",
     "vue": "^2.6.3",
-    "vue-router": "^3.0.2",
+    "vue-router": "^3.1.3",
     "vue-select": "^2.6.4",
     "vuelidate": "^0.7.4",
     "vuex": "^3.1.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@vue/cli-plugin-babel": "^3.4.0",
-    "@vue/cli-plugin-eslint": "^3.4.0",
-    "@vue/cli-service": "^3.6.0",
+    "@babel/core": "^7.6.0",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.1.0",
-    "documentation": "^11.0.1",
-    "eslint": "^5.13.0",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "documentation": "^12.1.2",
+    "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.1.0",
-    "jest": "^24.1.0",
+    "jest": "^24.9.0",
     "jest-serializer-vue": "^2.0.2",
     "jest-transform-stub": "^2.0.0",
-    "lint-staged": "^8.1.3",
+    "lint-staged": "^9.2.5",
     "npm-run-all": "^4.1.5",
     "postcss-nested": "^4.1.1",
-    "vue-jest": "^3.0.2",
+    "stylelint": "^10.1.0",
+    "stylelint-config-standard": "^18.3.0",
+    "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.3"
   },
   "gitHooks": {
     "pre-commit": "npm-run-all pre-commit:*"
   },
   "lint-staged": {
+    "src/lib/**/*.js": [
+      "documentation lint"
+    ],
+    "lib/**/*.js": [
+      "documentation lint"
+    ],
     "*.js": [
-      "vue-cli-service lint",
-      "git add"
+      "vue-cli-service lint"
+    ],
+    "*.postcss": [
+      "stylelint"
+    ],
+    "*.py": [
+      "pylint"
+    ],
+    "*.sh": [
+      "shellcheck --shell=bash"
     ],
     "*.vue": [
       "vue-cli-service lint",
-      "git add"
-    ],
-    "*.py": [
-      "pylint",
-      "git add"
-    ],
-    "*.sh": [
-      "shellcheck --shell=bash",
-      "git add"
+      "stylelint"
     ]
   },
   "_moduleAliases": {

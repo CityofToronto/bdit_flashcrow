@@ -20,8 +20,8 @@ const UPPERCASE_WORDS = [
 /**
  * Normalizes location descriptions.
  *
- * @param {String} description - raw description from centreline / FLOW
- * @returns {String} normalized description
+ * @param {string} description - raw description from centreline / FLOW
+ * @returns {string} normalized description
  */
 function formatCountLocationDescription(description) {
   return description
@@ -48,8 +48,8 @@ function formatCountLocationDescription(description) {
  * used for automatic traffic study durations, especially in the "Request Data" user
  * flow.
  *
- * @param {Number} duration - duration, in hours
- * @returns {String} human-readable duration
+ * @param {number} duration - duration, in hours
+ * @returns {string} human-readable duration
  */
 function formatDuration(duration) {
   const days = duration / 24;

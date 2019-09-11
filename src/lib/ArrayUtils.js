@@ -1,7 +1,7 @@
 /**
  * @function ComparisonKey
  * @param {*} x - value being compared
- * @returns {(Number|String)} key to compare value on
+ * @returns {(number|string)} key to compare value on
  */
 
 /**
@@ -13,9 +13,9 @@ class ArrayUtils {
    * Returns an array of integers `[lo, ..., hi - 1]`.  The semantics are similar to
    * the 1-argument and 2-argument versions of Python's `range()`.
    *
-   * @param {Number} lo - range starts here (inclusive)
-   * @param {Number} hi - range ends here (exclusive)
-   * @returns {Array<Number>} - array containing range `[lo, ..., hi - 1]`
+   * @param {number} lo - range starts here (inclusive)
+   * @param {number} hi - range ends here (exclusive)
+   * @returns {Array<number>} - array containing range `[lo, ..., hi - 1]`
    */
   static range(lo, hi) {
     let loActual = lo;
@@ -79,7 +79,7 @@ class ArrayUtils {
    *
    * @param {Array} xs - array to search
    * @param {ComparisonKey} key - key to compare by
-   * @param {Number} direction - whether to sort ascending (> 0) or descending (< 0).
+   * @param {number} direction - whether to sort ascending (> 0) or descending (< 0).
    * @returns copy of `xs` sorted by `key`:
    *
    * - ascending if `direction > 0`;

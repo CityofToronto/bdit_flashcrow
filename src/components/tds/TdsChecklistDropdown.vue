@@ -72,7 +72,7 @@ export default {
       padding: 0;
 
       /* see https://developer.mozilla.org/en-US/docs/Web/CSS/list-style */
-      &:before {
+      &::before {
         content: '\200B';
         float: left;
       }
@@ -81,7 +81,8 @@ export default {
         color: var(--success-darker);
       }
 
-      &:hover, &.selected:hover {
+      &:hover,
+      &.selected:hover {
         background-color: var(--primary-light);
         color: var(--primary-darker);
       }

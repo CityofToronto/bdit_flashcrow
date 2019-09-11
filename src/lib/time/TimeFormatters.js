@@ -15,8 +15,8 @@ class TimeFormatters {
    * primarily to provide a `null`-safe wrapper to `Intl.DateTimeFormat`.
    *
    * @param {Date} d - date to format
-   * @param {object} options - formatting options, as per `Intl.DateTimeFormat`
-   * @returns {String} the formatted date string, or the empty string if `d === null`
+   * @param {Object} options - formatting options, as per `Intl.DateTimeFormat`
+   * @returns {string} the formatted date string, or the empty string if `d === null`
    */
   static format(d, options) {
     if (!d) {
@@ -29,7 +29,7 @@ class TimeFormatters {
    * Format `d` according to `en-US` defaults.
    *
    * @param {Date} d - date to format
-   * @returns {String} the formatted date string, or the empty string if `d === null`
+   * @returns {string} the formatted date string, or the empty string if `d === null`
    */
   static formatDefault(d) {
     return TimeFormatters.format(d);
@@ -39,7 +39,7 @@ class TimeFormatters {
    * Extract the day of week from `d` in three-letter short form.
    *
    * @param {Date} d - date to format
-   * @returns {String} three-letter short day of week, or the empty string if `d === null`
+   * @returns {string} three-letter short day of week, or the empty string if `d === null`
    */
   static formatDayOfWeek(d) {
     return TimeFormatters.format(d, {
@@ -50,8 +50,8 @@ class TimeFormatters {
   /**
    * Returns a human-readable description of the days of the week.
    *
-   * @param {Array<Number>} daysOfWeek - array of unique days of week (0-6), in ascending order
-   * @returns {String} human-readable description of the days of the week
+   * @param {Array<number>} daysOfWeek - array of unique days of week (0-6), in ascending order
+   * @returns {string} human-readable description of the days of the week
    */
   static formatDaysOfWeek(daysOfWeek) {
     /*
@@ -85,7 +85,7 @@ class TimeFormatters {
    * Extract the time of day from `d` in 24-hour `HH:MM` format.
    *
    * @param {Date} d - date to format
-   * @returns {String} the formatted time of day, or the empty string if `d === null`
+   * @returns {string} the formatted time of day, or the empty string if `d === null`
    */
   static formatTimeOfDay(d) {
     return TimeFormatters.format(d, {
@@ -99,7 +99,7 @@ class TimeFormatters {
    * Extract the year and month from `d` in `MMM YYYY` format.
    *
    * @param {Date} d - date to format
-   * @returns {String} the formatted year and month, or the empty string if `d === null`
+   * @returns {string} the formatted year and month, or the empty string if `d === null`
    */
   static formatYearMonth(d) {
     return TimeFormatters.format(d, {
@@ -113,7 +113,7 @@ class TimeFormatters {
  * Array of three-letter short day of week names, indexed to match `Date#getDay()`.
  *
  * @see https://stackoverflow.com/questions/30437134/how-to-get-the-weekday-names-using-intl
- * @type {Array<String>}
+ * @type {Array<string>}
  */
 TimeFormatters.DAYS_OF_WEEK = ArrayUtils.range(4, 11)
   .map(date => TimeFormatters.formatDayOfWeek(new Date(1970, 0, date)));

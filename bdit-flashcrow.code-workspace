@@ -1,4 +1,19 @@
 {
+	"extensions": {
+		"recommendations": [
+			"christian-kohler.npm-intellisense",
+			"cpylua.language-postcss",
+			"dbaeumer.vscode-eslint",
+			"eg2.vscode-npm-script",
+			"ms-python.python",
+			"ms-vscode.powershell",
+			"ms-vscode-remote.vscode-remote-extensionpack",
+			"octref.vetur",
+			"shinnn.stylelint",
+			"timonwong.shellcheck",
+			"Tyriar.sort-lines",
+		]
+	},
 	"folders": [
 		{
 			"path": "."
@@ -21,16 +36,6 @@
 		"files.watcherExclude": {
 			"**/dist/**": true
 		},
-		"remote.SSH.defaultExtensions": [
-			"christian-kohler.npm-intellisense",
-			"dbaeumer.vscode-eslint",
-			"eg2.vscode-npm-script",
-			"ms-python.python",
-			"ms-vscode.powershell",
-			"octref.vetur",
-			"timonwong.shellcheck",
-			"Tyriar.sort-lines",
-		],
 		"telemetry.enableCrashReporter": false,
 		"telemetry.enableTelemetry": false
 	}

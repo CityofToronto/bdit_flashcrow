@@ -6,8 +6,8 @@ class ArrayStats {
   /**
    * Compute the sum of the given numbers.
    *
-   * @param {Array<Number>} xs - array of numbers
-   * @returns {Number} sum of `xs`
+   * @param {Array<number>} xs - array of numbers
+   * @returns {number} sum of `xs`
    */
   static sum(xs) {
     let sum = 0;
@@ -21,13 +21,13 @@ class ArrayStats {
    * Estimate the given percentile of histogram-bucketed data.  This estimate
    * assumes that data is evenly distributed across each histogram bucket.
    *
-   * @param {Array<[Number, Number]>} buckets - array of `[min, max]` intervals
+   * @param {Array<[number, number]>} buckets - array of `[min, max]` intervals
    * corresponding to histogram buckets
-   * @param {Array<Number>} counts - array of counts, such that `counts[i]` is the
+   * @param {Array<number>} counts - array of counts, such that `counts[i]` is the
    * number of items in the interval `buckets[i]`
-   * @param {Number} p - quantile, as a value on the interval `[0, 1]` where
+   * @param {number} p - quantile, as a value on the interval `[0, 1]` where
    * 0 = 0th percentile (min), 1 = 100th percentile (max)
-   * @returns {Number} the value at quantile `p`
+   * @returns {number} the value at quantile `p`
    */
   static histogramPercentile(buckets, counts, p) {
     const n = buckets.length;
@@ -69,9 +69,9 @@ class ArrayStats {
    * Estimate the average (mean) of histogram-bucketed data.  This estimate
    * assumes that data is evenly distributed across each histogram bucket.
    *
-   * @param {Array<[Number, Number]>} buckets - array of `[min, max]` intervals
+   * @param {Array<[number, number]>} buckets - array of `[min, max]` intervals
    * corresponding to histogram buckets
-   * @param {Array<Number>} counts - array of counts, such that `counts[i]` is the
+   * @param {Array<number>} counts - array of counts, such that `counts[i]` is the
    * number of items in the interval `buckets[i]`
    */
   static histogramMean(buckets, counts) {

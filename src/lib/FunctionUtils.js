@@ -9,7 +9,7 @@
  * motion).
  *
  * @param {Function} func - function to debounce
- * @param {Number} wait - time, in milliseconds, to wait after last call
+ * @param {number} wait - time, in milliseconds, to wait after last call
  * to `debounce(func, wait)` before `func()` is called
  * @returns {Function} debounced version of `func`
  */
