@@ -1,7 +1,5 @@
+apache-airflow==1.10.5
+Flask==1.1.1
 pylint==2.3.1
 psycopg2==2.8.3
-certifi==2019.6.16 
-chardet==3.0.4 
-idna==2.8 
-requests==2.22.0 
-urllib3==1.25.3
+requests==2.22.0
