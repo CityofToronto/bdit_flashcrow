@@ -7,11 +7,13 @@ import Boom from '@hapi/boom';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
 import Joi from '@hapi/joi';
+import Excel from 'exceljs';
 
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
 import MovePDFDocument from './MovePDFDocument';
+import SSEStream from './SSEStream';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -167,7 +169,49 @@ async function initServer() {
   routes.push({
     method: 'GET',
     path: '/stream/xls',
-    handler: async () => ({ todo: true }),
+    handler: async (request, h) => {
+      const workbook = new Excel.Workbook();
+      const sheet = workbook.addWorksheet('MOVE Reporter Test', {
+        pageSetup: {
+          orientation: 'landscape',
+        },
+      });
+      // add image to cell
+      const imageId = workbook.addImage({
+        buffer: imageData,
+        extension: 'png',
+      });
+      sheet.addImage(imageId, 'A1');
+      // add Date to cell
+      sheet.getCell('B1').value = new Date();
+      // merge cells horizontally
+      sheet.mergeCells('C1:E1');
+      sheet.getCell('C1').value = 'horizontal!';
+      // add table of data
+      const rows = [
+        { name: 'Foo', count: 1729 },
+        { name: 'Bar', count: 42 },
+        { name: 'Quux', count: 6 },
+      ];
+      rows.forEach(({ name, count }, i) => {
+        const row = i + 2;
+        sheet.getCell(`B${row}`).value = name;
+        sheet.getCell(`C${row}`).value = count;
+      });
+      // add another table, this time as input to a chart
+      chartData.forEach((value, i) => {
+        const row = i + 2;
+        sheet.getCell(`D${row}`).value = value;
+      });
+      // merge cells vertically
+      sheet.mergeCells('A5:A7');
+      sheet.getCell('A6').value = 'vertical!';
+
+      const xlsxStream = new SSEStream();
+      workbook.xlsx.write(xlsxStream);
+      return h.response(xlsxStream)
+        .type('application/vnd.ms-excel');
+    },
   });
 
   routes.push({
