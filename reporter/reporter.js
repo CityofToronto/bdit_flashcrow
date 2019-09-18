@@ -11,7 +11,7 @@ import Joi from '@hapi/joi';
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
-import PDFDocumentWithTables from './PDFDocumentWithTables';
+import MovePDFDocument from './MovePDFDocument';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -114,6 +114,12 @@ async function initServer() {
   const cotLogoPath = path.join(__dirname, 'cot_logo.png');
   const imageData = await readFile(cotLogoPath);
 
+  const chartData = [];
+  for (let i = 0; i < 10; i++) {
+    const value = Math.floor(Math.random() * 1000);
+    chartData.push(value);
+  }
+
   const routes = [];
 
   routes.push({
@@ -168,7 +174,7 @@ async function initServer() {
     method: 'GET',
     path: '/stream/pdf',
     handler: async (request, h) => {
-      const doc = new PDFDocumentWithTables({
+      const doc = new MovePDFDocument({
         layout: 'landscape',
         size: 'letter',
       });
@@ -176,6 +182,8 @@ async function initServer() {
       doc.text('Hello World!', 18, 18);
       // draw image
       doc.image(imageData, 18, 54, { fit: [144, 108] });
+      // draw chart
+      doc.chart(chartData, 18, 144, 288, 216);
       // add a page, and make it the active page
       doc.addPage();
       /*
