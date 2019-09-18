@@ -184,6 +184,7 @@ async function initServer() {
       doc.image(imageData, 18, 54, { fit: [144, 108] });
       // draw chart
       doc.chart(chartData, 18, 144, 288, 216);
+      doc.text('after chart');
       // add a page, and make it the active page
       doc.addPage();
       /*
@@ -200,7 +201,7 @@ async function initServer() {
         { name: 'Quux', count: 6 },
       ];
       doc.table({ headers, rows }, 18, 90);
-      // TODO: graphs
+      doc.text('after table');
       doc.end();
 
       return h.response(doc)

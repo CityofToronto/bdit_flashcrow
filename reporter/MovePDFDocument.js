@@ -3,77 +3,69 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import PDFDocument from 'pdfkit';
 
-function noop() {}
+const TABLE_MIN_ROWS = 3;
 
 class MovePDFDocument extends PDFDocument {
+  /*
+   * Compute row height using `.heightOfString()`.  The row height is the height
+   * of the tallest string in the row plus the `rowSpacing`.
+   *
+   * For more details, see:
+   *
+   * https://pdfkit.org/docs/text.html#text_measurements
+   */
+  computeRowHeight(row, columnWidth, rowSpacing) {
+    let result = 0;
+
+    row.forEach((cell) => {
+      const cellHeight = this.heightOfString(cell, {
+        width: columnWidth,
+        align: 'left',
+      });
+      result = Math.max(result, cellHeight);
+    });
+
+    return result + rowSpacing;
+  }
+
   /**
    * @see https://www.andronio.me/2017/09/02/pdfkit-tables/
    */
-  table({ headers, rows }, arg0, arg1, arg2) {
+  table({ headers, rows }, x, y, options) {
     // ARGUMENTS NORMALIZATION
-    let startX = this.page.margins.left;
-    let startY = this.y;
-    let options = {};
+    const startX = x;
+    let startY = y;
 
-    if ((typeof arg0 === 'number') && (typeof arg1 === 'number')) {
-      startX = arg0;
-      startY = arg1;
-
-      if (typeof arg2 === 'object') {
-        options = arg2;
-      }
-    } else if (typeof arg0 === 'object') {
-      options = arg0;
-    }
+    const defaultOptions = {
+      columnSpacing: 15,
+      rowSpacing: 5,
+      usableWidth: this.page.width - this.page.margins.left - this.page.margins.right,
+    };
+    const tableOptions = Object.assign(defaultOptions, options);
+    const {
+      columnSpacing,
+      rowSpacing,
+      usableWidth,
+    } = tableOptions;
 
     // OPTIONS NORMALIZATION
     const columnCount = headers.length;
-    const columnSpacing = options.columnSpacing || 15;
-    const rowSpacing = options.rowSpacing || 5;
-    const defaultUsableWidth = this.page.width - this.page.margins.left - this.page.margins.right;
-    const usableWidth = options.width || defaultUsableWidth;
-
-    const prepareHeader = options.prepareHeader || noop;
-    const prepareRow = options.prepareRow || noop;
 
     const columnContainerWidth = usableWidth / columnCount;
     const columnWidth = columnContainerWidth - columnSpacing;
     const maxY = this.page.height - this.page.margins.bottom;
 
-    /*
-     * Compute row height using `.heightOfString()`.  The row height is the height
-     * of the tallest string in the row plus the `rowSpacing`.
-     *
-     * For more details, see:
-     *
-     * https://pdfkit.org/docs/text.html#text_measurements
-     */
-    const computeRowHeight = (row) => {
-      let result = 0;
-
-      row.forEach((cell) => {
-        const cellHeight = this.heightOfString(cell, {
-          width: columnWidth,
-          align: 'left',
-        });
-        result = Math.max(result, cellHeight);
-      });
-
-      return result + rowSpacing;
-    };
-
     let rowBottomY = 0;
 
     this.on('pageAdded', () => {
+      // TODO: move this to class-level
       startY = this.page.margins.top;
       rowBottomY = 0;
     });
 
-    // Allow the user to override style for headers
-    prepareHeader();
-
     // Check to have enough room for header and first rows
-    if (startY + 3 * computeRowHeight(headers) > maxY) {
+    const heightHeaders = this.computeRowHeight(headers, columnWidth, rowSpacing);
+    if (startY + TABLE_MIN_ROWS * heightHeaders > maxY) {
       this.addPage();
     }
 
@@ -86,7 +78,7 @@ class MovePDFDocument extends PDFDocument {
     });
 
     // Refresh the y coordinate of the bottom of the headers row
-    rowBottomY = Math.max(startY + computeRowHeight(headers), rowBottomY);
+    rowBottomY = Math.max(startY + heightHeaders, rowBottomY);
 
     // Separation line between headers and rows
     this.moveTo(startX, rowBottomY - rowSpacing * 0.5)
@@ -94,25 +86,22 @@ class MovePDFDocument extends PDFDocument {
       .lineWidth(2)
       .stroke();
 
-    rows.forEach((row, i) => {
+    rows.forEach((row) => {
       const rowText = headers.map(({ key }) => {
         if (row[key]) {
           return row[key].toString();
         }
         return '';
       });
-      const rowHeight = computeRowHeight(rowText);
 
       // Switch to next page if we cannot go any further because the space is over.
-      // For safety, consider 3 rows margin instead of just one
-      if (startY + 3 * rowHeight < maxY) {
+      // For safety, consider `TABLE_MIN_ROWS` rows margin
+      const rowHeight = this.computeRowHeight(rowText, columnWidth, rowSpacing);
+      if (startY + TABLE_MIN_ROWS * rowHeight < maxY) {
         startY = rowBottomY + rowSpacing;
       } else {
         this.addPage();
       }
-
-      // Allow the user to override style for rows
-      prepareRow(row, i);
 
       // Print all cells of the current row
       rowText.forEach((text, j) => {
@@ -126,12 +115,12 @@ class MovePDFDocument extends PDFDocument {
       rowBottomY = Math.max(startY + rowHeight, rowBottomY);
 
       // Separation line between rows
-      this.moveTo(startX, rowBottomY - rowSpacing * 0.5)
-        .lineTo(startX + usableWidth, rowBottomY - rowSpacing * 0.5)
+      const sepY = rowBottomY - rowSpacing / 2;
+      this
+        .moveTo(startX, sepY)
+        .lineTo(startX + usableWidth, sepY)
         .lineWidth(1)
-        .opacity(0.7)
-        .stroke()
-        .opacity(1); // Reset opacity after drawing the line
+        .stroke();
     });
 
     this.x = startX;
@@ -145,8 +134,8 @@ class MovePDFDocument extends PDFDocument {
 
     // OPTIONS NORMALIZATION
     const defaultOptions = {
-      heightAxis: 64,
-      widthAxis: 80,
+      heightAxis: 36,
+      widthAxis: 54,
       labelX: null,
       labelY: null,
       title: null,
@@ -193,7 +182,6 @@ class MovePDFDocument extends PDFDocument {
       const yBar = scaleY(value);
       const widthBar = scaleX.bandwidth();
       const heightBar = heightBars - yBar;
-      console.log(xBar, yBar, widthBar, heightBar);
       this
         .rect(xBar, yBar, widthBar, heightBar)
         .fill('#71767a');
@@ -241,6 +229,8 @@ class MovePDFDocument extends PDFDocument {
 
     this.restore();
 
+    this.x = x;
+    this.y = y + height;
     this.moveDown();
     return this;
   }
