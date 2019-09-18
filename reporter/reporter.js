@@ -1,3 +1,7 @@
+import fs from 'fs';
+import path from 'path';
+import util from 'util';
+
 import csvGenerate from 'csv-generate';
 import Boom from '@hapi/boom';
 import Good from '@hapi/good';
@@ -7,6 +11,9 @@ import Joi from '@hapi/joi';
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
+import MovePDFDocument from './MovePDFDocument';
+
+const readFile = util.promisify(fs.readFile);
 
 // TODO: DRY configuration with server.js
 async function failAction(request, h, err) {
@@ -104,6 +111,15 @@ async function initServer() {
     server.log(LogTag.INIT, `registered route: ${route.method.toUpperCase()} ${route.path}`);
   });
 
+  const cotLogoPath = path.join(__dirname, 'cot_logo.png');
+  const imageData = await readFile(cotLogoPath);
+
+  const chartData = [];
+  for (let i = 0; i < 10; i++) {
+    const value = Math.floor(Math.random() * 1000);
+    chartData.push(value);
+  }
+
   const routes = [];
 
   routes.push({
@@ -128,7 +144,7 @@ async function initServer() {
 
   routes.push({
     method: 'GET',
-    path: '/csv-streaming/{n}',
+    path: '/stream/csv/{n}',
     options: {
       validate: {
         params: {
@@ -146,6 +162,57 @@ async function initServer() {
       return h.response(csvGenerate({ length }))
         .type('text/csv');
     },
+  });
+
+  routes.push({
+    method: 'GET',
+    path: '/stream/xls',
+    handler: async () => ({ todo: true }),
+  });
+
+  routes.push({
+    method: 'GET',
+    path: '/stream/pdf',
+    handler: async (request, h) => {
+      const doc = new MovePDFDocument({
+        layout: 'landscape',
+        size: 'letter',
+      });
+      // write text (to active page)
+      doc.text('Hello World!', 18, 18);
+      // draw image
+      doc.image(imageData, 18, 54, { fit: [144, 108] });
+      // draw chart
+      doc.chart(chartData, 18, 144, 288, 216);
+      doc.text('after chart');
+      // add a page, and make it the active page
+      doc.addPage();
+      /*
+       * Generate a table.  There also appear to be lower-level utilities for
+       * generating individual rows and cells.
+       */
+      const headers = [
+        { text: 'Name', key: 'name' },
+        { text: 'Count', key: 'count' },
+      ];
+      const rows = [
+        { name: 'Foo', count: 1729 },
+        { name: 'Bar', count: 42 },
+        { name: 'Quux', count: 6 },
+      ];
+      doc.table({ headers, rows }, 18, 90);
+      doc.text('after table');
+      doc.end();
+
+      return h.response(doc)
+        .type('application/pdf');
+    },
+  });
+
+  routes.push({
+    method: 'GET',
+    path: '/stream/zip',
+    handler: async () => ({ todo: true }),
   });
 
   server.route(routes);
