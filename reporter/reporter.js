@@ -3,11 +3,12 @@ import path from 'path';
 import util from 'util';
 
 import csvGenerate from 'csv-generate';
+import Excel from 'exceljs';
 import Boom from '@hapi/boom';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
 import Joi from '@hapi/joi';
-import Excel from 'exceljs';
+import JSZip from 'jszip';
 
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
@@ -166,97 +167,135 @@ async function initServer() {
     },
   });
 
+  function generateExcel() {
+    const workbook = new Excel.Workbook();
+    const sheet = workbook.addWorksheet('MOVE Reporter Test', {
+      pageSetup: {
+        orientation: 'landscape',
+      },
+    });
+    // add image to cell
+    const imageId = workbook.addImage({
+      buffer: imageData,
+      extension: 'png',
+    });
+    sheet.addImage(imageId, 'A1');
+    // add Date to cell
+    sheet.getCell('B1').value = new Date();
+    // merge cells horizontally
+    sheet.mergeCells('C1:E1');
+    sheet.getCell('C1').value = 'horizontal!';
+    // add table of data
+    const rows = [
+      { name: 'Foo', count: 1729 },
+      { name: 'Bar', count: 42 },
+      { name: 'Quux', count: 6 },
+    ];
+    rows.forEach(({ name, count }, i) => {
+      const row = i + 2;
+      sheet.getCell(`B${row}`).value = name;
+      sheet.getCell(`C${row}`).value = count;
+    });
+    // add another table, this time as input to a chart
+    chartData.forEach((value, i) => {
+      const row = i + 2;
+      sheet.getCell(`D${row}`).value = value;
+    });
+    // merge cells vertically
+    sheet.mergeCells('A5:A7');
+    sheet.getCell('A6').value = 'vertical!';
+
+    const xlsxStream = new SSEStream();
+    workbook.xlsx.write(xlsxStream);
+    return xlsxStream;
+  }
+
   routes.push({
     method: 'GET',
-    path: '/stream/xls',
+    path: '/stream/excel',
     handler: async (request, h) => {
-      const workbook = new Excel.Workbook();
-      const sheet = workbook.addWorksheet('MOVE Reporter Test', {
-        pageSetup: {
-          orientation: 'landscape',
-        },
-      });
-      // add image to cell
-      const imageId = workbook.addImage({
-        buffer: imageData,
-        extension: 'png',
-      });
-      sheet.addImage(imageId, 'A1');
-      // add Date to cell
-      sheet.getCell('B1').value = new Date();
-      // merge cells horizontally
-      sheet.mergeCells('C1:E1');
-      sheet.getCell('C1').value = 'horizontal!';
-      // add table of data
-      const rows = [
-        { name: 'Foo', count: 1729 },
-        { name: 'Bar', count: 42 },
-        { name: 'Quux', count: 6 },
-      ];
-      rows.forEach(({ name, count }, i) => {
-        const row = i + 2;
-        sheet.getCell(`B${row}`).value = name;
-        sheet.getCell(`C${row}`).value = count;
-      });
-      // add another table, this time as input to a chart
-      chartData.forEach((value, i) => {
-        const row = i + 2;
-        sheet.getCell(`D${row}`).value = value;
-      });
-      // merge cells vertically
-      sheet.mergeCells('A5:A7');
-      sheet.getCell('A6').value = 'vertical!';
-
-      const xlsxStream = new SSEStream();
-      workbook.xlsx.write(xlsxStream);
-      return h.response(xlsxStream)
+      const excelStream = generateExcel();
+      return h.response(excelStream)
         .type('application/vnd.ms-excel');
     },
   });
+
+  function generatePDF() {
+    const doc = new MovePDFDocument({
+      layout: 'landscape',
+      size: 'letter',
+    });
+    // write text (to active page)
+    doc.text('Hello World!', 18, 18);
+    // draw image
+    doc.image(imageData, 18, 54, { fit: [144, 108] });
+    // draw chart
+    doc.chart(chartData, 18, 144, 288, 216);
+    doc.text('after chart');
+    // add a page, and make it the active page
+    doc.addPage();
+    /*
+     * Generate a table.  There also appear to be lower-level utilities for
+     * generating individual rows and cells.
+     */
+    const headers = [
+      { text: 'Name', key: 'name' },
+      { text: 'Count', key: 'count' },
+    ];
+    const rows = [
+      { name: 'Foo', count: 1729 },
+      { name: 'Bar', count: 42 },
+      { name: 'Quux', count: 6 },
+    ];
+    doc.table({ headers, rows }, 18, 90);
+    doc.text('after table');
+    doc.end();
+    return doc;
+  }
 
   routes.push({
     method: 'GET',
     path: '/stream/pdf',
     handler: async (request, h) => {
-      const doc = new MovePDFDocument({
-        layout: 'landscape',
-        size: 'letter',
-      });
-      // write text (to active page)
-      doc.text('Hello World!', 18, 18);
-      // draw image
-      doc.image(imageData, 18, 54, { fit: [144, 108] });
-      // draw chart
-      doc.chart(chartData, 18, 144, 288, 216);
-      doc.text('after chart');
-      // add a page, and make it the active page
-      doc.addPage();
-      /*
-       * Generate a table.  There also appear to be lower-level utilities for
-       * generating individual rows and cells.
-       */
-      const headers = [
-        { text: 'Name', key: 'name' },
-        { text: 'Count', key: 'count' },
-      ];
-      const rows = [
-        { name: 'Foo', count: 1729 },
-        { name: 'Bar', count: 42 },
-        { name: 'Quux', count: 6 },
-      ];
-      doc.table({ headers, rows }, 18, 90);
-      doc.text('after table');
-      doc.end();
-
-      return h.response(doc)
+      const pdfStream = generatePDF();
+      return h.response(pdfStream)
         .type('application/pdf');
     },
   });
 
+  const ZIP_DEFAULT_COMPRESSION_LEVEL = 6;
+
   routes.push({
     method: 'GET',
     path: '/stream/zip',
-    handler: async () => ({ todo: true }),
+    handler: async (request, h) => {
+      const zip = new JSZip();
+
+      const reportsFolder = zip
+        .folder('MOVE-reports')
+        .folder('RESCU')
+        .folder('Don-Mills-and-Overlea');
+
+      reportsFolder.file('cot_logo.png', imageData);
+
+      const pdfStream = generatePDF();
+      reportsFolder.file('report.pdf', pdfStream);
+
+      const excelStream = generateExcel();
+      reportsFolder.file('report.xlsx', excelStream);
+
+      const zipOptions = {
+        compression: 'DEFLATE',
+        compressionOptions: {
+          level: ZIP_DEFAULT_COMPRESSION_LEVEL,
+        },
+        streamFiles: true,
+      };
+
+      const zipStream = zip.generateNodeStream(zipOptions);
+      return h.response(zipStream)
+        .type('application/zip');
+    },
   });
 
   server.route(routes);
