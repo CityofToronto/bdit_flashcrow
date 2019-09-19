@@ -10,6 +10,7 @@ import Hapi from '@hapi/hapi';
 import Joi from '@hapi/joi';
 import JSZip from 'jszip';
 
+import ReportController from './ReportController';
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
@@ -299,6 +300,7 @@ async function initServer() {
   });
 
   server.route(routes);
+  server.route(ReportController);
 
   // START SERVER
   await server.start();

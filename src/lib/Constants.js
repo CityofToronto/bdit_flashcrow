@@ -47,6 +47,17 @@ const HttpStatus = {
   },
 };
 
+const ReportFormat = {
+  CSV: 'csv',
+  EXCEL: 'xlsx',
+  JSON: 'json',
+  PDF: 'pdf',
+};
+
+const ReportType = {
+  GRAPHICAL_24H_COUNT_SUMMARY: 'Graphical24hCountSummary',
+};
+
 const RequestStatus = {
   REQUESTED: {
     icon: 'concierge-bell',
@@ -158,6 +169,8 @@ const Constants = {
   COUNT_TYPES,
   FeatureCode,
   HttpStatus,
+  ReportFormat,
+  ReportType,
   RequestStatus,
   SignalType,
   SortDirection,
@@ -174,6 +187,8 @@ export {
   COUNT_TYPES,
   FeatureCode,
   HttpStatus,
+  ReportFormat,
+  ReportType,
   RequestStatus,
   SignalType,
   SortDirection,

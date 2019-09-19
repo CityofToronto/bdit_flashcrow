@@ -3,11 +3,20 @@
 
 require 'yaml'
 
+# You *MUST* create `provision.conf.yml` before running `vagrant up`.  The
+# Vagrant installation process relies on credentials provided in that file,
+# and since it contains credentials it is *NOT* included in our `git` repo.
+#
+# See the MOVE Installation Guide for more details:
+#
+# https://github.com/CityofToronto/bdit_flashcrow/blob/master/scripts/dev/README.md#set-up-move-config-files-on-host-machine
 provision_conf = YAML.load_file('provision.conf.yml')
 
 Vagrant.configure("2") do |config|
   config.vm.box = "cot-move/cot-move-dev"
   config.vm.box_version = "0.0.1"
+
+  # PROXY CONFIGURATION
 
   if Vagrant.has_plugin?("vagrant-proxyconf")
     proxy_url = "http://#{provision_conf["proxy_user"]}:#{provision_conf["proxy_pass"]}@proxy.toronto.ca:8080"
@@ -17,6 +26,8 @@ Vagrant.configure("2") do |config|
     config.proxy.enabled = { npm: false }
   end
 
+  # RESOURCE USAGE
+
   config.vm.provider "virtualbox" do |v|
     # see https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck
     v.customize ["modifyvm", :id, "--memory", 2048]
@@ -25,16 +36,26 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--ioapic", "on"]
   end
 
-  # webpack-dev-server
+  # 80xx: SERVICES
+
+  # npm run frontend
   config.vm.network "forwarded_port", guest: 8080, host: 8080
-  # backend API server
+  # npm run backend
   config.vm.network "forwarded_port", guest: 8081, host: 8081
-  # documentation serve (frontend)
+  # npm run reporter
+  config.vm.network "forwarded_port", guest: 8082, host: 8082
+
+  # 90xx: DOCUMENTATION
+
+  # npm run docs:js
   config.vm.network "forwarded_port", guest: 9080, host: 9080
-  # documentation serve (backend)
-  config.vm.network "forwarded_port", guest: 9081, host: 9081
-  # node --inspect=0.0.0.0:9229
-  config.vm.network "forwarded_port", guest: 9229, host: 9229
+
+  # 92xx: NODE DEBUGGER PORTS
+
+  # npm run backend:inspect
+  config.vm.network "forwarded_port", guest: 9281, host: 9281
+  # npm run reporter
+  config.vm.network "forwarded_port", guest: 9282, host: 9282
 
   # Disable automatic box checking.  While the comments in Vagrant's default
   # config discourage this, in a non-production setting it seems wiser to
