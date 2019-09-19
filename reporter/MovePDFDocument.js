@@ -234,6 +234,10 @@ class MovePDFDocument extends PDFDocument {
     this.moveDown();
     return this;
   }
+
+  availableWidth() {
+    return this.page.width - this.page.margins.left - this.page.margins.right;
+  }
 }
 
 export default MovePDFDocument;

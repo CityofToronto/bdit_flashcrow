@@ -10,12 +10,13 @@ import Hapi from '@hapi/hapi';
 import Joi from '@hapi/joi';
 import JSZip from 'jszip';
 
+import MovePDFDocument from './MovePDFDocument';
 import ReportController from './ReportController';
+import SSEStream from './SSEStream';
+import FormatGenerator from './reports/FormatGenerator';
 import config from '@/../lib/config/MoveConfig';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
-import MovePDFDocument from './MovePDFDocument';
-import SSEStream from './SSEStream';
 
 const readFile = util.promisify(fs.readFile);
 
@@ -117,6 +118,9 @@ async function initServer() {
 
   const cotLogoPath = path.join(__dirname, 'cot_logo.png');
   const imageData = await readFile(cotLogoPath);
+
+  server.log(LogTag.INIT, 'initializing report generation assets...');
+  await FormatGenerator.init();
 
   const chartData = [];
   for (let i = 0; i < 10; i++) {
