@@ -21,7 +21,6 @@ class FormatGenerator {
   }
 
   static pdf(pdfLayout) {
-    // TODO: implement this
     return pdfLayout;
   }
 }

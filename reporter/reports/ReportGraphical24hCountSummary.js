@@ -62,7 +62,7 @@ class ReportGraphical24hCountSummary extends ReportBase {
 
   generateCsvLayout(count, volumeByHour) {
     const { date: countDate } = count;
-    const year = countDate.getYear();
+    const year = countDate.getFullYear();
     const month = countDate.getMonth();
     const date = countDate.getDate();
     const rows = volumeByHour.map((value, hour) => {
