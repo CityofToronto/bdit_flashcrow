@@ -90,7 +90,7 @@ class ReportGraphical24hCountSummary extends ReportBase {
       date,
       locationDesc,
       identifiers: [
-        { name: 'Study Category', value: type.value },
+        { name: 'Study Category', value: type.label },
         { name: 'Station Number', value: stationCode },
         { name: 'Artery Code', value: arteryCode },
       ],

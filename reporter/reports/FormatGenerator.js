@@ -47,6 +47,7 @@ class FormatGenerator {
     const fontSizeXS = FormatCss.var('--font-size-xs');
     const fontSizeS = FormatCss.var('--font-size-s');
     const fontSizeM = FormatCss.var('--font-size-m');
+    const fontSizeL = FormatCss.var('--font-size-l');
     const fontSizeXL = FormatCss.var('--font-size-xl');
     const spaceXS = FormatCss.var('--space-xs');
     const spaceM = FormatCss.var('--space-m');
@@ -164,6 +165,12 @@ class FormatGenerator {
           beforeBars() {
             doc.fillColor(colorBaseLight);
           },
+          beforeTitle() {
+            doc
+              .fillColor(colorInk)
+              .fontSize(fontSizeL);
+          },
+          title: 'Volume by Hour of Day',
         });
       } else if (type === 'table') {
         const { table } = options;

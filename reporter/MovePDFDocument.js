@@ -162,6 +162,7 @@ class MovePDFDocument extends PDFDocument {
       beforeBars: noop,
       beforeTitle: noop,
       heightAxis: 36,
+      heightTitle: 36,
       widthAxis: 54,
       labelAxisX: null,
       labelAxisY: null,
@@ -174,19 +175,19 @@ class MovePDFDocument extends PDFDocument {
       beforeBars,
       beforeTitle,
       heightAxis,
+      heightTitle,
       labelAxisX,
       labelAxisY,
       widthAxis,
       title,
     } = chartOptions;
-    const heightBars = height - heightAxis;
 
     // AXES
     const scaleX = scaleBand()
       .range([widthAxis, width])
       .padding(0.1);
     const scaleY = scaleLinear()
-      .range([heightBars, 0]);
+      .range([height - heightAxis, heightTitle]);
     const axisX = axisBottom(scaleX)
       .tickSize(0)
       .tickPadding(8);
@@ -194,10 +195,16 @@ class MovePDFDocument extends PDFDocument {
       .tickSize(0)
       .tickPadding(8);
 
+    this.save();
+    this.translate(x, y);
+
     // CHART TITLE
     beforeTitle();
     if (title !== null) {
-      // TODO: this
+      this.text(title, 0, 0, {
+        align: 'center',
+        width,
+      });
     }
 
     // AXIS LABELS
@@ -213,15 +220,12 @@ class MovePDFDocument extends PDFDocument {
     scaleX.domain([...chartData.keys()]);
     scaleY.domain([0, max(chartData)]);
 
-    this.save();
-    this.translate(x, y);
-
     beforeBars();
     chartData.forEach((value, i) => {
       const xBar = scaleX(i);
       const yBar = scaleY(value);
       const widthBar = scaleX.bandwidth();
-      const heightBar = heightBars - yBar;
+      const heightBar = height - heightAxis - yBar;
       this
         .rect(xBar, yBar, widthBar, heightBar)
         .fill();
@@ -230,7 +234,7 @@ class MovePDFDocument extends PDFDocument {
     beforeAxisTicks();
     chartData.forEach((_, i) => {
       const xTick = scaleX(i);
-      const yTick = heightBars;
+      const yTick = height - heightAxis;
       const widthBar = scaleX.bandwidth();
       const heightTick = axisX.tickSize();
       const paddingTick = axisX.tickPadding();
@@ -249,7 +253,7 @@ class MovePDFDocument extends PDFDocument {
     });
     const yTicks = axisY.tickValues() || axisY.scale().ticks();
     yTicks.forEach((value) => {
-      const xTick = widthAxis;
+      const xTick = 0;
       const yTick = scaleY(value);
       const widthTick = axisY.tickSize();
       const paddingTick = axisY.tickPadding();
@@ -267,6 +271,7 @@ class MovePDFDocument extends PDFDocument {
       });
     });
 
+    // undo: translate(x, y)
     this.restore();
 
     this.x = x;
