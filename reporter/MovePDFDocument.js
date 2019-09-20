@@ -161,9 +161,9 @@ class MovePDFDocument extends PDFDocument {
       beforeAxisTicks: noop,
       beforeBars: noop,
       beforeTitle: noop,
-      heightAxis: 36,
-      heightTitle: 36,
-      widthAxis: 54,
+      heightAxis: 48,
+      heightTitle: 48,
+      widthAxis: 48,
       labelAxisX: null,
       labelAxisY: null,
       title: null,
@@ -181,6 +181,8 @@ class MovePDFDocument extends PDFDocument {
       widthAxis,
       title,
     } = chartOptions;
+    const widthBars = width - widthAxis;
+    const heightBars = height - heightTitle - heightAxis;
 
     // AXES
     const scaleX = scaleBand()
@@ -210,10 +212,23 @@ class MovePDFDocument extends PDFDocument {
     // AXIS LABELS
     beforeAxisLabels();
     if (labelAxisX !== null) {
-      // TODO: this
+      const optionsLabelAxisX = {
+        align: 'center',
+        width: widthBars,
+      };
+      const heightLabelAxisX = this.heightOfString(labelAxisX, optionsLabelAxisX);
+      this.text(labelAxisX, widthAxis, height - heightLabelAxisX, optionsLabelAxisX);
     }
     if (labelAxisY !== null) {
-      // TODO: this
+      this
+        .save()
+        .translate(0, heightTitle + heightBars / 2)
+        .rotate(-90)
+        .text(labelAxisY, -heightBars / 2, 0, {
+          align: 'center',
+          width: heightBars,
+        })
+        .restore();
     }
 
     // CHART RENDERING

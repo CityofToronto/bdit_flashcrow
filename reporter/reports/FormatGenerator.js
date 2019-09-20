@@ -157,6 +157,11 @@ class FormatGenerator {
       if (type === 'chart') {
         const { chartData } = options;
         doc.chart(chartData, margin, nextY, widthUsable, space3XL * 4, {
+          beforeAxisLabels() {
+            doc
+              .fillColor(colorInk)
+              .fontSize(fontSizeM);
+          },
           beforeAxisTicks() {
             doc
               .fillColor(colorInk)
@@ -170,6 +175,8 @@ class FormatGenerator {
               .fillColor(colorInk)
               .fontSize(fontSizeL);
           },
+          labelAxisX: 'Start Hour',
+          labelAxisY: 'Number of Vehicles',
           title: 'Volume by Hour of Day',
         });
       } else if (type === 'table') {
