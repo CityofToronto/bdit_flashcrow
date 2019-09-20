@@ -32,6 +32,13 @@ class FormatGenerator {
 
   static async pdf({
     layout,
+    metadata: {
+      reportName,
+      reportDate,
+      date,
+      locationDesc,
+      identifiers,
+    },
     content,
   }) {
     const fontSizeXS = FormatCss.var('--font-size-xs');
@@ -41,6 +48,7 @@ class FormatGenerator {
     const primaryDark = FormatCss.var('--primary-dark');
     const spaceXS = FormatCss.var('--space-xs');
     const spaceM = FormatCss.var('--space-m');
+    const spaceL = FormatCss.var('--space-l');
     const spaceXL = FormatCss.var('--space-xl');
     const space2XL = FormatCss.var('--space-2xl');
     const space3XL = FormatCss.var('--space-3xl');
@@ -55,8 +63,6 @@ class FormatGenerator {
 
     const margin = spaceXL;
     const widthUsable = width - 2 * margin;
-
-    const now = new Date();
 
     const doc = new MovePDFDocument({
       layout,
@@ -81,7 +87,7 @@ class FormatGenerator {
       .text(textH1, margin, margin + spaceM, optionsH)
       .fontSize(fontSizeM)
       .text(
-        'Graphical 24-Hour Count Summary Report',
+        reportName,
         margin,
         margin + spaceM + heightH1 + spaceM,
         optionsH,
@@ -104,15 +110,53 @@ class FormatGenerator {
       .restore()
       .moveDown();
 
+    // SUB-HEADER
+    doc
+      .save()
+      .fontSize(fontSizeS);
+
+    const dateStr = TimeFormatters.formatDefault(date);
+    doc
+      .text(locationDesc, margin, heightHeader + spaceL, {
+        align: 'left',
+        width: widthUsable / 2,
+      })
+      .moveDown()
+      .text(`Date: ${dateStr}`, {
+        align: 'left',
+        width: widthUsable / 2,
+      });
+    identifiers.forEach(({ name, value }, i) => {
+      const text = `${name}: ${value}`;
+      const textOptions = {
+        align: 'left',
+        width: widthUsable / 2,
+      };
+      if (i === 0) {
+        doc.text(text, margin + widthUsable / 2, heightHeader + spaceL, textOptions);
+      } else {
+        doc
+          .moveDown()
+          .text(text, textOptions);
+      }
+    });
+
+    doc
+      .restore()
+      .moveDown();
+
+    // MAIN LAYOUT
+
     content.forEach(({ type, options }) => {
       // TODO: deal with more complex layouts?
+      const nextY = doc.y + spaceL;
       if (type === 'chart') {
         const { chartData } = options;
-        doc.chart(chartData, margin, doc.y, widthUsable, space3XL * 4);
+        doc.chart(chartData, margin, nextY, widthUsable, space3XL * 4);
       } else if (type === 'table') {
         const { table } = options;
         doc
-          .table(table, margin, doc.y, {
+          .table(table, margin, nextY, {
             beforeHeader() {
               doc.fontSize(fontSizeS);
             },
@@ -127,14 +171,15 @@ class FormatGenerator {
     // FOOTER
     doc.save();
 
-    const textFooter = 'Page 1 of 1';
+    // TODO: put this in `.onAddPage()`, increment page number
+    const textFooter = 'Page 1';
     const heightFooter = doc.heightOfString(textFooter, optionsH);
-    const nowStr = TimeFormatters.formatDateTime(now);
-    const generatedAt = `Generated at: ${nowStr}`;
+    const reportDateStr = TimeFormatters.formatDateTime(reportDate);
+    const reportGeneratedAt = `Generated at: ${reportDateStr}`;
     doc
       .fontSize(fontSizeXS)
       .text(textFooter, margin, height - margin - heightFooter, optionsH)
-      .text(generatedAt, margin, height - margin - heightFooter, {
+      .text(reportGeneratedAt, margin, height - margin - heightFooter, {
         align: 'right',
         width: widthUsable,
       });

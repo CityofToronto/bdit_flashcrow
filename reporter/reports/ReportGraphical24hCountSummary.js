@@ -76,11 +76,33 @@ class ReportGraphical24hCountSummary extends ReportBase {
     return { columns, rows };
   }
 
+  getPdfMetadata(count) {
+    const {
+      arteryCode,
+      date,
+      locationDesc,
+      stationCode,
+      type,
+    } = count;
+    return {
+      reportName: 'Graphical 24-Hour Count Summary Report',
+      reportDate: new Date(),
+      date,
+      locationDesc,
+      identifiers: [
+        { name: 'Study Category', value: type.value },
+        { name: 'Station Number', value: stationCode },
+        { name: 'Artery Code', value: arteryCode },
+      ],
+    };
+  }
+
   generatePdfLayout(count, volumeByHour) {
     const chartOptions = {
       chartData: volumeByHour,
     };
 
+    const metadata = this.getPdfMetadata(count);
     const headers = volumeByHour.map((_, hour) => ({ key: hour, text: hour }));
     const tableOptions = {
       table: {
@@ -90,6 +112,7 @@ class ReportGraphical24hCountSummary extends ReportBase {
     };
     return {
       layout: 'portrait',
+      metadata,
       content: [
         { type: 'chart', options: chartOptions },
         { type: 'table', options: tableOptions },

@@ -207,7 +207,7 @@ class MovePDFDocument extends PDFDocument {
       const heightBar = heightBars - yBar;
       this
         .rect(xBar, yBar, widthBar, heightBar)
-        .fill('#71767a');
+        .fill();
     });
 
     chartData.forEach((_, i) => {
