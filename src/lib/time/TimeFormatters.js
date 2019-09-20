@@ -22,7 +22,11 @@ class TimeFormatters {
     if (!d) {
       return '';
     }
-    return new Intl.DateTimeFormat('en-US', options).format(d);
+    const defaultOptions = {
+      timeZone: 'America/Toronto',
+    };
+    const formatOptions = Object.assign(defaultOptions, options);
+    return new Intl.DateTimeFormat('en-US', formatOptions).format(d);
   }
 
   /**
@@ -58,8 +62,11 @@ class TimeFormatters {
    */
   static formatDateTime(d) {
     return TimeFormatters.format(d, {
-      dateStyle: 'medium',
-      timeStyle: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   }
 
