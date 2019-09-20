@@ -6,6 +6,16 @@ import PDFDocument from 'pdfkit';
 const TABLE_MIN_ROWS = 3;
 
 class MovePDFDocument extends PDFDocument {
+  constructor(options) {
+    super(options);
+
+    /*
+     * Prevent errors if we call `.heightOfString()` before `.text()`.
+     */
+    this.x = 0;
+    this.y = 0;
+  }
+
   /*
    * Compute row height using `.heightOfString()`.  The row height is the height
    * of the tallest string in the row plus the `rowSpacing`.

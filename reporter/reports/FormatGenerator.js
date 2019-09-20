@@ -4,29 +4,26 @@ import util from 'util';
 
 import csvStringify from 'csv-stringify';
 
-import FormatColors from './FormatColors';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FormatCss from './FormatCss';
 import MovePDFDocument from '../MovePDFDocument';
 
 const readFile = util.promisify(fs.readFile);
 
 class FormatGenerator {
-  static csvTimestamp(t) {
-    return t.toISOString().slice(0, 16).replace('T', ' ');
-  }
-
   static async init() {
     // load City of Toronto logo
     const cotLogoPath = path.resolve(__dirname, '../cot_logo.png');
     FormatGenerator.cotLogoData = await readFile(cotLogoPath);
 
     // initialize CSS colors map
-    await FormatColors.init();
+    await FormatCss.init();
   }
 
   static async csv({ columns, rows }) {
     return csvStringify(rows, {
       cast: {
-        date: FormatGenerator.csvTimestamp,
+        date: TimeFormatters.formatCsv,
       },
       columns,
       header: true,
@@ -41,58 +38,92 @@ class FormatGenerator {
   static async pdf({
     layout,
   }) {
-    const colorPrimaryDark = await FormatColors.var('--primary-dark');
+    const fontSizeXS = FormatCss.var('--font-size-xs');
+    const fontSizeM = FormatCss.var('--font-size-m');
+    const fontSizeXL = FormatCss.var('--font-size-xl');
+    const primaryDark = FormatCss.var('--primary-dark');
+    const spaceM = FormatCss.var('--space-m');
+    const spaceXL = FormatCss.var('--space-xl');
+    const space2XL = FormatCss.var('--space-2xl');
+    const space3XL = FormatCss.var('--space-3xl');
+
+    let width = 8.5 * FormatGenerator.PT_PER_IN;
+    let height = 11 * FormatGenerator.PT_PER_IN;
+    if (layout === 'landscape') {
+      const temp = width;
+      width = height;
+      height = temp;
+    }
+    const margin = spaceXL;
+    const widthUsable = width - 2 * margin;
+
+    const now = new Date();
 
     const doc = new MovePDFDocument({
       layout,
-      margins: 0.25 * FormatGenerator.PT_PER_IN,
+      margins: margin,
       size: 'letter',
     });
 
     // HEADER
     doc
       .save()
-      .fillColor(colorPrimaryDark)
-      .strokeColor(colorPrimaryDark);
+      .fillColor(primaryDark)
+      .strokeColor(primaryDark);
 
+    const textH1 = 'Traffic Safety Unit';
+    const optionsH = {
+      align: 'center',
+      width: widthUsable,
+    };
+    const heightH1 = doc.heightOfString(textH1, optionsH);
     doc
-      .fontSize(18)
-      .text(
-        'Traffic Safety Unit',
-        0.25 * FormatGenerator.PT_PER_IN,
-        0.35 * FormatGenerator.PT_PER_IN,
-        {
-          align: 'center',
-          width: 8 * FormatGenerator.PT_PER_IN,
-        },
-      )
-      .fontSize(12)
+      .fontSize(fontSizeXL)
+      .text(textH1, margin, margin + spaceM, optionsH)
+      .fontSize(fontSizeM)
       .text(
         'Graphical 24-Hour Count Summary Report',
-        0.25 * FormatGenerator.PT_PER_IN,
-        0.65 * FormatGenerator.PT_PER_IN,
-        {
-          align: 'center',
-          width: 8 * FormatGenerator.PT_PER_IN,
-        },
+        margin,
+        margin + spaceM + heightH1 + spaceM,
+        optionsH,
       );
 
     doc.image(
       FormatGenerator.cotLogoData,
-      0.25 * FormatGenerator.PT_PER_IN,
-      0.25 * FormatGenerator.PT_PER_IN,
-      {
-        fit: [
-          1.5 * FormatGenerator.PT_PER_IN,
-          0.75 * FormatGenerator.PT_PER_IN,
-        ],
-      },
+      margin,
+      margin,
+      { fit: [space3XL, space2XL] },
     );
 
+    const heightHeader = margin + space2XL;
     doc
-      .moveTo(0.25 * FormatGenerator.PT_PER_IN, 1 * FormatGenerator.PT_PER_IN)
-      .lineTo(8.25 * FormatGenerator.PT_PER_IN, 1 * FormatGenerator.PT_PER_IN)
+      .moveTo(margin, heightHeader)
+      .lineTo(width - margin, heightHeader)
       .stroke();
+
+    doc
+      .restore()
+      .moveDown();
+
+    // CHART
+
+    // TABLE
+
+    // FOOTER
+    doc
+      .save();
+
+    const textFooter = 'Page 1 of 1';
+    const heightFooter = doc.heightOfString(textFooter, optionsH);
+    const nowStr = TimeFormatters.formatDateTime(now);
+    const generatedAt = `Generated at: ${nowStr}`;
+    doc
+      .fontSize(fontSizeXS)
+      .text(textFooter, margin, height - margin - heightFooter, optionsH)
+      .text(generatedAt, margin, height - margin - heightFooter, {
+        align: 'right',
+        width: widthUsable,
+      });
 
     doc
       .restore()

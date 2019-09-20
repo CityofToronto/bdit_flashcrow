@@ -26,6 +26,20 @@ class TimeFormatters {
   }
 
   /**
+   * Use {@link Date#toISOString} to generate a machine-readable timestamp for
+   * CSV exports.
+   *
+   * @param {Date} d - date to format
+   * @returns {string} the formatted date string, or the empty string if `d === null`
+   */
+  static formatCsv(d) {
+    if (d === null) {
+      return '';
+    }
+    return d.toISOString().slice(0, 16).replace('T', ' ');
+  }
+
+  /**
    * Format `d` according to `en-US` defaults.
    *
    * @param {Date} d - date to format
@@ -33,6 +47,20 @@ class TimeFormatters {
    */
   static formatDefault(d) {
     return TimeFormatters.format(d);
+  }
+
+  /**
+   * Format `d` for the `en-US` locale, showing both date and time.  Note that
+   * {@link formatDefault} only shows date.
+   *
+   * @param {Date} d - date to format
+   * @returns {string} the formatted date-time string, or the empty string if `d === null`
+   */
+  static formatDateTime(d) {
+    return TimeFormatters.format(d, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
   }
 
   /**
