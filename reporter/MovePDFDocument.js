@@ -3,9 +3,21 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import PDFDocument from 'pdfkit';
 
+import { noop } from '@/lib/FunctionUtils';
+
 const TABLE_MIN_ROWS = 3;
 
 class MovePDFDocument extends PDFDocument {
+  constructor(options) {
+    super(options);
+
+    /*
+     * Prevent errors if we call `.heightOfString()` before `.text()`.
+     */
+    this.x = 0;
+    this.y = 0;
+  }
+
   /*
    * Compute row height using `.heightOfString()`.  The row height is the height
    * of the tallest string in the row plus the `rowSpacing`.
@@ -37,12 +49,16 @@ class MovePDFDocument extends PDFDocument {
     let startY = y;
 
     const defaultOptions = {
+      beforeHeader: noop,
+      beforeRow: noop,
       columnSpacing: 15,
       rowSpacing: 5,
-      usableWidth: this.page.width - this.page.margins.left - this.page.margins.right,
+      usableWidth: this.page.width - 2 * this.page.margins,
     };
     const tableOptions = Object.assign(defaultOptions, options);
     const {
+      beforeHeader,
+      beforeRow,
       columnSpacing,
       rowSpacing,
       usableWidth,
@@ -53,7 +69,7 @@ class MovePDFDocument extends PDFDocument {
 
     const columnContainerWidth = usableWidth / columnCount;
     const columnWidth = columnContainerWidth - columnSpacing;
-    const maxY = this.page.height - this.page.margins.bottom;
+    const maxY = this.page.height - this.page.margins;
 
     let rowBottomY = 0;
 
@@ -63,8 +79,12 @@ class MovePDFDocument extends PDFDocument {
       rowBottomY = 0;
     });
 
+    // Allow user to override style for header
+    beforeHeader();
+
     // Check to have enough room for header and first rows
-    const heightHeaders = this.computeRowHeight(headers, columnWidth, rowSpacing);
+    const headerText = headers.map(({ text }) => text);
+    const heightHeaders = this.computeRowHeight(headerText, columnWidth, rowSpacing);
     if (startY + TABLE_MIN_ROWS * heightHeaders > maxY) {
       this.addPage();
     }
@@ -86,13 +106,16 @@ class MovePDFDocument extends PDFDocument {
       .lineWidth(2)
       .stroke();
 
-    rows.forEach((row) => {
+    rows.forEach((row, i) => {
       const rowText = headers.map(({ key }) => {
         if (row[key]) {
           return row[key].toString();
         }
         return '';
       });
+
+      // Allow user to override style for rows
+      beforeRow(row, i);
 
       // Switch to next page if we cannot go any further because the space is over.
       // For safety, consider `TABLE_MIN_ROWS` rows margin
@@ -134,27 +157,39 @@ class MovePDFDocument extends PDFDocument {
 
     // OPTIONS NORMALIZATION
     const defaultOptions = {
-      heightAxis: 36,
-      widthAxis: 54,
-      labelX: null,
-      labelY: null,
+      beforeAxisLabels: noop,
+      beforeAxisTicks: noop,
+      beforeBars: noop,
+      beforeTitle: noop,
+      heightAxis: 48,
+      heightTitle: 48,
+      widthAxis: 48,
+      labelAxisX: null,
+      labelAxisY: null,
       title: null,
     };
     const chartOptions = Object.assign(defaultOptions, options);
     const {
+      beforeAxisLabels,
+      beforeAxisTicks,
+      beforeBars,
+      beforeTitle,
       heightAxis,
-      labelX,
-      labelY,
+      heightTitle,
+      labelAxisX,
+      labelAxisY,
       widthAxis,
+      title,
     } = chartOptions;
-    const heightBars = height - heightAxis;
+    const widthBars = width - widthAxis;
+    const heightBars = height - heightTitle - heightAxis;
 
     // AXES
     const scaleX = scaleBand()
       .range([widthAxis, width])
       .padding(0.1);
     const scaleY = scaleLinear()
-      .range([heightBars, 0]);
+      .range([height - heightAxis, heightTitle]);
     const axisX = axisBottom(scaleX)
       .tickSize(0)
       .tickPadding(8);
@@ -162,34 +197,59 @@ class MovePDFDocument extends PDFDocument {
       .tickSize(0)
       .tickPadding(8);
 
-    // AXIS LABELS
-    if (labelX !== null) {
-      // TODO: this
+    this.save();
+    this.translate(x, y);
+
+    // CHART TITLE
+    beforeTitle();
+    if (title !== null) {
+      this.text(title, 0, 0, {
+        align: 'center',
+        width,
+      });
     }
-    if (labelY !== null) {
-      // TODO: this
+
+    // AXIS LABELS
+    beforeAxisLabels();
+    if (labelAxisX !== null) {
+      const optionsLabelAxisX = {
+        align: 'center',
+        width: widthBars,
+      };
+      const heightLabelAxisX = this.heightOfString(labelAxisX, optionsLabelAxisX);
+      this.text(labelAxisX, widthAxis, height - heightLabelAxisX, optionsLabelAxisX);
+    }
+    if (labelAxisY !== null) {
+      this
+        .save()
+        .translate(0, heightTitle + heightBars / 2)
+        .rotate(-90)
+        .text(labelAxisY, -heightBars / 2, 0, {
+          align: 'center',
+          width: heightBars,
+        })
+        .restore();
     }
 
     // CHART RENDERING
     scaleX.domain([...chartData.keys()]);
     scaleY.domain([0, max(chartData)]);
 
-    this.save();
-    this.translate(x, y);
-
+    beforeBars();
     chartData.forEach((value, i) => {
       const xBar = scaleX(i);
       const yBar = scaleY(value);
       const widthBar = scaleX.bandwidth();
-      const heightBar = heightBars - yBar;
+      const heightBar = height - heightAxis - yBar;
       this
         .rect(xBar, yBar, widthBar, heightBar)
-        .fill('#71767a');
+        .fill();
     });
 
+    beforeAxisTicks();
     chartData.forEach((_, i) => {
       const xTick = scaleX(i);
-      const yTick = heightBars;
+      const yTick = height - heightAxis;
       const widthBar = scaleX.bandwidth();
       const heightTick = axisX.tickSize();
       const paddingTick = axisX.tickPadding();
@@ -206,10 +266,9 @@ class MovePDFDocument extends PDFDocument {
         width: widthBar,
       });
     });
-
     const yTicks = axisY.tickValues() || axisY.scale().ticks();
     yTicks.forEach((value) => {
-      const xTick = widthAxis;
+      const xTick = 0;
       const yTick = scaleY(value);
       const widthTick = axisY.tickSize();
       const paddingTick = axisY.tickPadding();
@@ -227,6 +286,7 @@ class MovePDFDocument extends PDFDocument {
       });
     });
 
+    // undo: translate(x, y)
     this.restore();
 
     this.x = x;

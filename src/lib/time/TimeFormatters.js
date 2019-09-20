@@ -22,7 +22,25 @@ class TimeFormatters {
     if (!d) {
       return '';
     }
-    return new Intl.DateTimeFormat('en-US', options).format(d);
+    const defaultOptions = {
+      timeZone: 'America/Toronto',
+    };
+    const formatOptions = Object.assign(defaultOptions, options);
+    return new Intl.DateTimeFormat('en-US', formatOptions).format(d);
+  }
+
+  /**
+   * Use {@link Date#toISOString} to generate a machine-readable timestamp for
+   * CSV exports.
+   *
+   * @param {Date} d - date to format
+   * @returns {string} the formatted date string, or the empty string if `d === null`
+   */
+  static formatCsv(d) {
+    if (d === null) {
+      return '';
+    }
+    return d.toISOString().slice(0, 16).replace('T', ' ');
   }
 
   /**
@@ -33,6 +51,23 @@ class TimeFormatters {
    */
   static formatDefault(d) {
     return TimeFormatters.format(d);
+  }
+
+  /**
+   * Format `d` for the `en-US` locale, showing both date and time.  Note that
+   * {@link formatDefault} only shows date.
+   *
+   * @param {Date} d - date to format
+   * @returns {string} the formatted date-time string, or the empty string if `d === null`
+   */
+  static formatDateTime(d) {
+    return TimeFormatters.format(d, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   /**

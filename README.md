@@ -14,8 +14,8 @@ To contact the Flashcrow team:
 | If... | Contact: | Who? |
 | --- | --- | --- |
 | You have a question related to Flashcrow development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
-| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | [Pallavi Thampi](mailto:Pallavi.Thampi@toronto.ca) |
-| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | [Andrew Konoff](mailto:Andrew.Konoff@toronto.ca) |
+| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | TBD |
+| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | TBD |
 | Your question isn't captured above, or you're not sure who to contact | Service Owner | [Jesse Coleman](mailto:Jesse.Coleman@toronto.ca) |
 
 We will try to respond to any questions within 48 hours.  However, given the small size of our team, please understand if it takes us a bit longer to respond sometimes.
@@ -62,21 +62,41 @@ This repository consists of:
 
 These scripts are listed in [package.json](package.json), as per the [`npm-run-script`](https://docs.npmjs.com/cli/run-script) documentation.
 
-- `backend`: runs the REST API server at `server.js`;
-- `backend:inspect`: runs `server.js`, but also opens debugging on port 9229;
+The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run-all ci:*`, `npx npm-run-all pre-commit:*`.
+
+### MOVE Web Backend
+
+- `backend`: runs the REST API server at `server.js` on port 8081;
+- `backend:inspect`: runs `server.js`, but also opens debugging on port 9281;
 - `backend:inspect-brk`: like `backend:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
+- `backend:test-api`: runs `server.js` in headless testing mode on port 8080, for use during REST API tests;
+
+### Continuous Integration (CI)
+
 - `ci:jest-coverage`: compute test coverage;
 - `ci:npm-audit`: run `npm audit` to scan for known vulnerabilities in our `npm` dependencies;
-- `ci:test-api`: test our REST API layer;
-- `ci:test-db`: test our database layer;
-- `ci:test-unit`: run unit tests;
-- `frontend`: runs `webpack-dev-server` to serve frontend static resources, with hot-reloading for changes;
+- `ci:npm-outdated`: run `npm outdated` to scan for outdated dependency versions;
+
+### Documentation
+
+- `docs:js`: generates JSDoc-based documentation and serves it on port 9080, with hot-reloading for changes;
+
+### MOVE Web Frontend
+
+- `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes;
 - `frontend:build`: builds a production-ready version of our frontend static resources;
-- `frontend:docs`: generates frontend JSDoc-based documentation and serves it on port 9080, with hot-reloading for changes;
+
+### `git` pre-commit Hook
+
 - `pre-commit:lint-staged`: run linters on any files changed in the current commit;
 - `pre-commit:test-unit-staged`: run unit tests for any files changed since latest `master`.
 
-The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run-all ci:*`, `npx npm-run-all pre-commit:*`.
+### MOVE Reporter
+
+- `reporter`: runs the REST API server at `reporter/reporter.js` on port 8082;
+- `reporter:inspect`: runs `reporter/reporter.js`, but also opens debugging on port 9282;
+- `reporter:inspect-brk`: like `reporter:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
+- `reporter:test-api`: runs `reporter/reporter.js` in testing mode on port 8082, for use during REST API tests;
 
 ### Deprecated
 
@@ -84,6 +104,12 @@ These are provided for backwards compatibility with CD pipelines as set up by Cl
 
 - `serve`: same as `frontend`;
 - `build`: same as `frontend:build`.
+
+These were used in our `ci:` scripts, but were removed from that set since `ci:jest-coverage` already runs all `jest` tests:
+
+- `test:test-api`
+- `test:test-db`
+- `test:test-unit`
 
 ## Vue CLI configuration
 
