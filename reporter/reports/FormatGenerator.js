@@ -32,11 +32,14 @@ class FormatGenerator {
 
   static async pdf({
     layout,
+    content,
   }) {
     const fontSizeXS = FormatCss.var('--font-size-xs');
+    const fontSizeS = FormatCss.var('--font-size-s');
     const fontSizeM = FormatCss.var('--font-size-m');
     const fontSizeXL = FormatCss.var('--font-size-xl');
     const primaryDark = FormatCss.var('--primary-dark');
+    const spaceXS = FormatCss.var('--space-xs');
     const spaceM = FormatCss.var('--space-m');
     const spaceXL = FormatCss.var('--space-xl');
     const space2XL = FormatCss.var('--space-2xl');
@@ -49,6 +52,7 @@ class FormatGenerator {
       width = height;
       height = temp;
     }
+
     const margin = spaceXL;
     const widthUsable = width - 2 * margin;
 
@@ -100,13 +104,28 @@ class FormatGenerator {
       .restore()
       .moveDown();
 
-    // CHART
-
-    // TABLE
+    content.forEach(({ type, options }) => {
+      // TODO: deal with more complex layouts?
+      if (type === 'chart') {
+        const { chartData } = options;
+        doc.chart(chartData, margin, doc.y, widthUsable, space3XL * 4);
+      } else if (type === 'table') {
+        const { table } = options;
+        doc
+          .table(table, margin, doc.y, {
+            beforeHeader() {
+              doc.fontSize(fontSizeS);
+            },
+            beforeRow() {
+              doc.fontSize(fontSizeXS);
+            },
+            columnSpacing: spaceXS,
+          });
+      }
+    });
 
     // FOOTER
-    doc
-      .save();
+    doc.save();
 
     const textFooter = 'Page 1 of 1';
     const heightFooter = doc.heightOfString(textFooter, optionsH);
@@ -129,12 +148,18 @@ class FormatGenerator {
   }
 }
 
+/**
+ * City of Toronto logo, in PNG format.
+ *
+ * @type {Buffer}
+ */
 FormatGenerator.cotLogoData = null;
 
 /**
  * By typographical convention, a point is 1/72 of an inch.  Many media (both
  * online and offline, including PDF) adhere to this convention.
  *
+ * @type {number}
  * @see https://en.wikipedia.org/wiki/Point_(typography)#Current_DTP_point_system
  */
 FormatGenerator.PT_PER_IN = 72;

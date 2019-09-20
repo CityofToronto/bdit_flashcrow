@@ -8,6 +8,7 @@
  * user interactions that produce a high volume of events (e.g. mouse
  * motion).
  *
+ * @memberof FunctionUtils
  * @param {Function} func - function to debounce
  * @param {number} wait - time, in milliseconds, to wait after last call
  * to `debounce(func, wait)` before `func()` is called
@@ -29,6 +30,23 @@ function debounce(func, wait) {
   };
 }
 
-export default {
+/**
+ * "No operation", i.e. a function that does nothing.
+ *
+ * @memberof FunctionUtils
+ */
+function noop() {}
+
+/**
+ * @namespace
+ */
+const FunctionUtils = {
   debounce,
+  noop,
+};
+
+export {
+  FunctionUtils as default,
+  debounce,
+  noop,
 };

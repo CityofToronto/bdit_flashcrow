@@ -3,6 +3,8 @@ import { axisBottom, axisLeft } from 'd3-axis';
 import { scaleBand, scaleLinear } from 'd3-scale';
 import PDFDocument from 'pdfkit';
 
+import { noop } from '@/lib/FunctionUtils';
+
 const TABLE_MIN_ROWS = 3;
 
 class MovePDFDocument extends PDFDocument {
@@ -47,12 +49,16 @@ class MovePDFDocument extends PDFDocument {
     let startY = y;
 
     const defaultOptions = {
+      beforeHeader: noop,
+      beforeRow: noop,
       columnSpacing: 15,
       rowSpacing: 5,
-      usableWidth: this.page.width - this.page.margins.left - this.page.margins.right,
+      usableWidth: this.page.width - 2 * this.page.margins,
     };
     const tableOptions = Object.assign(defaultOptions, options);
     const {
+      beforeHeader,
+      beforeRow,
       columnSpacing,
       rowSpacing,
       usableWidth,
@@ -63,7 +69,7 @@ class MovePDFDocument extends PDFDocument {
 
     const columnContainerWidth = usableWidth / columnCount;
     const columnWidth = columnContainerWidth - columnSpacing;
-    const maxY = this.page.height - this.page.margins.bottom;
+    const maxY = this.page.height - this.page.margins;
 
     let rowBottomY = 0;
 
@@ -73,8 +79,12 @@ class MovePDFDocument extends PDFDocument {
       rowBottomY = 0;
     });
 
+    // Allow user to override style for header
+    beforeHeader();
+
     // Check to have enough room for header and first rows
-    const heightHeaders = this.computeRowHeight(headers, columnWidth, rowSpacing);
+    const headerText = headers.map(({ text }) => text);
+    const heightHeaders = this.computeRowHeight(headerText, columnWidth, rowSpacing);
     if (startY + TABLE_MIN_ROWS * heightHeaders > maxY) {
       this.addPage();
     }
@@ -96,13 +106,16 @@ class MovePDFDocument extends PDFDocument {
       .lineWidth(2)
       .stroke();
 
-    rows.forEach((row) => {
+    rows.forEach((row, i) => {
       const rowText = headers.map(({ key }) => {
         if (row[key]) {
           return row[key].toString();
         }
         return '';
       });
+
+      // Allow user to override style for rows
+      beforeRow(row, i);
 
       // Switch to next page if we cannot go any further because the space is over.
       // For safety, consider `TABLE_MIN_ROWS` rows margin
@@ -243,10 +256,6 @@ class MovePDFDocument extends PDFDocument {
     this.y = y + height;
     this.moveDown();
     return this;
-  }
-
-  availableWidth() {
-    return this.page.width - this.page.margins.left - this.page.margins.right;
   }
 }
 

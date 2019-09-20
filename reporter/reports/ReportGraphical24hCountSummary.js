@@ -77,18 +77,22 @@ class ReportGraphical24hCountSummary extends ReportBase {
   }
 
   generatePdfLayout(count, volumeByHour) {
-    const chart = {
+    const chartOptions = {
       chartData: volumeByHour,
     };
-    const table = {
-      headers: [...volumeByHour.keys()],
-      rows: [volumeByHour],
+
+    const headers = volumeByHour.map((_, hour) => ({ key: hour, text: hour }));
+    const tableOptions = {
+      table: {
+        headers,
+        rows: [volumeByHour],
+      },
     };
     return {
       layout: 'portrait',
       content: [
-        ['chart', chart],
-        ['table', table],
+        { type: 'chart', options: chartOptions },
+        { type: 'table', options: tableOptions },
       ],
     };
   }
