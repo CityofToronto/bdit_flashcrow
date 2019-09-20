@@ -91,10 +91,6 @@ class ReportBase {
     throw new NotImplementedError();
   }
 
-  generateExcelLayout(transformedData) {
-    throw new NotImplementedError();
-  }
-
   generatePdfLayout(transformedData) {
     throw new NotImplementedError();
   }
@@ -121,12 +117,10 @@ class ReportBase {
       const csvLayout = this.generateCsvLayout(parsedId, transformedData);
       return FormatGenerator.csv(csvLayout);
     }
-    if (format === ReportFormat.EXCEL) {
-      const excelLayout = this.generateExcelLayout(parsedId, transformedData);
-      return FormatGenerator.excel(excelLayout);
-    }
     if (format === ReportFormat.JSON) {
-      return transformedData;
+      return {
+        data: transformedData,
+      };
     }
     if (format === ReportFormat.PDF) {
       const pdfLayout = this.generatePdfLayout(parsedId, transformedData);

@@ -49,7 +49,6 @@ const HttpStatus = {
 
 const ReportFormat = {
   CSV: 'csv',
-  EXCEL: 'xlsx',
   JSON: 'json',
   PDF: 'pdf',
 };

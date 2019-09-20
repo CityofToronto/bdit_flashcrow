@@ -30,11 +30,6 @@ class FormatGenerator {
     });
   }
 
-  static async excel(excelLayout) {
-    // TODO: implement this
-    return excelLayout;
-  }
-
   static async pdf({
     layout,
   }) {

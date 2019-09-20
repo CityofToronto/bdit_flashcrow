@@ -76,11 +76,6 @@ class ReportGraphical24hCountSummary extends ReportBase {
     return { columns, rows };
   }
 
-  generateExcelLayout(count, volumeByHour) {
-    // TODO: implement this
-    return { count, volumeByHour };
-  }
-
   generatePdfLayout(count, volumeByHour) {
     const chart = {
       chartData: volumeByHour,

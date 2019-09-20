@@ -13,9 +13,6 @@ function getReportMimeType(format) {
   if (format === ReportFormat.CSV) {
     return 'text/csv';
   }
-  if (format === ReportFormat.EXCEL) {
-    return 'application/vnd.ms-excel';
-  }
   if (format === ReportFormat.JSON) {
     return 'application/json';
   }
