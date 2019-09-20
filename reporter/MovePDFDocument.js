@@ -157,18 +157,27 @@ class MovePDFDocument extends PDFDocument {
 
     // OPTIONS NORMALIZATION
     const defaultOptions = {
+      beforeAxisLabels: noop,
+      beforeAxisTicks: noop,
+      beforeBars: noop,
+      beforeTitle: noop,
       heightAxis: 36,
       widthAxis: 54,
-      labelX: null,
-      labelY: null,
+      labelAxisX: null,
+      labelAxisY: null,
       title: null,
     };
     const chartOptions = Object.assign(defaultOptions, options);
     const {
+      beforeAxisLabels,
+      beforeAxisTicks,
+      beforeBars,
+      beforeTitle,
       heightAxis,
-      labelX,
-      labelY,
+      labelAxisX,
+      labelAxisY,
       widthAxis,
+      title,
     } = chartOptions;
     const heightBars = height - heightAxis;
 
@@ -185,11 +194,18 @@ class MovePDFDocument extends PDFDocument {
       .tickSize(0)
       .tickPadding(8);
 
-    // AXIS LABELS
-    if (labelX !== null) {
+    // CHART TITLE
+    beforeTitle();
+    if (title !== null) {
       // TODO: this
     }
-    if (labelY !== null) {
+
+    // AXIS LABELS
+    beforeAxisLabels();
+    if (labelAxisX !== null) {
+      // TODO: this
+    }
+    if (labelAxisY !== null) {
       // TODO: this
     }
 
@@ -200,6 +216,7 @@ class MovePDFDocument extends PDFDocument {
     this.save();
     this.translate(x, y);
 
+    beforeBars();
     chartData.forEach((value, i) => {
       const xBar = scaleX(i);
       const yBar = scaleY(value);
@@ -210,6 +227,7 @@ class MovePDFDocument extends PDFDocument {
         .fill();
     });
 
+    beforeAxisTicks();
     chartData.forEach((_, i) => {
       const xTick = scaleX(i);
       const yTick = heightBars;
@@ -229,7 +247,6 @@ class MovePDFDocument extends PDFDocument {
         width: widthBar,
       });
     });
-
     const yTicks = axisY.tickValues() || axisY.scale().ticks();
     yTicks.forEach((value) => {
       const xTick = widthAxis;

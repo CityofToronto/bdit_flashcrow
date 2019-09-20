@@ -41,11 +41,13 @@ class FormatGenerator {
     },
     content,
   }) {
+    const colorBaseLight = FormatCss.var('--base-light');
+    const colorInk = FormatCss.var('--ink');
+    const colorPrimaryDark = FormatCss.var('--primary-dark');
     const fontSizeXS = FormatCss.var('--font-size-xs');
     const fontSizeS = FormatCss.var('--font-size-s');
     const fontSizeM = FormatCss.var('--font-size-m');
     const fontSizeXL = FormatCss.var('--font-size-xl');
-    const primaryDark = FormatCss.var('--primary-dark');
     const spaceXS = FormatCss.var('--space-xs');
     const spaceM = FormatCss.var('--space-m');
     const spaceL = FormatCss.var('--space-l');
@@ -73,8 +75,8 @@ class FormatGenerator {
     // HEADER
     doc
       .save()
-      .fillColor(primaryDark)
-      .strokeColor(primaryDark);
+      .fillColor(colorPrimaryDark)
+      .strokeColor(colorPrimaryDark);
 
     const textH1 = 'Traffic Safety Unit';
     const optionsH = {
@@ -150,9 +152,19 @@ class FormatGenerator {
     content.forEach(({ type, options }) => {
       // TODO: deal with more complex layouts?
       const nextY = doc.y + spaceL;
+      doc.save();
       if (type === 'chart') {
         const { chartData } = options;
-        doc.chart(chartData, margin, nextY, widthUsable, space3XL * 4);
+        doc.chart(chartData, margin, nextY, widthUsable, space3XL * 4, {
+          beforeAxisTicks() {
+            doc
+              .fillColor(colorInk)
+              .fontSize(fontSizeS);
+          },
+          beforeBars() {
+            doc.fillColor(colorBaseLight);
+          },
+        });
       } else if (type === 'table') {
         const { table } = options;
         doc
@@ -166,6 +178,9 @@ class FormatGenerator {
             columnSpacing: spaceXS,
           });
       }
+      doc
+        .moveDown()
+        .restore();
     });
 
     // FOOTER
