@@ -54,7 +54,13 @@ const ReportFormat = {
 };
 
 const ReportType = {
-  GRAPHICAL_24H_COUNT_SUMMARY: 'Graphical24hCountSummary',
+  COUNT_SUMMARY_24H: 'CountSummary24h',
+  COUNT_SUMMARY_24H_DETAILED: 'CountSummary24hDetailed',
+  COUNT_SUMMARY_24H_GRAPHICAL: 'CountSummary24hGraphical',
+  COUNT_SUMMARY_TURNING_MOVEMENT: 'CountSummaryTurningMovement',
+  COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED: 'CountSummaryTurningMovementIllustrated',
+  INTERSECTION_WARRANT_SUMMARY: 'IntersectionWarrantSummary',
+  SPEED_PERCENTILE: 'SpeedPercentile',
 };
 
 const RequestStatus = {

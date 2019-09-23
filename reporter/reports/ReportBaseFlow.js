@@ -1,18 +1,12 @@
-import { ReportType } from '@/lib/Constants';
 import CountDAO from '@/../lib/db/CountDAO';
 import CountDataDAO from '@/../lib/db/CountDataDAO';
 import { InvalidReportIdError } from '@/../lib/error/MoveErrors';
+
 import ReportBase from './ReportBase';
 
-/**
- * Subclass of {@link ReportBase} for the Graphical 24-Hour Count Summary
- * Report.
- */
-class ReportGraphical24hCountSummary extends ReportBase {
+
+class ReportBaseFlow extends ReportBase {
   /* eslint-disable class-methods-use-this */
-  type() {
-    return ReportType.GRAPHICAL_24H_COUNT_SUMMARY;
-  }
 
   /**
    * Parses an ID in the format `{categoryId}/{id}`, and returns it as a
@@ -51,31 +45,6 @@ class ReportGraphical24hCountSummary extends ReportBase {
     return CountDataDAO.byCount(count);
   }
 
-  transformData(countData) {
-    const volumeByHour = new Array(24).fill(0);
-    countData.forEach(({ t, data: { COUNT } }) => {
-      const h = t.getHours();
-      volumeByHour[h] += COUNT;
-    });
-    return volumeByHour;
-  }
-
-  generateCsvLayout(count, volumeByHour) {
-    const { date: countDate } = count;
-    const year = countDate.getFullYear();
-    const month = countDate.getMonth();
-    const date = countDate.getDate();
-    const rows = volumeByHour.map((value, hour) => {
-      const time = new Date(year, month, date, hour);
-      return { time, count: value };
-    });
-    const columns = [
-      { key: 'time', header: 'Time' },
-      { key: 'count', header: 'Count' },
-    ];
-    return { columns, rows };
-  }
-
   getPdfMetadata(count) {
     const {
       arteryCode,
@@ -96,29 +65,6 @@ class ReportGraphical24hCountSummary extends ReportBase {
       ],
     };
   }
-
-  generatePdfLayout(count, volumeByHour) {
-    const chartOptions = {
-      chartData: volumeByHour,
-    };
-
-    const metadata = this.getPdfMetadata(count);
-    const headers = volumeByHour.map((_, hour) => ({ key: hour, text: hour }));
-    const tableOptions = {
-      table: {
-        headers,
-        rows: [volumeByHour],
-      },
-    };
-    return {
-      layout: 'portrait',
-      metadata,
-      content: [
-        { type: 'chart', options: chartOptions },
-        { type: 'table', options: tableOptions },
-      ],
-    };
-  }
 }
 
-export default ReportGraphical24hCountSummary;
+export default ReportBaseFlow;
