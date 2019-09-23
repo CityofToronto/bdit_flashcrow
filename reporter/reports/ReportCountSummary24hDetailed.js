@@ -11,15 +11,22 @@ class ReportCountSummary24hDetailed extends ReportBaseFlow {
     return ReportType.COUNT_SUMMARY_24H_DETAILED;
   }
 
-  transformData(/* countData */) {
-    // TODO: perform computations
+  transformData(countData) {
+    return countData.map(({
+      t,
+      data: { COUNT: value },
+    }) => ({
+      time: t,
+      count: value,
+    }));
   }
 
-  generateCsvLayout(/* count, transformedData */) {
+  generateCsvLayout(count, rows) {
     const columns = [
-      // TODO: columns
+      { key: 'time', header: 'Time' },
+      { key: 'count', header: 'Count' },
     ];
-    return { columns, rows: [] };
+    return { columns, rows };
   }
 
   generatePdfLayout(count /* , transformedData */) {
