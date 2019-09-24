@@ -47,7 +47,7 @@ class ArrayStats {
     if (p >= 1) {
       return buckets[n - 1][1];
     }
-    const cutoffCount = Math.round(p * totalCount);
+    const cutoffCount = p * totalCount;
     let curCount = 0;
     for (let i = 0; i < n; i++) {
       const [min, max] = buckets[i];
