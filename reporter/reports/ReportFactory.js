@@ -1,5 +1,11 @@
 import { InvalidReportTypeError } from '@/../lib/error/MoveErrors';
-import ReportGraphical24hCountSummary from './ReportGraphical24hCountSummary';
+import ReportCountSummary24h from './ReportCountSummary24h';
+import ReportCountSummary24hDetailed from './ReportCountSummary24hDetailed';
+import ReportCountSummary24hGraphical from './ReportCountSummary24hGraphical';
+import ReportCountSummaryTurningMovement from './ReportCountSummaryTurningMovement';
+import ReportCountSummaryTurningMovementIllustrated from './ReportCountSummaryTurningMovementIllustrated';
+import ReportIntersectionWarrantSummary from './ReportIntersectionWarrantSummary';
+import ReportSpeedPercentile from './ReportSpeedPercentile';
 
 /**
  * Factory class for report types.
@@ -36,6 +42,12 @@ class ReportFactory {
  */
 ReportFactory.instances = {};
 
-ReportFactory.registerInstance(new ReportGraphical24hCountSummary());
+ReportFactory.registerInstance(new ReportCountSummary24h());
+ReportFactory.registerInstance(new ReportCountSummary24hDetailed());
+ReportFactory.registerInstance(new ReportCountSummary24hGraphical());
+ReportFactory.registerInstance(new ReportCountSummaryTurningMovement());
+ReportFactory.registerInstance(new ReportCountSummaryTurningMovementIllustrated());
+ReportFactory.registerInstance(new ReportIntersectionWarrantSummary());
+ReportFactory.registerInstance(new ReportSpeedPercentile());
 
 export default ReportFactory;

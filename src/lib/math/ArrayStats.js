@@ -47,7 +47,13 @@ class ArrayStats {
     if (p >= 1) {
       return buckets[n - 1][1];
     }
-    const cutoffCount = Math.round(p * totalCount);
+    /*
+     * At this point, `p > 0` and `totalCount > 0`, so `cutoffCount > 0`.
+     * This means that `count > 0` below when we perform the division to
+     * calculate `t`, thus guaranteeing that we're safe from divide-by-zero
+     * errors.
+     */
+    const cutoffCount = p * totalCount;
     let curCount = 0;
     for (let i = 0; i < n; i++) {
       const [min, max] = buckets[i];
