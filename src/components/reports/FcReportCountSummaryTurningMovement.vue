@@ -36,42 +36,42 @@
           <th>Other</th>
         </tr>
       </thead>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="sumAmPeak"
         :time-range="timeRangeAmPeak"
         title="AM PEAK" />
       <tr class="fc-report-tmc-summary-spacer">
         <td colspan="26"></td>
       </tr>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="sumPmPeak"
         :time-range="timeRangePmPeak"
         title="PM PEAK" />
       <tr class="fc-report-tmc-summary-spacer">
         <td colspan="26"></td>
       </tr>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="avgOffHours"
         :time-range="timeRangeOffHours"
         title="OFF HOUR AVG" />
       <tr class="fc-report-tmc-summary-spacer">
         <td colspan="26"></td>
       </tr>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="sumAm2Hour"
         :time-range="timeRangeAm2Hour"
         title="2 HR AM" />
       <tr class="fc-report-tmc-summary-spacer">
         <td colspan="26"></td>
       </tr>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="sumPm2Hour"
         :time-range="timeRangePm2Hour"
         title="2 HR PM" />
       <tr class="fc-report-tmc-summary-spacer">
         <td colspan="26"></td>
       </tr>
-      <FcReportTmcSummarySection
+      <FcReportCountSummaryTurningMovementSection
         :section-data="sum8Hour"
         :time-range="timeRange8Hour"
         title="8 HR SUM" />
@@ -96,7 +96,8 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcReportTmcSummarySection from '@/components/FcReportTmcSummarySection.vue';
+import FcReportCountSummaryTurningMovementSection from
+  '@/components/reports/FcReportCountSummaryTurningMovementSection.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
 
 function normalizeData(rawData) {
@@ -244,7 +245,7 @@ function timeRange(countData, is) {
 export default {
   name: 'FcReportTmcSummary',
   components: {
-    FcReportTmcSummarySection,
+    FcReportCountSummaryTurningMovementSection,
   },
   props: {
     count: Object,

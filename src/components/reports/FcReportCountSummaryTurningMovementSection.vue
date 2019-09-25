@@ -105,7 +105,7 @@
 
 <script>
 export default {
-  name: 'FcReportTmcSummarySection',
+  name: 'FcReportCountSummaryTurningMovementSection',
   props: {
     sectionData: Object,
     timeRange: {
