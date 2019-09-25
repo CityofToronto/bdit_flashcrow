@@ -174,7 +174,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
       start.getMonth(),
       start.getDate(),
       start.getHours(),
-      start.getMinutes() - 15,
+      start.getMinutes() - ReportCountSummaryTurningMovement.MINUTES_PER_ROW,
       start.getSeconds(),
     );
     return { start, end };
@@ -361,6 +361,11 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
  * @type {number}
  */
 ReportCountSummaryTurningMovement.ROWS_PER_HOUR = 4;
+
+/**
+ * @type {number}
+ */
+ReportCountSummaryTurningMovement.MINUTES_PER_ROW = 15;
 
 // TODO: configurable AM / PM peaks?
 

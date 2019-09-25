@@ -57,11 +57,20 @@ class ReportSpeedPercentile extends ReportBaseFlow {
 
   static getCountDataByHour(countData) {
     const countDataByHour = [];
-    for (let h = 0; h < 24; h++) {
+    for (let h = 0; h < ReportSpeedPercentile.HOURS_PER_DAY; h++) {
       const volume = new Array(SPEED_CLASSES.length).fill(0);
       countDataByHour.push(volume);
     }
     countData.forEach(({ t, data: { COUNT, SPEED_CLASS: s } }) => {
+      if (s <= 0 || s > SPEED_CLASSES.length) {
+        /*
+         * In our full dataset, we have some rows with `"SPEED_CLASS" = 0`.  For now, we
+         * ignore out-of-bounds rows to prevent invalid access on `countDataByHour`.
+         *
+         * TODO: log these rows
+         */
+        return;
+      }
       const h = t.getHours();
       countDataByHour[h][s - 1] += COUNT;
     });
@@ -74,48 +83,53 @@ class ReportSpeedPercentile extends ReportBaseFlow {
     });
   }
 
-  static getHoursPeakAm(countDataByHour) {
+  static getHoursPeak(countDataByHour, lo, hi) {
+    const countDataByHourSlice = countDataByHour.slice(lo, hi);
     const volume = SPEED_CLASSES.map((_, s) => {
-      const h = ArrayUtils.getMaxIndexBy(
-        countDataByHour.slice(0, 12),
+      let h = ArrayUtils.getMaxIndexBy(
+        countDataByHourSlice,
         ({ volume: v }) => v[s],
       );
+      h += lo;
       if (countDataByHour[h].volume[s] === 0) {
+        /*
+         * In the report, we don't show a peak hour for speed classes that have no
+         * traffic.  Since all counts are non-negative, this condition implies there
+         * is no traffic for this speed class.
+         */
         return null;
       }
       return h;
     });
     let total = ArrayUtils.getMaxIndexBy(
-      countDataByHour.slice(0, 12),
+      countDataByHourSlice,
       ({ total: t }) => t,
     );
+    total += lo;
     if (countDataByHour[total].total === 0) {
+      /*
+       * In the report, we don't show a peak hour for total volume if there is no traffic.
+       * Since all counts are non-negative, this condition implies there is no traffic.
+       */
       total = null;
     }
     return { volume, total };
   }
 
-  static getHoursPeakPm(countDataByHour) {
-    const volume = SPEED_CLASSES.map((_, s) => {
-      let h = ArrayUtils.getMaxIndexBy(
-        countDataByHour.slice(12),
-        ({ volume: v }) => v[s],
-      );
-      h += 12;
-      if (countDataByHour[h].volume[s] === 0) {
-        return null;
-      }
-      return h;
-    });
-    let total = ArrayUtils.getMaxIndexBy(
-      countDataByHour.slice(12),
-      ({ total: t }) => t,
+  static getHoursPeakAm(countDataByHour) {
+    return ReportSpeedPercentile.getHoursPeak(
+      countDataByHour,
+      0,
+      ReportSpeedPercentile.HOURS_PER_DAY / 2,
     );
-    total += 12;
-    if (countDataByHour[total].total === 0) {
-      total = null;
-    }
-    return { volume, total };
+  }
+
+  static getHoursPeakPm(countDataByHour) {
+    return ReportSpeedPercentile.getHoursPeak(
+      countDataByHour,
+      ReportSpeedPercentile.HOURS_PER_DAY / 2,
+      ReportSpeedPercentile.HOURS_PER_DAY,
+    );
   }
 
   static getSpeedClassPercents(speedClassTotals, total) {
@@ -218,5 +232,10 @@ class ReportSpeedPercentile extends ReportBaseFlow {
     };
   }
 }
+
+/**
+ * @type {number}
+ */
+ReportSpeedPercentile.HOURS_PER_DAY = 24;
 
 export default ReportSpeedPercentile;
