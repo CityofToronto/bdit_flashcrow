@@ -9,6 +9,8 @@
  * searching arrays.
  */
 class ArrayUtils {
+  // ARRAY GENERATION
+
   /**
    * Returns an array of integers `[lo, ..., hi - 1]`.  The semantics are similar to
    * the 1-argument and 2-argument versions of Python's `range()`.
@@ -31,6 +33,53 @@ class ArrayUtils {
     }
     return [...Array(n).keys()].map(i => loActual + i);
   }
+
+  // AGGREGATION
+
+  /**
+   * Given an array of objects with number-valued entries, returns the "object sum"
+   * of those entries.
+   *
+   * This is particularly useful when summing larger objects, such as Turning Movement Count
+   * data rows.  It can still be used for smaller objects (e.g. vector math) - but if
+   * profiling shows that to be a bottleneck, you should consider more specific functions
+   * or class methods.
+   *
+   * @param {Object<string, number>} objs - objects to sum
+   * @return {Object<string, number>} object `sum` such that `sum[key]` is the
+   * sum of all defined `obj[key]` values
+   * @example
+   * const objs = [{ a: 1, b: 2 }, { a: 3, c: 4 }, { b: 5 }];
+   * const sum = ArrayUtils.sumObjects(objs);
+   * // { a: 4, b: 7, c: 4 }
+   */
+  static sumObjects(objs) {
+    const sum = {};
+    objs.forEach((obj) => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (!Object.prototype.hasOwnProperty.call(sum, key)) {
+          sum[key] = 0;
+        }
+        sum[key] += value;
+      });
+    });
+    return sum;
+  }
+
+  // SELECTION
+
+  /**
+   * Creates a new array
+   *
+   * @param {Array} xs - array to select from
+   * @param {number} indices - indices to select
+   * @return {Array} elements of `xs` at the given `indices`
+   */
+  static selectIndices(xs, indices) {
+    return indices.map((_, i) => xs[i]);
+  }
+
+  // SEARCHING
 
   /**
    * Returns the maximum value in `xs` according to `key`.
@@ -73,6 +122,8 @@ class ArrayUtils {
     }
     return indexMax;
   }
+
+  // SORTING
 
   /**
    * Returns `xs` sorted by `key`, either ascending or descending according to `direction`.
