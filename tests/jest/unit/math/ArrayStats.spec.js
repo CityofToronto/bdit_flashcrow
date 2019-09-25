@@ -102,6 +102,13 @@ test('ArrayStats.histogramPercentile() [edge cases]', () => {
     0.95,
   );
   expect(Math.floor(p)).toEqual(29);
+
+  p = ArrayStats.histogramPercentile(
+    [[0, 10], [10, 20], [20, 30]],
+    [0, 1, 0],
+    1,
+  );
+  expect(p).toEqual(20);
 });
 
 test('ArrayStats.histogramPercentile() [Trax Pro]', () => {

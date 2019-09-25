@@ -1,5 +1,5 @@
 import ArrayUtils from '@/lib/ArrayUtils';
-import Constants from '@/lib/Constants';
+import { SortDirection } from '@/lib/Constants';
 
 test('ArrayUtils.range()', () => {
   expect(ArrayUtils.range(-1)).toEqual([]);
@@ -25,6 +25,51 @@ test('ArrayUtils.range()', () => {
       expect(xs[j]).toBe(lo + j);
     }
   }
+});
+
+test('ArrayUtils.sumObjects()', () => {
+  const xs = [
+    { a: 1, b: 2 },
+    { a: 3, b: 4 },
+    { a: 5, c: 6 },
+    { b: 7 },
+  ];
+  let sum;
+
+  sum = ArrayUtils.sumObjects([]);
+  expect(sum).toStrictEqual({});
+
+  sum = ArrayUtils.sumObjects([{}]);
+  expect(sum).toStrictEqual({});
+
+  sum = ArrayUtils.sumObjects([xs[0]]);
+  expect(sum).toStrictEqual(xs[0]);
+
+  sum = ArrayUtils.sumObjects([xs[0], {}]);
+  expect(sum).toStrictEqual(xs[0]);
+
+  sum = ArrayUtils.sumObjects([xs[0], xs[1]]);
+  expect(sum).toStrictEqual({ a: 4, b: 6 });
+
+  sum = ArrayUtils.sumObjects(xs);
+  expect(sum).toStrictEqual({ a: 9, b: 13, c: 6 });
+});
+
+test('ArrayUtils.selectIndices()', () => {
+  const xs = ArrayUtils.range(10, 20);
+  let ys;
+
+  ys = ArrayUtils.selectIndices(xs, []);
+  expect(ys).toStrictEqual([]);
+
+  ys = ArrayUtils.selectIndices(xs, [0]);
+  expect(ys).toStrictEqual([xs[0]]);
+
+  ys = ArrayUtils.selectIndices(xs, [0, 1, 2]);
+  expect(ys).toStrictEqual([xs[0], xs[1], xs[2]]);
+
+  ys = ArrayUtils.selectIndices(xs, ArrayUtils.range(0, 10));
+  expect(ys).toStrictEqual(xs);
 });
 
 test('ArrayUtils.getMaxBy()', () => {
@@ -92,13 +137,13 @@ test('ArrayUtils.sortBy()', () => {
   xsSorted = ArrayUtils.sortBy(xs, x => x.foo);
   expect(xsSorted).toEqual([xs[0], xs[2], xs[1]]);
 
-  xsSorted = ArrayUtils.sortBy(xs, x => x.foo, Constants.SortDirection.DESC);
+  xsSorted = ArrayUtils.sortBy(xs, x => x.foo, SortDirection.DESC);
   expect(xsSorted).toEqual([xs[1], xs[2], xs[0]]);
 
   xsSorted = ArrayUtils.sortBy(xs, x => x.bar);
   expect(xsSorted).toEqual([xs[2], xs[1], xs[0]]);
 
-  xsSorted = ArrayUtils.sortBy(xs, x => x.bar, Constants.SortDirection.DESC);
+  xsSorted = ArrayUtils.sortBy(xs, x => x.bar, SortDirection.DESC);
   expect(xsSorted).toEqual([xs[0], xs[1], xs[2]]);
 
   xsSorted = ArrayUtils.sortBy(xs, x => -Math.abs(x.foo - 1111));
