@@ -34,9 +34,9 @@ import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
 import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
-import apiFetch from '@/lib/ApiFetch';
+import { apiFetch } from '@/lib/BackendClient';
 import { CentrelineType } from '@/lib/Constants';
-import FunctionUtils from '@/lib/FunctionUtils';
+import { debounce } from '@/lib/FunctionUtils';
 import StringFormatters from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import style from '@/lib/geo/root.json';
@@ -658,7 +658,7 @@ export default {
       this.hoveredFeature = feature;
       this.map.setFeatureState(this.hoveredFeature, { hover: true });
     },
-    onMapMove: FunctionUtils.debounce(function onMapMove() {
+    onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
       const zoom = this.map.getZoom();
       if (zoom >= ZOOM_MIN_COUNTS) {

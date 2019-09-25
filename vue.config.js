@@ -21,6 +21,12 @@ module.exports = {
           '^/api': '',
         },
       },
+      '/reporter': {
+        target: 'https://localhost:8082/',
+        pathRewrite: {
+          '^/reporter': '',
+        },
+      },
     },
     public: 'localhost:8080',
     watchOptions: {

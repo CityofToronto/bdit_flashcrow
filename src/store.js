@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import apiFetch from '@/lib/ApiFetch';
+import { apiFetch } from '@/lib/BackendClient';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
   centrelineKey,
@@ -13,7 +13,7 @@ import {
   SortDirection,
   Status,
 } from '@/lib/Constants';
-import FunctionUtils from '@/lib/FunctionUtils';
+import { debounce } from '@/lib/FunctionUtils';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 Vue.use(Vuex);
@@ -75,7 +75,7 @@ function makeNumPerCategory() {
   return numPerCategory;
 }
 
-const clearToastDebounced = FunctionUtils.debounce((commit) => {
+const clearToastDebounced = debounce((commit) => {
   commit('clearToast');
 }, TIMEOUT_TOAST);
 

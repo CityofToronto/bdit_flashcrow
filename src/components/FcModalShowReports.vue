@@ -162,7 +162,7 @@ import FcReportTmcSummary from '@/components/FcReportTmcSummary.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import TdsPanel from '@/components/tds/TdsPanel.vue';
-import apiFetch from '@/lib/ApiFetch';
+import { apiFetch } from '@/lib/BackendClient';
 import { Status, STATUS_META } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
