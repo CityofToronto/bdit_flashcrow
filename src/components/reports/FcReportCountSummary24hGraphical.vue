@@ -12,7 +12,7 @@
     <FcChartAtrVolume24h
       v-model="highlightedHour"
       :aspect-ratio="2"
-      :chart-data="volumeByHour" />
+      :chart-data="reportData" />
     <footer>
       <table
         @mouseleave="highlightedHour = null">
@@ -21,13 +21,13 @@
         </caption>
         <colgroup>
           <col
-            v-for="(_, h) in volumeByHour"
+            v-for="(_, h) in reportData"
             :key="'col_' + h">
         </colgroup>
         <thead>
           <tr>
             <th
-              v-for="(_, h) in volumeByHour"
+              v-for="(_, h) in reportData"
               :key="'th_' + h"
               :class="{ highlight: highlightedHour === h }"
               @mouseenter="highlightedHour = h">
@@ -38,7 +38,7 @@
         <tbody>
           <tr>
             <td
-              v-for="(n, h) in volumeByHour"
+              v-for="(n, h) in reportData"
               :key="'td_' + h"
               :class="{ highlight: highlightedHour === h }"
               @mouseenter="highlightedHour = h">
@@ -54,16 +54,16 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcChartAtrVolume24h from '@/components/FcChartAtrVolume24h.vue';
+import FcChartAtrVolume24h from '@/components/reports/FcChartAtrVolume24h.vue';
 
 export default {
-  name: 'FcReportAtrVolume24hGraph',
+  name: 'FcReportCountSummary24hGraphical',
   components: {
     FcChartAtrVolume24h,
   },
   props: {
     count: Object,
-    countData: Array,
+    reportData: Array,
   },
   data() {
     return {
@@ -71,14 +71,6 @@ export default {
     };
   },
   computed: {
-    volumeByHour() {
-      const volumeByHour = new Array(24).fill(0);
-      this.countData.forEach(({ t, data: { COUNT } }) => {
-        const h = t.getHours();
-        volumeByHour[h] += COUNT;
-      });
-      return volumeByHour;
-    },
     ...mapState(['locationQuery']),
   },
 };

@@ -278,6 +278,7 @@ export default {
       if (this.report === null) {
         return;
       }
+      this.activeReportData = null;
       const countInfoId = this.activeCount.id;
       const categoryId = this.activeCount.type.id;
       const type = this.report;
