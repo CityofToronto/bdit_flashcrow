@@ -2,8 +2,8 @@
   <tbody class="fc-report-tmc-summary-section">
     <tr>
       <th class="br" rowspan="2">
-        <span v-if="timeRange">
-          {{timeRange.start | timeOfDay}}&ndash;{{timeRange.end | timeOfDay}}
+        <span>
+          {{timeRangeNormalized.start | timeOfDay}}&ndash;{{timeRangeNormalized.end | timeOfDay}}
         </span>
       </th>
       <th>CAR</th>
@@ -108,10 +108,7 @@ export default {
   name: 'FcReportCountSummaryTurningMovementSection',
   props: {
     sectionData: Object,
-    timeRange: {
-      type: Object,
-      default() { return null; },
-    },
+    timeRange: Object,
     title: String,
   },
   data() {
@@ -127,6 +124,14 @@ export default {
       dirs: ['N', 'E', 'S', 'W'],
       turns: ['L', 'T', 'R', 'TOTAL'],
     };
+  },
+  computed: {
+    timeRangeNormalized() {
+      let { start, end } = this.timeRange;
+      start = new Date(start.slice(0, -1));
+      end = new Date(end.slice(0, -1));
+      return { start, end };
+    },
   },
 };
 </script>

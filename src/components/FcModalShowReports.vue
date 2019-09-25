@@ -113,10 +113,16 @@
                       <i class="fa fa-download"></i>
                     </button>
                   </header>
+                  <div
+                    v-if="activeReportData === null"
+                    class="report-loading-spinner">
+                    <TdsLoadingSpinner />
+                  </div>
                   <component
+                    v-else
                     :is="selectedReport.reportComponent"
                     :count="activeCount"
-                    :count-data="activeCountData" />
+                    :report-data="activeReportData" />
                 </section>
               </div>
             </div>
@@ -136,10 +142,12 @@ import FcReportCountSummaryTurningMovement from
 import FcReportSpeedPercentile from
   '@/components/reports/FcReportSpeedPercentile.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
+import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/components/tds/TdsMixinModal';
 import TdsPanel from '@/components/tds/TdsPanel.vue';
-import { apiFetch } from '@/lib/BackendClient';
+import { reporterFetch } from '@/lib/BackendClient';
 import {
+  ReportFormat,
   ReportType,
   Status,
   STATUS_META,
@@ -208,11 +216,12 @@ export default {
     FcReportCountSummaryTurningMovement,
     FcReportSpeedPercentile,
     TdsActionDropdown,
+    TdsLoadingSpinner,
     TdsPanel,
   },
   data() {
     return {
-      activeCountData: [],
+      activeReportData: null,
       report: null,
       Status,
       STATUS_META,
@@ -265,34 +274,29 @@ export default {
     ...mapState(['locationQuery']),
   },
   watch: {
-    activeCount: {
-      handler() {
-        const countInfoId = this.activeCount.id;
-        const categoryId = this.activeCount.type.id;
-        const options = {
-          method: 'GET',
-          data: { countInfoId, categoryId },
-        };
-        apiFetch('/counts/data', options)
-          .then((countData) => {
-            const countDataNormalized = countData.map((bucket) => {
-              const bucketNormalized = Object.assign({}, bucket);
-              bucketNormalized.t = new Date(
-                bucketNormalized.t.slice(0, -1),
-              );
-              return bucketNormalized;
-            });
-            this.activeCountData = countDataNormalized;
-          });
-      },
-      immediate: true,
-    },
-    activeCountData() {
-      if (this.optionsReports.length > 0 && this.report === null) {
-        const { value } = this.optionsReports[0];
-        this.report = value;
+    report() {
+      if (this.report === null) {
+        return;
       }
+      const countInfoId = this.activeCount.id;
+      const categoryId = this.activeCount.type.id;
+      const type = this.report;
+      const id = `${categoryId}/${countInfoId}`;
+      const options = {
+        method: 'GET',
+        data: { type, id, format: ReportFormat.JSON },
+      };
+      reporterFetch('/reports', options)
+        .then(({ data: activeReportData }) => {
+          this.activeReportData = activeReportData;
+        });
     },
+  },
+  created() {
+    if (this.optionsReports.length > 0) {
+      const { value } = this.optionsReports[0];
+      this.report = value;
+    }
   },
   methods: {
     onSelectActiveCount(i) {
@@ -309,6 +313,10 @@ export default {
     width: calc(100% - var(--space-3xl));
     & > header > .flex-container-row {
       align-items: center;
+    }
+    .report-loading-spinner {
+      height: var(--space-2xl);
+      width: var(--space-2xl);
     }
     .fc-modal-show-reports-filters {
       align-items: center;
