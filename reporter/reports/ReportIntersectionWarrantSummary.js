@@ -2,8 +2,9 @@ import { ReportType } from '@/lib/Constants';
 import ReportBaseFlow from './ReportBaseFlow';
 
 /**
- * Subclass of {@link ReportBase} for the Illustrated Turning Movement Count
- * Summary Report.
+ * Subclass of {@link ReportBaseFlow} for the Intersection Warrant Summary Report.
+ *
+ * @see https://www.notion.so/bditto/Intersection-Warrant-Summary-Report-6f06d430038c4421b5e727a478af1b34
  */
 class ReportIntersectionWarrantSummary extends ReportBaseFlow {
   /* eslint-disable class-methods-use-this */

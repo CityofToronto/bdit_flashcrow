@@ -1,12 +1,35 @@
+import { ReportType } from '@/lib/Constants';
 import CountDAO from '@/../lib/db/CountDAO';
 import CountDataDAO from '@/../lib/db/CountDataDAO';
 import { InvalidReportIdError } from '@/../lib/error/MoveErrors';
 
 import ReportBase from './ReportBase';
 
-
+/**
+ * Base class for all FLOW-related reports, i.e. those reports that deal with traffic count
+ * and study data.
+ */
 class ReportBaseFlow extends ReportBase {
   /* eslint-disable class-methods-use-this */
+
+  /**
+   * @returns {Boolean} whether this report is TMC-related (i.e. relies on data
+   * from `"TRAFFIC"."DET"`)
+   */
+  isTmcRelated() {
+    const type = this.type();
+    return type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT
+      || type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED;
+  }
+
+  /**
+   * @returns {Boolean} whether this report is speed-related (i.e. relies on data
+   * from `"TRAFFIC"."CNT_DET"` with valid `SPEED_CLASS` values)
+   */
+  isSpeedRelated() {
+    const type = this.type();
+    return type === ReportType.SPEED_PERCENTILE;
+  }
 
   /**
    * Parses an ID in the format `{categoryId}/{id}`, and returns it as a
@@ -37,11 +60,33 @@ class ReportBaseFlow extends ReportBase {
     if (count === null) {
       throw new InvalidReportIdError(rawId);
     }
+    if (this.isSpeedRelated()) {
+      /*
+       * Speed reports MUST have speed data, as the speed class calculations depend on it.
+       * Without that, many of those calculations will return `NaN`.
+       */
+      if (count.type.value !== 'ATR_SPEED_VOLUME') {
+        throw new InvalidReportIdError(rawId);
+      }
+    } else if (this.isTmcRelated()) {
+      /*
+       * TMC reports MUST have TMC data, as the various turning movement totals depend on it.
+       * Without that, many of those calculations will return `NaN`.
+       */
+      if (count.type.value !== 'TMC') {
+        throw new InvalidReportIdError(rawId);
+      }
+    } else if (count.type.value === 'TMC') {
+      /*
+       * Other reports MUST NOT have TMC data, as they expect data in the volume-data format
+       * in `"TRAFFIC"."CNT_DET"`.
+       */
+      throw new InvalidReportIdError(rawId);
+    }
     return count;
   }
 
   async fetchRawData(count) {
-    // TODO: validate this data in some way?
     return CountDataDAO.byCount(count);
   }
 

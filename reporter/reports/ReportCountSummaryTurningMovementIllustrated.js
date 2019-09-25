@@ -2,8 +2,10 @@ import { ReportType } from '@/lib/Constants';
 import ReportBaseFlow from './ReportBaseFlow';
 
 /**
- * Subclass of {@link ReportBase} for the Illustrated Turning Movement Count
+ * Subclass of {@link ReportBaseFlow} for the Illustrated Turning Movement Count
  * Summary Report.
+ *
+ * @see https://www.notion.so/bditto/Illustrated-Turning-Movement-Count-Summary-Report-6f9d2e01a64a4642ba93ada45900e68b
  */
 class ReportCountSummaryTurningMovementIllustrated extends ReportBaseFlow {
   /* eslint-disable class-methods-use-this */

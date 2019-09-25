@@ -3,7 +3,9 @@ import { ReportType } from '@/lib/Constants';
 import ReportBaseFlow from './ReportBaseFlow';
 
 /**
- * Subclass of {@link ReportBase} for the Turning Movement Count Summary Report.
+ * Subclass of {@link ReportBaseFlow} for the Turning Movement Count Summary Report.
+ *
+ * @see https://www.notion.so/bditto/Turning-Movement-Count-Summary-Report-d9bc143ed7e14acc894a4c0c0135c8a4
  */
 class ReportCountSummaryTurningMovement extends ReportBaseFlow {
   /* eslint-disable class-methods-use-this */
@@ -15,7 +17,15 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
   static computeMovementAndVehicleTotals(rawData) {
     const data = Object.assign({}, rawData);
 
-    // directional totals, by type of vehicle
+    /*
+     * Directional totals, by type of vehicle.  Here `N_CARS_R` means "cars entering via the
+     * northbound leg, turning right", i.e. cars travelling southbound that then enter the
+     * intersection from the north, turn right, and exit the intersection at west travelling
+     * westbound.
+     *
+     * `N_CARS_TOTAL`, then, means "cars entering via the northbound leg" - this is the sum
+     * of the three possible turning movements (Right, Thru, Left).
+     */
     data.N_CARS_TOTAL = data.N_CARS_R + data.N_CARS_T + data.N_CARS_L;
     data.E_CARS_TOTAL = data.E_CARS_R + data.E_CARS_T + data.E_CARS_L;
     data.S_CARS_TOTAL = data.S_CARS_R + data.S_CARS_T + data.S_CARS_L;
@@ -31,7 +41,15 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     data.S_BUS_TOTAL = data.S_BUS_R + data.S_BUS_T + data.S_BUS_L;
     data.W_BUS_TOTAL = data.W_BUS_R + data.W_BUS_T + data.W_BUS_L;
 
-    // directional exits, by type of vehicle
+    /*
+     * Directional exits, by type of vehicle.  Here `N_TRUCK_EXITS` means "trucks exiting
+     * via the northbound leg".  Each directional exit is the sum of three turning
+     * movements from the other three legs.
+     *
+     * It is generally assumed that all vehicles entering the intersection then proceed to
+     * exit the intersection.  As such, the sum of directional exits should equal the sum
+     * of directional totals.
+     */
     data.N_CARS_EXITS = data.E_CARS_R + data.S_CARS_T + data.W_CARS_L;
     data.E_CARS_EXITS = data.S_CARS_R + data.W_CARS_T + data.N_CARS_L;
     data.S_CARS_EXITS = data.W_CARS_R + data.N_CARS_T + data.E_CARS_L;
@@ -47,7 +65,11 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     data.S_BUS_EXITS = data.W_BUS_R + data.N_BUS_T + data.E_BUS_L;
     data.W_BUS_EXITS = data.N_BUS_R + data.E_BUS_T + data.S_BUS_L;
 
-    // turning movement totals, all vehicles combined
+    /*
+     * Turning movement totals, all vehicles combined.  `N_VEHICLE_R` means "vehicles entering
+     * via the northbound leg, turning right", and is the sum of vehicle-type-specific counts
+     * (i.e. cars, trucks, busses).
+     */
     data.N_VEHICLE_R = data.N_CARS_R + data.N_TRUCK_R + data.N_BUS_R;
     data.E_VEHICLE_R = data.E_CARS_R + data.E_TRUCK_R + data.E_BUS_R;
     data.S_VEHICLE_R = data.S_CARS_R + data.S_TRUCK_R + data.S_BUS_R;
@@ -63,19 +85,34 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     data.S_VEHICLE_L = data.S_CARS_L + data.S_TRUCK_L + data.S_BUS_L;
     data.W_VEHICLE_L = data.W_CARS_L + data.W_TRUCK_L + data.W_BUS_L;
 
-    // directional exit totals, all vehicles combined
+    /*
+     * Directional exit totals, all vehicles combined.  `N_VEHICLE_EXITS` means "vehicles exiting
+     * via the northbound leg", and is the sum of vehicle-type-specific exits (i.e. cars, trucks,
+     * busses).
+     */
     data.N_VEHICLE_EXITS = data.N_CARS_EXITS + data.N_TRUCK_EXITS + data.N_BUS_EXITS;
     data.E_VEHICLE_EXITS = data.E_CARS_EXITS + data.E_TRUCK_EXITS + data.E_BUS_EXITS;
     data.S_VEHICLE_EXITS = data.S_CARS_EXITS + data.S_TRUCK_EXITS + data.S_BUS_EXITS;
     data.W_VEHICLE_EXITS = data.W_CARS_EXITS + data.W_TRUCK_EXITS + data.W_BUS_EXITS;
 
-    // directional totals, all vehicles combined
+    /*
+     * Directional totals, all vehicles combined.  `N_VEHICLE_TOTAL` means "vehicles entering
+     * via the northbound leg", and is the sum of vehicle-type-specific directional totals.
+     */
     data.N_VEHICLE_TOTAL = data.N_CARS_TOTAL + data.N_TRUCK_TOTAL + data.N_BUS_TOTAL;
     data.E_VEHICLE_TOTAL = data.E_CARS_TOTAL + data.E_TRUCK_TOTAL + data.E_BUS_TOTAL;
     data.S_VEHICLE_TOTAL = data.S_CARS_TOTAL + data.S_TRUCK_TOTAL + data.S_BUS_TOTAL;
     data.W_VEHICLE_TOTAL = data.W_CARS_TOTAL + data.W_TRUCK_TOTAL + data.W_BUS_TOTAL;
 
-    // modal totals, including peds / bikes
+    /*
+     * Modal totals, including peds / bikes.  `VEHICLE_TOTAL` means "total number of vehicles
+     * entering via any leg".
+     *
+     * For peds, bikes, and other, we do not have turning movement or other direction-of-travel
+     * information.  `N_PEDS` means "pedestrians crossing the northbound leg in either direction".
+     *
+     * It is unclear how a cyclist turning in lane would be counted.
+     */
     data.VEHICLE_TOTAL = data.N_VEHICLE_TOTAL
       + data.E_VEHICLE_TOTAL
       + data.S_VEHICLE_TOTAL
@@ -84,7 +121,11 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     data.BIKE_TOTAL = data.N_BIKE + data.E_BIKE + data.S_BIKE + data.W_BIKE;
     data.OTHER_TOTAL = data.N_OTHER + data.E_OTHER + data.S_OTHER + data.W_OTHER;
 
-    // overall total
+    /*
+     * Overall total.
+     *
+     * TODO: do we also need a vehicles + bikes total?
+     */
     data.TOTAL = data.VEHICLE_TOTAL + data.PEDS_TOTAL + data.BIKE_TOTAL + data.OTHER_TOTAL;
 
     return data;

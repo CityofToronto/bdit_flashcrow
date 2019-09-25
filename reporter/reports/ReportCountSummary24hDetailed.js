@@ -2,7 +2,9 @@ import { ReportType } from '@/lib/Constants';
 import ReportBaseFlow from './ReportBaseFlow';
 
 /**
- * Subclass of {@link ReportBase} for the Detailed 24-Hour Count Summary Report.
+ * Subclass of {@link ReportBaseFlow} for the Detailed 24-Hour Count Summary Report.
+ *
+ * @see https://www.notion.so/bditto/Detailed-24-Hour-Count-Summary-Report-ccb63a389d2944c7ad172f08c5e65235
  */
 class ReportCountSummary24hDetailed extends ReportBaseFlow {
   /* eslint-disable class-methods-use-this */

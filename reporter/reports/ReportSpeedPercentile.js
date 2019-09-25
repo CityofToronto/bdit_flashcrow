@@ -4,8 +4,10 @@ import ArrayStats from '@/lib/math/ArrayStats';
 import ReportBaseFlow from './ReportBaseFlow';
 
 /**
- * Subclass of {@link ReportBase} for the Illustrated Turning Movement Count
- * Summary Report.
+ * Subclass of {@link ReportBaseFlow} for the Speed Percentile Report, as per the TraxPro
+ * reference layouts.
+ *
+ * @see https://www.notion.so/bditto/Speed-Percentile-Report-Traxpro-3775545a80e34f568df1f082b626f35e
  */
 class ReportSpeedPercentile extends ReportBaseFlow {
   /* eslint-disable class-methods-use-this */
