@@ -93,26 +93,19 @@ class BackendClient {
     return apiOptions;
   }
 
-  /**
-   * Fetch the REST API resource at the given path, using the given options.
-   *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
-   * @param {string} url - path of REST API resource to fetch
-   * @param {Object} options - options to fetch with
-   * @param {string} options.method - HTTP method to call the REST API resource with
-   * @returns {Promise<(Object|Array)>} promise that resolves to JSON response body
-   * @throws {Object} if `fetch()` results in an HTTP 4xx or HTTP 5xx error
-   */
-  async fetch(url, options) {
-    const apiOptions = BackendClient.getFetchOptions(options);
-    const apiUrl = this.getFetchUrl(url, apiOptions);
-    delete apiOptions.csrf;
-    delete apiOptions.data;
-    const response = await fetch(apiUrl, apiOptions);
+  static async getResponseBody(response) {
+    const contentType = response.headers.get(BackendClient.HEADER_CONTENT_TYPE);
+    if (contentType.indexOf('application/json') === 0) {
+      return response.json();
+    }
+    return response.blob();
+  }
+
+  static async handleResponse(response) {
     if (response.status >= 400) {
       // HTTP 4xx / 5xx
       try {
-        const responseBody = await response.json();
+        const responseBody = await BackendClient.getResponseBody(response);
         throw responseBody;
       } catch (err) {
         /*
@@ -137,7 +130,7 @@ class BackendClient {
         __redirect: response.url,
       };
     }
-    const responseBody = await response.json();
+    const responseBody = await BackendClient.getResponseBody(response);
     if (response.ok) {
       // HTTP 2xx
       return responseBody;
@@ -145,7 +138,31 @@ class BackendClient {
     // ???
     throw responseBody;
   }
+
+  /**
+   * Fetch the REST API resource at the given path, using the given options.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+   * @param {string} url - path of REST API resource to fetch
+   * @param {Object} options - options to fetch with
+   * @param {string} options.method - HTTP method to call the REST API resource with
+   * @returns {Promise<(Object|Array|Blob)>} promise that resolves to response body
+   * @throws {(Object|Array|Blob)} if `fetch()` results in an HTTP 4xx or HTTP 5xx error
+   */
+  async fetch(url, options) {
+    const apiOptions = BackendClient.getFetchOptions(options);
+    const apiUrl = this.getFetchUrl(url, apiOptions);
+    delete apiOptions.csrf;
+    delete apiOptions.data;
+    const response = await fetch(apiUrl, apiOptions);
+    return BackendClient.handleResponse(response);
+  }
 }
+
+/**
+ * @type {string}
+ */
+BackendClient.HEADER_CONTENT_TYPE = 'Content-Type';
 
 const apiClient = new BackendClient('/api');
 async function apiFetch(url, options) {
@@ -159,6 +176,8 @@ async function reporterFetch(url, options) {
 
 export {
   BackendClient as default,
+  apiClient,
   apiFetch,
+  reporterClient,
   reporterFetch,
 };

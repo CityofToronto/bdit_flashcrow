@@ -69,7 +69,7 @@
           </div>
           <section class="fc-modal-show-reports-detail flex-container-column flex-3 px-m">
             <div class="flex-container-row flex-fill">
-              <div class="flex-cross-scroll">
+              <div class="flex-cross-scroll px-m">
                 <TdsPanel
                   v-if="activeCount.status === Status.REQUEST_IN_PROGRESS"
                   variant="info">
@@ -108,10 +108,23 @@
                   <header class="mb-m flex-container-row">
                     <h3>{{selectedReport.label}}</h3>
                     <div class="flex-fill"></div>
-                    <button
-                      class="tds-button-secondary font-size-l">
-                      <i class="fa fa-download"></i>
-                    </button>
+                    <TdsActionDropdown
+                      class="font-size-l"
+                      :options="optionsDownloadFormats"
+                      @action-selected="onSelectDownloadFormat">
+                      <template v-slot:default>
+                        <template v-if="downloadLoading">
+                          <div class="download-loading-spinner">
+                            <TdsLoadingSpinner />
+                          </div>
+                          <span> Downloading&hellip;</span>
+                        </template>
+                        <span v-else>
+                          <i class="fa fa-download"></i>
+                          <span> Download</span>
+                        </span>
+                      </template>
+                    </TdsActionDropdown>
                   </header>
                   <div
                     v-if="activeReportData === null"
@@ -134,7 +147,9 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
+
 import FcReportCountSummary24hGraphical from
   '@/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
@@ -154,10 +169,16 @@ import {
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+const DOWNLOAD_FORMATS_SUPPORTED = [
+  { label: 'CSV', value: ReportFormat.CSV },
+  { label: 'PDF', value: ReportFormat.PDF },
+];
+
 const OPTIONS_REPORTS_ATR_VOLUME = [
   {
     label: '24-Hour Graphical Report',
     value: ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
+    formats: [ReportFormat.CSV, ReportFormat.PDF],
   },
   {
     label: '24-Hour Summary Report',
@@ -176,6 +197,7 @@ const OPTIONS_REPORTS = {
     {
       label: 'TMC Summary Report',
       value: ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
+      formats: [ReportFormat.CSV],
     },
     {
       label: 'TMC Illustrated Report',
@@ -189,6 +211,7 @@ const OPTIONS_REPORTS = {
     {
       label: 'Speed Percentile Report',
       value: ReportType.SPEED_PERCENTILE,
+      formats: [ReportFormat.CSV],
     },
     ...OPTIONS_REPORTS_ATR_VOLUME,
   ],
@@ -222,6 +245,7 @@ export default {
   data() {
     return {
       activeReportData: null,
+      downloadLoading: false,
       report: null,
       Status,
       STATUS_META,
@@ -251,6 +275,15 @@ export default {
         return { label, value: i };
       });
     },
+    optionsDownloadFormats() {
+      if (this.selectedReport === null || this.downloadLoading) {
+        return [];
+      }
+      return DOWNLOAD_FORMATS_SUPPORTED.map(({ label, value }) => {
+        const disabled = !this.selectedReport.formats.includes(value);
+        return { label, value, disabled };
+      });
+    },
     optionsReports() {
       const { value } = this.activeCount.type;
       if (value === undefined) {
@@ -266,10 +299,15 @@ export default {
       if (this.report === null) {
         return null;
       }
-      const { label } = this.optionsReports
+      const { label, formats = [] } = this.optionsReports
         .find(({ value }) => this.report === value);
       const reportComponent = `FcReport${this.report}`;
-      return { label, value: this.report, reportComponent };
+      return {
+        label,
+        value: this.report,
+        formats,
+        reportComponent,
+      };
     },
     ...mapState(['locationQuery']),
   },
@@ -279,9 +317,9 @@ export default {
         return;
       }
       this.activeReportData = null;
+      const type = this.report;
       const countInfoId = this.activeCount.id;
       const categoryId = this.activeCount.type.id;
-      const type = this.report;
       const id = `${categoryId}/${countInfoId}`;
       const options = {
         method: 'GET',
@@ -303,6 +341,26 @@ export default {
     onSelectActiveCount(i) {
       this.activeIndex = i;
     },
+    onSelectDownloadFormat(format) {
+      if (this.report === null || this.downloadLoading) {
+        return;
+      }
+      const type = this.report;
+      const countInfoId = this.activeCount.id;
+      const categoryId = this.activeCount.type.id;
+      const id = `${categoryId}/${countInfoId}`;
+      const options = {
+        method: 'GET',
+        data: { type, id, format },
+      };
+      this.downloadLoading = true;
+      reporterFetch('/reports', options)
+        .then((reportData) => {
+          const filename = `report.${format}`;
+          saveAs(reportData, filename);
+          this.downloadLoading = false;
+        });
+    },
   },
 };
 </script>
@@ -318,6 +376,11 @@ export default {
     .report-loading-spinner {
       height: var(--space-2xl);
       width: var(--space-2xl);
+    }
+    .download-loading-spinner {
+      display: inline-block;
+      height: var(--space-l);
+      width: var(--space-l);
     }
     .fc-modal-show-reports-filters {
       align-items: center;

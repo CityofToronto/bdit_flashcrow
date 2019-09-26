@@ -6,9 +6,15 @@
     <template v-slot:dropdown>
       <ul>
         <li
-          v-for="{ label, value } in options"
-          :key="value">
-          <span @click="onClickAction(value)">
+          v-for="{ label, value, disabled } in options"
+          :key="value"
+          :class="{ disabled }">
+          <span v-if="disabled">
+            {{label}}
+          </span>
+          <span
+            v-else
+            @click="onClickAction(value)">
             {{label}}
           </span>
         </li>
@@ -69,6 +75,16 @@ export default {
         font-size: var(--font-size-m);
         font-weight: var(--font-normal);
         padding: var(--space-m);
+      }
+
+      &.disabled {
+        color: var(--disabled-dark);
+        &:hover {
+          background-color: var(--white);
+        }
+        & > span {
+          cursor: not-allowed;
+        }
       }
     }
   }
