@@ -73,9 +73,10 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### Continuous Integration (CI)
 
-- `ci:jest-coverage`: compute test coverage;
+- `ci:jest-coverage`: run all `jest` tests and compute coverage;
 - `ci:npm-audit`: run `npm audit` to scan for known vulnerabilities in our `npm` dependencies;
 - `ci:npm-outdated`: run `npm outdated` to scan for outdated dependency versions;
+- `ci:test-unit`: run unit `jest` tests, as required for our CodeBuild pipeline;
 
 ### Documentation
 
@@ -109,7 +110,6 @@ These were used in our `ci:` scripts, but were removed from that set since `ci:j
 
 - `test:test-api`
 - `test:test-db`
-- `test:test-unit`
 
 ## Vue CLI configuration
 
