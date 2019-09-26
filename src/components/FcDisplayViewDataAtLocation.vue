@@ -21,9 +21,6 @@
         <button class="tds-button-secondary" disabled>
           <i class="fa fa-download"></i>
         </button>
-        <button class="tds-button-secondary" disabled>
-          <i class="fa fa-print"></i>
-        </button>
       </header>
       <FcCardTableCounts
         v-model="selection"

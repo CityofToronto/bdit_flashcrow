@@ -144,6 +144,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     Object.entries(sum).forEach(([key, value]) => {
       avg[key] = Math.round(ReportCountSummaryTurningMovement.ROWS_PER_HOUR * value / n);
     });
+    return avg;
   }
 
   static computeAllMovementAndVehicleTotals(countData) {
@@ -272,8 +273,8 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     );
 
     const indicesPm = ArrayUtils.range(
-      ReportCountSummaryTurningMovement.INDEX_AM_PEAK_START,
-      ReportCountSummaryTurningMovement.INDEX_AM_PEAK_END,
+      ReportCountSummaryTurningMovement.INDEX_PM_PEAK_START,
+      ReportCountSummaryTurningMovement.INDEX_PM_PEAK_END,
     );
     const pm = ReportCountSummaryTurningMovement.sumSection(
       totaledData,

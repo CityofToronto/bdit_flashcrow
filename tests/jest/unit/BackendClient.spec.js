@@ -1,16 +1,12 @@
-import {
-  getFetchOptions,
-  getFetchUrl,
-  getQueryString,
-} from '@/lib/ApiFetch';
+import BackendClient from '@/lib/BackendClient';
 
-test('getFetchOptions()', () => {
-  expect(getFetchOptions()).toEqual({
+test('BackendClient.getFetchOptions()', () => {
+  expect(BackendClient.getFetchOptions()).toEqual({
     credentials: 'include',
     method: 'GET',
     headers: {},
   });
-  expect(getFetchOptions({
+  expect(BackendClient.getFetchOptions({
     data: { a: '1', b: ['2', '3'] },
   })).toEqual({
     credentials: 'include',
@@ -18,7 +14,7 @@ test('getFetchOptions()', () => {
     data: { a: '1', b: ['2', '3'] },
     headers: {},
   });
-  expect(getFetchOptions({
+  expect(BackendClient.getFetchOptions({
     data: { a: '1', b: ['2', '3'] },
     method: 'POST',
   })).toEqual({
@@ -30,7 +26,7 @@ test('getFetchOptions()', () => {
     },
     body: '{"a":"1","b":["2","3"]}',
   });
-  expect(getFetchOptions({
+  expect(BackendClient.getFetchOptions({
     csrf: 'f00bar',
     data: { a: '1', b: ['2', '3'] },
   })).toEqual({
@@ -40,7 +36,7 @@ test('getFetchOptions()', () => {
     data: { a: '1', b: ['2', '3'] },
     headers: {},
   });
-  expect(getFetchOptions({
+  expect(BackendClient.getFetchOptions({
     csrf: 'f00bar',
     data: { a: '1', b: ['2', '3'] },
     method: 'POST',
@@ -57,39 +53,40 @@ test('getFetchOptions()', () => {
   });
 });
 
-test('getFetchUrl()', () => {
-  expect(getFetchUrl(
+test('BackendClient.getFetchUrl()', () => {
+  const client = new BackendClient('/rest');
+  expect(client.getFetchUrl(
     '/foo',
-    getFetchOptions(),
-  )).toEqual('/api/foo');
-  expect(getFetchUrl(
+    BackendClient.getFetchOptions(),
+  )).toEqual('/rest/foo');
+  expect(client.getFetchUrl(
     '/foo',
-    getFetchOptions({
+    BackendClient.getFetchOptions({
       data: { a: '1', b: ['2', '3'] },
     }),
-  )).toEqual('/api/foo?a=1&b=2&b=3');
-  expect(getFetchUrl(
+  )).toEqual('/rest/foo?a=1&b=2&b=3');
+  expect(client.getFetchUrl(
     '/foo',
-    getFetchOptions({
+    BackendClient.getFetchOptions({
       data: { a: '1', b: ['2', '3'] },
       method: 'POST',
     }),
-  )).toEqual('/api/foo');
+  )).toEqual('/rest/foo');
 });
 
-test('getQueryString()', () => {
-  expect(getQueryString({})).toEqual('');
-  expect(getQueryString({
+test('BackendClient.getQueryString()', () => {
+  expect(BackendClient.getQueryString({})).toEqual('');
+  expect(BackendClient.getQueryString({
     a: '1',
   })).toEqual('a=1');
-  expect(getQueryString({
+  expect(BackendClient.getQueryString({
     a: 'foo bar',
   })).toEqual('a=foo%20bar');
-  expect(getQueryString({
+  expect(BackendClient.getQueryString({
     a: '1',
     b: '2',
   })).toEqual('a=1&b=2');
-  expect(getQueryString({
+  expect(BackendClient.getQueryString({
     a: ['1', '2'],
   })).toEqual('a=1&a=2');
 });

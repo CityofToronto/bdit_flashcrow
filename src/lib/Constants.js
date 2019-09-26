@@ -59,7 +59,9 @@ const ReportType = {
   COUNT_SUMMARY_24H_GRAPHICAL: 'CountSummary24hGraphical',
   COUNT_SUMMARY_TURNING_MOVEMENT: 'CountSummaryTurningMovement',
   COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED: 'CountSummaryTurningMovementIllustrated',
+  CROSSWALK_OBSERVANCE_SUMMARY: 'CrosswalkObservanceSummary',
   INTERSECTION_WARRANT_SUMMARY: 'IntersectionWarrantSummary',
+  PED_DELAY_SUMMARY: 'PedDelaySummary',
   SPEED_PERCENTILE: 'SpeedPercentile',
 };
 

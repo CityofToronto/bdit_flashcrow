@@ -86,15 +86,6 @@
         })">
         <i class="fa fa-download"></i>
       </button>
-      <button
-        class="tds-button-secondary font-size-l"
-        disabled
-        @click="$emit('action-item', {
-          type: 'print',
-          item,
-        })">
-        <i class="fa fa-print"></i>
-      </button>
     </template>
     <template v-slot:__expanded="{ item }">
       <div class="mb-m text-muted">
@@ -291,6 +282,7 @@ export default {
       width: 120px;
     }
   }
+  /* stylelint-disable no-descending-specificity */
   .cell-ACTIONS {
     & > button {
       opacity: 0;
@@ -299,6 +291,7 @@ export default {
       }
     }
   }
+  /* stylelint-enable */
   tr:hover > .cell-ACTIONS > button {
     opacity: 1;
   }
