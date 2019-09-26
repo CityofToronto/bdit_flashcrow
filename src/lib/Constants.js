@@ -169,6 +169,8 @@ const STATUS_META = [
   { label: 'In progress', class: 'info', icon: 'user-clock' },
 ];
 
+const TZ_TORONTO = 'America/Toronto';
+
 const Constants = {
   centrelineKey,
   CentrelineType,
@@ -185,6 +187,7 @@ const Constants = {
   SPEED_CLASSES,
   Status,
   STATUS_META,
+  TZ_TORONTO,
 };
 export {
   Constants as default,
@@ -203,4 +206,5 @@ export {
   SPEED_CLASSES,
   Status,
   STATUS_META,
+  TZ_TORONTO,
 };

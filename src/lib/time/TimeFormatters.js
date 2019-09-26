@@ -1,4 +1,5 @@
 import ArrayUtils from '@/lib/ArrayUtils';
+import { TZ_TORONTO } from '@/lib/Constants';
 
 /**
  * `TimeFormatters` contains various formatting methods for date / time formats used
@@ -23,7 +24,7 @@ class TimeFormatters {
       return '';
     }
     const defaultOptions = {
-      timeZone: 'America/Toronto',
+      timeZone: TZ_TORONTO,
     };
     const formatOptions = Object.assign(defaultOptions, options);
     return new Intl.DateTimeFormat('en-US', formatOptions).format(d);

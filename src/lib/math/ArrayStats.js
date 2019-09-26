@@ -44,9 +44,6 @@ class ArrayStats {
     if (p <= 0) {
       return buckets[0][0];
     }
-    if (p >= 1) {
-      return buckets[n - 1][1];
-    }
     /*
      * At this point, `p > 0` and `totalCount > 0`, so `cutoffCount > 0`.
      * This means that `count > 0` below when we perform the division to
@@ -55,9 +52,13 @@ class ArrayStats {
      */
     const cutoffCount = p * totalCount;
     let curCount = 0;
+    let lastNonZeroBucket = 0;
     for (let i = 0; i < n; i++) {
       const [min, max] = buckets[i];
       const count = counts[i];
+      if (count > 0) {
+        lastNonZeroBucket = i;
+      }
       if (curCount + count >= cutoffCount) {
         /*
          * `t` here represents the proportion of the bucket that is less than the
@@ -68,7 +69,7 @@ class ArrayStats {
       }
       curCount += count;
     }
-    return buckets[n - 1][1];
+    return buckets[lastNonZeroBucket][1];
   }
 
   /**
