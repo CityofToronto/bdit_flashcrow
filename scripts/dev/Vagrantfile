@@ -34,6 +34,8 @@ Vagrant.configure("2") do |config|
     # see https://www.mkwd.net/improve-vagrant-performance/
     v.cpus = 2
     v.customize ["modifyvm", :id, "--ioapic", "on"]
+    # see https://serverfault.com/questions/453185/vagrant-virtualbox-dns-10-0-2-3-not-working
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # 80xx: SERVICES

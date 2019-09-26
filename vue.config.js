@@ -30,7 +30,19 @@ module.exports = {
     },
     public: 'localhost:8080',
     watchOptions: {
-      poll: 1000,
+      poll: 2000,
+    },
+  },
+  // see https://medium.com/@kenneth_chau/speeding-up-webpack-typescript-incremental-builds-by-7x-3912ba4c1d15
+  // see https://cli.vuejs.org/guide/webpack.html#simple-configuration
+  configureWebpack: {
+    optimization: {
+      removeAvailableModules: false,
+      removeEmptyChunks: false,
+      splitChunks: false,
+    },
+    output: {
+      pathinfo: false,
     },
   },
 };
