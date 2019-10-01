@@ -31,13 +31,14 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
     const segmentLineStrings = segments.map(({ geom: { coordinates } }) => coordinates);
     const intersectionPoint = intersection.geom.coordinates;
     const directionCandidates = getDirectionCandidatesFrom(segmentLineStrings, intersectionPoint);
-    const minFeatureCode = ArrayUtils.getMinBy(
-      Array.from(Object.values(directionCandidates)),
+    const minFeatureCodeIndex = ArrayUtils.getMinBy(
+      Array.from(directionCandidates.values()),
       i => segments[i].featureCode,
     );
+    const minFeatureCode = segments[minFeatureCodeIndex].featureCode;
     const majorDirections = [];
     const minorDirections = [];
-    Object.entries(directionCandidates).forEach(([direction, i]) => {
+    directionCandidates.forEach((i, direction) => {
       if (segments[i].featureCode === minFeatureCode) {
         majorDirections.push(direction);
       } else {

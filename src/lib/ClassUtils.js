@@ -2,8 +2,8 @@ import { EnumInstantiationError } from '@/../lib/error/MoveErrors';
 
 const INITIALIZED = '__initialized';
 
-function pushEnumValue(enumClass, value, name) {
-  const enumValue = Object.assign({}, value);
+function pushEnumValue(enumClass, enumValue, name) {
+  /* eslint-disable no-param-reassign */
   enumValue.name = name;
   enumValue.ordinal = enumClass.enumValues.length;
   Object.defineProperty(enumClass, name, {

@@ -19,7 +19,8 @@ class ReportBaseFlow extends ReportBase {
   isTmcRelated() {
     const type = this.type();
     return type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT
-      || type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED;
+      || type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED
+      || type === ReportType.INTERSECTION_WARRANT_SUMMARY;
   }
 
   /**

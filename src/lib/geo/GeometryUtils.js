@@ -123,21 +123,21 @@ function getLineStringAngleFrom(lineString, point) {
  * @memberof GeometryUtils
  * @param {Array<GeoJsonLineString>} lineStrings
  * @param {GeoJsonPoint} point
- * @returns {Object<CardinalDirection, number>} mapping from `CardinalDirection` values
+ * @returns {Map<CardinalDirection, number>} mapping from `CardinalDirection` values
  * to indices into `lineStrings` representing best directional candidates (see above)
  */
 function getDirectionCandidatesFrom(lineStrings, point) {
   const angles = lineStrings
-    .map(([lineString, i]) => [getLineStringAngleFrom(lineString, point), i])
+    .map((lineString, i) => [getLineStringAngleFrom(lineString, point), i])
     .filter(([angle]) => angle !== null);
-  const bestCandidates = {};
+  const bestCandidates = new Map();
   CardinalDirection.enumValues.forEach((enumValue) => {
     const angleDifferences = angles
       .map(([angle]) => Math.abs(getAngleDifference(angle, enumValue.angle)));
     const bestAngleIndex = ArrayUtils.getMinIndexBy(angleDifferences, identity);
     const bestCandidateIndex = angles[bestAngleIndex][1];
     if (angleDifferences[bestCandidateIndex] <= 45) {
-      bestCandidates[enumValue] = bestCandidateIndex;
+      bestCandidates.set(enumValue, bestCandidateIndex);
     }
   });
   return bestCandidates;
