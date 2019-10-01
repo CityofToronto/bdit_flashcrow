@@ -112,4 +112,16 @@ class ReportBaseFlow extends ReportBase {
   }
 }
 
+// TODO: what if we have smaller / larger buckets?
+
+/**
+ * @type {number}
+ */
+ReportBaseFlow.ROWS_PER_HOUR = 4;
+
+/**
+ * @type {number}
+ */
+ReportBaseFlow.MINUTES_PER_ROW = 15;
+
 export default ReportBaseFlow;

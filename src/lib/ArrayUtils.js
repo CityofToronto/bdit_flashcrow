@@ -82,6 +82,48 @@ class ArrayUtils {
   // SEARCHING
 
   /**
+   * Returns the minimum value in `xs` according to `key`.
+   *
+   * @param {Array} xs - array to search
+   * @param {ComparisonKey} key - key to compare by
+   * @returns minimum value in `xs` when compared by `key`, or `null` if `xs`
+   * is empty
+   */
+  static getMinBy(xs, key) {
+    const i = ArrayUtils.getMinIndexBy(xs, key);
+    if (i === null) {
+      return null;
+    }
+    return xs[i];
+  }
+
+  /**
+   * Returns the index of the minimum value in `xs` according to `key`.
+   *
+   * @param {Array} xs - array to search
+   * @param {ComparisonKey} key - key to compare by
+   * @returns index of minimum value in `xs` when compared by `key`, or `null` if `xs`
+   * is empty
+   */
+  static getMinIndexBy(xs, key) {
+    const n = xs.length;
+    if (n === 0) {
+      return null;
+    }
+    let indexMin = 0;
+    let kMin = key(xs[0]);
+    for (let i = 1; i < n; i += 1) {
+      const x = xs[i];
+      const k = key(x);
+      if (k < kMin) {
+        indexMin = i;
+        kMin = k;
+      }
+    }
+    return indexMin;
+  }
+
+  /**
    * Returns the maximum value in `xs` according to `key`.
    *
    * @param {Array} xs - array to search

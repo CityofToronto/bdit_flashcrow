@@ -1,3 +1,25 @@
+import { Enum } from '@/lib/ClassUtils';
+
+class CardinalDirection extends Enum {}
+CardinalDirection.init({
+  EAST: {
+    short: 'E',
+    angle: 0,
+  },
+  NORTH: {
+    short: 'N',
+    angle: 90,
+  },
+  WEST: {
+    short: 'W',
+    angle: 180,
+  },
+  SOUTH: {
+    short: 'S',
+    angle: 270,
+  },
+});
+
 function centrelineKey(centrelineType, centrelineId) {
   return `${centrelineType}/${centrelineId}`;
 }
@@ -172,6 +194,7 @@ const STATUS_META = [
 const TZ_TORONTO = 'America/Toronto';
 
 const Constants = {
+  CardinalDirection,
   centrelineKey,
   CentrelineType,
   CountHours,
@@ -191,6 +214,7 @@ const Constants = {
 };
 export {
   Constants as default,
+  CardinalDirection,
   centrelineKey,
   CentrelineType,
   CountHours,

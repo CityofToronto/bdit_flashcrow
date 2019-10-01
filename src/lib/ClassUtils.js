@@ -1,0 +1,81 @@
+import { EnumInstantiationError } from '@/../lib/error/MoveErrors';
+
+const INITIALIZED = '__initialized';
+
+function pushEnumValue(enumClass, value, name) {
+  const enumValue = Object.assign({}, value);
+  enumValue.name = name;
+  enumValue.ordinal = enumClass.enumValues.length;
+  Object.defineProperty(enumClass, name, {
+    value: enumValue,
+    configurable: false,
+    writable: false,
+    enumerable: true,
+  });
+  enumClass.enumValues.push(enumValue);
+}
+
+/**
+ * Enum superclass.  Inspired by `enumify`, except that we don't use `Symbol`, and we
+ * allow for JSON serialization.
+ *
+ * @see https://github.com/rauschma/enumify
+ * @example
+ * class MyEnum extends Enum {}
+ * MyEnum.init(['FOO', 'BAR']);
+ * console.log(MyEnum.FOO, MyEnum.BAR);
+ */
+class Enum {
+  constructor(instanceProperties) {
+    if ({}.hasOwnProperty.call(this.constructor, INITIALIZED)) {
+      throw new EnumInstantiationError(this.constructor.name);
+    }
+    Object.getOwnPropertyNames(instanceProperties).forEach((key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(instanceProperties, key);
+      Object.defineProperty(this, key, descriptor);
+    });
+  }
+
+  static init(values) {
+    Object.defineProperty(this, 'enumValues', {
+      value: [],
+      configurable: false,
+      writable: false,
+      enumerable: true,
+    });
+    if (Array.isArray(values)) {
+      values.forEach((key) => {
+        pushEnumValue(this, new this({}), key);
+      });
+    } else {
+      Object.entries(values).forEach(([key, value]) => {
+        pushEnumValue(this, new this(value), key);
+      });
+    }
+    Object.freeze(this.enumValues);
+    this[INITIALIZED] = true;
+    return this;
+  }
+
+  static enumValueOf(name) {
+    return this.enumValues.find(x => x.name === name);
+  }
+
+  toString() {
+    return this.name;
+  }
+
+  toJSON() {
+    return this.name;
+  }
+}
+
+/**
+ * @namespace
+ */
+const ClassUtils = { Enum };
+
+export {
+  ClassUtils as default,
+  Enum,
+};

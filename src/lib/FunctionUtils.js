@@ -31,6 +31,17 @@ function debounce(func, wait) {
 }
 
 /**
+ * Identity function: returns its input.
+ *
+ * @memberof FunctionUtils
+ * @param {*} x - value to return
+ * @return {*} `x`
+ */
+function identity(x) {
+  return x;
+}
+
+/**
  * "No operation", i.e. a function that does nothing.
  *
  * @memberof FunctionUtils
@@ -42,11 +53,13 @@ function noop() {}
  */
 const FunctionUtils = {
   debounce,
+  identity,
   noop,
 };
 
 export {
   FunctionUtils as default,
   debounce,
+  identity,
   noop,
 };
