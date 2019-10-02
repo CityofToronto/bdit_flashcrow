@@ -18,6 +18,52 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
     return ReportType.INTERSECTION_WARRANT_SUMMARY;
   }
 
+  /**
+   * @typedef {Object} DirectionMap
+   * @property {Array<CardinalDirection>} majorDirections
+   * @property {Array<CardinalDirection>} minorDirections
+   */
+
+  /**
+   *
+   * @param {Object} intersection - intersection to get directions from
+   * @param {Array} segments - segments incident to `intersection`
+   * @returns {DirectionMap} major and minor directions
+   */
+  static getMajorAndMinorDirections(intersection, segments) {
+    const segmentLineStrings = segments.map(({ geom: { coordinates } }) => coordinates);
+    const intersectionPoint = intersection.geom.coordinates;
+    const directionCandidates = getDirectionCandidatesFrom(segmentLineStrings, intersectionPoint);
+
+    /*
+     * Smaller `featureCode` values correspond to more major roads.
+     *
+     * TODO: what if all `segments` have the same `featureCode`?
+     */
+    const minFeatureCodeIndex = ArrayUtils.getMinBy(
+      Array.from(directionCandidates.values()),
+      i => segments[i].featureCode,
+    );
+    /*
+     * `directionCandidates` values are indices into the `segmentLineStrings` array, which
+     * we can also use on the input array `segments`.
+     */
+    const minFeatureCode = segments[minFeatureCodeIndex].featureCode;
+    const majorDirections = [];
+    const minorDirections = [];
+    directionCandidates.forEach((i, direction) => {
+      if (segments[i].featureCode === minFeatureCode) {
+        majorDirections.push(direction);
+      } else {
+        minorDirections.push(direction);
+      }
+    });
+    return {
+      majorDirections,
+      minorDirections,
+    };
+  }
+
   async fetchRawData(count) {
     const countData = await super.fetchRawData(count);
 
@@ -30,23 +76,10 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
       CentrelineDAO.byIdAndType(centrelineId, centrelineType),
       CentrelineDAO.featuresIncidentTo(centrelineType, centrelineId),
     ]);
-    const segmentLineStrings = segments.map(({ geom: { coordinates } }) => coordinates);
-    const intersectionPoint = intersection.geom.coordinates;
-    const directionCandidates = getDirectionCandidatesFrom(segmentLineStrings, intersectionPoint);
-    const minFeatureCodeIndex = ArrayUtils.getMinBy(
-      Array.from(directionCandidates.values()),
-      i => segments[i].featureCode,
-    );
-    const minFeatureCode = segments[minFeatureCodeIndex].featureCode;
-    const majorDirections = [];
-    const minorDirections = [];
-    directionCandidates.forEach((i, direction) => {
-      if (segments[i].featureCode === minFeatureCode) {
-        majorDirections.push(direction);
-      } else {
-        minorDirections.push(direction);
-      }
-    });
+    const {
+      majorDirections,
+      minorDirections,
+    } = ReportIntersectionWarrantSummary.getMajorAndMinorDirections(intersection, segments);
     return {
       countData,
       majorDirections,
@@ -130,6 +163,10 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
      * (iii) 50% Of The Heavier Left Turn Movement From Major Street When...
      * (a) The Left Turn Volume > 120 vph, and
      * (b) The Left Turn Volume Plus The Opposing Volume > 720 vph
+     *
+     * Note that, with the current thresholds, (iii) (b) actually implies (iii) (a)!  However, we
+     * explicitly check both below, as these thresholds could change.  For readability, it's
+     * important that the logic here closely mirror the relevant policies and procedures.
      */
     let crossingTotalStep3 = 0;
     const majorLeftMovements = majorDirections.map(

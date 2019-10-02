@@ -19,6 +19,7 @@ const RAD_TO_DEG = 180 / Math.PI;
 /**
  * Difference (in degrees) between two bearings.
  *
+ * @memberof GeometryUtils
  * @param {number} bearing0 - first bearing (in degrees)
  * @param {number} bearing1 - second bearing (in degrees)
  * @returns {number} `bearing1 - bearing0`, noralized to a value on the
@@ -36,6 +37,7 @@ function getBearingDifference(bearing0, bearing1) {
 }
 
 /**
+ * @memberof GeometryUtils
  * @see https://www.movable-type.co.uk/scripts/latlong.html
  * @returns {number} great circle bearing between two points, normalized to
  * a value on the interval `[0, 360]`
@@ -83,6 +85,7 @@ function getLineStringMidpoint(coordinates) {
 /**
  * It is expected that `lineString` has `point` as one of its endpoints.
  *
+ * @memberof GeometryUtils
  * @param {GeoJsonLineString} lineString
  * @param {GeoJsonPoint} point
  * @returns {?number} bearing of `lineString` from `point`, or

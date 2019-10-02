@@ -1,5 +1,14 @@
 import { Enum } from '@/lib/ClassUtils';
 
+/**
+ * Four cardinal directions.  Our legacy FLOW system stores Turning Movement Count
+ * data according to these directions.  Additionally, since Toronto's streets operate
+ * on a grid system, it is often useful to know cardinal directions of travel.
+ *
+ * @see GeometryUtils
+ * @param {string} short - short abbreviation for cardinal direction
+ * @param {number} bearing - compass bearing (in degrees)
+ */
 class CardinalDirection extends Enum {}
 CardinalDirection.init({
   NORTH: {
