@@ -2,21 +2,21 @@ import { Enum } from '@/lib/ClassUtils';
 
 class CardinalDirection extends Enum {}
 CardinalDirection.init({
-  EAST: {
-    short: 'E',
-    angle: 0,
-  },
   NORTH: {
     short: 'N',
-    angle: 90,
+    bearing: 0,
   },
-  WEST: {
-    short: 'W',
-    angle: 180,
+  EAST: {
+    short: 'E',
+    bearing: 90,
   },
   SOUTH: {
     short: 'S',
-    angle: 270,
+    bearing: 180,
+  },
+  WEST: {
+    short: 'W',
+    bearing: 270,
   },
 });
 

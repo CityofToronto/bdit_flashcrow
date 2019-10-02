@@ -17,28 +17,30 @@ const DEG_TO_RAD = Math.PI / 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
 /**
- * Difference (in degrees) between two angles.
+ * Difference (in degrees) between two bearings.
  *
- * @param {number} angle0
- * @param {number} angle1
- * @returns {number} difference (in degrees) between two angles; always returns
- * a value on the interval `(-180, 180]`
+ * @param {number} bearing0 - first bearing (in degrees)
+ * @param {number} bearing1 - second bearing (in degrees)
+ * @returns {number} `bearing1 - bearing0`, noralized to a value on the
+ * interval `(-180, 180]`
  */
-function getAngleDifference(angle0, angle1) {
-  let dAngle = angle1 - angle0;
-  while (dAngle <= -180) {
-    dAngle += 360;
+function getBearingDifference(bearing0, bearing1) {
+  let dBearing = bearing1 - bearing0;
+  while (dBearing <= -180) {
+    dBearing += 360;
   }
-  while (dAngle > 180) {
-    dAngle -= 360;
+  while (dBearing > 180) {
+    dBearing -= 360;
   }
-  return dAngle;
+  return dBearing;
 }
 
 /**
  * @see https://www.movable-type.co.uk/scripts/latlong.html
+ * @returns {number} great circle bearing between two points, normalized to
+ * a value on the interval `[0, 360]`
  */
-function getGreatCircleAngle([lng0, lat0], [lng1, lat1]) {
+function getGreatCircleBearing([lng0, lat0], [lng1, lat1]) {
   if (lng0 === lng1 && lat0 === lat1) {
     return 0;
   }
@@ -49,8 +51,11 @@ function getGreatCircleAngle([lng0, lat0], [lng1, lat1]) {
   const dLam = lam1 - lam0;
   const y = Math.sin(dLam) * Math.cos(phi1);
   const x = Math.cos(phi0) * Math.sin(phi1) - Math.sin(phi0) * Math.cos(phi1) * Math.cos(dLam);
-  const angle = Math.atan2(y, x);
-  return angle * RAD_TO_DEG;
+  let bearing = Math.atan2(y, x) * RAD_TO_DEG;
+  if (bearing < 0) {
+    bearing += 360;
+  }
+  return bearing;
 }
 
 /**
@@ -80,10 +85,10 @@ function getLineStringMidpoint(coordinates) {
  *
  * @param {GeoJsonLineString} lineString
  * @param {GeoJsonPoint} point
- * @returns {?number} angle (in degrees) of `lineString` from `point`, or
+ * @returns {?number} bearing of `lineString` from `point`, or
  * `null` if `lineString` does not have `point` as an endpoint
  */
-function getLineStringAngleFrom(lineString, point) {
+function getLineStringBearingFrom(lineString, point) {
   const n = lineString.length;
   if (n < 2) {
     /*
@@ -94,10 +99,10 @@ function getLineStringAngleFrom(lineString, point) {
   const [lng0, lat0] = point;
   const i = lineString.findIndex(([lng, lat]) => lng === lng0 && lat === lat0);
   if (i === 0) {
-    return getGreatCircleAngle(point, lineString[1]);
+    return getGreatCircleBearing(point, lineString[1]);
   }
   if (i === n - 1) {
-    return getGreatCircleAngle(point, lineString[n - 2]);
+    return getGreatCircleBearing(point, lineString[n - 2]);
   }
   return null;
 }
@@ -111,10 +116,10 @@ function getLineStringAngleFrom(lineString, point) {
  * This method will ignore any features in `lineStrings` that do not meet this
  * requirement.
  *
- * To calculate this, we compute the angle at which each `LineString` leaves `point`.
- * If this angle is within 45 degrees of a cardinal direction, we say that it lies in
+ * To calculate this, we compute the bearing at which each `LineString` leaves `point`.
+ * If this bearing is within 45 degrees of a cardinal direction, we say that it lies in
  * that direction.  Of all features that lie in a cardinal direction, the one that
- * has an angle closest to that direction is chosen as the "best directional candidate".
+ * has an bearing closest to that direction is chosen as the "best directional candidate".
  *
  * The return value is a mapping from `CardinalDirection` values to indices into
  * `lineStrings` identifying the "best directional candidates".  Only directions with
@@ -127,16 +132,19 @@ function getLineStringAngleFrom(lineString, point) {
  * to indices into `lineStrings` representing best directional candidates (see above)
  */
 function getDirectionCandidatesFrom(lineStrings, point) {
-  const angles = lineStrings
-    .map((lineString, i) => [getLineStringAngleFrom(lineString, point), i])
-    .filter(([angle]) => angle !== null);
   const bestCandidates = new Map();
+  const bearings = lineStrings
+    .map((lineString, i) => [getLineStringBearingFrom(lineString, point), i])
+    .filter(([bearing]) => bearing !== null);
+  if (bearings.length === 0) {
+    return bestCandidates;
+  }
   CardinalDirection.enumValues.forEach((enumValue) => {
-    const angleDifferences = angles
-      .map(([angle]) => Math.abs(getAngleDifference(angle, enumValue.angle)));
-    const bestAngleIndex = ArrayUtils.getMinIndexBy(angleDifferences, identity);
-    const bestCandidateIndex = angles[bestAngleIndex][1];
-    if (angleDifferences[bestCandidateIndex] <= 45) {
+    const bearingDifferences = bearings
+      .map(([bearing]) => Math.abs(getBearingDifference(bearing, enumValue.bearing)));
+    const bestBearingIndex = ArrayUtils.getMinIndexBy(bearingDifferences, identity);
+    const bestCandidateIndex = bearings[bestBearingIndex][1];
+    if (bearingDifferences[bestBearingIndex] <= 45) {
       bestCandidates.set(enumValue, bestCandidateIndex);
     }
   });
@@ -151,10 +159,10 @@ function getDirectionCandidatesFrom(lineStrings, point) {
  */
 const GeometryUtils = {
   DEG_TO_RAD,
-  getAngleDifference,
+  getBearingDifference,
   getDirectionCandidatesFrom,
-  getGreatCircleAngle,
-  getLineStringAngleFrom,
+  getGreatCircleBearing,
+  getLineStringBearingFrom,
   getLineStringMidpoint,
   RAD_TO_DEG,
 };
@@ -162,10 +170,10 @@ const GeometryUtils = {
 export {
   GeometryUtils as default,
   DEG_TO_RAD,
-  getAngleDifference,
+  getBearingDifference,
   getDirectionCandidatesFrom,
-  getGreatCircleAngle,
-  getLineStringAngleFrom,
+  getGreatCircleBearing,
+  getLineStringBearingFrom,
   getLineStringMidpoint,
   RAD_TO_DEG,
 };
