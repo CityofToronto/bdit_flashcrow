@@ -30,7 +30,7 @@ class ReportBase {
    * `GET /reports`.
    *
    * @abstract
-   * @returns {string} type of reports for this class
+   * @returns {ReportType} type of reports for this class
    */
   type() {
     throw new NotImplementedError();
@@ -104,7 +104,7 @@ class ReportBase {
    * from `format`.
    *
    * @param {string} id - ID to generate report for
-   * @param {string} format - one of the values in {@link ReportFormat}
+   * @param {ReportFormat} format - format to generate report in
    * @returns {stream.Duplex} stream
    * @throws {InvalidReportFormatError} if this report type does not support
    * the given format

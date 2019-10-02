@@ -14,33 +14,33 @@ class ReportFactory {
   /**
    * Retrieve the instance of the given type.
    *
-   * @param {string} type - type of instance to get
+   * @param {ReportType} type - type of instance to get
    * @returns {ReportBase} instance of the given type, if such an instance has
    * been registered
    * @throws {InvalidReportTypeError} if no such instance has been registered
    */
   static getInstance(type) {
-    if (!Object.prototype.hasOwnProperty.call(this.instances, type)) {
+    if (!this.instances.has(type)) {
       throw new InvalidReportTypeError(type);
     }
-    return this.instances[type];
+    return this.instances.get(type);
   }
 
   /**
-   * Registers the given instance, using its `.type()` method to determine what key
-   * to register it under.
+   * Registers the given instance, using `ReportBase#type` to determine what key to
+   * register it under.
    *
    * @param {ReportBase} instance - instance of {@link ReportBase} to be registered
    */
   static registerInstance(instance) {
     const type = instance.type();
-    this.instances[type] = instance;
+    this.instances.set(type, instance);
   }
 }
 /**
- * @type {object<string, ReportBase>}
+ * @type {Map<string, ReportBase>}
  */
-ReportFactory.instances = {};
+ReportFactory.instances = new Map();
 
 ReportFactory.registerInstance(new ReportCountSummary24h());
 ReportFactory.registerInstance(new ReportCountSummary24hDetailed());

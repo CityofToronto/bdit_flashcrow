@@ -1,26 +1,7 @@
 import Joi from '@hapi/joi';
 
-import { ReportFormat } from '@/lib/Constants';
-import { InvalidReportFormatError } from '@/../lib/error/MoveErrors';
+import { ReportFormat, ReportType } from '@/lib/Constants';
 import ReportFactory from './reports/ReportFactory';
-
-/**
- * @param {string} format
- * @returns {string}
- * @throws {InvalidReportFormatError}
- */
-function getReportMimeType(format) {
-  if (format === ReportFormat.CSV) {
-    return 'text/csv';
-  }
-  if (format === ReportFormat.JSON) {
-    return 'application/json';
-  }
-  if (format === ReportFormat.PDF) {
-    return 'application/pdf';
-  }
-  throw new InvalidReportFormatError(format);
-}
 
 /**
  * Reporting-related routes.
@@ -44,22 +25,26 @@ ReportController.push({
   options: {
     validate: {
       query: {
-        type: Joi.string().required(),
+        type: Joi
+          .string()
+          .valid(...ReportType.enumValues.map(({ name }) => name))
+          .required(),
         id: Joi.string().required(),
         format: Joi
           .string()
-          .valid(...Object.values(ReportFormat))
+          .valid(...ReportFormat.enumValues.map(({ name }) => name))
           .required(),
       },
     },
   },
   handler: async (request, h) => {
     const { type, id, format } = request.query;
-    const report = ReportFactory.getInstance(type);
-    const reportStream = await report.generate(id, format);
-    const reportMimeType = getReportMimeType(format);
+    const reportType = ReportType.enumValueOf(type);
+    const reportFormat = ReportFormat.enumValueOf(format);
+    const reportInstance = ReportFactory.getInstance(reportType);
+    const reportStream = await reportInstance.generate(id, reportFormat);
     return h.response(reportStream)
-      .type(reportMimeType);
+      .type(reportType.mimeType);
   },
 });
 

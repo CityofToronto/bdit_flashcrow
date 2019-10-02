@@ -78,23 +78,82 @@ const HttpStatus = {
   },
 };
 
-const ReportFormat = {
-  CSV: 'csv',
-  JSON: 'json',
-  PDF: 'pdf',
-};
+/**
+ * Report formats available from MOVE Reporter.
+ *
+ * @param {string} extension - file extension for type
+ * @param {string} mimeType - MIME type to return results under
+ */
+class ReportFormat extends Enum {}
+ReportFormat.init({
+  CSV: {
+    extension: 'csv',
+    mimeType: 'text/csv',
+  },
+  JSON: {
+    extension: 'json',
+    mimeType: 'application/json',
+  },
+  PDF: {
+    extension: 'pdf',
+    mimeType: 'application/pdf',
+  },
+});
 
-const ReportType = {
-  COUNT_SUMMARY_24H: 'CountSummary24h',
-  COUNT_SUMMARY_24H_DETAILED: 'CountSummary24hDetailed',
-  COUNT_SUMMARY_24H_GRAPHICAL: 'CountSummary24hGraphical',
-  COUNT_SUMMARY_TURNING_MOVEMENT: 'CountSummaryTurningMovement',
-  COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED: 'CountSummaryTurningMovementIllustrated',
-  CROSSWALK_OBSERVANCE_SUMMARY: 'CrosswalkObservanceSummary',
-  INTERSECTION_WARRANT_SUMMARY: 'IntersectionWarrantSummary',
-  PED_DELAY_SUMMARY: 'PedDelaySummary',
-  SPEED_PERCENTILE: 'SpeedPercentile',
-};
+/**
+ * Report types available from MOVE Reporter.
+ *
+ * @param {boolean} tmcRelated - does this report type require TMC data?
+ * @param {string} speedRelated - does this report type require speed data?
+ */
+class ReportType extends Enum {}
+ReportType.init({
+  COUNT_SUMMARY_24H: {
+    tmcRelated: false,
+    speedRelated: false,
+    suffix: 'CountSummary24h',
+  },
+  COUNT_SUMMARY_24H_DETAILED: {
+    tmcRelated: false,
+    speedRelated: false,
+    suffix: 'CountSummary24hDetailed',
+  },
+  COUNT_SUMMARY_24H_GRAPHICAL: {
+    tmcRelated: false,
+    speedRelated: false,
+    suffix: 'CountSummary24hGraphical',
+  },
+  COUNT_SUMMARY_TURNING_MOVEMENT: {
+    tmcRelated: true,
+    speedRelated: false,
+    suffix: 'CountSummaryTurningMovement',
+  },
+  COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED: {
+    tmcRelated: true,
+    speedRelated: false,
+    suffix: 'CountSummaryTurningMovementIllustrated',
+  },
+  CROSSWALK_OBSERVANCE_SUMMARY: {
+    tmcRelated: false,
+    speedRelated: false,
+    suffix: 'CrosswalkObservanceSummary',
+  },
+  INTERSECTION_WARRANT_SUMMARY: {
+    tmcRelated: true,
+    speedRelated: false,
+    suffix: 'IntersectionWarrantSummary',
+  },
+  PED_DELAY_SUMMARY: {
+    tmcRelated: false,
+    speedRelated: false,
+    suffix: 'PedDelaySummary',
+  },
+  SPEED_PERCENTILE: {
+    tmcRelated: false,
+    speedRelated: true,
+    suffix: 'SpeedPercentile',
+  },
+});
 
 const RequestStatus = {
   REQUESTED: {

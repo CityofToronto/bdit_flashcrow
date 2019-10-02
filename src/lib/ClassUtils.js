@@ -1,4 +1,7 @@
-import { EnumInstantiationError } from '@/../lib/error/MoveErrors';
+import {
+  EnumInstantiationError,
+  EnumValueError,
+} from '@/../lib/error/MoveErrors';
 
 const INITIALIZED = '__initialized';
 
@@ -58,7 +61,11 @@ class Enum {
   }
 
   static enumValueOf(name) {
-    return this.enumValues.find(x => x.name === name);
+    const enumValue = this.enumValues.find(x => x.name === name);
+    if (enumValue === undefined) {
+      throw new EnumValueError(name);
+    }
+    return enumValue;
   }
 
   toString() {

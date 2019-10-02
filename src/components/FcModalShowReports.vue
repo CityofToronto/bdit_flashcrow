@@ -51,7 +51,7 @@
               <div class="flex-cross-scroll">
                 <div
                   v-for="{ label, value, disabled } in optionsReports"
-                  :key="value"
+                  :key="value.name"
                   class="py-m">
                   <label class="tds-radio">
                     <input
@@ -172,8 +172,8 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const DOWNLOAD_FORMATS_SUPPORTED = [
-  { label: 'CSV', value: ReportFormat.CSV },
-  { label: 'PDF', value: ReportFormat.PDF },
+  ReportFormat.CSV,
+  ReportFormat.PDF,
 ];
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
@@ -287,9 +287,10 @@ export default {
       if (this.selectedReport === null || this.downloadLoading) {
         return [];
       }
-      return DOWNLOAD_FORMATS_SUPPORTED.map(({ label, value }) => {
-        const disabled = !this.selectedReport.formats.includes(value);
-        return { label, value, disabled };
+      return DOWNLOAD_FORMATS_SUPPORTED.map((reportFormat) => {
+        const disabled = !this.selectedReport.formats.includes(reportFormat);
+        const { name } = reportFormat;
+        return { label: name, value: name, disabled };
       });
     },
     optionsReports() {
@@ -309,7 +310,7 @@ export default {
       }
       const { label, formats = [] } = this.optionsReports
         .find(({ value }) => this.report === value);
-      const reportComponent = `FcReport${this.report}`;
+      const reportComponent = `FcReport${this.report.suffix}`;
       return {
         label,
         value: this.report,
