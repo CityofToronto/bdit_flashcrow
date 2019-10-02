@@ -153,16 +153,19 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
      * Major and minor street approaches.  We first compute total directional approaches,
      * then sum those across `majorDirections` and `minorDirections` respectively.
      */
-    data.N = data.N_R + data.N_T + data.N_L;
-    data.E = data.E_R + data.E_T + data.E_L;
-    data.S = data.S_R + data.S_T + data.S_L;
-    data.W = data.W_R + data.W_T + data.W_L;
+    const approaches = {
+      N: data.N_R + data.N_T + data.N_L,
+      E: data.E_R + data.E_T + data.E_L,
+      S: data.S_R + data.S_T + data.S_L,
+      W: data.W_R + data.W_T + data.W_L,
+    };
+
 
     data.MAJOR_APPROACHES = ArrayStats.sum(
-      majorDirections.map(({ short: majorDir }) => data[majorDir]),
+      majorDirections.map(({ short: majorDir }) => approaches[majorDir]),
     );
     data.MINOR_APPROACHES = ArrayStats.sum(
-      minorDirections.map(({ short: minorDir }) => data[minorDir]),
+      minorDirections.map(({ short: minorDir }) => approaches[minorDir]),
     );
 
     /*
@@ -223,11 +226,22 @@ class ReportIntersectionWarrantSummary extends ReportBaseFlow {
     };
   }
 
-  generateCsvLayout(/* count, transformedData */) {
+  generateCsvLayout(count, { hourlyTotals, timeRanges }) {
+    const dataKeys = Object.keys(hourlyTotals[0]);
+    const dataColumns = dataKeys.map(key => ({ key, header: key }));
     const columns = [
-      // TODO: columns
+      { key: 'start', header: 'Start' },
+      { key: 'end', header: 'End' },
+      ...dataColumns,
     ];
-    return { columns, rows: [] };
+    const rows = hourlyTotals.map((hourTotals, hour) => {
+      const timeRange = timeRanges[hour];
+      return {
+        ...timeRange,
+        ...hourTotals,
+      };
+    });
+    return { columns, rows };
   }
 
   generatePdfLayout(count /* , transformedData */) {
