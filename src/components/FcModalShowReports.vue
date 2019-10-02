@@ -154,6 +154,8 @@ import FcReportCountSummary24hGraphical from
   '@/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
   '@/components/reports/FcReportCountSummaryTurningMovement.vue';
+import FcReportIntersectionWarrantSummary from
+  '@/components/reports/FcReportIntersectionWarrantSummary.vue';
 import FcReportSpeedPercentile from
   '@/components/reports/FcReportSpeedPercentile.vue';
 import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
@@ -200,6 +202,11 @@ const OPTIONS_REPORTS = {
       formats: [ReportFormat.CSV],
     },
     {
+      label: 'Intersection Warrant Summary Report',
+      value: ReportType.INTERSECTION_WARRANT_SUMMARY,
+      formats: [ReportFormat.CSV],
+    },
+    {
       label: 'TMC Illustrated Report',
       value: ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED,
       disabled: true,
@@ -237,6 +244,7 @@ export default {
   components: {
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
+    FcReportIntersectionWarrantSummary,
     FcReportSpeedPercentile,
     TdsActionDropdown,
     TdsLoadingSpinner,

@@ -30,6 +30,7 @@ module.exports = {
     },
     public: 'localhost:8080',
     watchOptions: {
+      ignored: /node_modules/,
       poll: 2000,
     },
   },

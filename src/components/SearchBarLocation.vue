@@ -46,7 +46,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
-import FunctionUtils from '@/lib/FunctionUtils';
+import { debounce } from '@/lib/FunctionUtils';
 
 export default {
   name: 'SearchBarLocation',
@@ -67,7 +67,7 @@ export default {
     ...mapState(['location', 'locationSuggestions', 'locationQuery']),
   },
   watch: {
-    query: FunctionUtils.debounce(function fetchQuerySuggestions() {
+    query: debounce(function fetchQuerySuggestions() {
       if (!this.selectedSuggestion) {
         this.fetchLocationSuggestions(this.query);
       }

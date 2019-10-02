@@ -142,7 +142,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     const n = indices.length;
     const avg = {};
     Object.entries(sum).forEach(([key, value]) => {
-      avg[key] = Math.round(ReportCountSummaryTurningMovement.ROWS_PER_HOUR * value / n);
+      avg[key] = Math.round(ReportBaseFlow.ROWS_PER_HOUR * value / n);
     });
     return avg;
   }
@@ -175,7 +175,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
       start.getMonth(),
       start.getDate(),
       start.getHours(),
-      start.getMinutes() - ReportCountSummaryTurningMovement.MINUTES_PER_ROW,
+      start.getMinutes() - ReportBaseFlow.MINUTES_PER_ROW,
       start.getSeconds(),
     );
     return { start, end };
@@ -236,7 +236,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
       totaledData,
       ReportCountSummaryTurningMovement.INDEX_AM_PEAK_START,
       ReportCountSummaryTurningMovement.INDEX_AM_PEAK_END,
-      ReportCountSummaryTurningMovement.ROWS_PER_HOUR,
+      ReportBaseFlow.ROWS_PER_HOUR,
     );
     const amPeak = ReportCountSummaryTurningMovement.sumSection(
       totaledData,
@@ -247,7 +247,7 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
       totaledData,
       ReportCountSummaryTurningMovement.INDEX_PM_PEAK_START,
       ReportCountSummaryTurningMovement.INDEX_PM_PEAK_END,
-      ReportCountSummaryTurningMovement.ROWS_PER_HOUR,
+      ReportBaseFlow.ROWS_PER_HOUR,
     );
     const pmPeak = ReportCountSummaryTurningMovement.sumSection(
       totaledData,
@@ -355,18 +355,6 @@ class ReportCountSummaryTurningMovement extends ReportBaseFlow {
     };
   }
 }
-
-// TODO: what if we have smaller / larger buckets?
-
-/**
- * @type {number}
- */
-ReportCountSummaryTurningMovement.ROWS_PER_HOUR = 4;
-
-/**
- * @type {number}
- */
-ReportCountSummaryTurningMovement.MINUTES_PER_ROW = 15;
 
 // TODO: configurable AM / PM peaks?
 

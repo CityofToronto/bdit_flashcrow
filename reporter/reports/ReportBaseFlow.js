@@ -19,7 +19,8 @@ class ReportBaseFlow extends ReportBase {
   isTmcRelated() {
     const type = this.type();
     return type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT
-      || type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED;
+      || type === ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED
+      || type === ReportType.INTERSECTION_WARRANT_SUMMARY;
   }
 
   /**
@@ -111,5 +112,17 @@ class ReportBaseFlow extends ReportBase {
     };
   }
 }
+
+// TODO: what if we have smaller / larger buckets?
+
+/**
+ * @type {number}
+ */
+ReportBaseFlow.ROWS_PER_HOUR = 4;
+
+/**
+ * @type {number}
+ */
+ReportBaseFlow.MINUTES_PER_ROW = 15;
 
 export default ReportBaseFlow;

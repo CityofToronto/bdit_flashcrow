@@ -72,6 +72,54 @@ test('ArrayUtils.selectIndices()', () => {
   expect(ys).toStrictEqual(xs);
 });
 
+test('ArrayUtils.getMinBy()', () => {
+  const xs = [
+    { foo: 42, bar: 'c' },
+    { foo: 1729, bar: 'b' },
+    { foo: 1234, bar: 'a' },
+  ];
+  let xMin;
+
+  xMin = ArrayUtils.getMinBy([], x => x.foo);
+  expect(xMin).toBeNull();
+
+  xMin = ArrayUtils.getMinBy([xs[0]], x => x.foo);
+  expect(xMin).toBe(xs[0]);
+
+  xMin = ArrayUtils.getMinBy(xs, x => x.foo);
+  expect(xMin).toBe(xs[0]);
+
+  xMin = ArrayUtils.getMinBy(xs, x => x.bar);
+  expect(xMin).toBe(xs[2]);
+
+  xMin = ArrayUtils.getMinBy(xs, x => -Math.abs(x.foo - 1111));
+  expect(xMin).toBe(xs[0]);
+});
+
+test('ArrayUtils.getMinIndexBy()', () => {
+  const xs = [
+    { foo: 42, bar: 'c' },
+    { foo: 1729, bar: 'b' },
+    { foo: 1234, bar: 'a' },
+  ];
+  let indexMin;
+
+  indexMin = ArrayUtils.getMinIndexBy([], x => x.foo);
+  expect(indexMin).toBeNull();
+
+  indexMin = ArrayUtils.getMinIndexBy([xs[0]], x => x.foo);
+  expect(indexMin).toBe(0);
+
+  indexMin = ArrayUtils.getMinIndexBy(xs, x => x.foo);
+  expect(indexMin).toBe(0);
+
+  indexMin = ArrayUtils.getMinIndexBy(xs, x => x.bar);
+  expect(indexMin).toBe(2);
+
+  indexMin = ArrayUtils.getMinIndexBy(xs, x => -Math.abs(x.foo - 1111));
+  expect(indexMin).toBe(0);
+});
+
 test('ArrayUtils.getMaxBy()', () => {
   const xs = [
     { foo: 42, bar: 'c' },

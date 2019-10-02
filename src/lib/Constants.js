@@ -1,3 +1,34 @@
+import { Enum } from '@/lib/ClassUtils';
+
+/**
+ * Four cardinal directions.  Our legacy FLOW system stores Turning Movement Count
+ * data according to these directions.  Additionally, since Toronto's streets operate
+ * on a grid system, it is often useful to know cardinal directions of travel.
+ *
+ * @see GeometryUtils
+ * @param {string} short - short abbreviation for cardinal direction
+ * @param {number} bearing - compass bearing (in degrees)
+ */
+class CardinalDirection extends Enum {}
+CardinalDirection.init({
+  NORTH: {
+    short: 'N',
+    bearing: 0,
+  },
+  EAST: {
+    short: 'E',
+    bearing: 90,
+  },
+  SOUTH: {
+    short: 'S',
+    bearing: 180,
+  },
+  WEST: {
+    short: 'W',
+    bearing: 270,
+  },
+});
+
 function centrelineKey(centrelineType, centrelineId) {
   return `${centrelineType}/${centrelineId}`;
 }
@@ -172,6 +203,7 @@ const STATUS_META = [
 const TZ_TORONTO = 'America/Toronto';
 
 const Constants = {
+  CardinalDirection,
   centrelineKey,
   CentrelineType,
   CountHours,
@@ -191,6 +223,7 @@ const Constants = {
 };
 export {
   Constants as default,
+  CardinalDirection,
   centrelineKey,
   CentrelineType,
   CountHours,
