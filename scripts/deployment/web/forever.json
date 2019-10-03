@@ -5,7 +5,7 @@
     "watch": false,
     "command": "node -r esm -r module-alias/register",
     "script": "server.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/home/ec2-user/flashcrow/web",
     "pidFile": "/home/ec2-user/log/flashcrow/move-backend-forever.pid",
     "logFile": "/home/ec2-user/log/flashcrow/move-backend-forever.log",
     "outFile": "/home/ec2-user/log/flashcrow/move-backend.log",

@@ -8,7 +8,7 @@ import db from '@/lib/db/db';
 import LogTag from '@/lib/log/LogTag';
 import FormatGenerator from '@/lib/reports/format/FormatGenerator';
 
-// TODO: DRY configuration with server.js
+// TODO: DRY configuration with web/server.js
 async function failAction(request, h, err) {
   if (config.ENV === 'production') {
     request.log(LogTag.ERROR, `ValidationError: ${err.message}`);

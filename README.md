@@ -51,10 +51,13 @@ Once the bug report has been submitted, you can either [submit a pull request](h
 
 This repository consists of:
 
-- [`src`](src/README.md): the Flashcrow web frontend, written as an SPA (Single-Page Application) using [Vue.js](https://vuejs.org/);
-- `server.js`: the Flashcrow web application server, which provides a REST API layer to access data from PostgreSQL and City of Toronto geospatial REST services;
-  - `lib`: libraries used by the web application server;
-- [`scripts`](scripts/README.md): development, deployment, and automation scripts.
+- [`lib`](lib/README.md): libraries used throughout MOVE;
+- [`reporter`](reporter/README.md): MOVE Reporter, which provides a RESTful API to fetch data-driven reports in various formats;
+- [`web`](web/README.md): the MOVE web application;
+  - `web/main.js`: entry point to the MOVE web frontend, written as an SPA (Single-Page Application) using [Vue.js](https://vuejs.org/);
+  - `web/server.js`: the MOVE web backend, which provides a REST API layer to access data from PostgreSQL and City of Toronto geospatial REST services;
+- [`scripts`](scripts/README.md): development, deployment, and automation scripts;
+- [`tests`](tests/README.md): tests.
 
 ---
 
@@ -66,10 +69,10 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### MOVE Web Backend
 
-- `backend`: runs the REST API server at `server.js` on port 8081;
-- `backend:inspect`: runs `server.js`, but also opens debugging on port 9281;
+- `backend`: runs the REST API server at `web/server.js` on port 8081;
+- `backend:inspect`: runs `web/server.js`, but also opens debugging on port 9281;
 - `backend:inspect-brk`: like `backend:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
-- `backend:test-api`: runs `server.js` in headless testing mode on port 8080, for use during REST API tests;
+- `backend:test-api`: runs `web/server.js` in headless testing mode on port 8080, for use during REST API tests;
 
 ### Continuous Integration (CI)
 

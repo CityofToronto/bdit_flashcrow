@@ -168,23 +168,15 @@ Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit_flashcrow.c
 
 ## Run!
 
-To run Flashcrow, you need to start two services: `webpack-dev-server` to serve static files, `server.js` for the REST API.  With the MOVE workspace open in Visual Studio Code, you can run each from a separate terminal.
+To run Flashcrow, you need to start three services:
 
-From the first terminal:
+- `npm run frontend` to serve static files;
+- `npm run backend` for the web application REST API;
+- `npm run reporter` for MOVE Reporter.
 
-```bash
-# runs webpack-dev-server
-npm run frontend
-```
+With the MOVE workspace open in Visual Studio Code, you can run each from a separate terminal.
 
-From the second terminal:
-
-```bash
-# runs server.js
-npm run backend
-```
-
-Once both are running, open [https://localhost:8080](https://localhost:8080) in your browser.
+Once all three are running, open [https://localhost:8080](https://localhost:8080) in your browser.
 
 ## Celebrate!
 
