@@ -1,0 +1,96 @@
+<template>
+  <main class="layout-request-study flex-fill flex-container-column">
+    <TdsTopBar class="nav-links text-size-l">
+      <template v-slot:left>
+        <router-link
+          :to="linkBackToData">
+          <i class="fa fa-chevron-left"></i>
+          <span> Back To Data</span>
+        </router-link>
+      </template>
+      <template v-slot:right>
+        <router-link
+          :to="{ name: 'home' }">
+          <span>Cancel </span>
+          <i class="fa fa-times"></i>
+        </router-link>
+      </template>
+    </TdsTopBar>
+    <div class="px-xl flex-fill flex-container-column">
+      <hr />
+      <FcBreadcrumbsRequestStudy :current-step-completed="false" />
+      <hr />
+      <router-view></router-view>
+    </div>
+    <div class="action-bottom flex-container-row shadow-3">
+      <router-view class="flex-fill" name="actionBottom"></router-view>
+    </div>
+  </main>
+</template>
+
+<script>
+import { mapMutations, mapState } from 'vuex';
+
+import FcBreadcrumbsRequestStudy from '@/web/components/FcBreadcrumbsRequestStudy.vue';
+import TdsTopBar from '@/web/components/tds/TdsTopBar.vue';
+
+export default {
+  name: 'LayoutRequestStudy',
+  components: {
+    FcBreadcrumbsRequestStudy,
+    TdsTopBar,
+  },
+  computed: {
+    linkBackToData() {
+      const { centrelineId, centrelineType } = this.location;
+      return {
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      };
+    },
+    ...mapState(['location']),
+  },
+  beforeRouteLeave(to, from, next) {
+    if (from.name === 'requestStudyConfirm' && to.name === 'viewData') {
+      /*
+       * In this case, we don't want to gate navigation - otherwise, the "Cancel Request?"
+       * confirm dialog is set, only to be immediately replaced by the "Confirmation: Request #"
+       * modal.
+       */
+      next();
+    } else {
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title: 'Cancel Request?',
+          prompt: 'If you cancel your request now, your selection will be lost.',
+          textCancel: 'No, continue',
+          textOk: 'Yes, cancel',
+          action: next,
+          actionCancel: () => {
+            next(false);
+          },
+        },
+      });
+    }
+  },
+  methods: {
+    ...mapMutations(['setModal']),
+  },
+};
+</script>
+
+<style lang="postcss">
+.layout-request-study {
+  & > .nav-links {
+    padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
+    text-transform: uppercase;
+    & > a {
+      text-decoration: none;
+    }
+  }
+  & > .action-bottom {
+    padding: var(--space-m) var(--space-xl);
+  }
+}
+</style>

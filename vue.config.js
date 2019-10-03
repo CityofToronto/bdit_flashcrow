@@ -37,6 +37,7 @@ module.exports = {
   // see https://medium.com/@kenneth_chau/speeding-up-webpack-typescript-incremental-builds-by-7x-3912ba4c1d15
   // see https://cli.vuejs.org/guide/webpack.html#simple-configuration
   configureWebpack: {
+    entry: './web/main.js',
     optimization: {
       removeAvailableModules: false,
       removeEmptyChunks: false,
