@@ -2,11 +2,11 @@ import Boom from '@hapi/boom';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
 
-import ReportController from './ReportController';
-import FormatGenerator from './reports/FormatGenerator';
 import config from '@/../lib/config/MoveConfig';
+import ReportController from '@/../lib/controller/ReportController';
 import db from '@/../lib/db/db';
 import LogTag from '@/../lib/log/LogTag';
+import FormatGenerator from '@/../lib/reports/format/FormatGenerator';
 
 // TODO: DRY configuration with server.js
 async function failAction(request, h, err) {
