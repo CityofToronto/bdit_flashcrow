@@ -8,13 +8,8 @@ The `src` folder contains the MOVE Web Application Frontend, written as an SPA (
 - `router.js`: frontend application routes, using [Vue Router](https://router.vuejs.org/);
 - `src/views`: top-level "view components" that implement the application routes;
 - `src/components`: components used by those top-level views;
-  - `src/components/tds`: "Toronto Design System" components, designed for general web application use;
-- `src/lib`: utility libraries used in the frontend;
-  - `src/lib/geo`: geospatial utilities;
-  - `src/lib/i18n`: short for "internationalization", currently used to store application-specific messages;
-  - `src/lib/math`: used for computations in some reports;
-  - `src/lib/time`: time-related utilities, mostly for human-readable formatting of dates and times;
-  - `src/lib/validation`: [Vuelidate](https://vuelidate.netlify.com/) schemas for use in frontend components.
+  - `src/components/reports`: Report components, used to render JSON report data from MOVE Reporter.
+  - `src/components/tds`: "Toronto Design System" components, designed for general web application use.
 
 ## Utility Libraries
 

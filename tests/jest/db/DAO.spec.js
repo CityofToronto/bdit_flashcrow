@@ -1,12 +1,15 @@
 import uuid from 'uuid/v4';
 
-import CategoryDAO from '@/../lib/db/CategoryDAO';
-import CentrelineDAO from '@/../lib/db/CentrelineDAO';
-import CountDAO from '@/../lib/db/CountDAO';
-import StudyRequestReasonDAO from '@/../lib/db/StudyRequestReasonDAO';
-import StudyRequestStatusDAO from '@/../lib/db/StudyRequestStatusDAO';
-import UserDAO from '@/../lib/db/UserDAO';
-import DAOTestUtils from '@/../lib/test/DAOTestUtils';
+import CategoryDAO from '@/lib/db/CategoryDAO';
+import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import CountDAO from '@/lib/db/CountDAO';
+import StudyRequestReasonDAO from '@/lib/db/StudyRequestReasonDAO';
+import StudyRequestStatusDAO from '@/lib/db/StudyRequestStatusDAO';
+import UserDAO from '@/lib/db/UserDAO';
+import {
+  InvalidCentrelineTypeError,
+} from '@/lib/error/MoveErrors';
+import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import {
   centrelineKey,
   CentrelineType,
@@ -44,8 +47,7 @@ test('CentrelineDAO.byIdAndType()', async () => {
   expect(result.centrelineType).toEqual(CentrelineType.SEGMENT);
 
   // invalid
-  result = await CentrelineDAO.byIdAndType(-1, -1);
-  expect(result).toBeNull();
+  expect(CentrelineDAO.byIdAndType(-1, -1)).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
 });
 
 function expectIdsAndTypesResult(results, { centrelineId, centrelineType }) {
@@ -70,12 +72,11 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   let results = await CentrelineDAO.byIdsAndTypes(query);
   expectIdsAndTypesResults(results, query);
 
-  // only invalid
+  // invalid
   query = [
     { centrelineId: -1, centrelineType: -1 },
   ];
-  results = await CentrelineDAO.byIdsAndTypes(query);
-  expectIdsAndTypesResults(results, []);
+  expect(CentrelineDAO.byIdsAndTypes(query)).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
 
   // single valid intersection
   query = [
@@ -98,14 +99,6 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   ];
   results = await CentrelineDAO.byIdsAndTypes(query);
   expectIdsAndTypesResults(results, [query[0]]);
-
-  // single value + invalid
-  query = [
-    { centrelineId: -1, centrelineType: -1 },
-    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
-  ];
-  results = await CentrelineDAO.byIdsAndTypes(query);
-  expectIdsAndTypesResults(results, [query[1]]);
 
   // intersection + segment
   query = [

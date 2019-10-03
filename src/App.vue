@@ -71,19 +71,19 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
-import '@/components/tds/tds.postcss';
+import '@/src/components/tds/tds.postcss';
 
-import FcDashboardBrand from '@/components/FcDashboardBrand.vue';
-import FcDashboardNav from '@/components/FcDashboardNav.vue';
-import FcDashboardNavItem from '@/components/FcDashboardNavItem.vue';
-import FcModalShowReports from '@/components/FcModalShowReports.vue';
-import FcModalRequestStudyConfirmation from '@/components/FcModalRequestStudyConfirmation.vue';
-import FcToast from '@/components/FcToast.vue';
-import ModalComingSoon from '@/components/ModalComingSoon.vue';
-import SearchBarLocation from '@/components/SearchBarLocation.vue';
-import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
-import TdsConfirmDialog from '@/components/tds/TdsConfirmDialog.vue';
-import TdsTopBar from '@/components/tds/TdsTopBar.vue';
+import FcDashboardBrand from '@/src/components/FcDashboardBrand.vue';
+import FcDashboardNav from '@/src/components/FcDashboardNav.vue';
+import FcDashboardNavItem from '@/src/components/FcDashboardNavItem.vue';
+import FcModalShowReports from '@/src/components/FcModalShowReports.vue';
+import FcModalRequestStudyConfirmation from '@/src/components/FcModalRequestStudyConfirmation.vue';
+import FcToast from '@/src/components/FcToast.vue';
+import ModalComingSoon from '@/src/components/ModalComingSoon.vue';
+import SearchBarLocation from '@/src/components/SearchBarLocation.vue';
+import TdsActionDropdown from '@/src/components/tds/TdsActionDropdown.vue';
+import TdsConfirmDialog from '@/src/components/tds/TdsConfirmDialog.vue';
+import TdsTopBar from '@/src/components/tds/TdsTopBar.vue';
 
 const SEARCH_BAR_ROUTES = [
   'viewData',
@@ -200,16 +200,19 @@ export default {
 }
 
 /* TRANSITIONS */
-.fc-open-down-enter-active, .fc-open-down-leave-active {
+.fc-open-down-enter-active,
+.fc-open-down-leave-active {
   transition: var(--transition-medium);
 }
 
-.fc-open-down-enter-to, .fc-open-down-leave {
+.fc-open-down-enter-to,
+.fc-open-down-leave {
   max-height: calc(var(--space-xl) + var(--space-l));
   overflow: hidden;
 }
 
-.fc-open-down-enter, .fc-open-down-leave-to {
+.fc-open-down-enter,
+.fc-open-down-leave-to {
   max-height: 0;
   overflow: hidden;
   padding: 0;

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
+import TdsChecklistDropdown from '@/src/components/tds/TdsChecklistDropdown.vue';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {

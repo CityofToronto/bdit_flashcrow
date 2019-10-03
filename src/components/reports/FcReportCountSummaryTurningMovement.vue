@@ -97,7 +97,7 @@
 import { mapState } from 'vuex';
 
 import FcReportCountSummaryTurningMovementSection from
-  '@/components/reports/FcReportCountSummaryTurningMovementSection.vue';
+  '@/src/components/reports/FcReportCountSummaryTurningMovementSection.vue';
 
 export default {
   name: 'FcReportCountSummaryTurningMovement',

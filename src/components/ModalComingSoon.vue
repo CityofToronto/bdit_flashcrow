@@ -17,14 +17,10 @@
 </template>
 
 <script>
-import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import TdsMixinModal from '@/src/components/tds/TdsMixinModal';
 
 export default {
   name: 'ModalComingSoon',
   mixins: [TdsMixinModal],
 };
 </script>
-
-<style lang="postcss">
-
-</style>

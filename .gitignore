@@ -6,9 +6,6 @@ node_modules
 # testing output
 /tests/coverage/
 
-# private configuration
-lib/config.js
-
 # local env files
 .env.local
 .env.*.local

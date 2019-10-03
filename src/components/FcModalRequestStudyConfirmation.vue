@@ -29,7 +29,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
-import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import TdsMixinModal from '@/src/components/tds/TdsMixinModal';
 
 export default {
   name: 'FcModalRequestStudyConfirmation',
@@ -56,7 +56,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-
-</style>

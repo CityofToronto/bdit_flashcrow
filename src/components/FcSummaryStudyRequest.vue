@@ -77,7 +77,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 
 export default {
   name: 'FcSummaryStudyRequest',
@@ -134,9 +134,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-summary-study-request {
-
-}
-</style>

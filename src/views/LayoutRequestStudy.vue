@@ -31,8 +31,8 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import FcBreadcrumbsRequestStudy from '@/components/FcBreadcrumbsRequestStudy.vue';
-import TdsTopBar from '@/components/tds/TdsTopBar.vue';
+import FcBreadcrumbsRequestStudy from '@/src/components/FcBreadcrumbsRequestStudy.vue';
+import TdsTopBar from '@/src/components/tds/TdsTopBar.vue';
 
 export default {
   name: 'LayoutRequestStudy',

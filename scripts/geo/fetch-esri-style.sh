@@ -35,7 +35,7 @@ parse_args "$@"
 
 # paths to important folders / files
 DIR_ROOT=$(realpath "$(dirname "$0")"/../..)
-DIR_LIB_GEO="$DIR_ROOT/src/lib/geo"
+DIR_LIB_GEO="$DIR_ROOT/lib/geo"
 STYLE_FILE="$DIR_LIB_GEO/root.json"
 METADATA_FILE="$DIR_LIB_GEO/metadata.json"
 STYLE_URL="http://www.arcgis.com/sharing/rest/content/items/$STYLE_ID/resources/styles/root.json"

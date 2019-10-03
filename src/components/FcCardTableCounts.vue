@@ -149,8 +149,8 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTable from '@/components/FcCardTable.vue';
-import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
+import FcCardTable from '@/src/components/FcCardTable.vue';
+import TdsActionDropdown from '@/src/components/tds/TdsActionDropdown.vue';
 import {
   SortDirection,
   SortKeys,

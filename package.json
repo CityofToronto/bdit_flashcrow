@@ -13,7 +13,7 @@
     "ci:npm-audit": "npm audit",
     "ci:npm-outdated": "npm outdated || true",
     "ci:test-unit": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"unit/**\" jest",
-    "docs:js": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch server.js src/** lib/**",
+    "docs:js": "documentation serve --babel babel.config.js --favicon public/favicon.ico --port 9080 --sort-order alpha --watch server.js lib/**",
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
     "pre-commit:lint-staged": "lint-staged",
@@ -81,6 +81,8 @@
     "babel-jest": "^24.9.0",
     "documentation": "^12.1.2",
     "eslint": "^5.16.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-vue": "^5.1.0",
     "jest": "^24.9.0",
     "jest-serializer-vue": "^2.0.2",
@@ -97,9 +99,6 @@
     "pre-commit": "npm-run-all pre-commit:*"
   },
   "lint-staged": {
-    "src/lib/**/*.js": [
-      "documentation lint"
-    ],
     "lib/**/*.js": [
       "documentation lint"
     ],
@@ -121,7 +120,7 @@
     ]
   },
   "_moduleAliases": {
-    "@": "src"
+    "@": "."
   },
   "browserslist": [
     "last 1 Firefox version",

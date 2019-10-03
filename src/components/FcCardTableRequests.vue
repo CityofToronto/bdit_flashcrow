@@ -100,8 +100,8 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import FcCardTable from '@/components/FcCardTable.vue';
-import TdsLabel from '@/components/tds/TdsLabel.vue';
+import FcCardTable from '@/src/components/FcCardTable.vue';
+import TdsLabel from '@/src/components/tds/TdsLabel.vue';
 import {
   RequestStatus,
   SortDirection,

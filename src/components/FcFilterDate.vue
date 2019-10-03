@@ -25,8 +25,8 @@
 <script>
 import { mapState } from 'vuex';
 
-import DatePicker from '@/components/DatePicker.vue';
-import TdsButtonDropdown from '@/components/tds/TdsButtonDropdown.vue';
+import DatePicker from '@/src/components/DatePicker.vue';
+import TdsButtonDropdown from '@/src/components/tds/TdsButtonDropdown.vue';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {

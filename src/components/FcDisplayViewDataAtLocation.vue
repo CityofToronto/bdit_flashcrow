@@ -38,7 +38,7 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTableCounts from '@/components/FcCardTableCounts.vue';
+import FcCardTableCounts from '@/src/components/FcCardTableCounts.vue';
 import { COUNT_TYPES, Status } from '@/lib/Constants';
 
 function idIsCount(id) {

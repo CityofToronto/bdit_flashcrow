@@ -33,7 +33,7 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
-import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
+import TdsLoadingSpinner from '@/src/components/tds/TdsLoadingSpinner.vue';
 import { apiFetch } from '@/lib/BackendClient';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -42,7 +42,7 @@ import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import style from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
-import PaneMapPopup from '@/components/PaneMapPopup.vue';
+import PaneMapPopup from '@/src/components/PaneMapPopup.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),

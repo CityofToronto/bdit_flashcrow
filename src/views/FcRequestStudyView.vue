@@ -56,10 +56,10 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 
-import FcSummaryStudy from '@/components/FcSummaryStudy.vue';
-import FcSummaryStudyRequest from '@/components/FcSummaryStudyRequest.vue';
-import TdsLabel from '@/components/tds/TdsLabel.vue';
-import TdsTopBar from '@/components/tds/TdsTopBar.vue';
+import FcSummaryStudy from '@/src/components/FcSummaryStudy.vue';
+import FcSummaryStudyRequest from '@/src/components/FcSummaryStudyRequest.vue';
+import TdsLabel from '@/src/components/tds/TdsLabel.vue';
+import TdsTopBar from '@/src/components/tds/TdsTopBar.vue';
 import { HttpStatus, RequestStatus } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,

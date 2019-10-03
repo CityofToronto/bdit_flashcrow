@@ -1,4 +1,4 @@
-import RestApiTestUtils from '@/../lib/test/RestApiTestUtils';
+import RestApiTestUtils from '@/lib/test/RestApiTestUtils';
 
 beforeAll(RestApiTestUtils.startup, RestApiTestUtils.TIMEOUT);
 afterAll(RestApiTestUtils.shutdown, RestApiTestUtils.TIMEOUT);

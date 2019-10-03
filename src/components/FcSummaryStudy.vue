@@ -60,7 +60,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -121,9 +121,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-summary-study {
-
-}
-</style>

@@ -20,7 +20,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
-import { VARIANT_ICONS } from '@/components/tds/TdsConstants';
+import { VARIANT_ICONS } from '@/src/components/tds/TdsConstants';
 
 export default {
   name: 'FcToast',

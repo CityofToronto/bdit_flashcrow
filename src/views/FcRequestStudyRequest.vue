@@ -30,8 +30,8 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import FcCardTableStudiesRequested from '@/components/FcCardTableStudiesRequested.vue';
-import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
+import FcCardTableStudiesRequested from '@/src/components/FcCardTableStudiesRequested.vue';
+import TdsActionDropdown from '@/src/components/tds/TdsActionDropdown.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
 import { COUNT_TYPES, SortKeys, Status } from '@/lib/Constants';
 
@@ -119,9 +119,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-request-study-request {
-
-}
-</style>

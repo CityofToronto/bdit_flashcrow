@@ -45,5 +45,10 @@ module.exports = {
     output: {
       pathinfo: false,
     },
+    resolve: {
+      alias: {
+        '@': __dirname,
+      },
+    },
   },
 };

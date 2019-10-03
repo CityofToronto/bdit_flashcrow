@@ -151,17 +151,17 @@ import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
-  '@/components/reports/FcReportCountSummary24hGraphical.vue';
+  '@/src/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
-  '@/components/reports/FcReportCountSummaryTurningMovement.vue';
+  '@/src/components/reports/FcReportCountSummaryTurningMovement.vue';
 import FcReportIntersectionWarrantSummary from
-  '@/components/reports/FcReportIntersectionWarrantSummary.vue';
+  '@/src/components/reports/FcReportIntersectionWarrantSummary.vue';
 import FcReportSpeedPercentile from
-  '@/components/reports/FcReportSpeedPercentile.vue';
-import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
-import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
-import TdsMixinModal from '@/components/tds/TdsMixinModal';
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+  '@/src/components/reports/FcReportSpeedPercentile.vue';
+import TdsActionDropdown from '@/src/components/tds/TdsActionDropdown.vue';
+import TdsLoadingSpinner from '@/src/components/tds/TdsLoadingSpinner.vue';
+import TdsMixinModal from '@/src/components/tds/TdsMixinModal';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 import { reporterFetch } from '@/lib/BackendClient';
 import {
   ReportFormat,

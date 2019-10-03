@@ -88,7 +88,7 @@
 import { email, required } from 'vuelidate/lib/validators';
 import { mapState } from 'vuex';
 
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 
 export default {
   name: 'FcLogin',
@@ -125,9 +125,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-login {
-
-}
-</style>
