@@ -169,10 +169,10 @@
 import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import DatePicker from '@/components/DatePicker.vue';
-import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+import DatePicker from '@/src/components/DatePicker.vue';
+import TdsButtonGroup from '@/src/components/tds/TdsButtonGroup.vue';
+import TdsChecklistDropdown from '@/src/components/tds/TdsChecklistDropdown.vue';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 
 export default {
   name: 'FcDetailsStudyRequest',

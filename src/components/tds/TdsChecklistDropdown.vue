@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import TdsButtonDropdown from '@/components/tds/TdsButtonDropdown.vue';
+import TdsButtonDropdown from '@/src/components/tds/TdsButtonDropdown.vue';
 
 export default {
   name: 'TdsChecklistDropdown',

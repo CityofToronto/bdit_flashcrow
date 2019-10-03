@@ -1,6 +1,6 @@
 import { mapMutations } from 'vuex';
 
-import TdsModal from '@/components/tds/TdsModal.vue';
+import TdsModal from '@/src/components/tds/TdsModal.vue';
 
 export default {
   components: {

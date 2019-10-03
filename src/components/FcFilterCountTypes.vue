@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
+import TdsChecklistDropdown from '@/src/components/tds/TdsChecklistDropdown.vue';
 import { COUNT_TYPES } from '@/lib/Constants';
 
 export default {

@@ -43,8 +43,8 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTableRequests from '@/components/FcCardTableRequests.vue';
-import FcFilterRequestStatus from '@/components/FcFilterRequestStatus.vue';
+import FcCardTableRequests from '@/src/components/FcCardTableRequests.vue';
+import FcFilterRequestStatus from '@/src/components/FcFilterRequestStatus.vue';
 
 export default {
   name: 'FcRequestsTrackByStatus',

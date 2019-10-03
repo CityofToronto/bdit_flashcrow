@@ -11,7 +11,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import PaneMap from '@/components/PaneMap.vue';
+import PaneMap from '@/src/components/PaneMap.vue';
 
 export default {
   name: 'LayoutViewData',

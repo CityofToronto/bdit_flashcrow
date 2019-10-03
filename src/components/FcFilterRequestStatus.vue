@@ -23,7 +23,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import TdsChecklistDropdown from '@/components/tds/TdsChecklistDropdown.vue';
+import TdsChecklistDropdown from '@/src/components/tds/TdsChecklistDropdown.vue';
 import { RequestStatus } from '@/lib/Constants';
 
 export default {

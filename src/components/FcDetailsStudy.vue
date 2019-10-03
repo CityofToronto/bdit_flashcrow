@@ -125,9 +125,9 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import TdsButtonGroup from '@/components/tds/TdsButtonGroup.vue';
-import TdsPanel from '@/components/tds/TdsPanel.vue';
-import TdsRadioGroup from '@/components/tds/TdsRadioGroup.vue';
+import TdsButtonGroup from '@/src/components/tds/TdsButtonGroup.vue';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
+import TdsRadioGroup from '@/src/components/tds/TdsRadioGroup.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 
 export default {
@@ -263,9 +263,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-details-study {
-
-}
-</style>

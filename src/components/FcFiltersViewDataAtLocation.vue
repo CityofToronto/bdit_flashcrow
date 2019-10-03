@@ -37,11 +37,11 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import FcFilterCountTypes from '@/components/FcFilterCountTypes.vue';
-import FcFilterDate from '@/components/FcFilterDate.vue';
-import FcFilterDayOfWeek from '@/components/FcFilterDayOfWeek.vue';
-import ToggleShowMap from '@/components/ToggleShowMap.vue';
-import TdsTopBar from '@/components/tds/TdsTopBar.vue';
+import FcFilterCountTypes from '@/src/components/FcFilterCountTypes.vue';
+import FcFilterDate from '@/src/components/FcFilterDate.vue';
+import FcFilterDayOfWeek from '@/src/components/FcFilterDayOfWeek.vue';
+import ToggleShowMap from '@/src/components/ToggleShowMap.vue';
+import TdsTopBar from '@/src/components/tds/TdsTopBar.vue';
 
 export default {
   name: 'FcFiltersViewDataAtLocation',
@@ -61,9 +61,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-filters-view-data-at-location {
-
-}
-</style>

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import TdsMixinModal from '@/components/tds/TdsMixinModal';
+import TdsMixinModal from '@/src/components/tds/TdsMixinModal';
 
 const DEFAULT_TEXT_CANCEL = 'Cancel';
 const DEFAULT_TEXT_OK = 'OK';

@@ -1,17 +1,12 @@
 {
 	"extensions": {
 		"recommendations": [
-			"christian-kohler.npm-intellisense",
 			"cpylua.language-postcss",
 			"dbaeumer.vscode-eslint",
-			"eg2.vscode-npm-script",
 			"ms-python.python",
-			"ms-vscode.powershell",
 			"ms-vscode-remote.vscode-remote-extensionpack",
 			"octref.vetur",
-			"shinnn.stylelint",
-			"timonwong.shellcheck",
-			"Tyriar.sort-lines",
+			"shinnn.stylelint"
 		]
 	},
 	"folders": [
@@ -34,7 +29,13 @@
 		],
 		"editor.quickSuggestionsDelay": 250,
 		"files.watcherExclude": {
-			"**/dist/**": true
+			"**/.git/objects/**": true,
+			"**/dist/**": true,
+			"**/node_modules/**": true
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/bower_components": true
 		},
 		"telemetry.enableCrashReporter": false,
 		"telemetry.enableTelemetry": false

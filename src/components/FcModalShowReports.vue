@@ -51,7 +51,7 @@
               <div class="flex-cross-scroll">
                 <div
                   v-for="{ label, value, disabled } in optionsReports"
-                  :key="value"
+                  :key="value.name"
                   class="py-m">
                   <label class="tds-radio">
                     <input
@@ -151,17 +151,17 @@ import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
-  '@/components/reports/FcReportCountSummary24hGraphical.vue';
+  '@/src/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
-  '@/components/reports/FcReportCountSummaryTurningMovement.vue';
+  '@/src/components/reports/FcReportCountSummaryTurningMovement.vue';
 import FcReportIntersectionWarrantSummary from
-  '@/components/reports/FcReportIntersectionWarrantSummary.vue';
+  '@/src/components/reports/FcReportIntersectionWarrantSummary.vue';
 import FcReportSpeedPercentile from
-  '@/components/reports/FcReportSpeedPercentile.vue';
-import TdsActionDropdown from '@/components/tds/TdsActionDropdown.vue';
-import TdsLoadingSpinner from '@/components/tds/TdsLoadingSpinner.vue';
-import TdsMixinModal from '@/components/tds/TdsMixinModal';
-import TdsPanel from '@/components/tds/TdsPanel.vue';
+  '@/src/components/reports/FcReportSpeedPercentile.vue';
+import TdsActionDropdown from '@/src/components/tds/TdsActionDropdown.vue';
+import TdsLoadingSpinner from '@/src/components/tds/TdsLoadingSpinner.vue';
+import TdsMixinModal from '@/src/components/tds/TdsMixinModal';
+import TdsPanel from '@/src/components/tds/TdsPanel.vue';
 import { reporterFetch } from '@/lib/BackendClient';
 import {
   ReportFormat,
@@ -172,8 +172,8 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const DOWNLOAD_FORMATS_SUPPORTED = [
-  { label: 'CSV', value: ReportFormat.CSV },
-  { label: 'PDF', value: ReportFormat.PDF },
+  ReportFormat.CSV,
+  ReportFormat.PDF,
 ];
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
@@ -287,9 +287,10 @@ export default {
       if (this.selectedReport === null || this.downloadLoading) {
         return [];
       }
-      return DOWNLOAD_FORMATS_SUPPORTED.map(({ label, value }) => {
-        const disabled = !this.selectedReport.formats.includes(value);
-        return { label, value, disabled };
+      return DOWNLOAD_FORMATS_SUPPORTED.map((reportFormat) => {
+        const disabled = !this.selectedReport.formats.includes(reportFormat);
+        const { name } = reportFormat;
+        return { label: name, value: name, disabled };
       });
     },
     optionsReports() {
@@ -309,7 +310,7 @@ export default {
       }
       const { label, formats = [] } = this.optionsReports
         .find(({ value }) => this.report === value);
-      const reportComponent = `FcReport${this.report}`;
+      const reportComponent = `FcReport${this.report.suffix}`;
       return {
         label,
         value: this.report,

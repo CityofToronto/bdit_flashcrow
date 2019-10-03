@@ -18,8 +18,8 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcSummaryStudy from '@/components/FcSummaryStudy.vue';
-import FcSummaryStudyRequest from '@/components/FcSummaryStudyRequest.vue';
+import FcSummaryStudy from '@/src/components/FcSummaryStudy.vue';
+import FcSummaryStudyRequest from '@/src/components/FcSummaryStudyRequest.vue';
 
 export default {
   name: 'FcRequestStudyConfirm',
@@ -32,9 +32,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-request-study-confirm {
-
-}
-</style>

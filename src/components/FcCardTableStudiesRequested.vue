@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import FcCardTable from '@/components/FcCardTable.vue';
+import FcCardTable from '@/src/components/FcCardTable.vue';
 import {
   SortDirection,
   SortKeys,
@@ -108,9 +108,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-card-table-studies-requested {
-
-}
-</style>

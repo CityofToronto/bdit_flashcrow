@@ -18,7 +18,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcDetailsStudy from '@/components/FcDetailsStudy.vue';
+import FcDetailsStudy from '@/src/components/FcDetailsStudy.vue';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 
 export default {
@@ -32,9 +32,3 @@ export default {
   validations: ValidationsStudyRequest.validations,
 };
 </script>
-
-<style lang="postcss">
-.fc-request-study-specify {
-
-}
-</style>

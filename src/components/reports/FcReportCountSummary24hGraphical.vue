@@ -54,7 +54,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcChartAtrVolume24h from '@/components/reports/FcChartAtrVolume24h.vue';
+import FcChartAtrVolume24h from '@/src/components/reports/FcChartAtrVolume24h.vue';
 
 export default {
   name: 'FcReportCountSummary24hGraphical',

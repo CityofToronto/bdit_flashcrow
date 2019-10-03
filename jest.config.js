@@ -8,23 +8,16 @@ if (TEST_DIR === undefined) {
 
 module.exports = {
   collectCoverageFrom: [
-    'lib/db/**/*.js',
-    'src/lib/**/*.js',
+    'lib/**/*.js',
     '!**/node_modules/**',
   ],
   coverageDirectory: '<rootDir>/tests/coverage',
   coverageThreshold: {
-    'lib/db': {
-      branches: 60,
-      functions: 60,
-      lines: 60,
-      statements: 60,
-    },
-    'src/lib/': {
-      branches: 60,
-      functions: 60,
-      lines: 60,
-      statements: 60,
+    'lib/': {
+      branches: 35,
+      functions: 35,
+      lines: 35,
+      statements: 35,
     },
   },
   moduleFileExtensions: [
@@ -38,7 +31,7 @@ module.exports = {
     '^.+\\.js$': 'babel-jest',
   },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/$1',
   },
   setupFiles: [
     '<rootDir>/tests/unitSetup.js',
