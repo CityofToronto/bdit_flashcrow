@@ -1,4 +1,9 @@
+/* eslint-disable camelcase */
 import ReportCountSummary24hGraphical from '@/lib/reports/ReportCountSummary24hGraphical';
+
+import countData_4_2156283 from './data/countData_4_2156283.json';
+import transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283 from
+  './data/transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283.json';
 
 function dateWithHour(h) {
   const m = Math.floor(Math.random() * 60);
@@ -34,4 +39,28 @@ test('ReportCountSummary24hGraphical#transformData', () => {
   expected[2] = 19;
   expected[3] = 73;
   expect(volumeByHour).toEqual(expected);
+});
+
+test('ReportCountSummary24hGraphical#transformData [Morningside S of Lawrence: 4/2156283]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const countData = countData_4_2156283.map(({
+    id,
+    countId,
+    t,
+    data,
+  }) => ({
+    id,
+    countId,
+    t: new Date(t.slice(0, -1)),
+    data,
+  }));
+
+  /*
+   * Note that this is a speed / volume ATR count, so we're actually getting more than
+   * one data point per hour.  This allows us to test that the 24-hour graphical report
+   * works in this case.
+   */
+  const transformedData = reportInstance.transformData(countData);
+  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283);
 });
