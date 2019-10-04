@@ -68,6 +68,9 @@ test('ArrayUtils.selectIndices()', () => {
   ys = ArrayUtils.selectIndices(xs, [0, 1, 2]);
   expect(ys).toStrictEqual([xs[0], xs[1], xs[2]]);
 
+  ys = ArrayUtils.selectIndices(xs, [1, 2, 0]);
+  expect(ys).toStrictEqual([xs[1], xs[2], xs[0]]);
+
   ys = ArrayUtils.selectIndices(xs, ArrayUtils.range(0, 10));
   expect(ys).toStrictEqual(xs);
 });

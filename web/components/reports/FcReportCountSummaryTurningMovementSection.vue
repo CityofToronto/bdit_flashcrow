@@ -7,7 +7,7 @@
         </span>
       </th>
       <th>CAR</th>
-      <template v-for="(dir, i) in dirs">
+      <template v-for="dir in dirs">
         <td
           :key="dir + '_CARS_EXITS'"
           class="bl">
@@ -15,8 +15,8 @@
         </td>
         <td
           v-for="turn in turns"
-          :key="dirs[(i + 2) % 4] + '_CARS_' + turn">
-          {{sectionData[dirs[(i + 2) % 4] + '_CARS_' + turn]}}
+          :key="dir + '_CARS_' + turn">
+          {{sectionData[dir + '_CARS_' + turn]}}
         </td>
       </template>
       <th class="bl">N</th>
@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th>TRUCK</th>
-      <template v-for="(dir, i) in dirs">
+      <template v-for="dir in dirs">
         <td
           :key="dir + '_TRUCK_EXITS'"
           class="bl">
@@ -34,8 +34,8 @@
         </td>
         <td
           v-for="turn in turns"
-          :key="dirs[(i + 2) % 4] + '_TRUCK_' + turn">
-          {{sectionData[dirs[(i + 2) % 4] + '_TRUCK_' + turn]}}
+          :key="dir + '_TRUCK_' + turn">
+          {{sectionData[dir + '_TRUCK_' + turn]}}
         </td>
       </template>
       <th class="bl">S</th>
@@ -46,7 +46,7 @@
     <tr>
       <th class="br">{{title}}</th>
       <th>BUS</th>
-      <template v-for="(dir, i) in dirs">
+      <template v-for="dir in dirs">
         <td
           :key="dir + '_BUS_EXITS'"
           class="bl">
@@ -54,8 +54,8 @@
         </td>
         <td
           v-for="turn in turns"
-          :key="dirs[(i + 2) % 4] + '_BUS_' + turn">
-          {{sectionData[dirs[(i + 2) % 4] + '_BUS_' + turn]}}
+          :key="dir + '_BUS_' + turn">
+          {{sectionData[dir + '_BUS_' + turn]}}
         </td>
       </template>
       <th class="bl">E</th>
@@ -82,7 +82,7 @@
     <tr>
       <th class="br"></th>
       <th class="bt">TOTAL</th>
-      <template v-for="(dir, i) in dirs">
+      <template v-for="dir in dirs">
         <td
           :key="dir + '_VEHICLE_EXITS'"
           class="bt bl">
@@ -90,9 +90,9 @@
         </td>
         <td
           v-for="turn in turns"
-          :key="dirs[(i + 2) % 4] + '_VEHICLE_' + turn"
+          :key="dir + '_VEHICLE_' + turn"
           class="bt">
-          {{sectionData[dirs[(i + 2) % 4] + '_VEHICLE_' + turn]}}
+          {{sectionData[dir + '_VEHICLE_' + turn]}}
         </td>
       </template>
       <th class="bt bl"></th>
