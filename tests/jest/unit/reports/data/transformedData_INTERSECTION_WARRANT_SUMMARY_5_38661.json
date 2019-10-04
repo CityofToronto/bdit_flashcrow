@@ -104,7 +104,7 @@
         "S_OTHER": 0,
         "W_OTHER": 0,
         "MAJOR_CROSSING_PEDS": 101,
-        "MAJOR_CROSSING_TOTAL": 430,
+        "MAJOR_CROSSING_TOTAL": 521,
         "MAJOR_APPROACHES": 1836,
         "MINOR_APPROACHES": 721,
         "TOTAL": 2557
@@ -131,7 +131,7 @@
         "S_OTHER": 0,
         "W_OTHER": 0,
         "MAJOR_CROSSING_PEDS": 153,
-        "MAJOR_CROSSING_TOTAL": 546,
+        "MAJOR_CROSSING_TOTAL": 671,
         "MAJOR_APPROACHES": 1922,
         "MINOR_APPROACHES": 870,
         "TOTAL": 2792
@@ -158,7 +158,7 @@
         "S_OTHER": 0,
         "W_OTHER": 0,
         "MAJOR_CROSSING_PEDS": 147,
-        "MAJOR_CROSSING_TOTAL": 547,
+        "MAJOR_CROSSING_TOTAL": 664,
         "MAJOR_APPROACHES": 2001,
         "MINOR_APPROACHES": 877,
         "TOTAL": 2878
@@ -185,7 +185,7 @@
         "S_OTHER": 0,
         "W_OTHER": 0,
         "MAJOR_CROSSING_PEDS": 175,
-        "MAJOR_CROSSING_TOTAL": 577,
+        "MAJOR_CROSSING_TOTAL": 702,
         "MAJOR_APPROACHES": 1859,
         "MINOR_APPROACHES": 857,
         "TOTAL": 2716
@@ -212,7 +212,7 @@
         "S_OTHER": 0,
         "W_OTHER": 0,
         "MAJOR_CROSSING_PEDS": 235,
-        "MAJOR_CROSSING_TOTAL": 561,
+        "MAJOR_CROSSING_TOTAL": 707,
         "MAJOR_APPROACHES": 1821,
         "MINOR_APPROACHES": 770,
         "TOTAL": 2591
@@ -274,7 +274,7 @@
       "S_OTHER": 0,
       "W_OTHER": 0,
       "MAJOR_CROSSING_PEDS": 1002,
-      "MAJOR_CROSSING_TOTAL": 3365,
+      "MAJOR_CROSSING_TOTAL": 3968,
       "MAJOR_APPROACHES": 12592,
       "MINOR_APPROACHES": 5386,
       "TOTAL": 17978
