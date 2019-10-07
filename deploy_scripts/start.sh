@@ -25,6 +25,7 @@ npm install
 npm run build
 
 # copy to web root
+sudo rm -rf /usr/share/nginx/html/flashcrow
 sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 
 # update database
