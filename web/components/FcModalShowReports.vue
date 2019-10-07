@@ -321,23 +321,11 @@ export default {
     ...mapState(['locationQuery']),
   },
   watch: {
+    activeCount() {
+      this.updateReport();
+    },
     report() {
-      if (this.report === null) {
-        return;
-      }
-      this.activeReportData = null;
-      const type = this.report;
-      const countInfoId = this.activeCount.id;
-      const categoryId = this.activeCount.type.id;
-      const id = `${categoryId}/${countInfoId}`;
-      const options = {
-        method: 'GET',
-        data: { type, id, format: ReportFormat.JSON },
-      };
-      reporterFetch('/reports', options)
-        .then(({ data: activeReportData }) => {
-          this.activeReportData = activeReportData;
-        });
+      this.updateReport();
     },
   },
   created() {
@@ -368,6 +356,24 @@ export default {
           const filename = `report.${format}`;
           saveAs(reportData, filename);
           this.downloadLoading = false;
+        });
+    },
+    updateReport() {
+      if (this.report === null) {
+        return;
+      }
+      this.activeReportData = null;
+      const type = this.report;
+      const countInfoId = this.activeCount.id;
+      const categoryId = this.activeCount.type.id;
+      const id = `${categoryId}/${countInfoId}`;
+      const options = {
+        method: 'GET',
+        data: { type, id, format: ReportFormat.JSON },
+      };
+      reporterFetch('/reports', options)
+        .then(({ data: activeReportData }) => {
+          this.activeReportData = activeReportData;
         });
     },
   },
