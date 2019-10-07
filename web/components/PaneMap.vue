@@ -591,8 +591,13 @@ export default {
       // get feature code from the visible layer, if possible
       const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
       if (locationFeature !== null) {
-        const { featureCode } = locationFeature;
-        elementInfo.featureCode = featureCode;
+        if (centrelineType === CentrelineType.SEGMENT) {
+          const { fcode: featureCode } = locationFeature.properties;
+          elementInfo.featureCode = featureCode;
+        } else if (centrelineType === CentrelineType.INTERSECTION) {
+          const { elevatio9: featureCode } = locationFeature.properties;
+          elementInfo.featureCode = featureCode;
+        }
       }
       this.setLocation(elementInfo);
     },

@@ -287,7 +287,7 @@ export default new Vuex.Store({
       if (state.location === null) {
         return countTypesAll;
       }
-      const { centrelineType, featureCode } = state.location;
+      const { centrelineType, featureCode = null } = state.location;
       if (centrelineType === CentrelineType.INTERSECTION) {
         return ['TMC'];
       }
