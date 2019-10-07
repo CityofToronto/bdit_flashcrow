@@ -14,10 +14,10 @@ module.exports = {
   coverageDirectory: '<rootDir>/tests/coverage',
   coverageThreshold: {
     'lib/': {
-      branches: 35,
-      functions: 35,
-      lines: 35,
-      statements: 35,
+      branches: 45,
+      functions: 45,
+      lines: 45,
+      statements: 45,
     },
   },
   moduleFileExtensions: [
