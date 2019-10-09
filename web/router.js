@@ -24,7 +24,7 @@ const router = new Router({
         auth: false,
         title: 'Log in',
       },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLogin.vue'),
+      component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcLogin.vue'),
     },
     {
       path: '/view',
@@ -50,7 +50,7 @@ const router = new Router({
     {
       path: '/requests/study/new',
       meta: { title: 'New Study' },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/LayoutRequestStudy.vue'),
+      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         const { location, studyRequest } = store.state;
         if (location === null) {
@@ -72,32 +72,32 @@ const router = new Router({
         name: 'requestStudy',
         meta: { title: 'New Study: Request' },
         components: {
-          default: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestStudyRequest.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ '@/web/components/FcActionBottomRequestData.vue'),
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
         },
       }, {
         path: 'schedule',
         name: 'requestStudySchedule',
         meta: { title: 'New Study: Schedule' },
         components: {
-          default: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestStudySchedule.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
         },
       }, {
         path: 'specify',
         name: 'requestStudySpecify',
         meta: { title: 'New Study: Specify' },
         components: {
-          default: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestStudySpecify.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
         },
       }, {
         path: 'confirm',
         name: 'requestStudyConfirm',
         meta: { title: 'New Study: Confirm' },
         components: {
-          default: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestStudyConfirm.vue'),
-          actionBottom: () => import(/* webpackChunkName: "home" */ '@/web/components/FcActionBottomConfirm.vue'),
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
         },
       }],
     },

@@ -87,7 +87,7 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### MOVE Web Frontend
 
-- `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes;
+- `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes, and with `webpack-bundle-analyzer` running on port 9081;
 - `frontend:build`: builds a production-ready version of our frontend static resources;
 
 ### `git` pre-commit Hook
