@@ -1,0 +1,176 @@
+{
+  "minVolume": {
+    "a": {
+      "compliance": 98,
+      "hourly": [
+        {
+          "value": 804,
+          "compliance": 80
+        },
+        {
+          "value": 1473,
+          "compliance": 100
+        },
+        {
+          "value": 2167,
+          "compliance": 100
+        },
+        {
+          "value": 2557,
+          "compliance": 100
+        },
+        {
+          "value": 2792,
+          "compliance": 100
+        },
+        {
+          "value": 2878,
+          "compliance": 100
+        },
+        {
+          "value": 2716,
+          "compliance": 100
+        },
+        {
+          "value": 2591,
+          "compliance": 100
+        }
+      ],
+      "threshold": 900
+    },
+    "b": {
+      "compliance": 100,
+      "hourly": [
+        {
+          "value": 264,
+          "compliance": 100
+        },
+        {
+          "value": 450,
+          "compliance": 100
+        },
+        {
+          "value": 577,
+          "compliance": 100
+        },
+        {
+          "value": 721,
+          "compliance": 100
+        },
+        {
+          "value": 870,
+          "compliance": 100
+        },
+        {
+          "value": 877,
+          "compliance": 100
+        },
+        {
+          "value": 857,
+          "compliance": 100
+        },
+        {
+          "value": 770,
+          "compliance": 100
+        }
+      ],
+      "threshold": 170
+    },
+    "compliance": 98
+  },
+  "delayToCross": {
+    "a": {
+      "compliance": 95,
+      "hourly": [
+        {
+          "value": 540,
+          "compliance": 60
+        },
+        {
+          "value": 1023,
+          "compliance": 100
+        },
+        {
+          "value": 1590,
+          "compliance": 100
+        },
+        {
+          "value": 1836,
+          "compliance": 100
+        },
+        {
+          "value": 1922,
+          "compliance": 100
+        },
+        {
+          "value": 2001,
+          "compliance": 100
+        },
+        {
+          "value": 1859,
+          "compliance": 100
+        },
+        {
+          "value": 1821,
+          "compliance": 100
+        }
+      ],
+      "threshold": 900
+    },
+    "b": {
+      "compliance": 100,
+      "hourly": [
+        {
+          "value": 150,
+          "compliance": 100
+        },
+        {
+          "value": 214,
+          "compliance": 100
+        },
+        {
+          "value": 340,
+          "compliance": 100
+        },
+        {
+          "value": 521,
+          "compliance": 100
+        },
+        {
+          "value": 671,
+          "compliance": 100
+        },
+        {
+          "value": 664,
+          "compliance": 100
+        },
+        {
+          "value": 702,
+          "compliance": 100
+        },
+        {
+          "value": 707,
+          "compliance": 100
+        }
+      ],
+      "threshold": 75
+    },
+    "compliance": 95
+  },
+  "collisionHazard": {
+    "a": {
+      "annual": [
+        3,
+        5,
+        10
+      ],
+      "compliance": 100,
+      "threshold": 5,
+      "value": 6
+    },
+    "b": true,
+    "c": true,
+    "compliance": 100
+  },
+  "combination": true
+}
