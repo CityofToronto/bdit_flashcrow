@@ -50,8 +50,8 @@
               class="flex-fill flex-container-row">
               <div class="flex-cross-scroll">
                 <div
-                  v-for="{ label, value, disabled } in optionsReports"
-                  :key="value.name"
+                  v-for="{ label, name, disabled } in optionsReports"
+                  :key="name"
                   class="py-m">
                   <label class="tds-radio">
                     <input
@@ -59,7 +59,7 @@
                       type="radio"
                       :disabled="activeCount.status === Status.REQUEST_IN_PROGRESS || disabled"
                       name="report"
-                      :value="value" />
+                      :value="name" />
                     <span>{{label}}</span>
                     <span v-if="disabled"> (coming soon)</span>
                   </label>
@@ -133,7 +133,7 @@
                   </div>
                   <component
                     v-else
-                    :is="selectedReport.reportComponent"
+                    :is="'FcReport' + selectedReport.suffix"
                     :count="activeCount"
                     :report-data="activeReportData" />
                 </section>
@@ -177,64 +177,29 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 ];
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
-  {
-    label: '24-Hour Graphical Report',
-    value: ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
-    formats: [ReportFormat.CSV, ReportFormat.PDF],
-  },
-  {
-    label: '24-Hour Summary Report',
-    value: ReportType.COUNT_SUMMARY_24H,
-    disabled: true,
-  },
-  {
-    label: '24-Hour Detailed Report',
-    value: ReportType.COUNT_SUMMARY_24H_DETAILED,
-    disabled: true,
-  },
+  ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
+  ReportType.COUNT_SUMMARY_24H,
+  ReportType.COUNT_SUMMARY_24H_DETAILED,
 ];
 const OPTIONS_REPORTS = {
   ATR_VOLUME_BICYCLE: OPTIONS_REPORTS_ATR_VOLUME,
   TMC: [
-    {
-      label: 'TMC Summary Report',
-      value: ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
-      formats: [ReportFormat.CSV],
-    },
-    {
-      label: 'Intersection Summary Report',
-      value: ReportType.INTERSECTION_SUMMARY,
-      formats: [ReportFormat.CSV],
-    },
-    {
-      label: 'TMC Illustrated Report',
-      value: ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED,
-      disabled: true,
-    },
+    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
+    ReportType.INTERSECTION_SUMMARY,
+    ReportType.WARRANT_TRAFFIC_CONTROL_SIGNAL,
+    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED,
   ],
   RESCU: OPTIONS_REPORTS_ATR_VOLUME,
   ATR_VOLUME: OPTIONS_REPORTS_ATR_VOLUME,
   ATR_SPEED_VOLUME: [
-    {
-      label: 'Speed Percentile Report',
-      value: ReportType.SPEED_PERCENTILE,
-      formats: [ReportFormat.CSV],
-    },
+    ReportType.SPEED_PERCENTILE,
     ...OPTIONS_REPORTS_ATR_VOLUME,
   ],
   PXO_OBSERVE: [
-    {
-      label: 'Crosswalk Observation Report',
-      value: ReportType.CROSSWALK_OBSERVANCE_SUMMARY,
-      disabled: true,
-    },
+    ReportType.CROSSWALK_OBSERVANCE_SUMMARY,
   ],
   PED_DELAY: [
-    {
-      label: 'Ped Delay Report',
-      value: ReportType.PED_DELAY_SUMMARY,
-      disabled: true,
-    },
+    ReportType.PED_DELAY_SUMMARY,
   ],
 };
 
@@ -308,15 +273,12 @@ export default {
       if (this.report === null) {
         return null;
       }
-      const { label, formats = [] } = this.optionsReports
-        .find(({ value }) => this.report === value);
-      const reportComponent = `FcReport${this.report.suffix}`;
-      return {
-        label,
-        value: this.report,
-        formats,
-        reportComponent,
-      };
+      const selectedReport = this.optionsReports
+        .find(({ name }) => this.report === name);
+      if (selectedReport === undefined) {
+        return null;
+      }
+      return selectedReport;
     },
     ...mapState(['locationQuery']),
   },
@@ -330,8 +292,8 @@ export default {
   },
   created() {
     if (this.optionsReports.length > 0) {
-      const { value } = this.optionsReports[0];
-      this.report = value;
+      const { name } = this.optionsReports[0];
+      this.report = name;
     }
   },
   methods: {
@@ -359,11 +321,11 @@ export default {
         });
     },
     updateReport() {
-      if (this.report === null) {
+      if (this.selectedReport === null) {
         return;
       }
       this.activeReportData = null;
-      const type = this.report;
+      const { name: type } = this.selectedReport;
       const countInfoId = this.activeCount.id;
       const categoryId = this.activeCount.type.id;
       const id = `${categoryId}/${countInfoId}`;
