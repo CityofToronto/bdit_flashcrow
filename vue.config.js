@@ -1,6 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
+const { ENV, DEV } = require('./lib/config/Env');
+
 const key = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.key'));
 const cert = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.crt'));
 
@@ -8,7 +12,7 @@ const cert = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.crt'));
  * Vue configuration.  Note that this is the only file in CommonJS module style;
  * `vue-cli-service` balks at running ES6 modules.
  */
-module.exports = {
+const vueConfig = {
   publicPath: '/',
   devServer: {
     historyApiFallback: true,
@@ -46,6 +50,14 @@ module.exports = {
     output: {
       pathinfo: false,
     },
+    plugins: [
+      // see https://medium.com/js-dojo/how-to-reduce-your-vue-js-bundle-size-with-webpack-3145bf5019b7
+      new BundleAnalyzerPlugin({
+        analyzerMode: ENV === DEV ? 'server' : 'disabled',
+        analyzerHost: '0.0.0.0',
+        analyzerPort: 9081,
+      }),
+    ],
     resolve: {
       alias: {
         '@': __dirname,
@@ -53,3 +65,5 @@ module.exports = {
     },
   },
 };
+
+module.exports = vueConfig;
