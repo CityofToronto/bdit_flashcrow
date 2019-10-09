@@ -115,7 +115,7 @@
 import { mapState } from 'vuex';
 
 export default {
-  name: 'FcReportIntersectionWarrantSummary',
+  name: 'FcReportIntersectionSummary',
   props: {
     count: Object,
     reportData: Object,

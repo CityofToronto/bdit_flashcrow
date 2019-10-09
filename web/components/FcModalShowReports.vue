@@ -154,8 +154,8 @@ import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
   '@/web/components/reports/FcReportCountSummaryTurningMovement.vue';
-import FcReportIntersectionWarrantSummary from
-  '@/web/components/reports/FcReportIntersectionWarrantSummary.vue';
+import FcReportIntersectionSummary from
+  '@/web/components/reports/FcReportIntersectionSummary.vue';
 import FcReportSpeedPercentile from
   '@/web/components/reports/FcReportSpeedPercentile.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
@@ -202,8 +202,8 @@ const OPTIONS_REPORTS = {
       formats: [ReportFormat.CSV],
     },
     {
-      label: 'Intersection Warrant Summary Report',
-      value: ReportType.INTERSECTION_WARRANT_SUMMARY,
+      label: 'Intersection Summary Report',
+      value: ReportType.INTERSECTION_SUMMARY,
       formats: [ReportFormat.CSV],
     },
     {
@@ -244,7 +244,7 @@ export default {
   components: {
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
-    FcReportIntersectionWarrantSummary,
+    FcReportIntersectionSummary,
     FcReportSpeedPercentile,
     TdsActionDropdown,
     TdsLoadingSpinner,
