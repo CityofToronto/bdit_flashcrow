@@ -1,0 +1,216 @@
+{
+  "minVolume": {
+    "a": {
+      "compliance": {
+        "avg": 98,
+        "full": 700,
+        "partial": 80,
+        "rest": 0,
+        "total": 780
+      },
+      "hourly": [
+        {
+          "value": 804,
+          "compliance": 80
+        },
+        {
+          "value": 1473,
+          "compliance": 100
+        },
+        {
+          "value": 2167,
+          "compliance": 100
+        },
+        {
+          "value": 2557,
+          "compliance": 100
+        },
+        {
+          "value": 2792,
+          "compliance": 100
+        },
+        {
+          "value": 2878,
+          "compliance": 100
+        },
+        {
+          "value": 2716,
+          "compliance": 100
+        },
+        {
+          "value": 2591,
+          "compliance": 100
+        }
+      ],
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
+    },
+    "b": {
+      "compliance": {
+        "avg": 100,
+        "full": 800,
+        "partial": 0,
+        "rest": 0,
+        "total": 800
+      },
+      "hourly": [
+        {
+          "value": 264,
+          "compliance": 100
+        },
+        {
+          "value": 450,
+          "compliance": 100
+        },
+        {
+          "value": 577,
+          "compliance": 100
+        },
+        {
+          "value": 721,
+          "compliance": 100
+        },
+        {
+          "value": 870,
+          "compliance": 100
+        },
+        {
+          "value": 877,
+          "compliance": 100
+        },
+        {
+          "value": 857,
+          "compliance": 100
+        },
+        {
+          "value": 770,
+          "compliance": 100
+        }
+      ],
+      "threshold": {
+        "full": 170,
+        "partial": 136
+      }
+    },
+    "compliance": 98
+  },
+  "delayToCross": {
+    "a": {
+      "compliance": {
+        "avg": 95,
+        "full": 700,
+        "partial": 0,
+        "rest": 60,
+        "total": 760
+      },
+      "hourly": [
+        {
+          "value": 540,
+          "compliance": 60
+        },
+        {
+          "value": 1023,
+          "compliance": 100
+        },
+        {
+          "value": 1590,
+          "compliance": 100
+        },
+        {
+          "value": 1836,
+          "compliance": 100
+        },
+        {
+          "value": 1922,
+          "compliance": 100
+        },
+        {
+          "value": 2001,
+          "compliance": 100
+        },
+        {
+          "value": 1859,
+          "compliance": 100
+        },
+        {
+          "value": 1821,
+          "compliance": 100
+        }
+      ],
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
+    },
+    "b": {
+      "compliance": {
+        "avg": 100,
+        "full": 800,
+        "partial": 0,
+        "rest": 0,
+        "total": 800
+      },
+      "hourly": [
+        {
+          "value": 150,
+          "compliance": 100
+        },
+        {
+          "value": 214,
+          "compliance": 100
+        },
+        {
+          "value": 340,
+          "compliance": 100
+        },
+        {
+          "value": 521,
+          "compliance": 100
+        },
+        {
+          "value": 671,
+          "compliance": 100
+        },
+        {
+          "value": 664,
+          "compliance": 100
+        },
+        {
+          "value": 702,
+          "compliance": 100
+        },
+        {
+          "value": 707,
+          "compliance": 100
+        }
+      ],
+      "threshold": {
+        "full": 75,
+        "partial": 60
+      }
+    },
+    "compliance": 95
+  },
+  "collisionHazard": {
+    "a": {
+      "annual": [
+        3,
+        5,
+        10
+      ],
+      "compliance": 100,
+      "startYear": 2016,
+      "threshold": 5,
+      "value": {
+        "avg": 6,
+        "total": 18
+      }
+    },
+    "b": true,
+    "c": true,
+    "compliance": 100
+  },
+  "combination": false
+}

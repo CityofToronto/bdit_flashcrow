@@ -29,11 +29,6 @@
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
-        <FcDashboardNavItem
-          disabled
-          icon="road"
-          label="Run Warrant"
-          :to="{ name: 'runWarrant' }" />
       </FcDashboardNav>
       <button class="tds-button-primary fc-help">
         <i class="fa fa-question-circle"></i>
