@@ -158,6 +158,8 @@ import FcReportIntersectionSummary from
   '@/web/components/reports/FcReportIntersectionSummary.vue';
 import FcReportSpeedPercentile from
   '@/web/components/reports/FcReportSpeedPercentile.vue';
+import FcReportWarrantTrafficSignalControl from
+  '@/web/components/reports/FcReportWarrantTrafficSignalControl.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
@@ -211,6 +213,7 @@ export default {
     FcReportCountSummaryTurningMovement,
     FcReportIntersectionSummary,
     FcReportSpeedPercentile,
+    FcReportWarrantTrafficSignalControl,
     TdsActionDropdown,
     TdsLoadingSpinner,
     TdsPanel,

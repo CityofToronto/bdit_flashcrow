@@ -1,7 +1,13 @@
 {
   "minVolume": {
     "a": {
-      "compliance": 98,
+      "compliance": {
+        "avg": 98,
+        "full": 700,
+        "partial": 80,
+        "rest": 0,
+        "total": 780
+      },
       "hourly": [
         {
           "value": 804,
@@ -36,10 +42,19 @@
           "compliance": 100
         }
       ],
-      "threshold": 900
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
     },
     "b": {
-      "compliance": 100,
+      "compliance": {
+        "avg": 100,
+        "full": 800,
+        "partial": 0,
+        "rest": 0,
+        "total": 800
+      },
       "hourly": [
         {
           "value": 264,
@@ -74,13 +89,22 @@
           "compliance": 100
         }
       ],
-      "threshold": 170
+      "threshold": {
+        "full": 170,
+        "partial": 136
+      }
     },
     "compliance": 98
   },
   "delayToCross": {
     "a": {
-      "compliance": 95,
+      "compliance": {
+        "avg": 95,
+        "full": 700,
+        "partial": 0,
+        "rest": 60,
+        "total": 760
+      },
       "hourly": [
         {
           "value": 540,
@@ -115,10 +139,19 @@
           "compliance": 100
         }
       ],
-      "threshold": 900
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
     },
     "b": {
-      "compliance": 100,
+      "compliance": {
+        "avg": 100,
+        "full": 800,
+        "partial": 0,
+        "rest": 0,
+        "total": 800
+      },
       "hourly": [
         {
           "value": 150,
@@ -153,7 +186,10 @@
           "compliance": 100
         }
       ],
-      "threshold": 75
+      "threshold": {
+        "full": 75,
+        "partial": 60
+      }
     },
     "compliance": 95
   },
@@ -165,12 +201,16 @@
         10
       ],
       "compliance": 100,
+      "startYear": 2016,
       "threshold": 5,
-      "value": 6
+      "value": {
+        "avg": 6,
+        "total": 18
+      }
     },
     "b": true,
     "c": true,
     "compliance": 100
   },
-  "combination": true
+  "combination": false
 }
