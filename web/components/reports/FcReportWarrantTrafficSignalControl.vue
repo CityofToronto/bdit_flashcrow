@@ -10,6 +10,8 @@
       </div>
     </header>
 
+    <FcReportTable v-bind="warrantSummaryLayout" />
+
     <h2>Warrant Summary</h2>
     <div class="mb-l">
       <table>
@@ -247,12 +249,15 @@
 <script>
 import { mapState } from 'vuex';
 
+import FcReportTable from
+  '@/web/components/reports/FcReportTable.vue';
 import FcReportWarrantTrafficSignalControlSection from
   '@/web/components/reports/FcReportWarrantTrafficSignalControlSection.vue';
 
 export default {
   name: 'FcReportWarrantTrafficSignalControl',
   components: {
+    FcReportTable,
     FcReportWarrantTrafficSignalControlSection,
   },
   props: {
@@ -283,6 +288,204 @@ export default {
         return 'School Hours';
       }
       return 'Other Hours';
+    },
+    warrantSummaryLayout() {
+      /* eslint-disable prefer-destructuring */
+      const reportData = this.reportData;
+      return {
+        title: 'Warrant Summary',
+        columnStyles: [
+          { c: 1, width: '4xl' },
+        ],
+        header: [
+          [
+            { value: 'Warrant', rowspan: 2 },
+            { value: 'Description', rowspan: 2 },
+            { value: 'Minimum Required', rowspan: 2 },
+            { value: 'Compliance', colspan: 2 },
+          ],
+          [
+            { value: 'Section %' },
+            { value: 'Entire %' },
+          ],
+        ],
+        body: [
+          [
+            {
+              value: '1 \u2013 Minimum Vehicular Volume',
+              header: true,
+              rowspan: 2,
+              style: { br: true },
+            },
+            {
+              value: `A. Total vehicular volume
+              entering intersection from
+              all approaches for each of
+              any 8 hours`,
+              header: true,
+            },
+            {
+              value: reportData.minVolume.a.threshold.full,
+            },
+            {
+              value: reportData.minVolume.a.compliance.avg,
+              style: { bl: true },
+            },
+            {
+              value: reportData.minVolume.compliance,
+              rowspan: 2,
+              style: { fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Total vehicular volume
+              entering intersection on
+              minor road(s) for each of
+              the same 8 hours`,
+              header: true,
+            },
+            {
+              value: reportData.minVolume.b.threshold.full,
+            },
+            {
+              value: reportData.minVolume.b.compliance.avg,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '2 \u2013 Delay to Cross Traffic',
+              header: true,
+              rowspan: 2,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `A. Total vehicular volume along
+              major street for each of
+              any 8 hours`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.delayToCross.a.threshold.full,
+              style: { bt: true },
+            },
+            {
+              value: reportData.delayToCross.a.compliance.avg,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.delayToCross.compliance,
+              rowspan: 2,
+              style: { bt: true, fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Combined vehicular pedestrian
+              volumes crossing major road
+              for each of the same 8 hours
+              (critical volume)`,
+              header: true,
+            },
+            {
+              value: reportData.delayToCross.b.threshold.full,
+            },
+            {
+              value: reportData.delayToCross.b.compliance.avg,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '3 \u2013 Collision Hazard',
+              header: true,
+              rowspan: 3,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `A. Number of reported
+              preventable collisions per
+              year averaged over
+              preceding 36 months`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.collisionHazard.a.threshold,
+              style: { bt: true },
+            },
+            {
+              value: reportData.collisionHazard.a.compliance,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.collisionHazard.compliance,
+              rowspan: 3,
+              style: { bt: true, fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Has adequate trial of
+              remedies less restrictive
+              than signalization failed to
+              reduce frequency of collisions?`,
+              header: true,
+            },
+            {
+              value: reportData.collisionHazard.b,
+            },
+            {
+              value: reportData.collisionHazard.b ? 100 : 0,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: `C. Has either of above
+              warrants (#1 or #2) been
+              fulfilled to the extent of 80%
+              at least?`,
+              header: true,
+            },
+            {
+              value: reportData.collisionHazard.c,
+            },
+            {
+              value: reportData.collisionHazard.c ? 100 : 0,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '4 \u2013 Combination',
+              header: true,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `Have both of warrants #1, #2
+              been satisfied to the extent of
+              80% at least for every hour?`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.combination,
+              style: { bt: true },
+            },
+            {
+              value: null,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.combination ? 100 : 0,
+              style: { bt: true, fontSize: 'l' },
+            },
+          ],
+        ],
+      };
     },
     ...mapState(['locationQuery']),
   },
