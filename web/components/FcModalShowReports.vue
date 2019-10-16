@@ -272,6 +272,19 @@ export default {
       return this.optionsReports
         .filter(({ disabled }) => !disabled);
     },
+    reportParameters() {
+      if (this.selectedReport === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL) {
+        // TODO: get actual parameters
+        return {
+          adequateTrial: true,
+          collisionsTotal: 25,
+          preparedBy: 'Evan Savage',
+          preventablesByYear: [3, 5, 10],
+          startYear: 2016,
+        };
+      }
+      return {};
+    },
     selectedReport() {
       if (this.report === null) {
         return null;
@@ -313,7 +326,12 @@ export default {
       const id = `${categoryId}/${countInfoId}`;
       const options = {
         method: 'GET',
-        data: { type, id, format },
+        data: {
+          type,
+          id,
+          format,
+          ...this.reportParameters,
+        },
       };
       this.downloadLoading = true;
       reporterFetch('/reports', options)
@@ -334,7 +352,12 @@ export default {
       const id = `${categoryId}/${countInfoId}`;
       const options = {
         method: 'GET',
-        data: { type, id, format: ReportFormat.JSON },
+        data: {
+          type,
+          id,
+          format: ReportFormat.JSON,
+          ...this.reportParameters,
+        },
       };
       reporterFetch('/reports', options)
         .then(({ data: activeReportData }) => {
