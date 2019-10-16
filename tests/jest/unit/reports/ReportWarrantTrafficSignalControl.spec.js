@@ -26,6 +26,13 @@ test('ReportWarrantTrafficSignalControl#transformData', () => {
     } = generateHourlyMajorAndMinorDirections(hourlyData);
     // TODO: generate segments
     const segments = new Array(4).fill(0);
+    const options = {
+      adequateTrial: true,
+      collisionsTotal: 25,
+      preparedBy: 'Foo Bar',
+      preventablesByYear: [3, 5, 10],
+      startYear: 2016,
+    };
     expect(() => {
       reportInstance.transformData({
         countData,
@@ -34,7 +41,7 @@ test('ReportWarrantTrafficSignalControl#transformData', () => {
         hourlyMinorDirections,
         minFeatureCode,
         segments,
-      });
+      }, options);
     }).not.toThrow();
   }
 });
@@ -63,6 +70,13 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
   const minFeatureCode = FeatureCode.MAJOR_ARTERIAL;
   const segments = new Array(4).fill(0);
 
+  const options = {
+    adequateTrial: true,
+    collisionsTotal: 25,
+    preparedBy: 'Foo Bar',
+    preventablesByYear: [3, 5, 10],
+    startYear: 2016,
+  };
   const transformedData = reportInstance.transformData({
     countData,
     hourlyData,
@@ -70,6 +84,6 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     hourlyMinorDirections,
     minFeatureCode,
     segments,
-  });
+  }, options);
   expect(transformedData).toEqual(transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661);
 });
