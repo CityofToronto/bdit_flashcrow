@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
 import { CardinalDirection } from '@/lib/Constants';
+import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 import ReportIntersectionSummary from '@/lib/reports/ReportIntersectionSummary';
 import {
-  generateMajorAndMinorDirections,
+  generateHourlyMajorAndMinorDirections,
   generateTmc,
 } from '@/lib/test/random/CountDataGenerator';
 
@@ -16,12 +17,17 @@ test('ReportIntersectionSummary#transformData', () => {
   // fuzz test
   for (let i = 0; i < 25; i++) {
     const countData = generateTmc();
-    const { majorDirections, minorDirections } = generateMajorAndMinorDirections();
+    const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
+    const {
+      hourlyMajorDirections,
+      hourlyMinorDirections,
+    } = generateHourlyMajorAndMinorDirections(hourlyData);
     expect(() => {
       reportInstance.transformData({
         countData,
-        majorDirections,
-        minorDirections,
+        hourlyData,
+        hourlyMajorDirections,
+        hourlyMinorDirections,
       });
     }).not.toThrow();
   }
@@ -41,13 +47,19 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     t: new Date(t.slice(0, -1)),
     data,
   }));
-  const majorDirections = [CardinalDirection.EAST, CardinalDirection.WEST];
-  const minorDirections = [CardinalDirection.NORTH, CardinalDirection.SOUTH];
+  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
+  const hourlyMajorDirections = hourlyData.map(
+    () => [CardinalDirection.EAST, CardinalDirection.WEST],
+  );
+  const hourlyMinorDirections = hourlyData.map(
+    () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+  );
 
   const { hourlyTotals, totals } = reportInstance.transformData({
     countData,
-    majorDirections,
-    minorDirections,
+    hourlyData,
+    hourlyMajorDirections,
+    hourlyMinorDirections,
   });
   expect(hourlyTotals).toEqual(
     transformedData_INTERSECTION_SUMMARY_5_38661.data.hourlyTotals,

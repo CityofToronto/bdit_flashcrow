@@ -10,155 +10,7 @@
       </div>
     </header>
 
-    <h2>Warrant Summary</h2>
-    <div class="mb-l">
-      <table>
-        <colgroup>
-          <col>
-          <col class="col-warrant-description">
-          <col span="3">
-        </colgroup>
-        <thead>
-          <tr>
-            <th rowspan="2">Warrant</th>
-            <th rowspan="2">Description</th>
-            <th rowspan="2">Minimum Required</th>
-            <th colspan="2">Compliance</th>
-          </tr>
-          <tr>
-            <th>Section %</th>
-            <th>Entire %</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th class="br" rowspan="2">1 &ndash; Minimum Vehicular Volume</th>
-            <th>
-              A. Total vehicular volume
-              entering intersection from
-              all approaches for each of
-              any 8 hours
-            </th>
-            <td>{{reportData.minVolume.a.threshold.full}}</td>
-            <td class="bl">{{reportData.minVolume.a.compliance.avg}}</td>
-            <td
-              class="font-size-l"
-              rowspan="2">
-              <strong>{{reportData.minVolume.compliance}}</strong>
-            </td>
-          </tr>
-          <tr>
-            <th>
-              B. Total vehicular volume
-              entering intersection on
-              minor road(s) for each of
-              the same 8 hours
-            </th>
-            <td>{{reportData.minVolume.b.threshold.full}}</td>
-            <td class="bl">{{reportData.minVolume.b.compliance.avg}}</td>
-          </tr>
-          <tr>
-            <th class="br bt" rowspan="2">2 &ndash; Delay to Cross Traffic</th>
-            <th class="bt">
-              A. Total vehicular volume along
-              major street for each of
-              any 8 hours
-            </th>
-            <td class="bt">{{reportData.delayToCross.a.threshold.full}}</td>
-            <td class="bl bt">{{reportData.delayToCross.a.compliance.avg}}</td>
-            <td
-              class="bt font-size-l"
-              rowspan="2">
-              <strong>{{reportData.delayToCross.compliance}}</strong>
-            </td>
-          </tr>
-          <tr>
-            <th>
-              B. Combined vehicular pedestrian
-              volumes crossing major road
-              for each of the same 8 hours
-              (critical volume)
-            </th>
-            <td>{{reportData.delayToCross.b.threshold.full}}</td>
-            <td class="bl">{{reportData.delayToCross.b.compliance.avg}}</td>
-          </tr>
-          <tr>
-            <th class="br bt" rowspan="3">3 &ndash; Collision Hazard</th>
-            <th class="bt">
-              A. Number of reported
-              preventable collisions per
-              year averaged over
-              preceding 36 months
-            </th>
-            <td class="bt">{{reportData.collisionHazard.a.threshold}}</td>
-            <td class="bl bt">{{reportData.collisionHazard.a.compliance}}</td>
-            <td
-              class="bt font-size-l"
-              rowspan="3">
-              <strong>{{reportData.collisionHazard.compliance}}</strong>
-            </td>
-          </tr>
-          <tr>
-            <th>
-              B. Has adequate trial of
-              remedies less restrictive
-              than signalization failed to
-              reduce frequency of collisions?
-            </th>
-            <td>
-              <i
-                class="fa font-size-l"
-                :class="{
-                  'fa-check': reportData.collisionHazard.b,
-                  'fa-times': !reportData.collisionHazard.b,
-                }"></i>
-            </td>
-            <td class="bl">
-              {{reportData.collisionHazard.b ? 100 : 0}}
-            </td>
-          </tr>
-          <tr>
-            <th>
-              C. Has either of above
-              warrants (#1 or #2) been
-              fulfilled to the extent of 80%
-              at least?
-            </th>
-            <td>
-              <i
-                class="fa font-size-l"
-                :class="{
-                  'fa-check': reportData.collisionHazard.c,
-                  'fa-times': !reportData.collisionHazard.c,
-                }"></i>
-            </td>
-            <td class="bl">
-              {{reportData.collisionHazard.c ? 100 : 0}}
-            </td>
-          </tr>
-          <tr>
-            <th class="br bt">4 &ndash; Combination</th>
-            <th class="bt">
-              Have both of warrants #1, #2
-              been satisfied to the extent of
-              80% at least for every hour?
-            </th>
-            <td class="bt">
-              <i
-                class="fa font-size-l"
-                :class="{
-                  'fa-check': reportData.combination,
-                  'fa-times': !reportData.combination,
-                }"></i>
-            </td>
-            <th class="bl bt">&nbsp;</th>
-            <td class="bt font-size-l">
-              <strong>{{reportData.combination ? 100 : 0}}</strong>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <FcReportTable v-bind="warrantSummaryLayout" />
 
     <h2>Warrant 1 &ndash; Minimum Vehicular Volume</h2>
     <FcReportWarrantTrafficSignalControlSection
@@ -247,12 +99,15 @@
 <script>
 import { mapState } from 'vuex';
 
+import FcReportTable from
+  '@/web/components/reports/FcReportTable.vue';
 import FcReportWarrantTrafficSignalControlSection from
   '@/web/components/reports/FcReportWarrantTrafficSignalControlSection.vue';
 
 export default {
   name: 'FcReportWarrantTrafficSignalControl',
   components: {
+    FcReportTable,
     FcReportWarrantTrafficSignalControlSection,
   },
   props: {
@@ -283,6 +138,206 @@ export default {
         return 'School Hours';
       }
       return 'Other Hours';
+    },
+    warrantSummaryLayout() {
+      /* eslint-disable prefer-destructuring */
+      const reportData = this.reportData;
+      return {
+        title: 'Warrant Summary',
+        columnStyles: [
+          { c: 1, width: '4xl' },
+        ],
+        header: [
+          [
+            { value: 'Warrant', rowspan: 2 },
+            { value: 'Description', rowspan: 2 },
+            { value: 'Minimum Required', rowspan: 2 },
+            { value: 'Compliance', colspan: 2 },
+          ],
+          [
+            { value: 'Section %' },
+            { value: 'Entire %' },
+          ],
+        ],
+        body: [
+          [
+            {
+              value: '1 \u2013 Minimum Vehicular Volume',
+              header: true,
+              rowspan: 2,
+              style: { br: true },
+            },
+            {
+              value: `A. Total vehicular volume
+              entering intersection from
+              all approaches for each of
+              any 8 hours`,
+              header: true,
+            },
+            {
+              value: reportData.minVolume.a.threshold.full,
+            },
+            {
+              value: reportData.minVolume.a.compliance.avg,
+              style: { bl: true },
+            },
+            {
+              value: reportData.minVolume.compliance,
+              rowspan: 2,
+              style: { bold: true, fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Total vehicular volume
+              entering intersection on
+              minor road(s) for each of
+              the same 8 hours`,
+              header: true,
+            },
+            {
+              value: reportData.minVolume.b.threshold.full,
+            },
+            {
+              value: reportData.minVolume.b.compliance.avg,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '2 \u2013 Delay to Cross Traffic',
+              header: true,
+              rowspan: 2,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `A. Total vehicular volume along
+              major street for each of
+              any 8 hours`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.delayToCross.a.threshold.full,
+              style: { bt: true },
+            },
+            {
+              value: reportData.delayToCross.a.compliance.avg,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.delayToCross.compliance,
+              rowspan: 2,
+              style: { bold: true, bt: true, fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Combined vehicular pedestrian
+              volumes crossing major road
+              for each of the same 8 hours
+              (critical volume)`,
+              header: true,
+            },
+            {
+              value: reportData.delayToCross.b.threshold.full,
+            },
+            {
+              value: reportData.delayToCross.b.compliance.avg,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '3 \u2013 Collision Hazard',
+              header: true,
+              rowspan: 3,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `A. Number of reported
+              preventable collisions per
+              year averaged over
+              preceding 36 months`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.collisionHazard.a.threshold,
+              style: { bt: true },
+            },
+            {
+              value: reportData.collisionHazard.a.compliance,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.collisionHazard.compliance,
+              rowspan: 3,
+              style: { bold: true, bt: true, fontSize: 'l' },
+            },
+          ],
+          [
+            {
+              value: `B. Has adequate trial of
+              remedies less restrictive
+              than signalization failed to
+              reduce frequency of collisions?`,
+              header: true,
+            },
+            {
+              value: reportData.collisionHazard.b,
+              style: { fontSize: 'l' },
+            },
+            {
+              value: reportData.collisionHazard.b ? 100 : 0,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: `C. Has either of above
+              warrants (#1 or #2) been
+              fulfilled to the extent of 80%
+              at least?`,
+              header: true,
+            },
+            {
+              value: reportData.collisionHazard.c,
+              style: { fontSize: 'l' },
+            },
+            {
+              value: reportData.collisionHazard.c ? 100 : 0,
+              style: { bl: true },
+            },
+          ],
+          [
+            {
+              value: '4 \u2013 Combination',
+              header: true,
+              style: { br: true, bt: true },
+            },
+            {
+              value: `Have both of warrants #1, #2
+              been satisfied to the extent of
+              80% at least for every hour?`,
+              header: true,
+              style: { bt: true },
+            },
+            {
+              value: reportData.combination,
+              style: { bt: true, fontSize: 'l' },
+            },
+            {
+              value: null,
+              style: { bl: true, bt: true },
+            },
+            {
+              value: reportData.combination ? 100 : 0,
+              style: { bold: true, bt: true, fontSize: 'l' },
+            },
+          ],
+        ],
+      };
     },
     ...mapState(['locationQuery']),
   },
