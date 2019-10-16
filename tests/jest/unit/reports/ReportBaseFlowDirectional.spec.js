@@ -6,7 +6,7 @@ import {
 } from '@/lib/test/random/CountDataGenerator';
 import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 
-test('ReportCountSummaryTurningMovement.computeMovementAndVehicleTotals', () => {
+test('ReportBaseFlowDirectional.computeMovementAndVehicleTotals', () => {
   // fuzz test
   for (let i = 0; i < 25; i++) {
     const rawData = generateTmcDataPoint();

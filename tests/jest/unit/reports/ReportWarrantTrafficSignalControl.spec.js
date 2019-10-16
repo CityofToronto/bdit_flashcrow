@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
 import { CardinalDirection, FeatureCode } from '@/lib/Constants';
+import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 import ReportWarrantTrafficSignalControl from '@/lib/reports/ReportWarrantTrafficSignalControl';
 import {
-  generateMajorAndMinorDirections,
+  generateHourlyMajorAndMinorDirections,
   generateTmc,
 } from '@/lib/test/random/CountDataGenerator';
 
@@ -16,17 +17,22 @@ test('ReportWarrantTrafficSignalControl#transformData', () => {
   // fuzz test
   for (let i = 0; i < 25; i++) {
     const countData = generateTmc();
+    const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
     // TODO: generate minFeatureCode
     const minFeatureCode = FeatureCode.MINOR_ARTERIAL;
-    const { majorDirections, minorDirections } = generateMajorAndMinorDirections();
+    const {
+      hourlyMajorDirections,
+      hourlyMinorDirections,
+    } = generateHourlyMajorAndMinorDirections(hourlyData);
     // TODO: generate segments
     const segments = new Array(4).fill(0);
     expect(() => {
       reportInstance.transformData({
         countData,
-        majorDirections,
+        hourlyData,
+        hourlyMajorDirections,
+        hourlyMinorDirections,
         minFeatureCode,
-        minorDirections,
         segments,
       });
     }).not.toThrow();
@@ -47,16 +53,22 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     t: new Date(t.slice(0, -1)),
     data,
   }));
-  const majorDirections = [CardinalDirection.EAST, CardinalDirection.WEST];
+  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
+  const hourlyMajorDirections = hourlyData.map(
+    () => [CardinalDirection.EAST, CardinalDirection.WEST],
+  );
+  const hourlyMinorDirections = hourlyData.map(
+    () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+  );
   const minFeatureCode = FeatureCode.MAJOR_ARTERIAL;
-  const minorDirections = [CardinalDirection.NORTH, CardinalDirection.SOUTH];
   const segments = new Array(4).fill(0);
 
   const transformedData = reportInstance.transformData({
     countData,
-    majorDirections,
+    hourlyData,
+    hourlyMajorDirections,
+    hourlyMinorDirections,
     minFeatureCode,
-    minorDirections,
     segments,
   });
   expect(transformedData).toEqual(transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661);
