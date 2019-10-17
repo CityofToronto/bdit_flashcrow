@@ -592,10 +592,18 @@ export default {
       const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
       if (locationFeature !== null) {
         if (centrelineType === CentrelineType.SEGMENT) {
-          const { fcode: featureCode } = locationFeature.properties;
+          const {
+            fcode: featureCode,
+            lf_name: description,
+          } = locationFeature.properties;
+          elementInfo.description = description;
           elementInfo.featureCode = featureCode;
         } else if (centrelineType === CentrelineType.INTERSECTION) {
-          const { elevatio9: featureCode } = locationFeature.properties;
+          const {
+            intersec5: description,
+            elevatio9: featureCode,
+          } = locationFeature.properties;
+          elementInfo.description = description;
           elementInfo.featureCode = featureCode;
         }
       }

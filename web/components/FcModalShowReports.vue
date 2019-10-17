@@ -8,7 +8,7 @@
         <h2>
           <span>{{activeCount.type.label}} at </span>
           <i class="fa fa-map-marker-alt"></i>
-          <span class="px-s">{{locationQuery}}</span>
+          <span class="px-s">{{activeCount.locationDesc}}</span>
         </h2>
       </div>
     </template>
