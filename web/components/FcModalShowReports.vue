@@ -61,8 +61,12 @@
                       :disabled="activeCount.status === Status.REQUEST_IN_PROGRESS || disabled"
                       name="report"
                       :value="name" />
-                    <span>{{label}}</span>
-                    <span v-if="disabled"> (coming soon)</span>
+                    <span
+                      :class="{
+                        'text-muted': activeCount.status === Status.REQUEST_IN_PROGRESS || disabled,
+                      }">
+                      {{label}}
+                    </span>
                   </label>
                 </div>
                 <component
