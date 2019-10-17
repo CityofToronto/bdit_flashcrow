@@ -120,15 +120,29 @@ export default {
         });
         return;
       }
-      const { centrelineId, centrelineType } = this.location;
       /*
-       * Update the URL to match the new location.  This allows the user to navigate between
-       * recently selected locations with the back / forward browser buttons.
+       * Guard against duplicate navigation, which can happen when first loading the page.
        */
-      this.$router.push({
-        name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
-      });
+      const {
+        centrelineId,
+        centrelineType,
+      } = this.location;
+      let {
+        centrelineId: centrelineIdPrev,
+        centrelineType: centrelineTypePrev,
+      } = this.$route.params;
+      centrelineIdPrev = parseInt(centrelineIdPrev, 10);
+      centrelineTypePrev = parseInt(centrelineTypePrev, 10);
+      if (centrelineIdPrev !== centrelineId || centrelineTypePrev !== centrelineType) {
+        /*
+         * Update the URL to match the new location.  This allows the user to navigate between
+         * recently selected locations with the back / forward browser buttons.
+         */
+        this.$router.push({
+          name: 'viewDataAtLocation',
+          params: { centrelineId, centrelineType },
+        });
+      }
     },
     studyTypesRelevantToLocation: {
       handler() {
