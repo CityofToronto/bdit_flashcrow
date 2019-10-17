@@ -28,7 +28,7 @@
         <button
           class="font-size-m ml-m"
           :disabled="item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT">
-          <span>View </span>
+          <span>Reports </span>
           <i class="fa fa-expand"></i>
         </button>
       </div>
