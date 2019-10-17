@@ -2,7 +2,7 @@
   <section class="fc-report-tmc-summary">
     <header class="py-m">
       <div>
-        <strong>{{locationQuery}}</strong>
+        <strong>{{count.locationDesc}}</strong>
       </div>
       <div>
         <strong>Survey Type: </strong>

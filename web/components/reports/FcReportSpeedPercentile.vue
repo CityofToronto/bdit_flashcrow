@@ -18,7 +18,7 @@
       <div class="flex-fill"></div>
       <div class="text-right">
         <div>
-          <strong>{{locationQuery}}</strong>
+          <strong>{{count.locationDesc}}</strong>
         </div>
         <div>
           <strong>Site Code: </strong>

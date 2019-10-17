@@ -2,7 +2,7 @@
   <div class="fc-report-warrant-traffic-signal-control">
     <header class="py-m">
       <div>
-        <strong>{{locationQuery}}</strong>
+        <strong>{{count.locationDesc}}</strong>
       </div>
       <div>
         <strong>Survey Type: </strong>

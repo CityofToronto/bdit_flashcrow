@@ -2,7 +2,7 @@
   <div class="fc-report-atr-volume-24h-graph">
     <header class="py-m">
       <div>
-        <strong>{{locationQuery}}</strong>
+        <strong>{{count.locationDesc}}</strong>
       </div>
       <div>
         <strong>Category: </strong>
