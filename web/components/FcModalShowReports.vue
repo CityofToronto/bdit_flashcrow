@@ -228,18 +228,13 @@ export default {
   },
   data() {
     const reportUserParameters = {};
-    ReportType.enumValues.forEach(({ name }) => {
-      if (name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL') {
-        const startYear = new Date().getFullYear() - 3;
-        reportUserParameters[name] = {
-          adequateTrial: true,
-          collisionsTotal: 0,
-          preventablesByYear: [0, 0, 0],
-          startYear,
-        };
-      } else {
-        reportUserParameters[name] = {};
-      }
+    ReportType.enumValues.forEach(({ name, options = {} }) => {
+      const defaultParameters = {};
+      Object.entries(options).forEach(([parameterName, reportParameter]) => {
+        const defaultParameterValue = reportParameter.defaultValue(this.$store);
+        defaultParameters[parameterName] = defaultParameterValue;
+      });
+      reportUserParameters[name] = defaultParameters;
     });
     return {
       activeReportData: null,
@@ -300,14 +295,7 @@ export default {
         return {};
       }
       const { name: type } = this.selectedReport;
-      const reportUserParameters = this.reportUserParameters[type];
-      // TODO: remove special-casing here
-      if (this.selectedReport === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL) {
-        return Object.assign({
-          preparedBy: this.username,
-        }, reportUserParameters);
-      }
-      return reportUserParameters;
+      return this.reportUserParameters[type];
     },
     selectedReport() {
       if (this.report === null) {
