@@ -64,6 +64,11 @@
                     <span v-if="disabled"> (coming soon)</span>
                   </label>
                 </div>
+                <component
+                  v-if="report === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+                  :is="'FcReportParameters' + selectedReport.suffix"
+                  v-model="reportUserParameters[report]"
+                  @update-report="updateReport" />
               </div>
             </div>
           </div>
@@ -148,7 +153,7 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
@@ -160,6 +165,8 @@ import FcReportSpeedPercentile from
   '@/web/components/reports/FcReportSpeedPercentile.vue';
 import FcReportWarrantTrafficSignalControl from
   '@/web/components/reports/FcReportWarrantTrafficSignalControl.vue';
+import FcReportParametersWarrantTrafficSignalControl from
+  '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
@@ -214,15 +221,31 @@ export default {
     FcReportIntersectionSummary,
     FcReportSpeedPercentile,
     FcReportWarrantTrafficSignalControl,
+    FcReportParametersWarrantTrafficSignalControl,
     TdsActionDropdown,
     TdsLoadingSpinner,
     TdsPanel,
   },
   data() {
+    const reportUserParameters = {};
+    ReportType.enumValues.forEach(({ name }) => {
+      if (name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL') {
+        const startYear = new Date().getFullYear() - 3;
+        reportUserParameters[name] = {
+          adequateTrial: true,
+          collisionsTotal: 0,
+          preventablesByYear: [0, 0, 0],
+          startYear,
+        };
+      } else {
+        reportUserParameters[name] = {};
+      }
+    });
     return {
       activeReportData: null,
       downloadLoading: false,
       report: null,
+      reportUserParameters,
       Status,
       STATUS_META,
       studies: [],
@@ -273,17 +296,18 @@ export default {
         .filter(({ disabled }) => !disabled);
     },
     reportParameters() {
-      if (this.selectedReport === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL) {
-        // TODO: get actual parameters
-        return {
-          adequateTrial: true,
-          collisionsTotal: 25,
-          preparedBy: 'Evan Savage',
-          preventablesByYear: [3, 5, 10],
-          startYear: 2016,
-        };
+      if (this.selectedReport === null) {
+        return {};
       }
-      return {};
+      const { name: type } = this.selectedReport;
+      const reportUserParameters = this.reportUserParameters[type];
+      // TODO: remove special-casing here
+      if (this.selectedReport === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL) {
+        return Object.assign({
+          preparedBy: this.username,
+        }, reportUserParameters);
+      }
+      return reportUserParameters;
     },
     selectedReport() {
       if (this.report === null) {
@@ -297,6 +321,7 @@ export default {
       return selectedReport;
     },
     ...mapState(['locationQuery']),
+    ...mapGetters(['username']),
   },
   watch: {
     activeCount() {
