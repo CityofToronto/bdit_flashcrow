@@ -21,7 +21,7 @@
         :feature="hoveredFeature"
         @zoom-in="onCountsVisibleClustersClick" />
       <PaneMapPopup
-        v-if="selectedFeature"
+        v-else-if="selectedFeature"
         :feature="selectedFeature"
         @zoom-in="onCountsVisibleClustersClick" />
     </div>

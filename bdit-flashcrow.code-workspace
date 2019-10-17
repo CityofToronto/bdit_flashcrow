@@ -3,9 +3,9 @@
 		"recommendations": [
 			"cpylua.language-postcss",
 			"dbaeumer.vscode-eslint",
+			"jcbuisson.vue",
 			"ms-python.python",
 			"ms-vscode-remote.vscode-remote-extensionpack",
-			"octref.vetur",
 			"shinnn.stylelint"
 		]
 	},

@@ -14,7 +14,8 @@
           name="adequateTrial"
           v-model="internalValue.adequateTrial" />
         <span>
-          <abbr title="Has there been an adequate trial of less restrictive remedies?">
+          <abbr
+            title="Has adequate trial of less restrictive remedies failed to reduce collisions?">
             Adequate Trial?
           </abbr>
         </span>

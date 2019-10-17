@@ -28,7 +28,7 @@
         <button
           class="font-size-m ml-m"
           :disabled="item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT">
-          <span>View </span>
+          <span>Reports </span>
           <i class="fa fa-expand"></i>
         </button>
       </div>
@@ -42,6 +42,7 @@
         <template v-slot:default>
           <span>
             {{item.counts[item.activeIndex].date | date}}
+            <i class="fa fa-caret-down"></i>
           </span>
         </template>
       </TdsActionDropdown>
@@ -270,11 +271,6 @@ export default {
       & > button {
         opacity: 0;
       }
-      &:hover {
-        & > button {
-          opacity: 1;
-        }
-      }
     }
   }
   .cell-DATE {
@@ -292,7 +288,8 @@ export default {
     }
   }
   /* stylelint-enable */
-  tr:hover > .cell-ACTIONS > button {
+  tr:hover > .cell-ACTIONS > button,
+  tr:hover > .cell-STUDY_TYPE > div > button {
     opacity: 1;
   }
 }
