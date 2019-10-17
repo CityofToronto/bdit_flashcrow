@@ -24,6 +24,7 @@
                 <template v-slot:default>
                   <span>
                     {{activeCount.date | date}} ({{activeCount.date | dayOfWeek}})
+                    <i class="fa fa-caret-down"></i>
                   </span>
                 </template>
               </TdsActionDropdown>
