@@ -123,6 +123,14 @@ export default new Vuex.Store({
     locationQuery: '',
   },
   getters: {
+    // AUTHENTICATION
+    username(state) {
+      if (state.auth.loggedIn) {
+        const { email, name } = state.auth.user;
+        return name || email;
+      }
+      return 'Guest';
+    },
     // FILTERING DATA
     hasFilters(state, getters) {
       return getters.hasFilterCountTypes

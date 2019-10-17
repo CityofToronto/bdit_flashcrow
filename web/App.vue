@@ -62,7 +62,12 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
@@ -110,19 +115,13 @@ export default {
       }
       return [{ label: 'Log in', value: 'login' }];
     },
-    username() {
-      if (this.auth.loggedIn) {
-        const { email, name } = this.auth.user;
-        return name || email;
-      }
-      return 'Guest';
-    },
     ...mapState([
       'auth',
       'location',
       'modal',
       'toast',
     ]),
+    ...mapGetters(['username']),
   },
   created() {
     this.webInit()

@@ -64,6 +64,11 @@
                     <span v-if="disabled"> (coming soon)</span>
                   </label>
                 </div>
+                <component
+                  v-if="report === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+                  :is="'FcReportParameters' + selectedReport.suffix"
+                  v-model="reportUserParameters[report]"
+                  @update-report="updateReport" />
               </div>
             </div>
           </div>
@@ -148,7 +153,7 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
@@ -160,6 +165,8 @@ import FcReportSpeedPercentile from
   '@/web/components/reports/FcReportSpeedPercentile.vue';
 import FcReportWarrantTrafficSignalControl from
   '@/web/components/reports/FcReportWarrantTrafficSignalControl.vue';
+import FcReportParametersWarrantTrafficSignalControl from
+  '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
@@ -214,15 +221,26 @@ export default {
     FcReportIntersectionSummary,
     FcReportSpeedPercentile,
     FcReportWarrantTrafficSignalControl,
+    FcReportParametersWarrantTrafficSignalControl,
     TdsActionDropdown,
     TdsLoadingSpinner,
     TdsPanel,
   },
   data() {
+    const reportUserParameters = {};
+    ReportType.enumValues.forEach(({ name, options = {} }) => {
+      const defaultParameters = {};
+      Object.entries(options).forEach(([parameterName, reportParameter]) => {
+        const defaultParameterValue = reportParameter.defaultValue(this.$store);
+        defaultParameters[parameterName] = defaultParameterValue;
+      });
+      reportUserParameters[name] = defaultParameters;
+    });
     return {
       activeReportData: null,
       downloadLoading: false,
       report: null,
+      reportUserParameters,
       Status,
       STATUS_META,
       studies: [],
@@ -272,6 +290,13 @@ export default {
       return this.optionsReports
         .filter(({ disabled }) => !disabled);
     },
+    reportParameters() {
+      if (this.selectedReport === null) {
+        return {};
+      }
+      const { name: type } = this.selectedReport;
+      return this.reportUserParameters[type];
+    },
     selectedReport() {
       if (this.report === null) {
         return null;
@@ -284,6 +309,7 @@ export default {
       return selectedReport;
     },
     ...mapState(['locationQuery']),
+    ...mapGetters(['username']),
   },
   watch: {
     activeCount() {
@@ -313,7 +339,12 @@ export default {
       const id = `${categoryId}/${countInfoId}`;
       const options = {
         method: 'GET',
-        data: { type, id, format },
+        data: {
+          type,
+          id,
+          format,
+          ...this.reportParameters,
+        },
       };
       this.downloadLoading = true;
       reporterFetch('/reports', options)
@@ -334,7 +365,12 @@ export default {
       const id = `${categoryId}/${countInfoId}`;
       const options = {
         method: 'GET',
-        data: { type, id, format: ReportFormat.JSON },
+        data: {
+          type,
+          id,
+          format: ReportFormat.JSON,
+          ...this.reportParameters,
+        },
       };
       reporterFetch('/reports', options)
         .then(({ data: activeReportData }) => {
