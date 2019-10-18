@@ -54,7 +54,7 @@ export default {
         header: [
           reportData.map((_, h) => ({
             value: h,
-            style: { highlight: highlightedHour === h },
+            style: { bb: true, highlight: highlightedHour === h },
           })),
         ],
         body: [
