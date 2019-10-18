@@ -2,51 +2,22 @@
   <div class="fc-report-atr-volume-24h-graph">
     <header class="py-m">
       <div>
-        <strong>{{locationQuery}}</strong>
+        <strong>{{count.locationDesc}}</strong>
       </div>
       <div>
         <strong>Category: </strong>
         <span>{{count.type.label}}</span>
       </div>
     </header>
-    <FcChartAtrVolume24h
+    <FcReportBarChart
       v-model="highlightedHour"
       :aspect-ratio="2"
       :chart-data="reportData" />
     <footer>
-      <table
-        @mouseleave="highlightedHour = null">
-        <caption class="font-size-l mb-m text-left">
-          <strong>Start Hour by Hour Volume</strong>
-        </caption>
-        <colgroup>
-          <col
-            v-for="(_, h) in reportData"
-            :key="'col_' + h">
-        </colgroup>
-        <thead>
-          <tr>
-            <th
-              v-for="(_, h) in reportData"
-              :key="'th_' + h"
-              :class="{ highlight: highlightedHour === h }"
-              @mouseenter="highlightedHour = h">
-              {{h}}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td
-              v-for="(n, h) in reportData"
-              :key="'td_' + h"
-              :class="{ highlight: highlightedHour === h }"
-              @mouseenter="highlightedHour = h">
-              {{n}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <FcReportTable
+        v-bind="tableLayout"
+        @table-mouseleave="onMouseleaveTable"
+        @cell-mouseenter="onMouseenterCell" />
     </footer>
   </div>
 </template>
@@ -54,12 +25,14 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcChartAtrVolume24h from '@/web/components/reports/FcChartAtrVolume24h.vue';
+import FcReportBarChart from '@/web/components/reports/FcReportBarChart.vue';
+import FcReportTable from '@/web/components/reports/FcReportTable.vue';
 
 export default {
   name: 'FcReportCountSummary24hGraphical',
   components: {
-    FcChartAtrVolume24h,
+    FcReportBarChart,
+    FcReportTable,
   },
   props: {
     count: Object,
@@ -71,49 +44,63 @@ export default {
     };
   },
   computed: {
+    tableLayout() {
+      /* eslint-disable prefer-destructuring */
+      const reportData = this.reportData;
+      const highlightedHour = this.highlightedHour;
+      return {
+        title: 'Volume by Start Hour',
+        columnStyles: reportData.map((_, h) => ({ c: h })),
+        header: [
+          reportData.map((_, h) => ({
+            value: h,
+            style: { highlight: highlightedHour === h },
+          })),
+        ],
+        body: [
+          reportData.map((n, h) => ({
+            value: n,
+            style: { highlight: highlightedHour === h },
+          })),
+        ],
+      };
+    },
     ...mapState(['locationQuery']),
+  },
+  methods: {
+    onMouseenterCell({ c: h }) {
+      this.highlightedHour = h;
+    },
+    onMouseleaveTable() {
+      this.highlightedHour = null;
+    },
   },
 };
 </script>
 
 <style lang="postcss">
 .fc-report-atr-volume-24h-graph {
-  & > .fc-chart-atr-volume-24h {
+  & > .fc-report-bar-chart {
     height: 400px;
   }
   & > footer {
     table {
-      border-collapse: separate;
-      border-spacing: 0;
-      text-align: center;
       & > colgroup > col {
         width: var(--space-2xl);
       }
       & > thead {
-        & > tr > th {
-          border-bottom: var(--border-default);
-          padding: var(--space-xs) var(--space-s);
-          &:nth-child(2n + 1) {
-            background-color: var(--base-lighter);
-          }
-          &.highlight {
-            background-color: var(--primary-light);
-            border-color: var(--primary-darker);
-            color: var(--primary-darker);
-          }
-        }
+        background-color: transparent;
       }
-      & > tbody {
-        & > tr > td {
-          padding: var(--space-xs) var(--space-s);
-          &:nth-child(2n + 1) {
-            background-color: var(--base-lighter);
-          }
-          &.highlight {
-            background-color: var(--primary-light);
-            border-color: var(--primary-darker);
-            color: var(--primary-darker);
-          }
+      & > thead > tr > th,
+      & > tbody > tr > td {
+        text-align: center;
+        &:nth-child(2n + 1) {
+          background-color: var(--base-lighter);
+        }
+        &.highlight {
+          background-color: var(--primary-light);
+          border-color: var(--primary-darker);
+          color: var(--primary-darker);
         }
       }
     }

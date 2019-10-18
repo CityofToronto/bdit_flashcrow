@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-chart-atr-volume-24h">
+  <div class="fc-report-bar-chart">
     <svg
       ref="svg"
       :height="pixelsHeight"
@@ -19,7 +19,7 @@ import 'd3-selection-multi';
 import Vue from 'vue';
 
 export default {
-  name: '',
+  name: 'FcReportBarChart',
   props: {
     aspectRatio: {
       type: Number,
@@ -162,7 +162,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-chart-atr-volume-24h {
+.fc-report-bar-chart {
   & > svg {
     & rect.bar {
       fill: var(--base);

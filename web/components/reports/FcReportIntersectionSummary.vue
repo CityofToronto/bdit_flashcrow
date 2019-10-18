@@ -2,129 +2,39 @@
   <div class="fc-report-intersection-warrant-summary">
     <header class="py-m">
       <div>
-        <strong>{{locationQuery}}</strong>
+        <strong>{{count.locationDesc}}</strong>
       </div>
       <div>
         <strong>Survey Type: </strong>
         <span>{{hoursHuman}}</span>
       </div>
     </header>
-    <table class="my-m">
-      <thead>
-        <tr>
-          <th class="br" rowspan="2">Time Period</th>
-          <th class="br" colspan="3">NORTHBOUND</th>
-          <th class="br" colspan="3">EASTBOUND</th>
-          <th class="br" colspan="3">SOUTHBOUND</th>
-          <th class="br" colspan="3">WESTBOUND</th>
-          <th class="br" colspan="4">BICYCLES</th>
-          <th class="br" colspan="4">OTHER</th>
-          <th class="br" colspan="2">MAJOR CROSSINGS</th>
-          <th class="br" colspan="2">APPROACHES</th>
-          <th rowspan="2">TOTAL</th>
-        </tr>
-        <tr>
-          <template v-for="dir in dirs">
-            <th :key="dir + '_L_TH'">Left</th>
-            <th :key="dir + '_T_TH'">Thru</th>
-            <th
-              :key="dir + '_R_TH'"
-              class="br">Right</th>
-          </template>
-          <th
-            v-for="dir in dirs"
-            :key="dir + '_BIKE_TH'"
-            :class="{ br: dir === 'W' }">{{dir}}</th>
-          <th
-            v-for="dir in dirs"
-            :key="dir + '_OTHER_TH'"
-            :class="{ br: dir === 'W' }">{{dir}}</th>
-          <th>Peds</th>
-          <th class="br">All</th>
-          <th>Major</th>
-          <th class="br">Minor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(hourTotals, hour) in reportData.hourlyTotals"
-          :key="hour">
-          <th class="br">
-            {{timeRanges[hour].start | timeOfDay}}&ndash;{{timeRanges[hour].end | timeOfDay}}
-          </th>
-          <template v-for="dir in dirs">
-            <td
-              v-for="turn in turns"
-              :key="dir + '_' + turn"
-              :class="{ br: turn === 'R' }">
-              {{hourTotals[dir + '_' + turn]}}
-            </td>
-          </template>
-          <td
-            v-for="dir in dirs"
-            :key="dir + '_BIKE'"
-            :class="{ br: dir === 'W' }">
-            {{hourTotals[dir + '_BIKE']}}
-          </td>
-          <td
-            v-for="dir in dirs"
-            :key="dir + '_OTHER'"
-            :class="{ br: dir === 'W' }">
-            {{hourTotals[dir + '_OTHER']}}
-          </td>
-          <td>{{hourTotals.MAJOR_CROSSING_PEDS}}</td>
-          <td class="br">{{hourTotals.MAJOR_CROSSING_TOTAL}}</td>
-          <td>{{hourTotals.MAJOR_APPROACHES}}</td>
-          <td class="br">{{hourTotals.MINOR_APPROACHES}}</td>
-          <td>{{hourTotals.TOTAL}}</td>
-        </tr>
-        <tr>
-          <th class="br bt">8 Hour Total</th>
-          <template v-for="dir in dirs">
-            <td
-              v-for="turn in turns"
-              :key="dir + '_' + turn"
-              :class="{ br: turn === 'R', bt: true }">
-              {{reportData.totals[dir + '_' + turn]}}
-            </td>
-          </template>
-          <td
-            v-for="dir in dirs"
-            :key="dir + '_BIKE'"
-            :class="{ br: dir === 'W', bt: true }">
-            {{reportData.totals[dir + '_BIKE']}}
-          </td>
-          <td
-            v-for="dir in dirs"
-            :key="dir + '_OTHER'"
-            :class="{ br: dir === 'W', bt: true }">
-            {{reportData.totals[dir + '_OTHER']}}
-          </td>
-          <td class="bt">{{reportData.totals.MAJOR_CROSSING_PEDS}}</td>
-          <td class="br bt">{{reportData.totals.MAJOR_CROSSING_TOTAL}}</td>
-          <td class="bt">{{reportData.totals.MAJOR_APPROACHES}}</td>
-          <td class="br bt">{{reportData.totals.MINOR_APPROACHES}}</td>
-          <td class="bt">{{reportData.totals.TOTAL}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <FcReportTable v-bind="tableLayout" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcReportTable from
+  '@/web/components/reports/FcReportTable.vue';
+
+function getTimeRangeHuman(timeRange) {
+  let { start, end } = timeRange;
+  start = new Date(start.slice(0, -1));
+  end = new Date(end.slice(0, -1));
+  return TimeFormatters.formatRangeTimeOfDay({ start, end });
+}
+
 export default {
   name: 'FcReportIntersectionSummary',
+  components: {
+    FcReportTable,
+  },
   props: {
     count: Object,
     reportData: Object,
-  },
-  data() {
-    return {
-      dirs: ['N', 'E', 'S', 'W'],
-      turns: ['L', 'T', 'R'],
-    };
   },
   computed: {
     hoursHuman() {
@@ -136,6 +46,91 @@ export default {
         return 'School Hours';
       }
       return 'Other Hours';
+    },
+    tableLayout() {
+      /* eslint-disable prefer-destructuring */
+      const reportData = this.reportData;
+      const dirs = ['N', 'E', 'S', 'W'];
+      const turns = ['L', 'T', 'R'];
+      return {
+        header: [
+          [
+            { value: 'Time Period', rowspan: 2, style: { br: true } },
+            { value: 'NORTHBOUND', colspan: 3, style: { br: true } },
+            { value: 'EASTBOUND', colspan: 3, style: { br: true } },
+            { value: 'SOUTHBOUND', colspan: 3, style: { br: true } },
+            { value: 'WESTBOUND', colspan: 3, style: { br: true } },
+            { value: 'BICYCLES', colspan: 4, style: { br: true } },
+            { value: 'OTHER', colspan: 4, style: { br: true } },
+            { value: 'MAJOR CROSSINGS', colspan: 2, style: { br: true } },
+            { value: 'APPROACHES', colspan: 2, style: { br: true } },
+            { value: 'TOTAL', rowspan: 2 },
+          ],
+          [
+            ...Array.prototype.concat.apply([], dirs.map(() => [
+              { value: 'Left' },
+              { value: 'Thru' },
+              { value: 'Right', style: { br: true } },
+            ])),
+            ...dirs.map(dir => ({ value: dir, style: { br: dir === 'W' } })),
+            ...dirs.map(dir => ({ value: dir, style: { br: dir === 'W' } })),
+            { value: 'Peds' },
+            { value: 'All', style: { br: true } },
+            { value: 'Major' },
+            { value: 'Minor', style: { br: true } },
+          ],
+        ],
+        body: [
+          ...reportData.hourlyTotals.map((hourTotals, hour) => {
+            const timeRange = reportData.timeRanges[hour];
+            const timeRangeHuman = getTimeRangeHuman(timeRange);
+            return [
+              { value: timeRangeHuman, header: true, style: { br: true } },
+              ...Array.prototype.concat.apply([], dirs.map(
+                dir => turns.map(turn => ({
+                  value: hourTotals[`${dir}_${turn}`],
+                  style: { br: turn === 'R' },
+                })),
+              )),
+              ...dirs.map(dir => ({
+                value: hourTotals[`${dir}_BIKE`],
+                style: { br: dir === 'W' },
+              })),
+              ...dirs.map(dir => ({
+                value: hourTotals[`${dir}_OTHER`],
+                style: { br: dir === 'W' },
+              })),
+              { value: hourTotals.MAJOR_CROSSING_PEDS },
+              { value: hourTotals.MAJOR_CROSSING_TOTAL, style: { br: true } },
+              { value: hourTotals.MAJOR_APPROACHES },
+              { value: hourTotals.MINOR_APPROACHES, style: { br: true } },
+              { value: hourTotals.TOTAL },
+            ];
+          }),
+          [
+            { value: '8 Hour Total', header: true, style: { br: true, bt: true } },
+            ...Array.prototype.concat.apply([], dirs.map(
+              dir => turns.map(turn => ({
+                value: reportData.totals[`${dir}_${turn}`],
+                style: { br: turn === 'R', bt: true },
+              })),
+            )),
+            ...dirs.map(dir => ({
+              value: reportData.totals[`${dir}_BIKE`],
+              style: { br: dir === 'W', bt: true },
+            })),
+            ...dirs.map(dir => ({
+              value: reportData.totals[`${dir}_OTHER`],
+              style: { br: dir === 'W', bt: true },
+            })),
+            { value: reportData.totals.MAJOR_CROSSING_PEDS, style: { bt: true } },
+            { value: reportData.totals.MAJOR_CROSSING_TOTAL, style: { br: true, bt: true } },
+            { value: reportData.totals.MAJOR_APPROACHES, style: { bt: true } },
+            { value: reportData.totals.MINOR_APPROACHES, style: { br: true, bt: true } },
+            { value: reportData.totals.TOTAL, style: { bt: true } },
+          ],
+        ],
+      };
     },
     timeRanges() {
       return this.reportData.timeRanges.map((timeRange) => {
