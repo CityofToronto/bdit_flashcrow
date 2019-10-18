@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-report-atr-speed-volume-pct">
+  <div class="fc-report-speed-percentile">
     <header class="flex-container-row py-m">
       <div>
         <div>
@@ -38,185 +38,7 @@
         </div>
       </div>
     </header>
-    <table class="my-m">
-      <thead>
-        <tr>
-          <th class="br">Start</th>
-          <th
-            v-for="([min, max], i) in SPEED_CLASSES"
-            :key="'min_' + i"
-            class="text-right">
-            {{min + 1}}
-          </th>
-          <th class="bl text-right">&nbsp;</th>
-          <th class="text-right">85th</th>
-          <th class="text-right">95th</th>
-        </tr>
-        <tr>
-          <th class="bb br">Time</th>
-          <th
-            v-for="([min, max], i) in SPEED_CLASSES"
-            :key="'max_' + i"
-            class="bb text-right">
-            {{i === SPEED_CLASSES.length - 1 ? 9999 : max}}
-          </th>
-          <th class="bb bl text-right">Total</th>
-          <th class="bb text-right">Percent</th>
-          <th class="bb text-right">Percent</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="({ volume, total, pct85, pct95 }, h) in reportData.countDataByHour"
-          :key="'tr_' + h">
-          <td
-            class="br text-right"
-            :class="{ bt: h === 12 }">
-            <span>{{hoursHuman[h]}}</span>
-          </td>
-          <td
-            v-for="(n, s) in volume"
-            :key="'td_' + h + '_' + s"
-            class="text-right"
-            :class="{
-              bt: h === 12,
-              peak: h === reportData.hoursPeakAm.volume[s] || h === reportData.hoursPeakPm.volume[s]
-            }">
-            <span>{{n}}</span>
-          </td>
-          <td
-            class="bl text-right"
-            :class="{
-              bt: h === 12,
-              peak: h === reportData.hoursPeakAm.total || h === reportData.hoursPeakPm.total
-            }">
-            <span>{{total}}</span>
-          </td>
-          <td
-            class="text-right"
-            :class="{ bt: h === 12 }">
-            <span v-if="pct85 !== null">{{pct85}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td
-            class="text-right"
-            :class="{ bt: h === 12 }">
-            <span v-if="pct95 !== null">{{pct95}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-        </tr>
-        <tr>
-          <td class="br bt text-right">
-            Total
-          </td>
-          <td
-            v-for="(n, s) in reportData.speedClassTotals"
-            :key="'td_total_' + s"
-            class="bt text-right">
-            <span>{{n}}</span>
-          </td>
-          <td class="bl bt text-right">
-            <span>{{reportData.totalStats.total}}</span>
-          </td>
-          <td class="bt" colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-          <td class="br bt text-right">
-            Percent
-          </td>
-          <td
-            v-for="(pct, s) in reportData.speedClassPercents"
-            :key="'td_percent_' + s"
-            class="bt text-right">
-            <span>{{pct | d3Format('.1%')}}</span>
-          </td>
-          <td class="bl bt text-right">
-            <span>100.0%</span>
-          </td>
-          <td class="bt" colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-          <td
-            class="br bt text-right">
-            AM Peak
-          </td>
-          <td
-            v-for="(h, s) in reportData.hoursPeakAm.volume"
-            :key="'td_peak_am_time_' + s"
-            class="bt text-right">
-            <span v-if="h !== null">{{hoursHuman[h]}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bl bt text-right">
-            <span v-if="reportData.hoursPeakAm.total !== null">
-              {{hoursHuman[reportData.hoursPeakAm.total]}}
-            </span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bt" colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-          <td
-            class="br text-right">
-            Vol.
-          </td>
-          <td
-            v-for="(h, s) in reportData.hoursPeakAm.volume"
-            :key="'td_peak_am_volume_' + s"
-            class="text-right">
-            <span v-if="h !== null">{{reportData.countDataByHour[h].volume[s]}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bl text-right">
-            <span v-if="reportData.hoursPeakAm.total !== null">
-              {{reportData.countDataByHour[reportData.hoursPeakAm.total].total}}
-            </span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-          <td
-            class="br bt text-right">
-            PM Peak
-          </td>
-          <td
-            v-for="(h, s) in reportData.hoursPeakPm.volume"
-            :key="'td_peak_pm_time_' + s"
-            class="bt text-right">
-            <span v-if="h !== null">{{hoursHuman[h]}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bl bt text-right">
-            <span v-if="reportData.hoursPeakPm.total !== null">
-              {{hoursHuman[reportData.hoursPeakPm.total]}}
-            </span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bt" colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-          <td
-            class="br text-right">
-            Vol.
-          </td>
-          <td
-            v-for="(h, s) in reportData.hoursPeakPm.volume"
-            :key="'td_peak_pm_volume_' + s"
-            class="text-right">
-            <span v-if="h !== null">{{reportData.countDataByHour[h].volume[s]}}</span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td class="bl text-right">
-            <span v-if="reportData.hoursPeakPm.total !== null">
-              {{reportData.countDataByHour[reportData.hoursPeakPm.total].total}}
-            </span>
-            <span v-else class="text-muted">N/A</span>
-          </td>
-          <td colspan="2">&nbsp;</td>
-        </tr>
-      </tbody>
-    </table>
+    <FcReportTable v-bind="tableLayout" />
     <footer class="mt-m">
       <template v-if="reportData.totalStats.total > 0">
         <div>
@@ -250,29 +72,179 @@
 </template>
 
 <script>
+import { format } from 'd3-format';
 import { mapState } from 'vuex';
 
 import { SPEED_CLASSES } from '@/lib/Constants';
+import FcReportTable from '@/web/components/reports/FcReportTable.vue';
+
+function getHoursHuman() {
+  const hoursHuman = [];
+  for (let h = 0; h < 24; h++) {
+    const time = h < 10 ? `0${h}:00` : `${h}:00`;
+    hoursHuman.push(time);
+  }
+  return hoursHuman;
+}
+
+const FORMAT_PERCENT = format('.1%');
 
 export default {
   name: 'FcReportSpeedPercentile',
+  components: {
+    FcReportTable,
+  },
   props: {
     count: Object,
     reportData: Object,
   },
-  data() {
-    return {
-      SPEED_CLASSES,
-    };
-  },
   computed: {
-    hoursHuman() {
-      const hoursHuman = [];
-      for (let h = 0; h < 24; h++) {
-        const time = h < 10 ? `0${h}:00` : `${h}:00`;
-        hoursHuman.push(time);
-      }
-      return hoursHuman;
+    tableLayout() {
+      /* eslint-disable prefer-destructuring */
+      const reportData = this.reportData;
+      const hoursHuman = getHoursHuman();
+      return {
+        header: [
+          [
+            { value: 'Start', style: { br: true } },
+            ...SPEED_CLASSES.map(speedClass => ({ value: speedClass[0] + 1 })),
+            { value: null, style: { bl: true } },
+            { value: '85th', style: { bl: true } },
+            { value: '95th', style: { bl: true } },
+          ],
+          [
+            { value: 'Time', style: { bb: true, br: true } },
+            ...SPEED_CLASSES.map((speedClass, s) => ({
+              value: s === SPEED_CLASSES.length - 1 ? 9999 : speedClass[1],
+              style: { bb: true },
+            })),
+            { value: 'Total', style: { bb: true, bl: true } },
+            { value: 'Percent', style: { bb: true, bl: true } },
+            { value: 'Percent', style: { bb: true, bl: true } },
+          ],
+        ],
+        body: [
+          ...reportData.countDataByHour.map(({
+            volume,
+            total,
+            pct85,
+            pct95,
+          }, h) => [
+            { value: hoursHuman[h], header: true, style: { bt: h === 12, br: true } },
+            ...volume.map((n, s) => ({
+              value: n,
+              style: {
+                bt: h === 12,
+                peak: h === reportData.hoursPeakAm.volume[s]
+                  || h === reportData.hoursPeakPm.volume[s],
+              },
+            })),
+            {
+              value: total,
+              style: {
+                bt: h === 12,
+                bl: true,
+                peak: h === reportData.hoursPeakAm.total
+                  || h === reportData.hoursPeakPm.total,
+              },
+            },
+            {
+              value: pct85 === null ? 'N/A' : pct85,
+              style: {
+                bt: h === 12,
+                bl: true,
+                muted: pct85 === null,
+              },
+            },
+            {
+              value: pct95 === null ? 'N/A' : pct95,
+              style: {
+                bt: h === 12,
+                bl: true,
+                muted: pct95 === null,
+              },
+            },
+          ]),
+          [
+            { value: 'Total', header: true, style: { br: true, bt: true } },
+            ...reportData.speedClassTotals.map(n => ({
+              value: n,
+              style: { bt: true },
+            })),
+            { value: reportData.totalStats.total, style: { bl: true, bt: true } },
+            { value: null, colspan: 2, style: { bt: true } },
+          ],
+          [
+            { value: 'Percent', header: true, style: { br: true, bt: true } },
+            ...reportData.speedClassPercents.map(pct => ({
+              value: FORMAT_PERCENT(pct),
+              style: { bt: true },
+            })),
+            { value: '100.0%', style: { bl: true, bt: true } },
+            { value: null, colspan: 2, style: { bt: true } },
+          ],
+          [
+            { value: 'AM Peak', header: true, style: { br: true, bt: true } },
+            ...reportData.hoursPeakAm.volume.map(h => ({
+              value: h === null ? 'N/A' : hoursHuman[h],
+              style: { bt: true, muted: h === null },
+            })),
+            {
+              value: reportData.hoursPeakAm.total === null
+                ? 'N/A'
+                : hoursHuman[reportData.hoursPeakAm.total],
+              style: { bl: true, bt: true, muted: reportData.hoursPeakAm.total === null },
+            },
+            { value: null, colspan: 2, style: { bt: true } },
+          ],
+          [
+            { value: 'Vol.', header: true, style: { br: true } },
+            ...reportData.hoursPeakAm.volume.map((h, s) => ({
+              value: h === null
+                ? 'N/A'
+                : reportData.countDataByHour[h].volume[s],
+              style: { muted: h === null },
+            })),
+            {
+              value: reportData.hoursPeakAm.total === null
+                ? 'N/A'
+                : reportData.countDataByHour[reportData.hoursPeakAm.total].total,
+              style: { bl: true, muted: reportData.hoursPeakAm.total === null },
+            },
+            { value: null, colspan: 2 },
+          ],
+          [
+            { value: 'PM Peak', header: true, style: { br: true, bt: true } },
+            ...reportData.hoursPeakPm.volume.map(h => ({
+              value: h === null ? 'N/A' : hoursHuman[h],
+              style: { bt: true, muted: h === null },
+            })),
+            {
+              value: reportData.hoursPeakPm.total === null
+                ? 'N/A'
+                : hoursHuman[reportData.hoursPeakPm.total],
+              style: { bl: true, bt: true, muted: reportData.hoursPeakPm.total === null },
+            },
+            { value: null, colspan: 2, style: { bt: true } },
+          ],
+          [
+            { value: 'Vol.', header: true, style: { br: true } },
+            ...reportData.hoursPeakPm.volume.map((h, s) => ({
+              value: h === null
+                ? 'N/A'
+                : reportData.countDataByHour[h].volume[s],
+              style: { muted: h === null },
+            })),
+            {
+              value: reportData.hoursPeakPm.total === null
+                ? 'N/A'
+                : reportData.countDataByHour[reportData.hoursPeakPm.total].total,
+              style: { bl: true, muted: reportData.hoursPeakPm.total === null },
+            },
+            { value: null, colspan: 2 },
+          ],
+        ],
+      };
     },
     ...mapState(['locationQuery']),
   },
@@ -280,30 +252,11 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-report-atr-speed-volume-pct {
+.fc-report-speed-percentile {
   table {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 960px;
-    & > thead {
-      background-color: var(--base-lighter);
-      & > tr > th {
-        padding: var(--space-xs) var(--space-s);
-      }
-    }
-    & > tbody {
-      & > tr {
-        &:nth-child(2n) {
-          background-color: var(--base-lighter);
-        }
-        & > td {
-          padding: var(--space-xs) var(--space-s);
-          &.peak {
-            background-color: var(--error-light);
-            font-weight: var(--font-weight-bold);
-          }
-        }
-      }
+    & > tbody > tr > td.peak {
+      background-color: var(--error-light);
+      font-weight: var(--font-weight-bold);
     }
   }
 }

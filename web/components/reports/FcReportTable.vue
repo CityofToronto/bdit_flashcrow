@@ -109,6 +109,7 @@ function normalizeStyle(style) {
     bb: false,
     br: false,
     fontSize: null,
+    muted: false,
     width: null,
   };
   return Object.assign(defaultStyle, style);
@@ -122,6 +123,7 @@ function getClassListForStyle(style) {
     bb,
     br,
     fontSize,
+    muted,
     width,
     ...customClasses
   } = style;
@@ -143,6 +145,9 @@ function getClassListForStyle(style) {
   }
   if (fontSize) {
     classList.push(`font-size-${fontSize}`);
+  }
+  if (muted) {
+    classList.push('text-muted');
   }
   if (width) {
     classList.push(`w-${width}`);
