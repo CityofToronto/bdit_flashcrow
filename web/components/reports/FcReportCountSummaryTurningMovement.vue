@@ -38,9 +38,7 @@ function getTimeRangeHuman(timeRange) {
   let { start, end } = timeRange;
   start = new Date(start.slice(0, -1));
   end = new Date(end.slice(0, -1));
-  const startHuman = TimeFormatters.formatTimeOfDay(start);
-  const endHuman = TimeFormatters.formatTimeOfDay(end);
-  return `${startHuman}\u2013${endHuman}`;
+  return TimeFormatters.formatRangeTimeOfDay({ start, end });
 }
 
 function getTableHeader() {
