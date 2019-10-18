@@ -10,54 +10,25 @@
       </div>
     </header>
 
-    <FcReportTable v-bind="warrantSummaryLayout" />
+    <FcReportTable v-bind="warrantSummaryTableLayout" />
 
-    <h2>Warrant 1 &ndash; Minimum Vehicular Volume</h2>
     <FcReportWarrantTrafficSignalControlSection
-      :section-data="reportData.minVolume.a"
-      title="1A. All Approaches" />
+      :title="'Warrant 1 \u2013 Minimum Vehicular Volume'"
+      caption="1A. All Approaches"
+      :section-data="reportData.minVolume.a" />
     <FcReportWarrantTrafficSignalControlSection
-      :section-data="reportData.minVolume.b"
-      title="1B. Minor Street Both Approaches" />
+      caption="1B. Minor Street Both Approaches"
+      :section-data="reportData.minVolume.b" />
 
-    <h2>Warrant 2 &ndash; Delay To Cross Traffic</h2>
     <FcReportWarrantTrafficSignalControlSection
-      :section-data="reportData.delayToCross.a"
-      title="2A. Major Road Both Approaches" />
+      :title="'Warrant 2 \u2013 Delay To Cross Traffic'"
+      caption="2A. Major Road Both Approaches"
+      :section-data="reportData.delayToCross.a" />
     <FcReportWarrantTrafficSignalControlSection
-      :section-data="reportData.delayToCross.b"
-      title="2B. Cross Street (Critical Volume)" />
+      caption="2B. Cross Street (Critical Volume)"
+      :section-data="reportData.delayToCross.b" />
 
-    <h2>Warrant 3 &ndash; Collision Hazard</h2>
-    <table class="my-m">
-      <caption class="font-size-l my-m text-left">
-        3A. Preventable Collisions Per Year
-      </caption>
-      <thead>
-        <tr>
-          <th>{{reportData.collisionHazard.a.startYear}}</th>
-          <th>{{reportData.collisionHazard.a.startYear + 1}}</th>
-          <th class="br">{{reportData.collisionHazard.a.startYear + 2}}</th>
-          <th>Total</th>
-          <th class="bl">Average</th>
-          <th>Minimum Required</th>
-          <th class="bl">Section %</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{reportData.collisionHazard.a.annual[0]}}</td>
-          <td>{{reportData.collisionHazard.a.annual[1]}}</td>
-          <td class="br">{{reportData.collisionHazard.a.annual[2]}}</td>
-          <td>{{reportData.collisionHazard.a.value.total}}</td>
-          <td class="bl">{{reportData.collisionHazard.a.value.avg}}</td>
-          <td>{{reportData.collisionHazard.a.threshold}}</td>
-          <td class="bl font-size-l">
-            <strong>{{reportData.collisionHazard.a.compliance}}</strong>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <FcReportTable v-bind="preventableCollisionsTableLayout" />
     <div>
       <div class="font-size-l my-m text-left">
         3B. Adequate Trial of Less Restrictive Remedies?
@@ -139,13 +110,63 @@ export default {
       }
       return 'Other Hours';
     },
-    warrantSummaryLayout() {
+    preventableCollisionsTableLayout() {
+      const sectionData = this.reportData.collisionHazard.a;
+      return {
+        title: 'Warrant 3 \u2013 Collision Hazard',
+        caption: '3A. Preventable Collisions Per Year',
+        header: [
+          [
+            { value: sectionData.startYear },
+            { value: sectionData.startYear + 1 },
+            {
+              value: sectionData.startYear + 2,
+              style: { br: true },
+            },
+            { value: 'Total' },
+            {
+              value: 'Average',
+              style: { bl: true },
+            },
+            { value: 'Minimum Required' },
+            {
+              value: 'Section %',
+              style: { bl: true },
+            },
+          ],
+        ],
+        body: [
+          [
+            { value: sectionData.annual[0] },
+            { value: sectionData.annual[1] },
+            {
+              value: sectionData.annual[2],
+              style: { br: true },
+            },
+            { value: sectionData.value.total },
+            {
+              value: sectionData.value.avg,
+              style: { bl: true },
+            },
+            { value: sectionData.threshold },
+            {
+              value: sectionData.compliance,
+              style: { bold: true, bl: true, fontSize: 'l' },
+            },
+          ],
+        ],
+      };
+    },
+    warrantSummaryTableLayout() {
       /* eslint-disable prefer-destructuring */
       const reportData = this.reportData;
       return {
         title: 'Warrant Summary',
         columnStyles: [
-          { c: 1, width: '4xl' },
+          {
+            c: 1,
+            style: { width: '4xl' },
+          },
         ],
         header: [
           [

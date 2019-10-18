@@ -1,36 +1,36 @@
 <template>
   <div class="fc-report-table">
     <h2 v-if="title">{{title}}</h2>
-    <table>
-      <caption v-if="caption">
+    <table class="my-m">
+      <caption
+        v-if="caption"
+        class="font-size-l my-m text-left">
         {{caption}}
       </caption>
-      <!-- TODO: colgroup -->
-      <colgroup>
-        <col>
-        <col class="col-warrant-description">
-        <col span="3">
+      <colgroup v-if="colgroup.length > 0">
+        <col
+          v-for="({ attrs }, c) in colgroup"
+          :key="'col_' + c"
+          v-bind="attrs" />
       </colgroup>
       <thead v-if="header.length > 0">
         <tr
           v-for="(row, r) in headerNormalized"
           :key="'row_header_' + r">
           <component
-            v-for="({ attrs, innerTag, tag, value }, c) in row"
+            v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <component :is="innerTag">
-              <i
-                v-if="value === true || value === false"
-                class="fa"
-                :class="{
-                  'fa-check': value,
-                  'fa-times': !value,
-                }"></i>
-              <span v-else-if="value === null">&nbsp;</span>
-              <span v-else>{{value}}</span>
-            </component>
+            <i
+              v-if="value === true || value === false"
+              class="fa"
+              :class="{
+                'fa-check': value,
+                'fa-times': !value,
+              }"></i>
+            <span v-else-if="value === null">&nbsp;</span>
+            <span v-else>{{value}}</span>
           </component>
         </tr>
       </thead>
@@ -39,21 +39,19 @@
           v-for="(row, r) in bodyNormalized"
           :key="'row_body_' + r">
           <component
-            v-for="({ attrs, innerTag, tag, value }, c) in row"
+            v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <component :is="innerTag">
-              <i
-                v-if="value === true || value === false"
-                class="fa"
-                :class="{
-                  'fa-check': value,
-                  'fa-times': !value,
-                }"></i>
-              <span v-else-if="value === null">&nbsp;</span>
-              <span v-else>{{value}}</span>
-            </component>
+            <i
+              v-if="value === true || value === false"
+              class="fa"
+              :class="{
+                'fa-check': value,
+                'fa-times': !value,
+              }"></i>
+            <span v-else-if="value === null">&nbsp;</span>
+            <span v-else>{{value}}</span>
           </component>
         </tr>
       </tbody>
@@ -62,21 +60,19 @@
           v-for="(row, r) in footerNormalized"
           :key="'row_footer_' + r">
           <component
-            v-for="({ attrs, innerTag, tag, value }, c) in row"
+            v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <component :is="innerTag">
-              <i
-                v-if="value === true || value === false"
-                class="fa"
-                :class="{
-                  'fa-check': value,
-                  'fa-times': !value,
-                }"></i>
-              <span v-else-if="value === null">&nbsp;</span>
-              <span v-else>{{value}}</span>
-            </component>
+            <i
+              v-if="value === true || value === false"
+              class="fa"
+              :class="{
+                'fa-check': value,
+                'fa-times': !value,
+              }"></i>
+            <span v-else-if="value === null">&nbsp;</span>
+            <span v-else>{{value}}</span>
           </component>
         </tr>
       </tfoot>
@@ -85,7 +81,7 @@
 </template>
 
 <script>
-function normalizeCellStyle(style) {
+function normalizeStyle(style) {
   const defaultStyle = {
     bold: false,
     bt: false,
@@ -93,19 +89,25 @@ function normalizeCellStyle(style) {
     bb: false,
     br: false,
     fontSize: null,
+    width: null,
   };
   return Object.assign(defaultStyle, style);
 }
 
-function getClassListForCellStyle(cellStyle) {
+function getClassListForStyle(style) {
   const {
+    bold,
     bt,
     bl,
     bb,
     br,
     fontSize,
-  } = cellStyle;
+    width,
+  } = style;
   const classList = [];
+  if (bold) {
+    classList.push('font-weight-bold');
+  }
   if (bt) {
     classList.push('bt');
   }
@@ -120,6 +122,9 @@ function getClassListForCellStyle(cellStyle) {
   }
   if (fontSize) {
     classList.push(`font-size-${fontSize}`);
+  }
+  if (width) {
+    classList.push(`w-${width}`);
   }
   return classList;
 }
@@ -146,20 +151,44 @@ function normalizeCell(cell, header) {
   if (colspan !== 1) {
     attrs.colspan = colspan;
   }
-  const cellStyle = normalizeCellStyle(cell.style);
-  const classList = getClassListForCellStyle(cellStyle);
+  const cellStyle = normalizeStyle(cell.style);
+  const classList = getClassListForStyle(cellStyle);
   if (classList.length > 0) {
     attrs.class = classList;
   }
 
-  const { bold } = cellStyle;
-  const innerTag = bold ? 'strong' : 'span';
   return {
     attrs,
-    innerTag,
     tag,
     value,
   };
+}
+
+function normalizeCol(columnStyle) {
+  const attrs = {};
+  const colStyle = normalizeStyle(columnStyle.style);
+  const classList = getClassListForStyle(colStyle);
+  if (classList.length > 0) {
+    attrs.class = classList;
+  }
+  return { attrs };
+}
+
+function normalizeColgroup(columnStyles) {
+  let cPrev = -1;
+  const colgroup = [];
+  columnStyles.forEach((columnStyle) => {
+    const { c } = columnStyle;
+    const cDiff = c - cPrev;
+    if (cDiff > 1) {
+      const span = cDiff - 1;
+      colgroup.push({ attrs: { span } });
+    }
+    const col = normalizeCol(columnStyle);
+    colgroup.push(col);
+    cPrev = c;
+  });
+  return colgroup;
 }
 
 export default {
@@ -192,6 +221,9 @@ export default {
       return this.body.map(row => row.map(
         cell => normalizeCell(cell, false),
       ));
+    },
+    colgroup() {
+      return normalizeColgroup(this.columnStyles);
     },
     footerNormalized() {
       return this.footer.map(row => row.map(
