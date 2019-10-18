@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { format } from 'd3-format';
 import { mapState } from 'vuex';
 
 import FcReportTable from
@@ -145,7 +146,7 @@ export default {
             },
             { value: sectionData.value.total },
             {
-              value: sectionData.value.avg,
+              value: format('.2f')(sectionData.value.avg),
               style: { bl: true },
             },
             { value: sectionData.threshold },
