@@ -241,22 +241,24 @@ export default {
 
 <style lang="postcss">
 .fc-report-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-  tr > th,
-  tr > td {
-    padding: var(--space-xs) var(--space-s);
-  }
-  tr > td {
-    text-align: right;
-  }
-  & > thead {
-    background-color: var(--base-lighter);
-  }
-  & > tbody {
-    & > tr:nth-child(2n) {
+  & > table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    tr > th,
+    tr > td {
+      padding: var(--space-xs) var(--space-s);
+    }
+    tr > td {
+      text-align: right;
+    }
+    & > thead {
       background-color: var(--base-lighter);
+    }
+    & > tbody {
+      & > tr:nth-child(2n) {
+        background-color: var(--base-lighter);
+      }
     }
   }
 }
