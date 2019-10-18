@@ -1,7 +1,9 @@
 <template>
   <div class="fc-report-table">
     <h2 v-if="title">{{title}}</h2>
-    <table class="my-m">
+    <table
+      class="my-m"
+      @mouseleave="$emit('table-mouseleave')">
       <caption
         v-if="caption"
         class="font-size-l my-m text-left">
@@ -21,7 +23,13 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs">
+            v-bind="attrs"
+            @mouseenter="$emit('cell-mouseenter', {
+              section: 'header',
+              r,
+              c,
+              value,
+            })">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -42,7 +50,13 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs">
+            v-bind="attrs"
+            @mouseenter="$emit('cell-mouseenter', {
+              section: 'body',
+              r,
+              c,
+              value,
+            })">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -63,7 +77,13 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs">
+            v-bind="attrs"
+            @mouseenter="$emit('cell-mouseenter', {
+              section: 'footer',
+              r,
+              c,
+              value,
+            })">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -103,6 +123,7 @@ function getClassListForStyle(style) {
     br,
     fontSize,
     width,
+    ...customClasses
   } = style;
   const classList = [];
   if (bold) {
@@ -126,6 +147,11 @@ function getClassListForStyle(style) {
   if (width) {
     classList.push(`w-${width}`);
   }
+  Object.entries(customClasses).forEach(([className, active]) => {
+    if (active) {
+      classList.push(className);
+    }
+  });
   return classList;
 }
 
