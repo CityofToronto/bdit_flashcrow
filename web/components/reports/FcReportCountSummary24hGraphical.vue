@@ -9,7 +9,7 @@
         <span>{{count.type.label}}</span>
       </div>
     </header>
-    <FcChartAtrVolume24h
+    <FcReportBarChart
       v-model="highlightedHour"
       :aspect-ratio="2"
       :chart-data="reportData" />
@@ -54,12 +54,12 @@
 <script>
 import { mapState } from 'vuex';
 
-import FcChartAtrVolume24h from '@/web/components/reports/FcChartAtrVolume24h.vue';
+import FcReportBarChart from '@/web/components/reports/FcReportBarChart.vue';
 
 export default {
   name: 'FcReportCountSummary24hGraphical',
   components: {
-    FcChartAtrVolume24h,
+    FcReportBarChart,
   },
   props: {
     count: Object,
@@ -78,7 +78,7 @@ export default {
 
 <style lang="postcss">
 .fc-report-atr-volume-24h-graph {
-  & > .fc-chart-atr-volume-24h {
+  & > .fc-report-bar-chart {
     height: 400px;
   }
   & > footer {
