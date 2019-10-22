@@ -12,7 +12,7 @@
     <FcReportTable v-bind="tableLayout" />
   </div>
 </template>
-[
+
 <script>
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcReportTable from
