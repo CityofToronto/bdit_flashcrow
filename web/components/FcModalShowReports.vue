@@ -421,6 +421,7 @@ export default {
       align-items: stretch;
       & > .fc-modal-show-reports-master {
         border-right: var(--border-default);
+        overflow: auto;
       }
       & > .fc-modal-show-reports-detail {
         max-width: 75%;
