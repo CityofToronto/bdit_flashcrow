@@ -73,7 +73,6 @@
 
 <script>
 import { format } from 'd3-format';
-import { mapState } from 'vuex';
 
 import { SPEED_CLASSES } from '@/lib/Constants';
 import FcReportTable from '@/web/components/reports/FcReportTable.vue';
@@ -246,7 +245,6 @@ export default {
         ],
       };
     },
-    ...mapState(['locationQuery']),
   },
 };
 </script>

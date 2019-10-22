@@ -158,12 +158,14 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
   '@/web/components/reports/FcReportCountSummaryTurningMovement.vue';
+import FcReportCountSummaryTurningMovementDetailed from
+  '@/web/components/reports/FcReportCountSummaryTurningMovementDetailed.vue';
 import FcReportIntersectionSummary from
   '@/web/components/reports/FcReportIntersectionSummary.vue';
 import FcReportSpeedPercentile from
@@ -199,6 +201,7 @@ const OPTIONS_REPORTS = {
   ATR_VOLUME_BICYCLE: OPTIONS_REPORTS_ATR_VOLUME,
   TMC: [
     ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
+    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED,
     ReportType.INTERSECTION_SUMMARY,
     ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL,
     ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED,
@@ -223,6 +226,7 @@ export default {
   components: {
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
+    FcReportCountSummaryTurningMovementDetailed,
     FcReportIntersectionSummary,
     FcReportSpeedPercentile,
     FcReportWarrantTrafficSignalControl,
@@ -313,7 +317,6 @@ export default {
       }
       return selectedReport;
     },
-    ...mapState(['locationQuery']),
     ...mapGetters(['username']),
   },
   watch: {
@@ -418,6 +421,7 @@ export default {
       align-items: stretch;
       & > .fc-modal-show-reports-master {
         border-right: var(--border-default);
+        overflow: auto;
       }
       & > .fc-modal-show-reports-detail {
         max-width: 75%;

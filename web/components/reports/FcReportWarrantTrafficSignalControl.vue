@@ -69,7 +69,6 @@
 
 <script>
 import { format } from 'd3-format';
-import { mapState } from 'vuex';
 
 import FcReportTable from
   '@/web/components/reports/FcReportTable.vue';
@@ -361,7 +360,6 @@ export default {
         ],
       };
     },
-    ...mapState(['locationQuery']),
   },
 };
 </script>

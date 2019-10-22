@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcReportTable from
   '@/web/components/reports/FcReportTable.vue';
@@ -140,7 +138,6 @@ export default {
         return { start, end };
       });
     },
-    ...mapState(['locationQuery']),
   },
 };
 </script>
