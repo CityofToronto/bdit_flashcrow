@@ -1,44 +1,22 @@
-from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from datetime import datetime, timedelta
-import os
+"""
+centreline_vector_tiles
 
-AIRFLOW_DAGS = os.path.dirname(os.path.realpath(__file__))
-AIRFLOW_ROOT = os.path.dirname(AIRFLOW_DAGS)
-AIRFLOW_TASKS = os.path.join(AIRFLOW_ROOT, 'tasks')
+Generate vector tiles from City of Toronto centreline geometry.  These are then
+served from `/tiles` on our web tier, where they are used by `PaneMap` in the web
+frontend to render interactive centreline features.
+"""
+# pylint: disable=pointless-statement
+from datetime import datetime
 
-default_args = {
-    'email': ['Evan.Savage@toronto.ca'],
-    'email_on_failure': True,
-    'email_on_retry': True,
-    'owner': 'ec2-user',
-    'start_date': datetime(2019, 5, 5),
-    'task_concurrency': 1
-}
+from airflow_utils import create_dag, create_bash_task
 
-dag = DAG(
-    'centreline_vector_tiles',
-    default_args=default_args,
-    max_active_runs=1,
-    schedule_interval='0 4 * * 6')
+START_DATE = datetime(2019, 5, 5)
+SCHEDULE_INTERVAL = '0 4 * * 6'
+DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-copy_centreline_sh = os.path.join(AIRFLOW_TASKS, 'copy_centreline.sh')
-copy_centreline = BashOperator(
-    task_id='copy_centreline',
-    bash_command='{0} '.format(copy_centreline_sh),
-    dag=dag)
+COPY_CENTRELINE = create_bash_task(DAG, 'copy_centreline')
+BUILD_VECTOR_TILES = create_bash_task(DAG, 'build_vector_tiles')
+EXTRACT_VECTOR_TILES = create_bash_task(DAG, 'extract_vector_tiles')
 
-build_vector_tiles_sh = os.path.join(AIRFLOW_TASKS, 'build_vector_tiles.sh')
-build_vector_tiles = BashOperator(
-    task_id='build_vector_tiles',
-    bash_command='{0} '.format(build_vector_tiles_sh),
-    dag=dag)
-
-extract_vector_tiles_sh = os.path.join(AIRFLOW_TASKS, 'extract_vector_tiles.sh')
-extract_vector_tiles = BashOperator(
-    task_id='extract_vector_tiles',
-    bash_command='{0} '.format(extract_vector_tiles_sh),
-    dag=dag)
-
-copy_centreline >> build_vector_tiles
-build_vector_tiles >> extract_vector_tiles
+COPY_CENTRELINE >> BUILD_VECTOR_TILES
+BUILD_VECTOR_TILES >> EXTRACT_VECTOR_TILES

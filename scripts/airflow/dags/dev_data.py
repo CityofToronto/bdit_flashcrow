@@ -1,37 +1,19 @@
-from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from datetime import datetime, timedelta
-import os
+"""
+dev_data
 
-AIRFLOW_DAGS = os.path.dirname(os.path.realpath(__file__))
-AIRFLOW_ROOT = os.path.dirname(AIRFLOW_DAGS)
-AIRFLOW_TASKS = os.path.join(AIRFLOW_ROOT, 'tasks')
+Generates a test dataset for development by sampling collisions and counts.  This
+allows us to conduct local tests against actual data.
+"""
+# pylint: disable=pointless-statement
+from datetime import datetime
 
-default_args = {
-    'email': ['Evan.Savage@toronto.ca'],
-    'email_on_failure': True,
-    'email_on_retry': True,
-    'owner': 'ec2-user',
-    'start_date': datetime(2019, 5, 8),
-    'task_concurrency': 1
-}
+from airflow_utils import create_dag, create_bash_task
 
-dag = DAG(
-    'dev_data',
-    default_args=default_args,
-    max_active_runs=1,
-    schedule_interval='30 5 * * 6')
+START_DATE = datetime(2019, 5, 8)
+SCHEDULE_INTERVAL = '30 5 * * 6'
+DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-sample_dev_data_sh = os.path.join(AIRFLOW_TASKS, 'sample_dev_data.sh')
-sample_dev_data = BashOperator(
-    task_id='sample_dev_data',
-    bash_command='{0} '.format(sample_dev_data_sh),
-    dag=dag)
+SAMPLE_DEV_DATA = create_bash_task(DAG, 'sample_dev_data')
+DUMP_DEV_DATA = create_bash_task(DAG, 'dump_dev_data')
 
-dump_dev_data_sh = os.path.join(AIRFLOW_TASKS, 'dump_dev_data.sh')
-dump_dev_data = BashOperator(
-    task_id='dump_dev_data',
-    bash_command='{0} '.format(dump_dev_data_sh),
-    dag=dag)
-
-sample_dev_data >> dump_dev_data
+SAMPLE_DEV_DATA >> DUMP_DEV_DATA

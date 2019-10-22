@@ -1,44 +1,21 @@
-from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from datetime import datetime, timedelta
-import os
+"""
+flow_geocoding
 
-AIRFLOW_DAGS = os.path.dirname(os.path.realpath(__file__))
-AIRFLOW_ROOT = os.path.dirname(AIRFLOW_DAGS)
-AIRFLOW_TASKS = os.path.join(AIRFLOW_ROOT, 'tasks')
+Use arterycode matching information as built by Aakash (Big Data) to link
+counts with the Toronto centreline.
+"""
+# pylint: disable=pointless-statement
+from datetime import datetime
 
-default_args = {
-    'email': ['Evan.Savage@toronto.ca'],
-    'email_on_failure': True,
-    'email_on_retry': True,
-    'owner': 'ec2-user',
-    'start_date': datetime(2019, 5, 6),
-    'task_concurrency': 1
-}
+from airflow_utils import create_dag, create_bash_task
 
-dag = DAG(
-    'flow_geocoding',
-    default_args=default_args,
-    max_active_runs=1,
-    schedule_interval='30 4 * * *')
+START_DATE = datetime(2019, 5, 6)
+SCHEDULE_INTERVAL = '30 4 * * *'
+DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-copy_artery_tcl_sh = os.path.join(AIRFLOW_TASKS, 'copy_artery_tcl.sh')
-copy_artery_tcl = BashOperator(
-    task_id='copy_artery_tcl',
-    bash_command='{0} '.format(copy_artery_tcl_sh),
-    dag=dag)
+COPY_ARTERY_TCL = create_bash_task(DAG, 'copy_artery_tcl')
+BUILD_ARTERY_SEGMENTS = create_bash_task(DAG, 'build_artery_segments')
+BUILD_ARTERY_CENTRELINE = create_bash_task(DAG, 'build_artery_centreline')
 
-build_artery_segments_sh = os.path.join(AIRFLOW_TASKS, 'build_artery_segments.sh')
-build_artery_segments = BashOperator(
-    task_id='build_artery_segments',
-    bash_command='{0} '.format(build_artery_segments_sh),
-    dag=dag)
-
-build_artery_centreline_sh = os.path.join(AIRFLOW_TASKS, 'build_artery_centreline.sh')
-build_artery_centreline = BashOperator(
-    task_id='build_artery_centreline',
-    bash_command='{0} '.format(build_artery_centreline_sh),
-    dag=dag)
-
-copy_artery_tcl >> build_artery_segments
-build_artery_segments >> build_artery_centreline
+COPY_ARTERY_TCL >> BUILD_ARTERY_SEGMENTS
+BUILD_ARTERY_SEGMENTS >> BUILD_ARTERY_CENTRELINE
