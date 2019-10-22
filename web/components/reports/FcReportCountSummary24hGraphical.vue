@@ -23,8 +23,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import FcReportBarChart from '@/web/components/reports/FcReportBarChart.vue';
 import FcReportTable from '@/web/components/reports/FcReportTable.vue';
 
@@ -65,7 +63,6 @@ export default {
         ],
       };
     },
-    ...mapState(['locationQuery']),
   },
   methods: {
     onMouseenterCell({ c: h }) {

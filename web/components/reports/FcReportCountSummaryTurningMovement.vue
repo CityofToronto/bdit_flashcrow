@@ -28,8 +28,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcReportTable from
   '@/web/components/reports/FcReportTable.vue';
@@ -252,7 +250,6 @@ export default {
       ];
       return { header, body };
     },
-    ...mapState(['locationQuery']),
   },
 };
 </script>
@@ -261,12 +258,6 @@ export default {
 .fc-report-tmc-summary {
   table {
     width: 1600px;
-    & > thead {
-      background-color: var(--base-lighter);
-      & > tr > th {
-        padding: var(--space-xs) var(--space-s);
-      }
-    }
     & > tbody {
       & > tr {
         &:nth-child(2n) {

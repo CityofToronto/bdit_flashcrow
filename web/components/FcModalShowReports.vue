@@ -158,12 +158,14 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
   '@/web/components/reports/FcReportCountSummaryTurningMovement.vue';
+import FcReportCountSummaryTurningMovementDetailed from
+  '@/web/components/reports/FcReportCountSummaryTurningMovementDetailed.vue';
 import FcReportIntersectionSummary from
   '@/web/components/reports/FcReportIntersectionSummary.vue';
 import FcReportSpeedPercentile from
@@ -224,6 +226,7 @@ export default {
   components: {
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
+    FcReportCountSummaryTurningMovementDetailed,
     FcReportIntersectionSummary,
     FcReportSpeedPercentile,
     FcReportWarrantTrafficSignalControl,
@@ -314,7 +317,6 @@ export default {
       }
       return selectedReport;
     },
-    ...mapState(['locationQuery']),
     ...mapGetters(['username']),
   },
   watch: {
