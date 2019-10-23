@@ -160,6 +160,8 @@
 import { saveAs } from 'file-saver';
 import { mapGetters } from 'vuex';
 
+import FcReportCountSummary24hDetailed from
+  '@/web/components/reports/FcReportCountSummary24hDetailed.vue';
 import FcReportCountSummary24hGraphical from
   '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
 import FcReportCountSummaryTurningMovement from
@@ -194,8 +196,8 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
   ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
-  ReportType.COUNT_SUMMARY_24H,
   ReportType.COUNT_SUMMARY_24H_DETAILED,
+  ReportType.COUNT_SUMMARY_24H,
 ];
 const OPTIONS_REPORTS = {
   ATR_VOLUME_BICYCLE: OPTIONS_REPORTS_ATR_VOLUME,
@@ -224,6 +226,7 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    FcReportCountSummary24hDetailed,
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
     FcReportCountSummaryTurningMovementDetailed,
