@@ -28,6 +28,6 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumac
     },
   );
 
-  const transformedData = reportInstance.transformData(countData);
+  const transformedData = reportInstance.transformData(null, countData);
   expect(transformedData).toEqual(expectedData);
 });

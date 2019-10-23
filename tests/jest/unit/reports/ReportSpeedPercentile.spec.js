@@ -42,7 +42,7 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
    * Replicating TraxPro's histogram calculation *exactly* is difficult, so we
    * tolerate some deviation from legacy report values.
    */
-  const transformedData = reportInstance.transformData(countData);
+  const transformedData = reportInstance.transformData(null, countData);
   const {
     countDataByHour,
     hoursPeakAm,
