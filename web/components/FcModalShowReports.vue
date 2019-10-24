@@ -160,6 +160,8 @@
 import { saveAs } from 'file-saver';
 import { mapGetters } from 'vuex';
 
+import FcReportCountSummary24h from
+  '@/web/components/reports/FcReportCountSummary24h.vue';
 import FcReportCountSummary24hDetailed from
   '@/web/components/reports/FcReportCountSummary24hDetailed.vue';
 import FcReportCountSummary24hGraphical from
@@ -226,6 +228,7 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
+    FcReportCountSummary24h,
     FcReportCountSummary24hDetailed,
     FcReportCountSummary24hGraphical,
     FcReportCountSummaryTurningMovement,
