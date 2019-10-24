@@ -1,5 +1,11 @@
 import uuid from 'uuid/v4';
 
+import {
+  CardinalDirection,
+  centrelineKey,
+  CentrelineType,
+} from '@/lib/Constants';
+import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
@@ -10,13 +16,79 @@ import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
-import {
-  centrelineKey,
-  CentrelineType,
-} from '@/lib/Constants';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
+
+test('ArteryDAO.getApproachDirection', async () => {
+  expect(ArteryDAO.getApproachDirection('')).toBe(null);
+  expect(ArteryDAO.getApproachDirection(null)).toBe(null);
+  expect(ArteryDAO.getApproachDirection('invalid-direction')).toBe(null);
+
+  expect(ArteryDAO.getApproachDirection('N')).toBe(CardinalDirection.SOUTH);
+  expect(ArteryDAO.getApproachDirection('E')).toBe(CardinalDirection.WEST);
+  expect(ArteryDAO.getApproachDirection('S')).toBe(CardinalDirection.NORTH);
+  expect(ArteryDAO.getApproachDirection('W')).toBe(CardinalDirection.EAST);
+});
+
+test('ArteryDAO.getCombinedStreet', async () => {
+  expect(ArteryDAO.getCombinedStreet(null, null, null)).toBe(null);
+  expect(ArteryDAO.getCombinedStreet(null, 'Ave', 'W')).toBe(null);
+
+  expect(ArteryDAO.getCombinedStreet(
+    'BROWNS LINE',
+    null,
+    null,
+  )).toBe('BROWNS LINE');
+  expect(ArteryDAO.getCombinedStreet(
+    'ADANAC',
+    'DR',
+    null,
+  )).toBe('ADANAC DR');
+  expect(ArteryDAO.getCombinedStreet(
+    'DUNDAS',
+    'ST',
+    'W',
+  )).toBe('DUNDAS ST W');
+});
+
+test('ArteryDAO.byArteryCode', async () => {
+  // intersection
+  let result = await ArteryDAO.byArteryCode(1146);
+  expect(result).toEqual({
+    approachDir: null,
+    arteryCode: 1146,
+    centrelineId: 13446642,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.246253917, 43.773318767],
+    },
+    locationDesc: 'ELLESMERE RD AT PARKINGTON CRES (PX 2296)',
+    stationCode: '0013446642',
+    street1: 'ELLESMERE RD',
+    street2: 'PARKINGTON CRES',
+    street3: 'PX 2296',
+  });
+
+  // segment
+  result = await ArteryDAO.byArteryCode(1);
+  expect(result).toEqual({
+    approachDir: CardinalDirection.EAST,
+    arteryCode: 1,
+    centrelineId: 110795,
+    centrelineType: CentrelineType.SEGMENT,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.2289101129868, 43.7396537576817],
+    },
+    locationDesc: 'ADANAC DR E/B W OF BELLAMY RD',
+    stationCode: '1',
+    street1: 'ADANAC DR',
+    street2: 'BELLAMY RD',
+    street3: null,
+  });
+});
 
 test('CategoryDAO', async () => {
   expect(CategoryDAO.isInited()).toBe(false);

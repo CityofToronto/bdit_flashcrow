@@ -31,6 +31,6 @@ test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/
    * one data point per hour.  This allows us to test that the 24-hour detailed report
    * works in this case.
    */
-  const transformedData = reportInstance.transformData(countData);
+  const transformedData = reportInstance.transformData(null, countData);
   expect(transformedData).toEqual(expectedData);
 });

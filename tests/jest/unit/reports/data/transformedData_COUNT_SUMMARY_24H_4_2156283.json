@@ -1,0 +1,73 @@
+[
+  {
+    "title": "MORNINGSIDE AVE",
+    "directionGroups": [
+      {
+        "title": "Northbound",
+        "counts": [
+          {
+            "location":"MORNINGSIDE AVE N/B S OF LAWRENCE AVE",
+            "category": "SPEED",
+            "stationCode": 2946,
+            "arteryCode": 2946,
+            "date": "2019-03-07T05:00:00.000Z",
+            "dayOfWeek": "Thu",
+            "amPeak": {
+              "indices": [32, 33, 34, 35],
+              "sum": 488,
+              "timeRange": {
+                "start": "2019-03-07T08:00:00.000Z",
+                "end": "2019-03-07T09:00:00.000Z"
+              }
+            },
+            "pmPeak": {
+              "indices": [62, 63, 64, 65],
+              "sum": 481,
+              "timeRange": {
+                "start": "2019-03-07T15:30:00.000Z",
+                "end": "2019-03-07T16:30:00.000Z"
+              }
+            },
+            "offPeak": {
+              "indices": [59, 60, 61, 62],
+              "sum": 441,
+              "timeRange": {
+                "start": "2019-03-07T14:45:00.000Z",
+                "end": "2019-03-07T15:45:00.000Z"
+              }
+            },
+            "total": 6063
+          }
+        ],
+        "totals": {
+          "sum": {
+            "amPeak": 488,
+            "pmPeak": 481,
+            "offPeak": 441,
+            "total": 6063
+          },
+          "avg": {
+            "amPeak": 488,
+            "pmPeak": 481,
+            "offPeak": 441,
+            "total": 6063
+          }
+        }
+      }
+    ],
+    "totals": {
+      "sum": {
+        "amPeak": 488,
+        "pmPeak": 481,
+        "offPeak": 441,
+        "total": 6063
+      },
+      "avg": {
+        "amPeak": 488,
+        "pmPeak": 481,
+        "offPeak": 441,
+        "total": 6063
+      }
+    }
+  }
+]

@@ -71,6 +71,6 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
     ),
   );
 
-  const transformedData = reportInstance.transformData(countData);
+  const transformedData = reportInstance.transformData(null, countData);
   expect(transformedData).toEqual(expectedData);
 });

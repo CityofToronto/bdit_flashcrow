@@ -23,7 +23,7 @@ test('ReportIntersectionSummary#transformData', () => {
       hourlyMinorDirections,
     } = generateHourlyMajorAndMinorDirections(hourlyData);
     expect(() => {
-      reportInstance.transformData({
+      reportInstance.transformData(null, {
         countData,
         hourlyData,
         hourlyMajorDirections,
@@ -55,7 +55,7 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
   );
 
-  const { hourlyTotals, totals } = reportInstance.transformData({
+  const { hourlyTotals, totals } = reportInstance.transformData(null, {
     countData,
     hourlyData,
     hourlyMajorDirections,

@@ -15,14 +15,14 @@ test('ReportCountSummary24hGraphical#transformData', () => {
   const reportInstance = new ReportCountSummary24hGraphical();
 
   let countData = [];
-  let volumeByHour = reportInstance.transformData(countData);
+  let volumeByHour = reportInstance.transformData(null, countData);
   let expected = new Array(24).fill(0);
   expect(volumeByHour).toEqual(expected);
 
   countData = [
     { t: dateWithHour(11), data: { COUNT: 42 } },
   ];
-  volumeByHour = reportInstance.transformData(countData);
+  volumeByHour = reportInstance.transformData(null, countData);
   expected = new Array(24).fill(0);
   expected[11] = 42;
   expect(volumeByHour).toEqual(expected);
@@ -33,7 +33,7 @@ test('ReportCountSummary24hGraphical#transformData', () => {
     { t: dateWithHour(2), data: { COUNT: 2 } },
     { t: dateWithHour(3), data: { COUNT: 73 } },
   ];
-  volumeByHour = reportInstance.transformData(countData);
+  volumeByHour = reportInstance.transformData(null, countData);
   expected = new Array(24).fill(0);
   expected[1] = 6;
   expected[2] = 19;
@@ -61,6 +61,6 @@ test('ReportCountSummary24hGraphical#transformData [Morningside S of Lawrence: 4
    * one data point per hour.  This allows us to test that the 24-hour graphical report
    * works in this case.
    */
-  const transformedData = reportInstance.transformData(countData);
+  const transformedData = reportInstance.transformData(null, countData);
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283);
 });
