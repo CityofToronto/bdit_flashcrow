@@ -6,7 +6,7 @@ import config from '@/lib/config/MoveConfig';
 import ReportController from '@/lib/controller/ReportController';
 import db from '@/lib/db/db';
 import LogTag from '@/lib/log/LogTag';
-import FormatGenerator from '@/lib/reports/format/FormatGenerator';
+import MovePdfGenerator from '@/lib/reports/format/MovePdfGenerator';
 
 // TODO: DRY configuration with web/server.js
 async function failAction(request, h, err) {
@@ -104,8 +104,8 @@ async function initServer() {
     server.log(LogTag.INIT, `registered route: ${route.method.toUpperCase()} ${route.path}`);
   });
 
-  server.log(LogTag.INIT, 'initializing report generation assets...');
-  await FormatGenerator.init();
+  server.log(LogTag.INIT, 'initializing PDF generation assets...');
+  await MovePdfGenerator.init();
 
   server.route(ReportController);
 
