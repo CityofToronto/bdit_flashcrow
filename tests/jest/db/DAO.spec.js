@@ -50,6 +50,15 @@ test('ArteryDAO.getCombinedStreet', async () => {
     'ST',
     'W',
   )).toBe('DUNDAS ST W');
+
+  /*
+   * Some of the `ARTERYDATA` entries have spaces in street names.
+   */
+  expect(ArteryDAO.getCombinedStreet(
+    'CACTUS ',
+    'AVE',
+    null,
+  )).toBe('CACTUS AVE');
 });
 
 test('ArteryDAO.byArteryCode', async () => {
