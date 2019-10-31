@@ -1,12 +1,12 @@
 <template>
   <div class="fc-report-table">
-    <h2 v-if="title">{{title}}</h2>
+    <h3 v-if="title">{{title}}</h3>
     <table
       class="my-m"
-      @mouseleave="$emit('table-mouseleave')">
+      :class="{ 'auto-width': autoWidthTable }">
       <caption
         v-if="caption"
-        class="font-size-l my-m text-left">
+        class="font-size-m my-m text-left">
         {{caption}}
       </caption>
       <colgroup v-if="colgroup.length > 0">
@@ -23,13 +23,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'header',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -50,13 +44,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'body',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -77,13 +65,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'footer',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -101,22 +83,11 @@
 </template>
 
 <script>
-function normalizeStyle(style) {
-  const defaultStyle = {
-    bold: false,
-    bt: false,
-    bl: false,
-    bb: false,
-    br: false,
-    fontSize: null,
-    muted: false,
-    width: null,
-  };
-  return Object.assign(defaultStyle, style);
-}
+import TableUtils from '@/lib/reports/format/TableUtils';
 
 function getClassListForStyle(style) {
   const {
+    alignment,
     bold,
     bt,
     bl,
@@ -127,7 +98,9 @@ function getClassListForStyle(style) {
     width,
     ...customClasses
   } = style;
-  const classList = [];
+  const classList = [
+    `text-${alignment}`,
+  ];
   if (bold) {
     classList.push('font-weight-bold');
   }
@@ -160,44 +133,9 @@ function getClassListForStyle(style) {
   return classList;
 }
 
-function normalizeCell(cell, header) {
-  // top-level options
-  const defaultOptions = {
-    value: null,
-    rowspan: 1,
-    colspan: 1,
-    header,
-  };
-  const {
-    value,
-    rowspan,
-    colspan,
-    header: cellHeader,
-  } = Object.assign(defaultOptions, cell);
-  const tag = cellHeader ? 'th' : 'td';
-  const attrs = {};
-  if (rowspan !== 1) {
-    attrs.rowspan = rowspan;
-  }
-  if (colspan !== 1) {
-    attrs.colspan = colspan;
-  }
-  const cellStyle = normalizeStyle(cell.style);
-  const classList = getClassListForStyle(cellStyle);
-  if (classList.length > 0) {
-    attrs.class = classList;
-  }
-
-  return {
-    attrs,
-    tag,
-    value,
-  };
-}
-
 function normalizeCol(columnStyle) {
   const attrs = {};
-  const colStyle = normalizeStyle(columnStyle.style);
+  const colStyle = TableUtils.normalizeStyle(columnStyle.style);
   const classList = getClassListForStyle(colStyle);
   if (classList.length > 0) {
     attrs.class = classList;
@@ -205,7 +143,7 @@ function normalizeCol(columnStyle) {
   return { attrs };
 }
 
-function normalizeColgroup(columnStyles) {
+function getColgroup(columnStyles) {
   let cPrev = -1;
   const colgroup = [];
   columnStyles.forEach((columnStyle) => {
@@ -222,19 +160,59 @@ function normalizeColgroup(columnStyles) {
   return colgroup;
 }
 
+function getSectionRows(section, header, tableStyle) {
+  return section.map(row => row.map((cell) => {
+    const {
+      value,
+      rowspan,
+      colspan,
+      header: cellHeader,
+      style: cellStyle,
+    } = TableUtils.normalizeCell(cell, header, tableStyle);
+    const tag = cellHeader ? 'th' : 'td';
+    const attrs = {};
+    if (rowspan !== 1) {
+      attrs.rowspan = rowspan;
+    }
+    if (colspan !== 1) {
+      attrs.colspan = colspan;
+    }
+    const classList = getClassListForStyle(cellStyle);
+    if (classList.length > 0) {
+      attrs.class = classList;
+    }
+    return {
+      tag,
+      attrs,
+      value,
+    };
+  }));
+}
+
 export default {
   name: 'FcReportTable',
   props: {
-    body: Array,
+    title: {
+      type: String,
+      default: null,
+    },
     caption: {
       type: String,
-      default() { return null; },
+      default: null,
+    },
+    autoWidthTable: {
+      type: Boolean,
+      default: false,
+    },
+    dontBreakTable: {
+      type: Boolean,
+      default: false,
+    },
+    tableStyle: {
+      type: Object,
+      default() { return {}; },
     },
     columnStyles: {
-      type: Array,
-      default() { return []; },
-    },
-    footer: {
       type: Array,
       default() { return []; },
     },
@@ -242,29 +220,24 @@ export default {
       type: Array,
       default() { return []; },
     },
-    title: {
-      type: String,
-      default() { return null; },
+    body: Array,
+    footer: {
+      type: Array,
+      default() { return []; },
     },
   },
   computed: {
     bodyNormalized() {
-      return this.body.map(row => row.map(
-        cell => normalizeCell(cell, false),
-      ));
+      return getSectionRows(this.body, false, this.tableStyle);
     },
     colgroup() {
-      return normalizeColgroup(this.columnStyles);
+      return getColgroup(this.columnStyles);
     },
     footerNormalized() {
-      return this.footer.map(row => row.map(
-        cell => normalizeCell(cell, false),
-      ));
+      return getSectionRows(this.footer, false, this.tableStyle);
     },
     headerNormalized() {
-      return this.header.map(row => row.map(
-        cell => normalizeCell(cell, true),
-      ));
+      return getSectionRows(this.header, true, this.tableStyle);
     },
   },
 };
@@ -276,20 +249,21 @@ export default {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
+    &.auto-width {
+      width: auto;
+    }
     tr > th,
     tr > td {
       padding: var(--space-xs) var(--space-s);
-    }
-    tr > td {
-      text-align: right;
+      &.shade {
+        background-color: var(--base-lighter);
+      }
+      &.peak {
+        background-color: var(--error-light);
+      }
     }
     & > thead {
       background-color: var(--base-lighter);
-    }
-    & > tbody {
-      & > tr:nth-child(2n) {
-        background-color: var(--base-lighter);
-      }
     }
   }
 }

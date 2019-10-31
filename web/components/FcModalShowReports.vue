@@ -115,11 +115,17 @@
                 <section
                   v-else
                   class="mb-xl">
-                  <header class="mb-m flex-container-row">
-                    <h3>{{selectedReport.label}}</h3>
-                    <div class="flex-fill"></div>
+                  <div
+                    v-if="activeReportLayout === null"
+                    class="report-loading-spinner">
+                    <TdsLoadingSpinner />
+                  </div>
+                  <div
+                    v-else
+                    class="fc-report-wrapper">
+                    <FcReport v-bind="activeReportLayout" />
                     <TdsActionDropdown
-                      class="font-size-l"
+                      class="fc-report-download font-size-l"
                       :options="optionsDownloadFormats"
                       @action-selected="onSelectDownloadFormat">
                       <template v-slot:default>
@@ -135,17 +141,7 @@
                         </span>
                       </template>
                     </TdsActionDropdown>
-                  </header>
-                  <div
-                    v-if="activeReportData === null"
-                    class="report-loading-spinner">
-                    <TdsLoadingSpinner />
                   </div>
-                  <component
-                    v-else
-                    :is="'FcReport' + selectedReport.suffix"
-                    :count="activeCount"
-                    :report-data="activeReportData" />
                 </section>
               </div>
             </div>
@@ -160,30 +156,16 @@
 import { saveAs } from 'file-saver';
 import { mapGetters } from 'vuex';
 
-import FcReportCountSummary24h from
-  '@/web/components/reports/FcReportCountSummary24h.vue';
-import FcReportCountSummary24hDetailed from
-  '@/web/components/reports/FcReportCountSummary24hDetailed.vue';
-import FcReportCountSummary24hGraphical from
-  '@/web/components/reports/FcReportCountSummary24hGraphical.vue';
-import FcReportCountSummaryTurningMovement from
-  '@/web/components/reports/FcReportCountSummaryTurningMovement.vue';
-import FcReportCountSummaryTurningMovementDetailed from
-  '@/web/components/reports/FcReportCountSummaryTurningMovementDetailed.vue';
-import FcReportIntersectionSummary from
-  '@/web/components/reports/FcReportIntersectionSummary.vue';
-import FcReportSpeedPercentile from
-  '@/web/components/reports/FcReportSpeedPercentile.vue';
-import FcReportWarrantTrafficSignalControl from
-  '@/web/components/reports/FcReportWarrantTrafficSignalControl.vue';
-import FcReportParametersWarrantTrafficSignalControl from
-  '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
+import FcReport from '@/web/components/reports/FcReport.vue';
+import FcReportParametersWarrantTrafficSignalControl
+  from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import { reporterFetch } from '@/lib/BackendClient';
 import {
+  ReportBlock,
   ReportFormat,
   ReportType,
   Status,
@@ -228,14 +210,7 @@ export default {
   name: 'FcModalShowReports',
   mixins: [TdsMixinModal],
   components: {
-    FcReportCountSummary24h,
-    FcReportCountSummary24hDetailed,
-    FcReportCountSummary24hGraphical,
-    FcReportCountSummaryTurningMovement,
-    FcReportCountSummaryTurningMovementDetailed,
-    FcReportIntersectionSummary,
-    FcReportSpeedPercentile,
-    FcReportWarrantTrafficSignalControl,
+    FcReport,
     FcReportParametersWarrantTrafficSignalControl,
     TdsActionDropdown,
     TdsLoadingSpinner,
@@ -252,7 +227,7 @@ export default {
       reportUserParameters[name] = defaultParameters;
     });
     return {
-      activeReportData: null,
+      activeReportLayout: null,
       downloadLoading: false,
       report: null,
       reportUserParameters,
@@ -372,7 +347,7 @@ export default {
       if (this.selectedReport === null) {
         return;
       }
-      this.activeReportData = null;
+      this.activeReportLayout = null;
       const { name: type } = this.selectedReport;
       const countInfoId = this.activeCount.id;
       const categoryId = this.activeCount.type.id;
@@ -382,13 +357,26 @@ export default {
         data: {
           type,
           id,
-          format: ReportFormat.JSON,
+          format: ReportFormat.WEB,
           ...this.reportParameters,
         },
       };
       reporterFetch('/reports', options)
-        .then(({ data: activeReportData }) => {
-          this.activeReportData = activeReportData;
+        .then(({ type: reportTypeStr, date: reportDateStr, content }) => {
+          const reportType = ReportType.enumValueOf(reportTypeStr);
+          const reportDate = new Date(reportDateStr);
+          const reportContent = content.map(({ type: blockTypeStr, options: blockOptions }) => {
+            const blockType = ReportBlock.enumValueOf(blockTypeStr);
+            return {
+              type: blockType,
+              options: blockOptions,
+            };
+          });
+          this.activeReportLayout = {
+            type: reportType,
+            date: reportDate,
+            content: reportContent,
+          };
         });
     },
   },
@@ -435,6 +423,14 @@ export default {
           overflow: auto;
           & > section > header {
             align-items: center;
+          }
+          .fc-report-wrapper {
+            position: relative;
+            & > .fc-report-download {
+              position: absolute;
+              top: 0;
+              right: 0;
+            }
           }
         }
       }
