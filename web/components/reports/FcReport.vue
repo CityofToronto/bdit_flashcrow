@@ -16,7 +16,7 @@
         :key="'block_' + i"
         :is="'FcReport' + blockType.suffix"
         v-bind="options"
-        class="my-m" />
+        class="pt-l" />
     </div>
   </section>
 </template>

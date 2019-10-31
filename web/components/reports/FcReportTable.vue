@@ -3,10 +3,11 @@
     <h3 v-if="title">{{title}}</h3>
     <table
       class="my-m"
+      :class="{ 'auto-width': autoWidthTable }"
       @mouseleave="$emit('table-mouseleave')">
       <caption
         v-if="caption"
-        class="font-size-s my-m text-left">
+        class="font-size-m my-m text-left">
         {{caption}}
       </caption>
       <colgroup v-if="colgroup.length > 0">
@@ -256,11 +257,15 @@ export default {
       type: String,
       default: null,
     },
+    autoWidthTable: {
+      type: Boolean,
+      default: false,
+    },
     dontBreakTable: {
       type: Boolean,
       default: false,
     },
-    style: {
+    tableStyle: {
       type: Object,
       default() { return {}; },
     },
@@ -280,16 +285,16 @@ export default {
   },
   computed: {
     bodyNormalized() {
-      return getSectionRows(this.body, false, this.style);
+      return getSectionRows(this.body, false, this.tableStyle);
     },
     colgroup() {
       return getColgroup(this.columnStyles);
     },
     footerNormalized() {
-      return getSectionRows(this.footer, false, this.style);
+      return getSectionRows(this.footer, false, this.tableStyle);
     },
     headerNormalized() {
-      return getSectionRows(this.header, true, this.style);
+      return getSectionRows(this.header, true, this.tableStyle);
     },
   },
 };
@@ -301,6 +306,9 @@ export default {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
+    &.auto-width {
+      width: auto;
+    }
     tr > th,
     tr > td {
       padding: var(--space-xs) var(--space-s);

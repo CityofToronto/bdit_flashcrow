@@ -4,7 +4,7 @@
       <div
         v-for="({ name, value }, i) in left"
         :key="'left_' + i"
-        class="font-size-s">
+        class="font-size-m">
         <strong v-if="value === null">
           {{name}}
         </strong>
@@ -18,7 +18,7 @@
       <div
         v-for="({ name, value }, i) in right"
         :key="'left_' + i"
-        class="font-size-s">
+        class="font-size-m">
         <strong v-if="value === null">
           {{name}}
         </strong>
