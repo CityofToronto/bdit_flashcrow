@@ -115,11 +115,17 @@
                 <section
                   v-else
                   class="mb-xl">
-                  <header class="mb-m flex-container-row">
-                    <h3>{{selectedReport.label}}</h3>
-                    <div class="flex-fill"></div>
+                  <div
+                    v-if="activeReportLayout === null"
+                    class="report-loading-spinner">
+                    <TdsLoadingSpinner />
+                  </div>
+                  <div
+                    v-else
+                    class="fc-report-wrapper">
+                    <FcReport v-bind="activeReportLayout" />
                     <TdsActionDropdown
-                      class="font-size-l"
+                      class="fc-report-download font-size-l"
                       :options="optionsDownloadFormats"
                       @action-selected="onSelectDownloadFormat">
                       <template v-slot:default>
@@ -135,15 +141,7 @@
                         </span>
                       </template>
                     </TdsActionDropdown>
-                  </header>
-                  <div
-                    v-if="activeReportLayout === null"
-                    class="report-loading-spinner">
-                    <TdsLoadingSpinner />
                   </div>
-                  <FcReport
-                    v-else
-                    v-bind="activeReportLayout" />
                 </section>
               </div>
             </div>
@@ -425,6 +423,14 @@ export default {
           overflow: auto;
           & > section > header {
             align-items: center;
+          }
+          .fc-report-wrapper {
+            position: relative;
+            & > .fc-report-download {
+              position: absolute;
+              top: 0;
+              right: 0;
+            }
           }
         }
       }
