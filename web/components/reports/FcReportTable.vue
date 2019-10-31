@@ -1,12 +1,12 @@
 <template>
   <div class="fc-report-table">
-    <h2 v-if="title">{{title}}</h2>
+    <h3 v-if="title">{{title}}</h3>
     <table
       class="my-m"
       @mouseleave="$emit('table-mouseleave')">
       <caption
         v-if="caption"
-        class="font-size-l my-m text-left">
+        class="font-size-s my-m text-left">
         {{caption}}
       </caption>
       <colgroup v-if="colgroup.length > 0">
@@ -101,22 +101,49 @@
 </template>
 
 <script>
-function normalizeStyle(style) {
-  const defaultStyle = {
-    bold: false,
-    bt: false,
-    bl: false,
-    bb: false,
-    br: false,
-    fontSize: null,
-    muted: false,
-    width: null,
-  };
-  return Object.assign(defaultStyle, style);
+// TODO: DRY with MovePdfGenerator
+class TableUtils {
+  static normalizeStyle(style, header) {
+    const alignment = header ? 'center' : 'right';
+    const defaultStyle = {
+      alignment,
+      bold: header,
+      bt: false,
+      bl: false,
+      bb: false,
+      br: false,
+      fontSize: null,
+      muted: false,
+      peak: false,
+      shade: false,
+      width: null,
+    };
+    return Object.assign(defaultStyle, style);
+  }
+
+  static normalizeCell(cell, header, tableStyle) {
+    const {
+      value = null,
+      rowspan = 1,
+      colspan = 1,
+      header: cellHeader = header,
+      style: cellStyle = {},
+    } = cell;
+    const mergedStyle = Object.assign({}, tableStyle, cellStyle);
+    const style = TableUtils.normalizeStyle(mergedStyle, cellHeader);
+    return {
+      value,
+      rowspan,
+      colspan,
+      header: cellHeader,
+      style,
+    };
+  }
 }
 
 function getClassListForStyle(style) {
   const {
+    alignment,
     bold,
     bt,
     bl,
@@ -127,7 +154,9 @@ function getClassListForStyle(style) {
     width,
     ...customClasses
   } = style;
-  const classList = [];
+  const classList = [
+    `text-${alignment}`,
+  ];
   if (bold) {
     classList.push('font-weight-bold');
   }
@@ -160,44 +189,9 @@ function getClassListForStyle(style) {
   return classList;
 }
 
-function normalizeCell(cell, header) {
-  // top-level options
-  const defaultOptions = {
-    value: null,
-    rowspan: 1,
-    colspan: 1,
-    header,
-  };
-  const {
-    value,
-    rowspan,
-    colspan,
-    header: cellHeader,
-  } = Object.assign(defaultOptions, cell);
-  const tag = cellHeader ? 'th' : 'td';
-  const attrs = {};
-  if (rowspan !== 1) {
-    attrs.rowspan = rowspan;
-  }
-  if (colspan !== 1) {
-    attrs.colspan = colspan;
-  }
-  const cellStyle = normalizeStyle(cell.style);
-  const classList = getClassListForStyle(cellStyle);
-  if (classList.length > 0) {
-    attrs.class = classList;
-  }
-
-  return {
-    attrs,
-    tag,
-    value,
-  };
-}
-
 function normalizeCol(columnStyle) {
   const attrs = {};
-  const colStyle = normalizeStyle(columnStyle.style);
+  const colStyle = TableUtils.normalizeStyle(columnStyle.style);
   const classList = getClassListForStyle(colStyle);
   if (classList.length > 0) {
     attrs.class = classList;
@@ -205,7 +199,7 @@ function normalizeCol(columnStyle) {
   return { attrs };
 }
 
-function normalizeColgroup(columnStyles) {
+function getColgroup(columnStyles) {
   let cPrev = -1;
   const colgroup = [];
   columnStyles.forEach((columnStyle) => {
@@ -222,19 +216,55 @@ function normalizeColgroup(columnStyles) {
   return colgroup;
 }
 
+function getSectionRows(section, header, tableStyle) {
+  return section.map(row => row.map((cell) => {
+    const {
+      value,
+      rowspan,
+      colspan,
+      header: cellHeader,
+      style: cellStyle,
+    } = TableUtils.normalizeCell(cell, header, tableStyle);
+    const tag = cellHeader ? 'th' : 'td';
+    const attrs = {};
+    if (rowspan !== 1) {
+      attrs.rowspan = rowspan;
+    }
+    if (colspan !== 1) {
+      attrs.colspan = colspan;
+    }
+    const classList = getClassListForStyle(cellStyle);
+    if (classList.length > 0) {
+      attrs.class = classList;
+    }
+    return {
+      tag,
+      attrs,
+      value,
+    };
+  }));
+}
+
 export default {
   name: 'FcReportTable',
   props: {
-    body: Array,
+    title: {
+      type: String,
+      default: null,
+    },
     caption: {
       type: String,
-      default() { return null; },
+      default: null,
+    },
+    dontBreakTable: {
+      type: Boolean,
+      default: false,
+    },
+    style: {
+      type: Object,
+      default() { return {}; },
     },
     columnStyles: {
-      type: Array,
-      default() { return []; },
-    },
-    footer: {
       type: Array,
       default() { return []; },
     },
@@ -242,29 +272,24 @@ export default {
       type: Array,
       default() { return []; },
     },
-    title: {
-      type: String,
-      default() { return null; },
+    body: Array,
+    footer: {
+      type: Array,
+      default() { return []; },
     },
   },
   computed: {
     bodyNormalized() {
-      return this.body.map(row => row.map(
-        cell => normalizeCell(cell, false),
-      ));
+      return getSectionRows(this.body, false, this.style);
     },
     colgroup() {
-      return normalizeColgroup(this.columnStyles);
+      return getColgroup(this.columnStyles);
     },
     footerNormalized() {
-      return this.footer.map(row => row.map(
-        cell => normalizeCell(cell, false),
-      ));
+      return getSectionRows(this.footer, false, this.style);
     },
     headerNormalized() {
-      return this.header.map(row => row.map(
-        cell => normalizeCell(cell, true),
-      ));
+      return getSectionRows(this.header, true, this.style);
     },
   },
 };
@@ -279,17 +304,20 @@ export default {
     tr > th,
     tr > td {
       padding: var(--space-xs) var(--space-s);
-    }
-    tr > td {
-      text-align: right;
+      &.shade {
+        background-color: var(--base-lighter);
+      }
+      &.peak {
+        background-color: var(--error-light);
+      }
+      &.highlight {
+        background-color: var(--primary-light);
+        border-color: var(--primary-darker);
+        color: var(--primary-darker);
+      }
     }
     & > thead {
       background-color: var(--base-lighter);
-    }
-    & > tbody {
-      & > tr:nth-child(2n) {
-        background-color: var(--base-lighter);
-      }
     }
   }
 }

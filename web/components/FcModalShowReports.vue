@@ -167,6 +167,7 @@ import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import { reporterFetch } from '@/lib/BackendClient';
 import {
+  ReportBlock,
   ReportFormat,
   ReportType,
   Status,
@@ -363,10 +364,21 @@ export default {
         },
       };
       reporterFetch('/reports', options)
-        .then(({ type: typeStr, date: dateStr, content }) => {
-          const reportType = ReportType.enumValueOf(typeStr);
-          const date = new Date(dateStr);
-          this.activeReportLayout = { type: reportType, date, content };
+        .then(({ type: reportTypeStr, date: reportDateStr, content }) => {
+          const reportType = ReportType.enumValueOf(reportTypeStr);
+          const reportDate = new Date(reportDateStr);
+          const reportContent = content.map(({ type: blockTypeStr, options: blockOptions }) => {
+            const blockType = ReportBlock.enumValueOf(blockTypeStr);
+            return {
+              type: blockType,
+              options: blockOptions,
+            };
+          });
+          this.activeReportLayout = {
+            type: reportType,
+            date: reportDate,
+            content: reportContent,
+          };
         });
     },
   },
