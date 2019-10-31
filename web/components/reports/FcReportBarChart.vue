@@ -28,6 +28,11 @@ export default {
       default: null,
     },
   },
+  watch: {
+    data() {
+      this.generator.update();
+    },
+  },
   mounted() {
     Vue.nextTick(() => {
       this.updateSize();
