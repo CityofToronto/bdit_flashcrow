@@ -3,8 +3,7 @@
     <h3 v-if="title">{{title}}</h3>
     <table
       class="my-m"
-      :class="{ 'auto-width': autoWidthTable }"
-      @mouseleave="$emit('table-mouseleave')">
+      :class="{ 'auto-width': autoWidthTable }">
       <caption
         v-if="caption"
         class="font-size-m my-m text-left">
@@ -24,13 +23,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'header',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -51,13 +44,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'body',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -78,13 +65,7 @@
             v-for="({ attrs, tag, value }, c) in row"
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
-            v-bind="attrs"
-            @mouseenter="$emit('cell-mouseenter', {
-              section: 'footer',
-              r,
-              c,
-              value,
-            })">
+            v-bind="attrs">
             <i
               v-if="value === true || value === false"
               class="fa"
@@ -317,11 +298,6 @@ export default {
       }
       &.peak {
         background-color: var(--error-light);
-      }
-      &.highlight {
-        background-color: var(--primary-light);
-        border-color: var(--primary-darker);
-        color: var(--primary-darker);
       }
     }
     & > thead {

@@ -27,17 +27,6 @@ export default {
       type: String,
       default: null,
     },
-    value: Number,
-  },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
   },
   mounted() {
     Vue.nextTick(() => {
@@ -80,9 +69,6 @@ export default {
   & > svg {
     & rect.bar {
       fill: var(--base);
-      &.highlight {
-        fill: var(--primary-vivid);
-      }
     }
     & .tick {
       font-size: var(--font-size-m);
