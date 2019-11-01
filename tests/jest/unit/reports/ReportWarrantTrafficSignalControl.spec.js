@@ -1,15 +1,21 @@
 /* eslint-disable camelcase */
+import path from 'path';
+
 import { CardinalDirection, FeatureCode } from '@/lib/Constants';
 import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 import ReportWarrantTrafficSignalControl from '@/lib/reports/ReportWarrantTrafficSignalControl';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateHourlyMajorAndMinorDirections,
   generateTmc,
 } from '@/lib/test/random/CountDataGenerator';
 
-import countData_5_38661 from './data/countData_5_38661.json';
-import transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661 from
-  './data/transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661.json';
+const countData_5_38661 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_5_38661.json'),
+);
+const transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661 = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661.json'),
+);
 
 test('ReportWarrantTrafficSignalControl#transformData', () => {
   const reportInstance = new ReportWarrantTrafficSignalControl();
@@ -49,18 +55,7 @@ test('ReportWarrantTrafficSignalControl#transformData', () => {
 test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]', () => {
   const reportInstance = new ReportWarrantTrafficSignalControl();
 
-  const countData = countData_5_38661.map(({
-    id,
-    countId,
-    t,
-    data,
-  }) => ({
-    id,
-    countId,
-    t: new Date(t.slice(0, -1)),
-    data,
-  }));
-  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
+  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);
   const hourlyMajorDirections = hourlyData.map(
     () => [CardinalDirection.EAST, CardinalDirection.WEST],
   );
@@ -78,7 +73,7 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     startYear: 2016,
   };
   const transformedData = reportInstance.transformData(null, {
-    countData,
+    countData: countData_5_38661,
     hourlyData,
     hourlyMajorDirections,
     hourlyMinorDirections,

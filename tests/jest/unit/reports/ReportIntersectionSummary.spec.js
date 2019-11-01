@@ -1,15 +1,21 @@
 /* eslint-disable camelcase */
+import path from 'path';
+
 import { CardinalDirection } from '@/lib/Constants';
 import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 import ReportIntersectionSummary from '@/lib/reports/ReportIntersectionSummary';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateHourlyMajorAndMinorDirections,
   generateTmc,
 } from '@/lib/test/random/CountDataGenerator';
 
-import countData_5_38661 from './data/countData_5_38661.json';
-import transformedData_INTERSECTION_SUMMARY_5_38661 from
-  './data/transformedData_INTERSECTION_SUMMARY_5_38661.json';
+const countData_5_38661 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_5_38661.json'),
+);
+const transformedData_INTERSECTION_SUMMARY_5_38661 = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_INTERSECTION_SUMMARY_5_38661.json'),
+);
 
 test('ReportIntersectionSummary#transformData', () => {
   const reportInstance = new ReportIntersectionSummary();
@@ -36,18 +42,7 @@ test('ReportIntersectionSummary#transformData', () => {
 test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]', () => {
   const reportInstance = new ReportIntersectionSummary();
 
-  const countData = countData_5_38661.map(({
-    id,
-    countId,
-    t,
-    data,
-  }) => ({
-    id,
-    countId,
-    t: new Date(t.slice(0, -1)),
-    data,
-  }));
-  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData);
+  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);
   const hourlyMajorDirections = hourlyData.map(
     () => [CardinalDirection.EAST, CardinalDirection.WEST],
   );
@@ -55,16 +50,11 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
   );
 
-  const { hourlyTotals, totals } = reportInstance.transformData(null, {
-    countData,
+  const transformedData = reportInstance.transformData(null, {
+    countData: countData_5_38661,
     hourlyData,
     hourlyMajorDirections,
     hourlyMinorDirections,
   });
-  expect(hourlyTotals).toEqual(
-    transformedData_INTERSECTION_SUMMARY_5_38661.data.hourlyTotals,
-  );
-  expect(totals).toEqual(
-    transformedData_INTERSECTION_SUMMARY_5_38661.data.totals,
-  );
+  expect(transformedData).toEqual(transformedData_INTERSECTION_SUMMARY_5_38661);
 });

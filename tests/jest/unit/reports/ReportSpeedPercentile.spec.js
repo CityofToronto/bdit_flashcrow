@@ -1,9 +1,15 @@
 /* eslint-disable camelcase */
-import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
+import path from 'path';
 
-import countData_4_2156283 from './data/countData_4_2156283.json';
-import transformedData_SPEED_PERCENTILE_4_2156283 from
-  './data/transformedData_SPEED_PERCENTILE_4_2156283.json';
+import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
+
+const countData_4_2156283 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_4_2156283.json'),
+);
+const transformedData_SPEED_PERCENTILE_4_2156283 = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_SPEED_PERCENTILE_4_2156283.json'),
+);
 
 expect.extend({
   toBeWithinTolerance(received, expected, tolerance) {
@@ -26,23 +32,11 @@ expect.extend({
 test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportSpeedPercentile();
 
-  const countData = countData_4_2156283.map(({
-    id,
-    countId,
-    t,
-    data,
-  }) => ({
-    id,
-    countId,
-    t: new Date(t.slice(0, -1)),
-    data,
-  }));
-
   /*
    * Replicating TraxPro's histogram calculation *exactly* is difficult, so we
    * tolerate some deviation from legacy report values.
    */
-  const transformedData = reportInstance.transformData(null, countData);
+  const transformedData = reportInstance.transformData(null, countData_4_2156283);
   const {
     countDataByHour,
     hoursPeakAm,

@@ -1,33 +1,23 @@
 /* eslint-disable camelcase */
+import path from 'path';
+
 import ReportCountSummaryTurningMovementDetailed
   from '@/lib/reports/ReportCountSummaryTurningMovementDetailed';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
 
-import countData_5_36781 from './data/countData_5_36781.json';
-import transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781 from
-  './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781.json';
+const countData_5_36781 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_5_36781.json'),
+);
+const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781 = loadJsonSync(
+  path.resolve(
+    __dirname,
+    './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781.json',
+  ),
+);
 
 test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const countData = countData_5_36781.map(({
-    id,
-    countId,
-    t,
-    data,
-  }) => ({
-    id,
-    countId,
-    t: new Date(t.slice(0, -1)),
-    data,
-  }));
-
-  const expectedData = transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781.map(
-    ({ t: tStr, data }) => {
-      const t = new Date(tStr.slice(0, -1));
-      return { t, data };
-    },
-  );
-
-  const transformedData = reportInstance.transformData(null, countData);
-  expect(transformedData).toEqual(expectedData);
+  const transformedData = reportInstance.transformData(null, countData_5_36781);
+  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781);
 });
