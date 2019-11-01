@@ -53,6 +53,7 @@
     "esm": "^3.2.25",
     "file-saver": "^2.0.2",
     "jsdom": "^15.2.0",
+    "luxon": "^1.21.0",
     "mapbox-gl": "^1.4.1",
     "module-alias": "^2.2.2",
     "mustache": "^3.1.0",
