@@ -18,6 +18,9 @@ test('JsonUtils.reviver', () => {
   json = '"Hello, World!"';
   expect(JSON.parse(json, reviver)).toEqual('Hello, World!');
 
+  json = '"1978-03-19 19:47:24"';
+  expect(JSON.parse(json, reviver)).toBeInstanceOf(DateTime);
+
   json = '"1978-03-19 19:47:24.217"';
   expect(JSON.parse(json, reviver)).toBeInstanceOf(DateTime);
 });
