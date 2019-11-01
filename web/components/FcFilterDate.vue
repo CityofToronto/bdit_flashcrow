@@ -12,7 +12,7 @@
         :disabled-dates="{start: tomorrow, end: null}"
         is-expanded
         is-inline
-        :max-date="now"
+        :max-date="now.toJSDate()"
         :min-date="minDate"
         mode="range"
         placeholder="Filter by date"
@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      minDate: new Date(1985, 0, 1),
+      minDate: new Date(1985, 1, 1),
     };
   },
   computed: {
@@ -65,11 +65,7 @@ export default {
       return `${strStart}-${strEnd}`;
     },
     tomorrow() {
-      return new Date(
-        this.now.getFullYear(),
-        this.now.getMonth(),
-        this.now.getDate() + 1,
-      );
+      return this.now.plus({ days: 1 });
     },
     ...mapState(['now']),
   },
