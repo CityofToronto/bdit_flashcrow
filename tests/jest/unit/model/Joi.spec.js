@@ -19,3 +19,14 @@ test('Joi.dateTime', () => {
   result = Joi.dateTime().validate(dt);
   expect(result.error).not.toBeNull();
 });
+
+test('Joi.dateTime [optional / required]', () => {
+  let result = Joi.dateTime().validate(undefined);
+  expect(result.error).toBeNull();
+
+  result = Joi.dateTime().optional().validate(undefined);
+  expect(result.error).toBeNull();
+
+  result = Joi.dateTime().required().validate(undefined);
+  expect(result.error).not.toBeNull();
+});
