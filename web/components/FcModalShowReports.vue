@@ -362,9 +362,8 @@ export default {
         },
       };
       reporterFetch('/reports', options)
-        .then(({ type: reportTypeStr, date: reportDateStr, content }) => {
+        .then(({ type: reportTypeStr, date: reportDate, content }) => {
           const reportType = ReportType.enumValueOf(reportTypeStr);
-          const reportDate = new Date(reportDateStr);
           const reportContent = content.map(({ type: blockTypeStr, options: blockOptions }) => {
             const blockType = ReportBlock.enumValueOf(blockTypeStr);
             return {

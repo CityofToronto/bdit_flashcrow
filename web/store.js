@@ -15,39 +15,12 @@ import {
 } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
+import DateTime from '@/lib/time/DateTime';
 
 Vue.use(Vuex);
 
 const MAX_PER_CATEGORY = 10;
 const TIMEOUT_TOAST = 10000;
-
-function normalizeCount(count) {
-  /*
-   * Due to a bug in our replication process, count timestamps are stored in
-   * PostgreSQL in Toronto-local time, as opposed to UTC - this means we
-   * should ignore the "Z" at the end of the stringified timestamp.
-   */
-  const date = new Date(count.date.slice(0, -1));
-  return {
-    ...count,
-    date,
-  };
-}
-
-function normalizeStudy(study) {
-  const createdAt = new Date(study.createdAt);
-  return { ...study, createdAt };
-}
-
-function normalizeStudyRequest(studyRequest) {
-  const dueDate = new Date(studyRequest.dueDate);
-  const estimatedDeliveryDate = new Date(studyRequest.estimatedDeliveryDate);
-  return {
-    ...studyRequest,
-    dueDate,
-    estimatedDeliveryDate,
-  };
-}
 
 function makeStudy(studyType) {
   return {
@@ -86,7 +59,7 @@ export default new Vuex.Store({
     modal: null,
     toast: null,
     // time
-    now: new Date(),
+    now: DateTime.local(),
     // authentication
     auth: {
       csrf: '',
@@ -167,7 +140,7 @@ export default new Vuex.Store({
             .filter(c => start <= c.createdAt && c.createdAt <= end);
         }
         countsOfType = countsOfType
-          .filter(c => state.filterDayOfWeek.includes(c.date.getDay()));
+          .filter(c => state.filterDayOfWeek.includes(c.date.weekday));
         studiesOfType = studiesOfType
           .filter(({ daysOfWeek }) => daysOfWeek.some(d => state.filterDayOfWeek.includes(d)));
 
@@ -241,11 +214,7 @@ export default new Vuex.Store({
       if (studyRequest.priority === 'URGENT') {
         return now;
       }
-      return new Date(
-        now.getFullYear(),
-        now.getMonth() + 2,
-        now.getDate(),
-      );
+      return now.plus({ months: 2 });
     },
     studyRequestModel(state, getters) {
       const { studyRequest } = state;
@@ -341,16 +310,8 @@ export default new Vuex.Store({
       if (priority === 'URGENT') {
         return dueDate;
       }
-      const oneWeekBeforeDueDate = new Date(
-        dueDate.getFullYear(),
-        dueDate.getMonth(),
-        dueDate.getDate() - 7,
-      );
-      const twoMonthsOut = new Date(
-        now.getFullYear(),
-        now.getMonth() + 2,
-        now.getDate(),
-      );
+      const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
+      const twoMonthsOut = now.plus({ months: 2 });
       if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
         return twoMonthsOut;
       }
@@ -452,11 +413,7 @@ export default new Vuex.Store({
     },
     setNewStudyRequest(state, studyTypes) {
       const { location, now } = state;
-      const dueDate = new Date(
-        now.getFullYear(),
-        now.getMonth() + 3,
-        now.getDate(),
-      );
+      const dueDate = now.plus({ months: 3 });
       const {
         centrelineId,
         centrelineType,
@@ -604,20 +561,18 @@ export default new Vuex.Store({
         apiFetch('/counts/byCentreline', optionsCounts),
       ]);
 
-      const studiesNormalized = studies.map(normalizeStudy);
-      const countsNormalized = counts.map(normalizeCount);
       const numPerCategoryNormalized = makeNumPerCategory();
       numPerCategory.forEach(({ n, category: { value } }) => {
         numPerCategoryNormalized[value] += n;
       });
-      studiesNormalized.forEach(({ studyType: value }) => {
+      studies.forEach(({ studyType: value }) => {
         numPerCategoryNormalized[value] += 1;
       });
 
       const result = {
-        counts: countsNormalized,
+        counts,
         numPerCategory: numPerCategoryNormalized,
-        studies: studiesNormalized,
+        studies,
       };
       commit('setCountsResult', result);
       return result;
@@ -625,8 +580,7 @@ export default new Vuex.Store({
     // STUDY REQUESTS
     async fetchStudyRequest({ commit, dispatch }, id) {
       const url = `/requests/study/${id}`;
-      let studyRequest = await apiFetch(url);
-      studyRequest = normalizeStudyRequest(studyRequest);
+      const studyRequest = await apiFetch(url);
       commit('setStudyRequest', studyRequest);
 
       const { centrelineId, centrelineType } = studyRequest;
@@ -645,8 +599,7 @@ export default new Vuex.Store({
       };
     },
     async fetchAllStudyRequests({ commit, dispatch }) {
-      let studyRequests = await apiFetch('/requests/study');
-      studyRequests = studyRequests.map(normalizeStudyRequest);
+      const studyRequests = await apiFetch('/requests/study');
       commit('setStudyRequests', studyRequests);
 
       const centrelineIdsAndTypes = studyRequests
@@ -669,8 +622,7 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      let studyRequest = await apiFetch('/requests/study', options);
-      studyRequest = normalizeStudyRequest(studyRequest);
+      const studyRequest = await apiFetch('/requests/study', options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
         data: { studyRequest },

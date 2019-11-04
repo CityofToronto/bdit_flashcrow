@@ -16,6 +16,7 @@ import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
+import DateTime from '@/lib/time/DateTime';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
@@ -230,8 +231,8 @@ test('CountDAO.byCentreline()', async () => {
   expect(counts).toHaveLength(0);
 
   // invalid date range (start > end)
-  let start = new Date(2018, 0, 1);
-  let end = new Date(2017, 11, 31);
+  let start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let end = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   counts = await CountDAO.byCentreline(
     30000549, CentrelineType.INTERSECTION,
     { start, end },
@@ -249,8 +250,8 @@ test('CountDAO.byCentreline()', async () => {
 
   // valid feature with less than maxPerCategory counts, date range
   // filters to empty
-  start = new Date(2018, 0, 1);
-  end = new Date(2019, 0, 1);
+  start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  end = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
   counts = await CountDAO.byCentreline(
     14659630, CentrelineType.SEGMENT,
     { start, end },
@@ -268,8 +269,8 @@ test('CountDAO.byCentreline()', async () => {
 
   // valid feature with more than maxPerCategory counts, date range
   // filters to less
-  start = new Date(2015, 0, 1);
-  end = new Date(2016, 0, 1);
+  start = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
+  end = DateTime.fromObject({ year: 2016, month: 1, day: 1 });
   counts = await CountDAO.byCentreline(
     1145768, CentrelineType.SEGMENT,
     { start, end },
@@ -293,8 +294,8 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
   expectNumPerCategory(numPerCategory, []);
 
   // invalid date range (start > end)
-  let start = new Date(2018, 0, 1);
-  let end = new Date(2017, 11, 31);
+  let start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let end = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   numPerCategory = await CountDAO.byCentrelineNumPerCategory(
     30000549, CentrelineType.INTERSECTION,
     { start, end },
@@ -318,8 +319,8 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
   expectNumPerCategory(numPerCategory, [[2, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, date range filters to empty
-  start = new Date(2018, 0, 1);
-  end = new Date(2019, 0, 1);
+  start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  end = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
   numPerCategory = await CountDAO.byCentrelineNumPerCategory(
     14659630, CentrelineType.SEGMENT,
     { start, end },
@@ -336,8 +337,8 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
   expectNumPerCategory(numPerCategory, [[14, 'RESCU']]);
 
   // centreline feature with lots of counts, date range filters to empty
-  start = new Date(1980, 0, 1);
-  end = new Date(1980, 0, 2);
+  start = DateTime.fromObject({ year: 1980, month: 1, day: 1 });
+  end = DateTime.fromObject({ year: 1980, month: 1, day: 2 });
   numPerCategory = await CountDAO.byCentrelineNumPerCategory(
     1145768, CentrelineType.SEGMENT,
     { start, end },
@@ -346,8 +347,8 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
   expectNumPerCategory(numPerCategory, []);
 
   // centreline feature with lots of counts, date range filters down
-  start = new Date(2015, 0, 1);
-  end = new Date(2016, 0, 1);
+  start = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
+  end = DateTime.fromObject({ year: 2016, month: 1, day: 1 });
   numPerCategory = await CountDAO.byCentrelineNumPerCategory(
     1145768, CentrelineType.SEGMENT,
     { start, end },

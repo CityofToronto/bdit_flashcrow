@@ -4,6 +4,7 @@ import {
   SortKeys,
   Status,
 } from '@/lib/Constants';
+import DateTime from '@/lib/time/DateTime';
 
 test('Constants.SortKeys', () => {
   Object.values(SortKeys).forEach((sortKeys) => {
@@ -12,7 +13,7 @@ test('Constants.SortKeys', () => {
     });
   });
 
-  const now = new Date();
+  const now = DateTime.local();
   const COUNT_DATE_NULL = {
     date: null,
     status: Status.NO_EXISTING_COUNT,
