@@ -140,7 +140,7 @@ export default new Vuex.Store({
             .filter(c => start <= c.createdAt && c.createdAt <= end);
         }
         countsOfType = countsOfType
-          .filter(c => state.filterDayOfWeek.includes(c.date.weekday % 7));
+          .filter(c => state.filterDayOfWeek.includes(c.date.weekday));
         studiesOfType = studiesOfType
           .filter(({ daysOfWeek }) => daysOfWeek.some(d => state.filterDayOfWeek.includes(d)));
 
