@@ -14,6 +14,14 @@ test('DateTime.local', () => {
   });
 });
 
+test('DateTime.fromJSDate', () => {
+  const dt = DateTime.fromJSDate(new Date());
+  expect(dt.zone).toEqual({
+    valid: true,
+    zoneName: Settings.defaultZoneName,
+  });
+});
+
 test('DateTime#weekday', () => {
   let dt = DateTime.fromObject({
     year: 2019,

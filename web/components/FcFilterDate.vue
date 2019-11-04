@@ -27,6 +27,7 @@ import { mapState } from 'vuex';
 
 import DatePicker from '@/web/components/DatePicker.vue';
 import TdsButtonDropdown from '@/web/components/tds/TdsButtonDropdown.vue';
+import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
@@ -46,17 +47,32 @@ export default {
   computed: {
     filterDate: {
       get() {
-        return this.$store.state.filterDate;
+        const { filterDate } = this.$store.state;
+        if (filterDate === null) {
+          return null;
+        }
+        let { start, end } = filterDate;
+        start = start.toJSDate();
+        end = end.toJSDate();
+        return { start, end };
       },
       set(filterDate) {
-        this.$store.commit('setFilterDate', filterDate);
+        if (filterDate === null) {
+          this.$store.commit('setFilterDate', null);
+          return;
+        }
+        let { start, end } = filterDate;
+        start = DateTime.fromJSDate(start);
+        end = DateTime.fromJSDate(end);
+        this.$store.commit('setFilterDate', { start, end });
       },
     },
     title() {
-      if (this.filterDate === null) {
+      const { filterDate } = this.$store.state;
+      if (filterDate === null) {
         return 'Dates';
       }
-      const { start, end } = this.filterDate;
+      const { start, end } = filterDate;
       const strStart = TimeFormatters.formatYearMonth(start);
       const strEnd = TimeFormatters.formatYearMonth(end);
       if (strStart === strEnd) {
