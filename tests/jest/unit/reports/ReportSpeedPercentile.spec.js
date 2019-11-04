@@ -2,6 +2,7 @@
 import path from 'path';
 
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
+import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
 
 const countData_4_2156283 = loadJsonSync(
@@ -12,21 +13,7 @@ const transformedData_SPEED_PERCENTILE_4_2156283 = loadJsonSync(
 );
 
 expect.extend({
-  toBeWithinTolerance(received, expected, tolerance) {
-    const pass = Math.abs(received - expected) <= tolerance;
-    if (pass) {
-      const msg = `expected ${received} to be outside tolerance ${tolerance} of ${expected}`;
-      return {
-        message: () => msg,
-        pass: true,
-      };
-    }
-    const msg = `expected ${received} to be within tolerance ${tolerance} of ${expected}`;
-    return {
-      message: () => msg,
-      pass: false,
-    };
-  },
+  toBeWithinTolerance,
 });
 
 test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]', () => {

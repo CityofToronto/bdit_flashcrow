@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      minDate: new Date(1985, 1, 1),
+      minDate: new Date(1985, 0, 1),
     };
   },
   computed: {
