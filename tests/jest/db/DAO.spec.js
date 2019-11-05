@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+import path from 'path';
 import uuid from 'uuid/v4';
 
 import {
@@ -9,6 +11,7 @@ import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
+import CountDataDAO from '@/lib/db/CountDataDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestReasonDAO from '@/lib/db/StudyRequestReasonDAO';
@@ -18,10 +21,18 @@ import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import DateTime from '@/lib/time/DateTime';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
+
+const countData_4_1415698 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_4_1415698.json'),
+);
+const countData_5_26177 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_5_26177.json'),
+);
 
 test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('')).toBe(null);
@@ -387,6 +398,23 @@ test('CountDAO.byIdAndCategory()', async () => {
   expect(count).not.toBeNull();
   expect(count.id).toBe(1415698);
   expect(count.type.id).toBe(4);
+});
+
+test('CountDataDAO', async () => {
+  let count;
+  let countData;
+
+  // TMC
+  count = await CountDAO.byIdAndCategory(26177, 5);
+  debugger;
+  countData = await CountDataDAO.byCount(count);
+  expect(countData).toEqual(countData_5_26177);
+
+  // non-TMC
+  count = await CountDAO.byIdAndCategory(1415698, 4);
+  debugger;
+  countData = await CountDataDAO.byCount(count);
+  expect(countData).toEqual(countData_4_1415698);
 });
 
 test('StudyRequestDAO', async () => {

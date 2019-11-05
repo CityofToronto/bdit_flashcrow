@@ -27,6 +27,9 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Counts.DATE(COUNT_DATE_NULL)).toEqual(-Infinity);
   expect(SortKeys.Counts.DATE(COUNT_DATE_NOW))
     .toEqual(COUNT_DATE_NOW.date.valueOf());
+  expect(SortKeys.Counts.DAY(COUNT_DATE_NULL)).toEqual(-Infinity);
+  expect(SortKeys.Counts.DAY(COUNT_DATE_NOW))
+    .toEqual(COUNT_DATE_NOW.date.weekday);
   expect(SortKeys.Counts.STATUS(COUNT_DATE_NOW))
     .toEqual(COUNT_DATE_NOW.status);
   expect(SortKeys.Counts.STUDY_TYPE(COUNT_DATE_NOW))
@@ -63,4 +66,10 @@ test('Constants.SortKeys', () => {
     .toEqual(REQUEST.requestedBy.name);
   expect(SortKeys.Requests.STATUS(REQUEST))
     .toEqual(REQUEST.status);
+
+  const STUDY = {
+    createdAt: now,
+  };
+  expect(SortKeys.Studies.CREATED_AT(STUDY))
+    .toEqual(now.valueOf());
 });

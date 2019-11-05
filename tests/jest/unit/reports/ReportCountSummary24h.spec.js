@@ -13,6 +13,68 @@ const transformedData_COUNT_SUMMARY_24H_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_24H_4_2156283.json'),
 );
 
+test('ReportCountSummary24h.peak', () => {
+  const volumeByBucket = [3, 5, 10, 15, 6, 2, 1, 5, 14, 0];
+
+  expect(ReportCountSummary24h.peak(volumeByBucket, 0, 4, 2)).toEqual({
+    indexStart: 2,
+    indexEnd: 4,
+    sum: 25,
+  });
+
+  expect(ReportCountSummary24h.peak(volumeByBucket, 4, 7, 2)).toEqual({
+    indexStart: 4,
+    indexEnd: 6,
+    sum: 8,
+  });
+
+  expect(ReportCountSummary24h.peak(volumeByBucket, 6, 10, 2)).toEqual({
+    indexStart: 7,
+    indexEnd: 9,
+    sum: 19,
+  });
+});
+
+test('ReportCountSummary24h.timeRange', () => {
+  const countData = [{
+    t: DateTime.fromObject({ year: 2000, month: 1, day: 1 }),
+  }];
+
+  expect(ReportCountSummary24h.timeRange(countData, 0, 4)).toEqual({
+    start: DateTime.fromObject({
+      year: 2000,
+      month: 1,
+      day: 1,
+      hour: 0,
+      minute: 0,
+    }),
+    end: DateTime.fromObject({
+      year: 2000,
+      month: 1,
+      day: 1,
+      hour: 1,
+      minute: 0,
+    }),
+  });
+
+  expect(ReportCountSummary24h.timeRange(countData, 13, 22)).toEqual({
+    start: DateTime.fromObject({
+      year: 2000,
+      month: 1,
+      day: 1,
+      hour: 3,
+      minute: 15,
+    }),
+    end: DateTime.fromObject({
+      year: 2000,
+      month: 1,
+      day: 1,
+      hour: 5,
+      minute: 30,
+    }),
+  });
+});
+
 test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
 
