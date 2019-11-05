@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
+import { SPEED_CLASSES } from '@/lib/Constants';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -14,6 +15,38 @@ const transformedData_SPEED_PERCENTILE_4_2156283 = loadJsonSync(
 
 expect.extend({
   toBeWithinTolerance,
+});
+
+test('ReportSpeedPercentile.getArrayStats', () => {
+  const xs = SPEED_CLASSES.map(() => 0);
+  expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
+    total: 0,
+    pct15: null,
+    pct50: null,
+    pct85: null,
+    pct95: null,
+    mu: null,
+  });
+
+  xs[3] = 1;
+  expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
+    total: 1,
+    pct15: 30,
+    pct50: 32,
+    pct85: 34,
+    pct95: 34,
+    mu: 32,
+  });
+
+  xs[4] = 1;
+  expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
+    total: 2,
+    pct15: 31,
+    pct50: 35,
+    pct85: 38,
+    pct95: 39,
+    mu: 35,
+  });
 });
 
 test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]', () => {
