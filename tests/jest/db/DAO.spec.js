@@ -9,6 +9,8 @@ import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
+import StudyDAO from '@/lib/db/StudyDAO';
+import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestReasonDAO from '@/lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/lib/db/UserDAO';
@@ -385,6 +387,84 @@ test('CountDAO.byIdAndCategory()', async () => {
   expect(count).not.toBeNull();
   expect(count.id).toBe(1415698);
   expect(count.type.id).toBe(4);
+});
+
+test('StudyRequestDAO', async () => {
+  const user = DAOTestUtils.randomUser();
+  const userCreated = await UserDAO.create(user);
+  const now = DateTime.local();
+  const transientStudyRequest = {
+    userSubject: userCreated.subject,
+    status: 'REQUESTED',
+    serviceRequestId: null,
+    priority: 'STANDARD',
+    dueDate: now.plus({ months: 3 }),
+    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
+    reasons: ['TSC', 'PED_SAFETY'],
+    ccEmails: [],
+    centrelineId: 1729,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.333251, 43.709012],
+    },
+    studies: [{
+      studyType: 'TMC',
+      daysOfWeek: [2, 3, 4],
+      duration: null,
+      hours: 'ROUTINE',
+      notes: 'completely normal routine turning movement count',
+    }],
+  };
+
+  // save study request
+  let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  expect(persistedStudyRequest.id).not.toBeNull();
+
+  // fetch saved study request
+  let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // update study request fields
+  persistedStudyRequest.reasons = ['TSC'];
+  persistedStudyRequest.serviceRequestId = '12345';
+
+  // update existing study fields
+  persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
+  persistedStudyRequest.studies[0].hours = 'SCHOOL';
+  persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // add new study to study request
+  persistedStudyRequest.studies.push({
+    studyType: 'TMC',
+    daysOfWeek: [0, 6],
+    duration: null,
+    hours: 'OTHER',
+    notes: 'complete during shopping mall peak hours',
+  });
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  debugger;
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // remove study from study request
+  persistedStudyRequest.studies.pop();
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // delete study request
+  await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(true);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toBeNull();
+  const studies = await StudyDAO.byStudyRequests([persistedStudyRequest]);
+  expect(studies).toHaveLength(0);
+
+  // delete: should not work again
+  await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
 });
 
 test('StudyRequestReasonDAO', async () => {
