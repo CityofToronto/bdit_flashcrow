@@ -35,7 +35,8 @@ sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 /home/ec2-user/flashcrow/scripts/db/db-update.sh --psqlArgs "$psqlArgs"
 
 # start flashcrow
-NODE_ENV=production forever start "/home/ec2-user/forever.json"
+# shellcheck disable=SC2046
+env $(xargs < "/home/ec2-user/cot-env.config") NODE_ENV=production forever start "/home/ec2-user/forever.json"
 
 # need to restart nginx
 sudo service nginx restart
