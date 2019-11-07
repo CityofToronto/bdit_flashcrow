@@ -13,6 +13,8 @@ set -e
 set -o nounset
 
 cd "$(dirname "$0")"
+
+GIT_ROOT=$(realpath ../..)
 PROVISION_ENV="$1"
 
 # setup nginx
@@ -22,8 +24,8 @@ service nginx status && service nginx stop
 rm -rf /run/nginx.pid
 
 # install nginx configs
-cp "$PROVISION_ENV/nginx/nginx.conf" /etc/nginx/
-cp "$PROVISION_ENV/nginx/default.d/*.conf" /etc/nginx/default.d/
+cp "$GIT_ROOT/scripts/deployment/$PROVISION_ENV/nginx/nginx.conf" /etc/nginx/
+cp $GIT_ROOT/scripts/deployment/$PROVISION_ENV/nginx/default.d/*.conf /etc/nginx/default.d/
 service nginx start
 
 # install yum packages
