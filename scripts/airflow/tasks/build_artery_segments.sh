@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -eu
-cd $(dirname $0)
+set -euo pipefail
+GIT_ROOT=/home/ec2-user/flashcrow
+TASKS_ROOT="${GIT_ROOT}/scripts/airflow/tasks"
 
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow < build_artery_segments/build_artery_segments.sql
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 < "${TASKS_ROOT}/build_artery_segments/build_artery_segments.sql"
