@@ -19,24 +19,30 @@ echo 'export AIRFLOW_HOME="$HOME/airflow"' >> "$HOME/.bashrc"
 . "$HOME/.bashrc"
 
 pip install --upgrade pip
-pip install apache-airflow psycopg2 mbutil flask-bcrypt
+pip install apache-airflow psycopg2 mbutil flask-bcrypt cryptography
 
-# create log directories
-echo "creating log directories..."
-mkdir -p "$HOME/log/airflow"
+# generate secure random user password using `openssl`, and write to `.pgpass`
+echo "Generating PostgreSQL user password..."
+AIRFLOW_USER_PASSWORD=$(openssl rand -base64 32)
+echo "${PGHOST}:5432:airflow:airflow:${AIRFLOW_USER_PASSWORD}" >> "$HOME/.pgpass"
+
+# create database
+psql -h "${PGHOST}" -U flashcrow_dba postgres -v pgPassword="'$AIRFLOW_USER_PASSWORD'" < ./provision-db-airflow.sql
 
 # initdb, first time (to generate directory)
 airflow initdb
 
-# .pgpass entries: airflow, BDITTO
+AIRFLOW_ADMIN_PASSWORD=$(openssl rand -base64 32)
+python ./airflow_admin_user.py "${AIRFLOW_ADMIN_PASSWORD}"
+
 # copy airflow.cfg over
-# run airflow_admin_user.py
+cp /home/ec2-user/flashcrow/scripts/deployment/etl/airflow.cfg /home/ec2-user/airflow/airflow.cfg
+
 # install tippecanoe
 git clone https://github.com/mapbox/tippecanoe.git "$HOME/tippecanoe"
 cd "$HOME/tippecanoe"
 make -j
 sudo make install
-
 
 ln -s /home/ec2-user/flashcrow/scripts/airflow/dags /home/ec2-user/airflow/dags
 

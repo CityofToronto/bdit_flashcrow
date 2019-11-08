@@ -10,6 +10,6 @@ set -o nounset
 
 cd "$(dirname "$0")"
 sudo ../provision-admin.sh etl
-./provision-etl-admin.sh
+sudo ./provision-etl-admin.sh
 ../provision-user.sh
 ./provision-etl-user.sh

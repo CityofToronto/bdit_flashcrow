@@ -15,6 +15,7 @@ def main():
   user.username = 'admin'
   user.email = 'airflow@flashcrow-etl.intra.dev-toronto.ca'
   user.password = sys.argv[1]
+  user.superuser = True
   session = settings.Session()
   session.add(user)
   session.commit()

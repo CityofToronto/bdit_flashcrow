@@ -1,34 +1,37 @@
 #!/bin/bash
 
-set -eu
-cd $(dirname $0)/dump_dev_data
+set -euo pipefail
+GIT_ROOT=/home/ec2-user/flashcrow
+TASKS_ROOT="${GIT_ROOT}/scripts/airflow/tasks"
+FLASHCROW_DEV_DATA=/data/dev_data/flashcrow-dev-data.sql
 
 # create required schemas
-cp create_schemas.sql flashcrow-dev-data.sql
+mkdir -p /data/dev_data
+cp "${TASKS_ROOT}/dump_dev_data/create_schemas.sql" "${FLASHCROW_DEV_DATA}"
 
 # copy full tables
-pg_dump -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 -t "gis.centreline" -t "gis.centreline_intersection" -t "prj_volume.artery_centreline" -t '"TRAFFIC"."CATEGORY"' -t '"TRAFFIC"."ARTERYDATA"' -x --no-owner --clean --if-exists flashcrow >> flashcrow-dev-data.sql
+env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t "gis.centreline" -t "gis.centreline_intersection" -t "prj_volume.artery_centreline" -t '"TRAFFIC"."CATEGORY"' -t '"TRAFFIC"."ARTERYDATA"' -x --no-owner --clean --if-exists >> "${FLASHCROW_DEV_DATA}"
 
 # copy schemas of sampled tables
-pg_dump -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 -t '"TRAFFIC"."COUNTINFOMICS"' -t '"TRAFFIC"."DET"' -t '"TRAFFIC"."COUNTINFO"' -t '"TRAFFIC"."CNT_DET"' -t '"TRAFFIC"."CNT_SPD"' -x --no-owner --clean --if-exists --schema-only flashcrow >> flashcrow-dev-data.sql
+env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t '"TRAFFIC"."COUNTINFOMICS"' -t '"TRAFFIC"."DET"' -t '"TRAFFIC"."COUNTINFO"' -t '"TRAFFIC"."CNT_DET"' -t '"TRAFFIC"."CNT_SPD"' -x --no-owner --clean --if-exists --schema-only >> "${FLASHCROW_DEV_DATA}"
 
 # copy sampled table data from flashcrow_dev_data schema
-echo 'COPY "TRAFFIC"."COUNTINFOMICS" FROM stdin;' >> flashcrow-dev-data.sql
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_countinfomics) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> flashcrow-dev-data.sql
-echo '\.' >> flashcrow-dev-data.sql
+echo 'COPY "TRAFFIC"."COUNTINFOMICS" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_countinfomics) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
+echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
-echo 'COPY "TRAFFIC"."DET" FROM stdin;' >> flashcrow-dev-data.sql
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_det) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> flashcrow-dev-data.sql
-echo '\.' >> flashcrow-dev-data.sql
+echo 'COPY "TRAFFIC"."DET" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_det) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
+echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
-echo 'COPY "TRAFFIC"."COUNTINFO" FROM stdin;' >> flashcrow-dev-data.sql
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_countinfo) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> flashcrow-dev-data.sql
-echo '\.' >> flashcrow-dev-data.sql
+echo 'COPY "TRAFFIC"."COUNTINFO" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_countinfo) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
+echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
-echo 'COPY "TRAFFIC"."CNT_DET" FROM stdin;' >> flashcrow-dev-data.sql
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_det) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> flashcrow-dev-data.sql
-echo '\.' >> flashcrow-dev-data.sql
+echo 'COPY "TRAFFIC"."CNT_DET" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_det) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
+echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
-echo 'COPY "TRAFFIC"."CNT_SPD" FROM stdin;' >> flashcrow-dev-data.sql
-psql -v ON_ERROR_STOP=1 -U flashcrow -h fr194ibxx9jxbj3.ccca5v4b7zsj.us-east-1.rds.amazonaws.com -p 5432 flashcrow -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_spd) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> flashcrow-dev-data.sql
-echo '\.' >> flashcrow-dev-data.sql
+echo 'COPY "TRAFFIC"."CNT_SPD" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_spd) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
+echo '\.' >> "${FLASHCROW_DEV_DATA}"
