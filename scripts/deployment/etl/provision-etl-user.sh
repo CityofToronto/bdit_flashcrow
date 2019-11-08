@@ -19,7 +19,7 @@ echo 'export AIRFLOW_HOME="$HOME/airflow"' >> "$HOME/.bashrc"
 . "$HOME/.bashrc"
 
 pip install --upgrade pip
-pip install apache-airflow psycopg2 mbutil flask-bcrypt
+pip install apache-airflow psycopg2 mbutil flask-bcrypt cryptography
 
 # generate secure random user password using `openssl`, and write to `.pgpass`
 echo "Generating PostgreSQL user password..."
