@@ -3,6 +3,9 @@
     v-model="internalValue"
     class="date-picker-control flex-container-row"
     :disabled-attribute="disabledAttribute"
+    :disabled-dates="disabledDatesJS"
+    :max-date="maxDateJS"
+    :min-date="minDateJS"
     popover-visibility="focus"
     :show-caps="true"
     :show-day-popover="false"
@@ -33,18 +36,72 @@
 </template>
 
 <script>
+import DateTime from '@/lib/time/DateTime';
+
 const SIZES = ['xs', 's', 'm', 'l', 'xl', '2xl'];
 
+function fromInternalValue(mode, internalValue) {
+  if (internalValue === null) {
+    return null;
+  }
+  if (mode === 'multiple') {
+    return internalValue.map(d => DateTime.fromJSDate(d));
+  }
+  if (mode === 'range') {
+    let { start, end } = internalValue;
+    start = fromInternalValue('single', start);
+    end = fromInternalValue('single', end);
+    return { start, end };
+  }
+  // single
+  return DateTime.fromJSDate(internalValue);
+}
+
+function toInternalValue(mode, value) {
+  if (value === null) {
+    return null;
+  }
+  if (mode === 'multiple') {
+    return value.map(dt => dt.toJSDate());
+  }
+  if (mode === 'range') {
+    let { start, end } = value;
+    start = toInternalValue('single', start);
+    end = toInternalValue('single', end);
+    return { start, end };
+  }
+  // single
+  return value.toJSDate();
+}
+
 export default {
-  name: 'FilterDate',
+  name: 'DatePicker',
   props: {
     disabled: {
       type: Boolean,
       default: false,
     },
+    disabledDates: {
+      type: Object,
+      default() {
+        return null;
+      },
+    },
     invalid: {
       type: Boolean,
       default: false,
+    },
+    maxDate: {
+      type: Object,
+      default() {
+        return null;
+      },
+    },
+    minDate: {
+      type: Object,
+      default() {
+        return null;
+      },
     },
     name: {
       type: String,
@@ -62,7 +119,7 @@ export default {
       type: String,
       default: 'm',
     },
-    value: [Date, Object],
+    value: Object,
   },
   data() {
     return {
@@ -78,13 +135,25 @@ export default {
     };
   },
   computed: {
+    disabledDatesJS() {
+      return toInternalValue('range', this.disabledDates);
+    },
     internalValue: {
       get() {
-        return this.value;
+        const { mode } = this.$attrs;
+        return toInternalValue(mode, this.value);
       },
-      set(value) {
+      set(internalValue) {
+        const { mode } = this.$attrs;
+        const value = fromInternalValue(mode, internalValue);
         this.$emit('input', value);
       },
+    },
+    maxDateJS() {
+      return toInternalValue('single', this.maxDate);
+    },
+    minDateJS() {
+      return toInternalValue('single', this.minDate);
     },
     sizeMinusOne() {
       const i = SIZES.indexOf(this.size);
