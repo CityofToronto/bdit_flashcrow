@@ -66,3 +66,36 @@ test('ReportCountSummary24hGraphical#transformData [Morningside S of Lawrence: 4
   const transformedData = reportInstance.transformData(null, countData_4_2156283);
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283);
 });
+
+test('ReportCountSummary24hGraphical#transformData [Morningside S of Lawrence: 4/2156283]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const count = {
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { name: 'SPEED' },
+  };
+
+  /*
+   * Note that this is a speed / volume ATR count, so we're actually getting more than
+   * one data point per hour.  This allows us to test that the 24-hour graphical report
+   * works in this case.
+   */
+  const transformedData = reportInstance.transformData(count, countData_4_2156283);
+  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283);
+});
+
+test('ReportCountSummary24hGraphical#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const count = {
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { name: 'SPEED' },
+  };
+
+  const transformedData = reportInstance.transformData(count, countData_4_2156283);
+  expect(() => {
+    reportInstance.generateCsv(count, transformedData);
+  }).not.toThrow();
+});

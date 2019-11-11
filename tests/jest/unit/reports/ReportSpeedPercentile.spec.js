@@ -5,6 +5,7 @@ import { SPEED_CLASSES } from '@/lib/Constants';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import DateTime from '@/lib/time/DateTime';
 
 const countData_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/countData_4_2156283.json'),
@@ -105,4 +106,19 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
   speedClassPercents.forEach((percent, s) => {
     expect(transformedData.speedClassPercents[s]).toBeCloseTo(percent, 2);
   });
+});
+
+test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
+  const reportInstance = new ReportSpeedPercentile();
+
+  const count = {
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { name: 'SPEED' },
+  };
+
+  const transformedData = reportInstance.transformData(count, countData_4_2156283);
+  expect(() => {
+    reportInstance.generateCsv(count, transformedData);
+  }).not.toThrow();
 });
