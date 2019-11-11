@@ -9,6 +9,7 @@ import {
   generateHourlyMajorAndMinorDirections,
   generateTmc,
 } from '@/lib/test/random/CountDataGenerator';
+import DateTime from '@/lib/time/DateTime';
 
 const countData_5_38661 = loadJsonSync(
   path.resolve(__dirname, './data/countData_5_38661.json'),
@@ -42,6 +43,12 @@ test('ReportIntersectionSummary#transformData', () => {
 test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]', () => {
   const reportInstance = new ReportIntersectionSummary();
 
+  const count = {
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
+    locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
+    type: { name: 'TMC' },
+  };
+
   const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);
   const hourlyMajorDirections = hourlyData.map(
     () => [CardinalDirection.EAST, CardinalDirection.WEST],
@@ -50,11 +57,39 @@ test('ReportIntersectionSummary#transformData [Overlea and Thorncliffe: 5/38661]
     () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
   );
 
-  const transformedData = reportInstance.transformData(null, {
+  const transformedData = reportInstance.transformData(count, {
     countData: countData_5_38661,
     hourlyData,
     hourlyMajorDirections,
     hourlyMinorDirections,
   });
   expect(transformedData).toEqual(transformedData_INTERSECTION_SUMMARY_5_38661);
+});
+
+test('ReportIntersectionSummary#generateCsv [Overlea and Thorncliffe: 5/38661]', () => {
+  const reportInstance = new ReportIntersectionSummary();
+
+  const count = {
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
+    locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
+    type: { name: 'TMC' },
+  };
+
+  const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);
+  const hourlyMajorDirections = hourlyData.map(
+    () => [CardinalDirection.EAST, CardinalDirection.WEST],
+  );
+  const hourlyMinorDirections = hourlyData.map(
+    () => [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+  );
+
+  const transformedData = reportInstance.transformData(count, {
+    countData: countData_5_38661,
+    hourlyData,
+    hourlyMajorDirections,
+    hourlyMinorDirections,
+  });
+  expect(() => {
+    reportInstance.generateCsv(count, transformedData);
+  }).not.toThrow();
 });

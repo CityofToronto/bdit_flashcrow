@@ -30,7 +30,7 @@ test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283);
 });
 
-test('ReportCountSummary24hGraphical#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
+test('ReportCountSummary24hDetailed#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24hDetailed();
 
   const count = {
