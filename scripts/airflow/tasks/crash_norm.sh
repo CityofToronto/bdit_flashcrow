@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -eu
-# shellcheck disable=SC2046
-# shellcheck disable=SC2086
-cd $(dirname $0)
+set -euo pipefail
+GIT_ROOT=/home/ec2-user/flashcrow
+TASKS_ROOT="${GIT_ROOT}/scripts/airflow/tasks"
 
-env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 < crash_norm/crash_norm.sql
+env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 < "${TASKS_ROOT}/crash_norm/crash_norm.sql"
