@@ -98,5 +98,4 @@ test('ReportCountSummary24hGraphical#generateCsv [Morningside S of Lawrence: 4/2
   expect(() => {
     reportInstance.generateCsv(count, transformedData);
   }).not.toThrow();
-  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_GRAPHICAL_4_2156283);
 });
