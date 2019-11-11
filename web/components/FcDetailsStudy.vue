@@ -129,7 +129,6 @@ import TdsButtonGroup from '@/web/components/tds/TdsButtonGroup.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
-import DateTime from '@/lib/time/DateTime';
 
 export default {
   name: 'FcDetailsStudy',
@@ -148,20 +147,6 @@ export default {
     };
   },
   computed: {
-    attrsDueDate() {
-      const { now } = this.$store.state;
-      if (this.priority === 'URGENT') {
-        return {
-          disabledDates: { start: null, end: now },
-          minDate: now,
-        };
-      }
-      const twoMonthsOut = DateTime.local().plus({ months: 2 });
-      return {
-        disabledDates: { start: null, end: twoMonthsOut },
-        minDate: twoMonthsOut,
-      };
-    },
     dateRange: {
       get() {
         return this.study.dateRange;

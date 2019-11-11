@@ -12,7 +12,7 @@
         :disabled-dates="{start: tomorrow, end: null}"
         is-expanded
         is-inline
-        :max-date="now.toJSDate()"
+        :max-date="now"
         :min-date="minDate"
         mode="range"
         placeholder="Filter by date"
@@ -41,30 +41,16 @@ export default {
   },
   data() {
     return {
-      minDate: new Date(1985, 0, 1),
+      minDate: DateTime.fromObject({ year: 1985, month: 1, day: 1 }),
     };
   },
   computed: {
     filterDate: {
       get() {
-        const { filterDate } = this.$store.state;
-        if (filterDate === null) {
-          return null;
-        }
-        let { start, end } = filterDate;
-        start = start.toJSDate();
-        end = end.toJSDate();
-        return { start, end };
+        return this.$store.state.filterDate;
       },
       set(filterDate) {
-        if (filterDate === null) {
-          this.$store.commit('setFilterDate', null);
-          return;
-        }
-        let { start, end } = filterDate;
-        start = DateTime.fromJSDate(start);
-        end = DateTime.fromJSDate(end);
-        this.$store.commit('setFilterDate', { start, end });
+        this.$store.commit('setFilterDate', filterDate);
       },
     },
     title() {
