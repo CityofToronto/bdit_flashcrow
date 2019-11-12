@@ -12,4 +12,9 @@ START_DATE = datetime(2019, 7, 17)
 SCHEDULE_INTERVAL = '0 0 * * *'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-CRASH_GEOCODING = create_bash_task(DAG, 'crash_geocoding')
+BUILD_EVENTS_INTERSECTIONS = create_bash_task(DAG, 'build_events_intersections')
+BUILD_EVENTS_SEGMENTS = create_bash_task(DAG, 'build_events_segments')
+BUILD_EVENTS_CENTRELINE = create_bash_task(DAG, 'build_events_centreline')
+
+BUILD_EVENTS_INTERSECTIONS >> BUILD_EVENTS_CENTRELINE
+BUILD_EVENTS_SEGMENTS >> BUILD_EVENTS_CENTRELINE
