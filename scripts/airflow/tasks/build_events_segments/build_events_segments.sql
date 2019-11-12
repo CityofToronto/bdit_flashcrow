@@ -1,9 +1,9 @@
 CREATE INDEX IF NOT EXISTS centreline_srid26917_geom_idx ON gis.centreline USING gist (ST_Transform(geom, 26917));
 
-DROP TABLE IF EXISTS collisions.events_segments;
-CREATE TABLE collisions.events_segments AS (
+DROP TABLE IF EXISTS collisions_new.events_segments;
+CREATE TABLE collisions_new.events_segments AS (
   SELECT e.collision_id, u.geo_id FROM
-		(SELECT collision_id, latitude, longitude FROM collisions.events) e
+		(SELECT collision_id, latitude, longitude FROM collisions_new.events) e
 	  INNER JOIN LATERAL
 		(SELECT geo_id, ST_Distance(
 			ST_Transform(geom, 26917),
@@ -21,4 +21,4 @@ CREATE TABLE collisions.events_segments AS (
 	  LIMIT 1
 	) u ON true
 );
-CREATE UNIQUE INDEX events_segments_collision_id ON collisions.events_segments (collision_id);
+CREATE UNIQUE INDEX events_segments_collision_id ON collisions_new.events_segments (collision_id);

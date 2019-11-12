@@ -1,9 +1,10 @@
+CREATE SCHEMA IF NOT EXISTS collisions_new;
 CREATE INDEX IF NOT EXISTS centreline_intersection_srid26917_geom_idx ON gis.centreline_intersection USING gist (ST_Transform(geom, 26917));
 
-DROP TABLE IF EXISTS collisions.events_intersections;
-CREATE TABLE collisions.events_intersections AS (
+DROP TABLE IF EXISTS collisions_new.events_intersections;
+CREATE TABLE collisions_new.events_intersections AS (
 	SELECT e.collision_id, u.int_id FROM
-		(SELECT collision_id, latitude, longitude FROM collisions.events) e
+		(SELECT collision_id, latitude, longitude FROM collisions_new.events) e
 	  INNER JOIN LATERAL
 		(SELECT int_id, ST_Distance(
 			ST_Transform(geom, 26917),
@@ -22,4 +23,4 @@ CREATE TABLE collisions.events_intersections AS (
 	  LIMIT 1
 	) u ON true
 );
-CREATE UNIQUE INDEX events_intersections_collision_id ON collisions.events_intersections (collision_id);
+CREATE UNIQUE INDEX events_intersections_collision_id ON collisions_new.events_intersections (collision_id);

@@ -1,7 +1,7 @@
-CREATE SCHEMA IF NOT EXISTS collisions;
+CREATE SCHEMA IF NOT EXISTS collisions_new;
 
-DROP TABLE IF EXISTS collisions.events;
-CREATE TABLE collisions.events AS (
+DROP TABLE IF EXISTS collisions_new.events;
+CREATE TABLE collisions_new.events AS (
   SELECT
     row_number() OVER (ORDER BY "ACCDATE", "ACCNB") AS collision_id,
     "ACCNB" AS accnb,
@@ -54,10 +54,10 @@ CREATE TABLE collisions.events AS (
     FROM "TRAFFIC"."ACC"
     GROUP BY "ACCDATE", "ACCNB"
 );
-CREATE UNIQUE INDEX events_collision_id ON collisions.events (collision_id);
+CREATE UNIQUE INDEX events_collision_id ON collisions_new.events (collision_id);
 
-DROP TABLE IF EXISTS collisions.involved;
-CREATE TABLE collisions.involved AS (
+DROP TABLE IF EXISTS collisions_new.involved;
+CREATE TABLE collisions_new.involved AS (
   SELECT
     e.collision_id,
     a."VEH_NO" AS veh_no,
@@ -102,6 +102,6 @@ CREATE TABLE collisions.involved AS (
     a."FATAL_NO" AS fatal_no,
     a."ACTUAL_SPEED" AS actual_speed,
     a."POSTED_SPEED" AS posted_speed
-  FROM "TRAFFIC"."ACC" a JOIN collisions.events AS e ON a."ACCDATE" = e.accdate AND a."ACCNB" = e.accnb
+  FROM "TRAFFIC"."ACC" a JOIN collisions_new.events AS e ON a."ACCDATE" = e.accdate AND a."ACCNB" = e.accnb
 );
-CREATE INDEX involved_collision_id ON collisions.involved (collision_id);
+CREATE INDEX involved_collision_id ON collisions_new.involved (collision_id);
