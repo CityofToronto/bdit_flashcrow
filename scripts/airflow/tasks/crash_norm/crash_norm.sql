@@ -54,6 +54,7 @@ CREATE TABLE collisions.events AS (
     FROM "TRAFFIC"."ACC"
     GROUP BY "ACCDATE", "ACCNB"
 );
+CREATE UNIQUE INDEX events_collision_id ON collisions.events (collision_id);
 
 DROP TABLE IF EXISTS collisions.involved;
 CREATE TABLE collisions.involved AS (
@@ -103,3 +104,4 @@ CREATE TABLE collisions.involved AS (
     a."POSTED_SPEED" AS posted_speed
   FROM "TRAFFIC"."ACC" a JOIN collisions.events AS e ON a."ACCDATE" = e.accdate AND a."ACCNB" = e.accnb
 );
+CREATE INDEX involved_collision_id ON collisions.involved (collision_id);
