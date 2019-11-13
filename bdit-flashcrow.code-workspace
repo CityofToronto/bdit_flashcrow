@@ -38,6 +38,7 @@
 			"**/bower_components": true
 		},
 		"telemetry.enableCrashReporter": false,
-		"telemetry.enableTelemetry": false
+		"telemetry.enableTelemetry": false,
+		"editor.detectIndentation": false
 	}
 }
