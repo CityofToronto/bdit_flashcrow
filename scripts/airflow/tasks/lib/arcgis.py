@@ -3,9 +3,8 @@ This script generates SQL code that can be run to replicate layers from
 ArcGIS REST servers to your own database.
 '''
 import datetime
-import time
 
-import requests
+from http_utils import requests_session
 
 ESRI_TYPES_INTEGER = [
   'esriFieldTypeInteger',
@@ -25,29 +24,18 @@ ESRI_TYPES_POLYGON = [
   'esriGeometryMultiPolygon',
   'esriGeometryPolygon'
 ]
+REQUESTS_SESSION = requests_session()
 
 def get_table_name(base_url, mapserver_name, layer_id):
   """
-  Function to retrieve the name of the layer
-
-  Parameters
-  -----------
-  mapserver
-      The mapserver that host the layer
-  id
-      The id of the layer
-
-  Returns
-  --------
-  output_name
-      The table name of the layer
+  Get table name from layer.
   """
   url = '{base_url}/{mapserver_name}/MapServer/layers'.format(
     base_url=base_url,
     mapserver_name=mapserver_name
   )
   params = {'f': 'json'}
-  response = requests.get(url, params=params)
+  response = REQUESTS_SESSION.get(url, params=params)
   response = response.json()
   layers = response['layers']
   for layer in layers:
@@ -60,6 +48,9 @@ def get_table_name(base_url, mapserver_name, layer_id):
   raise ValueError(msg)
 
 def get_column_type(field_type):
+  """
+  Map ESRI types to PostgreSQL equivalents.
+  """
   if field_type in ESRI_TYPES_INTEGER:
     return 'integer'
   elif field_type == 'esriFieldTypeString':
@@ -74,7 +65,10 @@ def get_column_type(field_type):
   raise ValueError(msg)
 
 def dump_init_table(target_schema, table_name, response):
-  '''Create a new table in postgresql for the layer'''
+  """
+  Prints the `CREATE TABLE` command for the given layer, as well as a `COPY`
+  command to preface the dumped rows.
+  """
   new_columns = []
 
   fields = response['fields']
@@ -112,7 +106,9 @@ def get_data(
     layer_id,
     page_offset,
     per_page):
-  '''Get data from gcc view rest api'''
+  """
+  Fetch data from the given layer, with the given page offset and size.
+  """
   url = '{base_url}/{mapserver_name}/MapServer/{layer_id}/query'.format(
     base_url=base_url,
     mapserver_name=mapserver_name,
@@ -135,19 +131,20 @@ def get_data(
     "resultRecordCount": "{}".format(per_page),
     "f":"json"
   }
-  while True:
-    try:
-      response = requests.get(url, params=params)
-      return response.json()
-    except requests.exceptions.ConnectionError:
-      time.sleep(10)
+  response = REQUESTS_SESSION.get(url, params=params)
+  return response.json()
 
 def get_pg_timestamp(field_value):
-  '''Convert epoch time to postgresql timestamp without time zone'''
+  """
+  Convert epoch milliseconds to PostgreSQL `timestamp without time zone` format.
+  """
   field_datetime = datetime.datetime.fromtimestamp(field_value / 1000)
   return field_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
 def get_pg_value(feature, field):
+  """
+  Get the PostgreSQL value corresponding to the given field for the given feature.
+  """
   field_name = field['name']
   field_value = feature['attributes'][field_name]
   if field_value is None:
@@ -159,17 +156,29 @@ def get_pg_value(feature, field):
 
 # Geometry Switcher
 def get_pg_line(geometry):
+  """
+  Output the given line geometry in WKT format.
+  """
   inner = ','.join(' '.join(str(x) for x in tup) for tup in geometry['paths'][0])
   return 'SRID=4326;LineString('+ inner + ')'
 
 def get_pg_point(geometry):
+  """
+  Output the given point geometry in WKT format.
+  """
   return 'SRID=4326;Point({x} {y})'.format(**geometry)
 
 def get_pg_polygon(geometry):
+  """
+  Output the given polygon geometry in WKT format.
+  """
   inner = ','.join(' '.join(str(x) for x in tup) for tup in geometry['rings'][0])
   return 'SRID=4326;MultiPolygon(((' + inner + ')))'
 
 def get_pg_geometry(geometry_type, geometry):
+  """
+  Output the given geometry of the given geometry type in WKT format.
+  """
   if geometry_type in ESRI_TYPES_LINE:
     return get_pg_line(geometry)
   elif geometry_type == 'esriGeometryPoint':
@@ -181,6 +190,11 @@ def get_pg_geometry(geometry_type, geometry):
     raise ValueError(msg)
 
 def get_pg_row(feature, fields, geometry_type):
+  """
+  Output the row of PostgreSQL values for the given feature.  This row will include
+  a field at the end for geometry, to match the extra geometry column generated in
+  `dump_init_table`.
+  """
   row = [get_pg_value(feature, field) for field in fields]
   geometry = feature['geometry']
   pg_geometry = get_pg_geometry(geometry_type, geometry)
@@ -188,7 +202,9 @@ def get_pg_row(feature, fields, geometry_type):
   return row
 
 def dump_data(response):
-  '''Send data to postgresql'''
+  """
+  Dump all features in the given REST API response to standard output.
+  """
   features = response['features']
   fields = response['fields']
   geometry_type = response['geometryType']
@@ -197,7 +213,11 @@ def dump_data(response):
     print('\t'.join(row))
 
 def has_more_results(response):
-  '''Check if last query return all rows'''
+  """
+  Checks the `exceededTransferLimit` flag of the REST API response.  If set, this
+  flag indicates that there are more rows after the page offset than could be
+  returned in the response, which means that we need to continue paging.
+  """
   return response.get('exceededTransferLimit', False)
 
 def get_layer(
@@ -210,7 +230,8 @@ def get_layer(
   This function fetches layer metadata and records from the given ArcGIS server.  It then creates
   a table based on layer attribute types before inserting records into that table.
 
-  ArcGIS Server returns records in a paginated format.
+  ArcGIS Server returns records in a paginated format, so we must use `has_more_results` to check
+  when we've paged through all results.
 
   Parameters
   ----------
@@ -250,10 +271,14 @@ def get_layer(
       page_offset += len(features)
     else:
       break
+  # Signal that the data dump is complete.
   print('\\.')
 
 if __name__ == '__main__':
   def main():
+    """
+    Test `get_layer` using the given base URL, mapserver name, and layer ID.
+    """
     import sys
     base_url = sys.argv[1]
     mapserver_name = sys.argv[2]
