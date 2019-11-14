@@ -2,10 +2,15 @@
 This script generates SQL code that can be run to replicate layers from
 ArcGIS REST servers to your own database.
 '''
+import csv
 import datetime
+import json
+import sys
+import time
 
 from http_utils import requests_session
 
+CSV_WRITER = csv.writer(sys.stdout)
 ESRI_TYPES_INTEGER = [
   'esriFieldTypeInteger',
   'esriFieldTypeSingle',
@@ -17,14 +22,48 @@ ESRI_TYPES_LINE = [
   'esriGeometryLine',
   'esriGeometryPolyline'
 ]
-ESRI_TYPES_POINT = [
-
-]
 ESRI_TYPES_POLYGON = [
   'esriGeometryMultiPolygon',
   'esriGeometryPolygon'
 ]
 REQUESTS_SESSION = requests_session()
+
+def get_json(url, params):
+  """
+  Attempt to fetch JSON for the given URL and query parameters.  Since ArcGIS occasionally
+  returns empty HTTP 200 responses, we also retry on those empty responses.
+  """
+  empty_retries = 5
+  sleep_time = 0.05
+  while True:
+    # Throttle our requests to reduce the chance of hitting rate limits, server capacity, etc.
+    response = REQUESTS_SESSION.get(url, params=params)
+    time.sleep(sleep_time)
+
+    # If the response is empty, retry up to `empty_retries` times.
+    if not response.text:
+      empty_retries -= 1
+      if empty_retries > 0:
+        sleep_time *= 2
+        continue
+      msg = 'empty response from {url}'.format(
+        url=response.url
+      )
+      raise ValueError(msg)
+
+    # If the response can't be parsed as valid JSON, dump response body and exit.
+    try:
+      return response.json()
+    except json.decoder.JSONDecodeError:
+      msg = 'could not decode JSON for {url} (HTTP {status_code})'.format(
+        url=response.url,
+        status_code=response.status_code
+      )
+      print('--- JSON ERROR ---')
+      print(msg)
+      print('--- JSON BODY ---')
+      print(response.text, flush=True)
+      raise ValueError(msg)
 
 def get_table_name(base_url, mapserver_name, layer_id):
   """
@@ -35,8 +74,7 @@ def get_table_name(base_url, mapserver_name, layer_id):
     mapserver_name=mapserver_name
   )
   params = {'f': 'json'}
-  response = REQUESTS_SESSION.get(url, params=params)
-  response = response.json()
+  response = get_json(url, params)
   layers = response['layers']
   for layer in layers:
     if layer['id'] == layer_id:
@@ -73,7 +111,7 @@ def get_pg_geometry_type(geometry_type):
   elif geometry_type == 'esriGeometryPoint':
     return 'geometry(POINT, 4326)'
   elif geometry_type in ESRI_TYPES_POLYGON:
-    return 'geometry(POLYGON, 4326)'
+    return 'geometry(MULTIPOLYGON, 4326)'
   else:
     msg = 'invalid geometry type {geometry_type}'.format(geometry_type=geometry_type)
     raise ValueError(msg)
@@ -120,7 +158,7 @@ def dump_init_table(target_schema, table_name, response):
   )
   print(sql)
 
-  sql = 'COPY "{target_schema}"."{table_name}" FROM stdin;'.format(
+  sql = 'COPY "{target_schema}"."{table_name}" FROM stdin CSV;'.format(
     target_schema=target_schema,
     table_name=table_name
   )
@@ -157,8 +195,7 @@ def get_data(
     "resultRecordCount": "{}".format(per_page),
     "f":"json"
   }
-  response = REQUESTS_SESSION.get(url, params=params)
-  return response.json()
+  return get_json(url, params)
 
 def get_pg_timestamp(field_value):
   """
@@ -174,7 +211,7 @@ def get_pg_value(feature, field):
   field_name = field['name']
   field_value = feature['attributes'][field_name]
   if field_value is None:
-    return '\\N'
+    return ''
   field_type = field['type']
   if field_type == 'esriFieldTypeDate':
     return get_pg_timestamp(field_value)
@@ -235,7 +272,7 @@ def dump_data(response):
   geometry_type = response['geometryType']
   for feature in features:
     row = get_pg_row(feature, fields, geometry_type)
-    print('\t'.join(row))
+    CSV_WRITER.writerow(row)
 
 def has_more_results(response):
   """
