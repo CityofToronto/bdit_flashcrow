@@ -64,6 +64,20 @@ def get_column_type(field_type):
   )
   raise ValueError(msg)
 
+def get_pg_geometry_type(geometry_type):
+  """
+  Output the given geometry of the given geometry type in WKT format.
+  """
+  if geometry_type in ESRI_TYPES_LINE:
+    return 'geometry(LINESTRING, 4326)'
+  elif geometry_type == 'esriGeometryPoint':
+    return 'geometry(POINT, 4326)'
+  elif geometry_type in ESRI_TYPES_POLYGON:
+    return 'geometry(POLYGON, 4326)'
+  else:
+    msg = 'invalid geometry type {geometry_type}'.format(geometry_type=geometry_type)
+    raise ValueError(msg)
+
 def dump_init_table(target_schema, table_name, response):
   """
   Prints the `CREATE TABLE` command for the given layer, as well as a `COPY`
@@ -85,7 +99,13 @@ def dump_init_table(target_schema, table_name, response):
     )
     new_columns.append(new_column)
 
-  new_columns.append('geom geometry')
+  geometry_type = response['geometryType']
+  pg_geometry_type = get_pg_geometry_type(geometry_type)
+  new_column = 'geom {pg_geometry_type}'.format(
+    pg_geometry_type=pg_geometry_type
+  )
+  new_columns.append(new_column)
+
   new_columns_clause = '(\n  {0})'.format(',\n  '.join(new_columns))
   sql = 'CREATE TABLE IF NOT EXISTS "{target_schema}"."{table_name}" {new_columns_clause};'.format(
     target_schema=target_schema,
@@ -154,7 +174,6 @@ def get_pg_value(feature, field):
     return get_pg_timestamp(field_value)
   return str(field_value)
 
-# Geometry Switcher
 def get_pg_line(geometry):
   """
   Output the given line geometry in WKT format.
