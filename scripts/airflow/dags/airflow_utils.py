@@ -1,9 +1,13 @@
 """
 airflow_utils.py
 
-Provides `create_dag` for easy DAG generation.
+Provides `create_dag` for easy DAG generation, and `create_bash_tasks` for easy
+`BashOperator`-based task generation.
+
+Also adds the
 """
 import os
+import sys
 
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
@@ -11,6 +15,11 @@ from airflow.operators.bash_operator import BashOperator
 AIRFLOW_DAGS = os.path.dirname(os.path.realpath(__file__))
 AIRFLOW_ROOT = os.path.dirname(AIRFLOW_DAGS)
 AIRFLOW_TASKS = os.path.join(AIRFLOW_ROOT, 'tasks')
+AIRFLOW_TASKS_LIB = os.path.join(AIRFLOW_TASKS, 'lib')
+
+# Some tasks rely on Python libraries within the `tasks/lib` folder, so
+# we add that to the path here.
+sys.path.append(AIRFLOW_TASKS_LIB)
 
 def create_dag(filepath, doc, start_date, schedule_interval):
   """
