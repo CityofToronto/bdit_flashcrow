@@ -80,9 +80,15 @@ def get_pg_geometry_type(geometry_type):
 
 def dump_init_table(target_schema, table_name, response):
   """
-  Prints the `CREATE TABLE` command for the given layer, as well as a `COPY`
+  Prints `DROP TABLE` / `CREATE TABLE` commands for the given layer, as well as a `COPY`
   command to preface the dumped rows.
   """
+  sql = 'DROP TABLE IF EXISTS "{target_schema}"."{table_name}";'.format(
+    target_schema=target_schema,
+    table_name=table_name,
+  )
+  print(sql)
+
   new_columns = []
 
   fields = response['fields']
@@ -107,7 +113,7 @@ def dump_init_table(target_schema, table_name, response):
   new_columns.append(new_column)
 
   new_columns_clause = '(\n  {0})'.format(',\n  '.join(new_columns))
-  sql = 'CREATE TABLE IF NOT EXISTS "{target_schema}"."{table_name}" {new_columns_clause};'.format(
+  sql = 'CREATE TABLE "{target_schema}"."{table_name}" {new_columns_clause};'.format(
     target_schema=target_schema,
     table_name=table_name,
     new_columns_clause=new_columns_clause
