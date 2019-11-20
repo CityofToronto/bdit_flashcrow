@@ -10,5 +10,4 @@ The `scripts` folder contains various scripts used for development, deployment, 
 - `deployment`: provisioning and deployment scripts;
   - [`deployment/web`](deployment/web/README.md) for our web stack;
   - [`deployment/etl`](deployment/etl/README.md) for our ETL stack;
-- [`dev`](dev/README.md): provisioning scripts for the Flashcrow development environment;
-- `replication`: scripts for on-prem replication of Oracle CRASH / FLOW data to PostgreSQL.
+- [`dev`](dev/README.md): provisioning scripts for the Flashcrow development environment.
