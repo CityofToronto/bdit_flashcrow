@@ -26,8 +26,8 @@
         <span v-else>{{item.counts[item.activeIndex].type.label}}</span>
         <div class="flex-fill"></div>
         <button
-          class="font-size-m ml-m"
-          :disabled="item.counts[item.activeIndex].status === Status.NO_EXISTING_COUNT">
+          v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT"
+          class="font-size-m ml-m">
           <span>Reports </span>
           <i class="fa fa-expand"></i>
         </button>
@@ -67,26 +67,6 @@
           :class="'fa-' + STATUS_META[item.counts[item.activeIndex].status].icon"></i>
         <span> {{STATUS_META[item.counts[item.activeIndex].status].label}}</span>
       </span>
-    </template>
-    <template v-slot:ACTIONS="{ item }">
-      <button
-        class="tds-button-secondary font-size-l"
-        @click="$emit('action-item', {
-          type: 'request-study',
-          item,
-        })">
-        <i class="fa fa-plus-circle"></i>
-      </button>
-      <button
-        class="tds-button-secondary font-size-l"
-        disabled
-        @click="$emit('action-item', {
-          type: 'download',
-          item,
-          options: { formats: ['CSV'] },
-        })">
-        <i class="fa fa-download"></i>
-      </button>
     </template>
     <template v-slot:__expanded="{ item }">
       <div class="mb-m text-muted">
@@ -189,8 +169,6 @@ export default {
       name: 'STATUS',
       sortable: true,
       title: 'Status',
-    }, {
-      name: 'ACTIONS',
     }];
     const sortKeys = {};
     Object.entries(SortKeys.Counts)
@@ -268,29 +246,12 @@ export default {
       & > u {
         color: var(--primary-vivid);
       }
-      & > button {
-        opacity: 0;
-      }
     }
   }
   .cell-DATE {
     & > button.tds-action-dropdown > .dropdown {
       width: 120px;
     }
-  }
-  /* stylelint-disable no-descending-specificity */
-  .cell-ACTIONS {
-    & > button {
-      opacity: 0;
-      &:not(:last-child) {
-        margin-right: var(--space-s);
-      }
-    }
-  }
-  /* stylelint-enable */
-  tr:hover > .cell-ACTIONS > button,
-  tr:hover > .cell-STUDY_TYPE > div > button {
-    opacity: 1;
   }
 }
 </style>
