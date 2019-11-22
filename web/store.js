@@ -234,17 +234,12 @@ export default new Vuex.Store({
         priority,
         dueDate,
         reasons,
-        ccEmails: ccEmailsStr,
+        ccEmails,
         centrelineId,
         centrelineType,
         geom,
         studies,
       } = studyRequest;
-      const ccEmails = ccEmailsStr
-        .trim()
-        .split(',')
-        .map(ccEmail => ccEmail.trim())
-        .filter(ccEmail => ccEmail !== '');
       const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       return {
         serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
@@ -431,7 +426,7 @@ export default new Vuex.Store({
         priority: 'STANDARD',
         dueDate,
         reasons: [],
-        ccEmails: '',
+        ccEmails: [],
         centrelineId,
         centrelineType,
         geom,

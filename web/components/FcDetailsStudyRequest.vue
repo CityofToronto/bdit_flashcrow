@@ -142,14 +142,9 @@
       <label>
         <span>Any staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
-          <input
-            v-model.lazy="v.ccEmails.$model"
-            class="font-size-l full-width mb-m"
-            :class="{
-              invalid: v.ccEmails.$error,
-            }"
-            name="ccEmails"
-            type="text" />
+          <FcInputTextArray
+            v-model="v.ccEmails.$model"
+            name="ccEmails" />
         </div>
       </label>
       <TdsPanel
@@ -170,6 +165,7 @@ import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import DatePicker from '@/web/components/DatePicker.vue';
+import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
 import TdsButtonGroup from '@/web/components/tds/TdsButtonGroup.vue';
 import TdsChecklistDropdown from '@/web/components/tds/TdsChecklistDropdown.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
@@ -178,6 +174,7 @@ export default {
   name: 'FcDetailsStudyRequest',
   components: {
     DatePicker,
+    FcInputTextArray,
     TdsButtonGroup,
     TdsChecklistDropdown,
     TdsPanel,

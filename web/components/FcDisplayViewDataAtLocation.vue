@@ -13,8 +13,7 @@
         <div class="flex-fill"></div>
         <button
           class="tds-button-primary"
-          @click="onActionBulk('request-study')"
-          :disabled="$v.$invalid">
+          @click="onActionBulk('request-study')">
           <i class="fa fa-plus"></i>
           <span> Request Study</span>
         </button>
@@ -27,7 +26,6 @@
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators';
 import {
   mapActions,
   mapGetters,
@@ -103,11 +101,6 @@ export default {
       'showMap',
       'studies',
     ]),
-  },
-  validations: {
-    selection: {
-      required,
-    },
   },
   watch: {
     location() {
