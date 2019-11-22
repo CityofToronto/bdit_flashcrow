@@ -229,7 +229,6 @@ export default new Vuex.Store({
         return studyRequest;
       }
       const {
-        hasServiceRequestId,
         serviceRequestId,
         priority,
         dueDate,
@@ -242,7 +241,7 @@ export default new Vuex.Store({
       } = studyRequest;
       const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       return {
-        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
+        serviceRequestId,
         priority,
         dueDate,
         estimatedDeliveryDate,
@@ -421,7 +420,6 @@ export default new Vuex.Store({
       };
       const studies = studyTypes.map(makeStudy);
       const studyRequest = {
-        hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
         dueDate,

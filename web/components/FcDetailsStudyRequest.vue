@@ -1,45 +1,16 @@
 <template>
   <div class="fc-details-study-request">
     <div class="form-group mt-xl">
-      <strong>Do you have a service request number?</strong>
-      <div class="inner-container">
-        <TdsButtonGroup
-          v-model="v.hasServiceRequestId.$model"
-          class="font-size-l"
-          :invalid="v.hasServiceRequestId.$error"
-          name="hasServiceRequestId"
-          :options="[
-            { label: 'Yes', value: true },
-            { label: 'No', value: false },
-          ]"
-          type="radio" />
-      </div>
-    </div>
-    <div
-      v-if="hasServiceRequestId"
-      class="form-group mt-xl">
       <label>
-        <span>Enter service request number:</span>
+        <span>Is there a service number for your request?</span>
         <div class="inner-container">
           <input
-            v-model="v.serviceRequestId.$model"
+            v-model="serviceRequestId"
             class="font-size-l full-width mb-m"
-            :class="{
-              invalid: v.serviceRequestId.$error,
-            }"
-            :disabled="!hasServiceRequestId"
             name="serviceRequestId"
             type="text" />
         </div>
       </label>
-      <TdsPanel
-        v-if="v.serviceRequestId.$error"
-        class="inner-container"
-        variant="error">
-        <p>
-          Please enter your service request number.
-        </p>
-      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
       <strong>What is the priority of your request?</strong>
@@ -222,20 +193,6 @@ export default {
           key: 'dueDate',
           value: dueDate,
         });
-      },
-    },
-    hasServiceRequestId: {
-      get() {
-        return this.studyRequest.hasServiceRequestId;
-      },
-      set(hasServiceRequestId) {
-        this.setStudyRequestMeta({
-          key: 'hasServiceRequestId',
-          value: hasServiceRequestId,
-        });
-        if (!hasServiceRequestId) {
-          this.serviceRequestId = null;
-        }
       },
     },
     priority: {

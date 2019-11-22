@@ -22,7 +22,7 @@
       <div class="flex-1 px-m">
         <p>Service Request Number:</p>
         <p class="font-size-l mb-xl">
-          <strong v-if="hasServiceRequestId">{{serviceRequestId}}</strong>
+          <strong v-if="serviceRequestId">{{serviceRequestId}}</strong>
           <span v-else class="text-muted">N/A</span>
         </p>
       </div>
@@ -130,9 +130,6 @@ export default {
     },
     dueDate() {
       return this.studyRequest.dueDate;
-    },
-    hasServiceRequestId() {
-      return this.studyRequest.hasServiceRequestId;
     },
     priority() {
       return this.studyRequest.priority;
