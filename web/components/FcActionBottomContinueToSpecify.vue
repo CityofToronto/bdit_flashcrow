@@ -20,7 +20,9 @@ export default {
   validations: ValidationsStudyRequest.validationsMeta,
   methods: {
     onClickContinue() {
-      this.$router.push({ name: 'requestStudySpecify' });
+      let { name } = this.$route;
+      name = name.replace('Schedule', 'Specify');
+      this.$router.push({ name });
     },
   },
 };

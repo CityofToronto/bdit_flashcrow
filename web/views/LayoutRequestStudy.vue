@@ -3,14 +3,14 @@
     <TdsTopBar class="nav-links text-size-l">
       <template v-slot:left>
         <router-link
-          :to="linkBackToData">
+          :to="linkBack.route">
           <i class="fa fa-chevron-left"></i>
-          <span> Back To Data</span>
+          <span> {{linkBack.label}}</span>
         </router-link>
       </template>
       <template v-slot:right>
         <router-link
-          :to="{ name: 'home' }">
+          :to="linkBack.route">
           <span>Cancel </span>
           <i class="fa fa-times"></i>
         </router-link>
@@ -41,38 +41,27 @@ export default {
     TdsTopBar,
   },
   computed: {
-    linkBackToData() {
-      const { centrelineId, centrelineType } = this.location;
-      return {
+    linkBack() {
+      if (this.studyRequest.id !== undefined) {
+        // coming from edit flow
+        const { params: { id } } = this.$route;
+        const route = {
+          name: 'requestStudyView',
+          params: { id },
+        };
+        const label = `Back to Request #${id}`;
+        return { route, label };
+      }
+      // coming from view flow
+      const { centrelineId, centrelineType, description } = this.location;
+      const route = {
         name: 'viewDataAtLocation',
         params: { centrelineId, centrelineType },
       };
+      const label = `Back to ${description}`;
+      return { route, label };
     },
-    ...mapState(['location']),
-  },
-  beforeRouteLeave(to, from, next) {
-    if (from.name === 'requestStudyConfirm' && to.name === 'viewData') {
-      /*
-       * In this case, we don't want to gate navigation - otherwise, the "Cancel Request?"
-       * confirm dialog is set, only to be immediately replaced by the "Confirmation: Request #"
-       * modal.
-       */
-      next();
-    } else {
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: {
-          title: 'Cancel Request?',
-          prompt: 'If you cancel your request now, your selection will be lost.',
-          textCancel: 'No, continue',
-          textOk: 'Yes, cancel',
-          action: next,
-          actionCancel: () => {
-            next(false);
-          },
-        },
-      });
-    }
+    ...mapState(['location', 'studyRequest']),
   },
   methods: {
     ...mapMutations(['setModal']),

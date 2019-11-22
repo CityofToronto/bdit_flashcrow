@@ -617,15 +617,18 @@ export default new Vuex.Store({
     },
     async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;
+      const update = data.id !== undefined;
+      const method = update ? 'PUT' : 'POST';
+      const url = update ? `/requests/study/${data.id}` : '/requests/study';
       const options = {
-        method: 'POST',
+        method,
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequest = await apiFetch('/requests/study', options);
+      const studyRequest = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest },
+        data: { studyRequest, update },
       });
       return studyRequest;
     },

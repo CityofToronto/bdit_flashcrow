@@ -23,7 +23,9 @@ export default {
   },
   methods: {
     onClickRequestData() {
-      this.$router.push({ name: 'requestStudySchedule' });
+      let { name } = this.$route;
+      name = `${name}Schedule`;
+      this.$router.push({ name });
     },
   },
 };

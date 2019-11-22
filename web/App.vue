@@ -44,7 +44,7 @@
             <span>{{toast.text}}</span>
           </FcToast>
           <SearchBarLocation
-            :disabled="searchBarDisabled || !auth.loggedIn" />
+            v-if="searchBarShown" />
         </template>
         <template v-slot:right>
           <TdsActionDropdown
@@ -106,8 +106,9 @@ export default {
     TdsTopBar,
   },
   computed: {
-    searchBarDisabled() {
-      return !SEARCH_BAR_ROUTES.includes(this.$route.name);
+    searchBarShown() {
+      const showSearchBarForRoute = SEARCH_BAR_ROUTES.includes(this.$route.name);
+      return showSearchBarForRoute && this.auth.loggedIn;
     },
     userActions() {
       if (this.auth.loggedIn) {

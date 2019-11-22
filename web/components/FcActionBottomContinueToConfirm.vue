@@ -20,7 +20,9 @@ export default {
   validations: ValidationsStudyRequest.validations,
   methods: {
     onClickContinue() {
-      this.$router.push({ name: 'requestStudyConfirm' });
+      let { name } = this.$route;
+      name = name.replace('Specify', 'Confirm');
+      this.$router.push({ name });
     },
   },
 };

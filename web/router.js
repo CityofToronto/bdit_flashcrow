@@ -59,6 +59,7 @@ const router = new Router({
         } else {
           if (
             studyRequest === null
+            || studyRequest.id !== undefined
             || studyRequest.centrelineType !== location.centrelineType
             || studyRequest.centrelineId !== location.centrelineId
           ) {
