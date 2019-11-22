@@ -629,5 +629,16 @@ export default new Vuex.Store({
       });
       return studyRequest;
     },
+    async deleteStudyRequests({ dispatch, state }, studyRequests) {
+      const options = {
+        method: 'DELETE',
+        csrf: state.auth.csrf,
+      };
+      const promisesStudyRequests = studyRequests.map(
+        ({ id }) => apiFetch(`/requests/study/${id}`, options),
+      );
+      await Promise.all(promisesStudyRequests);
+      await dispatch('fetchAllStudyRequests');
+    },
   },
 });

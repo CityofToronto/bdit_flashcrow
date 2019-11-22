@@ -13,19 +13,10 @@
         <div class="flex-fill"></div>
         <FcFilterRequestStatus class="font-size-l" />
         <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-check-square"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-flag"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
+          class="fc-request-download font-size-l"
+          @click="onActionBulk('export')">
           <i class="fa fa-download"></i>
+          <span> Download</span>
         </button>
       </header>
       <FcCardTableRequests
@@ -92,34 +83,45 @@ export default {
       });
   },
   methods: {
-    actionAccept(studyRequests) {
-      console.log('accept', studyRequests);
+    actionDelete(studyRequests) {
+      const n = studyRequests.length;
+
+      const title = n > 1 ? `Delete ${n} Requests?` : 'Delete Request?';
+
+      const studyRequestsHumanParts = studyRequests.map(({ id, location }, i) => {
+        const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
+        return `${maybeAnd}#${id} at ${location.description}`;
+      });
+      const studyRequestsHuman = studyRequestsHumanParts.join(', ');
+      const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;
+
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          textCancel: 'Cancel',
+          textOk: 'OK',
+          action: () => {
+            this.deleteStudyRequests(studyRequests);
+          },
+        },
+      });
     },
     actionExport(studyRequests) {
       console.log('export', studyRequests);
     },
-    actionFlag(studyRequests) {
-      console.log('flag', studyRequests);
-    },
     onActionBulk(type, options) {
       const studyRequests = this.selectedStudyRequests;
       const actionOptions = options || {};
-      if (type === 'accept') {
-        this.actionAccept(studyRequests, actionOptions);
-      } else if (type === 'flag') {
-        this.actionFlag(studyRequests, actionOptions);
-      } else if (type === 'export') {
+      if (type === 'export') {
         this.actionExport(studyRequests, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
-      if (type === 'accept') {
-        this.actionAccept([item], actionOptions);
-      } else if (type === 'flag') {
-        this.actionFlag([item], actionOptions);
-      } else if (type === 'export') {
-        this.actionExport([item], actionOptions);
+      if (type === 'delete') {
+        this.actionDelete([item], actionOptions);
       }
     },
     onChangeSelectAll() {
@@ -132,8 +134,14 @@ export default {
     syncFromRoute() {
       return this.fetchAllStudyRequests();
     },
-    ...mapActions(['fetchAllStudyRequests']),
-    ...mapMutations(['setFilterRequestStatus']),
+    ...mapActions([
+      'deleteStudyRequests',
+      'fetchAllStudyRequests',
+    ]),
+    ...mapMutations([
+      'setFilterRequestStatus',
+      'setModal',
+    ]),
   },
 };
 </script>

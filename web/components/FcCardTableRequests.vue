@@ -67,30 +67,11 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-m"
-          disabled
           @click="$emit('action-item', {
-            type: 'accept',
+            type: 'delete',
             item,
           })">
-          <i class="fa fa-check-square"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
-            type: 'flag',
-            item,
-          })">
-          <i class="fa fa-flag"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
-            type: 'export',
-            item,
-          })">
-          <i class="fa fa-download"></i>
+          <i class="fa fa-trash-alt"></i>
         </button>
       </div>
     </template>
@@ -171,13 +152,9 @@ export default {
     color: var(--error);
   }
   .cell-actions {
-    opacity: 0;
     & > button:not(:last-child) {
       margin-right: var(--space-s);
     }
-  }
-  tr:hover .cell-actions {
-    opacity: 1;
   }
 }
 </style>
