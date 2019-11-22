@@ -18,7 +18,7 @@
     </template>
     <template v-slot:STUDY_TYPE="{ item }">
       <div
-        class="cell-study-type flex-container-row"
+        class="flex-container-row"
         @click.prevent="onActionShowReports(item)">
         <u v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT">
           {{item.counts[item.activeIndex].type.label}}
@@ -237,9 +237,6 @@ export default {
     }
   }
   .cell-STUDY_TYPE {
-    &:hover {
-      background-color: var(--primary-light);
-    }
     & > div {
       align-items: center;
       cursor: pointer;
