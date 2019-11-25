@@ -13,7 +13,7 @@
       </label>
     </div>
     <div class="form-group mt-xl">
-      <strong>What is the priority of your request?</strong>
+      <strong>What is the priority of your request? *</strong>
       <div class="inner-container">
         <TdsButtonGroup
           v-model="priority"
@@ -45,8 +45,10 @@
         </p>
       </TdsPanel>
     </div>
-    <div class="form-group mt-xl">
-      <strong>When do you need the data by?</strong>
+    <div
+      v-if="priority === 'URGENT'"
+      class="form-group mt-xl">
+      <strong>When do you need the data by? *</strong>
       <div class="inner-container">
         <DatePicker
           v-model="v.dueDate.$model"
@@ -68,18 +70,9 @@
           Please select a due date for this request.
         </p>
       </TdsPanel>
-      <TdsPanel
-        v-else-if="!v.dueDate.$dirty"
-        class="inner-container"
-        variant="info">
-        <p>
-          By default, we've selected a date 3 months from now.  If this meets your
-          needs, you don't need to change this due date.
-        </p>
-      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
-      <strong>What reasons are there for your request?</strong>
+      <strong>What reasons are there for your request? *</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="v.reasons.$model"
@@ -111,7 +104,7 @@
     </div>
     <div class="form-group mt-xl">
       <label>
-        <span>Any staff you'd like to keep informed on the request?</span>
+        <span>Any other staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
           <FcInputTextArray
             v-model="v.ccEmails.$model"
@@ -123,8 +116,7 @@
         class="inner-container"
         variant="error">
         <p>
-          Please enter a comma-separated list of valid
-          <strong>@toronto.ca</strong> email addresses.
+          Please enter valid <strong>@toronto.ca</strong> email addresses.
         </p>
       </TdsPanel>
     </div>
