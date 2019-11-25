@@ -221,12 +221,16 @@ export default new Vuex.Store({
       if (studyRequest === null) {
         return null;
       }
+      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       if (studyRequest.id !== undefined) {
         /*
          * This study request instance has already been persisted to database, so we
          * don't need to normalize it in the same way.
          */
-        return studyRequest;
+        return {
+          ...studyRequest,
+          estimatedDeliveryDate,
+        };
       }
       const {
         serviceRequestId,
@@ -239,7 +243,6 @@ export default new Vuex.Store({
         geom,
         studies,
       } = studyRequest;
-      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       return {
         serviceRequestId,
         priority,

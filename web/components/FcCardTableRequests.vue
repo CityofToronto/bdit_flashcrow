@@ -118,8 +118,8 @@ export default {
     }];
     return {
       columns,
-      sortBy: 'PRIORITY',
-      sortDirection: SortDirection.ASC,
+      sortBy: 'ID',
+      sortDirection: SortDirection.DESC,
       sortKeys: SortKeys.Requests,
       RequestStatus,
     };
