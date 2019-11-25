@@ -32,8 +32,15 @@
         {{item.location.description}}
       </span>
     </template>
-    <template v-slot:STUDY_TYPES="{ item, children }">
-      <span>TODO: item type</span>
+    <template v-slot:REQUESTER="{ item }">
+      <span
+        v-if="item.requestedBy === null"
+        class="text-muted">
+        N/A
+      </span>
+      <span v-else>
+        {{item.requestedBy.name}}
+      </span>
     </template>
     <template v-slot:DATE="{ item }">
       <span>{{item.dueDate | date}}</span>
@@ -95,23 +102,21 @@ export default {
       name: 'SELECTION',
     }, {
       name: 'ID',
-      sortable: true,
       title: 'ID#',
     }, {
       name: 'LOCATION',
-      sortable: true,
       title: 'Location',
     }, {
+      name: 'REQUESTER',
+      title: 'Requested By',
+    }, {
       name: 'DATE',
-      sortable: true,
       title: 'Due Date',
     }, {
       name: 'PRIORITY',
-      sortable: true,
       title: 'Priority',
     }, {
       name: 'STATUS',
-      sortable: true,
       title: 'Status',
     }, {
       name: 'ACTIONS',
