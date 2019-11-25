@@ -86,12 +86,14 @@ export default new Vuex.Store({
     // REQUESTS
     studyRequests: [],
     studyRequestLocations: new Map(),
+    studyRequestUsers: new Map(),
     requestReasons: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
     studyRequestLocation: null,
+    studyRequestUser: null,
     // query that will appear in the search bar
     locationQuery: '',
   },
@@ -193,15 +195,24 @@ export default new Vuex.Store({
       return state.studyRequests
         .filter(({ status }) => state.filterRequestStatus.includes(status))
         .map((studyRequest) => {
-          const { centrelineId, centrelineType } = studyRequest;
+          const {
+            centrelineId,
+            centrelineType,
+            userSubject,
+          } = studyRequest;
           const key = centrelineKey(centrelineType, centrelineId);
           let location = null;
           if (state.studyRequestLocations.has(key)) {
             location = state.studyRequestLocations.get(key);
           }
+          let requestedBy = null;
+          if (state.studyRequestUsers.has(userSubject)) {
+            requestedBy = state.studyRequestUsers.get(userSubject);
+          }
           return {
             ...studyRequest,
             location,
+            requestedBy,
           };
         });
     },
@@ -391,12 +402,16 @@ export default new Vuex.Store({
     clearStudyRequests(state) {
       Vue.set(state, 'studyRequests', []);
       Vue.set(state, 'studyRequestLocations', new Map());
+      Vue.set(state, 'studyRequestUsers', new Map());
     },
     setStudyRequests(state, studyRequests) {
       Vue.set(state, 'studyRequests', studyRequests);
     },
     setStudyRequestLocations(state, studyRequestLocations) {
       Vue.set(state, 'studyRequestLocations', studyRequestLocations);
+    },
+    setStudyRequestUsers(state, studyRequestUsers) {
+      Vue.set(state, 'studyRequestUsers', studyRequestUsers);
     },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
@@ -407,6 +422,9 @@ export default new Vuex.Store({
     },
     setStudyRequestLocation(state, studyRequestLocation) {
       Vue.set(state, 'studyRequestLocation', studyRequestLocation);
+    },
+    setStudyRequestUser(state, studyRequestUser) {
+      Vue.set(state, 'studyRequestUser', studyRequestUser);
     },
     setNewStudyRequest(state, studyTypes) {
       const { location, now } = state;
@@ -579,32 +597,61 @@ export default new Vuex.Store({
       const studyRequest = await apiFetch(url);
       commit('setStudyRequest', studyRequest);
 
-      const { centrelineId, centrelineType } = studyRequest;
+      const {
+        centrelineId,
+        centrelineType,
+        userSubject,
+      } = studyRequest;
+
       const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
-      const studyRequestLocations = await dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-      );
+      const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
+
+      const subjects = [userSubject];
+      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
+
+      const [
+        studyRequestLocations,
+        studyRequestUsers,
+      ] = await Promise.all([promiseLocations, promiseUsers]);
+
       const key = centrelineKey(centrelineType, centrelineId);
       const studyRequestLocation = studyRequestLocations.get(key);
       commit('setStudyRequestLocation', studyRequestLocation);
 
+      const studyRequestUser = studyRequestUsers.get(userSubject);
+      commit('setStudyRequestUser', studyRequestUser);
+
       return {
         studyRequest,
         studyRequestLocation,
+        studyRequestUser,
       };
     },
     async fetchAllStudyRequests({ commit, dispatch }) {
       const studyRequests = await apiFetch('/requests/study');
       commit('setStudyRequests', studyRequests);
 
-      const centrelineIdsAndTypes = studyRequests
-        .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
-      const studyRequestLocations = await dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-      );
+      const centrelineKeys = new Set();
+      const centrelineIdsAndTypes = [];
+      let subjects = new Set();
+      studyRequests.forEach(({ centrelineId, centrelineType, userSubject }) => {
+        const key = centrelineKey(centrelineId, centrelineType);
+        if (!centrelineKeys.has(key)) {
+          centrelineKeys.add(key);
+          centrelineIdsAndTypes.push({ centrelineId, centrelineType });
+        }
+        subjects.add(userSubject);
+      });
+      subjects = Array.from(subjects);
+
+      const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
+      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
+      const [
+        studyRequestLocations,
+        studyRequestUsers,
+      ] = await Promise.all([promiseLocations, promiseUsers]);
       commit('setStudyRequestLocations', studyRequestLocations);
+      commit('setStudyRequestUsers', studyRequestUsers);
 
       return {
         studyRequests,
@@ -640,6 +687,16 @@ export default new Vuex.Store({
       // TODO: during supervisor view work, just delete locally
       // from `studyRequests`, `studyRequestLocations`
       await dispatch('fetchAllStudyRequests');
+    },
+    // USERS
+    async fetchUsersBySubjects(_, subjects) {
+      const options = {
+        data: {
+          subject: subjects,
+        },
+      };
+      const users = await apiFetch('/users/bySubject', options);
+      return new Map(users);
     },
   },
 });
