@@ -1,7 +1,8 @@
 {
   "name": "bdit_flashcrow",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
+  "license": "MIT",
   "description": "An integrated data platform for City of Toronto transportation data",
   "homepage": "https://move.intra.dev-toronto.ca",
   "scripts": {
