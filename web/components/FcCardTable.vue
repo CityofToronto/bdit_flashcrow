@@ -92,6 +92,7 @@
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
 import { SortDirection } from '@/lib/Constants';
+import ObjectUtils from '@/lib/ObjectUtils';
 
 export default {
   name: 'FcCardTable',
@@ -106,6 +107,10 @@ export default {
       default: false,
     },
     items: Array,
+    searchKeys: {
+      type: Object,
+      default() { return {}; },
+    },
     sortBy: {
       type: String,
       default: null,
@@ -120,10 +125,12 @@ export default {
     },
   },
   data() {
+    const searchBy = ObjectUtils.map(this.searchKeys, () => '');
     return {
       expanded: null,
       internalSortBy: this.sortBy,
       internalSortDirection: this.sortDirection,
+      searchBy,
       SortDirection,
     };
   },
@@ -135,15 +142,23 @@ export default {
         icon = icon || null;
         title = title || ' ';
 
+        const searchKey = this.searchKeys[name] || null;
+        const searchable = searchKey !== null;
+        const searchQuery = this.searchBy[name] || null;
+
         const sortKey = this.sortKeys[name] || null;
         const sortable = sortKey !== null;
         const sorted = name === this.internalSortBy;
+
         const headerClasses = { sortable, sorted };
 
         return {
           headerClasses,
           icon,
           name,
+          searchable,
+          searchKey,
+          searchQuery,
           sortable,
           sorted,
           sortKey,
@@ -152,15 +167,25 @@ export default {
       });
     },
     itemsNormalized() {
-      if (this.internalSortBy === null) {
-        return this.items;
+      const searchFilters = this.columnsNormalized
+        .filter(({ searchable, searchQuery }) => searchable && searchQuery !== '')
+        .map(({ searchKey, searchQuery: q }) => r => searchKey(q, r));
+
+      let itemsNormalized = this.items;
+      if (searchFilters.length > 0) {
+        itemsNormalized = itemsNormalized.filter(
+          r => searchFilters.every(filter => filter(r)),
+        );
       }
-      const sortKey = this.sortKeys[this.internalSortBy];
-      return ArrayUtils.sortBy(
-        this.items,
-        item => sortKey(item),
-        this.internalSortDirection,
-      );
+      if (this.internalSortBy !== null) {
+        const sortKey = this.sortKeys[this.internalSortBy];
+        itemsNormalized = ArrayUtils.sortBy(
+          itemsNormalized,
+          item => sortKey(item),
+          this.internalSortDirection,
+        );
+      }
+      return itemsNormalized;
     },
     numTableColumns() {
       const n = this.columns.length;

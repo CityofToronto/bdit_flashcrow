@@ -84,6 +84,7 @@ import FcCardTable from '@/web/components/FcCardTable.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 import {
   RequestStatus,
+  SearchKeys,
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
@@ -123,6 +124,7 @@ export default {
     }];
     return {
       columns,
+      searchKeys: SearchKeys.Requests,
       sortBy: 'ID',
       sortDirection: SortDirection.DESC,
       sortKeys: SortKeys.Requests,
