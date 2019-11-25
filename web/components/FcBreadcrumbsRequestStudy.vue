@@ -69,14 +69,8 @@ export default {
     },
     steps() {
       const { params } = this.$route;
-      if (ROUTES_CREATE.includes(this.currentStep)) {
-        return ROUTES_CREATE.map((name, i) => ({
-          name,
-          label: LABELS[i],
-          params,
-        }));
-      }
-      return ROUTES_EDIT.map((name, i) => ({
+      const routes = ROUTES_CREATE.includes(this.currentStep) ? ROUTES_CREATE : ROUTES_EDIT;
+      return routes.map((name, i) => ({
         name,
         label: LABELS[i],
         params,

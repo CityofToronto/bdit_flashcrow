@@ -18,7 +18,7 @@ export default {
     linkFinish() {
       if (this.studyRequest.id !== undefined) {
         // coming from edit flow
-        const { params: { id } } = this.$route;
+        const { id } = this.studyRequest;
         const route = {
           name: 'requestStudyView',
           params: { id },

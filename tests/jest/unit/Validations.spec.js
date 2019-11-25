@@ -36,6 +36,8 @@ test('ValidationsStudyRequest.torontoInternal()', () => {
   expect(torontoInternal(',,,,,,')).toBeFalsy();
   expect(torontoInternal('foo.bar@gmail.com')).toBeFalsy();
   expect(torontoInternal('Evan.Savage@toronto.ca')).toBeTruthy();
+  expect(torontoInternal('toronto.ca')).toBeFalsy();
+  expect(torontoInternal('@toronto.ca')).toBeFalsy();
 });
 
 test('ValidationsStudyRequest.needsValidDuration()', () => {

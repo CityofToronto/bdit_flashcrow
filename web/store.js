@@ -637,6 +637,8 @@ export default new Vuex.Store({
         ({ id }) => apiFetch(`/requests/study/${id}`, options),
       );
       await Promise.all(promisesStudyRequests);
+      // TODO: during supervisor view work, just delete locally
+      // from `studyRequests`, `studyRequestLocations`
       await dispatch('fetchAllStudyRequests');
     },
   },

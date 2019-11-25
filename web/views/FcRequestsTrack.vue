@@ -100,8 +100,6 @@ export default {
         data: {
           title,
           prompt,
-          textCancel: 'Cancel',
-          textOk: 'OK',
           action: () => {
             this.deleteStudyRequests(studyRequests);
           },
@@ -109,6 +107,7 @@ export default {
       });
     },
     actionExport(studyRequests) {
+      // TODO: implement export here
       console.log('export', studyRequests);
     },
     onActionBulk(type, options) {
