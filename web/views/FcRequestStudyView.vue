@@ -12,7 +12,12 @@
     <div class="px-xl flex-fill flex-container-column">
       <hr />
       <div
-        v-if="studyRequest !== null"
+        v-if="studyRequest === null"
+        class="request-loading-spinner">
+        <TdsLoadingSpinner />
+      </div>
+      <div
+        v-else
         class="flex-fill flex-container-column">
         <header class="flex-container-row">
           <h2>
@@ -33,11 +38,12 @@
             </span>
           </h2>
           <div class="flex-fill"></div>
-          <TdsLabel
-            class="font-size-l uppercase"
-            v-bind="RequestStatus[studyRequest.status]">
-            {{studyRequest.status}}
-          </TdsLabel>
+          <button
+            class="font-size-l"
+            @click="onActionEdit">
+            <i class="fa fa-edit" />
+            <span> Edit</span>
+          </button>
         </header>
         <section class="flex-fill flex-container-row">
           <div class="flex-cross-scroll">
@@ -58,9 +64,9 @@ import { mapActions, mapState } from 'vuex';
 
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
-import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsTopBar from '@/web/components/tds/TdsTopBar.vue';
-import { HttpStatus, RequestStatus } from '@/lib/Constants';
+import { HttpStatus } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
@@ -84,13 +90,12 @@ export default {
   components: {
     FcSummaryStudy,
     FcSummaryStudyRequest,
-    TdsLabel,
+    TdsLoadingSpinner,
     TdsTopBar,
   },
   data() {
     return {
       location: null,
-      RequestStatus,
     };
   },
   computed: {
@@ -110,6 +115,16 @@ export default {
       });
   },
   methods: {
+    onActionEdit() {
+      if (this.studyRequest === null) {
+        return;
+      }
+      const { id } = this.studyRequest;
+      this.$router.push({
+        name: 'requestStudyEdit',
+        params: { id },
+      });
+    },
     syncFromRoute(to) {
       const { id } = to.params;
       return this.fetchStudyRequest(id)
@@ -132,6 +147,10 @@ export default {
     & > a {
       text-decoration: none;
     }
+  }
+  .request-loading-spinner {
+    height: var(--space-2xl);
+    width: var(--space-2xl);
   }
   header {
     align-items: center;

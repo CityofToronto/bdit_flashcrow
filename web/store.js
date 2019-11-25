@@ -221,33 +221,30 @@ export default new Vuex.Store({
       if (studyRequest === null) {
         return null;
       }
+      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       if (studyRequest.id !== undefined) {
         /*
          * This study request instance has already been persisted to database, so we
          * don't need to normalize it in the same way.
          */
-        return studyRequest;
+        return {
+          ...studyRequest,
+          estimatedDeliveryDate,
+        };
       }
       const {
-        hasServiceRequestId,
         serviceRequestId,
         priority,
         dueDate,
         reasons,
-        ccEmails: ccEmailsStr,
+        ccEmails,
         centrelineId,
         centrelineType,
         geom,
         studies,
       } = studyRequest;
-      const ccEmails = ccEmailsStr
-        .trim()
-        .split(',')
-        .map(ccEmail => ccEmail.trim())
-        .filter(ccEmail => ccEmail !== '');
-      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
       return {
-        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
+        serviceRequestId,
         priority,
         dueDate,
         estimatedDeliveryDate,
@@ -426,12 +423,11 @@ export default new Vuex.Store({
       };
       const studies = studyTypes.map(makeStudy);
       const studyRequest = {
-        hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
         dueDate,
         reasons: [],
-        ccEmails: '',
+        ccEmails: [],
         centrelineId,
         centrelineType,
         geom,
@@ -617,17 +613,33 @@ export default new Vuex.Store({
     },
     async saveActiveStudyRequest({ commit, getters, state }) {
       const data = getters.studyRequestModel;
+      const update = data.id !== undefined;
+      const method = update ? 'PUT' : 'POST';
+      const url = update ? `/requests/study/${data.id}` : '/requests/study';
       const options = {
-        method: 'POST',
+        method,
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequest = await apiFetch('/requests/study', options);
+      const studyRequest = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest },
+        data: { studyRequest, update },
       });
       return studyRequest;
+    },
+    async deleteStudyRequests({ dispatch, state }, studyRequests) {
+      const options = {
+        method: 'DELETE',
+        csrf: state.auth.csrf,
+      };
+      const promisesStudyRequests = studyRequests.map(
+        ({ id }) => apiFetch(`/requests/study/${id}`, options),
+      );
+      await Promise.all(promisesStudyRequests);
+      // TODO: during supervisor view work, just delete locally
+      // from `studyRequests`, `studyRequestLocations`
+      await dispatch('fetchAllStudyRequests');
     },
   },
 });

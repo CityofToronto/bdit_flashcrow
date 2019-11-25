@@ -6,7 +6,7 @@
     </legend>
     <div class="mt-m px-m">
       <div class="form-group">
-        <strong>What days of the week should the study fall on?</strong>
+        <strong>What days of the week should the study fall on? *</strong>
         <TdsButtonGroup
           v-model="v.daysOfWeek.$model"
           class="font-size-l"
@@ -37,7 +37,7 @@
       <div
         v-if="studyType.automatic"
         class="form-group">
-        <strong>What's the duration of your study?</strong>
+        <strong>What's the duration of your study? *</strong>
         <TdsRadioGroup
           v-model="v.duration.$model"
           :invalid="v.duration.$error"
@@ -62,7 +62,7 @@
       <div
         v-else
         class="form-group">
-        <strong>What type of hours should we use?</strong>
+        <strong>What type of hours should we use? *</strong>
         <TdsRadioGroup
           v-model="hours"
           class="mb-m"

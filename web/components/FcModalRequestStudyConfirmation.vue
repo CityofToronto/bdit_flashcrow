@@ -4,7 +4,13 @@
       <h2>Confirmation: Request #{{studyRequestId}}</h2>
     </template>
     <template v-slot:content>
-      <p>Thank you for your request!</p>
+      <p v-if="update">
+        Your request has been updated.
+      </p>
+      <p v-else>
+        Thank you for your request!  You will receive a confirmation email
+        shortly.
+      </p>
       <p>
         You should receive your data by
         <strong>{{estimatedDeliveryDate | date}}</strong>.
@@ -43,6 +49,9 @@ export default {
     },
     studyRequestId() {
       return this.data.studyRequest.id;
+    },
+    update() {
+      return this.data.update;
     },
   },
   methods: {

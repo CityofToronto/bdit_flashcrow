@@ -9,7 +9,9 @@
       <div class="tds-modal-content flex-fill">
         <slot name="content"></slot>
       </div>
-      <footer v-if="$scopedSlots.footer">
+      <footer
+        v-if="$scopedSlots.footer"
+        class="mt-m">
         <slot name="footer"></slot>
       </footer>
     </aside>

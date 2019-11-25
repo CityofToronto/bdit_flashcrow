@@ -16,11 +16,11 @@
       </label>
     </template>
     <template v-slot:ID="{ item }">
-      <router-link
-        :to="{
-          name: 'requestStudyView',
-          params: { id: item.id },
-        }">{{item.id}}</router-link>
+      <div
+        class="flex-container-row"
+        @click.prevent="onActionShowRequest(item)">
+        <u>{{item.id}}</u>
+      </div>
     </template>
     <template v-slot:LOCATION="{ item }">
       <span
@@ -28,17 +28,9 @@
         class="text-muted">
         N/A
       </span>
-      <router-link
-        v-else
-        :to="{
-          name: 'viewDataAtLocation',
-          params: {
-            centrelineId: item.centrelineId,
-            centrelineType: item.centrelineType,
-          }
-        }">
+      <span v-else>
         {{item.location.description}}
-      </router-link>
+      </span>
     </template>
     <template v-slot:STUDY_TYPES="{ item, children }">
       <span>TODO: item type</span>
@@ -67,30 +59,11 @@
       <div class="cell-actions">
         <button
           class="tds-button-secondary font-size-m"
-          disabled
           @click="$emit('action-item', {
-            type: 'accept',
+            type: 'delete',
             item,
           })">
-          <i class="fa fa-check-square"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
-            type: 'flag',
-            item,
-          })">
-          <i class="fa fa-flag"></i>
-        </button>
-        <button
-          class="tds-button-secondary font-size-m"
-          disabled
-          @click="$emit('action-item', {
-            type: 'export',
-            item,
-          })">
-          <i class="fa fa-download"></i>
+          <i class="fa fa-trash-alt"></i>
         </button>
       </div>
     </template>
@@ -145,8 +118,8 @@ export default {
     }];
     return {
       columns,
-      sortBy: 'PRIORITY',
-      sortDirection: SortDirection.ASC,
+      sortBy: 'ID',
+      sortDirection: SortDirection.DESC,
       sortKeys: SortKeys.Requests,
       RequestStatus,
     };
@@ -162,6 +135,14 @@ export default {
     },
     ...mapGetters(['itemsStudyRequests']),
   },
+  methods: {
+    onActionShowRequest(item) {
+      this.$router.push({
+        name: 'requestStudyView',
+        params: { id: item.id },
+      });
+    },
+  },
 };
 </script>
 
@@ -170,14 +151,19 @@ export default {
   .priority-urgent {
     color: var(--error);
   }
+  .cell-ID {
+    & > div {
+      align-items: center;
+      cursor: pointer;
+      & > u {
+        color: var(--primary-vivid);
+      }
+    }
+  }
   .cell-actions {
-    opacity: 0;
     & > button:not(:last-child) {
       margin-right: var(--space-s);
     }
-  }
-  tr:hover .cell-actions {
-    opacity: 1;
   }
 }
 </style>

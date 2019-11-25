@@ -13,13 +13,9 @@
         <div class="flex-fill"></div>
         <button
           class="tds-button-primary"
-          @click="onActionBulk('request-study')"
-          :disabled="$v.$invalid">
+          @click="onActionBulk('request-study')">
           <i class="fa fa-plus"></i>
           <span> Request Study</span>
-        </button>
-        <button class="tds-button-secondary" disabled>
-          <i class="fa fa-download"></i>
         </button>
       </header>
       <FcCardTableCounts
@@ -30,7 +26,6 @@
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators';
 import {
   mapActions,
   mapGetters,
@@ -107,11 +102,6 @@ export default {
       'studies',
     ]),
   },
-  validations: {
-    selection: {
-      required,
-    },
-  },
   watch: {
     location() {
       if (this.location === null) {
@@ -167,23 +157,6 @@ export default {
       });
   },
   methods: {
-    actionDownload(counts, { formats }) {
-      const downloadFormats = formats || ['CSV'];
-      if (counts.length === 0) {
-        return;
-      }
-      if (counts.length === 1 && downloadFormats.length === 1) {
-        // TODO: single download
-      } else {
-        // TODO: multiple download (ZIP)
-      }
-      this.setModal({
-        component: 'ModalComingSoon',
-        data: {
-          feature: 'download',
-        },
-      });
-    },
     actionRequestStudy(studyTypes) {
       if (studyTypes.size === 0) {
         return;
@@ -207,20 +180,14 @@ export default {
     },
     onActionBulk(type, options) {
       const actionOptions = options || {};
-      if (type === 'download') {
-        const counts = this.selectedCounts;
-        this.actionDownload(counts, actionOptions);
-      } else if (type === 'request-study') {
+      if (type === 'request-study') {
         const studyTypes = this.selectedTypes;
         this.actionRequestStudy(studyTypes, actionOptions);
       }
     },
     onActionItem({ type, item, options }) {
       const actionOptions = options || {};
-      if (type === 'download') {
-        const count = item.counts[item.activeIndex];
-        this.actionDownload([count], actionOptions);
-      } else if (type === 'request-study') {
+      if (type === 'request-study') {
         const studyType = item.id;
         this.actionRequestStudy([studyType], actionOptions);
       } else if (type === 'show-reports') {
