@@ -3,6 +3,7 @@
     class="fc-card-table-requests"
     :columns="columns"
     :items="itemsStudyRequests"
+    :search-keys="searchKeys"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">

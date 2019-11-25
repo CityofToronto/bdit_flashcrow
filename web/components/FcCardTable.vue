@@ -19,19 +19,32 @@
           class="font-size-l text-left"
           :class="column.headerClasses"
           @click="onClickColumnHeader(column)">
-          <i
-            v-if="column.icon !== null"
-            class="fa"
-            :class="'fa-' + column.icon"></i>
-          <span> {{column.title}}</span>
-          <i
-            v-if="column.sortable"
-            class="fa"
-            :class="{
-              'fa-sort': !column.sorted,
-              'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
-              'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
-            }"></i>
+          <div class="flex-container-row">
+            <i
+              v-if="column.icon !== null"
+              class="fa"
+              :class="'fa-' + column.icon"></i>
+            <span> {{column.title}}</span>
+            <div class="flex-fill"></div>
+            <i
+              v-if="column.sortable"
+              class="fa"
+              :class="{
+                'fa-sort': !column.sorted,
+                'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
+                'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
+              }"></i>
+          </div>
+          <div
+            v-if="column.searchable"
+            class="fc-card-table-search">
+            <input
+              v-model="searchBy[column.name]"
+              type="text"
+              class="full-width"
+              :name="'search_' + column.name"
+              @click.stop />
+          </div>
         </th>
         <!-- EXPAND TOGGLE -->
         <th
@@ -144,7 +157,7 @@ export default {
 
         const searchKey = this.searchKeys[name] || null;
         const searchable = searchKey !== null;
-        const searchQuery = this.searchBy[name] || null;
+        const searchQuery = this.searchBy[name];
 
         const sortKey = this.sortKeys[name] || null;
         const sortable = sortKey !== null;
@@ -226,6 +239,8 @@ export default {
   }
   & > thead {
     & > tr > th {
+      padding: var(--space-m);
+      vertical-align: top;
       &.sortable {
         cursor: pointer;
         &.sorted {
@@ -236,14 +251,8 @@ export default {
           color: var(--primary-darker);
         }
       }
-
-      padding: var(--space-m);
-      & > span {
-        vertical-align: bottom;
-      }
-      & > i:last-child {
-        float: right;
-        vertical-align: bottom;
+      & > div {
+        align-items: center;
       }
     }
   }
