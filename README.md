@@ -14,9 +14,9 @@ To contact the Flashcrow team:
 | If... | Contact: | Who? |
 | --- | --- | --- |
 | You have a question related to Flashcrow development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
-| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | TBD |
-| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | TBD |
-| Your question isn't captured above, or you're not sure who to contact | Service Owner | [Jesse Coleman](mailto:Jesse.Coleman@toronto.ca) |
+| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | [Shine Chaudhuri](Shine.Chaudhuri@toronto.ca) |
+| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | [Ruth Birman](Ruth.Birman@toronto.ca) |
+| Your question isn't captured above, or you're not sure who to contact | Service Owner | [Aakash Harpalani](mailto:Aakash.Harpalani@toronto.ca) |
 
 We will try to respond to any questions within 48 hours.  However, given the small size of our team, please understand if it takes us a bit longer to respond sometimes.
 
