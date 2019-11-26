@@ -2,7 +2,9 @@
   <FcCardTable
     class="fc-card-table-requests"
     :columns="columns"
+    expandable
     :items="itemsStudyRequests"
+    ref="table"
     :search-keys="searchKeys"
     :sort-by="sortBy"
     :sort-direction="sortDirection"
@@ -75,6 +77,15 @@
         </button>
       </div>
     </template>
+    <template v-slot:__expanded="{ item }">
+      <div>
+        <FcSummaryStudy
+          v-for="(study, i) in item.studies"
+          :key="'study_' + item.id + '_' + i"
+          :index="i"
+          :study-request="item" />
+      </div>
+    </template>
   </FcCardTable>
 </template>
 
@@ -82,6 +93,7 @@
 import { mapGetters } from 'vuex';
 
 import FcCardTable from '@/web/components/FcCardTable.vue';
+import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 import {
   RequestStatus,
@@ -94,6 +106,7 @@ export default {
   name: 'FcCardTableRequests',
   components: {
     FcCardTable,
+    FcSummaryStudy,
     TdsLabel,
   },
   props: {
@@ -110,7 +123,7 @@ export default {
       title: 'Location',
     }, {
       name: 'REQUESTER',
-      title: 'Requested By',
+      title: 'Requester',
     }, {
       name: 'DATE',
       title: 'Due Date',

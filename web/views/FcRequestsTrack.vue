@@ -89,7 +89,7 @@ export default {
 
       const studyRequestsHumanParts = studyRequests.map(({ id, location }, i) => {
         const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
-        return `${maybeAnd}#${id} at ${location.description}`;
+        return `${maybeAnd}Request #${id} at ${location.description}`;
       });
       const studyRequestsHuman = studyRequestsHumanParts.join(', ');
       const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;

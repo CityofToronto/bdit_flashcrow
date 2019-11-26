@@ -105,6 +105,9 @@ export default {
     TdsLabel,
     TdsPanel,
   },
+  props: {
+    studyRequest: Object,
+  },
   data() {
     return {
       RequestStatus,
@@ -153,7 +156,7 @@ export default {
       return this.studyRequest.serviceRequestId;
     },
     ...mapGetters(['studyRequestEstimatedDeliveryDate']),
-    ...mapState(['requestReasons', 'studyRequest']),
+    ...mapState(['requestReasons']),
   },
 };
 </script>

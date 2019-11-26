@@ -93,7 +93,12 @@
               class="tds-button-secondary font-size-l"
               :disabled="!item.expandable"
               @click="onClickItemExpand(item)">
-              <i class="fa fa-chevron-circle-down"></i>
+              <i
+                class="fa"
+                :class="{
+                  'fa-chevron-circle-up': expanded === item.id,
+                  'fa-chevron-circle-down': expanded !== item.id,
+                }"></i>
             </button>
           </td>
         </tr>
