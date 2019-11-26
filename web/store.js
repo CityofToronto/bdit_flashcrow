@@ -616,8 +616,13 @@ export default new Vuex.Store({
         studyRequestUser,
       };
     },
-    async fetchAllStudyRequests({ commit, dispatch }) {
-      const studyRequests = await apiFetch('/requests/study');
+    async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
+      const data = {};
+      if (isSupervisor) {
+        data.isSupervisor = true;
+      }
+      const options = { data };
+      const studyRequests = await apiFetch('/requests/study', options);
       commit('setStudyRequests', studyRequests);
 
       const centrelineKeys = new Set();
