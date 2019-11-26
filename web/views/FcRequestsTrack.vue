@@ -13,7 +13,7 @@
         <div class="flex-fill"></div>
         <button
           class="fc-request-download font-size-l"
-          @click="actionExport(selectedStudyRequests)">
+          @click="actionExport(selectedItems)">
           <i class="fa fa-download"></i>
           <span> Download</span>
         </button>
@@ -109,6 +109,8 @@
 </template>
 
 <script>
+import { csvFormat } from 'd3-dsv';
+import { saveAs } from 'file-saver';
 import {
   mapActions,
   mapGetters,
@@ -122,6 +124,10 @@ import {
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
+import {
+  REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
+} from '@/lib/i18n/Strings';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcCardTable from '@/web/components/FcCardTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
@@ -175,9 +181,9 @@ export default {
     selectableIds() {
       return this.itemsNormalized.map(({ id }) => id);
     },
-    selectedStudyRequests() {
+    selectedItems() {
       return this.selection
-        .map(id => this.studyRequests.find(r => r.id === id));
+        .map(id => this.itemsNormalized.find(r => r.id === id));
     },
     selectionAll() {
       return this.selectableIds
@@ -230,8 +236,38 @@ export default {
       });
     },
     actionExport(studyRequests) {
-      // TODO: implement export here
-      console.log('export', studyRequests);
+      if (studyRequests.length === 0) {
+        this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
+        return;
+      }
+      const data = studyRequests.map((item) => {
+        const { id, priority, status } = item;
+        const location = (item.location && item.location.description) || null;
+        const requester = (item.requestedBy && item.requestedBy.name) || null;
+        const dueDate = TimeFormatters.formatDefault(item.dueDate);
+        const studies = item.studies.map(({ studyType }) => studyType).join(' ');
+        return {
+          id,
+          location,
+          requester,
+          dueDate,
+          priority,
+          status,
+          studies,
+        };
+      });
+      const columns = [
+        'id',
+        'location',
+        'requester',
+        'dueDate',
+        'priority',
+        'status',
+        'studies',
+      ];
+      const csvStr = csvFormat(data, columns);
+      const csvData = new Blob([csvStr], { type: 'text/csv' });
+      saveAs(csvData, 'requests.csv');
     },
     actionShowRequest(item) {
       const route = {
@@ -259,6 +295,7 @@ export default {
     ...mapActions([
       'deleteStudyRequests',
       'fetchAllStudyRequests',
+      'setToast',
     ]),
     ...mapMutations([
       'setModal',
