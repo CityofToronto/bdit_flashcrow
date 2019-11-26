@@ -100,7 +100,10 @@ export default {
           title,
           prompt,
           action: () => {
-            this.deleteStudyRequests(studyRequests);
+            this.deleteStudyRequests({
+              isSupervisor: this.isSupervisor,
+              studyRequests,
+            });
           },
         },
       });

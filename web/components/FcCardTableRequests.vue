@@ -141,14 +141,21 @@ export default {
         this.$emit('input', value);
       },
     },
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     ...mapGetters(['itemsStudyRequests']),
   },
   methods: {
     onActionShowRequest(item) {
-      this.$router.push({
+      const route = {
         name: 'requestStudyView',
         params: { id: item.id },
-      });
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
   },
 };

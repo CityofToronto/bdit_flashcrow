@@ -2,8 +2,7 @@
   <main class="fc-request-study-view flex-fill flex-container-column">
     <TdsTopBar class="nav-links text-size-l">
       <template v-slot:left>
-        <router-link
-          :to="{ name: 'requestsTrack' }">
+        <router-link :to="linkBack">
           <i class="fa fa-chevron-left"></i>
           <span> Back to All</span>
         </router-link>
@@ -99,6 +98,16 @@ export default {
     };
   },
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
+    linkBack() {
+      const route = { name: 'requestsTrack' };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      return route;
+    },
     ...mapState(['studyRequest', 'studyRequestLocation']),
   },
   beforeRouteEnter(to, from, next) {
@@ -127,7 +136,10 @@ export default {
     },
     syncFromRoute(to) {
       const { id } = to.params;
-      return this.fetchStudyRequest(id)
+      return this.fetchStudyRequest({
+        id,
+        isSupervisor: this.isSupervisor,
+      })
         .catch((err) => {
           const toast = getToast(err);
           this.setToast(toast);
