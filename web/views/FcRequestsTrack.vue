@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-requests-track-by-type flex-container-column flex-fill">
+  <div class="fc-requests-track flex-container-column flex-fill">
     <section>
       <header class="flex-container-row">
         <label class="tds-checkbox">
@@ -36,7 +36,7 @@ import {
 import FcCardTableRequests from '@/web/components/FcCardTableRequests.vue';
 
 export default {
-  name: 'FcRequestsTrackByStatus',
+  name: 'FcRequestsTrack',
   components: {
     FcCardTableRequests,
   },
@@ -46,6 +46,9 @@ export default {
     };
   },
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     selectableIds() {
       return this.itemsStudyRequests.map(({ id }) => id);
     },
@@ -97,7 +100,10 @@ export default {
           title,
           prompt,
           action: () => {
-            this.deleteStudyRequests(studyRequests);
+            this.deleteStudyRequests({
+              isSupervisor: this.isSupervisor,
+              studyRequests,
+            });
           },
         },
       });
@@ -127,7 +133,7 @@ export default {
       }
     },
     syncFromRoute() {
-      return this.fetchAllStudyRequests();
+      return this.fetchAllStudyRequests(this.isSupervisor);
     },
     ...mapActions([
       'deleteStudyRequests',
@@ -141,7 +147,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-requests-track-by-type {
+.fc-requests-track {
   max-height: 100%;
   overflow: auto;
   padding: var(--space-m) var(--space-xl);

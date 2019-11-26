@@ -254,10 +254,10 @@ export default {
       &.sortable {
         cursor: pointer;
         &.sorted {
-          background-color: var(--base-light);
+          background-color: var(--base-lighter);
         }
         &:hover {
-          background-color: var(--primary-light);
+          background-color: var(--primary-lighter);
           color: var(--primary-darker);
         }
       }

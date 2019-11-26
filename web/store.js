@@ -581,9 +581,13 @@ export default new Vuex.Store({
       return result;
     },
     // STUDY REQUESTS
-    async fetchStudyRequest({ commit, dispatch }, id) {
+    async fetchStudyRequest({ commit, dispatch }, { id, isSupervisor }) {
       const url = `/requests/study/${id}`;
-      const studyRequest = await apiFetch(url);
+      const options = {};
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const studyRequest = await apiFetch(url, options);
       commit('setStudyRequest', studyRequest);
 
       const {
@@ -616,8 +620,12 @@ export default new Vuex.Store({
         studyRequestUser,
       };
     },
-    async fetchAllStudyRequests({ commit, dispatch }) {
-      const studyRequests = await apiFetch('/requests/study');
+    async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
+      const options = {};
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const studyRequests = await apiFetch('/requests/study', options);
       commit('setStudyRequests', studyRequests);
 
       const centrelineKeys = new Set();
@@ -647,9 +655,12 @@ export default new Vuex.Store({
         studyRequestLocations,
       };
     },
-    async saveActiveStudyRequest({ commit, getters, state }) {
+    async saveActiveStudyRequest({ commit, getters, state }, isSupervisor) {
       const data = getters.studyRequestModel;
       const update = data.id !== undefined;
+      if (update && isSupervisor) {
+        data.isSupervisor = true;
+      }
       const method = update ? 'PUT' : 'POST';
       const url = update ? `/requests/study/${data.id}` : '/requests/study';
       const options = {
@@ -664,11 +675,14 @@ export default new Vuex.Store({
       });
       return studyRequest;
     },
-    async deleteStudyRequests({ dispatch, state }, studyRequests) {
+    async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
       const options = {
         method: 'DELETE',
         csrf: state.auth.csrf,
       };
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
       const promisesStudyRequests = studyRequests.map(
         ({ id }) => apiFetch(`/requests/study/${id}`, options),
       );

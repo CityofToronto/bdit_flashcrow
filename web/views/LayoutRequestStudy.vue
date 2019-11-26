@@ -41,6 +41,9 @@ export default {
     TdsTopBar,
   },
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     linkBack() {
       if (this.studyRequest.id !== undefined) {
         // coming from edit flow
@@ -49,6 +52,9 @@ export default {
           name: 'requestStudyView',
           params: { id },
         };
+        if (this.isSupervisor) {
+          route.query = { isSupervisor: true };
+        }
         const label = `Back to Request #${id}`;
         return { route, label };
       }
