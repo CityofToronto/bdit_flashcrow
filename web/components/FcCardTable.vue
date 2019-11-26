@@ -213,6 +213,7 @@ export default {
           this.internalSortDirection,
         );
       }
+      this.$emit('update-items-normalized', itemsNormalized);
       return itemsNormalized;
     },
     numTableColumns() {
