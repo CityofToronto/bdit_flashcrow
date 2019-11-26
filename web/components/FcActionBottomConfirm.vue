@@ -15,6 +15,9 @@ import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 export default {
   name: 'FcActionBottomConfirm',
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     linkFinish() {
       if (this.studyRequest.id !== undefined) {
         // coming from edit flow
@@ -23,6 +26,9 @@ export default {
           name: 'requestStudyView',
           params: { id },
         };
+        if (this.isSupervisor) {
+          route.query = { isSupervisor: true };
+        }
         const label = 'Save';
         return { route, label };
       }
@@ -40,7 +46,7 @@ export default {
   validations: ValidationsStudyRequest.validations,
   methods: {
     onClickConfirm() {
-      this.saveActiveStudyRequest();
+      this.saveActiveStudyRequest(this.isSupervisor);
       this.$router.push(this.linkFinish.route);
     },
     ...mapActions(['saveActiveStudyRequest']),

@@ -24,14 +24,7 @@
             <span
               v-if="studyRequestLocation !== null">
               at
-              <router-link
-                :to="{
-                  name: 'viewDataAtLocation',
-                  params: {
-                    centrelineId: studyRequest.centrelineId,
-                    centrelineType: studyRequest.centrelineType,
-                  }
-                }">
+              <router-link :to="linkLocation">
                 <span> {{studyRequestLocation.description}}</span>
               </router-link>
             </span>
@@ -108,6 +101,13 @@ export default {
       }
       return route;
     },
+    linkLocation() {
+      const { centrelineId, centrelineType } = this.studyRequest;
+      return {
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      };
+    },
     ...mapState(['studyRequest', 'studyRequestLocation']),
   },
   beforeRouteEnter(to, from, next) {
@@ -129,10 +129,14 @@ export default {
         return;
       }
       const { id } = this.studyRequest;
-      this.$router.push({
+      const route = {
         name: 'requestStudyEdit',
         params: { id },
-      });
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
     syncFromRoute(to) {
       const { id } = to.params;

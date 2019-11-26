@@ -14,6 +14,9 @@ import { mapState } from 'vuex';
 export default {
   name: 'FcActionBottomRequestData',
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     ...mapState(['studyRequest']),
   },
   validations: {
@@ -25,7 +28,11 @@ export default {
     onClickRequestData() {
       let { name } = this.$route;
       name = `${name}Schedule`;
-      this.$router.push({ name });
+      const route = { name };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
   },
 };
