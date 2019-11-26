@@ -8,7 +8,6 @@ import {
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
-  RequestStatus,
   SortKeys,
   SortDirection,
   Status,
@@ -81,8 +80,6 @@ export default new Vuex.Store({
     filterCountTypes: [...COUNT_TYPES.keys()],
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
-    // FILTERING REQUESTS
-    filterRequestStatus: Object.keys(RequestStatus),
     // REQUESTS
     studyRequests: [],
     studyRequestLocations: new Map(),
@@ -117,9 +114,6 @@ export default new Vuex.Store({
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
-    },
-    hasFilterRequestStatus(state) {
-      return state.filterRequestStatus.length !== Object.keys(RequestStatus).length;
     },
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
@@ -193,7 +187,6 @@ export default new Vuex.Store({
     // TABLE ITEMS: STUDY REQUESTS
     itemsStudyRequests(state) {
       return state.studyRequests
-        .filter(({ status }) => state.filterRequestStatus.includes(status))
         .map((studyRequest) => {
           const {
             centrelineId,
@@ -389,10 +382,6 @@ export default new Vuex.Store({
     setFilterDayOfWeek(state, filterDayOfWeek) {
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-    },
-    // FILTERING REQUESTS
-    setFilterRequestStatus(state, filterRequestStatus) {
-      Vue.set(state, 'filterRequestStatus', filterRequestStatus);
     },
     // MAP MODE
     setShowMap(state, showMap) {

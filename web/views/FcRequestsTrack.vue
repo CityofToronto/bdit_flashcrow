@@ -11,7 +11,6 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <FcFilterRequestStatus class="font-size-l" />
         <button
           class="fc-request-download font-size-l"
           @click="onActionBulk('export')">
@@ -35,13 +34,11 @@ import {
 } from 'vuex';
 
 import FcCardTableRequests from '@/web/components/FcCardTableRequests.vue';
-import FcFilterRequestStatus from '@/web/components/FcFilterRequestStatus.vue';
 
 export default {
   name: 'FcRequestsTrackByStatus',
   components: {
     FcCardTableRequests,
-    FcFilterRequestStatus,
   },
   data() {
     return {
@@ -65,7 +62,6 @@ export default {
     },
     ...mapGetters(['itemsStudyRequests']),
     ...mapState([
-      'filterRequestStatus',
       'studyRequests',
     ]),
   },
@@ -138,7 +134,6 @@ export default {
       'fetchAllStudyRequests',
     ]),
     ...mapMutations([
-      'setFilterRequestStatus',
       'setModal',
     ]),
   },

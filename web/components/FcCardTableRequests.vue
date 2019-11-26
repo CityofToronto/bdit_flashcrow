@@ -159,6 +159,24 @@ export default {
   .priority-urgent {
     color: var(--error);
   }
+  & > colgroup {
+    & > .col-SELECTION {
+      width: var(--space-xl);
+    }
+    & > .col-ID {
+      width: var(--space-3xl);
+    }
+    & > .col-DATE,
+    & > .col-PRIORITY {
+      width: var(--space-3xl);
+    }
+    & > .col-STATUS {
+      width: calc(var(--space-3xl) * 1.5);
+    }
+    & > .col-ACTIONS {
+      width: var(--space-xl);
+    }
+  }
   .cell-ID {
     & > div {
       align-items: center;

@@ -37,13 +37,23 @@
           </div>
           <div
             v-if="column.searchable"
-            class="fc-card-table-search">
+            class="flex-container-row mt-s"
+            @click.stop>
             <input
               v-model="searchBy[column.name]"
               type="text"
-              class="full-width"
-              :name="'search_' + column.name"
-              @click.stop />
+              class="font-size-s full-width"
+              :class="{
+                'btn-remove-before': searchBy[column.name] !== '',
+              }"
+              :name="'search_' + column.name" />
+            <button
+              v-if="searchBy[column.name] !== ''"
+              class="font-size-s btn-remove"
+              type="button"
+              @click="searchBy[column.name] = ''">
+              <i class="fa fa-times-circle"></i>
+            </button>
           </div>
         </th>
         <!-- EXPAND TOGGLE -->
@@ -253,6 +263,12 @@ export default {
       }
       & > div {
         align-items: center;
+        & > input.btn-remove-before {
+          border-radius: var(--space-s) 0 0 var(--space-s);
+        }
+        & > button.btn-remove {
+          border-radius: 0 var(--space-s) var(--space-s) 0;
+        }
       }
     }
   }
