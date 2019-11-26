@@ -19,19 +19,42 @@
           class="font-size-l text-left"
           :class="column.headerClasses"
           @click="onClickColumnHeader(column)">
-          <i
-            v-if="column.icon !== null"
-            class="fa"
-            :class="'fa-' + column.icon"></i>
-          <span> {{column.title}}</span>
-          <i
-            v-if="column.sortable"
-            class="fa"
-            :class="{
-              'fa-sort': !column.sorted,
-              'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
-              'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
-            }"></i>
+          <div class="flex-container-row">
+            <i
+              v-if="column.icon !== null"
+              class="fa"
+              :class="'fa-' + column.icon"></i>
+            <span> {{column.title}}</span>
+            <div class="flex-fill"></div>
+            <i
+              v-if="column.sortable"
+              class="fa"
+              :class="{
+                'fa-sort': !column.sorted,
+                'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
+                'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
+              }"></i>
+          </div>
+          <div
+            v-if="column.searchable"
+            class="flex-container-row mt-s"
+            @click.stop>
+            <input
+              v-model="searchBy[column.name]"
+              type="text"
+              class="font-size-s full-width"
+              :class="{
+                'btn-remove-before': searchBy[column.name] !== '',
+              }"
+              :name="'search_' + column.name" />
+            <button
+              v-if="searchBy[column.name] !== ''"
+              class="font-size-s btn-remove"
+              type="button"
+              @click="searchBy[column.name] = ''">
+              <i class="fa fa-times-circle"></i>
+            </button>
+          </div>
         </th>
         <!-- EXPAND TOGGLE -->
         <th
@@ -92,6 +115,7 @@
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
 import { SortDirection } from '@/lib/Constants';
+import ObjectUtils from '@/lib/ObjectUtils';
 
 export default {
   name: 'FcCardTable',
@@ -106,6 +130,10 @@ export default {
       default: false,
     },
     items: Array,
+    searchKeys: {
+      type: Object,
+      default() { return {}; },
+    },
     sortBy: {
       type: String,
       default: null,
@@ -120,10 +148,12 @@ export default {
     },
   },
   data() {
+    const searchBy = ObjectUtils.map(this.searchKeys, () => '');
     return {
       expanded: null,
       internalSortBy: this.sortBy,
       internalSortDirection: this.sortDirection,
+      searchBy,
       SortDirection,
     };
   },
@@ -135,15 +165,23 @@ export default {
         icon = icon || null;
         title = title || ' ';
 
+        const searchKey = this.searchKeys[name] || null;
+        const searchable = searchKey !== null;
+        const searchQuery = this.searchBy[name];
+
         const sortKey = this.sortKeys[name] || null;
         const sortable = sortKey !== null;
         const sorted = name === this.internalSortBy;
+
         const headerClasses = { sortable, sorted };
 
         return {
           headerClasses,
           icon,
           name,
+          searchable,
+          searchKey,
+          searchQuery,
           sortable,
           sorted,
           sortKey,
@@ -152,15 +190,25 @@ export default {
       });
     },
     itemsNormalized() {
-      if (this.internalSortBy === null) {
-        return this.items;
+      const searchFilters = this.columnsNormalized
+        .filter(({ searchable, searchQuery }) => searchable && searchQuery !== '')
+        .map(({ searchKey, searchQuery: q }) => r => searchKey(q, r));
+
+      let itemsNormalized = this.items;
+      if (searchFilters.length > 0) {
+        itemsNormalized = itemsNormalized.filter(
+          r => searchFilters.every(filter => filter(r)),
+        );
       }
-      const sortKey = this.sortKeys[this.internalSortBy];
-      return ArrayUtils.sortBy(
-        this.items,
-        item => sortKey(item),
-        this.internalSortDirection,
-      );
+      if (this.internalSortBy !== null) {
+        const sortKey = this.sortKeys[this.internalSortBy];
+        itemsNormalized = ArrayUtils.sortBy(
+          itemsNormalized,
+          item => sortKey(item),
+          this.internalSortDirection,
+        );
+      }
+      return itemsNormalized;
     },
     numTableColumns() {
       const n = this.columns.length;
@@ -201,6 +249,8 @@ export default {
   }
   & > thead {
     & > tr > th {
+      padding: var(--space-m);
+      vertical-align: top;
       &.sortable {
         cursor: pointer;
         &.sorted {
@@ -211,14 +261,14 @@ export default {
           color: var(--primary-darker);
         }
       }
-
-      padding: var(--space-m);
-      & > span {
-        vertical-align: bottom;
-      }
-      & > i:last-child {
-        float: right;
-        vertical-align: bottom;
+      & > div {
+        align-items: center;
+        & > input.btn-remove-before {
+          border-radius: var(--space-s) 0 0 var(--space-s);
+        }
+        & > button.btn-remove {
+          border-radius: 0 var(--space-s) var(--space-s) 0;
+        }
       }
     }
   }
