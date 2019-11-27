@@ -1,4 +1,5 @@
 import BackendClient from '@/lib/BackendClient';
+import DateTime from '@/lib/time/DateTime';
 
 test('BackendClient.getFetchOptions()', () => {
   expect(BackendClient.getFetchOptions()).toEqual({
@@ -89,4 +90,92 @@ test('BackendClient.getQueryString()', () => {
   expect(BackendClient.getQueryString({
     a: ['1', '2'],
   })).toEqual('a=1&a=2');
+});
+
+function mockResponseHeaders(contentType) {
+  return {
+    get(name) {
+      if (name === 'Content-Type') {
+        return contentType;
+      }
+      return undefined;
+    },
+  };
+}
+
+const MOCK_REDIRECT_URL = '/mock/redirect/url';
+
+function normalizeResponse(response, status) {
+  const ok = status >= 200 && status < 400;
+  const redirected = status >= 300 && status < 400;
+  const normalizedResponse = {
+    ...response,
+    ok,
+    redirected,
+  };
+  if (redirected) {
+    normalizedResponse.url = MOCK_REDIRECT_URL;
+  }
+  return normalizedResponse;
+}
+
+function mockJsonResponse(jsonResponse, status = 200) {
+  const headers = mockResponseHeaders('application/json');
+  const response = {
+    headers,
+    status,
+    async text() {
+      return JSON.stringify(jsonResponse);
+    },
+  };
+  return normalizeResponse(response, status);
+}
+
+function mockBinaryResponse(binaryResponse, status = 200) {
+  const headers = mockResponseHeaders(binaryResponse.type);
+  const response = {
+    async blob() {
+      return binaryResponse;
+    },
+    headers,
+    status,
+  };
+  return normalizeResponse(response, status);
+}
+
+test('BackendClient.getResponseBody', async () => {
+  const jsonResponse = {
+    t: DateTime.local(),
+    x: 42,
+  };
+  let response = mockJsonResponse(jsonResponse);
+  await expect(BackendClient.getResponseBody(response)).resolves.toEqual(jsonResponse);
+
+  const binaryResponse = new Blob(['hello, world!'], { type: 'text/plain' });
+  response = mockBinaryResponse(binaryResponse);
+  await expect(BackendClient.getResponseBody(response)).resolves.toEqual(binaryResponse);
+});
+
+test('BackendClient.handleResponse', async () => {
+  // HTTP 200
+  const jsonResponse = {
+    t: DateTime.local(),
+    x: 42,
+  };
+  let response = mockJsonResponse(jsonResponse);
+  await expect(BackendClient.handleResponse(response)).resolves.toEqual(jsonResponse);
+
+  const binaryResponse = new Blob(['hello, world!'], { type: 'text/plain' });
+  response = mockBinaryResponse(binaryResponse);
+  await expect(BackendClient.handleResponse(response)).resolves.toEqual(binaryResponse);
+
+  // HTTP 301: redirect
+  response = mockJsonResponse(jsonResponse, 301);
+  await expect(BackendClient.handleResponse(response)).resolves.toEqual({
+    __redirect: MOCK_REDIRECT_URL,
+  });
+
+  // HTTP 400 Bad Request
+  response = mockJsonResponse(jsonResponse, 400);
+  await expect(BackendClient.handleResponse(response)).rejects.toThrow();
 });

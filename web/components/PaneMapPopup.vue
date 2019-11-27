@@ -25,7 +25,7 @@ import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
-import StringFormatters from '@/lib/StringFormatters';
+import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 
 export default {
@@ -79,7 +79,7 @@ export default {
     },
     descriptionFormatted() {
       if (this.description) {
-        return StringFormatters.formatCountLocationDescription(this.description);
+        return formatCountLocationDescription(this.description);
       }
       return null;
     },
