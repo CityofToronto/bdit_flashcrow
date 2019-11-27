@@ -3,7 +3,7 @@ name: Feature request
 about: Describe a feature for this project
 title: ''
 labels: feature
-assignees: ''
+assignees: candu
 
 ---
 
