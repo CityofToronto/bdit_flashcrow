@@ -689,9 +689,11 @@ textarea {
   & > input[type="checkbox"] {
     appearance: none;
     cursor: pointer;
+    height: var(--font-size-l);
     outline: none;
     position: relative;
     vertical-align: middle;
+    width: var(--font-size-l);
     &::after {
       background-color: var(--white);
       border: var(--border-default);
@@ -740,9 +742,11 @@ textarea {
   & > input[type="radio"] {
     appearance: none;
     cursor: pointer;
+    height: var(--font-size-l);
     outline: none;
     position: relative;
     vertical-align: middle;
+    width: var(--font-size-l);
     &::after {
       background-color: var(--white);
       border: var(--border-default);
@@ -793,28 +797,28 @@ textarea {
   & > input[type="checkbox"] {
     appearance: none;
     background-color: var(--white);
-    border-radius: 1em;
+    border-radius: 1rem;
     border: var(--border-default);
-    box-shadow: inset -2em 0 0 0 var(--base);
+    box-shadow: inset -2rem 0 0 0 var(--base);
     cursor: pointer;
-    height: 2em;
+    height: 2rem;
     margin: 0;
     outline: none;
     position: relative;
     transition: var(--transition-short);
     vertical-align: middle;
-    width: 4em;
+    width: 4rem;
     &:checked {
       border-color: var(--success-dark);
-      box-shadow: inset 2em 0 0 0 var(--success);
+      box-shadow: inset 2rem 0 0 0 var(--success);
     }
     &:disabled {
       background-color: var(--disabled-light);
       border-color: var(--disabled-dark);
-      box-shadow: inset -2em 0 0 0 var(--disabled);
+      box-shadow: inset -2rem 0 0 0 var(--disabled);
     }
     &:disabled:checked {
-      box-shadow: inset 2em 0 0 0 var(--disabled);
+      box-shadow: inset 2rem 0 0 0 var(--disabled);
     }
   }
   & > span {
@@ -827,11 +831,11 @@ textarea {
     padding-left: var(--space-s);
   }
   &:hover > input[type="checkbox"]:not(:disabled) {
-    box-shadow: inset -2em 0 0 0 var(--base-light);
+    box-shadow: inset -2rem 0 0 0 var(--base-light);
   }
   &:hover > input[type="checkbox"]:not(:disabled):checked {
     border-color: var(--success);
-    box-shadow: inset 2em 0 0 0 var(--success-light);
+    box-shadow: inset 2rem 0 0 0 var(--success-light);
   }
 }
 
