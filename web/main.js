@@ -2,8 +2,6 @@ import { format } from 'd3-format';
 import Vue from 'vue';
 import VueCalendar from 'v-calendar';
 import Vuelidate from 'vuelidate';
-// polyfill fetch()
-import 'whatwg-fetch';
 
 import App from '@/web/App.vue';
 import router from '@/web/router';
@@ -26,5 +24,5 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
-  render: h => h(App),
+  render: (h) => h(App),
 }).$mount('#app');
