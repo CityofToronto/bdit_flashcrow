@@ -8,13 +8,13 @@ import 'whatwg-fetch';
 import App from '@/web/App.vue';
 import router from '@/web/router';
 import store from '@/web/store';
-import StringFormatters from '@/lib/StringFormatters';
+import { formatDuration } from '@/lib/StringFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 Vue.use(VueCalendar);
 Vue.use(Vuelidate);
 
-Vue.filter('durationHuman', StringFormatters.formatDuration);
+Vue.filter('durationHuman', formatDuration);
 
 Vue.filter('date', TimeFormatters.formatDefault);
 Vue.filter('dayOfWeek', TimeFormatters.formatDayOfWeek);

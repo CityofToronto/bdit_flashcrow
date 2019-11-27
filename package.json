@@ -2,10 +2,10 @@
   "name": "bdit_flashcrow",
   "version": "0.2.1",
   "private": true,
-  "license": "MIT",
   "description": "An integrated data platform for City of Toronto transportation data",
-  "homepage": "https://move.intra.dev-toronto.ca",
   "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "backend": "node -r esm -r module-alias/register web/server.js",
     "backend:inspect": "node -r esm -r module-alias/register --inspect=0.0.0.0:9281 web/server.js",
     "backend:inspect-brk": "node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9281 web/server.js",
@@ -24,9 +24,7 @@
     "reporter:inspect-brk": "node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js",
     "reporter:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r esm -r module-alias/register reporter/reporter.js",
     "test:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"api/**\" jest --runInBand",
-    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest --runInBand",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest --runInBand"
   },
   "dependencies": {
     "@hapi/boom": "^8.0.1",
@@ -41,6 +39,7 @@
     "@sendgrid/mail": "^6.4.0",
     "aws-sdk": "^2.580.0",
     "blankie": "^4.1.1",
+    "core-js": "^3.4.3",
     "csv-generate": "^3.2.3",
     "csv-stringify": "^5.3.3",
     "d3-array": "^2.4.0",
@@ -73,9 +72,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",
-    "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli": "^4.1.1",
+    "@vue/cli-plugin-babel": "^4.1.1",
+    "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-router": "^4.1.1",
+    "@vue/cli-plugin-vuex": "^4.1.1",
+    "@vue/cli-service": "^4.1.1",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-eslint": "^10.0.3",
@@ -97,9 +99,19 @@
     "vue-template-compiler": "^2.6.3",
     "webpack-bundle-analyzer": "^3.6.0"
   },
+  "browserslist": [
+    "last 1 Firefox version",
+    "last 1 Chrome version",
+    "last 1 Edge version"
+  ],
+  "_moduleAliases": {
+    "@": "."
+  },
   "gitHooks": {
     "pre-commit": "npm-run-all pre-commit:*"
   },
+  "homepage": "https://move.intra.dev-toronto.ca",
+  "license": "MIT",
   "lint-staged": {
     "lib/**/*.js": [
       "documentation lint"
@@ -120,13 +132,5 @@
       "vue-cli-service lint",
       "stylelint"
     ]
-  },
-  "_moduleAliases": {
-    "@": "."
-  },
-  "browserslist": [
-    "last 1 Firefox version",
-    "last 1 Chrome version",
-    "last 1 Edge version"
-  ]
+  }
 }
