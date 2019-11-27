@@ -42,7 +42,7 @@
             <input
               v-model="searchBy[column.name]"
               type="text"
-              class="font-size-s full-width"
+              class="font-size-s flex-fill"
               :class="{
                 'btn-remove-before': searchBy[column.name] !== '',
               }"
