@@ -186,28 +186,31 @@ export default new Vuex.Store({
     },
     // TABLE ITEMS: STUDY REQUESTS
     itemsStudyRequests(state) {
-      return state.studyRequests
-        .map((studyRequest) => {
-          const {
-            centrelineId,
-            centrelineType,
-            userSubject,
-          } = studyRequest;
-          const key = centrelineKey(centrelineType, centrelineId);
-          let location = null;
-          if (state.studyRequestLocations.has(key)) {
-            location = state.studyRequestLocations.get(key);
-          }
-          let requestedBy = null;
-          if (state.studyRequestUsers.has(userSubject)) {
-            requestedBy = state.studyRequestUsers.get(userSubject);
-          }
-          return {
-            ...studyRequest,
-            location,
-            requestedBy,
-          };
-        });
+      return state.studyRequests.map((studyRequest) => {
+        const {
+          centrelineId,
+          centrelineType,
+          userSubject,
+        } = studyRequest;
+
+        const key = centrelineKey(centrelineType, centrelineId);
+        let location = null;
+        if (state.studyRequestLocations.has(key)) {
+          location = state.studyRequestLocations.get(key);
+        }
+
+        let requestedBy = null;
+        if (state.studyRequestUsers.has(userSubject)) {
+          requestedBy = state.studyRequestUsers.get(userSubject);
+        }
+
+        return {
+          ...studyRequest,
+          expandable: true,
+          location,
+          requestedBy,
+        };
+      });
     },
     // ACTIVE STUDY REQUEST
     studyRequestMinDueDate(state) {

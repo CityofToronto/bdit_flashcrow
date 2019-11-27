@@ -13,19 +13,104 @@
         <div class="flex-fill"></div>
         <button
           class="fc-request-download font-size-l"
-          @click="onActionBulk('export')">
+          @click="actionExport(selectedItems)">
           <i class="fa fa-download"></i>
           <span> Download</span>
         </button>
       </header>
-      <FcCardTableRequests
-        v-model="selection"
-        @action-item="onActionItem" />
+      <FcCardTable
+        class="fc-card-table-requests"
+        :columns="columns"
+        expandable
+        :items="itemsStudyRequests"
+        ref="table"
+        :search-keys="searchKeys"
+        :sort-by="sortBy"
+        :sort-direction="sortDirection"
+        :sort-keys="sortKeys"
+        @update-items-normalized="updateItemsNormalized">
+        <template v-slot:SELECTION="{ item, isChild }">
+          <label v-if="!isChild" class="tds-checkbox">
+            <input
+              type="checkbox"
+              name="selectionItems"
+              :value="item.id"
+              v-model="selection" />
+          </label>
+        </template>
+        <template v-slot:ID="{ item }">
+          <div
+            class="flex-container-row"
+            @click.prevent="actionShowRequest(item)">
+            <u>{{item.id}}</u>
+          </div>
+        </template>
+        <template v-slot:LOCATION="{ item }">
+          <span
+            v-if="item.location === null"
+            class="text-muted">
+            N/A
+          </span>
+          <span v-else>
+            {{item.location.description}}
+          </span>
+        </template>
+        <template v-slot:REQUESTER="{ item }">
+          <span
+            v-if="item.requestedBy === null"
+            class="text-muted">
+            N/A
+          </span>
+          <span v-else>
+            {{item.requestedBy.name}}
+          </span>
+        </template>
+        <template v-slot:DATE="{ item }">
+          <span>{{item.dueDate | date}}</span>
+        </template>
+        <template v-slot:PRIORITY="{ item }">
+          <span
+            :class="{
+              'priority-urgent': item.priority === 'URGENT',
+            }">
+            <i
+              v-if="item.priority === 'URGENT'"
+              class="fa fa-exclamation"></i>
+            <span> {{item.priority}}</span>
+          </span>
+        </template>
+        <template v-slot:STATUS="{ item }">
+          <TdsLabel
+            v-bind="RequestStatus[item.status]">
+            {{item.status}}
+          </TdsLabel>
+        </template>
+        <template v-slot:ACTIONS="{ item }">
+          <div class="cell-actions">
+            <button
+              class="tds-button-secondary font-size-m"
+              @click="actionDelete([item])">
+              <i class="fa fa-trash-alt"></i>
+            </button>
+          </div>
+        </template>
+        <template v-slot:__expanded="{ item }">
+          <div>
+            <FcSummaryStudy
+              v-for="(study, i) in item.studies"
+              :key="'study_' + item.id + '_' + i"
+              :index="i"
+              :study-request="item" />
+          </div>
+        </template>
+      </FcCardTable>
     </section>
   </div>
 </template>
 
 <script>
+import { csvFormat } from 'd3-dsv';
+import { saveAs } from 'file-saver';
 import {
   mapActions,
   mapGetters,
@@ -33,16 +118,60 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTableRequests from '@/web/components/FcCardTableRequests.vue';
+import {
+  RequestStatus,
+  SearchKeys,
+  SortDirection,
+  SortKeys,
+} from '@/lib/Constants';
+import {
+  REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
+} from '@/lib/i18n/Strings';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcCardTable from '@/web/components/FcCardTable.vue';
+import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
+import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 
 export default {
   name: 'FcRequestsTrack',
   components: {
-    FcCardTableRequests,
+    FcCardTable,
+    FcSummaryStudy,
+    TdsLabel,
   },
   data() {
+    const columns = [{
+      name: 'SELECTION',
+    }, {
+      name: 'ID',
+      title: 'ID#',
+    }, {
+      name: 'LOCATION',
+      title: 'Location',
+    }, {
+      name: 'REQUESTER',
+      title: 'Requester',
+    }, {
+      name: 'DATE',
+      title: 'Due Date',
+    }, {
+      name: 'PRIORITY',
+      title: 'Priority',
+    }, {
+      name: 'STATUS',
+      title: 'Status',
+    }, {
+      name: 'ACTIONS',
+    }];
     return {
+      columns,
+      itemsNormalized: [],
+      searchKeys: SearchKeys.Requests,
       selection: [],
+      sortBy: 'ID',
+      sortDirection: SortDirection.DESC,
+      sortKeys: SortKeys.Requests,
+      RequestStatus,
     };
   },
   computed: {
@@ -50,11 +179,11 @@ export default {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
     selectableIds() {
-      return this.itemsStudyRequests.map(({ id }) => id);
+      return this.itemsNormalized.map(({ id }) => id);
     },
-    selectedStudyRequests() {
+    selectedItems() {
       return this.selection
-        .map(id => this.studyRequests.find(r => r.id === id));
+        .map(id => this.itemsNormalized.find(r => r.id === id));
     },
     selectionAll() {
       return this.selectableIds
@@ -64,9 +193,7 @@ export default {
       return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapGetters(['itemsStudyRequests']),
-    ...mapState([
-      'studyRequests',
-    ]),
+    ...mapState(['studyRequests']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -89,7 +216,7 @@ export default {
 
       const studyRequestsHumanParts = studyRequests.map(({ id, location }, i) => {
         const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
-        return `${maybeAnd}#${id} at ${location.description}`;
+        return `${maybeAnd}Request #${id} at ${location.description}`;
       });
       const studyRequestsHuman = studyRequestsHumanParts.join(', ');
       const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;
@@ -109,21 +236,48 @@ export default {
       });
     },
     actionExport(studyRequests) {
-      // TODO: implement export here
-      console.log('export', studyRequests);
-    },
-    onActionBulk(type, options) {
-      const studyRequests = this.selectedStudyRequests;
-      const actionOptions = options || {};
-      if (type === 'export') {
-        this.actionExport(studyRequests, actionOptions);
+      if (studyRequests.length === 0) {
+        this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
+        return;
       }
+      const data = studyRequests.map((item) => {
+        const { id, priority, status } = item;
+        const location = (item.location && item.location.description) || null;
+        const requester = (item.requestedBy && item.requestedBy.name) || null;
+        const dueDate = TimeFormatters.formatDefault(item.dueDate);
+        const studies = item.studies.map(({ studyType }) => studyType).join(' ');
+        return {
+          id,
+          location,
+          requester,
+          dueDate,
+          priority,
+          status,
+          studies,
+        };
+      });
+      const columns = [
+        'id',
+        'location',
+        'requester',
+        'dueDate',
+        'priority',
+        'status',
+        'studies',
+      ];
+      const csvStr = csvFormat(data, columns);
+      const csvData = new Blob([csvStr], { type: 'text/csv' });
+      saveAs(csvData, 'requests.csv');
     },
-    onActionItem({ type, item, options }) {
-      const actionOptions = options || {};
-      if (type === 'delete') {
-        this.actionDelete([item], actionOptions);
+    actionShowRequest(item) {
+      const route = {
+        name: 'requestStudyView',
+        params: { id: item.id },
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
       }
+      this.$router.push(route);
     },
     onChangeSelectAll() {
       if (this.selectionAll) {
@@ -135,9 +289,13 @@ export default {
     syncFromRoute() {
       return this.fetchAllStudyRequests(this.isSupervisor);
     },
+    updateItemsNormalized(itemsNormalized) {
+      this.itemsNormalized = itemsNormalized;
+    },
     ...mapActions([
       'deleteStudyRequests',
       'fetchAllStudyRequests',
+      'setToast',
     ]),
     ...mapMutations([
       'setModal',
@@ -181,6 +339,44 @@ export default {
       }
       & > button.tds-button-secondary:not(:disabled):hover {
         background-color: var(--base-light);
+      }
+    }
+  }
+
+  .fc-card-table-requests {
+    .priority-urgent {
+      color: var(--error);
+    }
+    & > colgroup {
+      & > .col-SELECTION {
+        width: var(--space-xl);
+      }
+      & > .col-ID {
+        width: var(--space-3xl);
+      }
+      & > .col-DATE,
+      & > .col-PRIORITY {
+        width: var(--space-3xl);
+      }
+      & > .col-STATUS {
+        width: calc(var(--space-3xl) * 1.5);
+      }
+      & > .col-ACTIONS {
+        width: var(--space-xl);
+      }
+    }
+    .cell-ID {
+      & > div {
+        align-items: center;
+        cursor: pointer;
+        & > u {
+          color: var(--primary-vivid);
+        }
+      }
+    }
+    .cell-actions {
+      & > button:not(:last-child) {
+        margin-right: var(--space-s);
       }
     }
   }

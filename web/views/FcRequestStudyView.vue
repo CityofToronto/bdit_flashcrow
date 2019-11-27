@@ -39,11 +39,13 @@
         </header>
         <section class="flex-fill flex-container-row">
           <div class="flex-cross-scroll">
-            <FcSummaryStudyRequest />
+            <FcSummaryStudyRequest
+              :study-request="studyRequest" />
             <FcSummaryStudy
               v-for="(_, i) in studyRequest.studies"
               :key="i"
-              :index="i" />
+              :index="i"
+              :study-request="studyRequest" />
           </div>
         </section>
       </div>
