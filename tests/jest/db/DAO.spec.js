@@ -453,6 +453,14 @@ test('StudyRequestDAO', async () => {
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
+  // fetch by user
+  let byUser = await StudyRequestDAO.byUser(user);
+  expect(byUser).toEqual([persistedStudyRequest]);
+
+  // fetch all
+  let all = await StudyRequestDAO.all();
+  expect(all).toEqual([persistedStudyRequest]);
+
   // update study request fields
   persistedStudyRequest.reasons = ['TSC'];
   persistedStudyRequest.serviceRequestId = '12345';
@@ -493,12 +501,21 @@ test('StudyRequestDAO', async () => {
 
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
+
+  // fetch by user
+  byUser = await StudyRequestDAO.byUser(user);
+  expect(byUser).toEqual([]);
+
+  // fetch all
+  all = await StudyRequestDAO.all();
+  expect(all).toEqual([]);
 });
 
 test('StudyRequestReasonDAO', async () => {
   expect(StudyRequestReasonDAO.isInited()).toBe(false);
 
   let reason = await StudyRequestReasonDAO.byValue('TSC');
+  expect(StudyRequestReasonDAO.isInited()).toBe(true);
   expect(reason.value).toBe('TSC');
   expect(reason.label).toBe('Traffic Signal Control');
   expect(StudyRequestReasonDAO.isInited()).toBe(true);
@@ -506,13 +523,17 @@ test('StudyRequestReasonDAO', async () => {
   reason = await StudyRequestReasonDAO.byValue('FOOBAR');
   expect(reason).toBeUndefined();
 
+  StudyRequestReasonDAO.uninit();
+  expect(StudyRequestReasonDAO.isInited()).toBe(false);
   await expect(StudyRequestReasonDAO.all()).resolves.toBeInstanceOf(Map);
+  expect(StudyRequestReasonDAO.isInited()).toBe(true);
 });
 
 test('StudyRequestStatusDAO', async () => {
   expect(StudyRequestStatusDAO.isInited()).toBe(false);
 
   let status = await StudyRequestStatusDAO.byValue('REQUESTED');
+  expect(StudyRequestStatusDAO.isInited()).toBe(true);
   expect(status.value).toBe('REQUESTED');
   expect(status.label).toBe('Requested');
   expect(StudyRequestStatusDAO.isInited()).toBe(true);
@@ -520,7 +541,10 @@ test('StudyRequestStatusDAO', async () => {
   status = await StudyRequestStatusDAO.byValue('FOOBAR');
   expect(status).toBeUndefined();
 
+  StudyRequestStatusDAO.uninit();
+  expect(StudyRequestStatusDAO.isInited()).toBe(false);
   await expect(StudyRequestStatusDAO.all()).resolves.toBeInstanceOf(Map);
+  expect(StudyRequestStatusDAO.isInited()).toBe(true);
 });
 
 test('UserDAO', async () => {
