@@ -1,10 +1,65 @@
 import {
   CentrelineType,
   COUNT_TYPES,
+  SearchKeys,
   SortKeys,
   Status,
 } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
+
+test('Constants.SearchKeys', () => {
+  const dueDate = DateTime.fromObject({
+    year: 2020,
+    month: 2,
+    day: 14,
+  });
+  const location = {
+    centrelineId: 1234,
+    centrelineType: CentrelineType.INTERSECTION,
+    description: 'Foo Ave and Bar St',
+    lng: 0,
+    lat: 0,
+  };
+  const requestedBy = {
+    email: 'Baz.Quux@toronto.ca',
+    name: 'Baz Quux',
+  };
+  const REQUEST = {
+    dueDate,
+    id: 42,
+    location: null,
+    priority: 'STANDARD',
+    requestedBy: null,
+    status: 'REVIEWED',
+  };
+
+  expect(SearchKeys.Requests.DATE('2019', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.DATE('2020', REQUEST)).toBe(true);
+
+  expect(SearchKeys.Requests.ID('4', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.ID('17', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.ID('foo', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.ID('42', REQUEST)).toBe(true);
+
+  expect(SearchKeys.Requests.LOCATION('', REQUEST)).toBe(true);
+  REQUEST.location = location;
+  expect(SearchKeys.Requests.LOCATION('foo ave', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.LOCATION('Bar St', REQUEST)).toBe(true);
+
+  expect(SearchKeys.Requests.PRIORITY('foo', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.PRIORITY('standard', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.PRIORITY('st', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.PRIORITY('URGENT', REQUEST)).toBe(false);
+
+  expect(SearchKeys.Requests.REQUESTER('', REQUEST)).toBe(true);
+  REQUEST.requestedBy = requestedBy;
+  expect(SearchKeys.Requests.REQUESTER('BAZ', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.REQUESTER('quux', REQUEST)).toBe(true);
+
+  expect(SearchKeys.Requests.STATUS('re', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.STATUS('rev', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.STATUS('req', REQUEST)).toBe(false);
+});
 
 test('Constants.SortKeys', () => {
   Object.values(SortKeys).forEach((sortKeys) => {
@@ -46,26 +101,32 @@ test('Constants.SortKeys', () => {
     email: 'Baz.Quux@toronto.ca',
     name: 'Baz Quux',
   };
-  const REQUEST = {
+  const REQUEST_STANDARD = {
     dueDate: now,
     id: 42,
     location,
-    priority: 'URGENT',
+    priority: 'STANDARD',
     requestedBy,
     status: 'REVIEWED',
   };
-  expect(SortKeys.Requests.DATE(REQUEST))
+  const REQUEST_URGENT = {
+    ...REQUEST_STANDARD,
+    priority: 'URGENT',
+  };
+  expect(SortKeys.Requests.DATE(REQUEST_STANDARD))
     .toEqual(now.valueOf());
-  expect(SortKeys.Requests.ID(REQUEST))
-    .toEqual(REQUEST.id);
-  expect(SortKeys.Requests.LOCATION(REQUEST))
-    .toEqual(REQUEST.location.description);
-  expect(SortKeys.Requests.PRIORITY(REQUEST))
+  expect(SortKeys.Requests.ID(REQUEST_STANDARD))
+    .toEqual(REQUEST_STANDARD.id);
+  expect(SortKeys.Requests.LOCATION(REQUEST_STANDARD))
+    .toEqual(REQUEST_STANDARD.location.description);
+  expect(SortKeys.Requests.PRIORITY(REQUEST_STANDARD))
+    .toEqual(0);
+  expect(SortKeys.Requests.PRIORITY(REQUEST_URGENT))
     .toEqual(1);
-  expect(SortKeys.Requests.REQUESTER(REQUEST))
-    .toEqual(REQUEST.requestedBy.name);
-  expect(SortKeys.Requests.STATUS(REQUEST))
-    .toEqual(REQUEST.status);
+  expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
+    .toEqual(REQUEST_STANDARD.requestedBy.name);
+  expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
+    .toEqual(REQUEST_STANDARD.status);
 
   const STUDY = {
     createdAt: now,
