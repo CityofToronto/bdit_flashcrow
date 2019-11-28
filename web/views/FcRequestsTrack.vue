@@ -138,11 +138,14 @@ import {
 } from 'vuex';
 
 import {
+  CentrelineType,
+  COUNT_TYPES,
   RequestStatus,
   SearchKeys,
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
+import { formatDuration } from '@/lib/StringFormatters';
 import {
   REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
 } from '@/lib/i18n/Strings';
@@ -151,6 +154,76 @@ import FcCardTable from '@/web/components/FcCardTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+
+function getItemFields(item) {
+  const {
+    centrelineType,
+    id,
+    priority,
+    status,
+  } = item;
+  let [lng, lat] = item.geom.coordinates;
+  const location = (item.location && item.location.description) || null;
+  const requester = (item.requestedBy && item.requestedBy.name) || null;
+  const dueDate = TimeFormatters.formatDefault(item.dueDate);
+  const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
+  if (centrelineType !== CentrelineType.INTERSECTION) {
+    lng = null;
+    lat = null;
+  }
+  return {
+    id,
+    location,
+    requester,
+    dueDate,
+    estimatedDeliveryDate,
+    priority,
+    status,
+    lng,
+    lat,
+  };
+}
+
+function getStudyFields(study, i) {
+  const studyIndex = i + 1;
+  const {
+    id: studyId,
+    hours,
+    notes,
+  } = study;
+  let {
+    daysOfWeek,
+    duration,
+    studyType,
+  } = study;
+  daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+  studyType = COUNT_TYPES.find(({ value }) => value === studyType);
+  if (studyType.automatic) {
+    duration = formatDuration(duration);
+  } else {
+    duration = null;
+  }
+  return {
+    studyId,
+    studyIndex,
+    studyType: studyType.label,
+    daysOfWeek,
+    duration,
+    hours,
+    notes,
+  };
+}
+
+function getItemRows(item) {
+  const itemFields = getItemFields(item);
+  return item.studies.map((study, i) => {
+    const studyFields = getStudyFields(study, i);
+    return {
+      ...itemFields,
+      ...studyFields,
+    };
+  });
+}
 
 export default {
   name: 'FcRequestsTrack',
@@ -261,32 +334,26 @@ export default {
         this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
         return;
       }
-      const data = studyRequests.map((item) => {
-        const { id, priority, status } = item;
-        const location = (item.location && item.location.description) || null;
-        const requester = (item.requestedBy && item.requestedBy.name) || null;
-        const dueDate = TimeFormatters.formatDefault(item.dueDate);
-        const studies = item.studies.map(({ studyType }) => studyType).join(' ');
-        return {
-          id,
-          location,
-          requester,
-          dueDate,
-          priority,
-          status,
-          studies,
-        };
-      });
+      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRows));
       const columns = [
         'id',
         'location',
         'requester',
         'dueDate',
+        'estimatedDeliveryDate',
         'priority',
         'status',
-        'studies',
+        'lng',
+        'lat',
+        'studyId',
+        'studyIndex',
+        'studyType',
+        'daysOfWeek',
+        'duration',
+        'hours',
+        'notes',
       ];
-      const csvStr = csvFormat(data, columns);
+      const csvStr = csvFormat(rows, columns);
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
