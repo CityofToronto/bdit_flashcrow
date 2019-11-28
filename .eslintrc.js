@@ -8,10 +8,11 @@ module.exports = {
     '@vue/airbnb',
   ],
   rules: {
-    'arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
+    'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
+    'max-classes-per-file': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     /*
      * We haven't incorporated `@babel/plugin-transform-exponentiation-operator`,
      * so we remove `Math.pow` from the list of restricted properties here.

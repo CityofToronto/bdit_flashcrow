@@ -240,7 +240,6 @@ async function beforeEachCheckAuth(to) {
     }
     return false;
   } catch (err) {
-    console.log(err);
     // prevent infinite redirect to login
     return to.name === 'login' ? false : { name: 'login' };
   }
