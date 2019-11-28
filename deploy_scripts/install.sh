@@ -3,11 +3,11 @@
 
 set -euo pipefail
 
-exec > >(tee -ia /home/ec2-user/flashcrow/install.log)
-exec 2> >(tee -ia /home/ec2-user/flashcrow/install.log >&2)
+exec > >(tee -ia /home/ec2-user/log/flashcrow/install.log)
+exec 2> >(tee -ia /home/ec2-user/log/flashcrow/install.log >&2)
 
 set +u
-source ~/.bash_profile
+source /home/ec2-user/.bash_profile
 set -u
 
 # section: enable_amazon_linux_extras
@@ -36,15 +36,15 @@ echo "$NVM_DIR"
 # install correct version of node
 echo "installing node@lts/*..."
 nvm install lts/*
-echo "lts/*" > ~/.nvmrc
+echo "lts/*" > /home/ec2-user/.nvmrc
 nvm use
 npm install -g forever npm@latest
 
 ## /install_python.sh
 echo "installing pyenv..."
-if [ ! -d ~/.pyenv ]; then
-  git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-  cat <<'EOF' >> ~/.bashrc
+if [ ! -d /home/ec2-user/.pyenv ]; then
+  git clone https://github.com/pyenv/pyenv.git /home/ec2-user/.pyenv
+  cat <<'EOF' >> /home/ec2-user/.bashrc
   export PYENV_ROOT="$HOME/.pyenv"
   export PATH="$PYENV_ROOT/bin:$PATH"
   if command -v pyenv 1>/dev/null 2>&1; then
