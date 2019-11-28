@@ -3,6 +3,9 @@
 
 set -euo pipefail
 
+exec > >(tee -ia /home/ec2-user/flashcrow/install.log)
+exec 2> >(tee -ia /home/ec2-user/flashcrow/install.log >&2)
+
 set +u
 source ~/.bash_profile
 set -u
