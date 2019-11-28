@@ -6,8 +6,8 @@
     <template v-slot:dropdown>
       <ul>
         <li
-          v-for="{ label, value, disabled } in options"
-          :key="value"
+          v-for="({ label, value, disabled }, i) in options"
+          :key="i"
           :class="{ disabled }">
           <span v-if="disabled">
             {{label}}

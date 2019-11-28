@@ -69,7 +69,26 @@
           <span>{{item.dueDate | date}}</span>
         </template>
         <template v-slot:PRIORITY="{ item }">
+          <TdsActionDropdown
+            v-if="isSupervisor"
+            class="font-size-m full-width"
+            :options="[
+              { label: 'STANDARD', value: { item, priority: 'STANDARD' } },
+              { label: 'URGENT', value: { item, priority: 'URGENT' } },
+            ]"
+            @action-selected="actionSetPriority">
+            <span
+              :class="{
+                'priority-urgent': item.priority === 'URGENT',
+              }">
+              <i
+                v-if="item.priority === 'URGENT'"
+                class="fa fa-exclamation"></i>
+              <span> {{item.priority}}</span>
+            </span>
+          </TdsActionDropdown>
           <span
+            v-else
             :class="{
               'priority-urgent': item.priority === 'URGENT',
             }">
@@ -130,6 +149,7 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcCardTable from '@/web/components/FcCardTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
+import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 
 export default {
@@ -137,6 +157,7 @@ export default {
   components: {
     FcCardTable,
     FcSummaryStudy,
+    TdsActionDropdown,
     TdsLabel,
   },
   data() {
@@ -269,6 +290,12 @@ export default {
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
+    actionSetPriority({ item, priority }) {
+      const { isSupervisor } = this;
+      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+      studyRequest.priority = priority;
+      this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
     actionShowRequest(item) {
       const route = {
         name: 'requestStudyView',
@@ -295,6 +322,7 @@ export default {
     ...mapActions([
       'deleteStudyRequests',
       'fetchAllStudyRequests',
+      'saveStudyRequest',
       'setToast',
     ]),
     ...mapMutations([
