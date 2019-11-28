@@ -46,10 +46,11 @@ export default {
   validations: ValidationsStudyRequest.validations,
   methods: {
     onClickConfirm() {
-      this.saveActiveStudyRequest(this.isSupervisor);
+      const { isSupervisor, studyRequest } = this;
+      this.saveStudyRequest({ isSupervisor, studyRequest });
       this.$router.push(this.linkFinish.route);
     },
-    ...mapActions(['saveActiveStudyRequest']),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>

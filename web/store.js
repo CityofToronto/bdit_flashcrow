@@ -51,6 +51,22 @@ const clearToastDebounced = debounce((commit) => {
   commit('clearToast');
 }, TIMEOUT_TOAST);
 
+function studyRequestEstimatedDeliveryDate(now, studyRequest) {
+  if (studyRequest === null) {
+    return null;
+  }
+  const { dueDate, priority } = studyRequest;
+  if (priority === 'URGENT') {
+    return dueDate;
+  }
+  const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
+  const twoMonthsOut = now.plus({ months: 2 });
+  if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
+    return twoMonthsOut;
+  }
+  return oneWeekBeforeDueDate;
+}
+
 export default new Vuex.Store({
   // TODO: organize state below
   state: {
@@ -223,46 +239,6 @@ export default new Vuex.Store({
       }
       return now.plus({ months: 2 });
     },
-    studyRequestModel(state, getters) {
-      const { studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
-      if (studyRequest.id !== undefined) {
-        /*
-         * This study request instance has already been persisted to database, so we
-         * don't need to normalize it in the same way.
-         */
-        return {
-          ...studyRequest,
-          estimatedDeliveryDate,
-        };
-      }
-      const {
-        serviceRequestId,
-        priority,
-        dueDate,
-        reasons,
-        ccEmails,
-        centrelineId,
-        centrelineType,
-        geom,
-        studies,
-      } = studyRequest;
-      return {
-        serviceRequestId,
-        priority,
-        dueDate,
-        estimatedDeliveryDate,
-        reasons,
-        ccEmails,
-        centrelineId,
-        centrelineType,
-        geom,
-        studies,
-      };
-    },
     studyTypesRelevantToLocation(state) {
       const countTypesAll = COUNT_TYPES.map(({ value }) => value);
       if (state.location === null) {
@@ -301,25 +277,6 @@ export default new Vuex.Store({
         }
         return { label, value, warning };
       });
-    },
-    studyRequestEstimatedDeliveryDate(state) {
-      const { now, studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      const { dueDate, priority } = state.studyRequest;
-      if (dueDate === null || priority === null) {
-        return null;
-      }
-      if (priority === 'URGENT') {
-        return dueDate;
-      }
-      const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-      const twoMonthsOut = now.plus({ months: 2 });
-      if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-        return twoMonthsOut;
-      }
-      return oneWeekBeforeDueDate;
     },
   },
   mutations: {
@@ -658,8 +615,13 @@ export default new Vuex.Store({
         studyRequestLocations,
       };
     },
-    async saveActiveStudyRequest({ commit, getters, state }, isSupervisor) {
-      const data = getters.studyRequestModel;
+    async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
+      const { now } = state;
+      const estimatedDeliveryDate = studyRequestEstimatedDeliveryDate(now, studyRequest);
+      const data = {
+        ...studyRequest,
+        estimatedDeliveryDate,
+      };
       const update = data.id !== undefined;
       if (update && isSupervisor) {
         data.isSupervisor = true;
@@ -671,12 +633,12 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequest = await apiFetch(url, options);
+      const studyRequestNew = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest, update },
+        data: { studyRequest: studyRequestNew, update },
       });
-      return studyRequest;
+      return studyRequestNew;
     },
     async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
       const options = {
