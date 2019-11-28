@@ -23,7 +23,7 @@ mkdir -p /home/ec2-user/log/flashcrow
 
 # install node and Python dependencies
 cd /home/ec2-user/flashcrow
-nvm use
+nvm use lts/*
 npm install
 pip install -r requirements.txt
 

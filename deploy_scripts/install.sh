@@ -37,7 +37,7 @@ echo "$NVM_DIR"
 echo "installing node@lts/*..."
 nvm install lts/*
 echo "lts/*" > /home/ec2-user/.nvmrc
-nvm use
+nvm use lts/*
 npm install -g forever npm@latest
 
 ## /install_python.sh
