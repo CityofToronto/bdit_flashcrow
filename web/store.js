@@ -640,6 +640,31 @@ export default new Vuex.Store({
       });
       return studyRequestNew;
     },
+    async saveStudyRequestsStatus({ state }, { isSupervisor, studyRequests, status }) {
+      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
+        if (studyRequest.status === status) {
+          return studyRequest;
+        }
+        /* eslint-disable no-param-reassign */
+        studyRequest.status = status;
+        const data = {
+          ...studyRequest,
+        };
+        if (isSupervisor) {
+          data.isSupervisor = isSupervisor;
+        }
+        const url = `/requests/study/${data.id}`;
+        const options = {
+          method: 'PUT',
+          csrf: state.auth.csrf,
+          data,
+        };
+        return apiFetch(url, options);
+      });
+      await Promise.all(promisesStudyRequests);
+      // TODO: modal?
+      return studyRequests;
+    },
     async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
       const options = {
         method: 'DELETE',
@@ -652,8 +677,6 @@ export default new Vuex.Store({
         ({ id }) => apiFetch(`/requests/study/${id}`, options),
       );
       await Promise.all(promisesStudyRequests);
-      // TODO: during supervisor view work, just delete locally
-      // from `studyRequests`, `studyRequestLocations`
       await dispatch('fetchAllStudyRequests');
     },
     // USERS

@@ -12,24 +12,26 @@
         </label>
         <div class="flex-fill"></div>
         <div class="br">
-          <button
-            class="font-size-l mr-m"
-            @click="actionAccept(selectedItems)">
-            <i class="fa fa-thumbs-up"></i>
-            <span> Approve</span>
-          </button>
-          <button
-            class="font-size-l mr-m"
-            @click="actionReject(selectedItems)">
-            <i class="fa fa-thumbs-down"></i>
-            <span> Reject</span>
-          </button>
-          <button
-            class="font-size-l mr-m"
-            @click="actionComplete(selectedItems)">
-            <i class="fa fa-check-circle"></i>
-            <span> Complete</span>
-          </button>
+          <template v-if="isSupervisor">
+            <button
+              class="font-size-l mr-m"
+              @click="actionAccept(selectedItems)">
+              <i class="fa fa-thumbs-up"></i>
+              <span> Approve</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionReject(selectedItems)">
+              <i class="fa fa-thumbs-down"></i>
+              <span> Reject</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionComplete(selectedItems)">
+              <i class="fa fa-check-circle"></i>
+              <span> Complete</span>
+            </button>
+          </template>
           <button
             class="font-size-l mr-m"
             @click="actionExport(selectedItems)">
@@ -48,6 +50,7 @@
       </header>
       <FcCardTable
         class="fc-card-table-requests"
+        :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
         :items="itemsStudyRequests"
@@ -133,19 +136,24 @@
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div class="br">
+          <div
+            v-if="isSupervisor"
+            class="br">
             <button
               class="font-size-m mr-m"
+              :disabled="item.status === 'ACCEPTED'"
               @click="actionAccept([item])">
               <i class="fa fa-thumbs-up"></i>
             </button>
             <button
               class="font-size-m mr-m"
+              :disabled="item.status === 'REJECTED'"
               @click="actionReject([item])">
               <i class="fa fa-thumbs-down"></i>
             </button>
             <button
               class="font-size-m mr-m"
+              :disabled="item.status === 'COMPLETED'"
               @click="actionComplete([item])">
               <i class="fa fa-check-circle"></i>
             </button>
@@ -190,7 +198,7 @@ import {
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
-import { formatDuration } from '@/lib/StringFormatters';
+import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
 import {
   REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
 } from '@/lib/i18n/Strings';
@@ -268,6 +276,31 @@ function getItemRows(item) {
       ...studyFields,
     };
   });
+}
+
+function getStudyRequestsToast(studyRequests, action) {
+  if (studyRequests.length > 0) {
+    return null;
+  }
+  // TODO: make it possible to parameterize entries in lib/i18n/Strings
+  return {
+    variant: 'warning',
+    text: `Please select one or more requests to ${action}.`,
+  };
+}
+
+function getStudyRequestsHuman(studyRequests, action) {
+  const n = studyRequests.length;
+  const actionUppercase = action[0].toUpperCase() + action.slice(1);
+  const title = n > 1 ? `${actionUppercase} ${n} Requests?` : `${actionUppercase} Request?`;
+
+  const studyRequestsHumanParts = studyRequests.map(
+    ({ id, location }) => `Request #${id} at ${location.description}`,
+  );
+  const studyRequestsHuman = formatOxfordCommaList(studyRequestsHumanParts);
+  const prompt = `You are about to ${action} ${studyRequestsHuman}.  Is that OK?`;
+
+  return { title, prompt };
 }
 
 export default {
@@ -349,36 +382,54 @@ export default {
   },
   methods: {
     actionAccept(studyRequests) {
-      console.log(studyRequests);
-    },
-    actionComplete(studyRequests) {
-      console.log(studyRequests);
-    },
-    actionDelete(studyRequests) {
-      const n = studyRequests.length;
-
-      const title = n > 1 ? `Delete ${n} Requests?` : 'Delete Request?';
-
-      const studyRequestsHumanParts = studyRequests.map(({ id, location }, i) => {
-        const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
-        return `${maybeAnd}Request #${id} at ${location.description}`;
-      });
-      const separator = n <= 2 ? ' ' : ', ';
-      const studyRequestsHuman = studyRequestsHumanParts.join(separator);
-      const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;
-
+      const actionName = 'approve';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, 'ACCEPTED');
+      };
       this.setModal({
         component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action: () => {
-            this.deleteStudyRequests({
-              isSupervisor: this.isSupervisor,
-              studyRequests,
-            });
-          },
-        },
+        data: { title, prompt, action },
+      });
+    },
+    actionComplete(studyRequests) {
+      const actionName = 'complete';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, 'COMPLETED');
+      };
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: { title, prompt, action },
+      });
+    },
+    actionDelete(studyRequests) {
+      const actionName = 'delete';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.deleteStudyRequests({
+          isSupervisor: this.isSupervisor,
+          studyRequests,
+        });
+      };
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: { title, prompt, action },
       });
     },
     actionExport(studyRequests) {
@@ -410,7 +461,20 @@ export default {
       saveAs(csvData, 'requests.csv');
     },
     actionReject(studyRequests) {
-      console.log(studyRequests);
+      const actionName = 'reject';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, 'REJECTED');
+      };
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: { title, prompt, action },
+      });
     },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
@@ -435,6 +499,17 @@ export default {
         this.selection = this.selectableIds;
       }
     },
+    setStudyRequestsStatus(items, status) {
+      const { isSupervisor } = this;
+      const studyRequests = items.map(
+        item => this.studyRequests.find(({ id }) => id === item.id),
+      );
+      return this.saveStudyRequestsStatus({
+        isSupervisor,
+        studyRequests,
+        status,
+      });
+    },
     syncFromRoute() {
       return this.fetchAllStudyRequests(this.isSupervisor);
     },
@@ -445,6 +520,7 @@ export default {
       'deleteStudyRequests',
       'fetchAllStudyRequests',
       'saveStudyRequest',
+      'saveStudyRequestsStatus',
       'setToast',
     ]),
     ...mapMutations([
@@ -494,6 +570,11 @@ export default {
       & > .col-PRIORITY {
         width: var(--space-3xl);
       }
+      & > .col-ACTIONS {
+        width: var(--space-2xl);
+      }
+    }
+    &.supervisor > colgroup {
       & > .col-ACTIONS {
         width: calc(var(--space-3xl) * 1.5);
       }
