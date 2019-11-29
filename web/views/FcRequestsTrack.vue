@@ -11,12 +11,40 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <button
-          class="fc-request-download font-size-l"
-          @click="actionExport(selectedItems)">
-          <i class="fa fa-download"></i>
-          <span> Download</span>
-        </button>
+        <div class="br">
+          <button
+            class="font-size-l mr-m"
+            @click="actionAccept(selectedItems)">
+            <i class="fa fa-thumbs-up"></i>
+            <span> Approve</span>
+          </button>
+          <button
+            class="font-size-l mr-m"
+            @click="actionReject(selectedItems)">
+            <i class="fa fa-thumbs-down"></i>
+            <span> Reject</span>
+          </button>
+          <button
+            class="font-size-l mr-m"
+            @click="actionComplete(selectedItems)">
+            <i class="fa fa-check-circle"></i>
+            <span> Complete</span>
+          </button>
+          <button
+            class="font-size-l mr-m"
+            @click="actionExport(selectedItems)">
+            <i class="fa fa-download"></i>
+            <span> Download</span>
+          </button>
+        </div>
+        <div>
+          <button
+            class="tds-button-error font-size-l ml-m"
+            @click="actionDelete(selectedItems)">
+            <i class="fa fa-trash-alt"></i>
+            <span> Delete</span>
+          </button>
+        </div>
       </header>
       <FcCardTable
         class="fc-card-table-requests"
@@ -105,9 +133,26 @@
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div class="cell-actions">
+          <div class="br">
             <button
-              class="tds-button-secondary font-size-m"
+              class="font-size-m mr-m"
+              @click="actionAccept([item])">
+              <i class="fa fa-thumbs-up"></i>
+            </button>
+            <button
+              class="font-size-m mr-m"
+              @click="actionReject([item])">
+              <i class="fa fa-thumbs-down"></i>
+            </button>
+            <button
+              class="font-size-m mr-m"
+              @click="actionComplete([item])">
+              <i class="fa fa-check-circle"></i>
+            </button>
+          </div>
+          <div>
+            <button
+              class="tds-button-error font-size-m ml-m"
               @click="actionDelete([item])">
               <i class="fa fa-trash-alt"></i>
             </button>
@@ -303,6 +348,12 @@ export default {
       });
   },
   methods: {
+    actionAccept(studyRequests) {
+      console.log(studyRequests);
+    },
+    actionComplete(studyRequests) {
+      console.log(studyRequests);
+    },
     actionDelete(studyRequests) {
       const n = studyRequests.length;
 
@@ -312,7 +363,8 @@ export default {
         const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
         return `${maybeAnd}Request #${id} at ${location.description}`;
       });
-      const studyRequestsHuman = studyRequestsHumanParts.join(', ');
+      const separator = n <= 2 ? ' ' : ', ';
+      const studyRequestsHuman = studyRequestsHumanParts.join(separator);
       const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;
 
       this.setModal({
@@ -356,6 +408,9 @@ export default {
       const csvStr = csvFormat(rows, columns);
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
+    },
+    actionReject(studyRequests) {
+      console.log(studyRequests);
     },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
@@ -421,21 +476,10 @@ export default {
       }
     }
   }
-  & > section {
-    & > header {
-      align-items: center;
-      background-color: var(--base-lighter);
-      padding: var(--space-m) var(--space-l);
-      & > * {
-        margin-right: var(--space-m);
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-      & > button.tds-button-secondary:not(:disabled):hover {
-        background-color: var(--base-light);
-      }
-    }
+  & > section > header {
+    align-items: center;
+    background-color: var(--base-lighter);
+    padding: var(--space-m) var(--space-l);
   }
 
   .fc-card-table-requests {
@@ -443,21 +487,15 @@ export default {
       color: var(--error);
     }
     & > colgroup {
-      & > .col-SELECTION {
-        width: var(--space-xl);
-      }
       & > .col-ID {
-        width: var(--space-3xl);
+        width: calc(var(--space-2xl) * 1.5);
       }
       & > .col-DATE,
       & > .col-PRIORITY {
         width: var(--space-3xl);
       }
-      & > .col-STATUS {
-        width: calc(var(--space-3xl) * 1.5);
-      }
       & > .col-ACTIONS {
-        width: var(--space-xl);
+        width: calc(var(--space-3xl) * 1.5);
       }
     }
     .cell-ID {
@@ -469,9 +507,9 @@ export default {
         }
       }
     }
-    .cell-actions {
-      & > button:not(:last-child) {
-        margin-right: var(--space-s);
+    .cell-ACTIONS {
+      & > div {
+        display: inline-block;
       }
     }
   }
