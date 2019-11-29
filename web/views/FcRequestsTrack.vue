@@ -382,36 +382,10 @@ export default {
   },
   methods: {
     actionAccept(studyRequests) {
-      const actionName = 'approve';
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const action = () => {
-        this.setStudyRequestsStatus(studyRequests, 'ACCEPTED');
-      };
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: { title, prompt, action },
-      });
+      this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
     },
     actionComplete(studyRequests) {
-      const actionName = 'complete';
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const action = () => {
-        this.setStudyRequestsStatus(studyRequests, 'COMPLETED');
-      };
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: { title, prompt, action },
-      });
+      this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
     },
     actionDelete(studyRequests) {
       const actionName = 'delete';
@@ -461,26 +435,32 @@ export default {
       saveAs(csvData, 'requests.csv');
     },
     actionReject(studyRequests) {
-      const actionName = 'reject';
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const action = () => {
-        this.setStudyRequestsStatus(studyRequests, 'REJECTED');
-      };
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: { title, prompt, action },
-      });
+      this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
     },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
       const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
       studyRequest.priority = priority;
       this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
+    actionSetStatus(studyRequests, actionName, status) {
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, status);
+      };
+      if (studyRequests.length === 1) {
+        action();
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: { title, prompt, action },
+      });
     },
     actionShowRequest(item) {
       const route = {
