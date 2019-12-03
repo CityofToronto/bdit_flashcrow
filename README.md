@@ -36,7 +36,7 @@ To deploy the Flashcrow web application, you will need access to the AWS CodeCom
 ```
 git remote add code-commit https://git-codecommit.us-east-1.amazonaws.com/v1/repos/bdit_flashcrow
 
-./scripts/deployment/code-commit/deploy_code_commit.sh
+env $(xargs < ~/move-env.config) ./scripts/deployment/code-commit/deploy_code_commit.sh
 ```
 
 For now, please use the `deploy_code_commit.sh` script for all deployments to AWS CodeCommit!  We're working with Cloud Services on a deployment process that includes continuous integration (CI) testing; in the meantime, that script runs our CI tests before pushing to AWS CodeCommit.

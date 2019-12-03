@@ -18,4 +18,8 @@ npx npm-run-all ci:*
 # attempt to build frontend
 npm run build
 
+# notify prj_move on Slack
+CURRENT_REVISION=$(git rev-parse HEAD)
+curl -H "Content-Type: application/json; charset=utf-8" -d "{\"text\": \"<!here> MOVE down for deployment: ${CURRENT_REVISION} -> flashcrow-dev0\"}" "$SLACK_WEBHOOK_URL"
+
 git push code-commit master
