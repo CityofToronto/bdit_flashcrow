@@ -1,5 +1,7 @@
 <template>
-  <TdsModal :data="data">
+  <TdsModal
+    :data="data"
+    v-on="$listeners">
     <template v-slot:header>
       <h2>Confirmation: Request #{{studyRequestId}}</h2>
     </template>
