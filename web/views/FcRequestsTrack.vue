@@ -165,23 +165,16 @@
             class="br">
             <button
               class="font-size-m mr-m"
-              :disabled="item.status === 'ACCEPTED'
-                || item.status === 'IN_PROGRESS'
-                || item.status === 'COMPLETED'"
               @click="actionAccept([item])">
               <i class="fa fa-thumbs-up"></i>
             </button>
             <button
               class="font-size-m mr-m"
-              :disabled="item.status === 'REJECTED'
-                || item.status === 'IN_PROGRESS'
-                || item.status === 'COMPLETED'"
               @click="actionReject([item])">
               <i class="fa fa-thumbs-down"></i>
             </button>
             <button
               class="font-size-m mr-m"
-              :disabled="item.status !== 'IN_PROGRESS'"
               @click="actionComplete([item])">
               <i class="fa fa-check-circle"></i>
             </button>
@@ -189,7 +182,6 @@
           <div>
             <button
               class="tds-button-error font-size-m ml-m"
-              :disabled="item.status !== 'REQUESTED'"
               @click="actionDelete([item])">
               <i class="fa fa-trash-alt"></i>
             </button>
