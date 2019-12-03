@@ -1,10 +1,5 @@
 BEGIN;
 
-INSERT INTO "study_request_reasons"
-  ("value", "label")
-VALUES
-  ('AWS', 'All-Way Stop Sign');
-
 CREATE TABLE "study_request_assignees" (
   "value" VARCHAR PRIMARY KEY NOT NULL,
   "label" VARCHAR NOT NULL

@@ -29,9 +29,17 @@ test('Constants.SearchKeys', () => {
     id: 42,
     location: null,
     priority: 'STANDARD',
+    assignedTo: null,
     requestedBy: null,
     status: 'REVIEWED',
   };
+
+  expect(SearchKeys.Requests.ASSIGNED_TO('', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.ASSIGNED_TO('n', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.ASSIGNED_TO('None', REQUEST)).toBe(true);
+  REQUEST.assignedTo = 'FIELD STAFF';
+  expect(SearchKeys.Requests.ASSIGNED_TO('None', REQUEST)).toBe(false);
+  expect(SearchKeys.Requests.ASSIGNED_TO('field', REQUEST)).toBe(true);
 
   expect(SearchKeys.Requests.DATE('2019', REQUEST)).toBe(false);
   expect(SearchKeys.Requests.DATE('2020', REQUEST)).toBe(true);
@@ -106,13 +114,19 @@ test('Constants.SortKeys', () => {
     id: 42,
     location,
     priority: 'STANDARD',
+    assignedTo: 'FIELD STAFF',
     requestedBy,
     status: 'REVIEWED',
   };
   const REQUEST_URGENT = {
     ...REQUEST_STANDARD,
     priority: 'URGENT',
+    assignedTo: null,
   };
+  expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_STANDARD))
+    .toEqual('FIELD STAFF');
+  expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_URGENT))
+    .toEqual('');
   expect(SortKeys.Requests.DATE(REQUEST_STANDARD))
     .toEqual(now.valueOf());
   expect(SortKeys.Requests.ID(REQUEST_STANDARD))
