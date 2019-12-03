@@ -140,8 +140,7 @@
             ]"
             @action-selected="actionSetAssignedTo">
             <span
-              v-if="item.assignedTo === null"
-              class="text-muted">
+              v-if="item.assignedTo === null">
               NONE
             </span>
             <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
@@ -608,6 +607,12 @@ export default {
       }
     }
     &.supervisor > colgroup {
+      & > .col-PRIORITY {
+        width: calc(var(--space-3xl) + var(--space-l));
+      }
+      & > .col-ASSIGNED_TO {
+        width: calc(var(--space-3xl) + var(--space-xl));
+      }
       & > .col-ACTIONS {
         width: calc(var(--space-4xl));
       }

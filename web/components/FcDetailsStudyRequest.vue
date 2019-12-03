@@ -76,7 +76,7 @@
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="v.reasons.$model"
-          class="font-size-l full-width mb-m text-left"
+          class="font-size-l full-width mb-m"
           :class="{
             'tds-button-success': reasons.length > 0,
           }"

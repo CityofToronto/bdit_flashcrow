@@ -3,6 +3,7 @@
     class="tds-button-dropdown"
     :class="{ invalid }">
     <slot name="title"></slot>
+    <i class="ml-s fa fa-caret-down" />
     <div class="dropdown shadow-3 text-left">
       <slot name="dropdown"></slot>
     </div>

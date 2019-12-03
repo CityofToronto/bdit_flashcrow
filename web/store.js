@@ -229,6 +229,13 @@ export default new Vuex.Store({
       });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestEstimatedDeliveryDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      return studyRequestEstimatedDeliveryDate(now, studyRequest);
+    },
     studyRequestMinDueDate(state) {
       const { now, studyRequest } = state;
       if (studyRequest === null) {
