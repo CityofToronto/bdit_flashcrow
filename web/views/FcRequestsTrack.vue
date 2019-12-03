@@ -160,23 +160,28 @@
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div
-            v-if="isSupervisor"
-            class="br">
+          <div class="br">
+            <template v-if="isSupervisor">
+              <button
+                class="font-size-m mr-m"
+                @click="actionAccept([item])">
+                <i class="fa fa-thumbs-up"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionReject([item])">
+                <i class="fa fa-thumbs-down"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionComplete([item])">
+                <i class="fa fa-check-circle"></i>
+              </button>
+            </template>
             <button
               class="font-size-m mr-m"
-              @click="actionAccept([item])">
-              <i class="fa fa-thumbs-up"></i>
-            </button>
-            <button
-              class="font-size-m mr-m"
-              @click="actionReject([item])">
-              <i class="fa fa-thumbs-down"></i>
-            </button>
-            <button
-              class="font-size-m mr-m"
-              @click="actionComplete([item])">
-              <i class="fa fa-check-circle"></i>
+              @click="actionExport([item])">
+              <i class="fa fa-download"></i>
             </button>
           </div>
           <div>
@@ -592,17 +597,19 @@ export default {
       color: var(--error);
     }
     & > colgroup {
-      & > .col-DATE,
-      & > .col-PRIORITY {
-        width: var(--space-3xl);
+      & > .col-ID {
+        width: calc(var(--space-2xl) * 1.5);
       }
+      & > .col-DATE,
+      & > .col-PRIORITY,
+      & > .col-ASSIGNED_TO,
       & > .col-ACTIONS {
-        width: var(--space-2xl);
+        width: var(--space-3xl);
       }
     }
     &.supervisor > colgroup {
       & > .col-ACTIONS {
-        width: calc(var(--space-3xl) * 1.5);
+        width: calc(var(--space-4xl));
       }
     }
     .cell-ID {

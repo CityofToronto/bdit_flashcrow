@@ -163,7 +163,14 @@ const router = new Router({
     {
       path: '/requests/track',
       name: 'requestsTrack',
-      meta: { title: 'Track Requests' },
+      meta: {
+        title({ query: { isSupervisor = null } }) {
+          if (isSupervisor) {
+            return 'Manage Requests';
+          }
+          return 'Track Requests';
+        },
+      },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
     },
     {
