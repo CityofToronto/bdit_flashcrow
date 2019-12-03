@@ -392,6 +392,7 @@ export default new Vuex.Store({
       const studyRequest = {
         serviceRequestId: null,
         priority: 'STANDARD',
+        assignedTo: null,
         dueDate,
         reasons: [],
         ccEmails: [],
@@ -636,7 +637,11 @@ export default new Vuex.Store({
       const studyRequestNew = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest: studyRequestNew, update },
+        data: {
+          isSupervisor,
+          studyRequest: studyRequestNew,
+          update,
+        },
       });
       return studyRequestNew;
     },

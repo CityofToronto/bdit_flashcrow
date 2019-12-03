@@ -129,10 +129,34 @@
             <span> {{item.priority}}</span>
           </span>
         </template>
+        <template v-slot:ASSIGNED_TO="{ item }">
+          <TdsActionDropdown
+            v-if="isSupervisor"
+            class="font-size-m full-width"
+            :options="[
+              { label: 'NONE', value: { item, assignedTo: null } },
+              { label: 'OTI', value: { item, assignedTo: 'OTI' } },
+              { label: 'FIELD STAFF', value: { item, assignedTo: 'FIELD_STAFF' } },
+            ]"
+            @action-selected="actionSetAssignedTo">
+            <span
+              v-if="item.assignedTo === null"
+              class="text-muted">
+              NONE
+            </span>
+            <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+          </TdsActionDropdown>
+          <span
+            v-else-if="item.assignedTo === null"
+            class="text-muted">
+            NONE
+          </span>
+          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+        </template>
         <template v-slot:STATUS="{ item }">
           <TdsLabel
             v-bind="RequestStatus[item.status]">
-            {{item.status}}
+            {{item.status.replace('_', ' ')}}
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
@@ -141,19 +165,23 @@
             class="br">
             <button
               class="font-size-m mr-m"
-              :disabled="item.status === 'ACCEPTED'"
+              :disabled="item.status === 'ACCEPTED'
+                || item.status === 'IN_PROGRESS'
+                || item.status === 'COMPLETED'"
               @click="actionAccept([item])">
               <i class="fa fa-thumbs-up"></i>
             </button>
             <button
               class="font-size-m mr-m"
-              :disabled="item.status === 'REJECTED'"
+              :disabled="item.status === 'REJECTED'
+                || item.status === 'IN_PROGRESS'
+                || item.status === 'COMPLETED'"
               @click="actionReject([item])">
               <i class="fa fa-thumbs-down"></i>
             </button>
             <button
               class="font-size-m mr-m"
-              :disabled="item.status === 'COMPLETED'"
+              :disabled="item.status !== 'IN_PROGRESS'"
               @click="actionComplete([item])">
               <i class="fa fa-check-circle"></i>
             </button>
@@ -161,6 +189,7 @@
           <div>
             <button
               class="tds-button-error font-size-m ml-m"
+              :disabled="item.status !== 'REQUESTED'"
               @click="actionDelete([item])">
               <i class="fa fa-trash-alt"></i>
             </button>
@@ -213,6 +242,7 @@ function getItemFields(item) {
     centrelineType,
     id,
     priority,
+    assignedTo,
     status,
   } = item;
   let [lng, lat] = item.geom.coordinates;
@@ -231,6 +261,7 @@ function getItemFields(item) {
     dueDate,
     estimatedDeliveryDate,
     priority,
+    assignedTo,
     status,
     lng,
     lat,
@@ -330,6 +361,9 @@ export default {
       name: 'PRIORITY',
       title: 'Priority',
     }, {
+      name: 'ASSIGNED_TO',
+      title: 'Assign',
+    }, {
       name: 'STATUS',
       title: 'Status',
     }, {
@@ -403,7 +437,12 @@ export default {
       };
       this.setModal({
         component: 'TdsConfirmDialog',
-        data: { title, prompt, action },
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: 'Delete',
+        },
       });
     },
     actionExport(studyRequests) {
@@ -419,6 +458,7 @@ export default {
         'dueDate',
         'estimatedDeliveryDate',
         'priority',
+        'assignedTo',
         'status',
         'lng',
         'lat',
@@ -436,6 +476,17 @@ export default {
     },
     actionReject(studyRequests) {
       this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+    },
+    actionSetAssignedTo({ item, assignedTo }) {
+      const { isSupervisor } = this;
+      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = 'ACCEPTED';
+      } else {
+        studyRequest.status = 'IN_PROGRESS';
+      }
+      this.saveStudyRequest({ isSupervisor, studyRequest });
     },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
@@ -457,9 +508,15 @@ export default {
         return;
       }
       const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
       this.setModal({
         component: 'TdsConfirmDialog',
-        data: { title, prompt, action },
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: actionUppercase,
+        },
       });
     },
     actionShowRequest(item) {
@@ -543,9 +600,6 @@ export default {
       color: var(--error);
     }
     & > colgroup {
-      & > .col-ID {
-        width: calc(var(--space-2xl) * 1.5);
-      }
       & > .col-DATE,
       & > .col-PRIORITY {
         width: var(--space-3xl);

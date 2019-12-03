@@ -49,7 +49,7 @@
               :name="'search_' + column.name" />
             <button
               v-if="searchBy[column.name] !== ''"
-              class="font-size-s btn-remove"
+              class="font-size-s btn-remove px-s"
               type="button"
               @click="searchBy[column.name] = ''">
               <i class="fa fa-times-circle"></i>
