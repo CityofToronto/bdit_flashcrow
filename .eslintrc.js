@@ -11,7 +11,7 @@ module.exports = {
     'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
     'max-classes-per-file': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': 'error',
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     /*
      * We haven't incorporated `@babel/plugin-transform-exponentiation-operator`,

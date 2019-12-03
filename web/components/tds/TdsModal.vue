@@ -81,7 +81,7 @@ export default {
       border-bottom: var(--border-default);
     }
     & > .tds-modal-content {
-      min-height: 120px;
+      min-height: auto;
     }
     & > footer {
       border-top: var(--border-default);

@@ -11,15 +11,46 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <button
-          class="fc-request-download font-size-l"
-          @click="actionExport(selectedItems)">
-          <i class="fa fa-download"></i>
-          <span> Download</span>
-        </button>
+        <div class="br">
+          <template v-if="isSupervisor">
+            <button
+              class="font-size-l mr-m"
+              @click="actionAccept(selectedItems)">
+              <i class="fa fa-thumbs-up"></i>
+              <span> Approve</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionReject(selectedItems)">
+              <i class="fa fa-thumbs-down"></i>
+              <span> Reject</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionComplete(selectedItems)">
+              <i class="fa fa-check-circle"></i>
+              <span> Complete</span>
+            </button>
+          </template>
+          <button
+            class="font-size-l mr-m"
+            @click="actionExport(selectedItems)">
+            <i class="fa fa-download"></i>
+            <span> Download</span>
+          </button>
+        </div>
+        <div>
+          <button
+            class="tds-button-error font-size-l ml-m"
+            @click="actionDelete(selectedItems)">
+            <i class="fa fa-trash-alt"></i>
+            <span> Delete</span>
+          </button>
+        </div>
       </header>
       <FcCardTable
         class="fc-card-table-requests"
+        :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
         :items="itemsStudyRequests"
@@ -98,16 +129,63 @@
             <span> {{item.priority}}</span>
           </span>
         </template>
+        <template v-slot:ASSIGNED_TO="{ item }">
+          <TdsActionDropdown
+            v-if="isSupervisor"
+            class="font-size-m full-width"
+            :options="[
+              { label: 'NONE', value: { item, assignedTo: null } },
+              { label: 'OTI', value: { item, assignedTo: 'OTI' } },
+              { label: 'FIELD STAFF', value: { item, assignedTo: 'FIELD_STAFF' } },
+            ]"
+            @action-selected="actionSetAssignedTo">
+            <span
+              v-if="item.assignedTo === null">
+              NONE
+            </span>
+            <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+          </TdsActionDropdown>
+          <span
+            v-else-if="item.assignedTo === null"
+            class="text-muted">
+            NONE
+          </span>
+          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+        </template>
         <template v-slot:STATUS="{ item }">
           <TdsLabel
             v-bind="RequestStatus[item.status]">
-            {{item.status}}
+            {{item.status.replace('_', ' ')}}
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div class="cell-actions">
+          <div class="br">
+            <template v-if="isSupervisor">
+              <button
+                class="font-size-m mr-m"
+                @click="actionAccept([item])">
+                <i class="fa fa-thumbs-up"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionReject([item])">
+                <i class="fa fa-thumbs-down"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionComplete([item])">
+                <i class="fa fa-check-circle"></i>
+              </button>
+            </template>
             <button
-              class="tds-button-secondary font-size-m"
+              class="font-size-m mr-m"
+              @click="actionExport([item])">
+              <i class="fa fa-download"></i>
+            </button>
+          </div>
+          <div>
+            <button
+              class="tds-button-error font-size-m ml-m"
               @click="actionDelete([item])">
               <i class="fa fa-trash-alt"></i>
             </button>
@@ -145,7 +223,7 @@ import {
   SortDirection,
   SortKeys,
 } from '@/lib/Constants';
-import { formatDuration } from '@/lib/StringFormatters';
+import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
 import {
   REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
 } from '@/lib/i18n/Strings';
@@ -160,6 +238,7 @@ function getItemFields(item) {
     centrelineType,
     id,
     priority,
+    assignedTo,
     status,
   } = item;
   let [lng, lat] = item.geom.coordinates;
@@ -178,6 +257,7 @@ function getItemFields(item) {
     dueDate,
     estimatedDeliveryDate,
     priority,
+    assignedTo,
     status,
     lng,
     lat,
@@ -225,6 +305,31 @@ function getItemRows(item) {
   });
 }
 
+function getStudyRequestsToast(studyRequests, action) {
+  if (studyRequests.length > 0) {
+    return null;
+  }
+  // TODO: make it possible to parameterize entries in lib/i18n/Strings
+  return {
+    variant: 'warning',
+    text: `Please select one or more requests to ${action}.`,
+  };
+}
+
+function getStudyRequestsHuman(studyRequests, action) {
+  const n = studyRequests.length;
+  const actionUppercase = action[0].toUpperCase() + action.slice(1);
+  const title = n > 1 ? `${actionUppercase} ${n} Requests?` : `${actionUppercase} Request?`;
+
+  const studyRequestsHumanParts = studyRequests.map(
+    ({ id, location }) => `Request #${id} at ${location.description}`,
+  );
+  const studyRequestsHuman = formatOxfordCommaList(studyRequestsHumanParts);
+  const prompt = `You are about to ${action} ${studyRequestsHuman}.  Is that OK?`;
+
+  return { title, prompt };
+}
+
 export default {
   name: 'FcRequestsTrack',
   components: {
@@ -251,6 +356,9 @@ export default {
     }, {
       name: 'PRIORITY',
       title: 'Priority',
+    }, {
+      name: 'ASSIGNED_TO',
+      title: 'Assign',
     }, {
       name: 'STATUS',
       title: 'Status',
@@ -303,29 +411,33 @@ export default {
       });
   },
   methods: {
+    actionAccept(studyRequests) {
+      this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
+    },
+    actionComplete(studyRequests) {
+      this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
+    },
     actionDelete(studyRequests) {
-      const n = studyRequests.length;
-
-      const title = n > 1 ? `Delete ${n} Requests?` : 'Delete Request?';
-
-      const studyRequestsHumanParts = studyRequests.map(({ id, location }, i) => {
-        const maybeAnd = i === n - 1 && n > 1 ? 'and ' : '';
-        return `${maybeAnd}Request #${id} at ${location.description}`;
-      });
-      const studyRequestsHuman = studyRequestsHumanParts.join(', ');
-      const prompt = `You are about to delete ${studyRequestsHuman}.  Is that OK?`;
-
+      const actionName = 'delete';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.deleteStudyRequests({
+          isSupervisor: this.isSupervisor,
+          studyRequests,
+        });
+      };
       this.setModal({
         component: 'TdsConfirmDialog',
         data: {
           title,
           prompt,
-          action: () => {
-            this.deleteStudyRequests({
-              isSupervisor: this.isSupervisor,
-              studyRequests,
-            });
-          },
+          action,
+          textOk: 'Delete',
         },
       });
     },
@@ -342,6 +454,7 @@ export default {
         'dueDate',
         'estimatedDeliveryDate',
         'priority',
+        'assignedTo',
         'status',
         'lng',
         'lat',
@@ -357,11 +470,50 @@ export default {
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
+    actionReject(studyRequests) {
+      this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+    },
+    actionSetAssignedTo({ item, assignedTo }) {
+      const { isSupervisor } = this;
+      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = 'ACCEPTED';
+      } else {
+        studyRequest.status = 'IN_PROGRESS';
+      }
+      this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
       const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
       studyRequest.priority = priority;
       this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
+    actionSetStatus(studyRequests, actionName, status) {
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, status);
+      };
+      if (studyRequests.length === 1) {
+        action();
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: actionUppercase,
+        },
+      });
     },
     actionShowRequest(item) {
       const route = {
@@ -380,6 +532,17 @@ export default {
         this.selection = this.selectableIds;
       }
     },
+    setStudyRequestsStatus(items, status) {
+      const { isSupervisor } = this;
+      const studyRequests = items.map(
+        item => this.studyRequests.find(({ id }) => id === item.id),
+      );
+      return this.saveStudyRequestsStatus({
+        isSupervisor,
+        studyRequests,
+        status,
+      });
+    },
     syncFromRoute() {
       return this.fetchAllStudyRequests(this.isSupervisor);
     },
@@ -390,6 +553,7 @@ export default {
       'deleteStudyRequests',
       'fetchAllStudyRequests',
       'saveStudyRequest',
+      'saveStudyRequestsStatus',
       'setToast',
     ]),
     ...mapMutations([
@@ -421,21 +585,10 @@ export default {
       }
     }
   }
-  & > section {
-    & > header {
-      align-items: center;
-      background-color: var(--base-lighter);
-      padding: var(--space-m) var(--space-l);
-      & > * {
-        margin-right: var(--space-m);
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-      & > button.tds-button-secondary:not(:disabled):hover {
-        background-color: var(--base-light);
-      }
-    }
+  & > section > header {
+    align-items: center;
+    background-color: var(--base-lighter);
+    padding: var(--space-m) var(--space-l);
   }
 
   .fc-card-table-requests {
@@ -443,21 +596,25 @@ export default {
       color: var(--error);
     }
     & > colgroup {
-      & > .col-SELECTION {
-        width: var(--space-xl);
-      }
       & > .col-ID {
-        width: var(--space-3xl);
+        width: calc(var(--space-2xl) * 1.5);
       }
       & > .col-DATE,
-      & > .col-PRIORITY {
+      & > .col-PRIORITY,
+      & > .col-ASSIGNED_TO,
+      & > .col-ACTIONS {
         width: var(--space-3xl);
       }
-      & > .col-STATUS {
-        width: calc(var(--space-3xl) * 1.5);
+    }
+    &.supervisor > colgroup {
+      & > .col-PRIORITY {
+        width: calc(var(--space-3xl) + var(--space-l));
+      }
+      & > .col-ASSIGNED_TO {
+        width: calc(var(--space-3xl) + var(--space-xl));
       }
       & > .col-ACTIONS {
-        width: var(--space-xl);
+        width: calc(var(--space-4xl));
       }
     }
     .cell-ID {
@@ -469,9 +626,9 @@ export default {
         }
       }
     }
-    .cell-actions {
-      & > button:not(:last-child) {
-        margin-right: var(--space-s);
+    .cell-ACTIONS {
+      & > div {
+        display: inline-block;
       }
     }
   }

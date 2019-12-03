@@ -229,6 +229,13 @@ export default new Vuex.Store({
       });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestEstimatedDeliveryDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      return studyRequestEstimatedDeliveryDate(now, studyRequest);
+    },
     studyRequestMinDueDate(state) {
       const { now, studyRequest } = state;
       if (studyRequest === null) {
@@ -392,6 +399,7 @@ export default new Vuex.Store({
       const studyRequest = {
         serviceRequestId: null,
         priority: 'STANDARD',
+        assignedTo: null,
         dueDate,
         reasons: [],
         ccEmails: [],
@@ -636,9 +644,38 @@ export default new Vuex.Store({
       const studyRequestNew = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest: studyRequestNew, update },
+        data: {
+          isSupervisor,
+          studyRequest: studyRequestNew,
+          update,
+        },
       });
       return studyRequestNew;
+    },
+    async saveStudyRequestsStatus({ state }, { isSupervisor, studyRequests, status }) {
+      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
+        if (studyRequest.status === status) {
+          return studyRequest;
+        }
+        /* eslint-disable no-param-reassign */
+        studyRequest.status = status;
+        const data = {
+          ...studyRequest,
+        };
+        if (isSupervisor) {
+          data.isSupervisor = isSupervisor;
+        }
+        const url = `/requests/study/${data.id}`;
+        const options = {
+          method: 'PUT',
+          csrf: state.auth.csrf,
+          data,
+        };
+        return apiFetch(url, options);
+      });
+      await Promise.all(promisesStudyRequests);
+      // TODO: modal?
+      return studyRequests;
     },
     async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
       const options = {
@@ -652,8 +689,6 @@ export default new Vuex.Store({
         ({ id }) => apiFetch(`/requests/study/${id}`, options),
       );
       await Promise.all(promisesStudyRequests);
-      // TODO: during supervisor view work, just delete locally
-      // from `studyRequests`, `studyRequestLocations`
       await dispatch('fetchAllStudyRequests');
     },
     // USERS

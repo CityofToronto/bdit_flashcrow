@@ -1,4 +1,8 @@
-import { formatCountLocationDescription, formatDuration } from '@/lib/StringFormatters';
+import {
+  formatCountLocationDescription,
+  formatDuration,
+  formatOxfordCommaList,
+} from '@/lib/StringFormatters';
 
 test('StringFormatters.formatCountLocationDescription', () => {
   expect(formatCountLocationDescription('')).toEqual('');
@@ -17,4 +21,11 @@ test('StringFormatters.formatDuration', () => {
   expect(formatDuration(24)).toEqual('1 day');
   expect(formatDuration(168)).toEqual('1 week');
   expect(formatDuration(72)).toEqual('3 days');
+});
+
+test('StringFormatters.formatOxfordCommaList', () => {
+  expect(formatOxfordCommaList([])).toEqual('');
+  expect(formatOxfordCommaList(['a'])).toEqual('a');
+  expect(formatOxfordCommaList(['a', 'b'])).toEqual('a and b');
+  expect(formatOxfordCommaList(['a', 'b', 'c'])).toEqual('a, b, and c');
 });

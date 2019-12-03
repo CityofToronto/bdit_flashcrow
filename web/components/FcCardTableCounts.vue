@@ -42,7 +42,6 @@
         <template v-slot:default>
           <span>
             {{item.counts[item.activeIndex].date | date}}
-            <i class="fa fa-caret-down"></i>
           </span>
         </template>
       </TdsActionDropdown>

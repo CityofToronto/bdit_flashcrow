@@ -42,14 +42,14 @@
             <input
               v-model="searchBy[column.name]"
               type="text"
-              class="font-size-s flex-fill"
+              class="font-size-s full-width"
               :class="{
                 'btn-remove-before': searchBy[column.name] !== '',
               }"
               :name="'search_' + column.name" />
             <button
               v-if="searchBy[column.name] !== ''"
-              class="font-size-s btn-remove"
+              class="font-size-s btn-remove px-s"
               type="button"
               @click="searchBy[column.name] = ''">
               <i class="fa fa-times-circle"></i>
@@ -90,7 +90,7 @@
             v-if="expandable"
             class="cell-expand">
             <button
-              class="tds-button-secondary font-size-l"
+              class="font-size-l"
               :disabled="!item.expandable"
               @click="onClickItemExpand(item)">
               <i

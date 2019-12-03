@@ -61,6 +61,7 @@ export default {
       text-align: center;
     }
     &:hover > span {
+      background-color: var(--success-lighter);
       border-color: var(--base-darkest);
       color: var(--base-darkest);
     }

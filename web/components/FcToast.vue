@@ -9,7 +9,6 @@
       <slot></slot>
       <div class="flex-fill"></div>
       <button
-        class="tds-button-secondary"
         @click="clearToast">
         <i class="fa fa-times"></i>
       </button>

@@ -406,13 +406,11 @@ test('CountDataDAO', async () => {
 
   // TMC
   count = await CountDAO.byIdAndCategory(26177, 5);
-  debugger;
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_5_26177);
 
   // non-TMC
   count = await CountDAO.byIdAndCategory(1415698, 4);
-  debugger;
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_4_1415698);
 });
@@ -426,6 +424,7 @@ test('StudyRequestDAO', async () => {
     status: 'REQUESTED',
     serviceRequestId: null,
     priority: 'STANDARD',
+    assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
     reasons: ['TSC', 'PED_SAFETY'],
@@ -483,7 +482,6 @@ test('StudyRequestDAO', async () => {
   });
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  debugger;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // remove study from study request
