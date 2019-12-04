@@ -175,6 +175,11 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
     clusterProperties: { sum: ['+', ['get', 'cnt']] },
   };
 
+  STYLE.sources.test = {
+    type: 'vector',
+    tiles: ['https://localhost:8080/api/dynamicTiles/test/{z}/{x}/{y}.pbf'],
+  };
+
   STYLE.layers.push({
     id: 'centreline',
     source: 'centreline',
@@ -239,6 +244,17 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
       'circle-color': PAINT_COLOR_COUNTS,
       'circle-opacity': PAINT_OPACITY,
       'circle-radius': PAINT_SIZE_COUNT_POINTS,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'test',
+    type: 'circle',
+    source: 'test',
+    'source-layer': 'test',
+    paint: {
+      'circle-color': '#ff0000',
+      'circle-radius': 10,
     },
   });
 

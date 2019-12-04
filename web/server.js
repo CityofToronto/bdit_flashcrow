@@ -9,6 +9,7 @@ import Blankie from 'blankie';
 import config from '@/lib/config/MoveConfig';
 import AuthController from '@/lib/controller/AuthController';
 import CountController from '@/lib/controller/CountController';
+import DynamicTileController from '@/lib/controller/DynamicTileController';
 import LocationController from '@/lib/controller/LocationController';
 import StudyController from '@/lib/controller/StudyController';
 import StudyRequestController from '@/lib/controller/StudyRequestController';
@@ -184,6 +185,7 @@ async function initServer() {
   server.log(LogTag.INIT, 'registering routes...');
   server.route(AuthController);
   server.route(CountController);
+  server.route(DynamicTileController);
   server.route(LocationController);
   server.route(StudyController);
   server.route(StudyRequestController);
