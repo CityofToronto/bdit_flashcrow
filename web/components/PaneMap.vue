@@ -177,7 +177,7 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
 
   STYLE.sources.test = {
     type: 'vector',
-    tiles: ['https://localhost:8080/api/dynamicTiles/test/{z}/{x}/{y}.pbf'],
+    tiles: ['https://localhost:8080/api/dynamicTiles/counts/{z}/{x}/{y}.pbf'],
   };
 
   STYLE.layers.push({
@@ -249,11 +249,14 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
 
   STYLE.layers.push({
     id: 'test',
-    type: 'circle',
     source: 'test',
-    'source-layer': 'test',
+    'source-layer': 'counts',
+    type: 'circle',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
       'circle-color': '#ff0000',
+      'circle-opacity': 0.3,
       'circle-radius': 10,
     },
   });
