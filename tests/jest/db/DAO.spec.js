@@ -204,40 +204,6 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   expectIdsAndTypesResults(results, query);
 });
 
-test('CountDAO.byBoundingBox()', async () => {
-  // bounding box outside of Toronto
-  let results = await CountDAO.byBoundingBox(0, 0, 1, 1);
-  expect(results).toHaveLength(0);
-
-  // empty bounding box
-  results = await CountDAO.byBoundingBox(
-    -79.347015, 43.651070,
-    -79.347015, 43.651070,
-  );
-  expect(results).toHaveLength(0);
-
-  // invalid bounding box (xmin > xmax, ymin > ymax)
-  results = await CountDAO.byBoundingBox(
-    -79.115243191, 43.855457183,
-    -79.639264937, 43.580995995,
-  );
-  expect(results).toHaveLength(0);
-
-  // bounding box containing one item
-  results = await CountDAO.byBoundingBox(
-    -79.39105486856735, 43.66697119145863,
-    -79.3797296679832, 43.67108387524755,
-  );
-  expect(results).toHaveLength(1);
-
-  // bounding box containing a bunch of items
-  results = await CountDAO.byBoundingBox(
-    -79.40506206200341, 43.663771812301974,
-    -79.37883903724058, 43.673294636735676,
-  );
-  expect(results.length).toBeGreaterThan(1);
-});
-
 test('CountDAO.byCentreline()', async () => {
   // invalid feature
   let counts = await CountDAO.byCentreline(-1, -1, null, 10);
