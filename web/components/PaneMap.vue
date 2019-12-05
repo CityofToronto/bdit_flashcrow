@@ -111,6 +111,20 @@ const PAINT_SIZE_INTERSECTIONS = [
     8,
   ],
 ];
+const PAINT_COLOR_COUNTS = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  '#00a91c',
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    '#e5a000',
+    // unhovered
+    '#00bde3',
+  ],
+];
 
 function injectSourcesAndLayers(rawStyle) {
   const STYLE = {};
@@ -128,9 +142,16 @@ function injectSourcesAndLayers(rawStyle) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
+  const { origin } = window.location;
+
+  STYLE.sources.collisions = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/collisions/{z}/{x}/{y}.pbf`],
+  };
+
   STYLE.sources.counts = {
     type: 'vector',
-    tiles: ['https://localhost:8080/api/dynamicTiles/counts/{z}/{x}/{y}.pbf'],
+    tiles: [`${origin}/api/dynamicTiles/counts/{z}/{x}/{y}.pbf`],
   };
 
   STYLE.layers.push({
@@ -169,9 +190,23 @@ function injectSourcesAndLayers(rawStyle) {
     minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': '#ff0000',
-      'circle-opacity': 0.3,
+      'circle-color': PAINT_COLOR_COUNTS,
       'circle-radius': 10,
+      'circle-opacity': PAINT_OPACITY,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'collisions',
+    source: 'collisions',
+    'source-layer': 'collisions',
+    type: 'circle',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
+    paint: {
+      'circle-color': '#ff0000',
+      'circle-opacity': 0.4,
+      'circle-radius': 5,
     },
   });
 
