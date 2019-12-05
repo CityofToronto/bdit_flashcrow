@@ -192,12 +192,12 @@ function injectSourcesAndLayers(rawStyle) {
     source: 'schools',
     'source-layer': 'schools',
     type: 'circle',
-    minzoom: ZOOM_TORONTO,
+    minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': '#77ff77',
+      'circle-color': '#70e17b',
       'circle-opacity': 0.5,
-      'circle-radius': 10,
+      'circle-radius': 5,
     },
   });
 
@@ -216,6 +216,47 @@ function injectSourcesAndLayers(rawStyle) {
   });
 
   STYLE.layers.push({
+    id: 'collisions-heatmap',
+    source: 'collisions',
+    'source-layer': 'collisions',
+    type: 'heatmap',
+    minzoom: ZOOM_TORONTO,
+    maxzoom: ZOOM_MIN_COUNTS + 1,
+    paint: {
+      'heatmap-color': [
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0, 'rgba(244, 227, 219, 0)',
+        0.5, '#f39268',
+        1, '#d63e04',
+      ],
+      'heatmap-intensity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_TORONTO, 1,
+        ZOOM_MIN_COUNTS, 3,
+      ],
+      'heatmap-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.8,
+        ZOOM_MIN_COUNTS + 1, 0,
+      ],
+      'heatmap-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_TORONTO, 3,
+        ZOOM_MIN_COUNTS, 8,
+      ],
+      'heatmap-weight': 1,
+    },
+  });
+
+  STYLE.layers.push({
     id: 'collisions',
     source: 'collisions',
     'source-layer': 'collisions',
@@ -223,8 +264,14 @@ function injectSourcesAndLayers(rawStyle) {
     minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': '#ff0000',
-      'circle-opacity': 0.4,
+      'circle-color': '#d63e04',
+      'circle-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.2,
+        ZOOM_MIN_COUNTS + 1, 0.8,
+      ],
       'circle-radius': 5,
     },
   });
