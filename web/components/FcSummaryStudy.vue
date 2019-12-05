@@ -58,8 +58,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
@@ -72,6 +70,7 @@ export default {
   },
   props: {
     index: Number,
+    studyRequest: Object,
   },
   data() {
     return {
@@ -117,7 +116,6 @@ export default {
       const { studyType } = this.study;
       return COUNT_TYPES.find(({ value }) => value === studyType);
     },
-    ...mapState(['studyRequest']),
   },
 };
 </script>

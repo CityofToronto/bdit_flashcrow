@@ -9,7 +9,9 @@
       <div class="tds-modal-content flex-fill">
         <slot name="content"></slot>
       </div>
-      <footer v-if="$scopedSlots.footer">
+      <footer
+        v-if="$scopedSlots.footer"
+        class="mt-m">
         <slot name="footer"></slot>
       </footer>
     </aside>
@@ -79,7 +81,7 @@ export default {
       border-bottom: var(--border-default);
     }
     & > .tds-modal-content {
-      min-height: 120px;
+      min-height: auto;
     }
     & > footer {
       border-top: var(--border-default);

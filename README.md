@@ -14,9 +14,9 @@ To contact the Flashcrow team:
 | If... | Contact: | Who? |
 | --- | --- | --- |
 | You have a question related to Flashcrow development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
-| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | TBD |
-| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | TBD |
-| Your question isn't captured above, or you're not sure who to contact | Service Owner | [Jesse Coleman](mailto:Jesse.Coleman@toronto.ca) |
+| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | [Shine Chaudhuri](Shine.Chaudhuri@toronto.ca) |
+| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | [Ruth Birman](Ruth.Birman@toronto.ca) |
+| Your question isn't captured above, or you're not sure who to contact | Service Owner | [Aakash Harpalani](mailto:Aakash.Harpalani@toronto.ca) |
 
 We will try to respond to any questions within 48 hours.  However, given the small size of our team, please understand if it takes us a bit longer to respond sometimes.
 
@@ -36,7 +36,7 @@ To deploy the Flashcrow web application, you will need access to the AWS CodeCom
 ```
 git remote add code-commit https://git-codecommit.us-east-1.amazonaws.com/v1/repos/bdit_flashcrow
 
-./scripts/deployment/code-commit/deploy_code_commit.sh
+env $(xargs < ~/move-env.config) ./scripts/deployment/code-commit/deploy_code_commit.sh
 ```
 
 For now, please use the `deploy_code_commit.sh` script for all deployments to AWS CodeCommit!  We're working with Cloud Services on a deployment process that includes continuous integration (CI) testing; in the meantime, that script runs our CI tests before pushing to AWS CodeCommit.

@@ -29,18 +29,15 @@ test('ValidationsStudyRequest.numConsecutiveDaysOfWeek()', () => {
   }
 });
 
-test('ValidationsStudyRequest.allTorontoInternal()', () => {
-  const { allTorontoInternal } = ValidationsStudyRequest.validations.studyRequest.ccEmails;
+test('ValidationsStudyRequest.torontoInternal()', () => {
+  const { torontoInternal } = ValidationsStudyRequest.validations.studyRequest.ccEmails.$each;
 
-  expect(allTorontoInternal('')).toBeTruthy();
-  expect(allTorontoInternal(',,,,,,')).toBeTruthy();
-  expect(allTorontoInternal(',  ,, ,\t,')).toBeTruthy();
-  expect(allTorontoInternal('foo.bar@gmail.com')).toBeFalsy();
-  expect(allTorontoInternal('Evan.Savage@toronto.ca')).toBeTruthy();
-  expect(allTorontoInternal('Evan.Savage@toronto.ca,')).toBeTruthy();
-  expect(allTorontoInternal('Evan.Savage@toronto.ca,foo.bar@gmail.com')).toBeFalsy();
-  expect(allTorontoInternal('Evan.Savage@toronto.ca, foo.bar@gmail.com')).toBeFalsy();
-  expect(allTorontoInternal('Evan.Savage@toronto.ca, Aakash.Harpalani@toronto.ca')).toBeTruthy();
+  expect(torontoInternal('')).toBeFalsy();
+  expect(torontoInternal(',,,,,,')).toBeFalsy();
+  expect(torontoInternal('foo.bar@gmail.com')).toBeFalsy();
+  expect(torontoInternal('Evan.Savage@toronto.ca')).toBeTruthy();
+  expect(torontoInternal('toronto.ca')).toBeFalsy();
+  expect(torontoInternal('@toronto.ca')).toBeFalsy();
 });
 
 test('ValidationsStudyRequest.needsValidDuration()', () => {

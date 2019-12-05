@@ -1,10 +1,11 @@
 {
   "name": "bdit_flashcrow",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
-  "homepage": "https://move.intra.dev-toronto.ca",
   "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "backend": "node -r esm -r module-alias/register web/server.js",
     "backend:inspect": "node -r esm -r module-alias/register --inspect=0.0.0.0:9281 web/server.js",
     "backend:inspect-brk": "node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9281 web/server.js",
@@ -23,9 +24,7 @@
     "reporter:inspect-brk": "node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js",
     "reporter:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r esm -r module-alias/register reporter/reporter.js",
     "test:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"api/**\" jest --runInBand",
-    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest --runInBand",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest --runInBand"
   },
   "dependencies": {
     "@hapi/boom": "^8.0.1",
@@ -38,27 +37,28 @@
     "@hapi/joi": "^15.1.1",
     "@hapi/scooter": "^5.1.1",
     "@sendgrid/mail": "^6.4.0",
-    "aws-sdk": "^2.566.0",
+    "aws-sdk": "^2.580.0",
     "blankie": "^4.1.1",
+    "core-js": "^3.4.5",
     "csv-generate": "^3.2.3",
     "csv-stringify": "^5.3.3",
-    "d3-array": "^2.3.3",
+    "d3-array": "^2.4.0",
     "d3-axis": "^1.0.12",
-    "d3-format": "^1.4.1",
-    "d3-scale": "^3.2.0",
-    "d3-selection": "^1.4.0",
+    "d3-dsv": "^1.2.0",
+    "d3-format": "^1.4.2",
+    "d3-scale": "^3.2.1",
+    "d3-selection": "^1.4.1",
     "d3-selection-multi": "^1.0.1",
     "esm": "^3.2.25",
     "file-saver": "^2.0.2",
     "jsdom": "^15.2.1",
-    "luxon": "^1.21.1",
-    "mapbox-gl": "^1.5.0",
+    "luxon": "^1.21.3",
+    "mapbox-gl": "^1.5.1",
     "module-alias": "^2.2.2",
     "mustache": "^3.1.0",
-    "nodemailer": "^6.3.1",
     "openid-client": "^2.4.5",
     "pdfmake": "^0.1.62",
-    "pg-promise": "^9.3.5",
+    "pg-promise": "^10.3.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
     "uuid": "^3.3.3",
@@ -66,20 +66,21 @@
     "vue": "^2.6.3",
     "vue-router": "^3.1.3",
     "vuelidate": "^0.7.4",
-    "vuex": "^3.1.0",
-    "whatwg-fetch": "^3.0.0"
+    "vuex": "^3.1.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-plugin-eslint": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
-    "@vue/eslint-config-airbnb": "^4.0.0",
+    "@babel/core": "^7.7.4",
+    "@vue/cli": "^4.1.1",
+    "@vue/cli-plugin-babel": "^4.1.1",
+    "@vue/cli-plugin-eslint": "^4.1.1",
+    "@vue/cli-plugin-router": "^4.1.1",
+    "@vue/cli-plugin-vuex": "^4.1.1",
+    "@vue/cli-service": "^4.1.1",
+    "@vue/eslint-config-airbnb": "^5.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",
-    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
-    "documentation": "^12.1.3",
+    "documentation": "^12.1.4",
     "eslint": "^5.16.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.18.2",
@@ -87,18 +88,28 @@
     "jest": "^24.9.0",
     "jest-serializer-vue": "^2.0.2",
     "jest-transform-stub": "^2.0.0",
-    "lint-staged": "^9.4.2",
+    "lint-staged": "^9.5.0",
     "npm-run-all": "^4.1.5",
     "postcss-nested": "^4.2.1",
-    "stylelint": "^11.1.1",
+    "stylelint": "^12.0.0",
     "stylelint-config-standard": "^19.0.0",
     "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.3",
     "webpack-bundle-analyzer": "^3.6.0"
   },
+  "browserslist": [
+    "last 1 Firefox version",
+    "last 1 Chrome version",
+    "last 1 Edge version"
+  ],
+  "_moduleAliases": {
+    "@": "."
+  },
   "gitHooks": {
     "pre-commit": "npm-run-all pre-commit:*"
   },
+  "homepage": "https://move.intra.dev-toronto.ca",
+  "license": "MIT",
   "lint-staged": {
     "lib/**/*.js": [
       "documentation lint"
@@ -119,13 +130,5 @@
       "vue-cli-service lint",
       "stylelint"
     ]
-  },
-  "_moduleAliases": {
-    "@": "."
-  },
-  "browserslist": [
-    "last 1 Firefox version",
-    "last 1 Chrome version",
-    "last 1 Edge version"
-  ]
+  }
 }

@@ -15,12 +15,21 @@ import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 export default {
   name: 'FcActionBottomContinue',
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     ...mapState(['studyRequest']),
   },
   validations: ValidationsStudyRequest.validationsMeta,
   methods: {
     onClickContinue() {
-      this.$router.push({ name: 'requestStudySpecify' });
+      let { name } = this.$route;
+      name = name.replace('Schedule', 'Specify');
+      const route = { name };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
   },
 };

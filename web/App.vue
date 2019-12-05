@@ -44,7 +44,7 @@
             <span>{{toast.text}}</span>
           </FcToast>
           <SearchBarLocation
-            :disabled="searchBarDisabled || !auth.loggedIn" />
+            v-if="searchBarShown" />
         </template>
         <template v-slot:right>
           <TdsActionDropdown
@@ -79,7 +79,6 @@ import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
 import FcToast from '@/web/components/FcToast.vue';
-import ModalComingSoon from '@/web/components/ModalComingSoon.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
@@ -99,15 +98,15 @@ export default {
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
     FcToast,
-    ModalComingSoon,
     SearchBarLocation,
     TdsActionDropdown,
     TdsConfirmDialog,
     TdsTopBar,
   },
   computed: {
-    searchBarDisabled() {
-      return !SEARCH_BAR_ROUTES.includes(this.$route.name);
+    searchBarShown() {
+      const showSearchBarForRoute = SEARCH_BAR_ROUTES.includes(this.$route.name);
+      return showSearchBarForRoute && this.auth.loggedIn;
     },
     userActions() {
       if (this.auth.loggedIn) {
@@ -153,14 +152,6 @@ export default {
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { centrelineId, centrelineType },
-      });
-    },
-    profileComingSoon() {
-      this.setModal({
-        component: 'ModalComingSoon',
-        data: {
-          feature: 'user profiles',
-        },
       });
     },
     signOut() {

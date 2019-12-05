@@ -1,7 +1,8 @@
 <template>
   <TdsModal
     class="tds-confirm-dialog"
-    :data="data">
+    :data="data"
+    @modal-close="onClickCancel">
     <template v-slot:header>
       <h2>{{data.title}}</h2>
     </template>
@@ -63,9 +64,6 @@ export default {
   .tds-modal {
     border: var(--border-default);
     border-radius: var(--space-m);
-    & > .tds-modal-close {
-      display: none;
-    }
   }
 }
 </style>

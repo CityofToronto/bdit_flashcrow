@@ -1,22 +1,41 @@
 <template>
-  <TdsModal :data="data">
+  <TdsModal
+    :data="data"
+    v-on="$listeners">
     <template v-slot:header>
       <h2>Confirmation: Request #{{studyRequestId}}</h2>
     </template>
     <template v-slot:content>
-      <p>Thank you for your request!</p>
-      <p>
+      <p v-if="update">
+        <span v-if="isSupervisor">
+          The request has been updated.
+        </span>
+        <span v-else>
+          Your request has been updated.
+        </span>
+      </p>
+      <p v-else>
+        Thank you for your request!  You will receive a confirmation email
+        shortly.
+      </p>
+      <p v-if="isSupervisor">
+        The estimated delivery date for this request is
+        <strong>{{estimatedDeliveryDate | date}}</strong>.
+      </p>
+      <p v-else>
         You should receive your data by
         <strong>{{estimatedDeliveryDate | date}}</strong>.
       </p>
-      <p v-if="priority === 'URGENT'">
-        You've marked this request urgent.  The Traffic Safety Unit will
-        contact you to make adjustments to the schedule.
-      </p>
-      <p v-else>
-        The Traffic Safety Unit will contact you if there are unforeseen
-        scheduling changes.
-      </p>
+      <template v-if="!update">
+        <p v-if="priority === 'URGENT'">
+          You've marked this request urgent.  The Traffic Safety Unit will
+          contact you to make adjustments to the schedule.
+        </p>
+        <p v-else>
+          The Traffic Safety Unit will contact you if there are unforeseen
+          scheduling changes.
+        </p>
+      </template>
     </template>
     <template v-slot:footer>
       <div class="flex-fill text-right">
@@ -38,11 +57,17 @@ export default {
     estimatedDeliveryDate() {
       return this.data.studyRequest.estimatedDeliveryDate;
     },
+    isSupervisor() {
+      return this.data.isSupervisor;
+    },
     priority() {
       return this.data.studyRequest.priority;
     },
     studyRequestId() {
       return this.data.studyRequest.id;
+    },
+    update() {
+      return this.data.update;
     },
   },
   methods: {

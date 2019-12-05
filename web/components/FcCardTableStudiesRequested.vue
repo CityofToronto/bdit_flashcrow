@@ -48,7 +48,7 @@
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
         <button
-          class="tds-button-secondary font-size-l"
+          class="font-size-l"
           @click="$emit('remove-study', item)">
           <i class="fa fa-trash-alt"></i>
         </button>

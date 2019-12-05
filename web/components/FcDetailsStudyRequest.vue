@@ -1,48 +1,19 @@
 <template>
   <div class="fc-details-study-request">
     <div class="form-group mt-xl">
-      <strong>Do you have a service request number?</strong>
-      <div class="inner-container">
-        <TdsButtonGroup
-          v-model="v.hasServiceRequestId.$model"
-          class="font-size-l"
-          :invalid="v.hasServiceRequestId.$error"
-          name="hasServiceRequestId"
-          :options="[
-            { label: 'Yes', value: true },
-            { label: 'No', value: false },
-          ]"
-          type="radio" />
-      </div>
-    </div>
-    <div
-      v-if="hasServiceRequestId"
-      class="form-group mt-xl">
       <label>
-        <span>Enter service request number:</span>
+        <span>Is there a service number for your request?</span>
         <div class="inner-container">
           <input
-            v-model="v.serviceRequestId.$model"
+            v-model="serviceRequestId"
             class="font-size-l full-width mb-m"
-            :class="{
-              invalid: v.serviceRequestId.$error,
-            }"
-            :disabled="!hasServiceRequestId"
             name="serviceRequestId"
             type="text" />
         </div>
       </label>
-      <TdsPanel
-        v-if="v.serviceRequestId.$error"
-        class="inner-container"
-        variant="error">
-        <p>
-          Please enter your service request number.
-        </p>
-      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
-      <strong>What is the priority of your request?</strong>
+      <strong>What is the priority of your request? *</strong>
       <div class="inner-container">
         <TdsButtonGroup
           v-model="priority"
@@ -74,8 +45,10 @@
         </p>
       </TdsPanel>
     </div>
-    <div class="form-group mt-xl">
-      <strong>When do you need the data by?</strong>
+    <div
+      v-if="priority === 'URGENT'"
+      class="form-group mt-xl">
+      <strong>When do you need the data by? *</strong>
       <div class="inner-container">
         <DatePicker
           v-model="v.dueDate.$model"
@@ -97,22 +70,13 @@
           Please select a due date for this request.
         </p>
       </TdsPanel>
-      <TdsPanel
-        v-else-if="!v.dueDate.$dirty"
-        class="inner-container"
-        variant="info">
-        <p>
-          By default, we've selected a date 3 months from now.  If this meets your
-          needs, you don't need to change this due date.
-        </p>
-      </TdsPanel>
     </div>
     <div class="form-group mt-xl">
-      <strong>What reasons are there for your request?</strong>
+      <strong>What reasons are there for your request? *</strong>
       <div class="inner-container mb-s">
         <TdsChecklistDropdown
           v-model="v.reasons.$model"
-          class="font-size-l full-width mb-m text-left"
+          class="font-size-l full-width mb-m"
           :class="{
             'tds-button-success': reasons.length > 0,
           }"
@@ -140,16 +104,11 @@
     </div>
     <div class="form-group mt-xl">
       <label>
-        <span>Any staff you'd like to keep informed on the request?</span>
+        <span>Any other staff you'd like to keep informed on the request?</span>
         <div class="inner-container">
-          <input
-            v-model.lazy="v.ccEmails.$model"
-            class="font-size-l full-width mb-m"
-            :class="{
-              invalid: v.ccEmails.$error,
-            }"
-            name="ccEmails"
-            type="text" />
+          <FcInputTextArray
+            v-model="v.ccEmails.$model"
+            name="ccEmails" />
         </div>
       </label>
       <TdsPanel
@@ -157,8 +116,7 @@
         class="inner-container"
         variant="error">
         <p>
-          Please enter a comma-separated list of valid
-          <strong>@toronto.ca</strong> email addresses.
+          Please enter valid <strong>@toronto.ca</strong> email addresses.
         </p>
       </TdsPanel>
     </div>
@@ -170,6 +128,7 @@ import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import DatePicker from '@/web/components/DatePicker.vue';
+import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
 import TdsButtonGroup from '@/web/components/tds/TdsButtonGroup.vue';
 import TdsChecklistDropdown from '@/web/components/tds/TdsChecklistDropdown.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
@@ -178,6 +137,7 @@ export default {
   name: 'FcDetailsStudyRequest',
   components: {
     DatePicker,
+    FcInputTextArray,
     TdsButtonGroup,
     TdsChecklistDropdown,
     TdsPanel,
@@ -225,20 +185,6 @@ export default {
           key: 'dueDate',
           value: dueDate,
         });
-      },
-    },
-    hasServiceRequestId: {
-      get() {
-        return this.studyRequest.hasServiceRequestId;
-      },
-      set(hasServiceRequestId) {
-        this.setStudyRequestMeta({
-          key: 'hasServiceRequestId',
-          value: hasServiceRequestId,
-        });
-        if (!hasServiceRequestId) {
-          this.serviceRequestId = null;
-        }
       },
     },
     priority: {

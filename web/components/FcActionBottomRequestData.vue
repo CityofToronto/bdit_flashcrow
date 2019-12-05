@@ -3,8 +3,7 @@
     class="tds-button-primary"
     @click="onClickRequestData"
     :disabled="$v.$invalid">
-    <span>Request Data </span>
-    <span class="tds-badge tds-badge-primary">{{studyRequest.studies.length}}</span>
+    Request Data ({{studyRequest.studies.length}})
   </button>
 </template>
 
@@ -14,6 +13,9 @@ import { mapState } from 'vuex';
 export default {
   name: 'FcActionBottomRequestData',
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
     ...mapState(['studyRequest']),
   },
   validations: {
@@ -23,7 +25,13 @@ export default {
   },
   methods: {
     onClickRequestData() {
-      this.$router.push({ name: 'requestStudySchedule' });
+      let { name } = this.$route;
+      name = `${name}Schedule`;
+      const route = { name };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
   },
 };

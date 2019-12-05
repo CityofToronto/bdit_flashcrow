@@ -2,8 +2,7 @@
   <main class="fc-request-study-view flex-fill flex-container-column">
     <TdsTopBar class="nav-links text-size-l">
       <template v-slot:left>
-        <router-link
-          :to="{ name: 'requestsTrack' }">
+        <router-link :to="linkBack">
           <i class="fa fa-chevron-left"></i>
           <span> Back to All</span>
         </router-link>
@@ -12,7 +11,12 @@
     <div class="px-xl flex-fill flex-container-column">
       <hr />
       <div
-        v-if="studyRequest !== null"
+        v-if="studyRequest === null"
+        class="request-loading-spinner">
+        <TdsLoadingSpinner />
+      </div>
+      <div
+        v-else
         class="flex-fill flex-container-column">
         <header class="flex-container-row">
           <h2>
@@ -20,32 +24,28 @@
             <span
               v-if="studyRequestLocation !== null">
               at
-              <router-link
-                :to="{
-                  name: 'viewDataAtLocation',
-                  params: {
-                    centrelineId: studyRequest.centrelineId,
-                    centrelineType: studyRequest.centrelineType,
-                  }
-                }">
+              <router-link :to="linkLocation">
                 <span> {{studyRequestLocation.description}}</span>
               </router-link>
             </span>
           </h2>
           <div class="flex-fill"></div>
-          <TdsLabel
-            class="font-size-l uppercase"
-            v-bind="RequestStatus[studyRequest.status]">
-            {{studyRequest.status}}
-          </TdsLabel>
+          <button
+            class="font-size-l"
+            @click="onActionEdit">
+            <i class="fa fa-edit" />
+            <span> Edit</span>
+          </button>
         </header>
         <section class="flex-fill flex-container-row">
           <div class="flex-cross-scroll">
-            <FcSummaryStudyRequest />
+            <FcSummaryStudyRequest
+              :study-request="studyRequest" />
             <FcSummaryStudy
               v-for="(_, i) in studyRequest.studies"
               :key="i"
-              :index="i" />
+              :index="i"
+              :study-request="studyRequest" />
           </div>
         </section>
       </div>
@@ -58,9 +58,9 @@ import { mapActions, mapState } from 'vuex';
 
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
-import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsTopBar from '@/web/components/tds/TdsTopBar.vue';
-import { HttpStatus, RequestStatus } from '@/lib/Constants';
+import { HttpStatus } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
@@ -84,16 +84,32 @@ export default {
   components: {
     FcSummaryStudy,
     FcSummaryStudyRequest,
-    TdsLabel,
+    TdsLoadingSpinner,
     TdsTopBar,
   },
   data() {
     return {
       location: null,
-      RequestStatus,
     };
   },
   computed: {
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
+    linkBack() {
+      const route = { name: 'requestsTrack' };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      return route;
+    },
+    linkLocation() {
+      const { centrelineId, centrelineType } = this.studyRequest;
+      return {
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      };
+    },
     ...mapState(['studyRequest', 'studyRequestLocation']),
   },
   beforeRouteEnter(to, from, next) {
@@ -110,9 +126,26 @@ export default {
       });
   },
   methods: {
+    onActionEdit() {
+      if (this.studyRequest === null) {
+        return;
+      }
+      const { id } = this.studyRequest;
+      const route = {
+        name: 'requestStudyEdit',
+        params: { id },
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
+    },
     syncFromRoute(to) {
       const { id } = to.params;
-      return this.fetchStudyRequest(id)
+      return this.fetchStudyRequest({
+        id,
+        isSupervisor: this.isSupervisor,
+      })
         .catch((err) => {
           const toast = getToast(err);
           this.setToast(toast);
@@ -132,6 +165,10 @@ export default {
     & > a {
       text-decoration: none;
     }
+  }
+  .request-loading-spinner {
+    height: var(--space-2xl);
+    width: var(--space-2xl);
   }
   header {
     align-items: center;

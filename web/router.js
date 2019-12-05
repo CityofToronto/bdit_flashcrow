@@ -49,7 +49,7 @@ const router = new Router({
     },
     {
       path: '/requests/study/new',
-      meta: { title: 'New Study' },
+      meta: { title: 'New Request' },
       component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/LayoutRequestStudy.vue'),
       beforeEnter(to, from, next) {
         const { location, studyRequest } = store.state;
@@ -59,6 +59,7 @@ const router = new Router({
         } else {
           if (
             studyRequest === null
+            || studyRequest.id !== undefined
             || studyRequest.centrelineType !== location.centrelineType
             || studyRequest.centrelineId !== location.centrelineId
           ) {
@@ -102,9 +103,74 @@ const router = new Router({
       }],
     },
     {
+      path: '/requests/study/:id/edit',
+      meta: {
+        title({ params: { id } }) {
+          return `Edit Request #${id}`;
+        },
+      },
+      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/LayoutRequestStudy.vue'),
+      children: [{
+        path: '',
+        name: 'requestStudyEdit',
+        meta: {
+          title({ params: { id } }) {
+            return `Edit Request #${id}: Request`;
+          },
+        },
+        components: {
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
+        },
+      }, {
+        path: 'schedule',
+        name: 'requestStudyEditSchedule',
+        meta: {
+          title({ params: { id } }) {
+            return `Edit Request #${id}: Schedule`;
+          },
+        },
+        components: {
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
+        },
+      }, {
+        path: 'specify',
+        name: 'requestStudyEditSpecify',
+        meta: {
+          title({ params: { id } }) {
+            return `Edit Request #${id}: Specify`;
+          },
+        },
+        components: {
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
+        },
+      }, {
+        path: 'confirm',
+        name: 'requestStudyEditConfirm',
+        meta: {
+          title({ params: { id } }) {
+            return `Edit Request #${id}: Confirm`;
+          },
+        },
+        components: {
+          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
+          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
+        },
+      }],
+    },
+    {
       path: '/requests/track',
       name: 'requestsTrack',
-      meta: { title: 'Track Requests' },
+      meta: {
+        title({ query: { isSupervisor = null } }) {
+          if (isSupervisor) {
+            return 'Manage Requests';
+          }
+          return 'Track Requests';
+        },
+      },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
     },
     {
@@ -181,7 +247,6 @@ async function beforeEachCheckAuth(to) {
     }
     return false;
   } catch (err) {
-    console.log(err);
     // prevent infinite redirect to login
     return to.name === 'login' ? false : { name: 'login' };
   }

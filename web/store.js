@@ -8,7 +8,6 @@ import {
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
-  RequestStatus,
   SortKeys,
   SortDirection,
   Status,
@@ -52,6 +51,22 @@ const clearToastDebounced = debounce((commit) => {
   commit('clearToast');
 }, TIMEOUT_TOAST);
 
+function studyRequestEstimatedDeliveryDate(now, studyRequest) {
+  if (studyRequest === null) {
+    return null;
+  }
+  const { dueDate, priority } = studyRequest;
+  if (priority === 'URGENT') {
+    return dueDate;
+  }
+  const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
+  const twoMonthsOut = now.plus({ months: 2 });
+  if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
+    return twoMonthsOut;
+  }
+  return oneWeekBeforeDueDate;
+}
+
 export default new Vuex.Store({
   // TODO: organize state below
   state: {
@@ -81,17 +96,17 @@ export default new Vuex.Store({
     filterCountTypes: [...COUNT_TYPES.keys()],
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
-    // FILTERING REQUESTS
-    filterRequestStatus: Object.keys(RequestStatus),
     // REQUESTS
     studyRequests: [],
     studyRequestLocations: new Map(),
+    studyRequestUsers: new Map(),
     requestReasons: [],
     // map mode
     showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
     studyRequestLocation: null,
+    studyRequestUser: null,
     // query that will appear in the search bar
     locationQuery: '',
   },
@@ -115,9 +130,6 @@ export default new Vuex.Store({
     },
     hasFilterDayOfWeek(state) {
       return state.filterDayOfWeek.length !== 7;
-    },
-    hasFilterRequestStatus(state) {
-      return state.filterRequestStatus.length !== Object.keys(RequestStatus).length;
     },
     // TABLE ITEMS: COUNTS
     itemsCounts(state) {
@@ -190,22 +202,40 @@ export default new Vuex.Store({
     },
     // TABLE ITEMS: STUDY REQUESTS
     itemsStudyRequests(state) {
-      return state.studyRequests
-        .filter(({ status }) => state.filterRequestStatus.includes(status))
-        .map((studyRequest) => {
-          const { centrelineId, centrelineType } = studyRequest;
-          const key = centrelineKey(centrelineType, centrelineId);
-          let location = null;
-          if (state.studyRequestLocations.has(key)) {
-            location = state.studyRequestLocations.get(key);
-          }
-          return {
-            ...studyRequest,
-            location,
-          };
-        });
+      return state.studyRequests.map((studyRequest) => {
+        const {
+          centrelineId,
+          centrelineType,
+          userSubject,
+        } = studyRequest;
+
+        const key = centrelineKey(centrelineType, centrelineId);
+        let location = null;
+        if (state.studyRequestLocations.has(key)) {
+          location = state.studyRequestLocations.get(key);
+        }
+
+        let requestedBy = null;
+        if (state.studyRequestUsers.has(userSubject)) {
+          requestedBy = state.studyRequestUsers.get(userSubject);
+        }
+
+        return {
+          ...studyRequest,
+          expandable: true,
+          location,
+          requestedBy,
+        };
+      });
     },
     // ACTIVE STUDY REQUEST
+    studyRequestEstimatedDeliveryDate(state) {
+      const { now, studyRequest } = state;
+      if (studyRequest === null) {
+        return null;
+      }
+      return studyRequestEstimatedDeliveryDate(now, studyRequest);
+    },
     studyRequestMinDueDate(state) {
       const { now, studyRequest } = state;
       if (studyRequest === null) {
@@ -215,49 +245,6 @@ export default new Vuex.Store({
         return now;
       }
       return now.plus({ months: 2 });
-    },
-    studyRequestModel(state, getters) {
-      const { studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      if (studyRequest.id !== undefined) {
-        /*
-         * This study request instance has already been persisted to database, so we
-         * don't need to normalize it in the same way.
-         */
-        return studyRequest;
-      }
-      const {
-        hasServiceRequestId,
-        serviceRequestId,
-        priority,
-        dueDate,
-        reasons,
-        ccEmails: ccEmailsStr,
-        centrelineId,
-        centrelineType,
-        geom,
-        studies,
-      } = studyRequest;
-      const ccEmails = ccEmailsStr
-        .trim()
-        .split(',')
-        .map(ccEmail => ccEmail.trim())
-        .filter(ccEmail => ccEmail !== '');
-      const estimatedDeliveryDate = getters.studyRequestEstimatedDeliveryDate;
-      return {
-        serviceRequestId: hasServiceRequestId ? serviceRequestId : null,
-        priority,
-        dueDate,
-        estimatedDeliveryDate,
-        reasons,
-        ccEmails,
-        centrelineId,
-        centrelineType,
-        geom,
-        studies,
-      };
     },
     studyTypesRelevantToLocation(state) {
       const countTypesAll = COUNT_TYPES.map(({ value }) => value);
@@ -297,25 +284,6 @@ export default new Vuex.Store({
         }
         return { label, value, warning };
       });
-    },
-    studyRequestEstimatedDeliveryDate(state) {
-      const { now, studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      const { dueDate, priority } = state.studyRequest;
-      if (dueDate === null || priority === null) {
-        return null;
-      }
-      if (priority === 'URGENT') {
-        return dueDate;
-      }
-      const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-      const twoMonthsOut = now.plus({ months: 2 });
-      if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-        return twoMonthsOut;
-      }
-      return oneWeekBeforeDueDate;
     },
   },
   mutations: {
@@ -382,10 +350,6 @@ export default new Vuex.Store({
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
-    // FILTERING REQUESTS
-    setFilterRequestStatus(state, filterRequestStatus) {
-      Vue.set(state, 'filterRequestStatus', filterRequestStatus);
-    },
     // MAP MODE
     setShowMap(state, showMap) {
       Vue.set(state, 'showMap', showMap);
@@ -394,12 +358,16 @@ export default new Vuex.Store({
     clearStudyRequests(state) {
       Vue.set(state, 'studyRequests', []);
       Vue.set(state, 'studyRequestLocations', new Map());
+      Vue.set(state, 'studyRequestUsers', new Map());
     },
     setStudyRequests(state, studyRequests) {
       Vue.set(state, 'studyRequests', studyRequests);
     },
     setStudyRequestLocations(state, studyRequestLocations) {
       Vue.set(state, 'studyRequestLocations', studyRequestLocations);
+    },
+    setStudyRequestUsers(state, studyRequestUsers) {
+      Vue.set(state, 'studyRequestUsers', studyRequestUsers);
     },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
@@ -410,6 +378,9 @@ export default new Vuex.Store({
     },
     setStudyRequestLocation(state, studyRequestLocation) {
       Vue.set(state, 'studyRequestLocation', studyRequestLocation);
+    },
+    setStudyRequestUser(state, studyRequestUser) {
+      Vue.set(state, 'studyRequestUser', studyRequestUser);
     },
     setNewStudyRequest(state, studyTypes) {
       const { location, now } = state;
@@ -426,12 +397,12 @@ export default new Vuex.Store({
       };
       const studies = studyTypes.map(makeStudy);
       const studyRequest = {
-        hasServiceRequestId: null,
         serviceRequestId: null,
         priority: 'STANDARD',
+        assignedTo: null,
         dueDate,
         reasons: [],
-        ccEmails: '',
+        ccEmails: [],
         centrelineId,
         centrelineType,
         geom,
@@ -578,56 +549,157 @@ export default new Vuex.Store({
       return result;
     },
     // STUDY REQUESTS
-    async fetchStudyRequest({ commit, dispatch }, id) {
+    async fetchStudyRequest({ commit, dispatch }, { id, isSupervisor }) {
       const url = `/requests/study/${id}`;
-      const studyRequest = await apiFetch(url);
+      const options = {};
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const studyRequest = await apiFetch(url, options);
       commit('setStudyRequest', studyRequest);
 
-      const { centrelineId, centrelineType } = studyRequest;
+      const {
+        centrelineId,
+        centrelineType,
+        userSubject,
+      } = studyRequest;
+
       const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
-      const studyRequestLocations = await dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-      );
+      const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
+
+      const subjects = [userSubject];
+      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
+
+      const [
+        studyRequestLocations,
+        studyRequestUsers,
+      ] = await Promise.all([promiseLocations, promiseUsers]);
+
       const key = centrelineKey(centrelineType, centrelineId);
       const studyRequestLocation = studyRequestLocations.get(key);
       commit('setStudyRequestLocation', studyRequestLocation);
 
+      const studyRequestUser = studyRequestUsers.get(userSubject);
+      commit('setStudyRequestUser', studyRequestUser);
+
       return {
         studyRequest,
         studyRequestLocation,
+        studyRequestUser,
       };
     },
-    async fetchAllStudyRequests({ commit, dispatch }) {
-      const studyRequests = await apiFetch('/requests/study');
+    async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
+      const options = {};
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const studyRequests = await apiFetch('/requests/study', options);
       commit('setStudyRequests', studyRequests);
 
-      const centrelineIdsAndTypes = studyRequests
-        .map(({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }));
-      const studyRequestLocations = await dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-      );
+      const centrelineKeys = new Set();
+      const centrelineIdsAndTypes = [];
+      let subjects = new Set();
+      studyRequests.forEach(({ centrelineId, centrelineType, userSubject }) => {
+        const key = centrelineKey(centrelineId, centrelineType);
+        if (!centrelineKeys.has(key)) {
+          centrelineKeys.add(key);
+          centrelineIdsAndTypes.push({ centrelineId, centrelineType });
+        }
+        subjects.add(userSubject);
+      });
+      subjects = Array.from(subjects);
+
+      const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
+      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
+      const [
+        studyRequestLocations,
+        studyRequestUsers,
+      ] = await Promise.all([promiseLocations, promiseUsers]);
       commit('setStudyRequestLocations', studyRequestLocations);
+      commit('setStudyRequestUsers', studyRequestUsers);
 
       return {
         studyRequests,
         studyRequestLocations,
       };
     },
-    async saveActiveStudyRequest({ commit, getters, state }) {
-      const data = getters.studyRequestModel;
+    async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
+      const { now } = state;
+      const estimatedDeliveryDate = studyRequestEstimatedDeliveryDate(now, studyRequest);
+      const data = {
+        ...studyRequest,
+        estimatedDeliveryDate,
+      };
+      const update = data.id !== undefined;
+      if (update && isSupervisor) {
+        data.isSupervisor = true;
+      }
+      const method = update ? 'PUT' : 'POST';
+      const url = update ? `/requests/study/${data.id}` : '/requests/study';
       const options = {
-        method: 'POST',
+        method,
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequest = await apiFetch('/requests/study', options);
+      const studyRequestNew = await apiFetch(url, options);
       commit('setModal', {
         component: 'FcModalRequestStudyConfirmation',
-        data: { studyRequest },
+        data: {
+          isSupervisor,
+          studyRequest: studyRequestNew,
+          update,
+        },
       });
-      return studyRequest;
+      return studyRequestNew;
+    },
+    async saveStudyRequestsStatus({ state }, { isSupervisor, studyRequests, status }) {
+      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
+        if (studyRequest.status === status) {
+          return studyRequest;
+        }
+        /* eslint-disable no-param-reassign */
+        studyRequest.status = status;
+        const data = {
+          ...studyRequest,
+        };
+        if (isSupervisor) {
+          data.isSupervisor = isSupervisor;
+        }
+        const url = `/requests/study/${data.id}`;
+        const options = {
+          method: 'PUT',
+          csrf: state.auth.csrf,
+          data,
+        };
+        return apiFetch(url, options);
+      });
+      await Promise.all(promisesStudyRequests);
+      // TODO: modal?
+      return studyRequests;
+    },
+    async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
+      const options = {
+        method: 'DELETE',
+        csrf: state.auth.csrf,
+      };
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const promisesStudyRequests = studyRequests.map(
+        ({ id }) => apiFetch(`/requests/study/${id}`, options),
+      );
+      await Promise.all(promisesStudyRequests);
+      await dispatch('fetchAllStudyRequests');
+    },
+    // USERS
+    async fetchUsersBySubjects(_, subjects) {
+      const options = {
+        data: {
+          subject: subjects,
+        },
+      };
+      const users = await apiFetch('/users/bySubject', options);
+      return new Map(users);
     },
   },
 });

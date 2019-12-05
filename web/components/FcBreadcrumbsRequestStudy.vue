@@ -31,11 +31,25 @@
 
 <script>
 
-const steps = [
-  { name: 'requestStudy', label: 'Request' },
-  { name: 'requestStudySchedule', label: 'Schedule' },
-  { name: 'requestStudySpecify', label: 'Specify' },
-  { name: 'requestStudyConfirm', label: 'Confirm' },
+const ROUTES_CREATE = [
+  'requestStudy',
+  'requestStudySchedule',
+  'requestStudySpecify',
+  'requestStudyConfirm',
+];
+
+const ROUTES_EDIT = [
+  'requestStudyEdit',
+  'requestStudyEditSchedule',
+  'requestStudyEditSpecify',
+  'requestStudyEditConfirm',
+];
+
+const LABELS = [
+  'Request',
+  'Schedule',
+  'Specify',
+  'Confirm',
 ];
 
 export default {
@@ -46,15 +60,21 @@ export default {
       default: false,
     },
   },
-  data() {
-    return { steps };
-  },
   computed: {
     currentIndex() {
       return this.steps.findIndex(step => step.name === this.currentStep);
     },
     currentStep() {
       return this.$route.name;
+    },
+    steps() {
+      const { params } = this.$route;
+      const routes = ROUTES_CREATE.includes(this.currentStep) ? ROUTES_CREATE : ROUTES_EDIT;
+      return routes.map((name, i) => ({
+        name,
+        label: LABELS[i],
+        params,
+      }));
     },
   },
 };

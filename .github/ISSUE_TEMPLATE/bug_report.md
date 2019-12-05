@@ -3,7 +3,7 @@ name: Bug report
 about: Report bugs and unexpected behaviour
 title: ''
 labels: bug
-assignees: ''
+assignees: candu
 
 ---
 
@@ -21,7 +21,7 @@ Steps to reproduce the bug:
 4. See error
 
 **Screenshots**
-For frontend bugs, provide a browser screenshot if possible.  For backend bugs, screenshots of either the frontend dev tools (e.g. Network tab showing API responses or errors, Console tab showing errors) or the backend `node --inspect` dev tools (e.g. Debugger tab showing the issue) are helpful. 
+For frontend bugs, provide a browser screenshot if possible.  For backend bugs, screenshots of either the frontend dev tools (e.g. Network tab showing API responses or errors, Console tab showing errors) or the backend `node --inspect` dev tools (e.g. Debugger tab showing the issue) are helpful.
 
 **Additional Notes**
 Add any other context about the problem here.

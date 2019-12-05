@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-requests-track-by-type flex-container-column flex-fill">
+  <div class="fc-requests-track flex-container-column flex-fill">
     <section>
       <header class="flex-container-row">
         <label class="tds-checkbox">
@@ -11,31 +11,203 @@
             @change="onChangeSelectAll" />
         </label>
         <div class="flex-fill"></div>
-        <FcFilterRequestStatus class="font-size-l" />
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-check-square"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-flag"></i>
-        </button>
-        <button
-          class="tds-button-secondary"
-          disabled>
-          <i class="fa fa-download"></i>
-        </button>
+        <div class="br">
+          <template v-if="isSupervisor">
+            <button
+              class="font-size-l mr-m"
+              @click="actionAccept(selectedItems)">
+              <i class="fa fa-thumbs-up"></i>
+              <span> Approve</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionReject(selectedItems)">
+              <i class="fa fa-thumbs-down"></i>
+              <span> Reject</span>
+            </button>
+            <button
+              class="font-size-l mr-m"
+              @click="actionComplete(selectedItems)">
+              <i class="fa fa-check-circle"></i>
+              <span> Complete</span>
+            </button>
+          </template>
+          <button
+            class="font-size-l mr-m"
+            @click="actionExport(selectedItems)">
+            <i class="fa fa-download"></i>
+            <span> Download</span>
+          </button>
+        </div>
+        <div>
+          <button
+            class="tds-button-error font-size-l ml-m"
+            @click="actionDelete(selectedItems)">
+            <i class="fa fa-trash-alt"></i>
+            <span> Delete</span>
+          </button>
+        </div>
       </header>
-      <FcCardTableRequests
-        v-model="selection"
-        @action-item="onActionItem" />
+      <FcCardTable
+        class="fc-card-table-requests"
+        :class="{ supervisor: isSupervisor }"
+        :columns="columns"
+        expandable
+        :items="itemsStudyRequests"
+        ref="table"
+        :search-keys="searchKeys"
+        :sort-by="sortBy"
+        :sort-direction="sortDirection"
+        :sort-keys="sortKeys"
+        @update-items-normalized="updateItemsNormalized">
+        <template v-slot:SELECTION="{ item, isChild }">
+          <label v-if="!isChild" class="tds-checkbox">
+            <input
+              type="checkbox"
+              name="selectionItems"
+              :value="item.id"
+              v-model="selection" />
+          </label>
+        </template>
+        <template v-slot:ID="{ item }">
+          <div
+            class="flex-container-row"
+            @click.prevent="actionShowRequest(item)">
+            <u>{{item.id}}</u>
+          </div>
+        </template>
+        <template v-slot:LOCATION="{ item }">
+          <span
+            v-if="item.location === null"
+            class="text-muted">
+            N/A
+          </span>
+          <span v-else>
+            {{item.location.description}}
+          </span>
+        </template>
+        <template v-slot:REQUESTER="{ item }">
+          <span
+            v-if="item.requestedBy === null"
+            class="text-muted">
+            N/A
+          </span>
+          <span v-else>
+            {{item.requestedBy.name}}
+          </span>
+        </template>
+        <template v-slot:DATE="{ item }">
+          <span>{{item.dueDate | date}}</span>
+        </template>
+        <template v-slot:PRIORITY="{ item }">
+          <TdsActionDropdown
+            v-if="isSupervisor"
+            class="font-size-m full-width"
+            :options="[
+              { label: 'STANDARD', value: { item, priority: 'STANDARD' } },
+              { label: 'URGENT', value: { item, priority: 'URGENT' } },
+            ]"
+            @action-selected="actionSetPriority">
+            <span
+              :class="{
+                'priority-urgent': item.priority === 'URGENT',
+              }">
+              <i
+                v-if="item.priority === 'URGENT'"
+                class="fa fa-exclamation"></i>
+              <span> {{item.priority}}</span>
+            </span>
+          </TdsActionDropdown>
+          <span
+            v-else
+            :class="{
+              'priority-urgent': item.priority === 'URGENT',
+            }">
+            <i
+              v-if="item.priority === 'URGENT'"
+              class="fa fa-exclamation"></i>
+            <span> {{item.priority}}</span>
+          </span>
+        </template>
+        <template v-slot:ASSIGNED_TO="{ item }">
+          <TdsActionDropdown
+            v-if="isSupervisor"
+            class="font-size-m full-width"
+            :options="[
+              { label: 'NONE', value: { item, assignedTo: null } },
+              { label: 'OTI', value: { item, assignedTo: 'OTI' } },
+              { label: 'FIELD STAFF', value: { item, assignedTo: 'FIELD_STAFF' } },
+            ]"
+            @action-selected="actionSetAssignedTo">
+            <span
+              v-if="item.assignedTo === null">
+              NONE
+            </span>
+            <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+          </TdsActionDropdown>
+          <span
+            v-else-if="item.assignedTo === null"
+            class="text-muted">
+            NONE
+          </span>
+          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+        </template>
+        <template v-slot:STATUS="{ item }">
+          <TdsLabel
+            v-bind="RequestStatus[item.status]">
+            {{item.status.replace('_', ' ')}}
+          </TdsLabel>
+        </template>
+        <template v-slot:ACTIONS="{ item }">
+          <div class="br">
+            <template v-if="isSupervisor">
+              <button
+                class="font-size-m mr-m"
+                @click="actionAccept([item])">
+                <i class="fa fa-thumbs-up"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionReject([item])">
+                <i class="fa fa-thumbs-down"></i>
+              </button>
+              <button
+                class="font-size-m mr-m"
+                @click="actionComplete([item])">
+                <i class="fa fa-check-circle"></i>
+              </button>
+            </template>
+            <button
+              class="font-size-m mr-m"
+              @click="actionExport([item])">
+              <i class="fa fa-download"></i>
+            </button>
+          </div>
+          <div>
+            <button
+              class="tds-button-error font-size-m ml-m"
+              @click="actionDelete([item])">
+              <i class="fa fa-trash-alt"></i>
+            </button>
+          </div>
+        </template>
+        <template v-slot:__expanded="{ item }">
+          <div>
+            <FcSummaryStudy
+              v-for="(study, i) in item.studies"
+              :key="'study_' + item.id + '_' + i"
+              :index="i"
+              :study-request="item" />
+          </div>
+        </template>
+      </FcCardTable>
     </section>
   </div>
 </template>
 
 <script>
+import { csvFormat } from 'd3-dsv';
+import { saveAs } from 'file-saver';
 import {
   mapActions,
   mapGetters,
@@ -43,27 +215,177 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTableRequests from '@/web/components/FcCardTableRequests.vue';
-import FcFilterRequestStatus from '@/web/components/FcFilterRequestStatus.vue';
+import {
+  CentrelineType,
+  COUNT_TYPES,
+  RequestStatus,
+  SearchKeys,
+  SortDirection,
+  SortKeys,
+} from '@/lib/Constants';
+import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
+import {
+  REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
+} from '@/lib/i18n/Strings';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcCardTable from '@/web/components/FcCardTable.vue';
+import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
+import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
+import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+
+function getItemFields(item) {
+  const {
+    centrelineType,
+    id,
+    priority,
+    assignedTo,
+    status,
+  } = item;
+  let [lng, lat] = item.geom.coordinates;
+  const location = (item.location && item.location.description) || null;
+  const requester = (item.requestedBy && item.requestedBy.name) || null;
+  const dueDate = TimeFormatters.formatDefault(item.dueDate);
+  const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
+  if (centrelineType !== CentrelineType.INTERSECTION) {
+    lng = null;
+    lat = null;
+  }
+  return {
+    id,
+    location,
+    requester,
+    dueDate,
+    estimatedDeliveryDate,
+    priority,
+    assignedTo,
+    status,
+    lng,
+    lat,
+  };
+}
+
+function getStudyFields(study, i) {
+  const studyIndex = i + 1;
+  const {
+    id: studyId,
+    hours,
+    notes,
+  } = study;
+  let {
+    daysOfWeek,
+    duration,
+    studyType,
+  } = study;
+  daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+  studyType = COUNT_TYPES.find(({ value }) => value === studyType);
+  if (studyType.automatic) {
+    duration = formatDuration(duration);
+  } else {
+    duration = null;
+  }
+  return {
+    studyId,
+    studyIndex,
+    studyType: studyType.label,
+    daysOfWeek,
+    duration,
+    hours,
+    notes,
+  };
+}
+
+function getItemRows(item) {
+  const itemFields = getItemFields(item);
+  return item.studies.map((study, i) => {
+    const studyFields = getStudyFields(study, i);
+    return {
+      ...itemFields,
+      ...studyFields,
+    };
+  });
+}
+
+function getStudyRequestsToast(studyRequests, action) {
+  if (studyRequests.length > 0) {
+    return null;
+  }
+  // TODO: make it possible to parameterize entries in lib/i18n/Strings
+  return {
+    variant: 'warning',
+    text: `Please select one or more requests to ${action}.`,
+  };
+}
+
+function getStudyRequestsHuman(studyRequests, action) {
+  const n = studyRequests.length;
+  const actionUppercase = action[0].toUpperCase() + action.slice(1);
+  const title = n > 1 ? `${actionUppercase} ${n} Requests?` : `${actionUppercase} Request?`;
+
+  const studyRequestsHumanParts = studyRequests.map(
+    ({ id, location }) => `Request #${id} at ${location.description}`,
+  );
+  const studyRequestsHuman = formatOxfordCommaList(studyRequestsHumanParts);
+  const prompt = `You are about to ${action} ${studyRequestsHuman}.  Is that OK?`;
+
+  return { title, prompt };
+}
 
 export default {
-  name: 'FcRequestsTrackByStatus',
+  name: 'FcRequestsTrack',
   components: {
-    FcCardTableRequests,
-    FcFilterRequestStatus,
+    FcCardTable,
+    FcSummaryStudy,
+    TdsActionDropdown,
+    TdsLabel,
   },
   data() {
+    const columns = [{
+      name: 'SELECTION',
+    }, {
+      name: 'ID',
+      title: 'ID#',
+    }, {
+      name: 'LOCATION',
+      title: 'Location',
+    }, {
+      name: 'REQUESTER',
+      title: 'Requester',
+    }, {
+      name: 'DATE',
+      title: 'Due Date',
+    }, {
+      name: 'PRIORITY',
+      title: 'Priority',
+    }, {
+      name: 'ASSIGNED_TO',
+      title: 'Assign',
+    }, {
+      name: 'STATUS',
+      title: 'Status',
+    }, {
+      name: 'ACTIONS',
+    }];
     return {
+      columns,
+      itemsNormalized: [],
+      searchKeys: SearchKeys.Requests,
       selection: [],
+      sortBy: 'ID',
+      sortDirection: SortDirection.DESC,
+      sortKeys: SortKeys.Requests,
+      RequestStatus,
     };
   },
   computed: {
-    selectableIds() {
-      return this.itemsStudyRequests.map(({ id }) => id);
+    isSupervisor() {
+      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
-    selectedStudyRequests() {
+    selectableIds() {
+      return this.itemsNormalized.map(({ id }) => id);
+    },
+    selectedItems() {
       return this.selection
-        .map(id => this.studyRequests.find(r => r.id === id));
+        .map(id => this.itemsNormalized.find(r => r.id === id));
     },
     selectionAll() {
       return this.selectableIds
@@ -73,10 +395,7 @@ export default {
       return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapGetters(['itemsStudyRequests']),
-    ...mapState([
-      'filterRequestStatus',
-      'studyRequests',
-    ]),
+    ...mapState(['studyRequests']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -93,34 +412,118 @@ export default {
   },
   methods: {
     actionAccept(studyRequests) {
-      console.log('accept', studyRequests);
+      this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
+    },
+    actionComplete(studyRequests) {
+      this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
+    },
+    actionDelete(studyRequests) {
+      const actionName = 'delete';
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const action = () => {
+        this.deleteStudyRequests({
+          isSupervisor: this.isSupervisor,
+          studyRequests,
+        });
+      };
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: 'Delete',
+        },
+      });
     },
     actionExport(studyRequests) {
-      console.log('export', studyRequests);
-    },
-    actionFlag(studyRequests) {
-      console.log('flag', studyRequests);
-    },
-    onActionBulk(type, options) {
-      const studyRequests = this.selectedStudyRequests;
-      const actionOptions = options || {};
-      if (type === 'accept') {
-        this.actionAccept(studyRequests, actionOptions);
-      } else if (type === 'flag') {
-        this.actionFlag(studyRequests, actionOptions);
-      } else if (type === 'export') {
-        this.actionExport(studyRequests, actionOptions);
+      if (studyRequests.length === 0) {
+        this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
+        return;
       }
+      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRows));
+      const columns = [
+        'id',
+        'location',
+        'requester',
+        'dueDate',
+        'estimatedDeliveryDate',
+        'priority',
+        'assignedTo',
+        'status',
+        'lng',
+        'lat',
+        'studyId',
+        'studyIndex',
+        'studyType',
+        'daysOfWeek',
+        'duration',
+        'hours',
+        'notes',
+      ];
+      const csvStr = csvFormat(rows, columns);
+      const csvData = new Blob([csvStr], { type: 'text/csv' });
+      saveAs(csvData, 'requests.csv');
     },
-    onActionItem({ type, item, options }) {
-      const actionOptions = options || {};
-      if (type === 'accept') {
-        this.actionAccept([item], actionOptions);
-      } else if (type === 'flag') {
-        this.actionFlag([item], actionOptions);
-      } else if (type === 'export') {
-        this.actionExport([item], actionOptions);
+    actionReject(studyRequests) {
+      this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+    },
+    actionSetAssignedTo({ item, assignedTo }) {
+      const { isSupervisor } = this;
+      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = 'ACCEPTED';
+      } else {
+        studyRequest.status = 'IN_PROGRESS';
       }
+      this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
+    actionSetPriority({ item, priority }) {
+      const { isSupervisor } = this;
+      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+      studyRequest.priority = priority;
+      this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
+    actionSetStatus(studyRequests, actionName, status) {
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const action = () => {
+        this.setStudyRequestsStatus(studyRequests, status);
+      };
+      if (studyRequests.length === 1) {
+        action();
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: actionUppercase,
+        },
+      });
+    },
+    actionShowRequest(item) {
+      const route = {
+        name: 'requestStudyView',
+        params: { id: item.id },
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
     },
     onChangeSelectAll() {
       if (this.selectionAll) {
@@ -129,17 +532,39 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    syncFromRoute() {
-      return this.fetchAllStudyRequests();
+    setStudyRequestsStatus(items, status) {
+      const { isSupervisor } = this;
+      const studyRequests = items.map(
+        item => this.studyRequests.find(({ id }) => id === item.id),
+      );
+      return this.saveStudyRequestsStatus({
+        isSupervisor,
+        studyRequests,
+        status,
+      });
     },
-    ...mapActions(['fetchAllStudyRequests']),
-    ...mapMutations(['setFilterRequestStatus']),
+    syncFromRoute() {
+      return this.fetchAllStudyRequests(this.isSupervisor);
+    },
+    updateItemsNormalized(itemsNormalized) {
+      this.itemsNormalized = itemsNormalized;
+    },
+    ...mapActions([
+      'deleteStudyRequests',
+      'fetchAllStudyRequests',
+      'saveStudyRequest',
+      'saveStudyRequestsStatus',
+      'setToast',
+    ]),
+    ...mapMutations([
+      'setModal',
+    ]),
   },
 };
 </script>
 
 <style lang="postcss">
-.fc-requests-track-by-type {
+.fc-requests-track {
   max-height: 100%;
   overflow: auto;
   padding: var(--space-m) var(--space-xl);
@@ -160,19 +585,50 @@ export default {
       }
     }
   }
-  & > section {
-    & > header {
-      align-items: center;
-      background-color: var(--base-lighter);
-      padding: var(--space-m) var(--space-l);
-      & > * {
-        margin-right: var(--space-m);
-        &:last-child {
-          margin-right: 0;
+  & > section > header {
+    align-items: center;
+    background-color: var(--base-lighter);
+    padding: var(--space-m) var(--space-l);
+  }
+
+  .fc-card-table-requests {
+    .priority-urgent {
+      color: var(--error);
+    }
+    & > colgroup {
+      & > .col-ID {
+        width: calc(var(--space-2xl) * 1.5);
+      }
+      & > .col-DATE,
+      & > .col-PRIORITY,
+      & > .col-ASSIGNED_TO,
+      & > .col-ACTIONS {
+        width: var(--space-3xl);
+      }
+    }
+    &.supervisor > colgroup {
+      & > .col-PRIORITY {
+        width: calc(var(--space-3xl) + var(--space-l));
+      }
+      & > .col-ASSIGNED_TO {
+        width: calc(var(--space-3xl) + var(--space-xl));
+      }
+      & > .col-ACTIONS {
+        width: calc(var(--space-4xl));
+      }
+    }
+    .cell-ID {
+      & > div {
+        align-items: center;
+        cursor: pointer;
+        & > u {
+          color: var(--primary-vivid);
         }
       }
-      & > button.tds-button-secondary:not(:disabled):hover {
-        background-color: var(--base-light);
+    }
+    .cell-ACTIONS {
+      & > div {
+        display: inline-block;
       }
     }
   }

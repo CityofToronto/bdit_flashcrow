@@ -1,10 +1,28 @@
 <template>
   <section class="fc-summary-study-request">
+    <div
+      v-if="studyRequest.id"
+      class="flex-container-row">
+      <div class="flex-1 px-m">
+        <p>Status:</p>
+        <TdsLabel
+          class="font-size-l uppercase"
+          v-bind="RequestStatus[studyRequest.status]">
+          {{studyRequest.status}}
+        </TdsLabel>
+      </div>
+      <div class="flex-1 px-m">
+        <p>Submitted:</p>
+        <p class="font-size-l mb-xl">
+          <strong>{{studyRequest.createdAt | date}}</strong>
+        </p>
+      </div>
+    </div>
     <div class="flex-container-row">
       <div class="flex-1 px-m">
         <p>Service Request Number:</p>
         <p class="font-size-l mb-xl">
-          <strong v-if="hasServiceRequestId">{{serviceRequestId}}</strong>
+          <strong v-if="serviceRequestId">{{serviceRequestId}}</strong>
           <span v-else class="text-muted">N/A</span>
         </p>
       </div>
@@ -77,12 +95,23 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
+import { RequestStatus } from '@/lib/Constants';
+import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
 export default {
   name: 'FcSummaryStudyRequest',
   components: {
+    TdsLabel,
     TdsPanel,
+  },
+  props: {
+    studyRequest: Object,
+  },
+  data() {
+    return {
+      RequestStatus,
+    };
   },
   computed: {
     ccEmails() {
@@ -104,9 +133,6 @@ export default {
     },
     dueDate() {
       return this.studyRequest.dueDate;
-    },
-    hasServiceRequestId() {
-      return this.studyRequest.hasServiceRequestId;
     },
     priority() {
       return this.studyRequest.priority;
@@ -130,7 +156,7 @@ export default {
       return this.studyRequest.serviceRequestId;
     },
     ...mapGetters(['studyRequestEstimatedDeliveryDate']),
-    ...mapState(['requestReasons', 'studyRequest']),
+    ...mapState(['requestReasons']),
   },
 };
 </script>

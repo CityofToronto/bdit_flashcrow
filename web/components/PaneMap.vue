@@ -37,7 +37,7 @@ import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import { apiFetch } from '@/lib/BackendClient';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import StringFormatters from '@/lib/StringFormatters';
+import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import style from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
@@ -579,7 +579,7 @@ export default {
       const elementInfo = {
         centrelineId,
         centrelineType,
-        description: StringFormatters.formatCountLocationDescription(locationdesc),
+        description: formatCountLocationDescription(locationdesc),
         /*
          * The backend doesn't provide these feature codes, so we have to fetch it from
          * the visible layer.
