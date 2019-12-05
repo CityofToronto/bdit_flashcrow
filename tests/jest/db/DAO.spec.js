@@ -204,40 +204,6 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   expectIdsAndTypesResults(results, query);
 });
 
-test('CountDAO.byBoundingBox()', async () => {
-  // bounding box outside of Toronto
-  let results = await CountDAO.byBoundingBox(0, 0, 1, 1);
-  expect(results).toHaveLength(0);
-
-  // empty bounding box
-  results = await CountDAO.byBoundingBox(
-    -79.347015, 43.651070,
-    -79.347015, 43.651070,
-  );
-  expect(results).toHaveLength(0);
-
-  // invalid bounding box (xmin > xmax, ymin > ymax)
-  results = await CountDAO.byBoundingBox(
-    -79.115243191, 43.855457183,
-    -79.639264937, 43.580995995,
-  );
-  expect(results).toHaveLength(0);
-
-  // bounding box containing one item
-  results = await CountDAO.byBoundingBox(
-    -79.39105486856735, 43.66697119145863,
-    -79.3797296679832, 43.67108387524755,
-  );
-  expect(results).toHaveLength(1);
-
-  // bounding box containing a bunch of items
-  results = await CountDAO.byBoundingBox(
-    -79.40506206200341, 43.663771812301974,
-    -79.37883903724058, 43.673294636735676,
-  );
-  expect(results.length).toBeGreaterThan(1);
-});
-
 test('CountDAO.byCentreline()', async () => {
   // invalid feature
   let counts = await CountDAO.byCentreline(-1, -1, null, 10);
@@ -259,7 +225,7 @@ test('CountDAO.byCentreline()', async () => {
     null,
     10,
   );
-  expect(counts).toHaveLength(2);
+  expect(counts).toHaveLength(16);
 
   // valid feature with less than maxPerCategory counts, date range
   // filters to empty
@@ -289,7 +255,7 @@ test('CountDAO.byCentreline()', async () => {
     { start, end },
     10,
   );
-  expect(counts).toHaveLength(3);
+  expect(counts).toHaveLength(10);
 });
 
 function expectNumPerCategory(actual, expected) {
@@ -329,7 +295,7 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
     null,
     10,
   );
-  expectNumPerCategory(numPerCategory, [[2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategory(numPerCategory, [[10, 'ATR_VOLUME'], [6, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, date range filters to empty
   start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
@@ -347,7 +313,7 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
     null,
     10,
   );
-  expectNumPerCategory(numPerCategory, [[14, 'RESCU']]);
+  expectNumPerCategory(numPerCategory, [[3633, 'RESCU']]);
 
   // centreline feature with lots of counts, date range filters to empty
   start = DateTime.fromObject({ year: 1980, month: 1, day: 1 });
@@ -367,7 +333,7 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
     { start, end },
     10,
   );
-  expectNumPerCategory(numPerCategory, [[3, 'RESCU']]);
+  expectNumPerCategory(numPerCategory, [[187, 'RESCU']]);
 
   // centreline feature with more than one kind of count
   numPerCategory = await CountDAO.byCentrelineNumPerCategory(
@@ -375,7 +341,7 @@ test('CountDAO.byCentrelineNumPerCategory()', async () => {
     null,
     10,
   );
-  expectNumPerCategory(numPerCategory, [[1, 'ATR_VOLUME'], [1, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategory(numPerCategory, [[6, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
 });
 
 test('CountDAO.byIdAndCategory()', async () => {
