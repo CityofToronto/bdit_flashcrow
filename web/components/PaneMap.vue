@@ -154,6 +154,11 @@ function injectSourcesAndLayers(rawStyle) {
     tiles: [`${origin}/api/dynamicTiles/counts/{z}/{x}/{y}.pbf`],
   };
 
+  STYLE.sources.schools = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/schools/{z}/{x}/{y}.pbf`],
+  };
+
   STYLE.layers.push({
     id: 'centreline',
     source: 'centreline',
@@ -207,6 +212,20 @@ function injectSourcesAndLayers(rawStyle) {
       'circle-color': '#ff0000',
       'circle-opacity': 0.4,
       'circle-radius': 5,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'schools',
+    source: 'schools',
+    'source-layer': 'schools',
+    type: 'circle',
+    minzoom: ZOOM_TORONTO,
+    maxzoom: ZOOM_MAX + 1,
+    paint: {
+      'circle-color': '#777777',
+      'circle-opacity': 0.8,
+      'circle-radius': 10,
     },
   });
 
