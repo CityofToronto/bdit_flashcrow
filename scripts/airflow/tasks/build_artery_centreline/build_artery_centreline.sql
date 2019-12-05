@@ -23,3 +23,4 @@ create table prj_volume.artery_centreline as (
 create index artery_centreline_arterycode on prj_volume.artery_centreline (arterycode);
 create index artery_centreline_centreline_id on prj_volume.artery_centreline (centreline_id);
 create index artery_centreline_geom on prj_volume.artery_centreline using gist (geom);
+create index artery_centreline_srid3857_geom ON prj_volume.artery_centreline using gist (ST_Transform(geom, 3857));

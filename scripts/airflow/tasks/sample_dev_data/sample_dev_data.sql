@@ -1,5 +1,9 @@
 create schema if not exists flashcrow_dev_data;
 
+drop table if exists flashcrow_dev_data.collisions_events;
+drop table if exists flashcrow_dev_data.collisions_events_centreline;
+drop table if exists flashcrow_dev_data.collisions_involved;
+
 drop table if exists flashcrow_dev_data.traffic_countinfomics;
 drop table if exists flashcrow_dev_data.traffic_det;
 
@@ -8,6 +12,18 @@ drop table if exists flashcrow_dev_data.traffic_cnt_det;
 drop table if exists flashcrow_dev_data.traffic_cnt_spd;
 
 -- SAMPLED DATA
+
+create table flashcrow_dev_data.collisions_events as
+  select * from collisions.events tablesample bernoulli (18)
+  where accdate >= '2009-01-01';
+create table flashcrow_dev_data.collisions_events_centreline as
+  select t.* from collisions.events_centreline as t
+    inner join flashcrow_dev_data.collisions_events as u
+    on t.collision_id = u.collision_id;
+create table flashcrow_dev_data.collisions_involved as
+  select t.* from collisions.involved as t
+    inner join flashcrow_dev_data.collisions_events as u
+    on t.collision_id = u.collision_id;
 
 create table flashcrow_dev_data.traffic_countinfomics as
   select * from "TRAFFIC"."COUNTINFOMICS" tablesample bernoulli (7.79)
