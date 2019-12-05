@@ -80,8 +80,20 @@ insert into flashcrow_dev_data.traffic_countinfomics (
   select * from "TRAFFIC"."COUNTINFOMICS"
   where "COUNT_INFO_ID" = 26177
 ) on conflict do nothing;
+insert into flashcrow_dev_data.traffic_det (
+  select * from "TRAFFIC"."DET"
+  where "COUNT_INFO_ID" = 26177
+) on conflict do nothing;
 
 insert into flashcrow_dev_data.traffic_countinfo (
   select * from "TRAFFIC"."COUNTINFO"
+  where "COUNT_INFO_ID" = 1415698
+) on conflict do nothing;
+insert into flashcrow_dev_data.traffic_cnt_det (
+  select * from "TRAFFIC"."CNT_DET"
+  where "COUNT_INFO_ID" = 1415698
+) on conflict do nothing;
+insert into flashcrow_dev_data.traffic_cnt_spd (
+  select * from "TRAFFIC"."CNT_SPD"
   where "COUNT_INFO_ID" = 1415698
 ) on conflict do nothing;

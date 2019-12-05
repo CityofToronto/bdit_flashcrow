@@ -50,11 +50,14 @@ CREATE TABLE collisions_new.events AS (
     max("REC_ID") AS rec_id,
     max("MVAIMG") AS mvaimg,
     max("DESCRIPTION") AS description,
-    max("TRAFCTLCOND") AS trafctlcond
+    max("TRAFCTLCOND") AS trafctlcond,
+    ST_SetSRID(ST_MakePoint(max("LONGITUDE"), max("LATITUDE")), 4326) AS geom
     FROM "TRAFFIC"."ACC"
     GROUP BY "ACCDATE", "ACCNB"
 );
 CREATE UNIQUE INDEX events_collision_id ON collisions_new.events (collision_id);
+CREATE INDEX events_geom ON collisions_new.events USING GIST (geom);
+CREATE INDEX events_srid3857_geom ON collisions_new.events USING GIST (ST_Transform(geom, 3857));
 
 DROP TABLE IF EXISTS collisions_new.involved;
 CREATE TABLE collisions_new.involved AS (
