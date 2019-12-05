@@ -252,14 +252,22 @@ function injectSourcesAndLayers(rawStyle) {
         ZOOM_TORONTO, 3,
         ZOOM_MIN_COUNTS, 8,
       ],
-      'heatmap-weight': 1,
+      'heatmap-weight': [
+        'step',
+        ['get', 'injury'],
+        1,
+        2, 2,
+        3, 5,
+        4, 10,
+      ],
     },
   });
 
   STYLE.layers.push({
-    id: 'collisions',
+    id: 'collisions-non-ksi',
     source: 'collisions',
     'source-layer': 'collisions',
+    filter: ['<', ['get', 'injury'], 3],
     type: 'circle',
     minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
@@ -270,9 +278,30 @@ function injectSourcesAndLayers(rawStyle) {
         ['linear'],
         ['zoom'],
         ZOOM_MIN_COUNTS, 0.2,
-        ZOOM_MIN_COUNTS + 1, 0.8,
+        ZOOM_MIN_COUNTS + 1, 0.6,
       ],
       'circle-radius': 5,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'collisions-ksi',
+    source: 'collisions',
+    'source-layer': 'collisions',
+    filter: ['>=', ['get', 'injury'], 3],
+    type: 'circle',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
+    paint: {
+      'circle-color': '#b51d09',
+      'circle-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.2,
+        ZOOM_MIN_COUNTS + 1, 0.8,
+      ],
+      'circle-radius': 10,
     },
   });
 
@@ -285,11 +314,6 @@ export default {
     TdsLoadingSpinner,
     PaneMapPopup,
   },
-  props: {
-    cols: Number,
-
-  },
-
   provide() {
     const self = this;
     return {
@@ -298,7 +322,6 @@ export default {
       },
     };
   },
-
   data() {
     return {
       coordinates: null,
