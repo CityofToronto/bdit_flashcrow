@@ -18,12 +18,10 @@
       </button>
       <PaneMapPopup
         v-if="hoveredFeature"
-        :feature="hoveredFeature"
-        @zoom-in="onCountsVisibleClustersClick" />
+        :feature="hoveredFeature" />
       <PaneMapPopup
         v-else-if="selectedFeature"
-        :feature="selectedFeature"
-        @zoom-in="onCountsVisibleClustersClick" />
+        :feature="selectedFeature" />
     </div>
   </div>
 </template>
@@ -34,7 +32,6 @@ import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
-import { apiFetch } from '@/lib/BackendClient';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
@@ -54,9 +51,23 @@ const ZOOM_TORONTO = 10;
 const ZOOM_MIN_INTERSECTIONS = 12;
 const ZOOM_MIN_COUNTS = 14;
 const ZOOM_LOCATION = 17;
-const ZOOM_MAX_COUNTS_CLUSTERED = 17;
 const ZOOM_MAX = 19;
 const ZOOM_MAX_BASEMAP = 23;
+
+const PAINT_OPACITY = [
+  'case',
+  ['boolean', ['feature-state', 'selected'], false],
+  // selected
+  0.6,
+  [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    // hovered
+    0.6,
+    // normal
+    0.45,
+  ],
+];
 
 const PAINT_COLOR_CENTRELINE = [
   'case',
@@ -70,20 +81,6 @@ const PAINT_COLOR_CENTRELINE = [
     '#e5a000',
     // unhovered
     '#dcdee0',
-  ],
-];
-const PAINT_COLOR_COUNTS = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
-  '#00a91c',
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    '#e5a000',
-    // normal
-    '#00bde3',
   ],
 ];
 const PAINT_SIZE_CENTRELINE = [
@@ -114,44 +111,22 @@ const PAINT_SIZE_INTERSECTIONS = [
     8,
   ],
 ];
-const PAINT_SIZE_COUNT_POINTS = [
+const PAINT_COLOR_COUNTS = [
   'case',
   ['boolean', ['feature-state', 'selected'], false],
   // selected
-  12,
+  '#00a91c',
   [
     'case',
     ['boolean', ['feature-state', 'hover'], false],
     // hovered
-    12,
-    // normal
-    10,
-  ],
-];
-const PAINT_SIZE_COUNT_CLUSTERS = [
-  'case',
-  ['boolean', ['feature-state', 'hover'], false],
-  // hovered
-  22,
-  // normal
-  20,
-];
-const PAINT_OPACITY = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
-  0.6,
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    0.6,
-    // normal
-    0.45,
+    '#e5a000',
+    // unhovered
+    '#00bde3',
   ],
 ];
 
-function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
+function injectSourcesAndLayers(rawStyle) {
   const STYLE = {};
   Object.assign(STYLE, rawStyle);
 
@@ -167,12 +142,21 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
-  STYLE.sources['counts-visible'] = {
-    type: 'geojson',
-    data: dataCountsVisible,
-    cluster: true,
-    clusterMaxZoom: ZOOM_MAX_COUNTS_CLUSTERED,
-    clusterProperties: { sum: ['+', ['get', 'cnt']] },
+  const { origin } = window.location;
+
+  STYLE.sources.collisions = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/collisions/{z}/{x}/{y}.pbf`],
+  };
+
+  STYLE.sources.counts = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/counts/{z}/{x}/{y}.pbf`],
+  };
+
+  STYLE.sources.schools = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/schools/{z}/{x}/{y}.pbf`],
   };
 
   STYLE.layers.push({
@@ -204,41 +188,44 @@ function injectSourcesAndLayers(rawStyle, dataCountsVisible) {
   });
 
   STYLE.layers.push({
-    id: 'counts-visible-clusters',
+    id: 'schools',
+    source: 'schools',
+    'source-layer': 'schools',
     type: 'circle',
-    source: 'counts-visible',
-    filter: ['has', 'point_count'],
+    minzoom: ZOOM_TORONTO,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': PAINT_COLOR_COUNTS,
-      'circle-opacity': PAINT_OPACITY,
-      'circle-radius': PAINT_SIZE_COUNT_CLUSTERS,
+      'circle-color': '#77ff77',
+      'circle-opacity': 0.5,
+      'circle-radius': 10,
     },
   });
 
   STYLE.layers.push({
-    id: 'counts-visible-cluster-counts',
-    type: 'symbol',
-    source: 'counts-visible',
-    filter: ['has', 'point_count'],
-    layout: {
-      'text-field': '{sum}',
-      'text-font': ['Ubuntu Regular'],
-      'text-size': 18,
-    },
+    id: 'counts',
+    source: 'counts',
+    'source-layer': 'counts',
+    type: 'circle',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
-      'text-color': '#1b1b1b',
+      'circle-color': PAINT_COLOR_COUNTS,
+      'circle-radius': 10,
+      'circle-opacity': PAINT_OPACITY,
     },
   });
 
   STYLE.layers.push({
-    id: 'counts-visible-points',
+    id: 'collisions',
+    source: 'collisions',
+    'source-layer': 'collisions',
     type: 'circle',
-    source: 'counts-visible',
-    filter: ['!', ['has', 'point_count']],
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': PAINT_COLOR_COUNTS,
-      'circle-opacity': PAINT_OPACITY,
-      'circle-radius': PAINT_SIZE_COUNT_POINTS,
+      'circle-color': '#ff0000',
+      'circle-opacity': 0.4,
+      'circle-radius': 5,
     },
   });
 
@@ -301,7 +288,7 @@ export default {
         return true;
       }
       if (centrelineType === CentrelineType.INTERSECTION) {
-        if (layerId === 'counts-visible-points') {
+        if (layerId === 'counts') {
           return this.selectedFeature.properties.centrelineId !== centrelineId;
         }
         if (layerId === 'intersections') {
@@ -317,13 +304,9 @@ export default {
     this.map = null;
   },
   mounted() {
-    this.dataCountsVisible = {
-      type: 'FeatureCollection',
-      features: [],
-    };
     const bounds = BOUNDS_TORONTO;
     const mapStyle = new GeoStyle(style, metadata).get();
-    this.mapStyle = injectSourcesAndLayers(mapStyle, this.dataCountsVisible);
+    this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
       sources: {
@@ -344,7 +327,7 @@ export default {
           maxzoom: ZOOM_MAX_BASEMAP,
         },
       ],
-    }, this.dataCountsVisible);
+    });
 
     // marker
     this.selectedMarker = new mapboxgl.Marker()
@@ -436,26 +419,6 @@ export default {
         });
       }
     },
-    fetchVisibleCounts(bounds) {
-      const xmin = bounds.getWest();
-      const ymin = bounds.getSouth();
-      const xmax = bounds.getEast();
-      const ymax = bounds.getNorth();
-      const data = {
-        xmin,
-        ymin,
-        xmax,
-        ymax,
-      };
-      const options = { data };
-      return apiFetch('/counts/byBoundingBox', options)
-        .then((dataCountsVisible) => {
-          this.dataCountsVisible = dataCountsVisible;
-          this.map.getSource('counts-visible')
-            .setData(this.dataCountsVisible);
-          return dataCountsVisible;
-        });
-    },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
         layers: [layer],
@@ -486,7 +449,7 @@ export default {
       }
       if (centrelineType === CentrelineType.INTERSECTION) {
         let feature = this.getFeatureForLayerAndProperty(
-          'counts-visible-points',
+          'counts',
           'centrelineId',
           centrelineId,
         );
@@ -510,8 +473,7 @@ export default {
      * priority order:
      *
      * - intersections
-     * - counts-visible-points
-     * - counts-visible-clusters
+     * - counts
      * - centreline
      *
      * TODO: within layers, rank by closest to `point`
@@ -523,8 +485,7 @@ export default {
     getFeatureForPoint(point) {
       const layers = [
         'centreline',
-        'counts-visible-clusters',
-        'counts-visible-points',
+        'counts',
         'intersections',
       ];
       let features = this.map.queryRenderedFeatures(point, { layers });
@@ -562,24 +523,13 @@ export default {
       };
       this.setLocation(elementInfo);
     },
-    onCountsVisibleClustersClick(feature) {
-      const clusterId = feature.properties.cluster_id;
-      this.map.getSource('counts-visible')
-        .getClusterExpansionZoom(clusterId, (err, zoom) => {
-          if (err) {
-            return;
-          }
-          const center = feature.geometry.coordinates;
-          this.map.easeTo({ center, zoom });
-        });
-    },
-    onCountsVisiblePointsClick(feature) {
+    onCountsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
-      const { centrelineId, centrelineType, locationdesc } = feature.properties;
+      const { centrelineId, centrelineType, locationDesc } = feature.properties;
       const elementInfo = {
         centrelineId,
         centrelineType,
-        description: formatCountLocationDescription(locationdesc),
+        description: formatCountLocationDescription(locationDesc),
         /*
          * The backend doesn't provide these feature codes, so we have to fetch it from
          * the visible layer.
@@ -632,20 +582,16 @@ export default {
         return;
       }
       const layerId = feature.layer.id;
-      if (layerId !== 'counts-visible-clusters') {
-        if (this.selectedFeature !== null) {
-          this.map.setFeatureState(this.selectedFeature, { selected: false });
-        }
-        // select clicked feature
-        this.selectedFeature = feature;
-        this.map.setFeatureState(this.selectedFeature, { selected: true });
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
       }
+      // select clicked feature
+      this.selectedFeature = feature;
+      this.map.setFeatureState(this.selectedFeature, { selected: true });
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
-      } else if (layerId === 'counts-visible-clusters') {
-        this.onCountsVisibleClustersClick(feature);
-      } else if (layerId === 'counts-visible-points') {
-        this.onCountsVisiblePointsClick(feature);
+      } else if (layerId === 'counts') {
+        this.onCountsClick(feature);
       } else if (layerId === 'intersections') {
         this.onIntersectionsClick(feature);
       }
@@ -673,15 +619,6 @@ export default {
     },
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
-      const zoom = this.map.getZoom();
-      if (zoom >= ZOOM_MIN_COUNTS) {
-        const bounds = this.map.getBounds();
-        this.fetchVisibleCounts(bounds);
-      } else {
-        this.dataCountsVisible.features = [];
-        this.map.getSource('counts-visible')
-          .setData(this.dataCountsVisible);
-      }
     }, 250),
     toggleSatellite() {
       this.satellite = !this.satellite;
