@@ -158,6 +158,24 @@ def dump_init_table(target_schema, table_name, response):
   )
   print(sql)
 
+  sql = '''\
+CREATE INDEX "{table_name}_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (geom);'''.format(
+    target_schema=target_schema,
+    table_name=table_name
+  )
+  print(sql)
+
+  sql = '''\
+CREATE INDEX "{table_name}_srid3857_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (ST_Transform(geom, 3857));'''.format(
+    target_schema=target_schema,
+    table_name=table_name
+  )
+  print(sql)
+
   sql = 'COPY "{target_schema}"."{table_name}" FROM stdin CSV;'.format(
     target_schema=target_schema,
     table_name=table_name
@@ -341,7 +359,6 @@ if __name__ == '__main__':
     """
     Test `get_layer` using the given base URL, mapserver name, and layer ID.
     """
-    import sys
     base_url = sys.argv[1]
     mapserver_name = sys.argv[2]
     layer_id = int(sys.argv[3])
