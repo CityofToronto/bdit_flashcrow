@@ -130,7 +130,7 @@ function injectSourcesAndLayers(rawStyle) {
   const STYLE = {};
   Object.assign(STYLE, rawStyle);
 
-  STYLE.glyphs = 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf';
+  STYLE.glyphs = 'https://move.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
   STYLE.sources.centreline = {
     type: 'vector',
@@ -184,20 +184,6 @@ function injectSourcesAndLayers(rawStyle) {
       'circle-color': PAINT_COLOR_CENTRELINE,
       'circle-radius': PAINT_SIZE_INTERSECTIONS,
       'circle-opacity': PAINT_OPACITY,
-    },
-  });
-
-  STYLE.layers.push({
-    id: 'schools',
-    source: 'schools',
-    'source-layer': 'schools',
-    type: 'circle',
-    minzoom: ZOOM_MIN_COUNTS,
-    maxzoom: ZOOM_MAX + 1,
-    paint: {
-      'circle-color': '#70e17b',
-      'circle-opacity': 0.5,
-      'circle-radius': 5,
     },
   });
 
@@ -302,6 +288,28 @@ function injectSourcesAndLayers(rawStyle) {
         ZOOM_MIN_COUNTS + 1, 0.8,
       ],
       'circle-radius': 10,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'schools',
+    source: 'schools',
+    'source-layer': 'schools',
+    type: 'symbol',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
+    layout: {
+      'text-field': '\uf549',
+      'text-font': ['literal', ['Font Awesome 5 Free']],
+      'text-size': [
+        'step',
+        ['zoom'],
+        16,
+        ZOOM_LOCATION, 20,
+      ],
+    },
+    paint: {
+      'text-color': '#00a91c',
     },
   });
 
