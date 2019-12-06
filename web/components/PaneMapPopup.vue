@@ -62,6 +62,13 @@ export default {
       if (this.layerId === 'centreline') {
         return this.feature.properties.lf_name;
       }
+      if (this.layerId === 'counts') {
+        const { numArteryCodes } = this.feature.properties;
+        if (numArteryCodes === 1) {
+          return '1 location';
+        }
+        return `${numArteryCodes} locations`;
+      }
       if (this.layerId === 'intersections') {
         return this.feature.properties.intersec5;
       }
