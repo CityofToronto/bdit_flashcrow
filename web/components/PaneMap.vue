@@ -144,6 +144,11 @@ function injectSourcesAndLayers(rawStyle) {
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
   };
 
+  STYLE.sources['collisions-heatmap'] = {
+    type: 'vector',
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/collisions/{z}/{x}/{y}.pbf'],
+  };
+
   const { origin } = window.location;
 
   STYLE.sources.collisions = {
@@ -205,7 +210,7 @@ function injectSourcesAndLayers(rawStyle) {
 
   STYLE.layers.push({
     id: 'collisions-heatmap',
-    source: 'collisions',
+    source: 'collisions-heatmap',
     'source-layer': 'collisions',
     type: 'heatmap',
     minzoom: ZOOM_TORONTO,
@@ -240,14 +245,7 @@ function injectSourcesAndLayers(rawStyle) {
         ZOOM_TORONTO, 5,
         ZOOM_MIN_COUNTS, 10,
       ],
-      'heatmap-weight': [
-        'step',
-        ['get', 'injury'],
-        0.2,
-        2, 0.5,
-        3, 5,
-        4, 10,
-      ],
+      'heatmap-weight': ['get', 'heatmap_weight'],
     },
   });
 
