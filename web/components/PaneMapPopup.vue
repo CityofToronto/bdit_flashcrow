@@ -1,36 +1,37 @@
 <template>
   <div class="pane-map-popup">
-    <div class="mb-m pr-xl">
-      <i class="fa fa-map-marker-alt"></i>
-      <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
-      <span v-else class="text-muted"> name unknown</span>
-    </div>
-    <button
-      class="font-size-l"
-      @click="onViewData">
-      View Data
-    </button>
+    <TdsPanel
+      :icon="icon"
+      :variant="variant">
+      <div class="ml-l">
+        <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
+        <span v-else class="text-muted"> name unknown</span>
+      </div>
+      <button
+        class="font-size-l mt-s"
+        @click="onViewData">
+        View Data
+      </button>
+    </TdsPanel>
   </div>
 </template>
 
 <script>
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
 export default {
   name: 'PaneMapPopup',
+  components: {
+    TdsPanel,
+  },
   props: {
     feature: Object,
-  },
-  inject: {
-    map: {
-      default: null,
-    },
+    hover: Boolean,
   },
   computed: {
     centrelineId() {
@@ -62,6 +63,13 @@ export default {
       if (this.layerId === 'centreline') {
         return this.feature.properties.lf_name;
       }
+      if (this.layerId === 'counts') {
+        const { numArteryCodes } = this.feature.properties;
+        if (numArteryCodes === 1) {
+          return '1 count station';
+        }
+        return `${numArteryCodes} count stations`;
+      }
       if (this.layerId === 'intersections') {
         return this.feature.properties.intersec5;
       }
@@ -86,26 +94,15 @@ export default {
        */
       return null;
     },
+    icon() {
+      return this.hover ? 'hand-pointer' : 'map-marker-alt';
+    },
     layerId() {
       return this.feature.layer.id;
     },
-  },
-  created() {
-    this.popup = new mapboxgl.Popup({
-      closeOnClick: false,
-      maxWidth: 'none',
-    });
-  },
-  mounted() {
-    Vue.nextTick(this.refreshPopup.bind(this));
-  },
-  updated() {
-    Vue.nextTick(this.refreshPopup.bind(this));
-  },
-  beforeDestroy() {
-    if (this.map) {
-      this.popup.remove();
-    }
+    variant() {
+      return this.hover ? 'warning' : 'success';
+    },
   },
   methods: {
     onViewData() {
@@ -131,12 +128,6 @@ export default {
         params: routerParameters,
       });
     },
-    refreshPopup() {
-      this.popup
-        .setLngLat(this.coordinates)
-        .setDOMContent(this.$el)
-        .addTo(this.map);
-    },
     ...mapMutations(['setLocation']),
   },
 };
@@ -144,6 +135,15 @@ export default {
 
 <style lang="postcss">
 .pane-map-popup {
-  background-color: white;
+  & > .tds-panel {
+    border-radius: var(--space-s);
+    box-shadow: var(--shadow-2);
+  }
+
+  left: var(--space-l);
+  position: absolute;
+  top: var(--space-m);
+  width: var(--space-4xl);
+  z-index: var(--z-index-controls);
 }
 </style>

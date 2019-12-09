@@ -15,7 +15,7 @@ export default {
 <style lang="postcss">
 .tds-top-bar {
   align-items: center;
-  padding: var(--space-m) var(--space-xl);
+  padding: var(--space-m) var(--space-l);
   & > * {
     margin-right: var(--space-m);
     &:last-child {

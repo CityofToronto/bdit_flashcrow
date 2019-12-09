@@ -16,13 +16,16 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
-      <PaneMapPopup
-        v-if="hoveredFeature"
-        :feature="hoveredFeature" />
-      <PaneMapPopup
-        v-else-if="selectedFeature"
-        :feature="selectedFeature" />
     </div>
+    <PaneMapPopup
+      v-if="hoveredFeature"
+      :feature="hoveredFeature"
+      :hover="true"
+      @mouseover.native="clearHoveredFeature" />
+    <PaneMapPopup
+      v-else-if="selectedFeature"
+      :feature="selectedFeature"
+      :hover="false" />
   </div>
 </template>
 
@@ -34,7 +37,6 @@ import { mapMutations, mapState } from 'vuex';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import style from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
@@ -130,7 +132,7 @@ function injectSourcesAndLayers(rawStyle) {
   const STYLE = {};
   Object.assign(STYLE, rawStyle);
 
-  STYLE.glyphs = 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf';
+  STYLE.glyphs = 'https://move.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
   STYLE.sources.centreline = {
     type: 'vector',
@@ -140,6 +142,11 @@ function injectSourcesAndLayers(rawStyle) {
   STYLE.sources.intersections = {
     type: 'vector',
     tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
+  };
+
+  STYLE.sources['collisions-heatmap'] = {
+    type: 'vector',
+    tiles: ['https://move.intra.dev-toronto.ca/tiles/collisions/{z}/{x}/{y}.pbf'],
   };
 
   const { origin } = window.location;
@@ -188,20 +195,6 @@ function injectSourcesAndLayers(rawStyle) {
   });
 
   STYLE.layers.push({
-    id: 'schools',
-    source: 'schools',
-    'source-layer': 'schools',
-    type: 'circle',
-    minzoom: ZOOM_TORONTO,
-    maxzoom: ZOOM_MAX + 1,
-    paint: {
-      'circle-color': '#77ff77',
-      'circle-opacity': 0.5,
-      'circle-radius': 10,
-    },
-  });
-
-  STYLE.layers.push({
     id: 'counts',
     source: 'counts',
     'source-layer': 'counts',
@@ -216,16 +209,107 @@ function injectSourcesAndLayers(rawStyle) {
   });
 
   STYLE.layers.push({
-    id: 'collisions',
+    id: 'collisions-heatmap',
+    source: 'collisions-heatmap',
+    'source-layer': 'collisions',
+    type: 'heatmap',
+    minzoom: ZOOM_TORONTO,
+    maxzoom: ZOOM_MIN_COUNTS + 1,
+    paint: {
+      'heatmap-color': [
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0, 'rgba(244, 227, 219, 0)',
+        0.5, '#f39268',
+        1, '#d63e04',
+      ],
+      'heatmap-intensity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_TORONTO, 1,
+        ZOOM_MIN_COUNTS, 3,
+      ],
+      'heatmap-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.8,
+        ZOOM_MIN_COUNTS + 1, 0,
+      ],
+      'heatmap-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_TORONTO, 5,
+        ZOOM_MIN_COUNTS, 10,
+      ],
+      'heatmap-weight': ['get', 'heatmap_weight'],
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'collisions-non-ksi',
     source: 'collisions',
     'source-layer': 'collisions',
+    filter: ['<', ['get', 'injury'], 3],
     type: 'circle',
     minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
     paint: {
-      'circle-color': '#ff0000',
-      'circle-opacity': 0.4,
+      'circle-color': '#d63e04',
+      'circle-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.2,
+        ZOOM_MIN_COUNTS + 1, 0.6,
+      ],
       'circle-radius': 5,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'collisions-ksi',
+    source: 'collisions',
+    'source-layer': 'collisions',
+    filter: ['>=', ['get', 'injury'], 3],
+    type: 'circle',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
+    paint: {
+      'circle-color': '#b51d09',
+      'circle-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        ZOOM_MIN_COUNTS, 0.2,
+        ZOOM_MIN_COUNTS + 1, 0.8,
+      ],
+      'circle-radius': 10,
+    },
+  });
+
+  STYLE.layers.push({
+    id: 'schools',
+    source: 'schools',
+    'source-layer': 'schools',
+    type: 'symbol',
+    minzoom: ZOOM_MIN_COUNTS,
+    maxzoom: ZOOM_MAX + 1,
+    layout: {
+      'text-field': '\uf549',
+      'text-font': ['literal', ['Font Awesome 5 Free']],
+      'text-size': [
+        'step',
+        ['zoom'],
+        16,
+        ZOOM_LOCATION, 20,
+      ],
+    },
+    paint: {
+      'text-color': '#00a91c',
     },
   });
 
@@ -238,11 +322,6 @@ export default {
     TdsLoadingSpinner,
     PaneMapPopup,
   },
-  props: {
-    cols: Number,
-
-  },
-
   provide() {
     const self = this;
     return {
@@ -251,7 +330,6 @@ export default {
       },
     };
   },
-
   data() {
     return {
       coordinates: null,
@@ -298,7 +376,7 @@ export default {
       }
       return false;
     },
-    ...mapState(['location', 'locationQuery', 'showMap']),
+    ...mapState(['location', 'showMap']),
   },
   created() {
     this.map = null;
@@ -396,6 +474,33 @@ export default {
     },
   },
   methods: {
+    clearHoveredFeature() {
+      if (this.hoveredFeature !== null) {
+        this.map.setFeatureState(this.hoveredFeature, { hover: false });
+        this.hoveredFeature = null;
+      }
+    },
+    setHoveredFeature(feature) {
+      this.clearHoveredFeature();
+      if (feature !== null) {
+        this.map.setFeatureState(feature, { hover: true });
+        this.hoveredFeature = feature;
+      }
+    },
+    clearSelectedFeature() {
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
+        this.selectedFeature = null;
+      }
+    },
+    setSelectedFeature(feature) {
+      this.clearSelectedFeature();
+      if (feature !== null) {
+        this.map.setFeatureState(feature, { selected: true });
+        this.selectedFeature = feature;
+        this.clearHoveredFeature();
+      }
+    },
     easeToLocation(location, oldLocation) {
       if (location !== null) {
         // zoom to location
@@ -525,11 +630,16 @@ export default {
     },
     onCountsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
-      const { centrelineId, centrelineType, locationDesc } = feature.properties;
+      const { centrelineId, centrelineType, numArteryCodes } = feature.properties;
+      let description;
+      if (numArteryCodes === 1) {
+        description = '1 count station';
+      }
+      description = `${numArteryCodes} count stations`;
       const elementInfo = {
         centrelineId,
         centrelineType,
-        description: formatCountLocationDescription(locationDesc),
+        description,
         /*
          * The backend doesn't provide these feature codes, so we have to fetch it from
          * the visible layer.
@@ -544,16 +654,16 @@ export default {
         if (centrelineType === CentrelineType.SEGMENT) {
           const {
             fcode: featureCode,
-            lf_name: description,
+            lf_name: descriptionVisible,
           } = locationFeature.properties;
-          elementInfo.description = description;
+          elementInfo.description = descriptionVisible;
           elementInfo.featureCode = featureCode;
         } else if (centrelineType === CentrelineType.INTERSECTION) {
           const {
-            intersec5: description,
+            intersec5: descriptionVisible,
             elevatio9: featureCode,
           } = locationFeature.properties;
-          elementInfo.description = description;
+          elementInfo.description = descriptionVisible;
           elementInfo.featureCode = featureCode;
         }
       }
@@ -574,20 +684,11 @@ export default {
     },
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
+      this.setSelectedFeature(feature);
       if (feature === null) {
-        if (this.selectedFeature !== null) {
-          this.map.setFeatureState(this.selectedFeature, { selected: false });
-          this.selectedFeature = null;
-        }
         return;
       }
       const layerId = feature.layer.id;
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-      }
-      // select clicked feature
-      this.selectedFeature = feature;
-      this.map.setFeatureState(this.selectedFeature, { selected: true });
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
       } else if (layerId === 'counts') {
@@ -598,24 +699,7 @@ export default {
     },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
-      const canvas = this.map.getCanvas();
-      if (feature === null) {
-        canvas.style.cursor = '';
-        if (this.hoveredFeature !== null) {
-          this.map.setFeatureState(this.hoveredFeature, { hover: false });
-          this.hoveredFeature = null;
-        }
-        return;
-      }
-      canvas.style.cursor = 'pointer';
-
-      // unhighlight features that are currently highlighted
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-      }
-      // highlight feature that is currently being hovered over
-      this.hoveredFeature = feature;
-      this.map.setFeatureState(this.hoveredFeature, { hover: true });
+      this.setHoveredFeature(feature);
     },
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
@@ -637,17 +721,12 @@ export default {
       if (!this.selectedFeatureNeedsUpdate) {
         return;
       }
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-      }
-      this.selectedFeature = this.getFeatureForLocation(this.location);
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: true });
-      }
+      const feature = this.getFeatureForLocation(this.location);
+      this.setSelectedFeature(feature);
     },
     updateSelectedMarker() {
       if (this.location === null) {
-        this.selectedFeature = null;
+        this.clearSelectedFeature();
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;
@@ -671,26 +750,26 @@ export default {
     height: calc(var(--space-xl) + var(--space-s) * 2);
     padding: var(--space-s);
     position: absolute;
-    right: 15px;
-    top: 8px;
+    right: var(--space-l);
+    top: var(--space-m);
     width: calc(var(--space-xl) + var(--space-s) * 2);
     z-index: var(--z-index-controls);
   }
   & > .pane-map-google-maps {
-    bottom: 8px;
+    bottom: var(--space-m);
     position: absolute;
-    left: 15px;
+    left: var(--space-l);
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
-    bottom: 8px;
+    bottom: var(--space-m);
     position: absolute;
-    right: 15px;
+    right: var(--space-l);
     z-index: var(--z-index-controls);
   }
   .mapboxgl-ctrl-bottom-right {
     bottom: 38px;
-    right: 5px;
+    right: 6px;
   }
 }
 </style>

@@ -6,7 +6,7 @@
 			"jcbuisson.vue",
 			"ms-python.python",
 			"ms-vscode-remote.vscode-remote-extensionpack",
-			"shinnn.stylelint"
+			"thibaudcolas.stylelint"
 		]
 	},
 	"folders": [
