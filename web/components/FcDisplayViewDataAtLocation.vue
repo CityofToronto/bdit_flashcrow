@@ -215,7 +215,8 @@ export default {
       const location = result[1];
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
-          || location.centrelineType !== this.location.centrelineType) {
+          || location.centrelineType !== this.location.centrelineType
+          || location.description !== this.location.description) {
         this.setLocation(location);
       }
     },

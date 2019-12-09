@@ -19,10 +19,13 @@
     </div>
     <PaneMapPopup
       v-if="hoveredFeature"
-      :feature="hoveredFeature" />
+      :feature="hoveredFeature"
+      :hover="true"
+      @mouseover.native="clearHoveredFeature" />
     <PaneMapPopup
       v-else-if="selectedFeature"
-      :feature="selectedFeature" />
+      :feature="selectedFeature"
+      :hover="false" />
   </div>
 </template>
 
@@ -375,7 +378,7 @@ export default {
       }
       return false;
     },
-    ...mapState(['location', 'locationQuery', 'showMap']),
+    ...mapState(['location', 'showMap']),
   },
   created() {
     this.map = null;
@@ -473,6 +476,33 @@ export default {
     },
   },
   methods: {
+    clearHoveredFeature() {
+      if (this.hoveredFeature !== null) {
+        this.map.setFeatureState(this.hoveredFeature, { hover: false });
+        this.hoveredFeature = null;
+      }
+    },
+    setHoveredFeature(feature) {
+      this.clearHoveredFeature();
+      if (feature !== null) {
+        this.map.setFeatureState(feature, { hover: true });
+        this.hoveredFeature = feature;
+      }
+    },
+    clearSelectedFeature() {
+      if (this.selectedFeature !== null) {
+        this.map.setFeatureState(this.selectedFeature, { selected: false });
+        this.selectedFeature = null;
+      }
+    },
+    setSelectedFeature(feature) {
+      this.clearSelectedFeature();
+      if (feature !== null) {
+        this.map.setFeatureState(feature, { selected: true });
+        this.selectedFeature = feature;
+        this.clearHoveredFeature();
+      }
+    },
     easeToLocation(location, oldLocation) {
       if (location !== null) {
         // zoom to location
@@ -605,9 +635,9 @@ export default {
       const { centrelineId, centrelineType, numArteryCodes } = feature.properties;
       let description;
       if (numArteryCodes === 1) {
-        description = '1 location';
+        description = '1 count station';
       }
-      description = `${numArteryCodes} locations`;
+      description = `${numArteryCodes} count stations`;
       const elementInfo = {
         centrelineId,
         centrelineType,
@@ -656,24 +686,11 @@ export default {
     },
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point);
+      this.setSelectedFeature(feature);
       if (feature === null) {
-        if (this.selectedFeature !== null) {
-          this.map.setFeatureState(this.selectedFeature, { selected: false });
-          this.selectedFeature = null;
-        }
         return;
       }
       const layerId = feature.layer.id;
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-      }
-      // select clicked feature
-      this.selectedFeature = feature;
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hovered: false });
-        this.hoveredFeature = null;
-      }
-      this.map.setFeatureState(this.selectedFeature, { selected: true });
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
       } else if (layerId === 'counts') {
@@ -684,24 +701,7 @@ export default {
     },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
-      const canvas = this.map.getCanvas();
-      if (feature === null) {
-        canvas.style.cursor = '';
-        if (this.hoveredFeature !== null) {
-          this.map.setFeatureState(this.hoveredFeature, { hover: false });
-          this.hoveredFeature = null;
-        }
-        return;
-      }
-      canvas.style.cursor = 'pointer';
-
-      // unhighlight features that are currently highlighted
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-      }
-      // highlight feature that is currently being hovered over
-      this.hoveredFeature = feature;
-      this.map.setFeatureState(this.hoveredFeature, { hover: true });
+      this.setHoveredFeature(feature);
     },
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
@@ -723,21 +723,12 @@ export default {
       if (!this.selectedFeatureNeedsUpdate) {
         return;
       }
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-      }
-      this.selectedFeature = this.getFeatureForLocation(this.location);
-      if (this.selectedFeature !== null) {
-        if (this.hoveredFeature !== null) {
-          this.map.setFeatureState(this.hoveredFeature, { hovered: false });
-          this.hoveredFeature = null;
-        }
-        this.map.setFeatureState(this.selectedFeature, { selected: true });
-      }
+      const feature = this.getFeatureForLocation(this.location);
+      this.setSelectedFeature(feature);
     },
     updateSelectedMarker() {
       if (this.location === null) {
-        this.selectedFeature = null;
+        this.clearSelectedFeature();
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;
@@ -761,26 +752,26 @@ export default {
     height: calc(var(--space-xl) + var(--space-s) * 2);
     padding: var(--space-s);
     position: absolute;
-    right: 15px;
-    top: 8px;
+    right: var(--space-l);
+    top: var(--space-m);
     width: calc(var(--space-xl) + var(--space-s) * 2);
     z-index: var(--z-index-controls);
   }
   & > .pane-map-google-maps {
-    bottom: 8px;
+    bottom: var(--space-m);
     position: absolute;
-    left: 15px;
+    left: var(--space-l);
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
-    bottom: 8px;
+    bottom: var(--space-m);
     position: absolute;
-    right: 15px;
+    right: var(--space-l);
     z-index: var(--z-index-controls);
   }
   .mapboxgl-ctrl-bottom-right {
     bottom: 38px;
-    right: 5px;
+    right: 6px;
   }
 }
 </style>

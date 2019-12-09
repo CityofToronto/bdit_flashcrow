@@ -1,15 +1,18 @@
 <template>
-  <div class="pane-map-popup text-center p-m">
-    <div>
-      <i class="fa fa-map-marker-alt"></i>
-      <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
-      <span v-else class="text-muted"> name unknown</span>
-    </div>
-    <button
-      class="font-size-l mt-m"
-      @click="onViewData">
-      View Data
-    </button>
+  <div class="pane-map-popup">
+    <TdsPanel
+      icon="map-marker-alt"
+      :variant="variant">
+      <div class="ml-l">
+        <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
+        <span v-else class="text-muted"> name unknown</span>
+      </div>
+      <button
+        class="font-size-l mt-s"
+        @click="onViewData">
+        View Data
+      </button>
+    </TdsPanel>
   </div>
 </template>
 
@@ -19,11 +22,16 @@ import { mapMutations } from 'vuex';
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
 export default {
   name: 'PaneMapPopup',
+  components: {
+    TdsPanel,
+  },
   props: {
     feature: Object,
+    hover: Boolean,
   },
   computed: {
     centrelineId() {
@@ -58,9 +66,9 @@ export default {
       if (this.layerId === 'counts') {
         const { numArteryCodes } = this.feature.properties;
         if (numArteryCodes === 1) {
-          return '1 location';
+          return '1 count station';
         }
-        return `${numArteryCodes} locations`;
+        return `${numArteryCodes} count stations`;
       }
       if (this.layerId === 'intersections') {
         return this.feature.properties.intersec5;
@@ -88,6 +96,9 @@ export default {
     },
     layerId() {
       return this.feature.layer.id;
+    },
+    variant() {
+      return this.hover ? 'warning' : 'success';
     },
   },
   methods: {
@@ -121,13 +132,14 @@ export default {
 
 <style lang="postcss">
 .pane-map-popup {
-  background-color: white;
-  border: var(--border-default);
-  border-radius: var(--space-s);
-  box-shadow: var(--shadow-2);
-  left: 8px;
+  & > .tds-panel {
+    border-radius: var(--space-s);
+    box-shadow: var(--shadow-2);
+  }
+
+  left: var(--space-l);
   position: absolute;
-  top: 8px;
+  top: var(--space-m);
   width: var(--space-4xl);
   z-index: var(--z-index-controls);
 }
