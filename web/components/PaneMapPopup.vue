@@ -1,7 +1,7 @@
 <template>
   <div class="pane-map-popup">
     <TdsPanel
-      icon="map-marker-alt"
+      :icon="icon"
       :variant="variant">
       <div class="ml-l">
         <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
@@ -93,6 +93,9 @@ export default {
        * change `CountDAO` to provide this when returning counts.
        */
       return null;
+    },
+    icon() {
+      return this.hover ? 'hand-pointer' : 'map-marker-alt';
     },
     layerId() {
       return this.feature.layer.id;

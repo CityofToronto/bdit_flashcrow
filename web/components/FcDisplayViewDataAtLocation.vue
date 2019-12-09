@@ -18,7 +18,13 @@
           <span> Request Study</span>
         </button>
       </header>
+      <div
+        v-if="loadingLocationData"
+        class="location-data-loading-spinner m-l">
+        <TdsLoadingSpinner />
+      </div>
       <FcCardTableCounts
+        v-else
         v-model="selection"
         @action-item="onActionItem" />
     </div>
@@ -33,8 +39,9 @@ import {
   mapState,
 } from 'vuex';
 
-import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
 import { COUNT_TYPES, Status } from '@/lib/Constants';
+import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 function idIsCount(id) {
   return Number.isInteger(id);
@@ -48,9 +55,11 @@ export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     FcCardTableCounts,
+    TdsLoadingSpinner,
   },
   data() {
     return {
+      loadingLocationData: true,
       selection: [],
     };
   },
@@ -103,35 +112,39 @@ export default {
     ]),
   },
   watch: {
-    location() {
-      if (this.location === null) {
+    location(location, locationPrev) {
+      if (location === null) {
         this.$router.push({
           name: 'viewData',
         });
         return;
       }
-      /*
-       * Guard against duplicate navigation, which can happen when first loading the page.
-       */
       const {
         centrelineId,
         centrelineType,
-      } = this.location;
-      let {
-        centrelineId: centrelineIdPrev,
-        centrelineType: centrelineTypePrev,
-      } = this.$route.params;
-      centrelineIdPrev = parseInt(centrelineIdPrev, 10);
-      centrelineTypePrev = parseInt(centrelineTypePrev, 10);
-      if (centrelineIdPrev !== centrelineId || centrelineTypePrev !== centrelineType) {
+      } = location;
+      if (locationPrev === null
+        || locationPrev.centrelineId !== centrelineId
+        || locationPrev.centrelineType !== centrelineType) {
         /*
-         * Update the URL to match the new location.  This allows the user to navigate between
-         * recently selected locations with the back / forward browser buttons.
+         * Guard against duplicate navigation, which can happen when first loading the page.
          */
-        this.$router.push({
-          name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
-        });
+        let {
+          centrelineId: centrelineIdRoute,
+          centrelineType: centrelineTypeRoute,
+        } = this.$route.params;
+        centrelineIdRoute = parseInt(centrelineIdRoute, 10);
+        centrelineTypeRoute = parseInt(centrelineTypeRoute, 10);
+        if (centrelineIdRoute !== centrelineId || centrelineTypeRoute !== centrelineType) {
+          /*
+           * Update the URL to match the new location.  This allows the user to navigate between
+           * recently selected locations with the back / forward browser buttons.
+           */
+          this.$router.push({
+            name: 'viewDataAtLocation',
+            params: { centrelineId, centrelineType },
+          });
+        }
       }
     },
     studyTypesRelevantToLocation: {
@@ -145,13 +158,19 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.syncFromRoute(to);
+      vm.syncFromRoute(to)
+        .then(() => {
+          /* eslint-disable-next-line no-param-reassign */
+          vm.loadingLocationData = false;
+        });
     });
   },
   beforeRouteUpdate(to, from, next) {
+    this.loadingLocationData = true;
     this.syncFromRoute(to)
       .then(() => {
         next();
+        this.loadingLocationData = false;
       }).catch((err) => {
         next(err);
       });
@@ -251,6 +270,10 @@ export default {
         margin-right: 0;
       }
     }
+  }
+  .location-data-loading-spinner {
+    height: var(--space-2xl);
+    width: var(--space-2xl);
   }
 }
 </style>
