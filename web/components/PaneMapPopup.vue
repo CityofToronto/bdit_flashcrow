@@ -1,12 +1,12 @@
 <template>
-  <div class="pane-map-popup">
-    <div class="mb-m pr-xl">
+  <div class="pane-map-popup text-center p-m">
+    <div>
       <i class="fa fa-map-marker-alt"></i>
       <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
       <span v-else class="text-muted"> name unknown</span>
     </div>
     <button
-      class="font-size-l"
+      class="font-size-l mt-m"
       @click="onViewData">
       View Data
     </button>
@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
@@ -26,11 +24,6 @@ export default {
   name: 'PaneMapPopup',
   props: {
     feature: Object,
-  },
-  inject: {
-    map: {
-      default: null,
-    },
   },
   computed: {
     centrelineId() {
@@ -97,23 +90,6 @@ export default {
       return this.feature.layer.id;
     },
   },
-  created() {
-    this.popup = new mapboxgl.Popup({
-      closeOnClick: false,
-      maxWidth: 'none',
-    });
-  },
-  mounted() {
-    Vue.nextTick(this.refreshPopup.bind(this));
-  },
-  updated() {
-    Vue.nextTick(this.refreshPopup.bind(this));
-  },
-  beforeDestroy() {
-    if (this.map) {
-      this.popup.remove();
-    }
-  },
   methods: {
     onViewData() {
       // update location
@@ -138,12 +114,6 @@ export default {
         params: routerParameters,
       });
     },
-    refreshPopup() {
-      this.popup
-        .setLngLat(this.coordinates)
-        .setDOMContent(this.$el)
-        .addTo(this.map);
-    },
     ...mapMutations(['setLocation']),
   },
 };
@@ -152,5 +122,13 @@ export default {
 <style lang="postcss">
 .pane-map-popup {
   background-color: white;
+  border: var(--border-default);
+  border-radius: var(--space-s);
+  box-shadow: var(--shadow-2);
+  left: 8px;
+  position: absolute;
+  top: 8px;
+  width: var(--space-4xl);
+  z-index: var(--z-index-controls);
 }
 </style>

@@ -16,13 +16,13 @@
       <button class="font-size-l" @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
       </button>
-      <PaneMapPopup
-        v-if="hoveredFeature"
-        :feature="hoveredFeature" />
-      <PaneMapPopup
-        v-else-if="selectedFeature"
-        :feature="selectedFeature" />
     </div>
+    <PaneMapPopup
+      v-if="hoveredFeature"
+      :feature="hoveredFeature" />
+    <PaneMapPopup
+      v-else-if="selectedFeature"
+      :feature="selectedFeature" />
   </div>
 </template>
 
@@ -34,7 +34,6 @@ import { mapMutations, mapState } from 'vuex';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import style from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
@@ -235,14 +234,14 @@ function injectSourcesAndLayers(rawStyle) {
         'interpolate',
         ['linear'],
         ['zoom'],
-        ZOOM_TORONTO, 3,
-        ZOOM_MIN_COUNTS, 8,
+        ZOOM_TORONTO, 5,
+        ZOOM_MIN_COUNTS, 10,
       ],
       'heatmap-weight': [
         'step',
         ['get', 'injury'],
-        1,
-        2, 2,
+        0.2,
+        2, 0.5,
         3, 5,
         4, 10,
       ],
@@ -603,11 +602,16 @@ export default {
     },
     onCountsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
-      const { centrelineId, centrelineType, locationDesc } = feature.properties;
+      const { centrelineId, centrelineType, numArteryCodes } = feature.properties;
+      let description;
+      if (numArteryCodes === 1) {
+        description = '1 location';
+      }
+      description = `${numArteryCodes} locations`;
       const elementInfo = {
         centrelineId,
         centrelineType,
-        description: formatCountLocationDescription(locationDesc),
+        description,
         /*
          * The backend doesn't provide these feature codes, so we have to fetch it from
          * the visible layer.
@@ -622,16 +626,16 @@ export default {
         if (centrelineType === CentrelineType.SEGMENT) {
           const {
             fcode: featureCode,
-            lf_name: description,
+            lf_name: descriptionVisible,
           } = locationFeature.properties;
-          elementInfo.description = description;
+          elementInfo.description = descriptionVisible;
           elementInfo.featureCode = featureCode;
         } else if (centrelineType === CentrelineType.INTERSECTION) {
           const {
-            intersec5: description,
+            intersec5: descriptionVisible,
             elevatio9: featureCode,
           } = locationFeature.properties;
-          elementInfo.description = description;
+          elementInfo.description = descriptionVisible;
           elementInfo.featureCode = featureCode;
         }
       }
@@ -665,6 +669,10 @@ export default {
       }
       // select clicked feature
       this.selectedFeature = feature;
+      if (this.hoveredFeature !== null) {
+        this.map.setFeatureState(this.hoveredFeature, { hovered: false });
+        this.hoveredFeature = null;
+      }
       this.map.setFeatureState(this.selectedFeature, { selected: true });
       if (layerId === 'centreline') {
         this.onCentrelineClick(feature);
@@ -720,6 +728,10 @@ export default {
       }
       this.selectedFeature = this.getFeatureForLocation(this.location);
       if (this.selectedFeature !== null) {
+        if (this.hoveredFeature !== null) {
+          this.map.setFeatureState(this.hoveredFeature, { hovered: false });
+          this.hoveredFeature = null;
+        }
         this.map.setFeatureState(this.selectedFeature, { selected: true });
       }
     },
