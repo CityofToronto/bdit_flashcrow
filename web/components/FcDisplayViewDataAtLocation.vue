@@ -184,7 +184,6 @@ export default {
       }
       this.setNewStudyRequest(Array.from(studyTypes));
       this.$router.push({ name: 'requestStudy' });
-      this.setShowMap(true);
     },
     actionShowReports(item) {
       if (item.counts.length === 0) {
@@ -251,7 +250,6 @@ export default {
       'setLocation',
       'setModal',
       'setNewStudyRequest',
-      'setShowMap',
     ]),
   },
 };

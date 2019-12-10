@@ -46,8 +46,6 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
-
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 
 export default {
@@ -73,11 +71,7 @@ export default {
   methods: {
     onClickOk() {
       this.clearModal();
-      this.setShowMap(true);
     },
-    ...mapMutations([
-      'setShowMap',
-    ]),
   },
 };
 </script>
