@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-display-view-data-at-location flex-2">
+  <div class="fc-display-view-data-at-location">
     <div class="flex-container-column">
       <FcFiltersViewDataAtLocation />
       <header class="flex-container-row">

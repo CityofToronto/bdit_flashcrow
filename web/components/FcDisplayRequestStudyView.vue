@@ -1,59 +1,54 @@
 <template>
-  <main class="fc-request-study-view flex-fill flex-container-column">
-    <section class="panes flex-fill flex-container-row">
-      <div class="pane-display flex-container-column">
-        <div class="nav-links flex-container-row px-xl py-l text-size-l">
-          <router-link :to="linkBack">
-            <i class="fa fa-chevron-left"></i>
-            <span> Back to All</span>
-          </router-link>
-        </div>
-        <div class="px-xl flex-fill flex-container-column">
-          <hr />
-          <div
-            v-if="studyRequest === null"
-            class="request-loading-spinner">
-            <TdsLoadingSpinner />
-          </div>
-          <div
-            v-else
-            class="flex-fill flex-container-column">
-            <header class="flex-container-row">
-              <h2>
-                Request #{{studyRequest.id}}
-                <span
-                  v-if="studyRequestLocation !== null">
-                  at
-                  <router-link :to="linkLocation">
-                    <span> {{studyRequestLocation.description}}</span>
-                  </router-link>
-                </span>
-              </h2>
-              <div class="flex-fill"></div>
-              <button
-                class="font-size-l"
-                @click="onActionEdit">
-                <i class="fa fa-edit" />
-                <span> Edit</span>
-              </button>
-            </header>
-            <section class="flex-fill flex-container-row">
-              <div class="flex-cross-scroll">
-                <FcSummaryStudyRequest
-                  :study-request="studyRequest" />
-                <FcSummaryStudy
-                  v-for="(_, i) in studyRequest.studies"
-                  :key="i"
-                  :index="i"
-                  :study-request="studyRequest" />
-              </div>
-            </section>
-          </div>
-        </div>
+  <div class="fc-display-request-study-view flex-container-column">
+    <div class="nav-links flex-container-row px-xl py-l text-size-l">
+      <router-link :to="linkBack">
+        <i class="fa fa-chevron-left"></i>
+        <span> Back to All</span>
+      </router-link>
+    </div>
+    <div class="px-xl flex-fill flex-container-column">
+      <hr />
+      <div
+        v-if="studyRequest === null"
+        class="request-loading-spinner">
+        <TdsLoadingSpinner />
       </div>
-      <PaneMap />
-    </section>
-  </main>
+      <div
+        v-else
+        class="flex-fill flex-container-column">
+        <header class="flex-container-row">
+          <h2>
+            Request #{{studyRequest.id}}
+            <span
+              v-if="studyRequestLocation !== null">
+              at
+              <router-link :to="linkLocation">
+                <span> {{studyRequestLocation.description}}</span>
+              </router-link>
+            </span>
+          </h2>
+          <div class="flex-fill"></div>
+          <button
+            class="font-size-l"
+            @click="onActionEdit">
+            <i class="fa fa-edit" />
+            <span> Edit</span>
+          </button>
+        </header>
+        <section class="flex-fill flex-container-row">
+          <div class="flex-cross-scroll">
+            <FcSummaryStudyRequest
+              :study-request="studyRequest" />
+            <FcSummaryStudy
+              v-for="(_, i) in studyRequest.studies"
+              :key="i"
+              :index="i"
+              :study-request="studyRequest" />
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -61,7 +56,6 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
-import PaneMap from '@/web/components/PaneMap.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import { HttpStatus } from '@/lib/Constants';
 import {
@@ -83,11 +77,10 @@ function getToast(err) {
 }
 
 export default {
-  name: 'FcRequestStudyView',
+  name: 'FcDisplayRequestStudyView',
   components: {
     FcSummaryStudy,
     FcSummaryStudyRequest,
-    PaneMap,
     TdsLoadingSpinner,
   },
   data() {
@@ -165,28 +158,20 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-request-study-view {
-  & .pane-display {
-    flex: 2;
-
-    & > .nav-links {
-      padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
-      text-transform: uppercase;
-      & > a {
-        text-decoration: none;
-      }
-    }
-    .request-loading-spinner {
-      height: var(--space-2xl);
-      width: var(--space-2xl);
-    }
-    header {
-      align-items: center;
+.fc-display-request-study-view {
+  & > .nav-links {
+    padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
+    text-transform: uppercase;
+    & > a {
+      text-decoration: none;
     }
   }
-
-  & .pane-map {
-    flex: 1;
+  .request-loading-spinner {
+    height: var(--space-2xl);
+    width: var(--space-2xl);
+  }
+  header {
+    align-items: center;
   }
 }
 </style>

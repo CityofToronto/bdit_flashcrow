@@ -32,7 +32,12 @@
       </FcDashboardNav>
       <button class="tds-button-primary fc-help">
         <i class="fa fa-question-circle"></i>
-        <a href="mailto:move-team@toronto.ca?subject=MOVE%20Help%20Request" target="_blank">Help</a>
+        <span>
+          &nbsp;
+          <a
+            href="mailto:move-team@toronto.ca?subject=MOVE%20Help%20Request"
+            target="_blank">Help</a>
+        </span>
       </button>
     </div>
     <div class="fc-content flex-fill flex-container-column">
@@ -51,8 +56,8 @@
             class="font-size-l"
             :options="userActions"
             @action-selected="onUserAction">
-            <span>{{username}} </span>
             <i class="fa fa-user-circle"></i>
+            <span> {{username}}</span>
           </TdsActionDropdown>
         </template>
       </TdsTopBar>
