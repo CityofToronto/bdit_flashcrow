@@ -34,7 +34,6 @@ const router = new Router({
         path: '',
         name: 'viewData',
         components: {
-          filters: null,
           display: null,
         },
       }, {
@@ -42,7 +41,6 @@ const router = new Router({
         meta: { title: 'View Data' },
         name: 'viewDataAtLocation',
         components: {
-          filters: () => import(/* webpackChunkName: "home" */ '@/web/components/FcFiltersViewDataAtLocation.vue'),
           display: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
         },
       }],

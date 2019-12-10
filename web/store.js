@@ -101,8 +101,6 @@ export default new Vuex.Store({
     studyRequestLocations: new Map(),
     studyRequestUsers: new Map(),
     requestReasons: [],
-    // map mode
-    showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
     studyRequestLocation: null,
@@ -349,10 +347,6 @@ export default new Vuex.Store({
     setFilterDayOfWeek(state, filterDayOfWeek) {
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-    },
-    // MAP MODE
-    setShowMap(state, showMap) {
-      Vue.set(state, 'showMap', showMap);
     },
     // STUDY REQUESTS
     clearStudyRequests(state) {

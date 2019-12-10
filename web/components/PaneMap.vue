@@ -376,7 +376,7 @@ export default {
       }
       return false;
     },
-    ...mapState(['location', 'showMap']),
+    ...mapState(['location']),
   },
   created() {
     this.map = null;
@@ -464,13 +464,6 @@ export default {
       Vue.nextTick(() => {
         this.map.resize();
       });
-    },
-    showMap() {
-      if (this.showMap === true) {
-        Vue.nextTick(() => {
-          this.map.resize();
-        });
-      }
     },
   },
   methods: {
