@@ -3,7 +3,7 @@
     <section class="panes flex-fill flex-container-row">
       <router-view
         v-show="drawerOpen"
-        class="pane-display"></router-view>
+        class="pane-drawer"></router-view>
       <PaneMap />
     </section>
   </main>
@@ -28,7 +28,7 @@ export default {
 <style lang="postcss">
 .fc-layout-drawer-map {
   & > .panes {
-    & > .pane-display {
+    & > .pane-drawer {
       flex: 1.8;
     }
     & > .pane-map {

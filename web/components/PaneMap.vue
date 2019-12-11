@@ -1,5 +1,7 @@
 <template>
-  <div class="pane-map">
+  <div
+    class="pane-map"
+    @mouseleave="clearHoveredFeature">
     <div
       v-if="loading"
       class="pane-map-loading-spinner">
@@ -21,14 +23,14 @@
       v-if="hoveredFeature"
       :feature="hoveredFeature"
       :hover="true"
-      @mouseover.native="clearHoveredFeature" />
+      @mouseenter.native="clearHoveredFeature" />
     <PaneMapPopup
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
     <div
       v-if="$route.name !== 'viewData'"
-      class="pane-display-toggle flex-container-row font-size-xl"
+      class="pane-drawer-toggle flex-container-row font-size-xl"
       :class="{
         'drawer-open': drawerOpen,
       }"
@@ -781,7 +783,7 @@ export default {
     right: var(--space-l);
     z-index: var(--z-index-controls);
   }
-  & > .pane-display-toggle {
+  & > .pane-drawer-toggle {
     align-items: center;
     background-color: var(--base-lightest);
     border: var(--border-default);

@@ -41,26 +41,23 @@
       </button>
     </div>
     <div class="fc-content flex-fill flex-container-column">
-      <TdsTopBar class="fc-topbar">
-        <template v-slot:left>
-          <FcToast
-            v-if="toast"
-            :variant="toast.variant">
-            <span>{{toast.text}}</span>
-          </FcToast>
-          <SearchBarLocation
-            v-if="searchBarShown" />
-        </template>
-        <template v-slot:right>
-          <TdsActionDropdown
-            class="font-size-l"
-            :options="userActions"
-            @action-selected="onUserAction">
-            <i class="fa fa-user-circle"></i>
-            <span> {{username}}</span>
-          </TdsActionDropdown>
-        </template>
-      </TdsTopBar>
+      <div class="fc-topbar flex-container-row px-l py-m">
+        <FcToast
+          v-if="toast"
+          :variant="toast.variant">
+          <span>{{toast.text}}</span>
+        </FcToast>
+        <SearchBarLocation
+          v-if="searchBarShown" />
+        <div class="flex-fill"></div>
+        <TdsActionDropdown
+          class="font-size-l"
+          :options="userActions"
+          @action-selected="onUserAction">
+          <i class="fa fa-user-circle"></i>
+          <span> {{username}}</span>
+        </TdsActionDropdown>
+      </div>
       <router-view></router-view>
     </div>
   </div>
@@ -87,7 +84,6 @@ import FcToast from '@/web/components/FcToast.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
-import TdsTopBar from '@/web/components/tds/TdsTopBar.vue';
 
 const SEARCH_BAR_ROUTES = [
   'viewData',
@@ -106,7 +102,6 @@ export default {
     SearchBarLocation,
     TdsActionDropdown,
     TdsConfirmDialog,
-    TdsTopBar,
   },
   computed: {
     searchBarShown() {
@@ -182,6 +177,7 @@ export default {
   }
 }
 .fc-topbar {
+  align-items: center;
   position: relative;
   & > .fc-toast {
     left: 0;

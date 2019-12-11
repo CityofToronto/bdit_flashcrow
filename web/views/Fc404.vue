@@ -1,11 +1,9 @@
 <template>
-  <div class="fc-404">
-    <h2>HTTP 404 Not Found</h2>
-    <p>
+  <div class="fc-404 px-l">
+    <h1>Page Not Found</h1>
+    <p class="font-size-l">
       Click
-      <router-link :to="{ name: 'home' }">
-        here
-      </router-link>
+      <router-link :to="{ name: 'home' }">here</router-link>
       to return home, or use the sidebar links to return
       to other parts of MOVE.
     </p>
