@@ -107,6 +107,8 @@ export default new Vuex.Store({
     studyRequestUser: null,
     // query that will appear in the search bar
     locationQuery: '',
+    // DRAWER
+    drawerOpen: true,
   },
   getters: {
     // AUTHENTICATION
@@ -416,6 +418,10 @@ export default new Vuex.Store({
     },
     setStudyMeta(state, { i, key, value }) {
       Vue.set(state.studyRequest.studies[i], key, value);
+    },
+    // DRAWER
+    setDrawerOpen(state, drawerOpen) {
+      Vue.set(state, 'drawerOpen', drawerOpen);
     },
   },
   actions: {

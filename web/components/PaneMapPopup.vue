@@ -116,6 +116,7 @@ export default {
         lng,
         lat,
       };
+      this.setDrawerOpen(true);
       this.setLocation(elementInfo);
 
       // open the view data window
@@ -128,7 +129,7 @@ export default {
         params: routerParameters,
       });
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLocation']),
   },
 };
 </script>

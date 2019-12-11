@@ -26,6 +26,22 @@
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
+    <div
+      v-if="$route.name !== 'viewData'"
+      class="pane-display-toggle flex-container-row font-size-xl"
+      :class="{
+        'drawer-open': drawerOpen,
+      }"
+      @click="setDrawerOpen(!drawerOpen)">
+      <div class="flex-fill text-center px-s">
+        <i
+          class="fa"
+          :class="{
+            'fa-chevron-left': drawerOpen,
+            'fa-chevron-right': !drawerOpen,
+          }"></i>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -376,7 +392,7 @@ export default {
       }
       return false;
     },
-    ...mapState(['location']),
+    ...mapState(['drawerOpen', 'location']),
   },
   created() {
     this.map = null;
@@ -456,6 +472,11 @@ export default {
     }
   },
   watch: {
+    drawerOpen() {
+      Vue.nextTick(() => {
+        this.map.resize();
+      });
+    },
     location(location, oldLocation) {
       this.easeToLocation(location, oldLocation);
       this.updateSelectedMarker();
@@ -728,7 +749,7 @@ export default {
           .addTo(this.map);
       }
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLocation']),
   },
 };
 </script>
@@ -759,6 +780,25 @@ export default {
     position: absolute;
     right: var(--space-l);
     z-index: var(--z-index-controls);
+  }
+  & > .pane-display-toggle {
+    align-items: center;
+    background-color: var(--base-lightest);
+    border: var(--border-default);
+    border-left: none;
+    border-radius: 0 var(--space-s) var(--space-s) 0;
+    box-shadow: var(--shadow-2);
+    color: var(--ink);
+    cursor: pointer;
+    height: calc(var(--space-xl) * 1.5);
+    left: 0;
+    position: absolute;
+    top: calc(50% - var(--space-l) * 1.5);
+    z-index: var(--z-index-controls);
+
+    &:hover {
+      background-color: var(--base-lighter);
+    }
   }
   .mapboxgl-ctrl-bottom-right {
     bottom: 38px;
