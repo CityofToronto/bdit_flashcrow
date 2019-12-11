@@ -101,14 +101,14 @@ export default new Vuex.Store({
     studyRequestLocations: new Map(),
     studyRequestUsers: new Map(),
     requestReasons: [],
-    // map mode
-    showMap: true,
     // ACTIVE STUDY REQUEST
     studyRequest: null,
     studyRequestLocation: null,
     studyRequestUser: null,
     // query that will appear in the search bar
     locationQuery: '',
+    // DRAWER
+    drawerOpen: true,
   },
   getters: {
     // AUTHENTICATION
@@ -350,10 +350,6 @@ export default new Vuex.Store({
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
-    // MAP MODE
-    setShowMap(state, showMap) {
-      Vue.set(state, 'showMap', showMap);
-    },
     // STUDY REQUESTS
     clearStudyRequests(state) {
       Vue.set(state, 'studyRequests', []);
@@ -422,6 +418,10 @@ export default new Vuex.Store({
     },
     setStudyMeta(state, { i, key, value }) {
       Vue.set(state.studyRequest.studies[i], key, value);
+    },
+    // DRAWER
+    setDrawerOpen(state, drawerOpen) {
+      Vue.set(state, 'drawerOpen', drawerOpen);
     },
   },
   actions: {

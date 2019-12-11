@@ -12,11 +12,7 @@ Vue.use(Router);
 const router = new Router({
   mode: 'history',
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      redirect: { name: 'viewData' },
-    },
+    // NON-DRAWER ROUTES
     {
       path: '/login',
       name: 'login',
@@ -25,140 +21,6 @@ const router = new Router({
         title: 'Log in',
       },
       component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcLogin.vue'),
-    },
-    {
-      path: '/view',
-      meta: { title: 'View Map' },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/LayoutViewData.vue'),
-      children: [{
-        path: '',
-        name: 'viewData',
-        components: {
-          filters: null,
-          display: null,
-        },
-      }, {
-        path: 'location/:centrelineType/:centrelineId',
-        meta: { title: 'View Data' },
-        name: 'viewDataAtLocation',
-        components: {
-          filters: () => import(/* webpackChunkName: "home" */ '@/web/components/FcFiltersViewDataAtLocation.vue'),
-          display: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
-        },
-      }],
-    },
-    {
-      path: '/requests/study/new',
-      meta: { title: 'New Request' },
-      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/LayoutRequestStudy.vue'),
-      beforeEnter(to, from, next) {
-        const { location, studyRequest } = store.state;
-        if (location === null) {
-          store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
-          next({ name: 'viewData' });
-        } else {
-          if (
-            studyRequest === null
-            || studyRequest.id !== undefined
-            || studyRequest.centrelineType !== location.centrelineType
-            || studyRequest.centrelineId !== location.centrelineId
-          ) {
-            store.commit('setNewStudyRequest', []);
-          }
-          next();
-        }
-      },
-      children: [{
-        path: '',
-        name: 'requestStudy',
-        meta: { title: 'New Study: Request' },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
-        },
-      }, {
-        path: 'schedule',
-        name: 'requestStudySchedule',
-        meta: { title: 'New Study: Schedule' },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
-        },
-      }, {
-        path: 'specify',
-        name: 'requestStudySpecify',
-        meta: { title: 'New Study: Specify' },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
-        },
-      }, {
-        path: 'confirm',
-        name: 'requestStudyConfirm',
-        meta: { title: 'New Study: Confirm' },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
-        },
-      }],
-    },
-    {
-      path: '/requests/study/:id/edit',
-      meta: {
-        title({ params: { id } }) {
-          return `Edit Request #${id}`;
-        },
-      },
-      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/LayoutRequestStudy.vue'),
-      children: [{
-        path: '',
-        name: 'requestStudyEdit',
-        meta: {
-          title({ params: { id } }) {
-            return `Edit Request #${id}: Request`;
-          },
-        },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
-        },
-      }, {
-        path: 'schedule',
-        name: 'requestStudyEditSchedule',
-        meta: {
-          title({ params: { id } }) {
-            return `Edit Request #${id}: Schedule`;
-          },
-        },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
-        },
-      }, {
-        path: 'specify',
-        name: 'requestStudyEditSpecify',
-        meta: {
-          title({ params: { id } }) {
-            return `Edit Request #${id}: Specify`;
-          },
-        },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
-        },
-      }, {
-        path: 'confirm',
-        name: 'requestStudyEditConfirm',
-        meta: {
-          title({ params: { id } }) {
-            return `Edit Request #${id}: Confirm`;
-          },
-        },
-        components: {
-          default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
-          actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
-        },
-      }],
     },
     {
       path: '/requests/track',
@@ -173,15 +35,146 @@ const router = new Router({
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
     },
+    // DRAWER ROUTES
     {
-      path: '/requests/study/:id',
-      name: 'requestStudyView',
-      meta: {
-        title({ params: { id } }) {
-          return `View Request #${id}`;
+      path: '/',
+      meta: { title: 'View Map' },
+      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutDrawerMap.vue'),
+      children: [{
+        path: '',
+        name: 'home',
+        redirect: { name: 'viewData' },
+      }, {
+        path: '/view',
+        meta: { title: 'View Map' },
+        name: 'viewData',
+        component: null,
+      }, {
+        path: '/view/location/:centrelineType/:centrelineId',
+        meta: { title: 'View Data' },
+        name: 'viewDataAtLocation',
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
+      }, {
+        path: '/requests/study/new',
+        meta: { title: 'New Request' },
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudy.vue'),
+        beforeEnter(to, from, next) {
+          const { location, studyRequest } = store.state;
+          if (location === null) {
+            store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
+            next({ name: 'viewData' });
+          } else {
+            if (
+              studyRequest === null
+              || studyRequest.id !== undefined
+              || studyRequest.centrelineType !== location.centrelineType
+              || studyRequest.centrelineId !== location.centrelineId
+            ) {
+              store.commit('setNewStudyRequest', []);
+            }
+            next();
+          }
         },
-      },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestStudyView.vue'),
+        children: [{
+          path: '',
+          name: 'requestStudy',
+          meta: { title: 'New Study: Request' },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
+          },
+        }, {
+          path: 'schedule',
+          name: 'requestStudySchedule',
+          meta: { title: 'New Study: Schedule' },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
+          },
+        }, {
+          path: 'specify',
+          name: 'requestStudySpecify',
+          meta: { title: 'New Study: Specify' },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
+          },
+        }, {
+          path: 'confirm',
+          name: 'requestStudyConfirm',
+          meta: { title: 'New Study: Confirm' },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
+          },
+        }],
+      }, {
+        path: '/requests/study/:id/edit',
+        meta: {
+          title({ params: { id } }) {
+            return `Edit Request #${id}`;
+          },
+        },
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudy.vue'),
+        children: [{
+          path: '',
+          name: 'requestStudyEdit',
+          meta: {
+            title({ params: { id } }) {
+              return `Edit Request #${id}: Request`;
+            },
+          },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyRequest.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomRequestData.vue'),
+          },
+        }, {
+          path: 'schedule',
+          name: 'requestStudyEditSchedule',
+          meta: {
+            title({ params: { id } }) {
+              return `Edit Request #${id}: Schedule`;
+            },
+          },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySchedule.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToSpecify.vue'),
+          },
+        }, {
+          path: 'specify',
+          name: 'requestStudyEditSpecify',
+          meta: {
+            title({ params: { id } }) {
+              return `Edit Request #${id}: Specify`;
+            },
+          },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudySpecify.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomContinueToConfirm.vue'),
+          },
+        }, {
+          path: 'confirm',
+          name: 'requestStudyEditConfirm',
+          meta: {
+            title({ params: { id } }) {
+              return `Edit Request #${id}: Confirm`;
+            },
+          },
+          components: {
+            default: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyConfirm.vue'),
+            actionBottom: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcActionBottomConfirm.vue'),
+          },
+        }],
+      }, {
+        path: '/requests/study/:id',
+        name: 'requestStudyView',
+        meta: {
+          title({ params: { id } }) {
+            return `View Request #${id}`;
+          },
+        },
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayRequestStudyView.vue'),
+      }],
     },
     {
       path: '*',

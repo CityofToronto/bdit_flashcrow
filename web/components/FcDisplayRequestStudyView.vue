@@ -1,13 +1,11 @@
 <template>
-  <main class="fc-request-study-view flex-fill flex-container-column">
-    <TdsTopBar class="nav-links text-size-l">
-      <template v-slot:left>
-        <router-link :to="linkBack">
-          <i class="fa fa-chevron-left"></i>
-          <span> Back to All</span>
-        </router-link>
-      </template>
-    </TdsTopBar>
+  <div class="fc-display-request-study-view flex-container-column">
+    <div class="nav-links flex-container-row px-xl py-l text-size-l">
+      <router-link :to="linkBack">
+        <i class="fa fa-chevron-left"></i>
+        <span> Back to All</span>
+      </router-link>
+    </div>
     <div class="px-xl flex-fill flex-container-column">
       <hr />
       <div
@@ -50,16 +48,15 @@
         </section>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
-import TdsTopBar from '@/web/components/tds/TdsTopBar.vue';
 import { HttpStatus } from '@/lib/Constants';
 import {
   REQUEST_STUDY_FORBIDDEN,
@@ -80,12 +77,11 @@ function getToast(err) {
 }
 
 export default {
-  name: 'FcRequestStudyView',
+  name: 'FcDisplayRequestStudyView',
   components: {
     FcSummaryStudy,
     FcSummaryStudyRequest,
     TdsLoadingSpinner,
-    TdsTopBar,
   },
   data() {
     return {
@@ -146,6 +142,9 @@ export default {
         id,
         isSupervisor: this.isSupervisor,
       })
+        .then(() => {
+          this.setLocation(this.studyRequestLocation);
+        })
         .catch((err) => {
           const toast = getToast(err);
           this.setToast(toast);
@@ -153,12 +152,13 @@ export default {
         });
     },
     ...mapActions(['fetchStudyRequest', 'setToast']),
+    ...mapMutations(['setLocation']),
   },
 };
 </script>
 
 <style lang="postcss">
-.fc-request-study-view {
+.fc-display-request-study-view {
   & > .nav-links {
     padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
     text-transform: uppercase;

@@ -1,6 +1,7 @@
 <template>
-  <div class="fc-display-view-data-at-location flex-2">
+  <div class="fc-display-view-data-at-location">
     <div class="flex-container-column">
+      <FcFiltersViewDataAtLocation />
       <header class="flex-container-row">
         <label class="tds-checkbox">
           <input
@@ -41,6 +42,7 @@ import {
 
 import { COUNT_TYPES, Status } from '@/lib/Constants';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
+import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 function idIsCount(id) {
@@ -55,6 +57,7 @@ export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     FcCardTableCounts,
+    FcFiltersViewDataAtLocation,
     TdsLoadingSpinner,
   },
   data() {
@@ -107,7 +110,6 @@ export default {
     ...mapState([
       'counts',
       'location',
-      'showMap',
       'studies',
     ]),
   },
@@ -182,7 +184,6 @@ export default {
       }
       this.setNewStudyRequest(Array.from(studyTypes));
       this.$router.push({ name: 'requestStudy' });
-      this.setShowMap(true);
     },
     actionShowReports(item) {
       if (item.counts.length === 0) {
@@ -249,7 +250,6 @@ export default {
       'setLocation',
       'setModal',
       'setNewStudyRequest',
-      'setShowMap',
     ]),
   },
 };
@@ -259,7 +259,7 @@ export default {
 .fc-display-view-data-at-location {
   max-height: 100%;
   overflow: auto;
-  padding: var(--space-m) var(--space-xl);
+  padding: var(--space-m) var(--space-l);
   & > .flex-container-column > header {
     align-items: center;
     background-color: var(--base-lighter);

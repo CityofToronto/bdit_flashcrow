@@ -791,54 +791,6 @@ textarea {
   }
 }
 
-.tds-toggle {
-  cursor: pointer;
-  vertical-align: middle;
-  & > input[type="checkbox"] {
-    appearance: none;
-    background-color: var(--white);
-    border-radius: 1rem;
-    border: var(--border-default);
-    box-shadow: inset -2rem 0 0 0 var(--base);
-    cursor: pointer;
-    height: 2rem;
-    margin: 0;
-    outline: none;
-    position: relative;
-    transition: var(--transition-short);
-    vertical-align: middle;
-    width: 4rem;
-    &:checked {
-      border-color: var(--success-dark);
-      box-shadow: inset 2rem 0 0 0 var(--success);
-    }
-    &:disabled {
-      background-color: var(--disabled-light);
-      border-color: var(--disabled-dark);
-      box-shadow: inset -2rem 0 0 0 var(--disabled);
-    }
-    &:disabled:checked {
-      box-shadow: inset 2rem 0 0 0 var(--disabled);
-    }
-  }
-  & > span {
-    vertical-align: middle;
-  }
-  & > span + input[type="checkbox"] { /* stylelint-disable-line */
-    margin-left: var(--space-s);
-  }
-  & > input[type="checkbox"] + span {
-    padding-left: var(--space-s);
-  }
-  &:hover > input[type="checkbox"]:not(:disabled) {
-    box-shadow: inset -2rem 0 0 0 var(--base-light);
-  }
-  &:hover > input[type="checkbox"]:not(:disabled):checked {
-    border-color: var(--success);
-    box-shadow: inset 2rem 0 0 0 var(--success-light);
-  }
-}
-
 /* BUTTONS */
 button {
   background-color: var(--white);
