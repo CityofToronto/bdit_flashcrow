@@ -317,7 +317,13 @@ function injectSourcesAndLayers(rawStyle) {
     minzoom: ZOOM_MIN_COUNTS,
     maxzoom: ZOOM_MAX + 1,
     layout: {
-      'text-field': '\uf549',
+      'text-field': [
+        'match',
+        ['get', 'schoolType'],
+        'U', '\uf19d',
+        'C', '\uf19d',
+        '\uf549',
+      ],
       'text-font': ['literal', ['Font Awesome 5 Free']],
       'text-size': [
         'step',
@@ -367,32 +373,6 @@ export default {
       const { lat, lng, zoom } = this.coordinates;
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
-    },
-    selectedFeatureNeedsUpdate() {
-      if (this.location === null) {
-        return this.selectedFeature !== null;
-      }
-      if (this.selectedFeature === null) {
-        return true;
-      }
-      const { centrelineId, centrelineType } = this.location;
-      const layerId = this.selectedFeature.layer.id;
-      if (centrelineType === CentrelineType.SEGMENT) {
-        if (layerId === 'centreline') {
-          return this.selectedFeature.properties.geo_id !== centrelineId;
-        }
-        return true;
-      }
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        if (layerId === 'counts') {
-          return this.selectedFeature.properties.centrelineId !== centrelineId;
-        }
-        if (layerId === 'intersections') {
-          return this.selectedFeature.properties.int_id !== centrelineId;
-        }
-        return true;
-      }
-      return false;
     },
     ...mapState(['drawerOpen', 'location']),
   },
@@ -459,8 +439,10 @@ export default {
         this.loading = true;
       });
       this.map.on('idle', () => {
-        this.updateSelectedFeature();
         this.loading = false;
+      });
+      this.map.once('idle', () => {
+        this.updateSelectedFeature();
       });
     });
   },
@@ -598,17 +580,29 @@ export default {
      * - centreline
      *
      * TODO: within layers, rank by closest to `point`
-     * TODO: don't depend on rendering order of layers
      *
      * @param {Object} point - `(x, y)` coordinates of mouse
      * @returns {Object?} the matched feature, or `null` if no such feature
      */
-    getFeatureForPoint(point) {
+    getFeatureForPoint(point, options) {
+      const defaultOptions = {
+        selectableOnly: false,
+      };
+      const featureOptions = {
+        ...defaultOptions,
+        ...options,
+      };
+      const { selectableOnly } = featureOptions;
+
       const layers = [
-        'centreline',
         'counts',
+        'centreline',
         'intersections',
       ];
+      if (!selectableOnly) {
+        layers.push('collisions-non-ksi', 'collisions-ksi', 'schools');
+      }
+
       let features = this.map.queryRenderedFeatures(point, { layers });
       if (features.length > 0) {
         // see if a feature was clicked ... if so choose that one
@@ -621,15 +615,7 @@ export default {
       if (features.length === 0) {
         return null;
       }
-
-      // get all elements in the bounding box that are intersections
-      let feature = features.find(value => value.layer.id === 'intersections');
-
-      // select first centreline segment if there are no intersections in the bounding box
-      if (feature === undefined) {
-        [feature] = features;
-      }
-      return feature;
+      return features[0];
     },
     onCentrelineClick(feature) {
       const { coordinates } = feature.geometry;
@@ -699,7 +685,9 @@ export default {
       this.setLocation(elementInfo);
     },
     onMapClick(e) {
-      const feature = this.getFeatureForPoint(e.point);
+      const feature = this.getFeatureForPoint(e.point, {
+        selectableOnly: true,
+      });
       this.setSelectedFeature(feature);
       if (feature === null) {
         return;
@@ -734,9 +722,6 @@ export default {
       this.coordinates = { lat, lng, zoom };
     },
     updateSelectedFeature() {
-      if (!this.selectedFeatureNeedsUpdate) {
-        return;
-      }
       const feature = this.getFeatureForLocation(this.location);
       this.setSelectedFeature(feature);
     },
