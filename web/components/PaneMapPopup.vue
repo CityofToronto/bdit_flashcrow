@@ -3,16 +3,17 @@
     <TdsPanel
       :icon="icon"
       :variant="variant">
-      <div class="ml-l pl-m">
+      <div class="font-size-m ml-l pl-m">
         <strong v-if="description">{{description}}</strong>
         <span v-else> name unknown</span>
       </div>
-      <button
-        v-if="!hover"
-        class="font-size-l mt-s"
-        @click="onViewData">
-        View Data
-      </button>
+      <template v-if="featureSelectable">
+        <button
+          class="font-size-l mt-s"
+          @click="onViewData">
+          View Data
+        </button>
+      </template>
     </TdsPanel>
   </div>
 </template>
@@ -26,6 +27,12 @@ import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
+
+const SELECTABLE_LAYERS = [
+  'centreline',
+  'counts',
+  'intersections',
+];
 
 export default {
   name: 'PaneMapPopup',
@@ -132,6 +139,9 @@ export default {
        */
       return null;
     },
+    featureSelectable() {
+      return SELECTABLE_LAYERS.includes(this.layerId);
+    },
     icon() {
       if (this.layerId === 'schools') {
         const { schoolType } = this.feature.properties;
@@ -189,6 +199,7 @@ export default {
     box-shadow: var(--shadow-2);
   }
 
+  font-family: var(--font-family);
   left: var(--space-l);
   position: absolute;
   top: var(--space-m);
