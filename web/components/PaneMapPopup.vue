@@ -3,15 +3,17 @@
     <TdsPanel
       :icon="icon"
       :variant="variant">
-      <div class="ml-l">
-        <strong v-if="descriptionFormatted"> {{descriptionFormatted}}</strong>
-        <span v-else class="text-muted"> name unknown</span>
+      <div class="font-size-m ml-l pl-m">
+        <strong v-if="description">{{description}}</strong>
+        <span v-else> name unknown</span>
       </div>
-      <button
-        class="font-size-l mt-s"
-        @click="onViewData">
-        View Data
-      </button>
+      <template v-if="featureSelectable">
+        <button
+          class="font-size-l mt-s"
+          @click="onViewData">
+          View Data
+        </button>
+      </template>
     </TdsPanel>
   </div>
 </template>
@@ -22,7 +24,15 @@ import { mapMutations } from 'vuex';
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import DateTime from '@/lib/time/DateTime';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
+
+const SELECTABLE_LAYERS = [
+  'centreline',
+  'counts',
+  'intersections',
+];
 
 export default {
   name: 'PaneMapPopup',
@@ -41,7 +51,10 @@ export default {
       if (this.layerId === 'intersections') {
         return this.feature.properties.int_id;
       }
-      return this.feature.properties.centrelineId;
+      if (this.layerId === 'counts') {
+        return this.feature.properties.centrelineId;
+      }
+      return null;
     },
     centrelineType() {
       if (this.layerId === 'centreline') {
@@ -50,7 +63,10 @@ export default {
       if (this.layerId === 'intersections') {
         return CentrelineType.INTERSECTION;
       }
-      return this.feature.properties.centrelineType;
+      if (this.layerId === 'counts') {
+        return this.feature.properties.centrelineType;
+      }
+      return null;
     },
     coordinates() {
       const { coordinates } = this.feature.geometry;
@@ -61,7 +77,11 @@ export default {
     },
     description() {
       if (this.layerId === 'centreline') {
-        return this.feature.properties.lf_name;
+        const description = this.feature.properties.lf_name;
+        if (!description) {
+          return description;
+        }
+        return formatCountLocationDescription(description);
       }
       if (this.layerId === 'counts') {
         const { numArteryCodes } = this.feature.properties;
@@ -71,9 +91,34 @@ export default {
         return `${numArteryCodes} count stations`;
       }
       if (this.layerId === 'intersections') {
-        return this.feature.properties.intersec5;
+        const description = this.feature.properties.intersec5;
+        if (!description) {
+          return description;
+        }
+        return formatCountLocationDescription(description);
       }
-      return this.feature.properties.locationDesc;
+      if (this.layerId === 'schools') {
+        return this.feature.properties.name;
+      }
+      if (this.layerId === 'collisions-non-ksi' || this.layerId === 'collisions-ksi') {
+        const { accdate, acctime, injury } = this.feature.properties;
+        let dt = DateTime.fromJSON(accdate);
+
+        const hhmm = parseInt(acctime, 10);
+        const hour = Math.floor(hhmm / 100);
+        const minute = hhmm % 100;
+        dt = dt.set({ hour, minute });
+        const dtStr = TimeFormatters.formatDateTime(dt);
+
+        if (injury === 4) {
+          return `${dtStr}: Fatal`;
+        }
+        if (injury === 3) {
+          return `${dtStr}: Serious Injury`;
+        }
+        return dtStr;
+      }
+      return null;
     },
     descriptionFormatted() {
       if (this.description) {
@@ -94,8 +139,21 @@ export default {
        */
       return null;
     },
+    featureSelectable() {
+      return SELECTABLE_LAYERS.includes(this.layerId);
+    },
     icon() {
-      return this.hover ? 'hand-pointer' : 'map-marker-alt';
+      if (this.layerId === 'schools') {
+        const { schoolType } = this.feature.properties;
+        if (schoolType === 'U' || schoolType === 'C') {
+          return 'graduation-cap';
+        }
+        return 'school';
+      }
+      if (this.layerId === 'collisions-ksi' || this.layerId === 'collisions-non-ksi') {
+        return 'car-crash';
+      }
+      return this.hover ? 'road' : 'map-marker-alt';
     },
     layerId() {
       return this.feature.layer.id;
@@ -141,6 +199,7 @@ export default {
     box-shadow: var(--shadow-2);
   }
 
+  font-family: var(--font-family);
   left: var(--space-l);
   position: absolute;
   top: var(--space-m);

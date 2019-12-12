@@ -156,9 +156,9 @@ export default {
     border: var(--border-default);
     border-top: 0;
     position: absolute;
-    top: 31px;
+    top: 34px;
     width: 100%;
-    z-index: var(--z-index-controls);
+    z-index: var(--z-index-search-bar);
     & > .suggestion {
       cursor: pointer;
       padding: var(--space-l) var(--space-m);
