@@ -2,5 +2,8 @@
 
 set -euo pipefail
 
-rm -rf /data/tiles/collisions
-mb-util --image_format=pbf --silent /data/tiles/collisions.mbtiles /data/tiles/collisions
+rm -rf /data/tiles/collisionsLevel3
+mb-util --image_format=pbf --silent /data/tiles/collisionsLevel3.mbtiles /data/tiles/collisionsLevel3
+
+rm -rf /data/tiles/collisionsLevel2
+mb-util --image_format=pbf --silent /data/tiles/collisionsLevel2.mbtiles /data/tiles/collisionsLevel2
