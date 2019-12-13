@@ -152,14 +152,14 @@ function injectSourcesAndLayers(rawStyle) {
 
   STYLE.glyphs = 'https://move.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
-  addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 2);
   addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
   addDynamicTileSource(STYLE, 'collisionsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
+  addDynamicTileSource(STYLE, 'counts', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'schoolsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
   addDynamicTileSource(STYLE, 'schoolsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
-  addDynamicTileSource(STYLE, 'counts', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
 
   addLayer(STYLE, 'midblocks', 'line', {
     paint: {
@@ -231,7 +231,11 @@ function injectSourcesAndLayers(rawStyle) {
         ['linear'],
         ['zoom'],
         STYLE.sources.collisionsLevel2.minzoom, 0.2,
-        STYLE.sources.collisionsLevel2.minzoom + 1, 0.6,
+        STYLE.sources.collisionsLevel2.minzoom + 1, [
+          'case',
+          ['>=', ['get', 'injury'], 3], 0.8,
+          0.6,
+        ],
       ],
       'circle-radius': [
         'case',
@@ -250,7 +254,11 @@ function injectSourcesAndLayers(rawStyle) {
         ['>=', ['get', 'injury'], 3], '#b51d09',
         '#d63e04',
       ],
-      'circle-opacity': 0.6,
+      'circle-opacity': [
+        'case',
+        ['>=', ['get', 'injury'], 3], 0.8,
+        0.6,
+      ],
       'circle-radius': [
         'case',
         ['>=', ['get', 'injury'], 3], 10,
@@ -498,7 +506,7 @@ export default {
       const { centrelineId, centrelineType } = location;
       if (centrelineType === CentrelineType.SEGMENT) {
         return this.getFeatureForLayerAndProperty(
-          'centreline',
+          'midblocks',
           'geo_id',
           centrelineId,
         );
@@ -549,11 +557,16 @@ export default {
 
       const layers = [
         'counts',
-        'centreline',
         'intersections',
+        'midblocks',
       ];
       if (!selectableOnly) {
-        layers.push('collisions-non-ksi', 'collisions-ksi', 'schools');
+        layers.push(
+          'collisionsLevel2',
+          'collisionsLevel1',
+          'schoolsLevel2',
+          'schoolsLevel1',
+        );
       }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
@@ -569,19 +582,6 @@ export default {
         return null;
       }
       return features[0];
-    },
-    onCentrelineClick(feature) {
-      const { coordinates } = feature.geometry;
-      const [lng, lat] = getLineStringMidpoint(coordinates);
-      const elementInfo = {
-        centrelineId: feature.properties.geo_id,
-        centrelineType: CentrelineType.SEGMENT,
-        description: feature.properties.lf_name,
-        featureCode: feature.properties.fcode,
-        lng,
-        lat,
-      };
-      this.setLocation(elementInfo);
     },
     onCountsClick(feature) {
       const [lng, lat] = feature.geometry.coordinates;
@@ -637,6 +637,19 @@ export default {
       };
       this.setLocation(elementInfo);
     },
+    onMidblocksClick(feature) {
+      const { coordinates } = feature.geometry;
+      const [lng, lat] = getLineStringMidpoint(coordinates);
+      const elementInfo = {
+        centrelineId: feature.properties.geo_id,
+        centrelineType: CentrelineType.SEGMENT,
+        description: feature.properties.lf_name,
+        featureCode: feature.properties.fcode,
+        lng,
+        lat,
+      };
+      this.setLocation(elementInfo);
+    },
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point, {
         selectableOnly: true,
@@ -646,12 +659,12 @@ export default {
         return;
       }
       const layerId = feature.layer.id;
-      if (layerId === 'centreline') {
-        this.onCentrelineClick(feature);
-      } else if (layerId === 'counts') {
+      if (layerId === 'counts') {
         this.onCountsClick(feature);
       } else if (layerId === 'intersections') {
         this.onIntersectionsClick(feature);
+      } else if (layerId === 'midblocks') {
+        this.onMidblocksClick(feature);
       }
     },
     onMapMousemove(e) {
