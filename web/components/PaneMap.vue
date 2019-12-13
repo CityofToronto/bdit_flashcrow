@@ -52,187 +52,143 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
+import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
-import style from '@/lib/geo/root.json';
+import rootStyle from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
 
-const ZOOM_MIN_BASEMAP = 0;
-const ZOOM_TORONTO = 10;
-const ZOOM_MIN_INTERSECTIONS = 12;
-const ZOOM_MIN_COUNTS = 14;
-const ZOOM_LOCATION = 17;
-const ZOOM_MAX = 19;
-const ZOOM_MAX_BASEMAP = 23;
+class MapZoom extends Enum {
+  get maxzoomSource() {
+    return this.maxzoomLayer - 1;
+  }
+}
+MapZoom.init({
+  LEVEL_3: {
+    minzoom: 10,
+    maxzoomLayer: 14,
+  },
+  LEVEL_2: {
+    minzoom: 14,
+    maxzoomLayer: 17,
+  },
+  LEVEL_1: {
+    minzoom: 17,
+    maxzoomLayer: 20,
+  },
+});
+MapZoom.MIN = MapZoom.LEVEL_3.minzoom;
+MapZoom.MAX = MapZoom.LEVEL_1.maxzoomSource;
 
-const PAINT_OPACITY = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
-  0.6,
-  [
+function interactionAttr(base, hovered, selected) {
+  return [
     'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    0.6,
-    // normal
-    0.45,
-  ],
-];
+    ['boolean', ['feature-state', 'selected'], false],
+    selected,
+    [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      hovered,
+      // normal
+      base,
+    ],
+  ];
+}
 
-const PAINT_COLOR_CENTRELINE = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
+const PAINT_OPACITY = interactionAttr(0.45, 0.6, 0.6);
+const PAINT_COLOR_CENTRELINE = interactionAttr(
+  '#dcdee0',
+  '#e5a000',
   '#00a91c',
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    '#e5a000',
-    // unhovered
-    '#dcdee0',
-  ],
-];
-const PAINT_SIZE_CENTRELINE = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
-  5,
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    5,
-    // normal
-    3,
-  ],
-];
-const PAINT_SIZE_INTERSECTIONS = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
-  10,
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    10,
-    // normal
-    8,
-  ],
-];
-const PAINT_COLOR_COUNTS = [
-  'case',
-  ['boolean', ['feature-state', 'selected'], false],
-  // selected
+);
+const PAINT_COLOR_COUNTS = interactionAttr(
+  '#00bde3',
+  '#e5a000',
   '#00a91c',
-  [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    // hovered
-    '#e5a000',
-    // unhovered
-    '#00bde3',
-  ],
-];
+);
+const PAINT_WIDTH_MIDBLOCKS = interactionAttr(3, 5, 5);
+const PAINT_RADIUS_INTERSECTIONS = interactionAttr(8, 10, 10);
+const PAINT_RADIUS_COUNTS = interactionAttr(10, 12, 12);
+
+function addTippecanoeSource(style, id, minLevel, maxLevel, crossfade = 0) {
+  /* eslint-disable-next-line no-param-reassign */
+  style.sources[id] = {
+    type: 'vector',
+    tiles: [`https://move.intra.dev-toronto.ca/tiles/${id}/{z}/{x}/{y}.pbf`],
+    minzoom: minLevel.minzoom,
+    maxzoom: maxLevel.maxzoomSource + crossfade,
+  };
+}
+
+function addDynamicTileSource(style, id, minLevel, maxLevel) {
+  const { origin } = window.location;
+  /* eslint-disable-next-line no-param-reassign */
+  style.sources[id] = {
+    type: 'vector',
+    tiles: [`${origin}/api/dynamicTiles/${id}/{z}/{x}/{y}.pbf`],
+    minzoom: minLevel.minzoom,
+    maxzoom: maxLevel.maxzoomSource,
+  };
+}
+
+function addLayer(style, id, type, options) {
+  const source = style.sources[id];
+  style.layers.push({
+    id,
+    source: id,
+    'source-layer': id,
+    type,
+    minzoom: source.minzoom,
+    maxzoom: source.maxzoom + 1,
+    ...options,
+  });
+}
 
 function injectSourcesAndLayers(rawStyle) {
-  const STYLE = {};
-  Object.assign(STYLE, rawStyle);
+  const STYLE = { ...rawStyle };
 
   STYLE.glyphs = 'https://move.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
-  STYLE.sources.centreline = {
-    type: 'vector',
-    tiles: ['https://move.intra.dev-toronto.ca/tiles/centreline/{z}/{x}/{y}.pbf'],
-  };
+  addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 1);
+  addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
+  addDynamicTileSource(STYLE, 'collisionsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'schoolsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
+  addDynamicTileSource(STYLE, 'schoolsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
+  addDynamicTileSource(STYLE, 'counts', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
 
-  STYLE.sources.intersections = {
-    type: 'vector',
-    tiles: ['https://move.intra.dev-toronto.ca/tiles/intersections/{z}/{x}/{y}.pbf'],
-  };
-
-  STYLE.sources['collisions-heatmap'] = {
-    type: 'vector',
-    tiles: ['https://move.intra.dev-toronto.ca/tiles/collisions/{z}/{x}/{y}.pbf'],
-  };
-
-  const { origin } = window.location;
-
-  STYLE.sources.collisions = {
-    type: 'vector',
-    tiles: [`${origin}/api/dynamicTiles/collisions/{z}/{x}/{y}.pbf`],
-  };
-
-  STYLE.sources.counts = {
-    type: 'vector',
-    tiles: [`${origin}/api/dynamicTiles/counts/{z}/{x}/{y}.pbf`],
-  };
-
-  STYLE.sources.schools = {
-    type: 'vector',
-    tiles: [`${origin}/api/dynamicTiles/schools/{z}/{x}/{y}.pbf`],
-  };
-
-  STYLE.layers.push({
-    id: 'centreline',
-    source: 'centreline',
-    'source-layer': 'centreline',
-    type: 'line',
-    minzoom: ZOOM_TORONTO,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'midblocks', 'line', {
     paint: {
       'line-color': PAINT_COLOR_CENTRELINE,
-      'line-width': PAINT_SIZE_CENTRELINE,
+      'line-width': PAINT_WIDTH_MIDBLOCKS,
       'line-opacity': PAINT_OPACITY,
     },
   });
-
-  STYLE.layers.push({
-    id: 'intersections',
-    source: 'intersections',
-    'source-layer': 'centreline_intersection',
-    type: 'circle',
-    minzoom: ZOOM_MIN_INTERSECTIONS,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'intersections', 'circle', {
     paint: {
       'circle-color': PAINT_COLOR_CENTRELINE,
-      'circle-radius': PAINT_SIZE_INTERSECTIONS,
+      'circle-radius': PAINT_RADIUS_INTERSECTIONS,
       'circle-opacity': PAINT_OPACITY,
     },
   });
-
-  STYLE.layers.push({
-    id: 'counts',
-    source: 'counts',
-    'source-layer': 'counts',
-    type: 'circle',
-    minzoom: ZOOM_MIN_COUNTS,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'counts', 'circle', {
     paint: {
       'circle-color': PAINT_COLOR_COUNTS,
-      'circle-radius': 10,
+      'circle-radius': PAINT_RADIUS_COUNTS,
       'circle-opacity': PAINT_OPACITY,
     },
   });
-
-  STYLE.layers.push({
-    id: 'collisions-heatmap',
-    source: 'collisions-heatmap',
-    'source-layer': 'collisions',
-    type: 'heatmap',
-    minzoom: ZOOM_TORONTO,
-    maxzoom: ZOOM_MIN_COUNTS + 1,
+  addLayer(STYLE, 'collisionsLevel3', 'heatmap', {
     paint: {
       'heatmap-color': [
         'interpolate',
@@ -246,76 +202,65 @@ function injectSourcesAndLayers(rawStyle) {
         'interpolate',
         ['linear'],
         ['zoom'],
-        ZOOM_TORONTO, 1,
-        ZOOM_MIN_COUNTS, 3,
+        STYLE.sources.collisionsLevel3.minzoom, 1,
+        STYLE.sources.collisionsLevel3.maxzoom, 3,
       ],
       'heatmap-opacity': [
         'interpolate',
         ['linear'],
         ['zoom'],
-        ZOOM_MIN_COUNTS, 0.8,
-        ZOOM_MIN_COUNTS + 1, 0,
+        STYLE.sources.collisionsLevel3.maxzoom, 0.8,
+        STYLE.sources.collisionsLevel3.maxzoom + 1, 0,
       ],
       'heatmap-radius': [
         'interpolate',
         ['linear'],
         ['zoom'],
-        ZOOM_TORONTO, 5,
-        ZOOM_MIN_COUNTS, 10,
+        STYLE.sources.collisionsLevel3.minzoom, 5,
+        STYLE.sources.collisionsLevel3.maxzoom, 10,
       ],
       'heatmap-weight': ['get', 'heatmap_weight'],
     },
   });
-
-  STYLE.layers.push({
-    id: 'collisions-non-ksi',
-    source: 'collisions',
-    'source-layer': 'collisions',
-    filter: ['<', ['get', 'injury'], 3],
-    type: 'circle',
-    minzoom: ZOOM_MIN_COUNTS,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'collisionsLevel2', 'circle', {
     paint: {
-      'circle-color': '#d63e04',
+      'circle-color': [
+        'case',
+        ['>=', ['get', 'injury'], 3], '#b51d09',
+        '#d63e04',
+      ],
       'circle-opacity': [
         'interpolate',
         ['linear'],
         ['zoom'],
-        ZOOM_MIN_COUNTS, 0.2,
-        ZOOM_MIN_COUNTS + 1, 0.6,
+        STYLE.sources.collisionsLevel2.minzoom, 0.2,
+        STYLE.sources.collisionsLevel2.minzoom + 1, 0.6,
       ],
-      'circle-radius': 5,
+      'circle-radius': [
+        'case',
+        ['>=', ['get', 'injury'], 3], 10,
+        5,
+      ],
+      'circle-sort-key': ['get', 'injury'],
     },
   });
-
-  STYLE.layers.push({
-    id: 'collisions-ksi',
-    source: 'collisions',
-    'source-layer': 'collisions',
-    filter: ['>=', ['get', 'injury'], 3],
-    type: 'circle',
-    minzoom: ZOOM_MIN_COUNTS,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'collisionsLevel1', 'circle', {
     paint: {
-      'circle-color': '#b51d09',
-      'circle-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        ZOOM_MIN_COUNTS, 0.2,
-        ZOOM_MIN_COUNTS + 1, 0.8,
+      'circle-color': [
+        'case',
+        ['>=', ['get', 'injury'], 3], '#b51d09',
+        '#d63e04',
       ],
-      'circle-radius': 10,
+      'circle-opacity': 0.6,
+      'circle-radius': [
+        'case',
+        ['>=', ['get', 'injury'], 3], 10,
+        5,
+      ],
+      'circle-sort-key': ['get', 'injury'],
     },
   });
-
-  STYLE.layers.push({
-    id: 'schools',
-    source: 'schools',
-    'source-layer': 'schools',
-    type: 'symbol',
-    minzoom: ZOOM_MIN_COUNTS,
-    maxzoom: ZOOM_MAX + 1,
+  addLayer(STYLE, 'schoolsLevel2', 'symbol', {
     layout: {
       'text-field': [
         'match',
@@ -325,12 +270,23 @@ function injectSourcesAndLayers(rawStyle) {
         '\uf549',
       ],
       'text-font': ['literal', ['Font Awesome 5 Free']],
-      'text-size': [
-        'step',
-        ['zoom'],
-        16,
-        ZOOM_LOCATION, 20,
+      'text-size': 16,
+    },
+    paint: {
+      'text-color': '#00a91c',
+    },
+  });
+  addLayer(STYLE, 'schoolsLevel1', 'symbol', {
+    layout: {
+      'text-field': [
+        'match',
+        ['get', 'schoolType'],
+        'U', '\uf19d',
+        'C', '\uf19d',
+        '\uf549',
       ],
+      'text-font': ['literal', ['Font Awesome 5 Free']],
+      'text-size': 20,
     },
     paint: {
       'text-color': '#00a91c',
@@ -381,7 +337,7 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(style, metadata).get();
+    const mapStyle = new GeoStyle(rootStyle, metadata).get();
     this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
@@ -399,8 +355,8 @@ export default {
           id: 'gcc-ortho-webm',
           type: 'raster',
           source: 'gcc-ortho-webm',
-          minzoom: ZOOM_MIN_BASEMAP,
-          maxzoom: ZOOM_MAX_BASEMAP,
+          minzoom: MapZoom.LEVEL_3.minzoom,
+          maxzoom: MapZoom.LEVEL_1.maxzoomLayer,
         },
       ],
     });
@@ -417,12 +373,12 @@ export default {
         container: this.$el,
         dragRotate: false,
         maxBounds: bounds,
-        minZoom: ZOOM_TORONTO,
-        maxZoom: ZOOM_MAX,
+        minZoom: MapZoom.MIN,
+        maxZoom: MapZoom.MAX,
         pitchWithRotate: false,
         renderWorldCopies: false,
         style: this.mapStyle,
-        zoom: ZOOM_TORONTO,
+        zoom: MapZoom.MIN,
       });
       this.updateCoordinates();
       this.map.addControl(
@@ -504,7 +460,7 @@ export default {
         // zoom to location
         const { lat, lng } = location;
         const center = new mapboxgl.LngLat(lng, lat);
-        const zoom = Math.max(this.map.getZoom(), ZOOM_LOCATION);
+        const zoom = Math.max(this.map.getZoom(), MapZoom.LEVEL_1.minzoom);
         this.map.easeTo({
           center,
           zoom,
@@ -518,7 +474,7 @@ export default {
         const center = BOUNDS_TORONTO.getCenter();
         this.map.easeTo({
           center,
-          zoom: ZOOM_TORONTO,
+          zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
     },
