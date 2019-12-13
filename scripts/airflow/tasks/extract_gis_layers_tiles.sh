@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-rm -rf /data/tiles/schools
-mb-util --image_format=pbf --silent /data/tiles/schools.mbtiles /data/tiles/schools
+rm -rf /data/tiles/schoolsLevel2
+mb-util --image_format=pbf --silent /data/tiles/schoolsLevel2.mbtiles /data/tiles/schoolsLevel2
