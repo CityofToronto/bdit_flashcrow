@@ -29,9 +29,9 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
 const SELECTABLE_LAYERS = [
-  'centreline',
   'counts',
   'intersections',
+  'midblocks',
 ];
 
 export default {
@@ -45,64 +45,45 @@ export default {
   },
   computed: {
     centrelineId() {
-      if (this.layerId === 'centreline') {
-        return this.feature.properties.geo_id;
-      }
       if (this.layerId === 'intersections') {
         return this.feature.properties.int_id;
       }
       if (this.layerId === 'counts') {
         return this.feature.properties.centrelineId;
       }
+      if (this.layerId === 'midblocks') {
+        return this.feature.properties.geo_id;
+      }
       return null;
     },
     centrelineType() {
-      if (this.layerId === 'centreline') {
-        return CentrelineType.SEGMENT;
-      }
       if (this.layerId === 'intersections') {
         return CentrelineType.INTERSECTION;
       }
       if (this.layerId === 'counts') {
         return this.feature.properties.centrelineType;
       }
+      if (this.layerId === 'midblocks') {
+        return CentrelineType.SEGMENT;
+      }
       return null;
     },
     coordinates() {
       const { coordinates } = this.feature.geometry;
-      if (this.layerId === 'centreline') {
+      if (this.layerId === 'midblocks') {
         return getLineStringMidpoint(coordinates);
       }
       return coordinates;
     },
     description() {
-      if (this.layerId === 'centreline') {
-        const description = this.feature.properties.lf_name;
-        if (!description) {
-          return description;
-        }
-        return formatCountLocationDescription(description);
-      }
-      if (this.layerId === 'counts') {
-        const { numArteryCodes } = this.feature.properties;
-        if (numArteryCodes === 1) {
-          return '1 count station';
-        }
-        return `${numArteryCodes} count stations`;
-      }
-      if (this.layerId === 'intersections') {
-        const description = this.feature.properties.intersec5;
-        if (!description) {
-          return description;
-        }
-        return formatCountLocationDescription(description);
-      }
-      if (this.layerId === 'schools') {
-        return this.feature.properties.name;
-      }
-      if (this.layerId === 'collisions-non-ksi' || this.layerId === 'collisions-ksi') {
+      if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
         const { accdate, acctime, injury } = this.feature.properties;
-        let dt = DateTime.fromJSON(accdate);
+        let dt;
+        if (this.layerId === 'collisionsLevel2') {
+          dt = DateTime.fromISO(accdate);
+        } else {
+          dt = DateTime.fromJSON(accdate);
+        }
 
         const hhmm = parseInt(acctime, 10);
         const hour = Math.floor(hhmm / 100);
@@ -118,6 +99,30 @@ export default {
         }
         return dtStr;
       }
+      if (this.layerId === 'counts') {
+        const { numArteryCodes } = this.feature.properties;
+        if (numArteryCodes === 1) {
+          return '1 count station';
+        }
+        return `${numArteryCodes} count stations`;
+      }
+      if (this.layerId === 'intersections') {
+        const description = this.feature.properties.intersec5;
+        if (!description) {
+          return description;
+        }
+        return formatCountLocationDescription(description);
+      }
+      if (this.layerId === 'midblocks') {
+        const description = this.feature.properties.lf_name;
+        if (!description) {
+          return description;
+        }
+        return formatCountLocationDescription(description);
+      }
+      if (this.layerId === 'schoolsLevel2' || this.layerId === 'schoolsLevel1') {
+        return this.feature.properties.name;
+      }
       return null;
     },
     descriptionFormatted() {
@@ -127,11 +132,11 @@ export default {
       return null;
     },
     featureCode() {
-      if (this.layerId === 'centreline') {
-        return this.feature.properties.fcode;
-      }
       if (this.layerId === 'intersections') {
         return this.feature.properties.elevatio9;
+      }
+      if (this.layerId === 'midblocks') {
+        return this.feature.properties.fcode;
       }
       /*
        * In this case, we don't have a reliable feature code we can use.  Eventually, we should
@@ -143,15 +148,18 @@ export default {
       return SELECTABLE_LAYERS.includes(this.layerId);
     },
     icon() {
-      if (this.layerId === 'schools') {
+      if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
+        return 'car-crash';
+      }
+      if (this.layerId === 'counts') {
+        return this.hover ? 'list-ol' : 'map-marker-alt';
+      }
+      if (this.layerId === 'schoolsLevel2' || this.layerId === 'schoolsLevel1') {
         const { schoolType } = this.feature.properties;
         if (schoolType === 'U' || schoolType === 'C') {
           return 'graduation-cap';
         }
         return 'school';
-      }
-      if (this.layerId === 'collisions-ksi' || this.layerId === 'collisions-non-ksi') {
-        return 'car-crash';
       }
       return this.hover ? 'road' : 'map-marker-alt';
     },
