@@ -92,15 +92,9 @@ MapZoom.MAX = MapZoom.LEVEL_1.maxzoomSource;
 function interactionAttr(base, hovered, selected) {
   return [
     'case',
-    ['boolean', ['feature-state', 'selected'], false],
-    selected,
-    [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      hovered,
-      // normal
-      base,
-    ],
+    ['boolean', ['feature-state', 'selected'], false], selected,
+    ['boolean', ['feature-state', 'hover'], false], hovered,
+    base,
   ];
 }
 
@@ -160,7 +154,7 @@ function injectSourcesAndLayers(rawStyle) {
 
   addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 1);
+  addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 2);
   addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
   addDynamicTileSource(STYLE, 'collisionsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'schoolsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
@@ -223,6 +217,9 @@ function injectSourcesAndLayers(rawStyle) {
     },
   });
   addLayer(STYLE, 'collisionsLevel2', 'circle', {
+    layout: {
+      'circle-sort-key': ['get', 'injury'],
+    },
     paint: {
       'circle-color': [
         'case',
@@ -241,10 +238,12 @@ function injectSourcesAndLayers(rawStyle) {
         ['>=', ['get', 'injury'], 3], 10,
         5,
       ],
-      'circle-sort-key': ['get', 'injury'],
     },
   });
   addLayer(STYLE, 'collisionsLevel1', 'circle', {
+    layout: {
+      'circle-sort-key': ['get', 'injury'],
+    },
     paint: {
       'circle-color': [
         'case',
@@ -257,7 +256,6 @@ function injectSourcesAndLayers(rawStyle) {
         ['>=', ['get', 'injury'], 3], 10,
         5,
       ],
-      'circle-sort-key': ['get', 'injury'],
     },
   });
   addLayer(STYLE, 'schoolsLevel2', 'symbol', {
@@ -292,7 +290,6 @@ function injectSourcesAndLayers(rawStyle) {
       'text-color': '#00a91c',
     },
   });
-
   return STYLE;
 }
 
