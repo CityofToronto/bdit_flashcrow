@@ -8,9 +8,13 @@ WITH event_injury AS (
 ),
 collisions AS (
   SELECT
-    ei.collision_id, ei.injury,
-    e.geom, e.accnb, e.accdate, e.acctime,
-    ec.centreline_id, ec.centreline_type
+    ei.collision_id, ei.injury, e.geom,
+    CASE
+      WHEN ei.injury = 4 THEN 10
+      WHEN ei.injury = 3 THEN 3
+      WHEN ei.injury = 2 THEN 0.3
+      ELSE 0.03
+    END AS heatmap_weight
   FROM event_injury ei
   JOIN collisions.events e ON ei.collision_id = e.collision_id
   JOIN collisions.events_centreline ec ON ei.collision_id = ec.collision_id
