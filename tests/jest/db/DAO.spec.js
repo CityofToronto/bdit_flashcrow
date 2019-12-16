@@ -14,6 +14,7 @@ import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
+import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
 import StudyRequestReasonDAO from '@/lib/db/StudyRequestReasonDAO';
 import StudyRequestStatusDAO from '@/lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/lib/db/UserDAO';
@@ -486,6 +487,95 @@ test('StudyRequestDAO', async () => {
   // fetch all
   all = await StudyRequestDAO.all();
   expect(all).toEqual([]);
+});
+
+test('StudyRequestCommentDAO', async () => {
+  const user1 = DAOTestUtils.randomUser();
+  const userCreated1 = await UserDAO.create(user1);
+  const now = DateTime.local();
+  const transientStudyRequest = {
+    userSubject: userCreated1.subject,
+    status: 'REQUESTED',
+    closed: false,
+    serviceRequestId: 12345,
+    priority: 'STANDARD',
+    assignedTo: 'FIELD STAFF',
+    dueDate: now.plus({ months: 4 }),
+    estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
+    reasons: ['TSC', 'PED_SAFETY'],
+    ccEmails: [],
+    centrelineId: 42,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.333251, 43.709012],
+    },
+    studies: [{
+      studyType: 'TMC',
+      daysOfWeek: [2, 3, 4],
+      duration: null,
+      hours: 'ROUTINE',
+      notes: 'completely normal routine turning movement count',
+    }],
+  };
+  const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+
+  const transientComment1 = {
+    userSubject: userCreated1.subject,
+    comment: 'We don\'t normally do this study here.',
+  };
+
+  const user2 = DAOTestUtils.randomUser();
+  const userCreated2 = await UserDAO.create(user2);
+  const transientComment2 = {
+    userSubject: userCreated2.subject,
+    comment: 'I believe we have already done this study before.',
+  };
+
+  // save comment 1
+  let persistedComment1 = await StudyRequestCommentDAO.create(
+    persistedStudyRequest,
+    transientComment1,
+  );
+  expect(persistedComment1.id).not.toBeNull();
+
+  // fetch saved comment
+  let fetchedComment1 = await StudyRequestCommentDAO.byId(persistedComment1.id);
+  expect(fetchedComment1).toEqual(persistedComment1);
+
+  // fetch by study request
+  let byStudyRequest = await StudyRequestCommentDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedComment1]);
+
+  // update comment
+  persistedComment1.comment = 'Yes, we\'ve done this already here.';
+  persistedComment1 = await StudyRequestCommentDAO.update(persistedComment1);
+  fetchedComment1 = await StudyRequestCommentDAO.byId(persistedComment1.id);
+  expect(fetchedComment1).toEqual(persistedComment1);
+
+  // save comment 2
+  const persistedComment2 = await StudyRequestCommentDAO.create(
+    persistedStudyRequest,
+    transientComment2,
+  );
+  expect(persistedComment2.id).not.toBeNull();
+
+  // fetch by study request: returns most recent first
+  byStudyRequest = await StudyRequestCommentDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedComment2, persistedComment1]);
+
+  // delete comment 1
+  await expect(StudyRequestCommentDAO.delete(persistedComment1)).resolves.toBe(true);
+  byStudyRequest = await StudyRequestCommentDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedComment2]);
+
+  // delete comment 1: should not work again
+  await expect(StudyRequestCommentDAO.delete(persistedComment1)).resolves.toBe(false);
+
+  // delete study request: should delete all comments
+  await StudyRequestDAO.delete(persistedStudyRequest);
+  byStudyRequest = await StudyRequestCommentDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([]);
 });
 
 test('StudyRequestReasonDAO', async () => {
