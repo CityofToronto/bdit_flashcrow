@@ -388,6 +388,7 @@ test('StudyRequestDAO', async () => {
   const transientStudyRequest = {
     userSubject: userCreated.subject,
     status: 'REQUESTED',
+    closed: false,
     serviceRequestId: null,
     priority: 'STANDARD',
     assignedTo: null,
@@ -434,6 +435,18 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
   persistedStudyRequest.studies[0].hours = 'SCHOOL';
   persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // close
+  persistedStudyRequest.closed = true;
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // reopen
+  persistedStudyRequest.closed = false;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
