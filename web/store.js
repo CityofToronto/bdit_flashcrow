@@ -549,13 +549,9 @@ export default new Vuex.Store({
       return result;
     },
     // STUDY REQUESTS
-    async fetchStudyRequest({ commit, dispatch }, { id, isSupervisor }) {
+    async fetchStudyRequest({ commit, dispatch }, { id }) {
       const url = `/requests/study/${id}`;
-      const options = {};
-      if (isSupervisor) {
-        options.data = { isSupervisor };
-      }
-      const studyRequest = await apiFetch(url, options);
+      const studyRequest = await apiFetch(url);
       commit('setStudyRequest', studyRequest);
 
       const {

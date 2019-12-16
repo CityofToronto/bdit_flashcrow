@@ -138,10 +138,7 @@ export default {
     },
     syncFromRoute(to) {
       const { id } = to.params;
-      return this.fetchStudyRequest({
-        id,
-        isSupervisor: this.isSupervisor,
-      })
+      return this.fetchStudyRequest({ id })
         .then(() => {
           this.setLocation(this.studyRequestLocation);
         })
