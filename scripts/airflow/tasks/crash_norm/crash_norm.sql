@@ -56,7 +56,7 @@ CREATE TABLE collisions_new.events AS (
     GROUP BY "ACCDATE", "ACCNB"
 );
 CREATE UNIQUE INDEX events_collision_id ON collisions_new.events (collision_id);
-CREATE INDEX events_accdate ON collisions.events (accdate);
+CREATE INDEX events_accdate ON collisions_new.events (accdate);
 CREATE INDEX events_geom ON collisions_new.events USING GIST (geom);
 CREATE INDEX events_srid3857_geom ON collisions_new.events USING GIST (ST_Transform(geom, 3857));
 
