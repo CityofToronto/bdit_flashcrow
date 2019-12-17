@@ -103,6 +103,7 @@ export default new Vuex.Store({
     requestReasons: [],
     // ACTIVE STUDY REQUEST
     studyRequest: null,
+    studyRequestComments: [],
     studyRequestLocation: null,
     studyRequestUser: null,
     // query that will appear in the search bar
@@ -375,9 +376,6 @@ export default new Vuex.Store({
     setStudyRequestLocation(state, studyRequestLocation) {
       Vue.set(state, 'studyRequestLocation', studyRequestLocation);
     },
-    setStudyRequestUser(state, studyRequestUser) {
-      Vue.set(state, 'studyRequestUser', studyRequestUser);
-    },
     setNewStudyRequest(state, studyTypes) {
       const { location, now } = state;
       const dueDate = now.plus({ months: 3 });
@@ -418,6 +416,19 @@ export default new Vuex.Store({
     },
     setStudyMeta(state, { i, key, value }) {
       Vue.set(state.studyRequest.studies[i], key, value);
+    },
+    // STUDY REQUEST COMMENTS
+    setStudyRequestComments(state, studyRequestComments) {
+      Vue.set(state, 'studyRequestComments', studyRequestComments);
+    },
+    setStudyRequestCommentUsers(state, studyRequestCommentUsers) {
+      Vue.set(state, 'studyRequestCommentUsers', studyRequestCommentUsers);
+    },
+    addStudyRequestComment(state, comment) {
+      state.studyRequestComments.unshift(comment);
+    },
+    removeStudyRequestComment(state, i) {
+      state.studyRequestComments.splice(i, 1);
     },
     // DRAWER
     setDrawerOpen(state, drawerOpen) {
@@ -557,31 +568,35 @@ export default new Vuex.Store({
       const {
         centrelineId,
         centrelineType,
-        userSubject,
       } = studyRequest;
+
+      const promiseComments = await dispatch('fetchStudyRequestComments', { studyRequest });
 
       const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
       const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
 
-      const subjects = [userSubject];
-      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
-
       const [
+        studyRequestComments,
         studyRequestLocations,
-        studyRequestUsers,
-      ] = await Promise.all([promiseLocations, promiseUsers]);
+      ] = await Promise.all([promiseComments, promiseLocations]);
 
       const key = centrelineKey(centrelineType, centrelineId);
       const studyRequestLocation = studyRequestLocations.get(key);
       commit('setStudyRequestLocation', studyRequestLocation);
 
-      const studyRequestUser = studyRequestUsers.get(userSubject);
-      commit('setStudyRequestUser', studyRequestUser);
+      let subjects = new Set();
+      studyRequestComments.forEach(({ userSubject }) => {
+        subjects.add(userSubject);
+      });
+      subjects = Array.from(subjects);
+      const studyRequestCommentUsers = await dispatch('fetchUsersBySubjects', subjects);
+      commit('setStudyRequestCommentUsers', studyRequestCommentUsers);
 
       return {
         studyRequest,
+        studyRequestComments,
+        studyRequestCommentUsers,
         studyRequestLocation,
-        studyRequestUser,
       };
     },
     async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
@@ -680,8 +695,62 @@ export default new Vuex.Store({
       await Promise.all(promisesStudyRequests);
       await dispatch('fetchAllStudyRequests');
     },
+    // STUDY REQUEST COMMENTS
+    async saveStudyRequestComment({ commit, state }, { studyRequest, comment }) {
+      const { id: studyRequestId } = studyRequest;
+      const url = `/requests/study/${studyRequestId}/comments`;
+      const data = {
+        ...comment,
+      };
+      const options = {
+        method: 'POST',
+        csrf: state.auth.csrf,
+        data,
+      };
+      const commentNew = await apiFetch(url, options);
+      commit('addStudyRequestComment', commentNew);
+    },
+    async fetchStudyRequestComments({ commit }, { studyRequest }) {
+      const { id: studyRequestId } = studyRequest;
+      const studyRequestComments = await apiFetch(`/requests/study/${studyRequestId}/comments`);
+      commit('setStudyRequestComments', studyRequestComments);
+      return studyRequestComments;
+    },
+    async updateStudyRequestComment({ state }, { studyRequest, comment }) {
+      const { id: commentId } = comment;
+      const { id: studyRequestId } = studyRequest;
+      const url = `/requests/study/${studyRequestId}/comments/${commentId}`;
+      const data = {
+        ...comment,
+      };
+      const options = {
+        method: 'PUT',
+        csrf: state.auth.csrf,
+        data,
+      };
+      return apiFetch(url, options);
+    },
+    async deleteStudyRequestComment({ commit, state }, { studyRequest, comment }) {
+      const { id: commentId } = comment;
+      const i = state.studyRequestComments.findIndex(({ id }) => id === commentId);
+      if (i === -1) {
+        return { success: false };
+      }
+      commit('removeStudyRequestComment', i);
+
+      const { id: studyRequestId } = studyRequest;
+      const url = `/requests/study/${studyRequestId}/comments/${commentId}`;
+      const options = {
+        method: 'DELETE',
+        csrf: state.auth.csrf,
+      };
+      return apiFetch(url, options);
+    },
     // USERS
     async fetchUsersBySubjects(_, subjects) {
+      if (subjects.length === 0) {
+        return new Map();
+      }
       const options = {
         data: {
           subject: subjects,

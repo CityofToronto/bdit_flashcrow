@@ -27,9 +27,9 @@
         <div class="flex-fill"></div>
         <button
           v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT"
-          class="font-size-m ml-m">
-          <span>Reports </span>
+          class="font-size-m ml-m uppercase">
           <i class="fa fa-expand"></i>
+          <span> Reports</span>
         </button>
       </div>
     </template>

@@ -1,23 +1,28 @@
 <template>
   <div class="fc-display-view-data-at-location">
     <div class="flex-container-column">
-      <FcFiltersViewDataAtLocation />
-      <header class="flex-container-row">
-        <label class="tds-checkbox">
-          <input
-            type="checkbox"
-            name="selectAll"
-            :checked="selectionAll"
-            :indeterminate.prop="selectionIndeterminate"
-            @change="onChangeSelectAll" />
-        </label>
-        <div class="flex-fill"></div>
-        <button
-          class="tds-button-primary"
-          @click="onActionBulk('request-study')">
-          <i class="fa fa-plus"></i>
-          <span> Request Study</span>
-        </button>
+      <header>
+        <h1 class="my-l">View Data</h1>
+        <div class="bar-actions-bulk flex-container-row p-l mb-l">
+          <label class="tds-checkbox mr-l">
+            <input
+              type="checkbox"
+              name="selectAll"
+              :checked="selectionAll"
+              :indeterminate.prop="selectionIndeterminate"
+              @change="onChangeSelectAll" />
+          </label>
+          <div class="py-s">
+            <button
+              class="font-size-l tds-button-primary uppercase"
+              @click="onActionBulk('request-study')">
+              <i class="fa fa-plus"></i>
+              <span> Request Study</span>
+            </button>
+          </div>
+          <div class="flex-fill"></div>
+          <FcFiltersViewDataAtLocation class="py-s" />
+        </div>
       </header>
       <div
         v-if="loadingLocationData"
@@ -260,16 +265,12 @@ export default {
   max-height: 100%;
   overflow: auto;
   padding: var(--space-m) var(--space-l);
-  & > .flex-container-column > header {
+  header > h1 {
+    font-size: 3rem;
+  }
+  .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);
-    padding: var(--space-m) var(--space-l);
-    & > * {
-      margin-right: var(--space-m);
-      &:last-child {
-        margin-right: 0;
-      }
-    }
   }
   .location-data-loading-spinner {
     height: var(--space-2xl);

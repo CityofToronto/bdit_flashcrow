@@ -1,5 +1,5 @@
 <template>
-<div class="py-m">
+<div>
   <button
     class="font-size-l mr-m"
     :class="{
@@ -23,7 +23,7 @@
     }"
     size="l" />
   <FcFilterDayOfWeek
-    class="font-size-l mr-m"
+    class="font-size-l"
     :class="{
       'tds-button-success': hasFilterDayOfWeek,
     }" />

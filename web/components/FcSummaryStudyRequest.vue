@@ -8,7 +8,7 @@
         <TdsLabel
           class="font-size-l uppercase"
           v-bind="RequestStatus[studyRequest.status]">
-          {{studyRequest.status}}
+          {{RequestStatus[studyRequest.status].text}}
         </TdsLabel>
       </div>
       <div class="flex-1 px-m">

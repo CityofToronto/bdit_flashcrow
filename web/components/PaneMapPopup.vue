@@ -9,9 +9,10 @@
       </div>
       <template v-if="featureSelectable">
         <button
-          class="font-size-l mt-s"
+          class="font-size-l mt-s uppercase"
           @click="onViewData">
-          View Data
+          <i class="fa fa-eye"></i>
+          <span> View Data</span>
         </button>
       </template>
     </TdsPanel>

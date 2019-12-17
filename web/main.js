@@ -15,6 +15,7 @@ Vue.use(Vuelidate);
 Vue.filter('durationHuman', formatDuration);
 
 Vue.filter('date', TimeFormatters.formatDefault);
+Vue.filter('dateTime', TimeFormatters.formatDateTime);
 Vue.filter('dayOfWeek', TimeFormatters.formatDayOfWeek);
 Vue.filter('d3Format', (value, formatSpec) => format(formatSpec)(value));
 Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
