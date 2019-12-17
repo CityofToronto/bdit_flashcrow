@@ -11,7 +11,7 @@
         <hr />
       </div>
       <div
-        v-if="studyRequest === null"
+        v-if="loadingStudyRequest || studyRequest === null"
         class="request-loading-spinner ml-l mt-l">
         <TdsLoadingSpinner />
       </div>
@@ -93,6 +93,7 @@ export default {
   },
   data() {
     return {
+      loadingStudyRequest: false,
       location: null,
     };
   },
@@ -151,9 +152,11 @@ export default {
     },
     syncFromRoute(to) {
       const { id } = to.params;
+      this.loadingStudyRequest = true;
       return this.fetchStudyRequest({ id })
         .then(() => {
           this.setLocation(this.studyRequestLocation);
+          this.loadingStudyRequest = false;
         })
         .catch((err) => {
           const toast = getToast(err);

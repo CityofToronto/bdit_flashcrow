@@ -43,7 +43,9 @@
       <header class="flex-container-row font-size-s mx-l">
         <div>
           <div class="mt-m">
-            <strong>{{studyRequestCommentUsers.get(comment.userSubject).name}}</strong>
+            <strong>
+              {{studyRequestCommentUsers.get(comment.userSubject).name}}
+            </strong>
           </div>
           <div class="mt-s">
             {{comment.createdAt | dateTime}}

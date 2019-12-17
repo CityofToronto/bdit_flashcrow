@@ -748,6 +748,9 @@ export default new Vuex.Store({
     },
     // USERS
     async fetchUsersBySubjects(_, subjects) {
+      if (subjects.length === 0) {
+        return new Map();
+      }
       const options = {
         data: {
           subject: subjects,
