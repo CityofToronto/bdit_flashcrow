@@ -110,6 +110,7 @@
         <template v-slot:ID="{ item }">
           <div
             class="flex-container-row"
+            :title="'Show Request #' + item.id"
             @click.prevent="actionShowRequest(item)">
             <u>{{item.id}}</u>
           </div>
@@ -197,19 +198,21 @@
         <template v-slot:STATUS="{ item }">
           <TdsLabel
             v-bind="RequestStatus[item.status]"
-            class="full-width">
-            {{item.status.replace('_', ' ')}}
+            class="full-width uppercase">
+            {{RequestStatus[item.status].text}}
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
           <template v-if="isSupervisor">
             <button
               class="font-size-m mr-m"
+              :title="'Approve Request #' + item.id"
               @click="actionApprove([item])">
               <i class="fa fa-thumbs-up"></i>
             </button>
             <button
               class="font-size-m mr-m"
+              :title="'Ask for Changes to Request #' + item.id"
               @click="actionReject([item])">
               <i class="fa fa-file-import"></i>
             </button>

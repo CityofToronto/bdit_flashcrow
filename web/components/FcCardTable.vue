@@ -91,6 +91,7 @@
             class="cell-expand">
             <button
               class="font-size-m"
+              :title="expanded === item.id ? 'Collapse' : 'Expand'"
               :disabled="!item.expandable"
               @click="onClickItemExpand(item)">
               <i
