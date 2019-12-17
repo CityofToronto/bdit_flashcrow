@@ -648,6 +648,31 @@ export default new Vuex.Store({
       });
       return studyRequestNew;
     },
+    async saveStudyRequestsClosed({ state }, { isSupervisor, studyRequests, closed }) {
+      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
+        if (studyRequest.closed === closed) {
+          return studyRequest;
+        }
+        /* eslint-disable no-param-reassign */
+        studyRequest.closed = closed;
+        const data = {
+          ...studyRequest,
+        };
+        if (isSupervisor) {
+          data.isSupervisor = isSupervisor;
+        }
+        const url = `/requests/study/${data.id}`;
+        const options = {
+          method: 'PUT',
+          csrf: state.auth.csrf,
+          data,
+        };
+        return apiFetch(url, options);
+      });
+      await Promise.all(promisesStudyRequests);
+      // TODO: modal?
+      return studyRequests;
+    },
     async saveStudyRequestsStatus({ state }, { isSupervisor, studyRequests, status }) {
       const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
         if (studyRequest.status === status) {

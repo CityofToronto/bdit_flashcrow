@@ -449,7 +449,7 @@ export default {
       this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
     },
     actionClose(studyRequests) {
-      console.log('close', studyRequests);
+      this.actionSetClosed(studyRequests, 'close', true);
     },
     actionComplete(studyRequests) {
       this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
@@ -490,7 +490,7 @@ export default {
       this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
     },
     actionReopen(studyRequests) {
-      console.log('reopen', studyRequests);
+      this.actionSetClosed(studyRequests, 'reopen', false);
     },
     actionSetAssignedTo({ item, assignedTo }) {
       const { isSupervisor } = this;
@@ -502,6 +502,31 @@ export default {
         studyRequest.status = 'IN_PROGRESS';
       }
       this.saveStudyRequest({ isSupervisor, studyRequest });
+    },
+    actionSetClosed(studyRequests, actionName, closed) {
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const action = () => {
+        this.setStudyRequestsClosed(studyRequests, closed);
+      };
+      if (studyRequests.length === 1) {
+        action();
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: actionUppercase,
+        },
+      });
     },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
@@ -555,6 +580,17 @@ export default {
       this.closed = closed;
       this.selection = [];
     },
+    setStudyRequestsClosed(items, closed) {
+      const { isSupervisor } = this;
+      const studyRequests = items.map(
+        item => this.studyRequests.find(({ id }) => id === item.id),
+      );
+      return this.saveStudyRequestsClosed({
+        isSupervisor,
+        studyRequests,
+        closed,
+      });
+    },
     setStudyRequestsStatus(items, status) {
       const { isSupervisor } = this;
       const studyRequests = items.map(
@@ -576,6 +612,7 @@ export default {
       'deleteStudyRequests',
       'fetchAllStudyRequests',
       'saveStudyRequest',
+      'saveStudyRequestsClosed',
       'saveStudyRequestsStatus',
       'setToast',
     ]),
