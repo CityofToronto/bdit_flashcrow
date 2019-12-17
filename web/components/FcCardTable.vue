@@ -283,7 +283,7 @@ export default {
     box-shadow: var(--shadow-3);
     & > tr {
       & > td {
-        padding: calc(var(--space-l) * 1.5) var(--space-m);
+        padding: var(--space-l) var(--space-m);
         &.cell-expand {
           cursor: pointer;
         }

@@ -2,44 +2,86 @@
   <div class="fc-requests-track flex-container-column flex-fill">
     <section>
       <header>
-        <h1 class="my-l">Open Requests</h1>
+        <div class="bar-tabs flex-container-row bb">
+          <button
+            class="font-size-l px-l uppercase"
+            :class="{
+              'tab-selected': !closed
+            }"
+            @click="setClosed(false)">Open</button>
+          <button
+            class="font-size-l px-l uppercase"
+            :class="{
+              'tab-selected': closed
+            }"
+            @click="setClosed(true)">Closed</button>
+        </div>
+        <h1 class="my-l">
+          <span v-if="closed">Closed Requests</span>
+          <span v-else>Open Requests</span>
+        </h1>
         <div class="bar-actions-bulk flex-container-row p-l mb-xl">
-          <label class="tds-checkbox">
+          <label class="tds-checkbox mr-l">
             <input
               type="checkbox"
               name="selectAll"
               :checked="selectionAll"
+              :disabled="selectableIds.length === 0"
               :indeterminate.prop="selectionIndeterminate"
               @change="onChangeSelectAll" />
           </label>
+          <template v-if="selectedItems.length > 0">
+            <div
+              v-if="closed"
+              class="py-s">
+              <button
+                class="font-size-m ml-m uppercase"
+                @click="actionReopen(selectedItems)">
+                <i class="fa fa-door-open"></i>
+                <span> Reopen</span>
+              </button>
+            </div>
+            <template v-else>
+              <div
+                v-if="isSupervisor"
+                class="br py-s">
+                <button
+                  class="font-size-m mr-m uppercase"
+                  @click="actionApprove(selectedItems)">
+                  <i class="fa fa-thumbs-up"></i>
+                  <span> Approve</span>
+                </button>
+                <button
+                  class="font-size-m mr-m uppercase"
+                  @click="actionComplete(selectedItems)">
+                  <i class="fa fa-clipboard-check"></i>
+                  <span> Complete</span>
+                </button>
+              </div>
+              <div class="py-s">
+                <button
+                  class="font-size-m ml-m uppercase"
+                  @click="actionDownload(selectedItems)">
+                  <i class="fa fa-download"></i>
+                  <span> Download</span>
+                </button>
+                <button
+                  class="font-size-m ml-m uppercase"
+                  @click="actionClose(selectedItems)">
+                  <i class="fa fa-door-closed"></i>
+                  <span> Close</span>
+                </button>
+              </div>
+            </template>
+          </template>
           <div
-            v-if="isSupervisor"
-            class="br ml-l py-s">
-              <button
-                class="font-size-m mr-m uppercase"
-                @click="actionApprove(selectedItems)">
-                <i class="fa fa-thumbs-up"></i>
-                <span> Approve</span>
-              </button>
-              <button
-                class="font-size-m mr-m uppercase"
-                @click="actionComplete(selectedItems)">
-                <i class="fa fa-clipboard-check"></i>
-                <span> Complete</span>
-              </button>
-          </div>
-          <div class="py-s">
+            v-else
+            class="py-s">
             <button
-              class="font-size-m ml-m uppercase"
-              @click="actionDownload(selectedItems)">
-              <i class="fa fa-download"></i>
-              <span> Download</span>
-            </button>
-            <button
-              class="font-size-m ml-m uppercase"
-              @click="actionClose(selectedItems)">
-              <i class="fa fa-trash-alt"></i>
-              <span> Close</span>
+              class="font-size-m uppercase"
+              @click="actionRefresh()">
+              <i class="fa fa-redo-alt"></i>
+              <span> Refresh</span>
             </button>
           </div>
         </div>
@@ -49,7 +91,7 @@
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
-        :items="itemsStudyRequests"
+        :items="itemsStudyRequestsVisible"
         ref="table"
         :search-keys="searchKeys"
         :sort-by="sortBy"
@@ -322,6 +364,7 @@ export default {
   },
   data() {
     return {
+      closed: false,
       itemsNormalized: [],
       searchKeys: SearchKeys.Requests,
       selection: [],
@@ -367,6 +410,10 @@ export default {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
+    itemsStudyRequestsVisible() {
+      return this.itemsStudyRequests
+        .filter(({ closed }) => closed === this.closed);
+    },
     selectableIds() {
       return this.itemsNormalized.map(({ id }) => id);
     },
@@ -375,8 +422,8 @@ export default {
         .map(id => this.itemsNormalized.find(r => r.id === id));
     },
     selectionAll() {
-      return this.selectableIds
-        .every(id => this.selection.includes(id));
+      return this.selectableIds.length > 0
+        && this.selectableIds.every(id => this.selection.includes(id));
     },
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
@@ -401,7 +448,8 @@ export default {
     actionApprove(studyRequests) {
       this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
     },
-    actionClose() {
+    actionClose(studyRequests) {
+      console.log('close', studyRequests);
     },
     actionComplete(studyRequests) {
       this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
@@ -435,8 +483,14 @@ export default {
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
+    actionRefresh() {
+      this.syncFromRoute(this.$route);
+    },
     actionReject(studyRequests) {
       this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+    },
+    actionReopen(studyRequests) {
+      console.log('reopen', studyRequests);
     },
     actionSetAssignedTo({ item, assignedTo }) {
       const { isSupervisor } = this;
@@ -497,6 +551,10 @@ export default {
         this.selection = this.selectableIds;
       }
     },
+    setClosed(closed) {
+      this.closed = closed;
+      this.selection = [];
+    },
     setStudyRequestsStatus(items, status) {
       const { isSupervisor } = this;
       const studyRequests = items.map(
@@ -536,6 +594,22 @@ export default {
 
   header > h1 {
     font-size: 3rem;
+  }
+
+  .bar-tabs > button {
+    background-color: transparent;
+    border: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: none;
+    color: var(--base);
+    &:hover {
+      color: var(--ink);
+    }
+    &.tab-selected {
+      background-color: var(--base-lighter);
+      color: var(--ink);
+    }
   }
 
   .bar-actions-bulk {
