@@ -446,13 +446,20 @@ export default {
   },
   methods: {
     actionApprove(studyRequests) {
-      this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
+      this.actionUpdateStudyRequests(studyRequests, 'approve', {
+        status: 'ACCEPTED',
+      });
     },
     actionClose(studyRequests) {
-      this.actionSetClosed(studyRequests, 'close', true);
+      this.actionUpdateStudyRequests(studyRequests, 'close', {
+        closed: true,
+      });
     },
     actionComplete(studyRequests) {
-      this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
+      this.actionUpdateStudyRequests(studyRequests, 'approve', {
+        closed: true,
+        status: 'COMPLETED',
+      });
     },
     actionDownload(studyRequests) {
       if (studyRequests.length === 0) {
@@ -487,10 +494,14 @@ export default {
       this.syncFromRoute(this.$route);
     },
     actionReject(studyRequests) {
-      this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+      this.actionUpdateStudyRequests(studyRequests, 'reject', {
+        status: 'REJECTED',
+      });
     },
     actionReopen(studyRequests) {
-      this.actionSetClosed(studyRequests, 'reopen', false);
+      this.actionUpdateStudyRequests(studyRequests, 'reopen', {
+        closed: false,
+      });
     },
     actionSetAssignedTo({ item, assignedTo }) {
       const { isSupervisor } = this;
@@ -503,61 +514,11 @@ export default {
       }
       this.saveStudyRequest({ isSupervisor, studyRequest });
     },
-    actionSetClosed(studyRequests, actionName, closed) {
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const action = () => {
-        this.setStudyRequestsClosed(studyRequests, closed);
-      };
-      if (studyRequests.length === 1) {
-        action();
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action,
-          textOk: actionUppercase,
-        },
-      });
-    },
     actionSetPriority({ item, priority }) {
       const { isSupervisor } = this;
       const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
       studyRequest.priority = priority;
       this.saveStudyRequest({ isSupervisor, studyRequest });
-    },
-    actionSetStatus(studyRequests, actionName, status) {
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const action = () => {
-        this.setStudyRequestsStatus(studyRequests, status);
-      };
-      if (studyRequests.length === 1) {
-        action();
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action,
-          textOk: actionUppercase,
-        },
-      });
     },
     actionShowRequest(item) {
       const route = {
@@ -568,6 +529,31 @@ export default {
         route.query = { isSupervisor: true };
       }
       this.$router.push(route);
+    },
+    actionUpdateStudyRequests(studyRequests, actionName, updates) {
+      const toast = getStudyRequestsToast(studyRequests, actionName);
+      if (toast !== null) {
+        this.setToast(toast);
+        return;
+      }
+      const action = () => {
+        this.setStudyRequests(studyRequests, updates);
+      };
+      if (studyRequests.length === 1) {
+        action();
+        return;
+      }
+      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
+      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
+      this.setModal({
+        component: 'TdsConfirmDialog',
+        data: {
+          title,
+          prompt,
+          action,
+          textOk: actionUppercase,
+        },
+      });
     },
     onChangeSelectAll() {
       if (this.selectionAll) {
@@ -580,27 +566,13 @@ export default {
       this.closed = closed;
       this.selection = [];
     },
-    setStudyRequestsClosed(items, closed) {
+    setStudyRequests(items, updates) {
       const { isSupervisor } = this;
-      const studyRequests = items.map(
-        item => this.studyRequests.find(({ id }) => id === item.id),
-      );
-      return this.saveStudyRequestsClosed({
-        isSupervisor,
-        studyRequests,
-        closed,
+      const studyRequests = items.map((item) => {
+        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+        return Object.assign(studyRequest, updates);
       });
-    },
-    setStudyRequestsStatus(items, status) {
-      const { isSupervisor } = this;
-      const studyRequests = items.map(
-        item => this.studyRequests.find(({ id }) => id === item.id),
-      );
-      return this.saveStudyRequestsStatus({
-        isSupervisor,
-        studyRequests,
-        status,
-      });
+      return this.updateStudyRequests({ isSupervisor, studyRequests });
     },
     syncFromRoute() {
       return this.fetchAllStudyRequests(this.isSupervisor);
@@ -612,8 +584,7 @@ export default {
       'deleteStudyRequests',
       'fetchAllStudyRequests',
       'saveStudyRequest',
-      'saveStudyRequestsClosed',
-      'saveStudyRequestsStatus',
+      'updateStudyRequests',
       'setToast',
     ]),
     ...mapMutations([

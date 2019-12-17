@@ -648,13 +648,8 @@ export default new Vuex.Store({
       });
       return studyRequestNew;
     },
-    async saveStudyRequestsClosed({ state }, { isSupervisor, studyRequests, closed }) {
-      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
-        if (studyRequest.closed === closed) {
-          return studyRequest;
-        }
-        /* eslint-disable no-param-reassign */
-        studyRequest.closed = closed;
+    async updateStudyRequests({ state }, { isSupervisor, studyRequests }) {
+      const promisesStudyRequests = studyRequests.map((studyRequest) => {
         const data = {
           ...studyRequest,
         };
@@ -669,34 +664,7 @@ export default new Vuex.Store({
         };
         return apiFetch(url, options);
       });
-      await Promise.all(promisesStudyRequests);
-      // TODO: modal?
-      return studyRequests;
-    },
-    async saveStudyRequestsStatus({ state }, { isSupervisor, studyRequests, status }) {
-      const promisesStudyRequests = studyRequests.map(async (studyRequest) => {
-        if (studyRequest.status === status) {
-          return studyRequest;
-        }
-        /* eslint-disable no-param-reassign */
-        studyRequest.status = status;
-        const data = {
-          ...studyRequest,
-        };
-        if (isSupervisor) {
-          data.isSupervisor = isSupervisor;
-        }
-        const url = `/requests/study/${data.id}`;
-        const options = {
-          method: 'PUT',
-          csrf: state.auth.csrf,
-          data,
-        };
-        return apiFetch(url, options);
-      });
-      await Promise.all(promisesStudyRequests);
-      // TODO: modal?
-      return studyRequests;
+      return Promise.all(promisesStudyRequests);
     },
     async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
       const options = {
