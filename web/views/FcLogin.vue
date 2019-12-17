@@ -16,7 +16,7 @@
     </div>
     <h1>Log in to MOVE</h1>
     <div class="flex-container-row">
-      <div class="flex-1 px-l">
+      <div class="flex-1">
         <TdsPanel
           class="font-size-l"
           variant="info">
