@@ -4,7 +4,7 @@
     <div class="fc-comment-new">
       <textarea
         v-model="commentText"
-        class="font-size-m full-width mb-m"
+        class="font-size-m full-width my-m px-l py-m"
         :disabled="loadingCommentNew"
         placeholder="Compose message"
         rows="5"></textarea>
@@ -43,7 +43,7 @@
       <header class="flex-container-row font-size-s mx-l">
         <div>
           <div class="mt-m">
-            <strong>{{comment.userSubject}}</strong>
+            <strong>{{studyRequestCommentUsers.get(comment.userSubject).name}}</strong>
           </div>
           <div class="mt-s">
             {{comment.createdAt | dateTime}}
@@ -92,6 +92,7 @@ export default {
     ...mapState([
       'auth',
       'studyRequestComments',
+      'studyRequestCommentUsers',
     ]),
   },
   methods: {

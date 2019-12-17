@@ -376,9 +376,6 @@ export default new Vuex.Store({
     setStudyRequestLocation(state, studyRequestLocation) {
       Vue.set(state, 'studyRequestLocation', studyRequestLocation);
     },
-    setStudyRequestUser(state, studyRequestUser) {
-      Vue.set(state, 'studyRequestUser', studyRequestUser);
-    },
     setNewStudyRequest(state, studyTypes) {
       const { location, now } = state;
       const dueDate = now.plus({ months: 3 });
@@ -423,6 +420,9 @@ export default new Vuex.Store({
     // STUDY REQUEST COMMENTS
     setStudyRequestComments(state, studyRequestComments) {
       Vue.set(state, 'studyRequestComments', studyRequestComments);
+    },
+    setStudyRequestCommentUsers(state, studyRequestCommentUsers) {
+      Vue.set(state, 'studyRequestCommentUsers', studyRequestCommentUsers);
     },
     addStudyRequestComment(state, comment) {
       state.studyRequestComments.unshift(comment);
@@ -568,35 +568,35 @@ export default new Vuex.Store({
       const {
         centrelineId,
         centrelineType,
-        userSubject,
       } = studyRequest;
 
-      const promiseComments = dispatch('fetchStudyRequestComments', { studyRequest });
+      const promiseComments = await dispatch('fetchStudyRequestComments', { studyRequest });
 
       const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
       const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
 
-      const subjects = [userSubject];
-      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
-
       const [
         studyRequestComments,
         studyRequestLocations,
-        studyRequestUsers,
-      ] = await Promise.all([promiseComments, promiseLocations, promiseUsers]);
+      ] = await Promise.all([promiseComments, promiseLocations]);
 
       const key = centrelineKey(centrelineType, centrelineId);
       const studyRequestLocation = studyRequestLocations.get(key);
       commit('setStudyRequestLocation', studyRequestLocation);
 
-      const studyRequestUser = studyRequestUsers.get(userSubject);
-      commit('setStudyRequestUser', studyRequestUser);
+      let subjects = new Set();
+      studyRequestComments.forEach(({ userSubject }) => {
+        subjects.add(userSubject);
+      });
+      subjects = Array.from(subjects);
+      const studyRequestCommentUsers = await dispatch('fetchUsersBySubjects', subjects);
+      commit('setStudyRequestCommentUsers', studyRequestCommentUsers);
 
       return {
         studyRequest,
         studyRequestComments,
+        studyRequestCommentUsers,
         studyRequestLocation,
-        studyRequestUser,
       };
     },
     async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
