@@ -1,51 +1,89 @@
 <template>
   <div class="fc-requests-track flex-container-column flex-fill">
     <section>
-      <header class="flex-container-row">
-        <label class="tds-checkbox">
-          <input
-            type="checkbox"
-            name="selectAll"
-            :checked="selectionAll"
-            :indeterminate.prop="selectionIndeterminate"
-            @change="onChangeSelectAll" />
-        </label>
-        <div class="flex-fill"></div>
-        <div class="br">
-          <template v-if="isSupervisor">
-            <button
-              class="font-size-l mr-m"
-              @click="actionAccept(selectedItems)">
-              <i class="fa fa-thumbs-up"></i>
-              <span> Approve</span>
-            </button>
-            <button
-              class="font-size-l mr-m"
-              @click="actionReject(selectedItems)">
-              <i class="fa fa-thumbs-down"></i>
-              <span> Reject</span>
-            </button>
-            <button
-              class="font-size-l mr-m"
-              @click="actionComplete(selectedItems)">
-              <i class="fa fa-check-circle"></i>
-              <span> Complete</span>
-            </button>
-          </template>
+      <header>
+        <div class="bar-tabs flex-container-row bb">
           <button
-            class="font-size-l mr-m"
-            @click="actionExport(selectedItems)">
-            <i class="fa fa-download"></i>
-            <span> Download</span>
-          </button>
+            class="font-size-l px-l uppercase"
+            :class="{
+              'tab-selected': !closed
+            }"
+            @click="setClosed(false)">Open</button>
+          <button
+            class="font-size-l px-l uppercase"
+            :class="{
+              'tab-selected': closed
+            }"
+            @click="setClosed(true)">Closed</button>
         </div>
-        <div>
-          <button
-            class="tds-button-error font-size-l ml-m"
-            @click="actionDelete(selectedItems)">
-            <i class="fa fa-trash-alt"></i>
-            <span> Delete</span>
-          </button>
+        <h1 class="my-l">
+          <span v-if="closed">Closed Requests</span>
+          <span v-else>Open Requests</span>
+        </h1>
+        <div class="bar-actions-bulk flex-container-row p-l mb-xl">
+          <label class="tds-checkbox mr-l">
+            <input
+              type="checkbox"
+              name="selectAll"
+              :checked="selectionAll"
+              :disabled="selectableIds.length === 0"
+              :indeterminate.prop="selectionIndeterminate"
+              @change="onChangeSelectAll" />
+          </label>
+          <template v-if="selectedItems.length > 0">
+            <div
+              v-if="closed"
+              class="py-s">
+              <button
+                class="font-size-m ml-m uppercase"
+                @click="actionReopen(selectedItems)">
+                <i class="fa fa-door-open"></i>
+                <span> Reopen</span>
+              </button>
+            </div>
+            <template v-else>
+              <div
+                v-if="isSupervisor"
+                class="br py-s">
+                <button
+                  class="font-size-m mr-m uppercase"
+                  @click="actionApprove(selectedItems)">
+                  <i class="fa fa-thumbs-up"></i>
+                  <span> Approve</span>
+                </button>
+                <button
+                  class="font-size-m mr-m uppercase"
+                  @click="actionComplete(selectedItems)">
+                  <i class="fa fa-clipboard-check"></i>
+                  <span> Complete</span>
+                </button>
+              </div>
+              <div class="py-s">
+                <button
+                  class="font-size-m ml-m uppercase"
+                  @click="actionDownload(selectedItems)">
+                  <i class="fa fa-download"></i>
+                  <span> Download</span>
+                </button>
+                <button
+                  class="font-size-m ml-m uppercase"
+                  @click="actionClose(selectedItems)">
+                  <i class="fa fa-door-closed"></i>
+                  <span> Close</span>
+                </button>
+              </div>
+            </template>
+          </template>
+          <div
+            v-else
+            class="py-s">
+            <button
+              class="font-size-m uppercase"
+              @click="actionRefresh()">
+              <i class="fa fa-redo-alt"></i>
+              <span> Refresh</span>
+            </button>
+          </div>
         </div>
       </header>
       <FcCardTable
@@ -53,7 +91,7 @@
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
-        :items="itemsStudyRequests"
+        :items="itemsStudyRequestsVisible"
         ref="table"
         :search-keys="searchKeys"
         :sort-by="sortBy"
@@ -72,19 +110,24 @@
         <template v-slot:ID="{ item }">
           <div
             class="flex-container-row"
+            :title="'Show Request #' + item.id"
             @click.prevent="actionShowRequest(item)">
             <u>{{item.id}}</u>
           </div>
         </template>
         <template v-slot:LOCATION="{ item }">
-          <span
-            v-if="item.location === null"
-            class="text-muted">
-            N/A
-          </span>
-          <span v-else>
-            {{item.location.description}}
-          </span>
+          <div class="text-ellipsis">
+            <span
+              v-if="item.location === null"
+              class="text-muted">
+              N/A
+            </span>
+            <span
+              v-else
+              :title="item.location.description">
+              {{item.location.description}}
+            </span>
+          </div>
         </template>
         <template v-slot:REQUESTER="{ item }">
           <span
@@ -154,42 +197,26 @@
         </template>
         <template v-slot:STATUS="{ item }">
           <TdsLabel
-            v-bind="RequestStatus[item.status]">
-            {{item.status.replace('_', ' ')}}
+            v-bind="RequestStatus[item.status]"
+            class="full-width uppercase">
+            {{RequestStatus[item.status].text}}
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div class="br">
-            <template v-if="isSupervisor">
-              <button
-                class="font-size-m mr-m"
-                @click="actionAccept([item])">
-                <i class="fa fa-thumbs-up"></i>
-              </button>
-              <button
-                class="font-size-m mr-m"
-                @click="actionReject([item])">
-                <i class="fa fa-thumbs-down"></i>
-              </button>
-              <button
-                class="font-size-m mr-m"
-                @click="actionComplete([item])">
-                <i class="fa fa-check-circle"></i>
-              </button>
-            </template>
+          <template v-if="isSupervisor">
             <button
               class="font-size-m mr-m"
-              @click="actionExport([item])">
-              <i class="fa fa-download"></i>
+              :title="'Approve Request #' + item.id"
+              @click="actionApprove([item])">
+              <i class="fa fa-thumbs-up"></i>
             </button>
-          </div>
-          <div>
             <button
-              class="tds-button-error font-size-m ml-m"
-              @click="actionDelete([item])">
-              <i class="fa fa-trash-alt"></i>
+              class="font-size-m mr-m"
+              :title="'Ask for Changes to Request #' + item.id"
+              @click="actionReject([item])">
+              <i class="fa fa-file-import"></i>
             </button>
-          </div>
+          </template>
         </template>
         <template v-slot:__expanded="{ item }">
           <div>
@@ -339,34 +366,8 @@ export default {
     TdsLabel,
   },
   data() {
-    const columns = [{
-      name: 'SELECTION',
-    }, {
-      name: 'ID',
-      title: 'ID#',
-    }, {
-      name: 'LOCATION',
-      title: 'Location',
-    }, {
-      name: 'REQUESTER',
-      title: 'Requester',
-    }, {
-      name: 'DATE',
-      title: 'Due Date',
-    }, {
-      name: 'PRIORITY',
-      title: 'Priority',
-    }, {
-      name: 'ASSIGNED_TO',
-      title: 'Assign',
-    }, {
-      name: 'STATUS',
-      title: 'Status',
-    }, {
-      name: 'ACTIONS',
-    }];
     return {
-      columns,
+      closed: false,
       itemsNormalized: [],
       searchKeys: SearchKeys.Requests,
       selection: [],
@@ -377,8 +378,44 @@ export default {
     };
   },
   computed: {
+    columns() {
+      const columns = [{
+        name: 'SELECTION',
+      }, {
+        name: 'ID',
+        title: 'ID#',
+      }, {
+        name: 'LOCATION',
+        title: 'Location',
+      }, {
+        name: 'REQUESTER',
+        title: 'Requester',
+      }, {
+        name: 'DATE',
+        title: 'Due Date',
+      }, {
+        name: 'PRIORITY',
+        title: 'Priority',
+      }, {
+        name: 'ASSIGNED_TO',
+        title: 'Assign',
+      }, {
+        name: 'STATUS',
+        title: 'Status',
+      }];
+      if (this.isSupervisor) {
+        columns.push({
+          name: 'ACTIONS',
+        });
+      }
+      return columns;
+    },
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
+    itemsStudyRequestsVisible() {
+      return this.itemsStudyRequests
+        .filter(({ closed }) => closed === this.closed);
     },
     selectableIds() {
       return this.itemsNormalized.map(({ id }) => id);
@@ -388,8 +425,8 @@ export default {
         .map(id => this.itemsNormalized.find(r => r.id === id));
     },
     selectionAll() {
-      return this.selectableIds
-        .every(id => this.selection.includes(id));
+      return this.selectableIds.length > 0
+        && this.selectableIds.every(id => this.selection.includes(id));
     },
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
@@ -411,37 +448,23 @@ export default {
       });
   },
   methods: {
-    actionAccept(studyRequests) {
-      this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
-    },
-    actionComplete(studyRequests) {
-      this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
-    },
-    actionDelete(studyRequests) {
-      const actionName = 'delete';
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const action = () => {
-        this.deleteStudyRequests({
-          isSupervisor: this.isSupervisor,
-          studyRequests,
-        });
-      };
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action,
-          textOk: 'Delete',
-        },
+    actionApprove(studyRequests) {
+      this.actionUpdateStudyRequests(studyRequests, 'approve', {
+        status: 'ACCEPTED',
       });
     },
-    actionExport(studyRequests) {
+    actionClose(studyRequests) {
+      this.actionUpdateStudyRequests(studyRequests, 'close', {
+        closed: true,
+      });
+    },
+    actionComplete(studyRequests) {
+      this.actionUpdateStudyRequests(studyRequests, 'approve', {
+        closed: true,
+        status: 'COMPLETED',
+      });
+    },
+    actionDownload(studyRequests) {
       if (studyRequests.length === 0) {
         this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
         return;
@@ -470,8 +493,18 @@ export default {
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
+    actionRefresh() {
+      this.syncFromRoute(this.$route);
+    },
     actionReject(studyRequests) {
-      this.actionSetStatus(studyRequests, 'reject', 'REJECTED');
+      this.actionUpdateStudyRequests(studyRequests, 'reject', {
+        status: 'REJECTED',
+      });
+    },
+    actionReopen(studyRequests) {
+      this.actionUpdateStudyRequests(studyRequests, 'reopen', {
+        closed: false,
+      });
     },
     actionSetAssignedTo({ item, assignedTo }) {
       const { isSupervisor } = this;
@@ -490,14 +523,24 @@ export default {
       studyRequest.priority = priority;
       this.saveStudyRequest({ isSupervisor, studyRequest });
     },
-    actionSetStatus(studyRequests, actionName, status) {
+    actionShowRequest(item) {
+      const route = {
+        name: 'requestStudyView',
+        params: { id: item.id },
+      };
+      if (this.isSupervisor) {
+        route.query = { isSupervisor: true };
+      }
+      this.$router.push(route);
+    },
+    actionUpdateStudyRequests(studyRequests, actionName, updates) {
       const toast = getStudyRequestsToast(studyRequests, actionName);
       if (toast !== null) {
         this.setToast(toast);
         return;
       }
       const action = () => {
-        this.setStudyRequestsStatus(studyRequests, status);
+        this.setStudyRequests(studyRequests, updates);
       };
       if (studyRequests.length === 1) {
         action();
@@ -515,16 +558,6 @@ export default {
         },
       });
     },
-    actionShowRequest(item) {
-      const route = {
-        name: 'requestStudyView',
-        params: { id: item.id },
-      };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
-      this.$router.push(route);
-    },
     onChangeSelectAll() {
       if (this.selectionAll) {
         this.selection = [];
@@ -532,16 +565,17 @@ export default {
         this.selection = this.selectableIds;
       }
     },
-    setStudyRequestsStatus(items, status) {
+    setClosed(closed) {
+      this.closed = closed;
+      this.selection = [];
+    },
+    setStudyRequests(items, updates) {
       const { isSupervisor } = this;
-      const studyRequests = items.map(
-        item => this.studyRequests.find(({ id }) => id === item.id),
-      );
-      return this.saveStudyRequestsStatus({
-        isSupervisor,
-        studyRequests,
-        status,
+      const studyRequests = items.map((item) => {
+        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+        return Object.assign(studyRequest, updates);
       });
+      return this.updateStudyRequests({ isSupervisor, studyRequests });
     },
     syncFromRoute() {
       return this.fetchAllStudyRequests(this.isSupervisor);
@@ -553,7 +587,7 @@ export default {
       'deleteStudyRequests',
       'fetchAllStudyRequests',
       'saveStudyRequest',
-      'saveStudyRequestsStatus',
+      'updateStudyRequests',
       'setToast',
     ]),
     ...mapMutations([
@@ -567,28 +601,31 @@ export default {
 .fc-requests-track {
   max-height: 100%;
   overflow: auto;
-  padding: var(--space-m) var(--space-xl);
-  & > header {
-    & > a {
-      border-bottom: 1px solid var(--base-light);
+  padding: var(--space-m) var(--space-l);
+
+  header > h1 {
+    font-size: 3rem;
+  }
+
+  .bar-tabs > button {
+    background-color: transparent;
+    border: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: none;
+    color: var(--base);
+    &:hover {
       color: var(--ink);
-      display: inline-block;
-      text-decoration: none;
-      &:hover {
-        border-color: var(--base);
-      }
-      &.router-link-exact-active {
-        border-color: var(--success);
-        &:hover {
-          border-color: var(--success-dark);
-        }
-      }
+    }
+    &.tab-selected {
+      background-color: var(--base-lighter);
+      color: var(--ink);
     }
   }
-  & > section > header {
+
+  .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);
-    padding: var(--space-m) var(--space-l);
   }
 
   .fc-card-table-requests {
@@ -601,8 +638,7 @@ export default {
       }
       & > .col-DATE,
       & > .col-PRIORITY,
-      & > .col-ASSIGNED_TO,
-      & > .col-ACTIONS {
+      & > .col-ASSIGNED_TO {
         width: var(--space-3xl);
       }
     }
@@ -613,23 +649,19 @@ export default {
       & > .col-ASSIGNED_TO {
         width: calc(var(--space-3xl) + var(--space-xl));
       }
-      & > .col-ACTIONS {
-        width: calc(var(--space-4xl));
+    }
+    .cell-ID > div {
+      align-items: center;
+      cursor: pointer;
+      & > u {
+        color: var(--primary-vivid);
       }
     }
-    .cell-ID {
-      & > div {
-        align-items: center;
-        cursor: pointer;
-        & > u {
-          color: var(--primary-vivid);
-        }
-      }
+    .cell-ACTIONS > div {
+      display: inline-block;
     }
-    .cell-ACTIONS {
-      & > div {
-        display: inline-block;
-      }
+    .cell-LOCATION > div {
+      width: var(--space-4xl);
     }
   }
 }

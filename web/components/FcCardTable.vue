@@ -90,7 +90,8 @@
             v-if="expandable"
             class="cell-expand">
             <button
-              class="font-size-l"
+              class="font-size-m"
+              :title="expanded === item.id ? 'Collapse' : 'Expand'"
               :disabled="!item.expandable"
               @click="onClickItemExpand(item)">
               <i
@@ -250,9 +251,6 @@ export default {
   border-spacing: 0;
   margin: var(--space-l) 0;
   width: 100%;
-  & > colgroup > .col-expand {
-    width: var(--space-xl);
-  }
   & > thead {
     & > tr > th {
       padding: var(--space-m);
@@ -279,14 +277,14 @@ export default {
     }
   }
   & > .fc-card-table-spacer {
-    height: var(--space-m);
+    height: var(--space-l);
   }
   & > tbody {
     background-color: var(--white);
     box-shadow: var(--shadow-3);
     & > tr {
       & > td {
-        padding: var(--space-m);
+        padding: var(--space-l) var(--space-m);
         &.cell-expand {
           cursor: pointer;
         }
