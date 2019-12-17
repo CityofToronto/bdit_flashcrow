@@ -1,51 +1,47 @@
 <template>
   <div class="fc-requests-track flex-container-column flex-fill">
     <section>
-      <header class="flex-container-row">
-        <label class="tds-checkbox">
-          <input
-            type="checkbox"
-            name="selectAll"
-            :checked="selectionAll"
-            :indeterminate.prop="selectionIndeterminate"
-            @change="onChangeSelectAll" />
-        </label>
-        <div class="flex-fill"></div>
-        <div class="br">
-          <template v-if="isSupervisor">
+      <header>
+        <h1 class="my-l">Open Requests</h1>
+        <div class="bar-actions-bulk flex-container-row p-l mb-xl">
+          <label class="tds-checkbox">
+            <input
+              type="checkbox"
+              name="selectAll"
+              :checked="selectionAll"
+              :indeterminate.prop="selectionIndeterminate"
+              @change="onChangeSelectAll" />
+          </label>
+          <div
+            v-if="isSupervisor"
+            class="br ml-l py-s">
+              <button
+                class="font-size-m mr-m uppercase"
+                @click="actionApprove(selectedItems)">
+                <i class="fa fa-thumbs-up"></i>
+                <span> Approve</span>
+              </button>
+              <button
+                class="font-size-m mr-m uppercase"
+                @click="actionComplete(selectedItems)">
+                <i class="fa fa-clipboard-check"></i>
+                <span> Complete</span>
+              </button>
+          </div>
+          <div class="py-s">
             <button
-              class="font-size-l mr-m"
-              @click="actionAccept(selectedItems)">
-              <i class="fa fa-thumbs-up"></i>
-              <span> Approve</span>
+              class="font-size-m ml-m uppercase"
+              @click="actionDownload(selectedItems)">
+              <i class="fa fa-download"></i>
+              <span> Download</span>
             </button>
             <button
-              class="font-size-l mr-m"
-              @click="actionReject(selectedItems)">
-              <i class="fa fa-thumbs-down"></i>
-              <span> Reject</span>
+              class="font-size-m ml-m uppercase"
+              @click="actionClose(selectedItems)">
+              <i class="fa fa-trash-alt"></i>
+              <span> Close</span>
             </button>
-            <button
-              class="font-size-l mr-m"
-              @click="actionComplete(selectedItems)">
-              <i class="fa fa-check-circle"></i>
-              <span> Complete</span>
-            </button>
-          </template>
-          <button
-            class="font-size-l mr-m"
-            @click="actionExport(selectedItems)">
-            <i class="fa fa-download"></i>
-            <span> Download</span>
-          </button>
-        </div>
-        <div>
-          <button
-            class="tds-button-error font-size-l ml-m"
-            @click="actionDelete(selectedItems)">
-            <i class="fa fa-trash-alt"></i>
-            <span> Delete</span>
-          </button>
+          </div>
         </div>
       </header>
       <FcCardTable
@@ -77,14 +73,18 @@
           </div>
         </template>
         <template v-slot:LOCATION="{ item }">
-          <span
-            v-if="item.location === null"
-            class="text-muted">
-            N/A
-          </span>
-          <span v-else>
-            {{item.location.description}}
-          </span>
+          <div class="text-ellipsis">
+            <span
+              v-if="item.location === null"
+              class="text-muted">
+              N/A
+            </span>
+            <span
+              v-else
+              :title="item.location.description">
+              {{item.location.description}}
+            </span>
+          </div>
         </template>
         <template v-slot:REQUESTER="{ item }">
           <span
@@ -154,42 +154,24 @@
         </template>
         <template v-slot:STATUS="{ item }">
           <TdsLabel
-            v-bind="RequestStatus[item.status]">
+            v-bind="RequestStatus[item.status]"
+            class="full-width">
             {{item.status.replace('_', ' ')}}
           </TdsLabel>
         </template>
         <template v-slot:ACTIONS="{ item }">
-          <div class="br">
-            <template v-if="isSupervisor">
-              <button
-                class="font-size-m mr-m"
-                @click="actionAccept([item])">
-                <i class="fa fa-thumbs-up"></i>
-              </button>
-              <button
-                class="font-size-m mr-m"
-                @click="actionReject([item])">
-                <i class="fa fa-thumbs-down"></i>
-              </button>
-              <button
-                class="font-size-m mr-m"
-                @click="actionComplete([item])">
-                <i class="fa fa-check-circle"></i>
-              </button>
-            </template>
+          <template v-if="isSupervisor">
             <button
               class="font-size-m mr-m"
-              @click="actionExport([item])">
-              <i class="fa fa-download"></i>
+              @click="actionApprove([item])">
+              <i class="fa fa-thumbs-up"></i>
             </button>
-          </div>
-          <div>
             <button
-              class="tds-button-error font-size-m ml-m"
-              @click="actionDelete([item])">
-              <i class="fa fa-trash-alt"></i>
+              class="font-size-m mr-m"
+              @click="actionReject([item])">
+              <i class="fa fa-file-import"></i>
             </button>
-          </div>
+          </template>
         </template>
         <template v-slot:__expanded="{ item }">
           <div>
@@ -339,34 +321,7 @@ export default {
     TdsLabel,
   },
   data() {
-    const columns = [{
-      name: 'SELECTION',
-    }, {
-      name: 'ID',
-      title: 'ID#',
-    }, {
-      name: 'LOCATION',
-      title: 'Location',
-    }, {
-      name: 'REQUESTER',
-      title: 'Requester',
-    }, {
-      name: 'DATE',
-      title: 'Due Date',
-    }, {
-      name: 'PRIORITY',
-      title: 'Priority',
-    }, {
-      name: 'ASSIGNED_TO',
-      title: 'Assign',
-    }, {
-      name: 'STATUS',
-      title: 'Status',
-    }, {
-      name: 'ACTIONS',
-    }];
     return {
-      columns,
       itemsNormalized: [],
       searchKeys: SearchKeys.Requests,
       selection: [],
@@ -377,6 +332,38 @@ export default {
     };
   },
   computed: {
+    columns() {
+      const columns = [{
+        name: 'SELECTION',
+      }, {
+        name: 'ID',
+        title: 'ID#',
+      }, {
+        name: 'LOCATION',
+        title: 'Location',
+      }, {
+        name: 'REQUESTER',
+        title: 'Requester',
+      }, {
+        name: 'DATE',
+        title: 'Due Date',
+      }, {
+        name: 'PRIORITY',
+        title: 'Priority',
+      }, {
+        name: 'ASSIGNED_TO',
+        title: 'Assign',
+      }, {
+        name: 'STATUS',
+        title: 'Status',
+      }];
+      if (this.isSupervisor) {
+        columns.push({
+          name: 'ACTIONS',
+        });
+      }
+      return columns;
+    },
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
@@ -411,37 +398,15 @@ export default {
       });
   },
   methods: {
-    actionAccept(studyRequests) {
+    actionApprove(studyRequests) {
       this.actionSetStatus(studyRequests, 'approve', 'ACCEPTED');
+    },
+    actionClose() {
     },
     actionComplete(studyRequests) {
       this.actionSetStatus(studyRequests, 'mark as complete', 'COMPLETED');
     },
-    actionDelete(studyRequests) {
-      const actionName = 'delete';
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const action = () => {
-        this.deleteStudyRequests({
-          isSupervisor: this.isSupervisor,
-          studyRequests,
-        });
-      };
-      this.setModal({
-        component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action,
-          textOk: 'Delete',
-        },
-      });
-    },
-    actionExport(studyRequests) {
+    actionDownload(studyRequests) {
       if (studyRequests.length === 0) {
         this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
         return;
@@ -567,28 +532,15 @@ export default {
 .fc-requests-track {
   max-height: 100%;
   overflow: auto;
-  padding: var(--space-m) var(--space-xl);
-  & > header {
-    & > a {
-      border-bottom: 1px solid var(--base-light);
-      color: var(--ink);
-      display: inline-block;
-      text-decoration: none;
-      &:hover {
-        border-color: var(--base);
-      }
-      &.router-link-exact-active {
-        border-color: var(--success);
-        &:hover {
-          border-color: var(--success-dark);
-        }
-      }
-    }
+  padding: var(--space-m) var(--space-l);
+
+  header > h1 {
+    font-size: 3rem;
   }
-  & > section > header {
+
+  .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);
-    padding: var(--space-m) var(--space-l);
   }
 
   .fc-card-table-requests {
@@ -601,8 +553,7 @@ export default {
       }
       & > .col-DATE,
       & > .col-PRIORITY,
-      & > .col-ASSIGNED_TO,
-      & > .col-ACTIONS {
+      & > .col-ASSIGNED_TO {
         width: var(--space-3xl);
       }
     }
@@ -613,23 +564,19 @@ export default {
       & > .col-ASSIGNED_TO {
         width: calc(var(--space-3xl) + var(--space-xl));
       }
-      & > .col-ACTIONS {
-        width: calc(var(--space-4xl));
+    }
+    .cell-ID > div {
+      align-items: center;
+      cursor: pointer;
+      & > u {
+        color: var(--primary-vivid);
       }
     }
-    .cell-ID {
-      & > div {
-        align-items: center;
-        cursor: pointer;
-        & > u {
-          color: var(--primary-vivid);
-        }
-      }
+    .cell-ACTIONS > div {
+      display: inline-block;
     }
-    .cell-ACTIONS {
-      & > div {
-        display: inline-block;
-      }
+    .cell-LOCATION > div {
+      width: var(--space-4xl);
     }
   }
 }
