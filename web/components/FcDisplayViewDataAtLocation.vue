@@ -3,7 +3,7 @@
     <div class="flex-container-column">
       <header>
         <h1 class="my-l">View Data</h1>
-        <div class="bar-actions-bulk flex-container-row p-l mb-xl">
+        <div class="bar-actions-bulk flex-container-row p-l mb-l">
           <label class="tds-checkbox mr-l">
             <input
               type="checkbox"

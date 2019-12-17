@@ -1,22 +1,24 @@
 <template>
   <div class="fc-display-request-study-view flex-container-column">
-    <div class="nav-links flex-container-row px-xl py-l text-size-l">
+    <div class="nav-links flex-container-row px-l pt-l pb-s text-size-l">
       <router-link :to="linkBack">
         <i class="fa fa-chevron-left"></i>
         <span> Back to All</span>
       </router-link>
     </div>
-    <div class="px-xl flex-fill flex-container-column">
-      <hr />
+    <div class="flex-fill flex-container-column">
+      <div class="px-l">
+        <hr />
+      </div>
       <div
         v-if="studyRequest === null"
-        class="request-loading-spinner">
+        class="request-loading-spinner ml-l mt-l">
         <TdsLoadingSpinner />
       </div>
       <div
         v-else
         class="flex-fill flex-container-column">
-        <header class="flex-container-row">
+        <header class="flex-container-row px-l">
           <h2>
             Request #{{studyRequest.id}}
             <span
@@ -29,20 +31,24 @@
           </h2>
           <div class="flex-fill"></div>
           <button
-            class="font-size-l"
+            v-if="auth.user.subject === studyRequest.userSubject || isSupervisor"
+            class="font-size-l uppercase"
             @click="onActionEdit">
             <i class="fa fa-edit" />
             <span> Edit</span>
           </button>
         </header>
         <section class="flex-fill flex-container-row">
-          <div class="flex-cross-scroll">
+          <div class="flex-cross-scroll px-l">
             <FcSummaryStudyRequest
               :study-request="studyRequest" />
             <FcSummaryStudy
               v-for="(_, i) in studyRequest.studies"
               :key="i"
               :index="i"
+              :study-request="studyRequest" />
+            <FcCommentsStudyRequest
+              :size-limit="240"
               :study-request="studyRequest" />
           </div>
         </section>
@@ -54,6 +60,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
+import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
@@ -79,6 +86,7 @@ function getToast(err) {
 export default {
   name: 'FcDisplayRequestStudyView',
   components: {
+    FcCommentsStudyRequest,
     FcSummaryStudy,
     FcSummaryStudyRequest,
     TdsLoadingSpinner,
@@ -106,7 +114,12 @@ export default {
         params: { centrelineId, centrelineType },
       };
     },
-    ...mapState(['studyRequest', 'studyRequestLocation']),
+    ...mapState([
+      'auth',
+      'studyRequest',
+      'studyRequestComments',
+      'studyRequestLocation',
+    ]),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -157,7 +170,6 @@ export default {
 <style lang="postcss">
 .fc-display-request-study-view {
   & > .nav-links {
-    padding: var(--space-l) var(--space-xl) var(--space-s) var(--space-xl);
     text-transform: uppercase;
     & > a {
       text-decoration: none;
