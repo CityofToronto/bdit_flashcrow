@@ -43,9 +43,17 @@
       <header class="flex-container-row font-size-s mx-l">
         <div>
           <div class="mt-m">
-            <strong>
+            <strong
+              v-if="comment.userSubject === auth.user.subject">
+              {{auth.user.name}}
+            </strong>
+            <strong
+              v-else-if="studyRequestCommentUsers.has(comment.userSubject)">
               {{studyRequestCommentUsers.get(comment.userSubject).name}}
             </strong>
+            <span v-else class="text-muted">
+              Author unknown
+            </span>
           </div>
           <div class="mt-s">
             {{comment.createdAt | dateTime}}
@@ -107,6 +115,7 @@ export default {
       const comment = {
         comment: this.commentText,
       };
+      this.commentText = '';
       this.loadingCommentNew = true;
       await this.saveStudyRequestComment({ studyRequest, comment });
       this.loadingCommentNew = false;
