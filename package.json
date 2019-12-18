@@ -56,7 +56,6 @@
     "mapbox-gl": "^1.6.0",
     "module-alias": "^2.2.2",
     "mustache": "^3.1.0",
-    "openid-client": "^2.4.5",
     "pdfmake": "^0.1.63",
     "pg-promise": "^10.3.1",
     "request": "^2.88.0",
