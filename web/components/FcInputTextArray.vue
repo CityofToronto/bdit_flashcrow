@@ -48,10 +48,12 @@ export default {
   methods: {
     onAdd() {
       this.internalValue.push('');
+      /* eslint-disable-next-line no-self-assign */
       this.internalValue = this.internalValue;
     },
     onRemove(i) {
       this.internalValue.splice(i, 1);
+      /* eslint-disable-next-line no-self-assign */
       this.internalValue = this.internalValue;
     },
   },
