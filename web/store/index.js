@@ -15,6 +15,7 @@ import {
 import { debounce } from '@/lib/FunctionUtils';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 import DateTime from '@/lib/time/DateTime';
+import trackRequests from '@/web/store/modules/trackRequests';
 
 Vue.use(Vuex);
 
@@ -68,6 +69,9 @@ function studyRequestEstimatedDeliveryDate(now, studyRequest) {
 }
 
 export default new Vuex.Store({
+  modules: {
+    trackRequests,
+  },
   // TODO: organize state below
   state: {
     // modal
@@ -97,9 +101,6 @@ export default new Vuex.Store({
     filterDate: null,
     filterDayOfWeek: [...Array(7).keys()],
     // REQUESTS
-    studyRequests: [],
-    studyRequestLocations: new Map(),
-    studyRequestUsers: new Map(),
     requestReasons: [],
     // ACTIVE STUDY REQUEST
     studyRequest: null,
@@ -198,34 +199,6 @@ export default new Vuex.Store({
           counts: countsOfTypeSorted,
           expandable,
           id: type.value,
-        };
-      });
-    },
-    // TABLE ITEMS: STUDY REQUESTS
-    itemsStudyRequests(state) {
-      return state.studyRequests.map((studyRequest) => {
-        const {
-          centrelineId,
-          centrelineType,
-          userSubject,
-        } = studyRequest;
-
-        const key = centrelineKey(centrelineType, centrelineId);
-        let location = null;
-        if (state.studyRequestLocations.has(key)) {
-          location = state.studyRequestLocations.get(key);
-        }
-
-        let requestedBy = null;
-        if (state.studyRequestUsers.has(userSubject)) {
-          requestedBy = state.studyRequestUsers.get(userSubject);
-        }
-
-        return {
-          ...studyRequest,
-          expandable: true,
-          location,
-          requestedBy,
         };
       });
     },
@@ -350,21 +323,6 @@ export default new Vuex.Store({
     setFilterDayOfWeek(state, filterDayOfWeek) {
       Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
       Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-    },
-    // STUDY REQUESTS
-    clearStudyRequests(state) {
-      Vue.set(state, 'studyRequests', []);
-      Vue.set(state, 'studyRequestLocations', new Map());
-      Vue.set(state, 'studyRequestUsers', new Map());
-    },
-    setStudyRequests(state, studyRequests) {
-      Vue.set(state, 'studyRequests', studyRequests);
-    },
-    setStudyRequestLocations(state, studyRequestLocations) {
-      Vue.set(state, 'studyRequestLocations', studyRequestLocations);
-    },
-    setStudyRequestUsers(state, studyRequestUsers) {
-      Vue.set(state, 'studyRequestUsers', studyRequestUsers);
     },
     // ACTIVE STUDY REQUEST
     clearStudyRequest(state) {
@@ -597,41 +555,6 @@ export default new Vuex.Store({
         studyRequestComments,
         studyRequestCommentUsers,
         studyRequestLocation,
-      };
-    },
-    async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
-      const options = {};
-      if (isSupervisor) {
-        options.data = { isSupervisor };
-      }
-      const studyRequests = await apiFetch('/requests/study', options);
-      commit('setStudyRequests', studyRequests);
-
-      const centrelineKeys = new Set();
-      const centrelineIdsAndTypes = [];
-      let subjects = new Set();
-      studyRequests.forEach(({ centrelineId, centrelineType, userSubject }) => {
-        const key = centrelineKey(centrelineId, centrelineType);
-        if (!centrelineKeys.has(key)) {
-          centrelineKeys.add(key);
-          centrelineIdsAndTypes.push({ centrelineId, centrelineType });
-        }
-        subjects.add(userSubject);
-      });
-      subjects = Array.from(subjects);
-
-      const promiseLocations = dispatch('fetchLocationsFromCentreline', centrelineIdsAndTypes);
-      const promiseUsers = dispatch('fetchUsersBySubjects', subjects);
-      const [
-        studyRequestLocations,
-        studyRequestUsers,
-      ] = await Promise.all([promiseLocations, promiseUsers]);
-      commit('setStudyRequestLocations', studyRequestLocations);
-      commit('setStudyRequestUsers', studyRequestUsers);
-
-      return {
-        studyRequests,
-        studyRequestLocations,
       };
     },
     async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
