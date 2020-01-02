@@ -431,8 +431,8 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
-    ...mapGetters(['itemsStudyRequests']),
-    ...mapState(['studyRequests']),
+    ...mapGetters('trackRequests', ['itemsStudyRequests']),
+    ...mapState('trackRequests', ['studyRequests']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -583,11 +583,13 @@ export default {
     updateItemsNormalized(itemsNormalized) {
       this.itemsNormalized = itemsNormalized;
     },
-    ...mapActions([
+    ...mapActions('trackRequests', [
       'deleteStudyRequests',
       'fetchAllStudyRequests',
-      'saveStudyRequest',
       'updateStudyRequests',
+    ]),
+    ...mapActions([
+      'saveStudyRequest',
       'setToast',
     ]),
     ...mapMutations([

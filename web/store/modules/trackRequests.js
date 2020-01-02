@@ -6,14 +6,13 @@ import {
 } from '@/lib/Constants';
 
 export default {
+  namespaced: true,
   state: {
     studyRequests: [],
     studyRequestLocations: new Map(),
     studyRequestUsers: new Map(),
   },
   getters: {
-
-    // TABLE ITEMS: STUDY REQUESTS
     itemsStudyRequests(state) {
       return state.studyRequests.map((studyRequest) => {
         const {
@@ -59,7 +58,6 @@ export default {
     },
   },
   actions: {
-
     async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
       const options = {};
       if (isSupervisor) {
@@ -103,6 +101,38 @@ export default {
         studyRequestLocations,
         studyRequestUsers,
       };
+    },
+    async updateStudyRequests({ state }, { isSupervisor, studyRequests }) {
+      const promisesStudyRequests = studyRequests.map((studyRequest) => {
+        const data = {
+          ...studyRequest,
+        };
+        if (isSupervisor) {
+          data.isSupervisor = isSupervisor;
+        }
+        const url = `/requests/study/${data.id}`;
+        const options = {
+          method: 'PUT',
+          csrf: state.auth.csrf,
+          data,
+        };
+        return apiFetch(url, options);
+      });
+      return Promise.all(promisesStudyRequests);
+    },
+    async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
+      const options = {
+        method: 'DELETE',
+        csrf: state.auth.csrf,
+      };
+      if (isSupervisor) {
+        options.data = { isSupervisor };
+      }
+      const promisesStudyRequests = studyRequests.map(
+        ({ id }) => apiFetch(`/requests/study/${id}`, options),
+      );
+      await Promise.all(promisesStudyRequests);
+      await dispatch('fetchAllStudyRequests');
     },
   },
 };
