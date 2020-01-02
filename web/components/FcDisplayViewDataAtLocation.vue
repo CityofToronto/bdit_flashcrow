@@ -250,11 +250,13 @@ export default {
       'fetchLocationFromCentreline',
       'newStudyRequest',
     ]),
+    ...mapMutations('requestStudy', [
+      'setNewStudyRequest',
+    ]),
     ...mapMutations([
       'setFilterCountTypes',
       'setLocation',
       'setModal',
-      'setNewStudyRequest',
     ]),
   },
 };

@@ -61,7 +61,8 @@ export default {
       const label = `Back to ${description}`;
       return { route, label };
     },
-    ...mapState(['location', 'studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
+    ...mapState(['location']),
   },
   methods: {
     ...mapMutations(['setModal']),

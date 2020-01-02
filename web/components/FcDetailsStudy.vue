@@ -238,10 +238,10 @@ export default {
       const { studyType } = this.study;
       return COUNT_TYPES.find(({ value }) => value === studyType);
     },
-    ...mapState(['studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
   },
   methods: {
-    ...mapMutations(['setStudyMeta']),
+    ...mapMutations('requestStudy', ['setStudyMeta']),
   },
 };
 </script>

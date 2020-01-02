@@ -86,13 +86,13 @@ export default {
         return getStudyTypeItem(this.counts, this.studies, type, id);
       });
     },
-    ...mapGetters([
+    ...mapGetters('requestStudy', [
       'studyTypesWithWarnings',
     ]),
+    ...mapState('requestStudy', ['studyRequest']),
     ...mapState([
       'counts',
       'studies',
-      'studyRequest',
     ]),
   },
   methods: {
@@ -111,9 +111,11 @@ export default {
     onRemoveStudy(item) {
       this.removeStudyFromStudyRequest(item.id);
     },
-    ...mapMutations([
+    ...mapMutations('requestStudy', [
       'addStudyToStudyRequest',
       'removeStudyFromStudyRequest',
+    ]),
+    ...mapMutations([
       'setModal',
     ]),
   },

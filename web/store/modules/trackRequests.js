@@ -102,7 +102,7 @@ export default {
         studyRequestUsers,
       };
     },
-    async updateStudyRequests({ state }, { isSupervisor, studyRequests }) {
+    async updateStudyRequests({ rootState }, { isSupervisor, studyRequests }) {
       const promisesStudyRequests = studyRequests.map((studyRequest) => {
         const data = {
           ...studyRequest,
@@ -113,17 +113,17 @@ export default {
         const url = `/requests/study/${data.id}`;
         const options = {
           method: 'PUT',
-          csrf: state.auth.csrf,
+          csrf: rootState.auth.csrf,
           data,
         };
         return apiFetch(url, options);
       });
       return Promise.all(promisesStudyRequests);
     },
-    async deleteStudyRequests({ dispatch, state }, { isSupervisor, studyRequests }) {
+    async deleteStudyRequests({ dispatch, rootState }, { isSupervisor, studyRequests }) {
       const options = {
         method: 'DELETE',
-        csrf: state.auth.csrf,
+        csrf: rootState.auth.csrf,
       };
       if (isSupervisor) {
         options.data = { isSupervisor };

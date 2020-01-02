@@ -99,10 +99,12 @@ export default {
     charsRemaining() {
       return this.sizeLimit - this.commentText.length;
     },
-    ...mapState([
-      'auth',
+    ...mapState('requestStudy', [
       'studyRequestComments',
       'studyRequestCommentUsers',
+    ]),
+    ...mapState([
+      'auth',
     ]),
   },
   methods: {
@@ -120,7 +122,7 @@ export default {
       await this.saveStudyRequestComment({ studyRequest, comment });
       this.loadingCommentNew = false;
     },
-    ...mapActions([
+    ...mapActions('requestStudy', [
       'saveStudyRequestComment',
       'deleteStudyRequestComment',
     ]),

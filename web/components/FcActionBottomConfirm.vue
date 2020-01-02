@@ -41,7 +41,8 @@ export default {
       const label = 'Confirm';
       return { route, label };
     },
-    ...mapState(['location', 'studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
+    ...mapState(['location']),
   },
   validations: ValidationsStudyRequest.validations,
   methods: {

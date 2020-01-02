@@ -27,7 +27,7 @@ export default {
     FcDetailsStudy,
   },
   computed: {
-    ...mapState(['studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
   },
   validations: ValidationsStudyRequest.validations,
 };
