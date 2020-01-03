@@ -1,10 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { apiFetch } from '@/lib/BackendClient';
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
-  centrelineKey,
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
@@ -13,6 +11,7 @@ import {
   Status,
 } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
+import { apiFetch } from '@/lib/api/BackendClient';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
 import trackRequests from '@/web/store/modules/trackRequests';
@@ -306,31 +305,6 @@ export default new Vuex.Store({
       commit('setLocation', location);
       return location;
     },
-    async fetchLocationFromCentreline(_, { centrelineId, centrelineType }) {
-      const options = {
-        data: { centrelineId, centrelineType },
-      };
-      const locations = await apiFetch('/location/centreline', options);
-      const locationsMap = new Map(locations);
-      const key = centrelineKey(centrelineType, centrelineId);
-      if (!locationsMap.has(key)) {
-        // TODO: better error handling here
-        throw new Error('not found!');
-      }
-      return locationsMap.get(key);
-    },
-    async fetchLocationsFromCentreline(_, centrelineTypesAndIds) {
-      const centrelineIds = centrelineTypesAndIds.map(({ centrelineId: id }) => id);
-      const centrelineTypes = centrelineTypesAndIds.map(({ centrelineType: type }) => type);
-      const options = {
-        data: {
-          centrelineId: centrelineIds,
-          centrelineType: centrelineTypes,
-        },
-      };
-      const locations = await apiFetch('/location/centreline', options);
-      return new Map(locations);
-    },
     async fetchLocationSuggestions({ commit }, query) {
       let locationSuggestions = null;
       if (query.startsWith('pxo:') || query.startsWith('px:')) {
@@ -435,19 +409,6 @@ export default new Vuex.Store({
         },
       });
       return studyRequestNew;
-    },
-    // USERS
-    async fetchUsersBySubjects(_, subjects) {
-      if (subjects.length === 0) {
-        return new Map();
-      }
-      const options = {
-        data: {
-          subject: subjects,
-        },
-      };
-      const users = await apiFetch('/users/bySubject', options);
-      return new Map(users);
     },
   },
 });

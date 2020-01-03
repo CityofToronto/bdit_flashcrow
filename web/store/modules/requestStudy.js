@@ -1,10 +1,10 @@
 import Vue from 'vue';
 
-import { apiFetch } from '@/lib/BackendClient';
 import {
-  centrelineKey,
   COUNT_TYPES,
 } from '@/lib/Constants';
+import { apiFetch } from '@/lib/api/BackendClient';
+import { getLocationByFeature, getUsersBySubjects } from '@/lib/api/WebApi';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 function makeStudy(studyType) {
@@ -160,20 +160,13 @@ export default {
 
       const promiseComments = await dispatch('fetchStudyRequestComments', { studyRequest });
 
-      const centrelineIdsAndTypes = [{ centrelineId, centrelineType }];
-      const promiseLocations = dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-        { root: true },
-      );
+      const promiseLocation = getLocationByFeature({ centrelineId, centrelineType });
 
       const [
         studyRequestComments,
-        studyRequestLocations,
-      ] = await Promise.all([promiseComments, promiseLocations]);
+        studyRequestLocation,
+      ] = await Promise.all([promiseComments, promiseLocation]);
 
-      const key = centrelineKey(centrelineType, centrelineId);
-      const studyRequestLocation = studyRequestLocations.get(key);
       commit('setStudyRequestLocation', studyRequestLocation);
 
       let subjects = new Set();
@@ -181,11 +174,7 @@ export default {
         subjects.add(userSubject);
       });
       subjects = Array.from(subjects);
-      const studyRequestCommentUsers = await dispatch(
-        'fetchUsersBySubjects',
-        subjects,
-        { root: true },
-      );
+      const studyRequestCommentUsers = await getUsersBySubjects(subjects);
       commit('setStudyRequestCommentUsers', studyRequestCommentUsers);
 
       return {

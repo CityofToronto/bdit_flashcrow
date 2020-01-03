@@ -1,4 +1,4 @@
-import BackendClient from '@/lib/BackendClient';
+import BackendClient from '@/lib/api/BackendClient';
 import DateTime from '@/lib/time/DateTime';
 
 test('BackendClient.getFetchOptions()', () => {

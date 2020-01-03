@@ -1,9 +1,10 @@
 import Vue from 'vue';
 
-import { apiFetch } from '@/lib/BackendClient';
 import {
   centrelineKey,
 } from '@/lib/Constants';
+import { apiFetch } from '@/lib/api/BackendClient';
+import { getLocationsByFeature, getUsersBySubjects } from '@/lib/api/WebApi';
 
 export default {
   namespaced: true,
@@ -58,7 +59,7 @@ export default {
     },
   },
   actions: {
-    async fetchAllStudyRequests({ commit, dispatch }, isSupervisor) {
+    async fetchAllStudyRequests({ commit }, isSupervisor) {
       const options = {};
       if (isSupervisor) {
         options.data = { isSupervisor };
@@ -79,16 +80,8 @@ export default {
       });
       subjects = Array.from(subjects);
 
-      const promiseLocations = dispatch(
-        'fetchLocationsFromCentreline',
-        centrelineIdsAndTypes,
-        { root: true },
-      );
-      const promiseUsers = dispatch(
-        'fetchUsersBySubjects',
-        subjects,
-        { root: true },
-      );
+      const promiseLocations = getLocationsByFeature(centrelineIdsAndTypes);
+      const promiseUsers = getUsersBySubjects(subjects);
       const [
         studyRequestLocations,
         studyRequestUsers,

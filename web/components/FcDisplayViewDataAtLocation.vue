@@ -46,6 +46,7 @@ import {
 } from 'vuex';
 
 import { COUNT_TYPES, Status } from '@/lib/Constants';
+import { getLocationByFeature } from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
 import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
@@ -232,7 +233,7 @@ export default {
         centrelineId,
         centrelineType,
       });
-      const promiseLocation = this.fetchLocationFromCentreline({
+      const promiseLocation = getLocationByFeature({
         centrelineId,
         centrelineType,
       });
@@ -247,7 +248,6 @@ export default {
     },
     ...mapActions([
       'fetchCountsByCentreline',
-      'fetchLocationFromCentreline',
       'newStudyRequest',
     ]),
     ...mapMutations('requestStudy', [
