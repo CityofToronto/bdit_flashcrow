@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import {
   mapActions,
   mapGetters,
@@ -79,6 +80,10 @@ export default {
     TdsLoadingSpinner,
   },
   data() {
+    const itemsCountsActive = {};
+    COUNT_TYPES.forEach(({ value }) => {
+      itemsCountsActive[value] = 0;
+    });
     return {
       counts: [],
       filter: {
@@ -86,6 +91,7 @@ export default {
         date: null,
         dayOfWeek: [...Array(7).keys()],
       },
+      itemsCountsActive,
       loadingLocationData: true,
       selection: [],
       studies: [],
@@ -201,7 +207,6 @@ export default {
       'studyTypesRelevantToLocation',
     ]),
     ...mapState([
-      'itemsCountsActive',
       'location',
     ]),
   },
@@ -277,6 +282,10 @@ export default {
       this.setNewStudyRequest(Array.from(studyTypes));
       this.$router.push({ name: 'requestStudy' });
     },
+    actionSelectActiveIndex(item, { activeIndex }) {
+      const { id } = item;
+      Vue.set(this.itemsCountsActive, id, activeIndex);
+    },
     actionShowReports(item) {
       if (item.counts.length === 0) {
         return;
@@ -302,6 +311,8 @@ export default {
       if (type === 'request-study') {
         const studyType = item.id;
         this.actionRequestStudy([studyType], actionOptions);
+      } else if (type === 'select-active-index') {
+        this.actionSelectActiveIndex(item, actionOptions);
       } else if (type === 'show-reports') {
         this.actionShowReports(item, actionOptions);
       }
@@ -329,6 +340,13 @@ export default {
       ] = await Promise.all([promiseCounts, promiseLocation]);
       this.counts = counts;
       this.studies = studies;
+
+      const itemsCountsActive = {};
+      COUNT_TYPES.forEach(({ value }) => {
+        itemsCountsActive[value] = 0;
+      });
+      this.itemsCountsActive = itemsCountsActive;
+
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
           || location.centrelineType !== this.location.centrelineType

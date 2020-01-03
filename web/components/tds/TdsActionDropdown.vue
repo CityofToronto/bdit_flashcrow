@@ -41,7 +41,6 @@ export default {
   methods: {
     onClickAction(value) {
       this.$emit('action-selected', value);
-      // TODO: close the dropdown
     },
   },
 };

@@ -122,10 +122,7 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapMutations,
-} from 'vuex';
+import { mapActions } from 'vuex';
 
 import FcCardTable from '@/web/components/FcCardTable.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
@@ -207,9 +204,10 @@ export default {
       this.$emit('action-item', { type: 'show-reports', item });
     },
     onSelectActiveIndex(item, activeIndex) {
-      this.setItemsCountsActive({
-        value: item.id,
-        activeIndex,
+      this.$emit('action-item', {
+        type: 'select-active-index',
+        item,
+        options: { activeIndex },
       });
     },
     optionsCounts(item) {
@@ -220,7 +218,6 @@ export default {
       return options;
     },
     ...mapActions(['setToast']),
-    ...mapMutations(['setItemsCountsActive']),
   },
 };
 </script>

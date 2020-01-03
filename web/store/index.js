@@ -15,14 +15,6 @@ Vue.use(Vuex);
 
 const TIMEOUT_TOAST = 10000;
 
-function makeItemsCountsActive() {
-  const itemsCountsActive = {};
-  COUNT_TYPES.forEach(({ value }) => {
-    itemsCountsActive[value] = 0;
-  });
-  return itemsCountsActive;
-}
-
 const clearToastDebounced = debounce((commit) => {
   commit('clearToast');
 }, TIMEOUT_TOAST);
@@ -65,8 +57,6 @@ export default new Vuex.Store({
     // selecting locations
     // TODO: in searching / selecting phase, generalize to other selection types
     location: null,
-    // data for selected locations
-    itemsCountsActive: makeItemsCountsActive(),
     // REQUESTS
     requestReasons: [],
     // query that will appear in the search bar
@@ -142,10 +132,6 @@ export default new Vuex.Store({
     },
     setLocationQuery(state, locationQuery) {
       Vue.set(state, 'locationQuery', locationQuery);
-    },
-    // COUNTS
-    setItemsCountsActive(state, { value, activeIndex }) {
-      Vue.set(state.itemsCountsActive, value, activeIndex);
     },
     // DRAWER
     setDrawerOpen(state, drawerOpen) {
