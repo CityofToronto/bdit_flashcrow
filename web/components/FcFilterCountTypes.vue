@@ -3,9 +3,8 @@
     class="fc-filter-count-types"
     name="countTypes"
     :options="options"
-    v-model="filterCountTypes"
-    @click="$emit('filter-count-types')">
-    <span>Counts ({{filterCountTypes.length}})</span>
+    v-model="internalValue">
+    <span>Counts ({{internalValue.length}})</span>
   </TdsChecklistDropdown>
 </template>
 
@@ -18,18 +17,21 @@ export default {
   components: {
     TdsChecklistDropdown,
   },
+  props: {
+    value: Array,
+  },
   data() {
     return {
       countTypes: COUNT_TYPES,
     };
   },
   computed: {
-    filterCountTypes: {
+    internalValue: {
       get() {
-        return this.$store.state.filterCountTypes;
+        return this.value;
       },
-      set(filterCountTypes) {
-        this.$store.commit('setFilterCountTypes', filterCountTypes);
+      set(value) {
+        this.$emit('input', value);
       },
     },
     options() {

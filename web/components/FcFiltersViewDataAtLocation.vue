@@ -8,21 +8,21 @@
     @click="clearFilters">
     All
   </button>
-  <button class="font-size-l mr-m" disabled>
-    Collisions
-  </button>
   <FcFilterCountTypes
+    v-model="internalValue.countTypes"
     class="font-size-l mr-m"
     :class="{
       'tds-button-success': hasFilterCountTypes,
     }" />
   <FcFilterDate
+    v-model="internalValue.date"
     class="mr-m"
     :class="{
-      'tds-button-success': filterDate !== null,
+      'tds-button-success': hasFilterDate,
     }"
     size="l" />
   <FcFilterDayOfWeek
+    v-model="internalValue.dayOfWeek"
     class="font-size-l"
     :class="{
       'tds-button-success': hasFilterDayOfWeek,
@@ -31,8 +31,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex';
-
+import { COUNT_TYPES } from '@/lib/Constants';
 import FcFilterCountTypes from '@/web/components/FcFilterCountTypes.vue';
 import FcFilterDate from '@/web/components/FcFilterDate.vue';
 import FcFilterDayOfWeek from '@/web/components/FcFilterDayOfWeek.vue';
@@ -44,12 +43,41 @@ export default {
     FcFilterDate,
     FcFilterDayOfWeek,
   },
+  props: {
+    value: Object,
+  },
   computed: {
-    ...mapGetters(['hasFilters', 'hasFilterCountTypes', 'hasFilterDayOfWeek']),
-    ...mapState(['filterCountTypes', 'filterDate', 'filterDayOfWeek']),
+    hasFilters() {
+      return this.hasFilterCountTypes
+        || this.hasFilterDate
+        || this.hasFilterDayOfWeek;
+    },
+    hasFilterCountTypes() {
+      return this.internalValue.countTypes.length !== COUNT_TYPES.length;
+    },
+    hasFilterDate() {
+      return this.internalValue.date !== null;
+    },
+    hasFilterDayOfWeek() {
+      return this.internalValue.dayOfWeek.length !== 7;
+    },
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
+    },
   },
   methods: {
-    ...mapMutations(['clearFilters']),
+    clearFilters() {
+      this.internalValue = {
+        countTypes: [...COUNT_TYPES.keys()],
+        date: null,
+        dayOfWeek: [...Array(7).keys()],
+      };
+    },
   },
 };
 </script>

@@ -124,7 +124,6 @@
 <script>
 import {
   mapActions,
-  mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
@@ -147,6 +146,7 @@ export default {
     TdsActionDropdown,
   },
   props: {
+    itemsCounts: Array,
     value: Array,
   },
   data() {
@@ -193,7 +193,6 @@ export default {
         this.$emit('input', value);
       },
     },
-    ...mapGetters(['itemsCounts']),
     ...mapState(['numPerCategory']),
   },
   methods: {

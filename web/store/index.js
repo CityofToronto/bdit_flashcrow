@@ -1,14 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
 import {
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
-  SortKeys,
-  SortDirection,
-  Status,
 } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { apiFetch } from '@/lib/api/BackendClient';
@@ -84,11 +80,6 @@ export default new Vuex.Store({
     itemsCountsActive: makeItemsCountsActive(),
     numPerCategory: makeNumPerCategory(),
     studies: [],
-    // FILTERING DATA
-    // TODO: in searching / selecting phase, bring this under one "filter" key
-    filterCountTypes: [...COUNT_TYPES.keys()],
-    filterDate: null,
-    filterDayOfWeek: [...Array(7).keys()],
     // REQUESTS
     requestReasons: [],
     // query that will appear in the search bar
@@ -104,87 +95,6 @@ export default new Vuex.Store({
         return name || email;
       }
       return 'Guest';
-    },
-    // FILTERING DATA
-    hasFilters(state, getters) {
-      return getters.hasFilterCountTypes
-        || state.filterDate !== null
-        || getters.hasFilterDayOfWeek;
-    },
-    hasFilterCountTypes(state) {
-      return state.filterCountTypes.length !== COUNT_TYPES.length;
-    },
-    hasFilterDayOfWeek(state) {
-      return state.filterDayOfWeek.length !== 7;
-    },
-    // TABLE ITEMS: COUNTS
-    itemsCounts(state) {
-      return state.filterCountTypes.map((i) => {
-        const type = COUNT_TYPES[i];
-        const activeIndex = state.itemsCountsActive[type.value];
-        let countsOfType = state.counts
-          .filter(c => c.type.value === type.value);
-        let studiesOfType = state.studies
-          .filter(s => s.studyType === type.value);
-        if (state.filterDate !== null) {
-          const { start, end } = state.filterDate;
-          countsOfType = countsOfType
-            .filter(c => start <= c.date && c.date <= end);
-          /*
-           * TODO: determine if we should instead filter by estimated date here (e.g. from
-           * the study request).
-           */
-          studiesOfType = studiesOfType
-            .filter(c => start <= c.createdAt && c.createdAt <= end);
-        }
-        countsOfType = countsOfType
-          .filter(c => state.filterDayOfWeek.includes(c.date.weekday));
-        studiesOfType = studiesOfType
-          .filter(({ daysOfWeek }) => daysOfWeek.some(d => state.filterDayOfWeek.includes(d)));
-
-        const expandable = countsOfType.length > 0;
-
-        if (countsOfType.length === 0 && studiesOfType.length === 0) {
-          const noExistingCount = {
-            id: type.value,
-            type,
-            date: null,
-            status: Status.NO_EXISTING_COUNT,
-          };
-          return {
-            activeIndex,
-            counts: [noExistingCount],
-            expandable,
-            id: type.value,
-          };
-        }
-        studiesOfType = studiesOfType.map((study) => {
-          const {
-            id,
-            createdAt,
-            studyRequestId,
-          } = study;
-          return {
-            id: `STUDY:${id}`,
-            type,
-            date: createdAt,
-            status: Status.REQUEST_IN_PROGRESS,
-            studyRequestId,
-          };
-        });
-        countsOfType = studiesOfType.concat(countsOfType);
-        const countsOfTypeSorted = ArrayUtils.sortBy(
-          countsOfType,
-          SortKeys.Counts.DATE,
-          SortDirection.DESC,
-        );
-        return {
-          activeIndex,
-          counts: countsOfTypeSorted,
-          expandable,
-          id: type.value,
-        };
-      });
     },
     // ACTIVE STUDY REQUEST
     studyTypesRelevantToLocation(state) {
@@ -255,24 +165,6 @@ export default new Vuex.Store({
     },
     setItemsCountsActive(state, { value, activeIndex }) {
       Vue.set(state.itemsCountsActive, value, activeIndex);
-    },
-    // FILTERING DATA
-    clearFilters(state) {
-      Vue.set(state, 'filterCountTypes', [...COUNT_TYPES.keys()]);
-      Vue.set(state, 'filterDate', null);
-      Vue.set(state, 'filterDayOfWeek', [...Array(7).keys()]);
-    },
-    setFilterCountTypes(state, filterCountTypes) {
-      Vue.set(state, 'filterCountTypes', filterCountTypes);
-      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-    },
-    setFilterDate(state, filterDate) {
-      Vue.set(state, 'filterDate', filterDate);
-      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-    },
-    setFilterDayOfWeek(state, filterDayOfWeek) {
-      Vue.set(state, 'filterDayOfWeek', filterDayOfWeek);
-      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
     },
     // DRAWER
     setDrawerOpen(state, drawerOpen) {

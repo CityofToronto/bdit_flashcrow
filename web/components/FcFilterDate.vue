@@ -7,7 +7,7 @@
     </template>
     <template v-slot:dropdown>
       <DatePicker
-        v-model="filterDate"
+        v-model="internalValue"
         class="fc-filter-date"
         :disabled-dates="{start: tomorrow, end: null}"
         is-expanded
@@ -38,6 +38,7 @@ export default {
   },
   props: {
     size: String,
+    value: Object,
   },
   data() {
     return {
@@ -45,20 +46,19 @@ export default {
     };
   },
   computed: {
-    filterDate: {
+    internalValue: {
       get() {
-        return this.$store.state.filterDate;
+        return this.value;
       },
-      set(filterDate) {
-        this.$store.commit('setFilterDate', filterDate);
+      set(value) {
+        this.$emit('input', value);
       },
     },
     title() {
-      const { filterDate } = this.$store.state;
-      if (filterDate === null) {
+      if (this.internalValue === null) {
         return 'Dates';
       }
-      const { start, end } = filterDate;
+      const { start, end } = this.internalValue;
       const strStart = TimeFormatters.formatYearMonth(start);
       const strEnd = TimeFormatters.formatYearMonth(end);
       if (strStart === strEnd) {

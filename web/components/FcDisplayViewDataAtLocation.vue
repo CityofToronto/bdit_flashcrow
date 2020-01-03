@@ -21,7 +21,9 @@
             </button>
           </div>
           <div class="flex-fill"></div>
-          <FcFiltersViewDataAtLocation class="py-s" />
+          <FcFiltersViewDataAtLocation
+            v-model="filter"
+            class="py-s" />
         </div>
       </header>
       <div
@@ -32,6 +34,7 @@
       <FcCardTableCounts
         v-else
         v-model="selection"
+        :items-counts="itemsCounts"
         @action-item="onActionItem" />
     </div>
   </div>
@@ -45,7 +48,13 @@ import {
   mapState,
 } from 'vuex';
 
-import { COUNT_TYPES, Status } from '@/lib/Constants';
+import ArrayUtils from '@/lib/ArrayUtils';
+import {
+  COUNT_TYPES,
+  SortDirection,
+  SortKeys,
+  Status,
+} from '@/lib/Constants';
 import { getLocationByFeature } from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
 import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
@@ -68,11 +77,86 @@ export default {
   },
   data() {
     return {
+      // TODO: in searching / selecting phase, bring this under one "filter" key
+      filter: {
+        countTypes: [...COUNT_TYPES.keys()],
+        date: null,
+        dayOfWeek: [...Array(7).keys()],
+      },
       loadingLocationData: true,
       selection: [],
     };
   },
   computed: {
+    itemsCounts() {
+      const { countTypes, date, dayOfWeek } = this.filter;
+      return countTypes.map((i) => {
+        const type = COUNT_TYPES[i];
+        const activeIndex = this.itemsCountsActive[type.value];
+        let countsOfType = this.counts
+          .filter(c => c.type.value === type.value);
+        let studiesOfType = this.studies
+          .filter(s => s.studyType === type.value);
+        if (date !== null) {
+          const { start, end } = date;
+          countsOfType = countsOfType
+            .filter(c => start <= c.date && c.date <= end);
+          /*
+           * TODO: determine if we should instead filter by estimated date here (e.g. from
+           * the study request).
+           */
+          studiesOfType = studiesOfType
+            .filter(c => start <= c.createdAt && c.createdAt <= end);
+        }
+        countsOfType = countsOfType
+          .filter(c => dayOfWeek.includes(c.date.weekday));
+        studiesOfType = studiesOfType
+          .filter(({ daysOfWeek }) => daysOfWeek.some(d => dayOfWeek.includes(d)));
+
+        const expandable = countsOfType.length > 0;
+
+        if (countsOfType.length === 0 && studiesOfType.length === 0) {
+          const noExistingCount = {
+            id: type.value,
+            type,
+            date: null,
+            status: Status.NO_EXISTING_COUNT,
+          };
+          return {
+            activeIndex,
+            counts: [noExistingCount],
+            expandable,
+            id: type.value,
+          };
+        }
+        studiesOfType = studiesOfType.map((study) => {
+          const {
+            id,
+            createdAt,
+            studyRequestId,
+          } = study;
+          return {
+            id: `STUDY:${id}`,
+            type,
+            date: createdAt,
+            status: Status.REQUEST_IN_PROGRESS,
+            studyRequestId,
+          };
+        });
+        countsOfType = studiesOfType.concat(countsOfType);
+        const countsOfTypeSorted = ArrayUtils.sortBy(
+          countsOfType,
+          SortKeys.Counts.DATE,
+          SortDirection.DESC,
+        );
+        return {
+          activeIndex,
+          counts: countsOfTypeSorted,
+          expandable,
+          id: type.value,
+        };
+      });
+    },
     selectableIds() {
       const selectableIds = [];
       this.itemsCounts.forEach(({ counts }) => {
@@ -110,11 +194,11 @@ export default {
       return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapGetters([
-      'itemsCounts',
       'studyTypesRelevantToLocation',
     ]),
     ...mapState([
       'counts',
+      'itemsCountsActive',
       'location',
       'studies',
     ]),
@@ -159,7 +243,7 @@ export default {
       handler() {
         const studyTypesIndices = this.studyTypesRelevantToLocation
           .map(value => COUNT_TYPES.findIndex(({ value: typeValue }) => typeValue === value));
-        this.setFilterCountTypes(studyTypesIndices);
+        this.filter.countTypes = studyTypesIndices;
       },
       immediate: true,
     },
@@ -248,7 +332,6 @@ export default {
     },
     ...mapActions([
       'fetchCountsByCentreline',
-      'newStudyRequest',
     ]),
     ...mapMutations('requestStudy', [
       'setNewStudyRequest',
