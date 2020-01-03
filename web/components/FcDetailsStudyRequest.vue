@@ -220,8 +220,9 @@ export default {
         });
       },
     },
-    ...mapGetters(['studyRequestMinDueDate']),
-    ...mapState(['requestReasons', 'studyRequest']),
+    ...mapGetters('requestStudy', ['studyRequestMinDueDate']),
+    ...mapState('requestStudy', ['studyRequest']),
+    ...mapState(['requestReasons']),
   },
   watch: {
     dueDate: {
@@ -235,7 +236,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['setStudyRequestMeta']),
+    ...mapMutations('requestStudy', ['setStudyRequestMeta']),
   },
 };
 </script>

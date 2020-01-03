@@ -155,7 +155,7 @@ export default {
     serviceRequestId() {
       return this.studyRequest.serviceRequestId;
     },
-    ...mapGetters(['studyRequestEstimatedDeliveryDate']),
+    ...mapGetters('requestStudy', ['studyRequestEstimatedDeliveryDate']),
     ...mapState(['requestReasons']),
   },
 };

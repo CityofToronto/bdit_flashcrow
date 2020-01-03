@@ -86,7 +86,13 @@
           </div>
         </div>
       </header>
+      <div
+        v-if="loadingStudyRequests"
+        class="requests-loading-spinner">
+        <TdsLoadingSpinner />
+      </div>
       <FcCardTable
+        v-else
         class="fc-card-table-requests"
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
@@ -237,12 +243,12 @@ import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
 import {
   mapActions,
-  mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
 
 import {
+  centrelineKey,
   CentrelineType,
   COUNT_TYPES,
   RequestStatus,
@@ -252,6 +258,10 @@ import {
 } from '@/lib/Constants';
 import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
 import {
+  getUserStudyRequests,
+  putStudyRequests,
+} from '@/lib/api/WebApi';
+import {
   REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
 } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -259,6 +269,7 @@ import FcCardTable from '@/web/components/FcCardTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 function getItemFields(item) {
   const {
@@ -364,17 +375,22 @@ export default {
     FcSummaryStudy,
     TdsActionDropdown,
     TdsLabel,
+    TdsLoadingSpinner,
   },
   data() {
     return {
       closed: false,
       itemsNormalized: [],
+      loadingStudyRequests: false,
+      RequestStatus,
       searchKeys: SearchKeys.Requests,
       selection: [],
       sortBy: 'ID',
       sortDirection: SortDirection.DESC,
       sortKeys: SortKeys.Requests,
-      RequestStatus,
+      studyRequests: [],
+      studyRequestLocations: new Map(),
+      studyRequestUsers: new Map(),
     };
   },
   computed: {
@@ -413,6 +429,33 @@ export default {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
+    itemsStudyRequests() {
+      return this.studyRequests.map((studyRequest) => {
+        const {
+          centrelineId,
+          centrelineType,
+          userSubject,
+        } = studyRequest;
+
+        const key = centrelineKey(centrelineType, centrelineId);
+        let location = null;
+        if (this.studyRequestLocations.has(key)) {
+          location = this.studyRequestLocations.get(key);
+        }
+
+        let requestedBy = null;
+        if (this.studyRequestUsers.has(userSubject)) {
+          requestedBy = this.studyRequestUsers.get(userSubject);
+        }
+
+        return {
+          ...studyRequest,
+          expandable: true,
+          location,
+          requestedBy,
+        };
+      });
+    },
     itemsStudyRequestsVisible() {
       return this.itemsStudyRequests
         .filter(({ closed }) => closed === this.closed);
@@ -431,8 +474,7 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
-    ...mapGetters(['itemsStudyRequests']),
-    ...mapState(['studyRequests']),
+    ...mapState(['auth']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -569,25 +611,33 @@ export default {
       this.closed = closed;
       this.selection = [];
     },
-    setStudyRequests(items, updates) {
+    async setStudyRequests(items, updates) {
       const { isSupervisor } = this;
       const studyRequests = items.map((item) => {
         const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
         return Object.assign(studyRequest, updates);
       });
-      return this.updateStudyRequests({ isSupervisor, studyRequests });
+      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
-    syncFromRoute() {
-      return this.fetchAllStudyRequests(this.isSupervisor);
+    async syncFromRoute() {
+      this.loadingStudyRequests = true;
+
+      const {
+        studyRequests,
+        studyRequestLocations,
+        studyRequestUsers,
+      } = await getUserStudyRequests(this.isSupervisor);
+
+      this.studyRequests = studyRequests;
+      this.studyRequestLocations = studyRequestLocations;
+      this.studyRequestUsers = studyRequestUsers;
+      this.loadingStudyRequests = false;
     },
     updateItemsNormalized(itemsNormalized) {
       this.itemsNormalized = itemsNormalized;
     },
     ...mapActions([
-      'deleteStudyRequests',
-      'fetchAllStudyRequests',
       'saveStudyRequest',
-      'updateStudyRequests',
       'setToast',
     ]),
     ...mapMutations([
@@ -626,6 +676,11 @@ export default {
   .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);
+  }
+
+  .requests-loading-spinner {
+    height: var(--space-2xl);
+    width: var(--space-2xl);
   }
 
   .fc-card-table-requests {

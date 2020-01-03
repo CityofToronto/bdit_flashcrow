@@ -115,11 +115,13 @@ export default {
         params: { centrelineId, centrelineType },
       };
     },
-    ...mapState([
-      'auth',
+    ...mapState('requestStudy', [
       'studyRequest',
       'studyRequestComments',
       'studyRequestLocation',
+    ]),
+    ...mapState([
+      'auth',
     ]),
   },
   beforeRouteEnter(to, from, next) {
@@ -164,7 +166,8 @@ export default {
           this.$router.push({ name: 'viewData' });
         });
     },
-    ...mapActions(['fetchStudyRequest', 'setToast']),
+    ...mapActions('requestStudy', ['fetchStudyRequest']),
+    ...mapActions(['setToast']),
     ...mapMutations(['setLocation']),
   },
 };

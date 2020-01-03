@@ -3,8 +3,8 @@
     class="fc-filter-day-of-week"
     name="dayOfWeek"
     :options="options"
-    v-model="filterDayOfWeek">
-    <span>Days ({{filterDayOfWeek.length}})</span>
+    v-model="internalValue">
+    <span>Days ({{internalValue.length}})</span>
   </TdsChecklistDropdown>
 </template>
 
@@ -17,13 +17,16 @@ export default {
   components: {
     TdsChecklistDropdown,
   },
+  props: {
+    value: Array,
+  },
   computed: {
-    filterDayOfWeek: {
+    internalValue: {
       get() {
-        return this.$store.state.filterDayOfWeek;
+        return this.value;
       },
-      set(filterDayOfWeek) {
-        this.$store.commit('setFilterDayOfWeek', filterDayOfWeek);
+      set(value) {
+        this.$emit('input', value);
       },
     },
     options() {

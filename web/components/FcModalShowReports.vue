@@ -162,7 +162,6 @@ import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
-import { reporterFetch } from '@/lib/BackendClient';
 import {
   ReportBlock,
   ReportFormat,
@@ -170,6 +169,7 @@ import {
   Status,
   STATUS_META,
 } from '@/lib/Constants';
+import { reporterFetch } from '@/lib/api/BackendClient';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 const DOWNLOAD_FORMATS_SUPPORTED = [

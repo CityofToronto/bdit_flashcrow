@@ -30,6 +30,9 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
+import {
+  getCountsByCentreline,
+} from '@/lib/api/WebApi';
 import FcCardTableStudiesRequested from '@/web/components/FcCardTableStudiesRequested.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import ArrayUtils from '@/lib/ArrayUtils';
@@ -79,6 +82,12 @@ export default {
     FcCardTableStudiesRequested,
     TdsActionDropdown,
   },
+  data() {
+    return {
+      counts: [],
+      studies: [],
+    };
+  },
   computed: {
     items() {
       return this.studyRequest.studies.map(({ studyType }, id) => {
@@ -86,14 +95,16 @@ export default {
         return getStudyTypeItem(this.counts, this.studies, type, id);
       });
     },
-    ...mapGetters([
+    ...mapGetters('requestStudy', [
       'studyTypesWithWarnings',
     ]),
-    ...mapState([
-      'counts',
-      'studies',
-      'studyRequest',
-    ]),
+    ...mapState('requestStudy', ['studyRequest']),
+    ...mapState(['location']),
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.syncFromRoute(to);
+    });
   },
   methods: {
     onAddStudy(studyType) {
@@ -111,9 +122,20 @@ export default {
     onRemoveStudy(item) {
       this.removeStudyFromStudyRequest(item.id);
     },
-    ...mapMutations([
+    async syncFromRoute() {
+      const { centrelineId, centrelineType } = this.location;
+      const { counts, studies } = await getCountsByCentreline({
+        centrelineId,
+        centrelineType,
+      });
+      this.counts = counts;
+      this.studies = studies;
+    },
+    ...mapMutations('requestStudy', [
       'addStudyToStudyRequest',
       'removeStudyFromStudyRequest',
+    ]),
+    ...mapMutations([
       'setModal',
     ]),
   },

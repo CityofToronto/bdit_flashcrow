@@ -30,7 +30,7 @@ export default {
     FcSummaryStudyRequest,
   },
   computed: {
-    ...mapState(['studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
   },
 };
 </script>

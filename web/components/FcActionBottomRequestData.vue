@@ -16,7 +16,7 @@ export default {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
-    ...mapState(['studyRequest']),
+    ...mapState('requestStudy', ['studyRequest']),
   },
   validations: {
     studyRequest: {

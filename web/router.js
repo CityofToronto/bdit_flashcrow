@@ -59,7 +59,7 @@ const router = new Router({
         meta: { title: 'New Request' },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudy.vue'),
         beforeEnter(to, from, next) {
-          const { location, studyRequest } = store.state;
+          const { location, requestStudy: { studyRequest } } = store.state;
           if (location === null) {
             store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
             next({ name: 'viewData' });
@@ -70,7 +70,7 @@ const router = new Router({
               || studyRequest.centrelineType !== location.centrelineType
               || studyRequest.centrelineId !== location.centrelineId
             ) {
-              store.commit('setNewStudyRequest', []);
+              store.commit('requestStudy/setNewStudyRequest', []);
             }
             next();
           }
