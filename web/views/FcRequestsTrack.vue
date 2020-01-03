@@ -474,7 +474,7 @@ export default {
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
     },
-    ...mapState(['csrf']),
+    ...mapState(['auth']),
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -617,7 +617,7 @@ export default {
         const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
         return Object.assign(studyRequest, updates);
       });
-      return putStudyRequests(this.csrf, isSupervisor, studyRequests);
+      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
     async syncFromRoute() {
       this.loadingStudyRequests = true;

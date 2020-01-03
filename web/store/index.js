@@ -42,30 +42,24 @@ export default new Vuex.Store({
   },
   // TODO: organize state below
   state: {
-    // modal
-    modal: null,
-    toast: null,
-    // time
-    now: DateTime.local(),
-    // authentication
+    // AUTH / HELPERS STATE
     auth: {
       csrf: '',
       loggedIn: false,
     },
-    // searching locations
-    locationSuggestions: null,
-    // selecting locations
-    // TODO: in searching / selecting phase, generalize to other selection types
-    location: null,
-    // REQUESTS
+    now: DateTime.local(),
     requestReasons: [],
-    // query that will appear in the search bar
-    locationQuery: '',
-    // DRAWER
+    // TOP-LEVEL UI
     drawerOpen: true,
+    modal: null,
+    toast: null,
+    // LOCATION
+    location: null,
+    locationSuggestions: null,
+    locationQuery: '',
   },
   getters: {
-    // AUTHENTICATION
+    // AUTH / HELPERS STATE
     username(state) {
       if (state.auth.loggedIn) {
         const { email, name } = state.auth.user;
@@ -98,8 +92,16 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    // AUTH / HELPERS STATE
     webInit(state, { reasons }) {
       Vue.set(state, 'requestReasons', reasons);
+    },
+    setAuth(state, auth) {
+      Vue.set(state, 'auth', auth);
+    },
+    // TOP-LEVEL UI
+    setDrawerOpen(state, drawerOpen) {
+      Vue.set(state, 'drawerOpen', drawerOpen);
     },
     clearModal(state) {
       Vue.set(state, 'modal', null);
@@ -113,9 +115,7 @@ export default new Vuex.Store({
     setToast(state, toast) {
       Vue.set(state, 'toast', toast);
     },
-    setAuth(state, auth) {
-      Vue.set(state, 'auth', auth);
-    },
+    // LOCATION
     clearLocationSuggestions(state) {
       Vue.set(state, 'locationSuggestions', null);
     },
@@ -133,27 +133,26 @@ export default new Vuex.Store({
     setLocationQuery(state, locationQuery) {
       Vue.set(state, 'locationQuery', locationQuery);
     },
-    // DRAWER
-    setDrawerOpen(state, drawerOpen) {
-      Vue.set(state, 'drawerOpen', drawerOpen);
-    },
   },
   actions: {
+    // AUTH / HELPERS STATE
     async webInit({ commit }) {
       const response = await apiFetch('/web/init');
       commit('webInit', response);
       return response;
-    },
-    async setToast({ commit }, toast) {
-      commit('setToast', toast);
-      clearToastDebounced(commit);
-      return toast;
     },
     async checkAuth({ commit }) {
       const auth = await apiFetch('/auth');
       commit('setAuth', auth);
       return auth;
     },
+    // TOP-LEVEL UI
+    async setToast({ commit }, toast) {
+      commit('setToast', toast);
+      clearToastDebounced(commit);
+      return toast;
+    },
+    // LOCATION
     async fetchLocationByKeyString({ commit }, keyString) {
       const options = {
         data: { keyString },
