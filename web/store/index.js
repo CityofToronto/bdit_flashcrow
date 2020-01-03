@@ -14,7 +14,6 @@ import { debounce } from '@/lib/FunctionUtils';
 import { apiFetch } from '@/lib/api/BackendClient';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
-import trackRequests from '@/web/store/modules/trackRequests';
 
 Vue.use(Vuex);
 
@@ -61,7 +60,6 @@ function studyRequestEstimatedDeliveryDate(now, studyRequest) {
 export default new Vuex.Store({
   modules: {
     requestStudy,
-    trackRequests,
   },
   // TODO: organize state below
   state: {
