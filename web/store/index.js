@@ -13,7 +13,6 @@ import requestStudy from '@/web/store/modules/requestStudy';
 
 Vue.use(Vuex);
 
-const MAX_PER_CATEGORY = 10;
 const TIMEOUT_TOAST = 10000;
 
 function makeItemsCountsActive() {
@@ -22,14 +21,6 @@ function makeItemsCountsActive() {
     itemsCountsActive[value] = 0;
   });
   return itemsCountsActive;
-}
-
-function makeNumPerCategory() {
-  const numPerCategory = {};
-  COUNT_TYPES.forEach(({ value }) => {
-    numPerCategory[value] = 0;
-  });
-  return numPerCategory;
 }
 
 const clearToastDebounced = debounce((commit) => {
@@ -75,11 +66,7 @@ export default new Vuex.Store({
     // TODO: in searching / selecting phase, generalize to other selection types
     location: null,
     // data for selected locations
-    // TODO: in searching / selecting phase, generalize to collisions and other layers
-    counts: [],
     itemsCountsActive: makeItemsCountsActive(),
-    numPerCategory: makeNumPerCategory(),
-    studies: [],
     // REQUESTS
     requestReasons: [],
     // query that will appear in the search bar
@@ -157,12 +144,6 @@ export default new Vuex.Store({
       Vue.set(state, 'locationQuery', locationQuery);
     },
     // COUNTS
-    setCountsResult(state, { counts, numPerCategory, studies }) {
-      Vue.set(state, 'counts', counts);
-      Vue.set(state, 'itemsCountsActive', makeItemsCountsActive());
-      Vue.set(state, 'numPerCategory', numPerCategory);
-      Vue.set(state, 'studies', studies);
-    },
     setItemsCountsActive(state, { value, activeIndex }) {
       Vue.set(state.itemsCountsActive, value, activeIndex);
     },
@@ -228,47 +209,6 @@ export default new Vuex.Store({
       }
       commit('setLocationSuggestions', locationSuggestions);
       return locationSuggestions;
-    },
-    async fetchCountsByCentreline({ commit, state }, { centrelineId, centrelineType }) {
-      const dataStudies = {
-        centrelineId,
-        centrelineType,
-      };
-      const optionsStudies = { data: dataStudies };
-
-      const dataCounts = {
-        centrelineId,
-        centrelineType,
-        maxPerCategory: MAX_PER_CATEGORY,
-      };
-      if (state.dateRange !== null) {
-        Object.assign(dataCounts, state.dateRange);
-      }
-      const optionsCounts = { data: dataCounts };
-
-      const [
-        studies,
-        { counts, numPerCategory },
-      ] = await Promise.all([
-        apiFetch('/studies/byCentreline', optionsStudies),
-        apiFetch('/counts/byCentreline', optionsCounts),
-      ]);
-
-      const numPerCategoryNormalized = makeNumPerCategory();
-      numPerCategory.forEach(({ n, category: { value } }) => {
-        numPerCategoryNormalized[value] += n;
-      });
-      studies.forEach(({ studyType: value }) => {
-        numPerCategoryNormalized[value] += 1;
-      });
-
-      const result = {
-        counts,
-        numPerCategory: numPerCategoryNormalized,
-        studies,
-      };
-      commit('setCountsResult', result);
-      return result;
     },
     // STUDY REQUESTS
     async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {

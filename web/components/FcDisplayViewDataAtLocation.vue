@@ -55,7 +55,10 @@ import {
   SortKeys,
   Status,
 } from '@/lib/Constants';
-import { getLocationByFeature } from '@/lib/api/WebApi';
+import {
+  getCountsByCentreline,
+  getLocationByFeature,
+} from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
 import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
@@ -77,7 +80,7 @@ export default {
   },
   data() {
     return {
-      // TODO: in searching / selecting phase, bring this under one "filter" key
+      counts: [],
       filter: {
         countTypes: [...COUNT_TYPES.keys()],
         date: null,
@@ -85,6 +88,7 @@ export default {
       },
       loadingLocationData: true,
       selection: [],
+      studies: [],
     };
   },
   computed: {
@@ -197,10 +201,8 @@ export default {
       'studyTypesRelevantToLocation',
     ]),
     ...mapState([
-      'counts',
       'itemsCountsActive',
       'location',
-      'studies',
     ]),
   },
   watch: {
@@ -313,7 +315,7 @@ export default {
     },
     async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
-      const promiseCounts = this.fetchCountsByCentreline({
+      const promiseCounts = getCountsByCentreline({
         centrelineId,
         centrelineType,
       });
@@ -321,8 +323,12 @@ export default {
         centrelineId,
         centrelineType,
       });
-      const result = await Promise.all([promiseCounts, promiseLocation]);
-      const location = result[1];
+      const [
+        { counts, studies },
+        location,
+      ] = await Promise.all([promiseCounts, promiseLocation]);
+      this.counts = counts;
+      this.studies = studies;
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
           || location.centrelineType !== this.location.centrelineType

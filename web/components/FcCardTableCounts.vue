@@ -125,7 +125,6 @@
 import {
   mapActions,
   mapMutations,
-  mapState,
 } from 'vuex';
 
 import FcCardTable from '@/web/components/FcCardTable.vue';
@@ -193,7 +192,6 @@ export default {
         this.$emit('input', value);
       },
     },
-    ...mapState(['numPerCategory']),
   },
   methods: {
     onActionShowReports(item) {
