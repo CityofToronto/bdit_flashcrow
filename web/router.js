@@ -18,9 +18,18 @@ const router = new Router({
       name: 'login',
       meta: {
         auth: false,
-        title: 'Log in',
+        title: 'Log In',
       },
       component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcLogin.vue'),
+    },
+    {
+      path: '/auth/adfs-callback',
+      name: 'adfsCallback',
+      meta: {
+        auth: false,
+        title: 'Log In: City of Toronto',
+      },
+      component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcAdfsCallback.vue'),
     },
     {
       path: '/requests/track',
