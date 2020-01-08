@@ -4,7 +4,7 @@ import {
   COUNT_TYPES,
 } from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
-import { getLocationByFeature, getUsersBySubjects } from '@/lib/api/WebApi';
+import { getLocationByFeature, getUsersByIds } from '@/lib/api/WebApi';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 function makeStudy(studyType) {
@@ -169,12 +169,12 @@ export default {
 
       commit('setStudyRequestLocation', studyRequestLocation);
 
-      let subjects = new Set();
-      studyRequestComments.forEach(({ userSubject }) => {
-        subjects.add(userSubject);
+      let ids = new Set();
+      studyRequestComments.forEach(({ userId }) => {
+        ids.add(userId);
       });
-      subjects = Array.from(subjects);
-      const studyRequestCommentUsers = await getUsersBySubjects(subjects);
+      ids = Array.from(ids);
+      const studyRequestCommentUsers = await getUsersByIds(ids);
       commit('setStudyRequestCommentUsers', studyRequestCommentUsers);
 
       return {

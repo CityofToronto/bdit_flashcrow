@@ -434,7 +434,7 @@ export default {
         const {
           centrelineId,
           centrelineType,
-          userSubject,
+          userId,
         } = studyRequest;
 
         const key = centrelineKey(centrelineType, centrelineId);
@@ -444,8 +444,8 @@ export default {
         }
 
         let requestedBy = null;
-        if (this.studyRequestUsers.has(userSubject)) {
-          requestedBy = this.studyRequestUsers.get(userSubject);
+        if (this.studyRequestUsers.has(userId)) {
+          requestedBy = this.studyRequestUsers.get(userId);
         }
 
         return {

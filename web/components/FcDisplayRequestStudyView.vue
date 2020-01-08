@@ -31,7 +31,7 @@
           </h2>
           <div class="flex-fill"></div>
           <button
-            v-if="auth.user.subject === studyRequest.userSubject || isSupervisor"
+            v-if="auth.user.id === studyRequest.userId || isSupervisor"
             class="font-size-l uppercase"
             @click="onActionEdit">
             <i class="fa fa-edit" />

@@ -44,12 +44,12 @@
         <div>
           <div class="mt-m">
             <strong
-              v-if="comment.userSubject === auth.user.subject">
+              v-if="comment.userId === auth.user.id">
               {{auth.user.name}}
             </strong>
             <strong
-              v-else-if="studyRequestCommentUsers.has(comment.userSubject)">
-              {{studyRequestCommentUsers.get(comment.userSubject).name}}
+              v-else-if="studyRequestCommentUsers.has(comment.userId)">
+              {{studyRequestCommentUsers.get(comment.userId).name}}
             </strong>
             <span v-else class="text-muted">
               Author unknown
@@ -61,7 +61,7 @@
         </div>
         <div class="flex-fill"></div>
         <button
-          v-if="auth.user.subject === comment.userSubject"
+          v-if="auth.user.id === comment.userId"
           class="font-size-m uppercase"
           @click="actionDelete(comment)">
           <i class="fa fa-trash" />
