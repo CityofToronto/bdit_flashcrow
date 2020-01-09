@@ -25,6 +25,12 @@ import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import {
+  generateEmail,
+  generateName,
+  generateUniqueName,
+  generateUser,
+} from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
@@ -385,7 +391,7 @@ test('CountDataDAO', async () => {
 });
 
 test('StudyRequestDAO', async () => {
-  const transientUser = DAOTestUtils.randomUser();
+  const transientUser = generateUser();
   const persistedUser = await UserDAO.create(transientUser);
   const now = DateTime.local();
   const transientStudyRequest = {
@@ -495,7 +501,7 @@ test('StudyRequestDAO', async () => {
 });
 
 test('StudyRequestCommentDAO', async () => {
-  const user1 = DAOTestUtils.randomUser();
+  const user1 = generateUser();
   const userCreated1 = await UserDAO.create(user1);
   const now = DateTime.local();
   const transientStudyRequest = {
@@ -530,7 +536,7 @@ test('StudyRequestCommentDAO', async () => {
     comment: 'We don\'t normally do this study here.',
   };
 
-  const user2 = DAOTestUtils.randomUser();
+  const user2 = generateUser();
   const userCreated2 = await UserDAO.create(user2);
   const transientComment2 = {
     userId: userCreated2.id,
@@ -623,14 +629,15 @@ test('StudyRequestStatusDAO', async () => {
 });
 
 test('UserDAO', async () => {
-  const transientUser = DAOTestUtils.randomUser();
+  const transientUser = generateUser();
   await expect(UserDAO.bySub(transientUser.sub)).resolves.toBeNull();
   const persistedUser = await UserDAO.create(transientUser);
   expect(persistedUser.sub).toEqual(transientUser.sub);
   await expect(UserDAO.bySub(transientUser.sub)).resolves.toEqual(persistedUser);
-  const name = DAOTestUtils.randomUserName();
-  const email = DAOTestUtils.randomUserEmail(name);
-  Object.assign(persistedUser, { email, uniqueName: name.full });
+  const name = generateName();
+  const email = generateEmail(name);
+  const uniqueName = generateUniqueName(name);
+  Object.assign(persistedUser, { email, uniqueName });
   await expect(UserDAO.update(persistedUser)).resolves.toEqual(true);
   await expect(UserDAO.bySub(transientUser.sub)).resolves.toEqual(persistedUser);
   await expect(UserDAO.delete(persistedUser)).resolves.toEqual(true);
