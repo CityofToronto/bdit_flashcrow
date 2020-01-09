@@ -62,11 +62,8 @@ export default {
     ...mapState(['auth']),
   },
   mounted() {
-    if (this.idToken === null) {
-      // TODO: redirect back to login
-    }
-    if (this.nonce === null) {
-      // TODO: redirect back to login
+    if (this.idToken === null || this.nonce === null) {
+      this.$router.push({ name: 'login' });
     }
     this.$refs.form.submit();
   },
