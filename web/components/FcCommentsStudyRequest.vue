@@ -45,11 +45,11 @@
           <div class="mt-m">
             <strong
               v-if="comment.userId === auth.user.id">
-              {{auth.user.name}}
+              {{auth.user.uniqueName}}
             </strong>
             <strong
               v-else-if="studyRequestCommentUsers.has(comment.userId)">
-              {{studyRequestCommentUsers.get(comment.userId).name}}
+              {{studyRequestCommentUsers.get(comment.userId).uniqueName}}
             </strong>
             <span v-else class="text-muted">
               Author unknown
