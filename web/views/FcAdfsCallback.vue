@@ -64,6 +64,7 @@ export default {
   mounted() {
     if (this.idToken === null || this.nonce === null) {
       this.$router.push({ name: 'login' });
+      return;
     }
     this.$refs.form.submit();
   },

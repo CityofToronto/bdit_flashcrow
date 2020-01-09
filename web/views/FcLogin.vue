@@ -24,23 +24,10 @@
 <script>
 import { mapState } from 'vuex';
 
-const HEX = '0123456789abcdef';
-
-function randomNonce(length) {
-  const bytes = new Uint8Array(length);
-  const random = window.crypto.getRandomValues(bytes);
-  const result = [];
-  random.forEach((c) => {
-    const hi = HEX[Math.floor(c / 16)];
-    result.push(hi);
-    const lo = HEX[c % 16];
-    result.push(lo);
-  });
-  return result.join('');
-}
+import ClientNonce from '@/lib/auth/ClientNonce';
 
 function setNonce() {
-  const nonce = randomNonce(16);
+  const nonce = ClientNonce.get(16);
   window.localStorage.setItem('nonce', nonce);
   return nonce;
 }
