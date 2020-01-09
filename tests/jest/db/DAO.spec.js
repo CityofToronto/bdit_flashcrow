@@ -629,17 +629,39 @@ test('StudyRequestStatusDAO', async () => {
 });
 
 test('UserDAO', async () => {
-  const transientUser = generateUser();
-  await expect(UserDAO.bySub(transientUser.sub)).resolves.toBeNull();
-  const persistedUser = await UserDAO.create(transientUser);
-  expect(persistedUser.sub).toEqual(transientUser.sub);
-  await expect(UserDAO.bySub(transientUser.sub)).resolves.toEqual(persistedUser);
+  const transientUser1 = generateUser();
+  const transientUser2 = generateUser();
+
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
+  await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
+
+  const persistedUser1 = await UserDAO.create(transientUser1);
+  expect(persistedUser1.sub).toEqual(transientUser1.sub);
+  await expect(UserDAO.byId(persistedUser1.id)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
+  await expect(UserDAO.byEmail(transientUser1.email)).resolves.toEqual(persistedUser1);
+
   const name = generateName();
   const email = generateEmail(name);
   const uniqueName = generateUniqueName(name);
-  Object.assign(persistedUser, { email, uniqueName });
-  await expect(UserDAO.update(persistedUser)).resolves.toEqual(true);
-  await expect(UserDAO.bySub(transientUser.sub)).resolves.toEqual(persistedUser);
-  await expect(UserDAO.delete(persistedUser)).resolves.toEqual(true);
-  await expect(UserDAO.bySub(transientUser.sub)).resolves.toBeNull();
+  Object.assign(persistedUser1, { email, uniqueName });
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
+
+  let users = await UserDAO.byIds([]);
+  expect(users.size).toBe(0);
+
+  users = await UserDAO.byIds([persistedUser1.id]);
+  expect(users.size).toBe(1);
+  expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
+
+  const persistedUser2 = await UserDAO.create(transientUser2);
+  users = await UserDAO.byIds([persistedUser1.id, persistedUser2.id]);
+  expect(users.size).toBe(2);
+  expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
+  expect(users.get(persistedUser2.id)).toEqual(persistedUser2);
+
+  await expect(UserDAO.delete(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
 });
