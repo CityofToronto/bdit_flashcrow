@@ -21,8 +21,11 @@ test('Constants.SearchKeys', () => {
     lat: 0,
   };
   const requestedBy = {
+    id: 42,
+    createdAt: DateTime.local(),
+    sub: '0123456789',
     email: 'Baz.Quux@toronto.ca',
-    name: 'Baz Quux',
+    uniqueName: 'ORG\\BazQuux',
   };
   const REQUEST = {
     dueDate,
@@ -107,8 +110,11 @@ test('Constants.SortKeys', () => {
     lat: 0,
   };
   const requestedBy = {
+    id: 42,
+    createdAt: DateTime.local(),
+    sub: '0123456789',
     email: 'Baz.Quux@toronto.ca',
-    name: 'Baz Quux',
+    uniqueName: 'ORG\\BazQuux',
   };
   const REQUEST_STANDARD = {
     dueDate: now,
@@ -139,7 +145,7 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Requests.PRIORITY(REQUEST_URGENT))
     .toEqual(1);
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
-    .toEqual(REQUEST_STANDARD.requestedBy.name);
+    .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.status);
 

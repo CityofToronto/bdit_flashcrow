@@ -62,8 +62,8 @@ export default new Vuex.Store({
     // AUTH / HELPERS STATE
     username(state) {
       if (state.auth.loggedIn) {
-        const { email, name } = state.auth.user;
-        return name || email;
+        const { email, uniqueName } = state.auth.user;
+        return uniqueName || email;
       }
       return 'Guest';
     },

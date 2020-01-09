@@ -142,7 +142,7 @@
             N/A
           </span>
           <span v-else>
-            {{item.requestedBy.name}}
+            {{item.requestedBy.uniqueName}}
           </span>
         </template>
         <template v-slot:DATE="{ item }">
@@ -281,7 +281,7 @@ function getItemFields(item) {
   } = item;
   let [lng, lat] = item.geom.coordinates;
   const location = (item.location && item.location.description) || null;
-  const requester = (item.requestedBy && item.requestedBy.name) || null;
+  const requester = (item.requestedBy && item.requestedBy.uniqueName) || null;
   const dueDate = TimeFormatters.formatDefault(item.dueDate);
   const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
   if (centrelineType !== CentrelineType.INTERSECTION) {
@@ -434,7 +434,7 @@ export default {
         const {
           centrelineId,
           centrelineType,
-          userSubject,
+          userId,
         } = studyRequest;
 
         const key = centrelineKey(centrelineType, centrelineId);
@@ -444,8 +444,8 @@ export default {
         }
 
         let requestedBy = null;
-        if (this.studyRequestUsers.has(userSubject)) {
-          requestedBy = this.studyRequestUsers.get(userSubject);
+        if (this.studyRequestUsers.has(userId)) {
+          requestedBy = this.studyRequestUsers.get(userId);
         }
 
         return {

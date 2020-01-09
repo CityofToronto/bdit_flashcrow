@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import path from 'path';
-import uuid from 'uuid/v4';
 
 import {
   CardinalDirection,
@@ -26,6 +25,12 @@ import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import {
+  generateEmail,
+  generateName,
+  generateUniqueName,
+  generateUser,
+} from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
@@ -386,11 +391,11 @@ test('CountDataDAO', async () => {
 });
 
 test('StudyRequestDAO', async () => {
-  const user = DAOTestUtils.randomUser();
-  const userCreated = await UserDAO.create(user);
+  const transientUser = generateUser();
+  const persistedUser = await UserDAO.create(transientUser);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userSubject: userCreated.subject,
+    userId: persistedUser.id,
     status: 'REQUESTED',
     closed: false,
     serviceRequestId: null,
@@ -427,7 +432,7 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // fetch by user
-  let byUser = await StudyRequestDAO.byUser(user);
+  let byUser = await StudyRequestDAO.byUser(persistedUser);
   expect(byUser).toEqual([persistedStudyRequest]);
 
   // fetch all
@@ -487,7 +492,7 @@ test('StudyRequestDAO', async () => {
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
 
   // fetch by user
-  byUser = await StudyRequestDAO.byUser(user);
+  byUser = await StudyRequestDAO.byUser(persistedUser);
   expect(byUser).toEqual([]);
 
   // fetch all
@@ -496,11 +501,11 @@ test('StudyRequestDAO', async () => {
 });
 
 test('StudyRequestCommentDAO', async () => {
-  const user1 = DAOTestUtils.randomUser();
+  const user1 = generateUser();
   const userCreated1 = await UserDAO.create(user1);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userSubject: userCreated1.subject,
+    userId: userCreated1.id,
     status: 'REQUESTED',
     closed: false,
     serviceRequestId: 12345,
@@ -527,14 +532,14 @@ test('StudyRequestCommentDAO', async () => {
   const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
 
   const transientComment1 = {
-    userSubject: userCreated1.subject,
+    userId: userCreated1.id,
     comment: 'We don\'t normally do this study here.',
   };
 
-  const user2 = DAOTestUtils.randomUser();
+  const user2 = generateUser();
   const userCreated2 = await UserDAO.create(user2);
   const transientComment2 = {
-    userSubject: userCreated2.subject,
+    userId: userCreated2.id,
     comment: 'I believe we have already done this study before.',
   };
 
@@ -624,19 +629,39 @@ test('StudyRequestStatusDAO', async () => {
 });
 
 test('UserDAO', async () => {
-  const user = DAOTestUtils.randomUser();
-  await expect(UserDAO.bySubject(user.subject)).resolves.toBeNull();
-  await expect(UserDAO.delete(user)).resolves.toEqual(false);
-  await expect(UserDAO.update(user)).resolves.toEqual(false);
-  const userCreated = await UserDAO.create(user);
-  expect(userCreated.subject).toEqual(user.subject);
-  await expect(UserDAO.bySubject(user.subject)).resolves.toEqual(user);
-  const name = DAOTestUtils.randomUserName();
-  const email = DAOTestUtils.randomUserEmail(name);
-  const token = uuid();
-  Object.assign(user, { name: name.full, email, token });
-  await expect(UserDAO.update(user)).resolves.toEqual(true);
-  await expect(UserDAO.bySubject(user.subject)).resolves.toEqual(user);
-  await expect(UserDAO.delete(user)).resolves.toEqual(true);
-  await expect(UserDAO.bySubject(user.subject)).resolves.toBeNull();
+  const transientUser1 = generateUser();
+  const transientUser2 = generateUser();
+
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
+  await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
+
+  const persistedUser1 = await UserDAO.create(transientUser1);
+  expect(persistedUser1.sub).toEqual(transientUser1.sub);
+  await expect(UserDAO.byId(persistedUser1.id)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
+  await expect(UserDAO.byEmail(transientUser1.email)).resolves.toEqual(persistedUser1);
+
+  const name = generateName();
+  const email = generateEmail(name);
+  const uniqueName = generateUniqueName(name);
+  Object.assign(persistedUser1, { email, uniqueName });
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
+
+  let users = await UserDAO.byIds([]);
+  expect(users.size).toBe(0);
+
+  users = await UserDAO.byIds([persistedUser1.id]);
+  expect(users.size).toBe(1);
+  expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
+
+  const persistedUser2 = await UserDAO.create(transientUser2);
+  users = await UserDAO.byIds([persistedUser1.id, persistedUser2.id]);
+  expect(users.size).toBe(2);
+  expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
+  expect(users.get(persistedUser2.id)).toEqual(persistedUser2);
+
+  await expect(UserDAO.delete(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
 });
