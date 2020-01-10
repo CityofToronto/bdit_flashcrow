@@ -1,5 +1,6 @@
 import { format } from 'd3-format';
 import Vue from 'vue';
+import Vuetify from 'vuetify/lib';
 import VueCalendar from 'v-calendar';
 import Vuelidate from 'vuelidate';
 
@@ -9,6 +10,7 @@ import store from '@/web/store';
 import { formatDuration } from '@/lib/StringFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+Vue.use(Vuetify);
 Vue.use(VueCalendar);
 Vue.use(Vuelidate);
 
@@ -23,7 +25,8 @@ Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 Vue.config.productionTip = false;
 
 new Vue({
+  render: h => h(App),
   router,
   store,
-  render: h => h(App),
+  vuetify: new Vuetify({}),
 }).$mount('#app');

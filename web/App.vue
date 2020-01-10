@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-app full-screen flex-container-row">
+  <div class="fc-app full-screen flex-container-row" data-app>
     <FcToast
       v-if="toast"
       :variant="toast.variant">
@@ -31,7 +31,7 @@
       <FcDashboardBrand />
       <FcDashboardNav>
         <FcDashboardNavItem
-          icon="map-marked-alt"
+          icon="map"
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
@@ -46,27 +46,39 @@
           :to="{ name: 'requestsTrack' }" />
       </FcDashboardNav>
       <div class="flex-fill"></div>
-      <div class="text-center">
-        <TdsActionDropdown
+      <div class="text-center mb-m">
+        <v-menu
           v-if="auth.loggedIn"
-          class="fc-user-dropup font-size-l"
-          :options="userActions"
-          @action-selected="onUserAction">
-          <span class="text-ellipsis">
-            <i class="fa fa-user-circle"></i>
-            <span> {{username}}</span>
-          </span>
-        </TdsActionDropdown>
-        <button
+          top>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              color="primary"
+              dark
+              v-on="on">
+              <span class="text-ellipsis">
+                <v-icon>mdi-account</v-icon>
+                <span> {{username}}</span>
+              </span>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="({ label, value }, i) in userActions"
+              :key="i"
+              @click="onUserAction(value)">
+              <v-list-item-title>{{label}}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn
           v-else
-          class="tds-button-primary font-size-l mb-m"
+          color="primary"
+          dark
           :disabled="$route.name === 'adfsCallback'"
-          type="button"
+          :loading="$route.name === 'adfsCallback'"
           @click="onClickLogin">
-          <span>Log in </span>
-          <TdsLoadingSpinner
-            v-if="$route.name === 'adfsCallback'" />
-        </button>
+          <span>Log in</span>
+        </v-btn>
       </div>
     </div>
     <div class="fc-content flex-fill flex-container-column">
@@ -95,10 +107,8 @@ import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
 import FcToast from '@/web/components/FcToast.vue';
-import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 export default {
   name: 'App',
@@ -109,10 +119,8 @@ export default {
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
     FcToast,
-    SearchBarLocation,
     TdsActionDropdown,
     TdsConfirmDialog,
-    TdsLoadingSpinner,
   },
   data() {
     return { nonce: null };

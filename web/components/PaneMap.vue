@@ -2,12 +2,14 @@
   <div
     class="pane-map"
     @mouseleave="clearHoveredFeature">
-    <div
-      v-if="loading"
-      class="pane-map-loading-spinner">
-      <TdsLoadingSpinner />
+    <div class="pane-map-progress">
+      <v-progress-linear
+        :active="loading"
+        dark
+        indeterminate />
     </div>
-    <SearchBarLocation />
+    <SearchBarLocation
+      v-model="internalLocation" />
     <div class="pane-map-google-maps">
       <button
         class="font-size-l"
@@ -62,7 +64,6 @@ import metadata from '@/lib/geo/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -306,7 +307,6 @@ function injectSourcesAndLayers(rawStyle) {
 export default {
   name: 'PaneMap',
   components: {
-    TdsLoadingSpinner,
     PaneMapPopup,
     SearchBarLocation,
   },
@@ -337,6 +337,14 @@ export default {
       const { lat, lng, zoom } = this.coordinates;
       const z = Math.round(zoom);
       return `https://www.google.com/maps/@${lat},${lng},${z}z`;
+    },
+    internalLocation: {
+      get() {
+        return this.location;
+      },
+      set(location) {
+        this.setLocation(location);
+      },
     },
     ...mapState(['drawerOpen', 'location']),
   },
@@ -713,22 +721,16 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  & > .pane-map-progress {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: var(--z-index-controls);
+  }
   & > .search-bar-location {
     top: var(--space-m);
     position: absolute;
     left: var(--space-l);
-    z-index: var(--z-index-controls);
-  }
-  & > .pane-map-loading-spinner {
-    background-color: var(--white);
-    border: var(--border-default);
-    border-radius: var(--space-m);
-    height: calc(var(--space-xl) + var(--space-s) * 2);
-    padding: var(--space-s);
-    position: absolute;
-    right: var(--space-l);
-    top: var(--space-m);
-    width: calc(var(--space-xl) + var(--space-s) * 2);
     z-index: var(--z-index-controls);
   }
   & > .pane-map-google-maps {

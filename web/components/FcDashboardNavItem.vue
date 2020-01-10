@@ -8,7 +8,7 @@
       <span>{{label}}</span>
     </div>
     <router-link v-else :to="to">
-      <i class="fa" :class="'fa-' + icon"></i>
+      <v-icon>mdi-{{icon}}</v-icon>
       <span>{{label}}</span>
     </router-link>
   </li>
