@@ -28,7 +28,7 @@
         <button
           v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT"
           class="font-size-m ml-m uppercase">
-          <i class="fa fa-expand"></i>
+          <v-icon>mdi-dock-window</v-icon>
           <span> Reports</span>
         </button>
       </div>

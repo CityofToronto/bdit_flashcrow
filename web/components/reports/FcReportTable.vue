@@ -24,13 +24,8 @@
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <i
-              v-if="value === true || value === false"
-              class="fa"
-              :class="{
-                'fa-check': value,
-                'fa-times': !value,
-              }"></i>
+            <v-icon v-if="value === true">mdi-check</v-icon>
+            <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
             <span v-else>{{value}}</span>
           </component>
@@ -45,13 +40,8 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <i
-              v-if="value === true || value === false"
-              class="fa"
-              :class="{
-                'fa-check': value,
-                'fa-times': !value,
-              }"></i>
+            <v-icon v-if="value === true">mdi-check</v-icon>
+            <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
             <span v-else>{{value}}</span>
           </component>
@@ -66,13 +56,8 @@
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <i
-              v-if="value === true || value === false"
-              class="fa"
-              :class="{
-                'fa-check': value,
-                'fa-times': !value,
-              }"></i>
+            <v-icon v-if="value === true">mdi-check</v-icon>
+            <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
             <span v-else>{{value}}</span>
           </component>

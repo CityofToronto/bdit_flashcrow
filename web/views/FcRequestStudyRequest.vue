@@ -32,6 +32,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
   getCountsByCentreline,
+  getStudiesByCentreline,
 } from '@/lib/api/WebApi';
 import FcCardTableStudiesRequested from '@/web/components/FcCardTableStudiesRequested.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
@@ -124,10 +125,11 @@ export default {
     },
     async syncFromRoute() {
       const { centrelineId, centrelineType } = this.location;
-      const { counts, studies } = await getCountsByCentreline({
-        centrelineId,
-        centrelineType,
-      });
+      const tasks = [
+        getCountsByCentreline({ centrelineId, centrelineType }),
+        getStudiesByCentreline({ centrelineId, centrelineType }),
+      ];
+      const [counts, studies] = await Promise.all(tasks);
       this.counts = counts;
       this.studies = studies;
     },

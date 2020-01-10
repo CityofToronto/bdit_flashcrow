@@ -7,7 +7,7 @@
       <div class="flex-container-row">
         <h2>
           <span>{{activeCount.type.label}} at </span>
-          <i class="fa fa-map-marker-alt"></i>
+          <v-icon>mdi-map-marker</v-icon>
           <span class="px-s">{{activeCount.locationDesc}}</span>
         </h2>
       </div>
@@ -29,11 +29,11 @@
               </TdsActionDropdown>
               <div class="flex-fill"></div>
               <span
-                class="font-size-l mb-m tds-label uppercase"
+                class="full-width tds-label uppercase"
                 :class="'tds-label-' + STATUS_META[activeCount.status].class">
-                <i
-                  class="fa"
-                  :class="'fa-' + STATUS_META[activeCount.status].icon"></i>
+                <v-icon>
+                  mdi-{{STATUS_META[activeCount.status].icon}}
+                </v-icon>
                 <span> {{STATUS_META[activeCount.status].label}}</span>
               </span>
             </div>

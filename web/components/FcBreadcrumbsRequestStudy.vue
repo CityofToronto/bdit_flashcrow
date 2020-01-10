@@ -16,9 +16,10 @@
         completed: i < currentIndex,
         current: i === currentIndex
       }">
-      <i
-        v-if="i < currentIndex || (i === currentIndex && currentStepCompleted)"
-        class="breadcrumb-step-icon fa fa-check-circle"></i>
+      <v-icon
+        v-if="i < currentIndex || (i === currentIndex && currentStepCompleted)">
+        mdi-check-circle
+      </v-icon>
       <strong v-else class="breadcrumb-step-icon text-center">{{i + 1}}</strong>
       <router-link
         v-if="i < currentIndex"

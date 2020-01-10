@@ -39,19 +39,20 @@
       <span
         class="full-width tds-label uppercase"
         :class="'tds-label-' + STATUS_META[item.status].class">
-        <i
-          class="fa"
-          :class="'fa-' + STATUS_META[item.status].icon"></i>
+        <v-icon>
+          mdi-{{STATUS_META[item.status].icon}}
+        </v-icon>
         <span> {{STATUS_META[item.status].label}}</span>
       </span>
     </template>
     <template v-slot:ACTIONS="{ item }">
       <div class="cell-actions">
-        <button
-          class="font-size-l"
+        <v-btn
+          icon
+          text
           @click="$emit('remove-study', item)">
-          <i class="fa fa-trash-alt"></i>
-        </button>
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </div>
     </template>
     <template v-slot:__footer="{ numTableColumns, items }">
