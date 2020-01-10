@@ -1,5 +1,10 @@
 <template>
-  <div class="full-screen flex-container-row">
+  <div class="fc-app full-screen flex-container-row">
+    <FcToast
+      v-if="toast"
+      :variant="toast.variant">
+      <span>{{toast.text}}</span>
+    </FcToast>
     <div class="hide">
       <form
         v-if="auth.loggedIn"
@@ -8,13 +13,21 @@
         action="/api/auth/logout">
         <input type="hidden" name="csrf" :value="auth.csrf" />
       </form>
+      <form
+        v-if="$route.name !== 'adfsCallback'"
+        ref="formSignIn"
+        method="POST"
+        action="/api/auth/adfs-init">
+        <input type="hidden" name="csrf" :value="auth.csrf" />
+        <input type="hidden" name="nonce" :value="nonce" />
+      </form>
     </div>
     <component
       v-if="modal !== null"
       :is="modal.component"
       :data="modal.data"
       @modal-close="clearModal"></component>
-    <div class="fc-sidebar">
+    <div class="fc-sidebar flex-container-column">
       <FcDashboardBrand />
       <FcDashboardNav>
         <FcDashboardNavItem
@@ -22,48 +35,48 @@
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
+          :disabled="!auth.loggedIn"
           icon="folder-plus"
           label="Request Study"
           :to="{ name: 'requestStudy' }" />
         <FcDashboardNavItem
+          :disabled="!auth.loggedIn"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
       </FcDashboardNav>
-      <button class="tds-button-primary fc-help">
-        <i class="fa fa-question-circle"></i>
-        <span>
-          &nbsp;
-          <a
-            href="mailto:move-team@toronto.ca?subject=MOVE%20Help%20Request"
-            target="_blank">Help</a>
-        </span>
-      </button>
-    </div>
-    <div class="fc-content flex-fill flex-container-column">
-      <div class="fc-topbar flex-container-row px-l py-m">
-        <FcToast
-          v-if="toast"
-          :variant="toast.variant">
-          <span>{{toast.text}}</span>
-        </FcToast>
-        <SearchBarLocation
-          v-if="searchBarShown" />
-        <div class="flex-fill"></div>
+      <div class="flex-fill"></div>
+      <div class="text-center">
         <TdsActionDropdown
-          class="font-size-l"
+          v-if="auth.loggedIn"
+          class="fc-user-dropup font-size-l"
           :options="userActions"
           @action-selected="onUserAction">
-          <i class="fa fa-user-circle"></i>
-          <span> {{username}}</span>
+          <span class="text-ellipsis">
+            <i class="fa fa-user-circle"></i>
+            <span> {{username}}</span>
+          </span>
         </TdsActionDropdown>
+        <button
+          v-else
+          class="tds-button-primary font-size-l mb-m"
+          :disabled="$route.name === 'adfsCallback'"
+          type="button"
+          @click="onClickLogin">
+          <span>Log in </span>
+          <TdsLoadingSpinner
+            v-if="$route.name === 'adfsCallback'" />
+        </button>
       </div>
+    </div>
+    <div class="fc-content flex-fill flex-container-column">
       <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import {
   mapActions,
   mapGetters,
@@ -75,6 +88,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import 'v-calendar/lib/v-calendar.min.css';
 import '@/web/components/tds/tds.postcss';
 
+import ClientNonce from '@/lib/auth/ClientNonce';
 import FcDashboardBrand from '@/web/components/FcDashboardBrand.vue';
 import FcDashboardNav from '@/web/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
@@ -84,11 +98,7 @@ import FcToast from '@/web/components/FcToast.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
-
-const SEARCH_BAR_ROUTES = [
-  'viewData',
-  'viewDataAtLocation',
-];
+import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 export default {
   name: 'App',
@@ -102,17 +112,14 @@ export default {
     SearchBarLocation,
     TdsActionDropdown,
     TdsConfirmDialog,
+    TdsLoadingSpinner,
+  },
+  data() {
+    return { nonce: null };
   },
   computed: {
-    searchBarShown() {
-      const showSearchBarForRoute = SEARCH_BAR_ROUTES.includes(this.$route.name);
-      return showSearchBarForRoute && this.auth.loggedIn;
-    },
     userActions() {
-      if (this.auth.loggedIn) {
-        return [{ label: 'Log out', value: 'logout' }];
-      }
-      return [{ label: 'Log in', value: 'login' }];
+      return [{ label: 'Log out', value: 'logout' }];
     },
     ...mapState([
       'auth',
@@ -132,16 +139,21 @@ export default {
       });
   },
   methods: {
+    onClickLogin() {
+      this.nonce = ClientNonce.get(16);
+      window.localStorage.setItem('nonce', this.nonce);
+      Vue.nextTick(() => {
+        this.$refs.formSignIn.submit();
+      });
+    },
     onModalToggle() {
       if (!this.$refs.modalToggle.checked) {
         this.clearModal();
       }
     },
     onUserAction(action) {
-      if (action === 'login') {
-        this.$router.push({ name: 'login' });
-      } else if (action === 'logout') {
-        this.signOut();
+      if (action === 'logout') {
+        this.$refs.formSignOut.submit();
       }
     },
     onViewData() {
@@ -154,9 +166,6 @@ export default {
         params: { centrelineId, centrelineType },
       });
     },
-    signOut() {
-      this.$refs.formSignOut.submit();
-    },
     ...mapActions(['setToast', 'webInit']),
     ...mapMutations(['clearModal', 'setModal']),
   },
@@ -164,25 +173,15 @@ export default {
 </script>
 
 <style lang="postcss">
-/* LAYOUT */
+.fc-app {
+  position: relative;
+}
+
 .fc-sidebar {
   background-color: var(--base-darker);
   color: var(--base-lighter);
   position: relative;
   width: var(--space-3xl);
-  & > .fc-help {
-    bottom: var(--space-m);
-    left: var(--space-l);
-    position: absolute;
-  }
-}
-.fc-topbar {
-  align-items: center;
-  position: relative;
-  & > .fc-toast {
-    left: 0;
-    top: 100%;
-  }
 }
 
 /* TRANSITIONS */

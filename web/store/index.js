@@ -61,11 +61,15 @@ export default new Vuex.Store({
   getters: {
     // AUTH / HELPERS STATE
     username(state) {
-      if (state.auth.loggedIn) {
-        const { email, uniqueName } = state.auth.user;
-        return uniqueName || email;
+      if (!state.auth.loggedIn) {
+        return null;
       }
-      return 'Guest';
+      const { uniqueName } = state.auth.user;
+      const i = uniqueName.indexOf('\\');
+      if (i === -1) {
+        return uniqueName;
+      }
+      return uniqueName.slice(i + 1);
     },
     // ACTIVE STUDY REQUEST
     studyTypesRelevantToLocation(state) {

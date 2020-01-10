@@ -1,7 +1,8 @@
 <template>
   <li
     class="fc-dashboard-nav-item text-center"
-    :class="{ disabled }">
+    :class="{ disabled }"
+    :title="title">
     <div v-if="disabled">
       <i class="fa" :class="'fa-' + icon"></i>
       <span>{{label}}</span>
@@ -21,6 +22,15 @@ export default {
     icon: String,
     label: String,
     to: Object,
+  },
+  computed: {
+    title() {
+      if (!this.disabled) {
+        return null;
+      }
+      const { label } = this;
+      return `${label} (Log in to access)`;
+    },
   },
 };
 </script>

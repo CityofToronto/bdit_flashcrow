@@ -7,6 +7,7 @@
       class="pane-map-loading-spinner">
       <TdsLoadingSpinner />
     </div>
+    <SearchBarLocation />
     <div class="pane-map-google-maps">
       <button
         class="font-size-l"
@@ -60,6 +61,7 @@ import rootStyle from '@/lib/geo/root.json';
 import metadata from '@/lib/geo/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
+import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -306,6 +308,7 @@ export default {
   components: {
     TdsLoadingSpinner,
     PaneMapPopup,
+    SearchBarLocation,
   },
   provide() {
     const self = this;
@@ -710,6 +713,12 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  & > .search-bar-location {
+    top: var(--space-m);
+    position: absolute;
+    left: var(--space-l);
+    z-index: var(--z-index-controls);
+  }
   & > .pane-map-loading-spinner {
     background-color: var(--white);
     border: var(--border-default);
