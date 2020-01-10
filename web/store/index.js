@@ -55,17 +55,19 @@ export default new Vuex.Store({
     toast: null,
     // LOCATION
     location: null,
-    locationSuggestions: null,
-    locationQuery: '',
   },
   getters: {
     // AUTH / HELPERS STATE
     username(state) {
-      if (state.auth.loggedIn) {
-        const { email, uniqueName } = state.auth.user;
-        return uniqueName || email;
+      if (!state.auth.loggedIn) {
+        return null;
       }
-      return 'Guest';
+      const { uniqueName } = state.auth.user;
+      const i = uniqueName.indexOf('\\');
+      if (i === -1) {
+        return uniqueName;
+      }
+      return uniqueName.slice(i + 1);
     },
     // ACTIVE STUDY REQUEST
     studyTypesRelevantToLocation(state) {
@@ -116,22 +118,8 @@ export default new Vuex.Store({
       Vue.set(state, 'toast', toast);
     },
     // LOCATION
-    clearLocationSuggestions(state) {
-      Vue.set(state, 'locationSuggestions', null);
-    },
-    setLocationSuggestions(state, locationSuggestions) {
-      Vue.set(state, 'locationSuggestions', locationSuggestions);
-    },
-    clearLocation(state) {
-      Vue.set(state, 'location', null);
-      Vue.set(state, 'locationQuery', null);
-    },
     setLocation(state, location) {
       Vue.set(state, 'location', location);
-      Vue.set(state, 'locationQuery', location.description);
-    },
-    setLocationQuery(state, locationQuery) {
-      Vue.set(state, 'locationQuery', locationQuery);
     },
   },
   actions: {
@@ -151,49 +139,6 @@ export default new Vuex.Store({
       commit('setToast', toast);
       clearToastDebounced(commit);
       return toast;
-    },
-    // LOCATION
-    async fetchLocationByKeyString({ commit }, keyString) {
-      const options = {
-        data: { keyString },
-      };
-      const location = await apiFetch('/cotgeocoder/findAddressCandidates', options);
-      commit('setLocation', location);
-      return location;
-    },
-    async fetchLocationSuggestions({ commit }, query) {
-      let locationSuggestions = null;
-      if (query.startsWith('pxo:') || query.startsWith('px:')) {
-        let pxStr = null;
-        let signalType = null;
-        if (query.startsWith('px:')) {
-          pxStr = query.split('px:')[1].trim();
-          signalType = 1;
-        } else {
-          pxStr = query.split('pxo:')[1].trim();
-          signalType = 2;
-        }
-        const px = parseInt(pxStr, 10);
-        if (Number.isNaN(px)) {
-          commit('clearLocationSuggestions');
-          return null;
-        }
-        const pxOptions = {
-          data: { px, signalType },
-        };
-        locationSuggestions = await apiFetch('/px/suggest', pxOptions);
-      } else {
-        if (query.length < 3) {
-          commit('clearLocationSuggestions');
-          return null;
-        }
-        const options = {
-          data: { q: query },
-        };
-        locationSuggestions = await apiFetch('/cotgeocoder/suggest', options);
-      }
-      commit('setLocationSuggestions', locationSuggestions);
-      return locationSuggestions;
     },
     // STUDY REQUESTS
     async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {

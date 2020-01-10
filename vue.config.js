@@ -64,6 +64,9 @@ const vueConfig = {
       },
     },
   },
+  transpileDependencies: [
+    'vuetify',
+  ],
 };
 
 module.exports = vueConfig;

@@ -45,9 +45,12 @@ export default {
   align-items: center;
   border-style: solid;
   border-width: 1px 0;
+  bottom: 0;
   box-shadow: var(--shadow-3);
-  padding: var(--space-m) var(--space-xl);
+  left: var(--space-3xl);
+  padding: var(--space-m) var(--space-l);
   position: absolute;
+  width: calc(100% - var(--space-3xl));
   z-index: var(--z-index-toast);
   & > i {
     margin-right: var(--space-m);

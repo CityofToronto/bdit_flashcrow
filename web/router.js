@@ -14,24 +14,6 @@ const router = new Router({
   routes: [
     // NON-DRAWER ROUTES
     {
-      path: '/login',
-      name: 'login',
-      meta: {
-        auth: false,
-        title: 'Log In',
-      },
-      component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcLogin.vue'),
-    },
-    {
-      path: '/auth/adfs-callback',
-      name: 'adfsCallback',
-      meta: {
-        auth: false,
-        title: 'Log In: City of Toronto',
-      },
-      component: () => import(/* webpackChunkName: "login" */ '@/web/views/FcAdfsCallback.vue'),
-    },
-    {
       path: '/requests/track',
       name: 'requestsTrack',
       meta: {
@@ -51,16 +33,33 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutDrawerMap.vue'),
       children: [{
         path: '',
+        meta: {
+          auth: { mode: 'try' },
+        },
         name: 'home',
         redirect: { name: 'viewData' },
       }, {
         path: '/view',
-        meta: { title: 'View Map' },
+        meta: {
+          auth: { mode: 'try' },
+          title: 'View Map',
+        },
         name: 'viewData',
         component: null,
       }, {
+        path: '/auth/adfs-callback',
+        name: 'adfsCallback',
+        meta: {
+          auth: { mode: 'try' },
+          title: 'Log In: City of Toronto',
+        },
+        component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcAdfsCallback.vue'),
+      }, {
         path: '/view/location/:centrelineType/:centrelineId',
-        meta: { title: 'View Data' },
+        meta: {
+          auth: { mode: 'try' },
+          title: 'View Data',
+        },
         name: 'viewDataAtLocation',
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
       }, {
@@ -182,7 +181,7 @@ const router = new Router({
             return `View Request #${id}`;
           },
         },
-        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayRequestStudyView.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudyView.vue'),
       }],
     },
     {
@@ -223,9 +222,10 @@ function routeMetaKey(to, key, defaultValue) {
  *
  * @param to {Object} - route to check permissions for
  * @returns {Boolean|Object} false if user has necessary permissions (i.e. no redirect needed),
- * otherwise the route to redirect to (e.g. for login)
+ * otherwise the route to redirect to
  */
 async function beforeEachCheckAuth(to) {
+  const { path } = to;
   try {
     const { loggedIn } = await store.dispatch('checkAuth');
     /*
@@ -240,8 +240,7 @@ async function beforeEachCheckAuth(to) {
         return false;
       }
       store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
-      const { path } = to;
-      return { name: 'login', query: { path } };
+      return { name: 'home', query: { path, login: true } };
     }
     if (metaAuth === false) {
       // this route requires an unauthenticated user
@@ -250,7 +249,7 @@ async function beforeEachCheckAuth(to) {
     return false;
   } catch (err) {
     // prevent infinite redirect to login
-    return to.name === 'login' ? false : { name: 'login' };
+    return { name: 'home' };
   }
 }
 

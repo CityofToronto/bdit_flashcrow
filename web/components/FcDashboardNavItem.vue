@@ -1,13 +1,14 @@
 <template>
   <li
     class="fc-dashboard-nav-item text-center"
-    :class="{ disabled }">
+    :class="{ disabled }"
+    :title="title">
     <div v-if="disabled">
       <i class="fa" :class="'fa-' + icon"></i>
       <span>{{label}}</span>
     </div>
     <router-link v-else :to="to">
-      <i class="fa" :class="'fa-' + icon"></i>
+      <v-icon>mdi-{{icon}}</v-icon>
       <span>{{label}}</span>
     </router-link>
   </li>
@@ -21,6 +22,15 @@ export default {
     icon: String,
     label: String,
     to: Object,
+  },
+  computed: {
+    title() {
+      if (!this.disabled) {
+        return null;
+      }
+      const { label } = this;
+      return `${label} (Log in to access)`;
+    },
   },
 };
 </script>
