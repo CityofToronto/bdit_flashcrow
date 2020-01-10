@@ -61,9 +61,9 @@
       <span
         class="full-width tds-label uppercase"
         :class="'tds-label-' + STATUS_META[item.counts[item.activeIndex].status].class">
-        <i
-          class="fa"
-          :class="'fa-' + STATUS_META[item.counts[item.activeIndex].status].icon"></i>
+        <v-icon>
+          mdi-{{STATUS_META[item.counts[item.activeIndex].status].icon}}
+        </v-icon>
         <span> {{STATUS_META[item.counts[item.activeIndex].status].label}}</span>
       </span>
     </template>

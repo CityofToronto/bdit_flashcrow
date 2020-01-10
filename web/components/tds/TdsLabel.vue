@@ -2,9 +2,7 @@
   <span
     class="tds-label"
     :class="'tds-label-' + variant">
-    <i
-      class="fa"
-      :class="'fa-' + variantIcon"></i>
+    <v-icon>mdi-{{variantIcon}}</v-icon>
     <slot></slot>
   </span>
 </template>
