@@ -4,11 +4,11 @@
     :class="{ disabled }"
     :title="title">
     <div v-if="disabled">
-      <i class="fa" :class="'fa-' + icon"></i>
+      <v-icon dark>mdi-{{icon}}</v-icon>
       <span>{{label}}</span>
     </div>
     <router-link v-else :to="to">
-      <v-icon>mdi-{{icon}}</v-icon>
+      <v-icon dark>mdi-{{icon}}</v-icon>
       <span>{{label}}</span>
     </router-link>
   </li>
@@ -58,7 +58,7 @@ export default {
       }
     }
   }
-  & i {
+  & i.v-icon.v-icon {
     display: block;
     font-size: var(--font-size-2xl);
     margin-bottom: var(--space-m);
