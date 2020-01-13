@@ -7,14 +7,12 @@
         <strong v-if="description">{{description}}</strong>
         <span v-else> name unknown</span>
       </div>
-      <template v-if="featureSelectable">
-        <button
-          class="font-size-l mt-s uppercase"
-          @click="onViewData">
-          <i class="fa fa-eye"></i>
-          <span> View Data</span>
-        </button>
-      </template>
+      <v-btn
+        v-if="featureSelectable"
+        class="mt-1"
+        @click="onViewData">
+        <v-icon left>mdi-table-eye</v-icon> View Data
+      </v-btn>
     </TdsPanel>
   </div>
 </template>
@@ -150,19 +148,19 @@ export default {
     },
     icon() {
       if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
-        return 'car-crash';
+        return 'car-brake-alert';
       }
       if (this.layerId === 'counts') {
-        return this.hover ? 'list-ol' : 'map-marker-alt';
+        return this.hover ? 'format-list-numbered' : 'map-marker';
       }
       if (this.layerId === 'schoolsLevel2' || this.layerId === 'schoolsLevel1') {
         const { schoolType } = this.feature.properties;
         if (schoolType === 'U' || schoolType === 'C') {
-          return 'graduation-cap';
+          return 'school';
         }
-        return 'school';
+        return 'teach';
       }
-      return this.hover ? 'road' : 'map-marker-alt';
+      return this.hover ? 'road-variant' : 'map-marker';
     },
     layerId() {
       return this.feature.layer.id;
@@ -209,8 +207,8 @@ export default {
   }
 
   font-family: var(--font-family);
-  left: var(--space-l);
   position: absolute;
+  right: var(--space-l);
   top: var(--space-m);
   width: var(--space-4xl);
   z-index: var(--z-index-controls);

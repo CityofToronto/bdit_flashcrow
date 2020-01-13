@@ -37,7 +37,7 @@
               <button
                 class="font-size-m ml-m uppercase"
                 @click="actionReopen(selectedItems)">
-                <i class="fa fa-door-open"></i>
+                <v-icon>mdi-door-open</v-icon>
                 <span> Reopen</span>
               </button>
             </div>
@@ -48,13 +48,13 @@
                 <button
                   class="font-size-m mr-m uppercase"
                   @click="actionApprove(selectedItems)">
-                  <i class="fa fa-thumbs-up"></i>
+                  <v-icon>mdi-thumb-up</v-icon>
                   <span> Approve</span>
                 </button>
                 <button
                   class="font-size-m mr-m uppercase"
                   @click="actionComplete(selectedItems)">
-                  <i class="fa fa-clipboard-check"></i>
+                  <v-icon>mdi-clipboard-check</v-icon>
                   <span> Complete</span>
                 </button>
               </div>
@@ -62,13 +62,13 @@
                 <button
                   class="font-size-m ml-m uppercase"
                   @click="actionDownload(selectedItems)">
-                  <i class="fa fa-download"></i>
+                  <v-icon>mdi-download</v-icon>
                   <span> Download</span>
                 </button>
                 <button
                   class="font-size-m ml-m uppercase"
                   @click="actionClose(selectedItems)">
-                  <i class="fa fa-door-closed"></i>
+                  <v-icon>mdi-door-closed-lock</v-icon>
                   <span> Close</span>
                 </button>
               </div>
@@ -80,7 +80,7 @@
             <button
               class="font-size-m uppercase"
               @click="actionRefresh()">
-              <i class="fa fa-redo-alt"></i>
+              <v-icon>mdi-refresh</v-icon>
               <span> Refresh</span>
             </button>
           </div>
@@ -161,9 +161,7 @@
               :class="{
                 'priority-urgent': item.priority === 'URGENT',
               }">
-              <i
-                v-if="item.priority === 'URGENT'"
-                class="fa fa-exclamation"></i>
+              <v-icon v-if="item.priority === 'URGENT'">mdi-exclamation</v-icon>
               <span> {{item.priority}}</span>
             </span>
           </TdsActionDropdown>
@@ -172,9 +170,7 @@
             :class="{
               'priority-urgent': item.priority === 'URGENT',
             }">
-            <i
-              v-if="item.priority === 'URGENT'"
-              class="fa fa-exclamation"></i>
+            <v-icon v-if="item.priority === 'URGENT'">mdi-exclamation</v-icon>
             <span> {{item.priority}}</span>
           </span>
         </template>
@@ -214,13 +210,13 @@
               class="font-size-m mr-m"
               :title="'Approve Request #' + item.id"
               @click="actionApprove([item])">
-              <i class="fa fa-thumbs-up"></i>
+              <v-icon>mdi-thumb-up</v-icon>
             </button>
             <button
               class="font-size-m mr-m"
               :title="'Ask for Changes to Request #' + item.id"
               @click="actionReject([item])">
-              <i class="fa fa-file-import"></i>
+              <v-icon>mdi-file-undo</v-icon>
             </button>
           </template>
         </template>

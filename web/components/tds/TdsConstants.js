@@ -1,8 +1,8 @@
 const VARIANT_ICONS = {
   success: 'check-circle',
   info: 'info-circle',
-  warning: 'exclamation-triangle',
-  error: 'times-circle',
+  warning: 'alert',
+  error: 'close-circle',
 };
 
 const TdsConstants = {

@@ -2,8 +2,7 @@
   <div class="fc-display-request-study-view flex-container-column">
     <div class="nav-links flex-container-row px-l pt-l pb-s text-size-l">
       <router-link :to="linkBack">
-        <i class="fa fa-chevron-left"></i>
-        <span> Back to All</span>
+        <v-icon>mdi-arrow-left</v-icon> Back to All
       </router-link>
     </div>
     <div class="flex-fill flex-container-column">
@@ -30,13 +29,11 @@
             </span>
           </h2>
           <div class="flex-fill"></div>
-          <button
+          <v-btn
             v-if="auth.user.id === studyRequest.userId || isSupervisor"
-            class="font-size-l uppercase"
             @click="onActionEdit">
-            <i class="fa fa-edit" />
-            <span> Edit</span>
-          </button>
+            <v-icon left>mdi-pencil</v-icon> Edit
+          </v-btn>
         </header>
         <section class="flex-fill flex-container-row">
           <div class="flex-cross-scroll px-l">

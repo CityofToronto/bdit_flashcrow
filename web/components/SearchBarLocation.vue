@@ -1,12 +1,10 @@
 <template>
   <v-toolbar
-    class="search-bar-location"
-    dark
-    color="teal">
+    dense
+    floating>
     <v-autocomplete
       v-model="keystring"
       cache-items
-      class="mx-4"
       flat
       hide-no-data
       hide-details
@@ -34,7 +32,7 @@ export default {
       keystring: null,
       items: [],
       loading: false,
-      query: '',
+      query: null,
     };
   },
   computed: {
@@ -49,6 +47,10 @@ export default {
   },
   watch: {
     query: debounce(async function processQuery() {
+      if (this.query === null) {
+        this.internalValue = null;
+        return;
+      }
       this.loading = true;
       this.items = await getLocationSuggestions(this.query);
       this.loading = false;

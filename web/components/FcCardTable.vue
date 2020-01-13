@@ -20,20 +20,20 @@
           :class="column.headerClasses"
           @click="onClickColumnHeader(column)">
           <div class="flex-container-row">
-            <i
-              v-if="column.icon !== null"
-              class="fa"
-              :class="'fa-' + column.icon"></i>
+            <v-icon v-if="column.icon !== null">mdi-{{column.icon}}</v-icon>
             <span> {{column.title}}</span>
             <div class="flex-fill"></div>
-            <i
-              v-if="column.sortable"
-              class="fa"
-              :class="{
-                'fa-sort': !column.sorted,
-                'fa-sort-up': column.sorted && internalSortDirection === SortDirection.ASC,
-                'fa-sort-down': column.sorted && internalSortDirection === SortDirection.DESC,
-              }"></i>
+            <template v-if="column.sortable">
+              <v-icon v-if="!column.sorted">mdi-arrow-up-down</v-icon>
+              <v-icon
+                v-else-if="internalSortDirection === SortDirection.ASC">
+                mdi-sort-ascending
+              </v-icon>
+              <v-icon
+                v-else-if="internalSortDirection === SortDirection.DESC">
+                mdi-sort-descending
+              </v-icon>
+            </template>
           </div>
           <div
             v-if="column.searchable"
@@ -52,7 +52,7 @@
               class="font-size-s btn-remove px-s"
               type="button"
               @click="searchBy[column.name] = ''">
-              <i class="fa fa-times-circle"></i>
+              <v-icon>mdi-close-circle</v-icon>
             </button>
           </div>
         </th>
@@ -94,12 +94,8 @@
               :title="expanded === item.id ? 'Collapse' : 'Expand'"
               :disabled="!item.expandable"
               @click="onClickItemExpand(item)">
-              <i
-                class="fa"
-                :class="{
-                  'fa-chevron-circle-up': expanded === item.id,
-                  'fa-chevron-circle-down': expanded !== item.id,
-                }"></i>
+              <v-icon v-if="expanded === item.id">mdi-chevron-up-circle</v-icon>
+              <v-icon v-else>mdi-chevron-down-circle</v-icon>
             </button>
           </td>
         </tr>

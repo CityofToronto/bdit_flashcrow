@@ -72,7 +72,6 @@
           class="mb-xl"
           icon="calendar-check"
           variant="info">
-          <i class="fa fa-calendar-check"></i>
           <p>
             Standard times to request counts are 2-3 months.
             Estimated Delivery Date: {{studyRequestEstimatedDeliveryDate | date}}

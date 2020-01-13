@@ -3,14 +3,12 @@
     <div class="nav-links flex-container-row px-xl pt-l pb-m text-size-l">
       <router-link
         :to="linkBack.route">
-        <i class="fa fa-chevron-left"></i>
-        <span> {{linkBack.label}}</span>
+        <v-icon>mdi-arrow-left</v-icon> {{linkBack.label}}
       </router-link>
       <div class="flex-fill"></div>
       <router-link
         :to="linkBack.route">
-        <span>Cancel </span>
-        <i class="fa fa-times"></i>
+        Cancel <v-icon>mdi-close</v-icon>
       </router-link>
     </div>
     <div class="px-xl flex-fill flex-container-column">

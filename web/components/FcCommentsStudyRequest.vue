@@ -60,13 +60,11 @@
           </div>
         </div>
         <div class="flex-fill"></div>
-        <button
+        <v-btn
           v-if="auth.user.id === comment.userId"
-          class="font-size-m uppercase"
           @click="actionDelete(comment)">
-          <i class="fa fa-trash" />
-          <span> Delete</span>
-        </button>
+          <v-icon left>mdi-delete</v-icon> Delete
+        </v-btn>
       </header>
       <div class="font-size-m mt-l mx-l">
         {{ comment.comment }}

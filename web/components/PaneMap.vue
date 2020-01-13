@@ -1,26 +1,27 @@
 <template>
   <div
-    class="pane-map"
+    class="fill-height pane-map"
     @mouseleave="clearHoveredFeature">
     <div class="pane-map-progress">
       <v-progress-linear
         :active="loading"
-        dark
         indeterminate />
     </div>
     <SearchBarLocation
+      class="search-bar-location"
       v-model="internalLocation" />
-    <div class="pane-map-google-maps">
-      <button
-        class="font-size-l"
-        :disabled="coordinates === null">
-        <a :href="hrefGoogleMaps" target="_blank">Google Maps</a>
-      </button>
-    </div>
     <div class="pane-map-mode">
-      <button class="font-size-l" @click="toggleSatellite">
+      <v-btn
+        class="mr-2"
+        fab
+        small
+        @click="openGoogleMaps">
+        <v-icon>mdi-google-maps</v-icon>
+      </v-btn>
+      <v-btn
+        @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
-      </button>
+      </v-btn>
     </div>
     <PaneMapPopup
       v-if="hoveredFeature"
@@ -39,12 +40,8 @@
       }"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="flex-fill text-center px-s">
-        <i
-          class="fa"
-          :class="{
-            'fa-chevron-left': drawerOpen,
-            'fa-chevron-right': !drawerOpen,
-          }"></i>
+        <v-icon v-if="drawerOpen">mdi-chevron-left</v-icon>
+        <v-icon v-else>mdi-chevron-right</v-icon>
       </div>
     </div>
   </div>
@@ -330,14 +327,6 @@ export default {
     };
   },
   computed: {
-    hrefGoogleMaps() {
-      if (this.coordinates === null) {
-        return '#';
-      }
-      const { lat, lng, zoom } = this.coordinates;
-      const z = Math.round(zoom);
-      return `https://www.google.com/maps/@${lat},${lng},${z}z`;
-    },
     internalLocation: {
       get() {
         return this.location;
@@ -685,6 +674,15 @@ export default {
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
     }, 250),
+    openGoogleMaps() {
+      if (this.coordinates === null) {
+        return;
+      }
+      const { lat, lng, zoom } = this.coordinates;
+      const z = Math.round(zoom);
+      const url = `https://www.google.com/maps/@${lat},${lng},${z}z`;
+      window.open(url, '_blank');
+    },
     toggleSatellite() {
       this.satellite = !this.satellite;
       if (this.satellite) {
@@ -729,12 +727,6 @@ export default {
   }
   & > .search-bar-location {
     top: var(--space-m);
-    position: absolute;
-    left: var(--space-l);
-    z-index: var(--z-index-controls);
-  }
-  & > .pane-map-google-maps {
-    bottom: var(--space-m);
     position: absolute;
     left: var(--space-l);
     z-index: var(--z-index-controls);

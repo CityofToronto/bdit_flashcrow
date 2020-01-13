@@ -13,12 +13,10 @@
               @change="onChangeSelectAll" />
           </label>
           <div class="py-s">
-            <button
-              class="font-size-l tds-button-primary uppercase"
+            <v-btn
               @click="onActionBulk('request-study')">
-              <i class="fa fa-plus"></i>
-              <span> Request Study</span>
-            </button>
+              <v-icon left>mdi-plus</v-icon> Request Study
+            </v-btn>
           </div>
           <div class="flex-fill"></div>
           <FcFiltersViewDataAtLocation
@@ -59,6 +57,7 @@ import {
 import {
   getCountsByCentreline,
   getLocationByFeature,
+  getStudiesByCentreline,
 } from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
 import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
@@ -207,6 +206,7 @@ export default {
       'studyTypesRelevantToLocation',
     ]),
     ...mapState([
+      'auth',
       'location',
     ]),
   },
@@ -326,18 +326,20 @@ export default {
     },
     async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
-      const promiseCounts = getCountsByCentreline({
-        centrelineId,
-        centrelineType,
-      });
-      const promiseLocation = getLocationByFeature({
-        centrelineId,
-        centrelineType,
-      });
+      const tasks = [
+        getCountsByCentreline({ centrelineId, centrelineType }),
+        getLocationByFeature({ centrelineId, centrelineType }),
+      ];
+      if (this.auth.loggedIn) {
+        tasks.push(
+          getStudiesByCentreline({ centrelineId, centrelineType }),
+        );
+      }
       const [
-        { counts, studies },
+        counts,
         location,
-      ] = await Promise.all([promiseCounts, promiseLocation]);
+        studies = [],
+      ] = await Promise.all(tasks);
       this.counts = counts;
       this.studies = studies;
 

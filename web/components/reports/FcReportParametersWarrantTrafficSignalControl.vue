@@ -1,12 +1,11 @@
 <template>
   <div class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
     <hr class="mb-m">
-    <button
-      class="font-size-l fc-report-parameters-update"
+    <v-btn
+      class="fc-report-parameters-update"
       @click="$emit('update-report')">
-      <i class="fa fa-sync"></i>
-      Update
-    </button>
+      <v-icon left>mdi-sync</v-icon> Update
+    </v-btn>
     <div class="form-group">
       <label class="tds-checkbox">
         <input
