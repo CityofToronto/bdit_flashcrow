@@ -4,14 +4,10 @@
       <header>
         <h1 class="my-l">View Data</h1>
         <div class="bar-actions-bulk flex-container-row p-l mb-l">
-          <label class="tds-checkbox mr-l">
-            <input
-              type="checkbox"
-              name="selectAll"
-              :checked="selectionAll"
-              :indeterminate.prop="selectionIndeterminate"
-              @change="onChangeSelectAll" />
-          </label>
+          <v-checkbox
+            v-model="selectionAll"
+            :indeterminate="selectionIndeterminate"
+            name="selectAll"></v-checkbox>
           <div class="py-s">
             <v-btn
               @click="onActionBulk('request-study')">
@@ -195,9 +191,18 @@ export default {
       }));
       return Array.from(studyTypes);
     },
-    selectionAll() {
-      return this.selectableIds
-        .every(id => this.selection.includes(id));
+    selectionAll: {
+      get() {
+        return this.selectableIds.length > 0
+          && this.selectableIds.every(id => this.selection.includes(id));
+      },
+      set(selectionAll) {
+        if (selectionAll) {
+          this.selection = this.selectableIds;
+        } else {
+          this.selection = [];
+        }
+      },
     },
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
@@ -315,13 +320,6 @@ export default {
         this.actionSelectActiveIndex(item, actionOptions);
       } else if (type === 'show-reports') {
         this.actionShowReports(item, actionOptions);
-      }
-    },
-    onChangeSelectAll() {
-      if (this.selectionAll) {
-        this.selection = [];
-      } else {
-        this.selection = this.selectableIds;
       }
     },
     async syncFromRoute(to) {

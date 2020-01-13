@@ -49,25 +49,17 @@
               v-else
               class="flex-fill flex-container-row">
               <div class="flex-cross-scroll">
-                <div
-                  v-for="{ label, name, disabled } in optionsReports"
-                  :key="name"
-                  class="py-m">
-                  <label class="tds-radio">
-                    <input
-                      v-model="report"
-                      type="radio"
+                  <v-radio-group
+                    v-model="report"
+                    column>
+                    <v-radio
+                      v-for="{ label, name, disabled } in optionsReports"
+                      :key="name"
                       :disabled="activeCount.status === Status.REQUEST_IN_PROGRESS || disabled"
                       name="report"
-                      :value="name" />
-                    <span
-                      :class="{
-                        'text-muted': activeCount.status === Status.REQUEST_IN_PROGRESS || disabled,
-                      }">
-                      {{label}}
-                    </span>
-                  </label>
-                </div>
+                      :label="label"
+                      :value="name"></v-radio>
+                  </v-radio-group>
                 <component
                   v-if="report === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
                   :is="'FcReportParameters' + selectedReport.suffix"

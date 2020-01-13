@@ -13,14 +13,11 @@
           :class="{
             selected: internalValue.includes(value),
           }">
-          <label class="tds-checkbox">
-            <input
-              v-model="internalValue"
-              type="checkbox"
-              :name="name"
-              :value="value" />
-            <span>{{label}}</span>
-          </label>
+          <v-checkbox
+            v-model="internalValue"
+            :label="label"
+            :name="name"
+            :value="value"></v-checkbox>
         </li>
       </ul>
     </template>

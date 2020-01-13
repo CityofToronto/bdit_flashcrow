@@ -7,18 +7,18 @@
       <v-icon left>mdi-sync</v-icon> Update
     </v-btn>
     <div class="form-group">
-      <label class="tds-checkbox">
-        <input
-          type="checkbox"
-          name="adequateTrial"
-          v-model="internalValue.adequateTrial" />
-        <span>
-          <abbr
-            title="Has adequate trial of less restrictive remedies failed to reduce collisions?">
-            Adequate Trial?
-          </abbr>
-        </span>
-      </label>
+      <v-checkbox
+        name="adequateTrial"
+        v-model="internalValue.adequateTrial">
+        <template v-slot:label>
+          <span>
+            <abbr
+              title="Has adequate trial of less restrictive remedies failed to reduce collisions?">
+              Adequate Trial?
+            </abbr>
+          </span>
+        </template>
+      </v-checkbox>
     </div>
     <div class="form-group">
       <label>

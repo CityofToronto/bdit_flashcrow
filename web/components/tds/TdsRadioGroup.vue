@@ -1,25 +1,14 @@
 <template>
-  <div
-    class="tds-radio-group flex-container-row mb-s"
-    :class="{ invalid }">
-    <label
+  <v-radio-group
+    v-model="internalValue"
+    row>
+    <v-radio
       v-for="{ label, sublabel, value } in options"
       :key="value"
-      class="tds-radio">
-      <input
-        v-model="internalValue"
-        type="radio"
-        :name="name"
-        :value="value" />
-      <span>
-        {{label}}
-        <template v-if="sublabel">
-          <br />
-          <small>{{sublabel}}</small>
-        </template>
-      </span>
-    </label>
-  </div>
+      :label="label"
+      :name="name"
+      :value="value"></v-radio>
+  </v-radio-group>
 </template>
 
 <script>
@@ -49,9 +38,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.tds-radio-group {
-  justify-content: space-between;
-}
-</style>

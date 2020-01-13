@@ -21,15 +21,11 @@
           <span v-else>Open Requests</span>
         </h1>
         <div class="bar-actions-bulk flex-container-row p-l mb-xl">
-          <label class="tds-checkbox mr-l">
-            <input
-              type="checkbox"
-              name="selectAll"
-              :checked="selectionAll"
-              :disabled="selectableIds.length === 0"
-              :indeterminate.prop="selectionIndeterminate"
-              @change="onChangeSelectAll" />
-          </label>
+          <v-checkbox
+            v-model="selectionAll"
+            :disabled="selectableIds.length === 0"
+            :indeterminate="selectionIndeterminate"
+            name="selectAll"></v-checkbox>
           <template v-if="selectedItems.length > 0">
             <div
               v-if="closed"
@@ -104,14 +100,11 @@
         :sort-direction="sortDirection"
         :sort-keys="sortKeys"
         @update-items-normalized="updateItemsNormalized">
-        <template v-slot:SELECTION="{ item, isChild }">
-          <label v-if="!isChild" class="tds-checkbox">
-            <input
-              type="checkbox"
-              name="selectionItems"
-              :value="item.id"
-              v-model="selection" />
-          </label>
+        <template v-slot:SELECTION="{ item }">
+          <v-checkbox
+            v-model="selection"
+            name="selectionItems"
+            :value="item.id"></v-checkbox>
         </template>
         <template v-slot:ID="{ item }">
           <div
@@ -463,9 +456,18 @@ export default {
       return this.selection
         .map(id => this.itemsNormalized.find(r => r.id === id));
     },
-    selectionAll() {
-      return this.selectableIds.length > 0
-        && this.selectableIds.every(id => this.selection.includes(id));
+    selectionAll: {
+      get() {
+        return this.selectableIds.length > 0
+          && this.selectableIds.every(id => this.selection.includes(id));
+      },
+      set(selectionAll) {
+        if (selectionAll) {
+          this.selection = this.selectableIds;
+        } else {
+          this.selection = [];
+        }
+      },
     },
     selectionIndeterminate() {
       return this.selection.length > 0 && !this.selectionAll;
@@ -595,13 +597,6 @@ export default {
           textOk: actionUppercase,
         },
       });
-    },
-    onChangeSelectAll() {
-      if (this.selectionAll) {
-        this.selection = [];
-      } else {
-        this.selection = this.selectableIds;
-      }
     },
     setClosed(closed) {
       this.closed = closed;

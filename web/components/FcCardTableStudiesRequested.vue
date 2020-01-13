@@ -8,12 +8,9 @@
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
     <template v-slot:SELECTION>
-      <label class="tds-checkbox">
-        <input
-          type="checkbox"
-          checked
-          disabled />
-      </label>
+      <v-checkbox
+        v-model="alwaysTrue"
+        disabled></v-checkbox>
     </template>
     <template v-slot:STUDY_TYPE="{ item }">
       <a
@@ -99,6 +96,7 @@ export default {
       name: 'ACTIONS',
     }];
     return {
+      alwaysTrue: true,
       columns,
       sortBy: 'STUDY_TYPE',
       sortDirection: SortDirection.ASC,
