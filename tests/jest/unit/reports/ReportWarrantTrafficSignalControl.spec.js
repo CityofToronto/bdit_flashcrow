@@ -36,7 +36,6 @@ test('ReportWarrantTrafficSignalControl#transformData', () => {
     const segments = new Array(4).fill(0);
     const options = {
       adequateTrial: true,
-      collisionsTotal: 25,
       preparedBy: 'Foo Bar',
       preventablesByYear: [3, 5, 10],
       startYear: 2016,
@@ -75,7 +74,6 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
 
   const options = {
     adequateTrial: true,
-    collisionsTotal: 25,
     preparedBy: 'Foo Bar',
     preventablesByYear: [3, 5, 10],
     startYear: 2016,
@@ -112,7 +110,6 @@ test('ReportWarrantTrafficSignalControl#generateCsv [Overlea and Thorncliffe: 5/
 
   const options = {
     adequateTrial: true,
-    collisionsTotal: 25,
     preparedBy: 'Foo Bar',
     preventablesByYear: [3, 5, 10],
     startYear: 2016,
