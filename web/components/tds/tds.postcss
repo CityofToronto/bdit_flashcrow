@@ -663,30 +663,6 @@ fieldset {
     }
   }
 }
-input[type="text"],
-textarea {
-  border: var(--border-default);
-  border-radius: var(--space-s);
-  font-family: var(--font-family);
-  padding: var(--space-s) var(--space-m);
-  &:disabled {
-    background-color: var(--disabled-light);
-    border-color: var(--disabled-dark);
-    color: var(--disabled-dark);
-  }
-  &:focus {
-    box-shadow: var(--shadow-outline);
-  }
-  &:not(:disabled):hover {
-    border-color: var(--base-darkest);
-  }
-  &.invalid {
-    border-color: var(--error);
-    &:not(:disabled):hover {
-      border-color: var(--error-dark);
-    }
-  }
-}
 
 /* FORMS: CHECKBOX, RADIO, TOGGLE */
 .tds-checkbox {
@@ -793,70 +769,6 @@ textarea {
     vertical-align: middle;
     & > small {
       font-weight: var(--font-weight-normal);
-    }
-  }
-}
-
-/* BUTTONS */
-button {
-  background-color: var(--white);
-  border: var(--border-default);
-  border-radius: var(--space-s);
-  color: var(--ink);
-  cursor: pointer;
-  font-family: var(--font-family);
-  font-size: var(--font-size-xl);
-  padding: var(--space-s) var(--space-m);
-  transition: border-color var(--transition-short);
-  &:focus {
-    box-shadow: var(--shadow-outline);
-  }
-  &:disabled {
-    opacity: 0.3;
-  }
-  &:not(:disabled) {
-    box-shadow: var(--shadow-2);
-    &:hover {
-      background-color: var(--base-lighter);
-      border-color: var(--base-darkest);
-    }
-  }
-  &.tds-button-primary {
-    background-color: var(--primary-lighter);
-    border-color: var(--primary-darker);
-    color: var(--primary-darker);
-    &:not(:disabled):hover {
-      background-color: var(--primary-light);
-    }
-  }
-  &.tds-button-success {
-    background-color: var(--success-lighter);
-    border-color: var(--success-darker);
-    color: var(--success-darker);
-    &:not(:disabled):hover {
-      background-color: var(--success-light);
-    }
-  }
-  &.tds-button-warning {
-    background-color: var(--warning-lighter);
-    border-color: var(--warning-darker);
-    color: var(--warning-darker);
-    &:not(:disabled):hover {
-      background-color: var(--warning-light);
-    }
-  }
-  &.tds-button-error {
-    background-color: var(--error-lighter);
-    border-color: var(--error-darker);
-    color: var(--error-darker);
-    &:not(:disabled):hover {
-      background-color: var(--error-light);
-    }
-  }
-  &.invalid {
-    border-color: var(--error);
-    &:not(:disabled):hover {
-      border-color: var(--error-dark);
     }
   }
 }

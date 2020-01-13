@@ -13,12 +13,10 @@
               @change="onChangeSelectAll" />
           </label>
           <div class="py-s">
-            <button
-              class="font-size-l tds-button-primary uppercase"
+            <v-btn
               @click="onActionBulk('request-study')">
-              <i class="fa fa-plus"></i>
-              <span> Request Study</span>
-            </button>
+              <v-icon left>mdi-plus</v-icon> Request Study
+            </v-btn>
           </div>
           <div class="flex-fill"></div>
           <FcFiltersViewDataAtLocation

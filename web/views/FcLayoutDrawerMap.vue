@@ -1,12 +1,14 @@
 <template>
-  <main class="fc-layout-drawer-map flex-fill flex-container-column">
-    <section class="panes flex-fill flex-container-row">
-      <router-view
-        v-show="drawerOpen"
-        class="pane-drawer"></router-view>
+  <v-row
+    class="fill-height"
+    no-gutters>
+    <router-view
+      v-show="drawerOpen"
+      class="pane-drawer"></router-view>
+    <v-col cols="12">
       <PaneMap />
-    </section>
-  </main>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -24,16 +26,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-layout-drawer-map {
-  & > .panes {
-    & > .pane-drawer {
-      flex: 1.8;
-    }
-    & > .pane-map {
-      flex: 1;
-    }
-  }
-}
-</style>

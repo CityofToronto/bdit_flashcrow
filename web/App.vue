@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-app full-screen flex-container-row" data-app>
+  <v-app id="fc_app">
     <FcToast
       v-if="toast"
       :variant="toast.variant">
@@ -27,7 +27,10 @@
       :is="modal.component"
       :data="modal.data"
       @modal-close="clearModal"></component>
-    <div class="fc-sidebar flex-container-column">
+    <v-navigation-drawer
+      app
+      mini-variant
+      permanent>
       <FcDashboardBrand />
       <FcDashboardNav>
         <FcDashboardNavItem
@@ -45,46 +48,49 @@
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
       </FcDashboardNav>
-      <div class="flex-fill"></div>
-      <div class="text-center mb-m">
-        <v-menu
-          v-if="auth.loggedIn"
-          top>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              color="primary"
-              dark
-              v-on="on">
-              <span class="text-ellipsis">
-                <v-icon>mdi-account</v-icon>
-                <span> {{username}}</span>
-              </span>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="({ label, value }, i) in userActions"
-              :key="i"
-              @click="onUserAction(value)">
-              <v-list-item-title>{{label}}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <v-btn
-          v-else
-          color="primary"
-          dark
-          :disabled="$route.name === 'adfsCallback'"
-          :loading="$route.name === 'adfsCallback'"
-          @click="onClickLogin">
-          <span>Log in</span>
-        </v-btn>
-      </div>
-    </div>
-    <div class="fc-content flex-fill flex-container-column">
-      <router-view></router-view>
-    </div>
-  </div>
+      <template v-slot:append>
+        <div class="text-center pb-2">
+          <v-menu
+            v-if="auth.loggedIn"
+            top>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                color="primary"
+                v-on="on">
+                <span class="text-ellipsis">
+                  <v-icon>mdi-account</v-icon>
+                </span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="({ label, value }, i) in userActions"
+                :key="i"
+                @click="onUserAction(value)">
+                <v-list-item-title>{{label}}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <v-btn
+            v-else
+            color="primary"
+            :disabled="$route.name === 'adfsCallback'"
+            fab
+            :loading="$route.name === 'adfsCallback'"
+            @click="onClickLogin">
+            <v-icon>mdi-login</v-icon>
+          </v-btn>
+        </div>
+      </template>
+    </v-navigation-drawer>
+    <v-content>
+      <v-container
+        class="fill-height pa-0"
+        fluid>
+        <router-view></router-view>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
@@ -179,35 +185,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-app {
-  position: relative;
-}
-
-.fc-sidebar {
-  background-color: var(--base-darker);
-  color: var(--base-lighter);
-  position: relative;
-  width: var(--space-3xl);
-}
-
-/* TRANSITIONS */
-.fc-open-down-enter-active,
-.fc-open-down-leave-active {
-  transition: var(--transition-medium);
-}
-
-.fc-open-down-enter-to,
-.fc-open-down-leave {
-  max-height: calc(var(--space-xl) + var(--space-l));
-  overflow: hidden;
-}
-
-.fc-open-down-enter,
-.fc-open-down-leave-to {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-}
-</style>
