@@ -1,18 +1,19 @@
 <template>
-  <div class="fc-display-request-study flex-container-column">
-    <div class="nav-links flex-container-row px-xl pt-l pb-m text-size-l">
-      <router-link
+  <div class="fc-display-request-study fill-height">
+    <v-toolbar dense>
+      <v-btn
+        icon
         :to="linkBack.route">
-        <v-icon>mdi-arrow-left</v-icon> {{linkBack.label}}
-      </router-link>
-      <div class="flex-fill"></div>
-      <router-link
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn
+        icon
         :to="linkBack.route">
-        Cancel <v-icon>mdi-close</v-icon>
-      </router-link>
-    </div>
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-toolbar>
     <div class="px-xl flex-fill flex-container-column">
-      <hr />
       <FcBreadcrumbsRequestStudy :current-step-completed="false" />
       <router-view></router-view>
     </div>
@@ -70,12 +71,6 @@ export default {
 
 <style lang="postcss">
 .fc-display-request-study {
-  & > .nav-links {
-    text-transform: uppercase;
-    & > a {
-      text-decoration: none;
-    }
-  }
   & > .action-bottom {
     padding: var(--space-m) var(--space-xl);
   }

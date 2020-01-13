@@ -1,10 +1,10 @@
 <template>
-  <button
-    class="tds-button-primary"
-    @click="onClickRequestData"
-    :disabled="$v.$invalid">
+  <v-btn
+    color="primary"
+    :disabled="$v.$invalid"
+    @click="onClickRequestData">
     Request Data ({{studyRequest.studies.length}})
-  </button>
+  </v-btn>
 </template>
 
 <script>

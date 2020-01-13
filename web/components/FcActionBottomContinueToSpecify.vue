@@ -1,10 +1,10 @@
 <template>
-  <button
-    class="tds-button-primary"
+  <v-btn
+    color="primary"
     :disabled="$v.$invalid"
     @click="onClickContinue">
     Continue
-  </button>
+  </v-btn>
 </template>
 
 <script>

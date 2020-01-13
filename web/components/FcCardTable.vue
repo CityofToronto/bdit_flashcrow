@@ -35,26 +35,15 @@
               </v-icon>
             </template>
           </div>
-          <div
+          <v-text-field
             v-if="column.searchable"
-            class="flex-container-row mt-s"
+            v-model="searchBy[column.name]"
+            append-icon="mdi-magnify"
+            clearable
+            dense
+            :name="'search_' + column.name"
             @click.stop>
-            <input
-              v-model="searchBy[column.name]"
-              type="text"
-              class="font-size-s full-width"
-              :class="{
-                'btn-remove-before': searchBy[column.name] !== '',
-              }"
-              :name="'search_' + column.name" />
-            <button
-              v-if="searchBy[column.name] !== ''"
-              class="font-size-s btn-remove px-s"
-              type="button"
-              @click="searchBy[column.name] = ''">
-              <v-icon>mdi-close-circle</v-icon>
-            </button>
-          </div>
+          </v-text-field>
         </th>
         <!-- EXPAND TOGGLE -->
         <th
@@ -150,7 +139,7 @@ export default {
     },
   },
   data() {
-    const searchBy = ObjectUtils.map(this.searchKeys, () => '');
+    const searchBy = ObjectUtils.map(this.searchKeys, () => null);
     return {
       expanded: null,
       internalSortBy: this.sortBy,
@@ -193,7 +182,7 @@ export default {
     },
     itemsNormalized() {
       const searchFilters = this.columnsNormalized
-        .filter(({ searchable, searchQuery }) => searchable && searchQuery !== '')
+        .filter(({ searchable, searchQuery }) => searchable && searchQuery !== null)
         .map(({ searchKey, searchQuery: q }) => r => searchKey(q, r));
 
       let itemsNormalized = this.items;
@@ -259,15 +248,6 @@ export default {
         &:hover {
           background-color: var(--primary-lighter);
           color: var(--primary-darker);
-        }
-      }
-      & > div {
-        align-items: center;
-        & > input.btn-remove-before {
-          border-radius: var(--space-s) 0 0 var(--space-s);
-        }
-        & > button.btn-remove {
-          border-radius: 0 var(--space-s) var(--space-s) 0;
         }
       }
     }
