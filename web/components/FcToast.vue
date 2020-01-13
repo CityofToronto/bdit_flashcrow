@@ -3,15 +3,14 @@
     <div
       class="fc-toast flex-container-row font-size-xl full-width"
       :class="'fc-toast-' + variant">
-      <i
-        class="fa"
-        :class="'fa-' + icon"></i>
+      <v-icon>mdi-{{icon}}</v-icon>
       <slot></slot>
       <div class="flex-fill"></div>
-      <button
+      <v-btn
+        icon
         @click="clearToast">
-        <i class="fa fa-times"></i>
-      </button>
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
     </div>
   </transition>
 </template>

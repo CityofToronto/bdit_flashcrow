@@ -11,7 +11,9 @@
         </tr>
         <tbody>
           <tr>
-            <td><i class="px-xs font-size-xl fa fa-plus-circle"></i></td>
+            <td>
+              <v-icon>mdi-plus-circle</v-icon>
+            </td>
             <td :colspan="numTableColumns - 1">
               <TdsActionDropdown
                 class="full-width font-size-l"

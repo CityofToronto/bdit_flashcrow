@@ -9,21 +9,19 @@
         class="flex-fill font-size-l"
         :name="name"
         type="text" />
-      <button
-        class="font-size-l btn-remove"
-        type="button"
+      <v-btn
+        class="full-width mb-m"
+        icon
         @click.prevent="onRemove(i)">
-        <i class="fa fa-minus" />
-      </button>
+        <v-icon left>mdi-minus</v-icon>
+      </v-btn>
     </div>
     <div class="flex-container-row">
-      <button
-        class="font-size-l full-width mb-m"
-        type="button"
+      <v-btn
+        class="full-width mb-m"
         @click.prevent="onAdd">
-        <i class="fa fa-plus" />
-        <span> Add</span>
-      </button>
+        <v-icon left>mdi-plus</v-icon> Add
+      </v-btn>
     </div>
   </div>
 </template>
@@ -64,12 +62,6 @@ export default {
 .fc-input-text-array {
   & > div {
     align-items: center;
-    & > input {
-      border-radius: var(--space-s) 0 0 var(--space-s);
-    }
-    & > button.btn-remove {
-      border-radius: 0 var(--space-s) var(--space-s) 0;
-    }
   }
 }
 </style>

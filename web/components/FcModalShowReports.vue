@@ -135,7 +135,7 @@
                           <span> Downloading&hellip;</span>
                         </template>
                         <span v-else>
-                          <i class="fa fa-download"></i>
+                          <v-icon>mdi-download</v-icon>
                           <span> Download</span>
                         </span>
                       </template>

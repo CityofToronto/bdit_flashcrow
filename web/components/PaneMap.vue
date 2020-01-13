@@ -40,12 +40,8 @@
       }"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="flex-fill text-center px-s">
-        <i
-          class="fa"
-          :class="{
-            'fa-chevron-left': drawerOpen,
-            'fa-chevron-right': !drawerOpen,
-          }"></i>
+        <v-icon v-if="drawerOpen">mdi-chevron-left</v-icon>
+        <v-icon v-else>mdi-chevron-right</v-icon>
       </div>
     </div>
   </div>

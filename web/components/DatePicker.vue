@@ -27,10 +27,6 @@
         @input="updateValue($event.target.value, { formatInput: false, hidePopover: false })"
         @change="updateValue($event.target.value, { formatInput: true, hidePopover: false })"
         @keyup.esc="updateValue(internalValue, { formatInput: true, hidePopover: true })" />
-      <i
-        v-if="showIcon"
-        class="fa fa-calendar-alt ml-m"
-        :class="'font-size-' + size"></i>
     </template>
   </v-date-picker>
 </template>
@@ -110,10 +106,6 @@ export default {
     placeholder: {
       type: String,
       default: '',
-    },
-    showIcon: {
-      type: Boolean,
-      default: false,
     },
     size: {
       type: String,

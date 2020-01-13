@@ -2,10 +2,12 @@
   <v-row
     class="fill-height"
     no-gutters>
-    <router-view
+    <v-col
       v-show="drawerOpen"
-      class="pane-drawer"></router-view>
-    <v-col cols="12">
+      cols="4">
+      <router-view></router-view>
+    </v-col>
+    <v-col :cols="drawerOpen ? 8 : 12">
       <PaneMap />
     </v-col>
   </v-row>
