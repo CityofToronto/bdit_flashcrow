@@ -1,11 +1,7 @@
 import Vue from 'vue';
 
-import {
-  COUNT_TYPES,
-} from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
 import { getLocationByFeature, getUsersByIds } from '@/lib/api/WebApi';
-import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 
 function makeStudy(studyType) {
   return {
@@ -17,23 +13,6 @@ function makeStudy(studyType) {
   };
 }
 
-// TODO: DRY with index.js
-function studyRequestEstimatedDeliveryDate(now, studyRequest) {
-  if (studyRequest === null) {
-    return null;
-  }
-  const { dueDate, priority } = studyRequest;
-  if (priority === 'URGENT') {
-    return dueDate;
-  }
-  const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-  const twoMonthsOut = now.plus({ months: 2 });
-  if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-    return twoMonthsOut;
-  }
-  return oneWeekBeforeDueDate;
-}
-
 export default {
   namespaced: true,
   state: {
@@ -42,44 +21,6 @@ export default {
     studyRequestComments: [],
     studyRequestCommentUsers: new Map(),
     studyRequestLocation: null,
-  },
-  getters: {
-    studyRequestEstimatedDeliveryDate(state, getters, rootState) {
-      const { studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      const { now } = rootState;
-      return studyRequestEstimatedDeliveryDate(now, studyRequest);
-    },
-    studyRequestMinDueDate(state, getters, rootState) {
-      const { studyRequest } = state;
-      if (studyRequest === null) {
-        return null;
-      }
-      const { now } = rootState;
-      if (studyRequest.priority === 'URGENT') {
-        return now;
-      }
-      return now.plus({ months: 2 });
-    },
-    studyTypesWithWarnings(state, getters, rootState, rootGetters) {
-      const studyTypesSelected = new Set();
-      if (state.studyRequest !== null) {
-        state.studyRequest.studies.forEach(({ studyType: value }) => {
-          studyTypesSelected.add(value);
-        });
-      }
-      return COUNT_TYPES.map(({ label, value }) => {
-        let warning = null;
-        if (studyTypesSelected.has(value)) {
-          warning = STUDY_DUPLICATE.getModalOptions({ label });
-        } else if (!rootGetters.studyTypesRelevantToLocation.includes(value)) {
-          warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
-        }
-        return { label, value, warning };
-      });
-    },
   },
   mutations: {
     // ACTIVE STUDY REQUEST

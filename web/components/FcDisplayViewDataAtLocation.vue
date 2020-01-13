@@ -285,7 +285,7 @@ export default {
         return;
       }
       this.setNewStudyRequest(Array.from(studyTypes));
-      this.$router.push({ name: 'requestStudy' });
+      this.$router.push({ name: 'requestStudyNew' });
     },
     actionSelectActiveIndex(item, { activeIndex }) {
       const { id } = item;

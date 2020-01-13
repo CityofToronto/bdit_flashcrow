@@ -41,7 +41,7 @@
           :disabled="!auth.loggedIn"
           icon="folder-plus"
           label="Request Study"
-          :to="{ name: 'requestStudy' }" />
+          :to="{ name: 'requestStudyNew' }" />
         <FcDashboardNavItem
           :disabled="!auth.loggedIn"
           icon="clipboard-list"

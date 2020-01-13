@@ -1,21 +1,17 @@
 <template>
-  <v-toolbar
-    dense
-    floating>
-    <v-autocomplete
-      v-model="keystring"
-      cache-items
-      flat
-      hide-no-data
-      hide-details
-      :items="items"
-      item-text="ADDRESS"
-      item-value="KEYSTRING"
-      label="Search"
-      :loading="loading"
-      prepend-icon="mdi-map-search-outline"
-      :search-input.sync="query" />
-  </v-toolbar>
+  <v-autocomplete
+    v-model="keystring"
+    cache-items
+    hide-no-data
+    hide-details
+    :items="items"
+    item-text="ADDRESS"
+    item-value="KEYSTRING"
+    label="Search"
+    :loading="loading"
+    prepend-inner-icon="mdi-map-search-outline"
+    :search-input.sync="query"
+    solo />
 </template>
 
 <script>

@@ -125,7 +125,7 @@
 
 <script>
 import Vue from 'vue';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import DatePicker from '@/web/components/DatePicker.vue';
 import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
@@ -144,6 +144,7 @@ export default {
   },
   props: {
     v: Object,
+    value: Object,
   },
   data() {
     return {
@@ -159,7 +160,7 @@ export default {
   },
   computed: {
     attrsDueDate() {
-      const minDate = this.studyRequestMinDueDate;
+      const minDate = this.minDueDate;
       return {
         disabledDates: { start: null, end: minDate },
         minDate,
@@ -186,6 +187,21 @@ export default {
           value: dueDate,
         });
       },
+    },
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit('input', value);
+      },
+    },
+    minDueDate() {
+      const { now, studyRequest } = this;
+      if (studyRequest.priority === 'URGENT') {
+        return now;
+      }
+      return now.plus({ months: 2 });
     },
     priority: {
       get() {
@@ -220,9 +236,7 @@ export default {
         });
       },
     },
-    ...mapGetters('requestStudy', ['studyRequestMinDueDate']),
-    ...mapState('requestStudy', ['studyRequest']),
-    ...mapState(['requestReasons']),
+    ...mapState(['now', 'requestReasons']),
   },
   watch: {
     dueDate: {
@@ -234,9 +248,6 @@ export default {
     priority() {
       this.dueDate = this.dueDateCached[this.priority];
     },
-  },
-  methods: {
-    ...mapMutations('requestStudy', ['setStudyRequestMeta']),
   },
 };
 </script>

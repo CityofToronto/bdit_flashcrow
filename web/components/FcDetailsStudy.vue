@@ -1,42 +1,33 @@
 <template>
-  <fieldset class="fc-details-study mb-m">
-    <legend class="font-size-l">
-      <span class="number-icon">{{indexHuman}}</span>
+  <v-card
+    class="mb-3 pa-3"
+    outlined>
+    <v-card-title>
       {{studyType.label}}
-    </legend>
-    <div class="mt-m px-m">
-      <div class="form-group">
-        <strong>What days of the week should the study fall on? *</strong>
-        <TdsButtonGroup
-          v-model="v.daysOfWeek.$model"
-          class="font-size-l"
-          :invalid="v.daysOfWeek.$error"
-          :name="nameDaysOfWeek"
-          :options="[
-            { label: 'Su', value: 0 },
-            { label: 'M', value: 1 },
-            { label: 'Tu', value: 2 },
-            { label: 'W', value: 3 },
-            { label: 'Th', value: 4 },
-            { label: 'F', value: 5 },
-            { label: 'Sa', value: 6 },
-          ]"
-          type="checkbox" />
-        <TdsPanel
-          v-if="v.daysOfWeek.$error"
-          variant="error">
-          <p v-if="!v.daysOfWeek.required">
-            Please select one or more days of the week.
-          </p>
-          <p v-else-if="!v.daysOfWeek.needsValidDuration">
-            Please select {{duration / 24}} consecutive days for the study,
-            or reduce the requested duration.
-          </p>
-        </TdsPanel>
-      </div>
-      <div
-        v-if="studyType.automatic"
-        class="form-group">
+    </v-card-title>
+    <v-card-text class="mt-m px-m">
+      <strong>What days of the week should the study fall on? *</strong>
+      <v-row class="pl-1">
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Su" :value="0"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="M" :value="1"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Tu" :value="2"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="W" :value="3"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Th" :value="4"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="F" :value="5"></v-checkbox>
+        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Sa" :value="6"></v-checkbox>
+      </v-row>
+      <TdsPanel
+        v-if="v.daysOfWeek.$error"
+        variant="error">
+        <p v-if="!v.daysOfWeek.required">
+          Please select one or more days of the week.
+        </p>
+        <p v-else-if="!v.daysOfWeek.needsValidDuration">
+          Please select {{duration / 24}} consecutive days for the study,
+          or reduce the requested duration.
+        </p>
+      </TdsPanel>
+      <template v-if="studyType.automatic">
         <strong>What's the duration of your study? *</strong>
         <TdsRadioGroup
           v-model="v.duration.$model"
@@ -58,10 +49,8 @@
             or reduce the requested duration.
           </p>
         </TdsPanel>
-      </div>
-      <div
-        v-else
-        class="form-group">
+      </template>
+      <template v-else>
         <strong>What type of hours should we use? *</strong>
         <TdsRadioGroup
           v-model="hours"
@@ -97,35 +86,31 @@
             </a>
           </p>
         </TdsPanel>
-      </div>
-      <div class="form-group">
-        <strong>Any additional notes you'd like to share?</strong>
-        <textarea
-          ref="notes"
-          v-model="v.notes.$model"
-          class="full-width"
-          :class="{
-            invalid: v.notes.$error,
-          }"
-          :name="nameNotes"
-          rows="4"></textarea>
-        <TdsPanel
-          v-if="v.notes.$error"
-          variant="error">
-          <p>
-            If you have selected Other hours above, please provide additional
-            notes to explain your requirements.
-          </p>
-        </TdsPanel>
-      </div>
-    </div>
-  </fieldset>
+      </template>
+      <strong>Any additional notes you'd like to share?</strong>
+      <v-textarea
+        v-model="v.notes.$model"
+        ref="notes"
+        :class="{
+          invalid: v.notes.$error,
+        }"
+        counter
+        filled
+        no-resize
+        rows="4"></v-textarea>
+      <TdsPanel
+        v-if="v.notes.$error"
+        variant="error">
+        <p>
+          If you have selected Other hours above, please provide additional
+          notes to explain your requirements.
+        </p>
+      </TdsPanel>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
-
-import TdsButtonGroup from '@/web/components/tds/TdsButtonGroup.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
@@ -133,13 +118,12 @@ import { CountHours, COUNT_TYPES } from '@/lib/Constants';
 export default {
   name: 'FcDetailsStudy',
   components: {
-    TdsButtonGroup,
     TdsPanel,
     TdsRadioGroup,
   },
   props: {
-    index: Number,
     v: Object,
+    value: Object,
   },
   data() {
     return {
@@ -147,101 +131,18 @@ export default {
     };
   },
   computed: {
-    dateRange: {
+    internalValue: {
       get() {
-        return this.study.dateRange;
+        return this.value;
       },
-      set(dateRange) {
-        this.setStudyMeta({
-          i: this.index,
-          key: 'dateRange',
-          value: dateRange,
-        });
+      set(value) {
+        this.$emit('input', value);
       },
-    },
-    daysOfWeek: {
-      get() {
-        return this.study.daysOfWeek;
-      },
-      set(daysOfWeek) {
-        this.setStudyMeta({
-          i: this.index,
-          key: 'daysOfWeek',
-          value: daysOfWeek,
-        });
-        this.v.duration.$touch();
-      },
-    },
-    duration: {
-      get() {
-        return this.study.duration;
-      },
-      set(duration) {
-        this.setStudyMeta({
-          i: this.index,
-          key: 'duration',
-          value: duration,
-        });
-        this.v.daysOfWeek.$touch();
-      },
-    },
-    hours: {
-      get() {
-        return this.study.hours;
-      },
-      set(hours) {
-        this.setStudyMeta({
-          i: this.index,
-          key: 'hours',
-          value: hours,
-        });
-        this.v.notes.$touch();
-      },
-    },
-    indexHuman() {
-      return this.index + 1;
-    },
-    nameDateRange() {
-      return `dateRange_${this.indexHuman}`;
-    },
-    nameDaysOfWeek() {
-      return `daysOfWeek_${this.indexHuman}`;
-    },
-    nameDuration() {
-      return `duration_${this.indexHuman}`;
-    },
-    nameHours() {
-      return `hours_${this.indexHuman}`;
-    },
-    nameNotes() {
-      return `notes_${this.indexHuman}`;
-    },
-    notes: {
-      get() {
-        return this.study.notes;
-      },
-      set(notes) {
-        this.setStudyMeta({
-          i: this.index,
-          key: 'notes',
-          value: notes,
-        });
-      },
-    },
-    priority() {
-      return this.studyRequest.priority;
-    },
-    study() {
-      return this.studyRequest.studies[this.index];
     },
     studyType() {
-      const { studyType } = this.study;
+      const { studyType } = this.internalValue;
       return COUNT_TYPES.find(({ value }) => value === studyType);
     },
-    ...mapState('requestStudy', ['studyRequest']),
-  },
-  methods: {
-    ...mapMutations('requestStudy', ['setStudyMeta']),
   },
 };
 </script>

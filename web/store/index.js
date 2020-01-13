@@ -19,23 +19,6 @@ const clearToastDebounced = debounce((commit) => {
   commit('clearToast');
 }, TIMEOUT_TOAST);
 
-// TODO: DRY with requestStudy module
-function studyRequestEstimatedDeliveryDate(now, studyRequest) {
-  if (studyRequest === null) {
-    return null;
-  }
-  const { dueDate, priority } = studyRequest;
-  if (priority === 'URGENT') {
-    return dueDate;
-  }
-  const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-  const twoMonthsOut = now.plus({ months: 2 });
-  if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-    return twoMonthsOut;
-  }
-  return oneWeekBeforeDueDate;
-}
-
 export default new Vuex.Store({
   modules: {
     requestStudy,
@@ -142,12 +125,7 @@ export default new Vuex.Store({
     },
     // STUDY REQUESTS
     async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
-      const { now } = state;
-      const estimatedDeliveryDate = studyRequestEstimatedDeliveryDate(now, studyRequest);
-      const data = {
-        ...studyRequest,
-        estimatedDeliveryDate,
-      };
+      const data = studyRequest;
       const update = data.id !== undefined;
       if (update && isSupervisor) {
         data.isSupervisor = true;

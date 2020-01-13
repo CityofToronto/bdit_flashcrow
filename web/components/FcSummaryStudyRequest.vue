@@ -74,7 +74,7 @@
           variant="info">
           <p>
             Standard times to request counts are 2-3 months.
-            Estimated Delivery Date: {{studyRequestEstimatedDeliveryDate | date}}
+            Estimated Delivery Date: {{studyRequest.estimatedDeliveryDate | date}}
           </p>
         </TdsPanel>
         <TdsPanel
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapState } from 'vuex';
 
 import { RequestStatus } from '@/lib/Constants';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
@@ -154,7 +154,6 @@ export default {
     serviceRequestId() {
       return this.studyRequest.serviceRequestId;
     },
-    ...mapGetters('requestStudy', ['studyRequestEstimatedDeliveryDate']),
     ...mapState(['requestReasons']),
   },
 };
