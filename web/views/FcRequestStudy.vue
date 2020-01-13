@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex fill-height flex-column">
+  <div class="fc-request-study d-flex fill-height flex-column">
     <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
       <v-btn
         icon
@@ -8,43 +8,46 @@
       </v-btn>
       <v-toolbar-title>New Study Request</v-toolbar-title>
     </v-toolbar>
-    <div class="flex-grow-1 flex-shrink-0 pa-3">
-      <FcDetailsStudyRequest
-        v-model="studyRequest"
-        :v="$v.studyRequest" />
-      <FcDetailsStudy
-          v-for="(_, i) in studyRequest.studies"
-          :key="i"
-          v-model="studyRequest.studies[i]"
-          :v="$v.studyRequest.studies.$each[i]" />
-      <v-menu>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            v-on="on"
-            block>
-            <v-icon left>mdi-plus</v-icon>Add Study
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="{ label, value, warning } in studyTypesWithWarnings"
-            :key="value"
-            @click="onAddStudy(value)">
-            <v-list-item-title>
-              <v-icon v-if="warning !== null">mdi-alert</v-icon> {{label}}
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-btn
-        block
-        class="mt-6"
-        color="primary"
-        @click="onFinish">
-        {{linkFinish.label}}
-      </v-btn>
-    </div>
+    <section class="flex-grow-1 flex-shrink-0">
+      <div class="fill-height pa-3 overflow-y-auto">
+        <FcDetailsStudyRequest
+          v-model="studyRequest"
+          :v="$v.studyRequest" />
+        <FcDetailsStudy
+            v-for="(_, i) in studyRequest.studies"
+            :key="i"
+            v-model="studyRequest.studies[i]"
+            :v="$v.studyRequest.studies.$each[i]"
+            @remove-study="onRemoveStudy(i)" />
+        <v-menu>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-bind="attrs"
+              v-on="on"
+              block>
+              <v-icon left>mdi-plus</v-icon>Add Study
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="{ label, value, warning } in studyTypesWithWarnings"
+              :key="value"
+              @click="onAddStudy(value)">
+              <v-list-item-title>
+                <v-icon v-if="warning !== null">mdi-alert</v-icon> {{label}}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn
+          block
+          class="mt-6"
+          color="primary"
+          @click="onFinish">
+          {{linkFinish.label}}
+        </v-btn>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -220,3 +223,12 @@ export default {
   },
 };
 </script>
+
+<style lang="postcss">
+.fc-request-study {
+  max-height: 100vh;
+  & > section {
+    max-height: calc(100vh - 48px);
+  }
+}
+</style>

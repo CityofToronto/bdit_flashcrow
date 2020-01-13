@@ -107,6 +107,13 @@
         </p>
       </TdsPanel>
     </v-card-text>
+    <v-card-actions>
+      <v-btn
+        text
+        @click="$emit('remove-study')">
+        Delete
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
