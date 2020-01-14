@@ -1,12 +1,13 @@
 <template>
   <v-radio-group
     v-model="internalValue"
+    :error-messages="errorMessages"
+    :messages="messages"
     row>
     <v-radio
       v-for="{ label, sublabel, value } in options"
       :key="value"
       :label="label"
-      :name="name"
       :value="value"></v-radio>
   </v-radio-group>
 </template>
@@ -15,11 +16,12 @@
 export default {
   name: 'TdsRadioGroup',
   props: {
+    errorMessages: Array,
     invalid: {
       type: Boolean,
       default: false,
     },
-    name: String,
+    messages: Array,
     options: {
       type: Array,
       default() { return []; },

@@ -5,34 +5,30 @@
     <v-card-title>
       {{studyType.label}}
     </v-card-title>
-    <v-card-text class="mt-m px-m">
-      <strong>What days of the week should the study fall on? *</strong>
-      <v-row class="pl-1">
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Su" :value="0"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="M" :value="1"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Tu" :value="2"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="W" :value="3"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Th" :value="4"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="F" :value="5"></v-checkbox>
-        <v-checkbox v-model="v.daysOfWeek.$model" class="mx-2" label="Sa" :value="6"></v-checkbox>
-      </v-row>
-      <TdsPanel
-        v-if="v.daysOfWeek.$error"
-        variant="error">
-        <p v-if="!v.daysOfWeek.required">
-          Please select one or more days of the week.
-        </p>
-        <p v-else-if="!v.daysOfWeek.needsValidDuration">
-          Please select {{duration / 24}} consecutive days for the study,
-          or reduce the requested duration.
-        </p>
-      </TdsPanel>
-      <template v-if="studyType.automatic">
+    <v-card-text>
+      <div class="mb-4">
+        <strong>What days of the week should the study fall on? *</strong>
+        <v-row class="pl-1">
+          <v-checkbox
+            v-for="(label, i) in DAYS_OF_WEEK"
+            :key="i"
+            v-model="v.daysOfWeek.$model"
+            class="mx-2"
+            :error-messages="errorMessagesDaysOfWeek"
+            hide-details
+            :label="label"
+            :value="i"></v-checkbox>
+        </v-row>
+        <v-messages
+          class="mt-1"
+          :color="errorMessagesDaysOfWeek.length === 0 ? 'default' : 'error'"
+          :value="errorMessagesDaysOfWeek"></v-messages>
+      </div>
+      <div v-if="studyType.automatic" class="mb-4">
         <strong>What's the duration of your study? *</strong>
         <TdsRadioGroup
           v-model="v.duration.$model"
-          :invalid="v.duration.$error"
-          :name="nameDuration"
+          :error-messages="errorMessagesDuration"
           :options="[
             { label: '1 day', sublabel: '24 hours', value: 24 },
             { label: '2 days', sublabel: '48 hours', value: 48 },
@@ -41,71 +37,28 @@
             { label: '5 days', sublabel: '120 hours', value: 120 },
             { label: '1 week', sublabel: '168 hours', value: 168 },
           ]" />
-        <TdsPanel
-          v-if="v.duration.$error"
-          variant="error">
-          <p>
-            Please select {{duration / 24}} consecutive days for the study,
-            or reduce the requested duration.
-          </p>
-        </TdsPanel>
-      </template>
-      <template v-else>
+      </div>
+      <div v-else class="mb-4">
         <strong>What type of hours should we use? *</strong>
         <TdsRadioGroup
-          v-model="hours"
+          v-model="internalValue.hours"
           class="mb-m"
-          :name="nameHours"
+          :messages="messagesHours"
           :options="[
             { label: 'School', value: 'SCHOOL' },
             { label: 'Routine', value: 'ROUTINE' },
             { label: 'Other', value: 'OTHER' },
           ]" />
-        <TdsPanel
-          v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
-          icon="clock"
-          variant="info">
-          <p>
-            <small>
-              <span
-                v-for="([start, end], i) in CountHours[hours]"
-                :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
-            </small>
-          </p>
-        </TdsPanel>
-        <TdsPanel
-          v-else-if="hours === 'OTHER'"
-          icon="clock"
-          variant="warning">
-          <p>
-            Please specify your desired schedule in
-            <a
-              href="#"
-              @click.prevent="$refs.notes.focus()">
-              additional notes.
-            </a>
-          </p>
-        </TdsPanel>
-      </template>
+      </div>
       <strong>Any additional notes you'd like to share?</strong>
       <v-textarea
         v-model="v.notes.$model"
         ref="notes"
-        :class="{
-          invalid: v.notes.$error,
-        }"
-        counter
+        :error-messages="errorMessagesNotes"
         filled
         no-resize
-        rows="4"></v-textarea>
-      <TdsPanel
-        v-if="v.notes.$error"
-        variant="error">
-        <p>
-          If you have selected Other hours above, please provide additional
-          notes to explain your requirements.
-        </p>
-      </TdsPanel>
+        rows="4"
+        @blur="v.notes.$touch()"></v-textarea>
     </v-card-text>
     <v-card-actions>
       <v-btn
@@ -118,14 +71,17 @@
 </template>
 
 <script>
-import TdsPanel from '@/web/components/tds/TdsPanel.vue';
-import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 import { CountHours, COUNT_TYPES } from '@/lib/Constants';
+import {
+  STUDY_OTHER_HOURS_REQUIRES_NOTES,
+  STUDY_REQUIRES_DAYS_OF_WEEK,
+} from '@/lib/i18n/Strings';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 
 export default {
   name: 'FcDetailsStudy',
   components: {
-    TdsPanel,
     TdsRadioGroup,
   },
   props: {
@@ -133,8 +89,9 @@ export default {
     value: Object,
   },
   data() {
+    const { DAYS_OF_WEEK } = TimeFormatters;
     return {
-      CountHours,
+      DAYS_OF_WEEK,
     };
   },
   computed: {
@@ -145,6 +102,50 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+    errorMessagesDaysOfWeek() {
+      const errors = [];
+      if (!this.v.daysOfWeek.$dirty) {
+        return errors;
+      }
+      if (!this.v.daysOfWeek.required) {
+        errors.push(STUDY_REQUIRES_DAYS_OF_WEEK.text);
+      }
+      return errors;
+    },
+    errorMessagesDuration() {
+      const errors = [];
+      if (!this.v.duration.$dirty) {
+        return errors;
+      }
+      const { duration } = this.internalValue;
+      if (!this.v.duration.needsValidDaysOfWeek) {
+        const days = duration / 24;
+        const msg = `Please select ${days} consecutive days or reduce study duration.`;
+        errors.push(msg);
+      }
+      return errors;
+    },
+    errorMessagesNotes() {
+      const errors = [];
+      if (!this.v.notes.$dirty) {
+        return errors;
+      }
+      if (!this.v.notes.requiredIfOtherHours) {
+        errors.push(STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
+      }
+      return errors;
+    },
+    messagesHours() {
+      const { hours } = this.internalValue;
+      if (hours !== 'SCHOOL' && hours !== 'ROUTINE') {
+        return [];
+      }
+      const countHoursParts = CountHours[hours].map(
+        ([start, end]) => `${start}\u2013${end}`,
+      );
+      const countHoursMessage = countHoursParts.join(', ');
+      return [countHoursMessage];
     },
     studyType() {
       const { studyType } = this.internalValue;
