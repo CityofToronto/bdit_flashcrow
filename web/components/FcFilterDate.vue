@@ -1,23 +1,15 @@
 <template>
-  <TdsButtonDropdown
-    class="fc-filter-date"
-    :class="'font-size-' + size">
+  <TdsButtonDropdown class="fc-filter-date font-size-l">
     <template v-slot:title>
       <span>{{title}}</span>
     </template>
     <template v-slot:dropdown>
-      <DatePicker
+      <FcDatePicker
         v-model="internalValue"
-        class="fc-filter-date"
-        :disabled-dates="{start: tomorrow, end: null}"
-        is-expanded
-        is-inline
-        :max-date="now"
-        :min-date="minDate"
-        mode="range"
-        placeholder="Filter by date"
-        :size="size">
-      </DatePicker>
+        :max="now"
+        :min="minDate"
+        mode="range">
+      </FcDatePicker>
     </template>
   </TdsButtonDropdown>
 </template>
@@ -25,7 +17,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import DatePicker from '@/web/components/DatePicker.vue';
+import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import TdsButtonDropdown from '@/web/components/tds/TdsButtonDropdown.vue';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -33,11 +25,10 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 export default {
   name: 'FcFilterDate',
   components: {
-    DatePicker,
+    FcDatePicker,
     TdsButtonDropdown,
   },
   props: {
-    size: String,
     value: Object,
   },
   data() {
@@ -58,7 +49,7 @@ export default {
       if (this.internalValue === null) {
         return 'Dates';
       }
-      const { start, end } = this.internalValue;
+      const [start, end] = this.internalValue;
       const strStart = TimeFormatters.formatYearMonth(start);
       const strEnd = TimeFormatters.formatYearMonth(end);
       if (strStart === strEnd) {

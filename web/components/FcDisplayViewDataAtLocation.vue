@@ -103,7 +103,7 @@ export default {
         let studiesOfType = this.studies
           .filter(s => s.studyType === type.value);
         if (date !== null) {
-          const { start, end } = date;
+          const [start, end] = date;
           countsOfType = countsOfType
             .filter(c => start <= c.date && c.date <= end);
           /*
