@@ -1,36 +1,37 @@
 <template>
-  <div class="fc-display-view-data-at-location">
-    <div class="flex-container-column">
-      <header>
-        <h1 class="my-l">View Data</h1>
-        <div class="bar-actions-bulk flex-container-row p-l mb-l">
-          <v-checkbox
-            v-model="selectionAll"
-            :indeterminate="selectionIndeterminate"
-            name="selectAll"></v-checkbox>
-          <div class="py-s">
+  <div class="fc-display-view-data-at-location d-flex fill-height flex-column">
+    <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
+      <v-btn
+        icon
+        @click="$router.go(-1)">
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+      <v-toolbar-title>View Data</v-toolbar-title>
+    </v-toolbar>
+    <section class="flex-grow-1 flex-shrink-0">
+      <v-progress-linear
+        v-if="loadingLocationData"
+        indeterminate />
+      <div v-else class="fill-height pa-3 overflow-y-auto">
+        <div>
+          <div class="bar-actions-bulk flex-container-row pa-3 mb-4">
+            <v-checkbox
+              v-model="selectionAll"
+              :indeterminate="selectionIndeterminate"
+              name="selectAll"></v-checkbox>
+            <v-spacer></v-spacer>
             <v-btn
               @click="onActionBulk('request-study')">
               <v-icon left>mdi-plus</v-icon> Request Study
             </v-btn>
           </div>
-          <div class="flex-fill"></div>
-          <FcFiltersViewDataAtLocation
-            v-model="filter"
-            class="py-s" />
         </div>
-      </header>
-      <div
-        v-if="loadingLocationData"
-        class="location-data-loading-spinner m-l">
-        <TdsLoadingSpinner />
+        <FcCardTableCounts
+          v-model="selection"
+          :items-counts="itemsCounts"
+          @action-item="onActionItem" />
       </div>
-      <FcCardTableCounts
-        v-else
-        v-model="selection"
-        :items-counts="itemsCounts"
-        @action-item="onActionItem" />
-    </div>
+    </section>
   </div>
 </template>
 
@@ -56,8 +57,6 @@ import {
   getStudiesByCentreline,
 } from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
-import FcFiltersViewDataAtLocation from '@/web/components/FcFiltersViewDataAtLocation.vue';
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 function idIsCount(id) {
   return Number.isInteger(id);
@@ -71,8 +70,6 @@ export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     FcCardTableCounts,
-    FcFiltersViewDataAtLocation,
-    TdsLoadingSpinner,
   },
   data() {
     const itemsCountsActive = {};
@@ -81,11 +78,6 @@ export default {
     });
     return {
       counts: [],
-      filter: {
-        countTypes: [...COUNT_TYPES.keys()],
-        date: null,
-        dayOfWeek: [...Array(7).keys()],
-      },
       itemsCountsActive,
       loadingLocationData: true,
       selection: [],
@@ -94,7 +86,7 @@ export default {
   },
   computed: {
     itemsCounts() {
-      const { countTypes, date, dayOfWeek } = this.filter;
+      const countTypes = [...COUNT_TYPES.keys()];
       return countTypes.map((i) => {
         const type = COUNT_TYPES[i];
         const activeIndex = this.itemsCountsActive[type.value];
@@ -102,24 +94,8 @@ export default {
           .filter(c => c.type.value === type.value);
         let studiesOfType = this.studies
           .filter(s => s.studyType === type.value);
-        if (date !== null) {
-          const [start, end] = date;
-          countsOfType = countsOfType
-            .filter(c => start <= c.date && c.date <= end);
-          /*
-           * TODO: determine if we should instead filter by estimated date here (e.g. from
-           * the study request).
-           */
-          studiesOfType = studiesOfType
-            .filter(c => start <= c.createdAt && c.createdAt <= end);
-        }
-        countsOfType = countsOfType
-          .filter(c => dayOfWeek.includes(c.date.weekday));
-        studiesOfType = studiesOfType
-          .filter(({ daysOfWeek }) => daysOfWeek.some(d => dayOfWeek.includes(d)));
 
-        const expandable = countsOfType.length > 0;
-
+        const expandable = false;
         if (countsOfType.length === 0 && studiesOfType.length === 0) {
           const noExistingCount = {
             id: type.value,
@@ -251,14 +227,6 @@ export default {
         }
       }
     },
-    studyTypesRelevantToLocation: {
-      handler() {
-        const studyTypesIndices = this.studyTypesRelevantToLocation
-          .map(value => COUNT_TYPES.findIndex(({ value: typeValue }) => typeValue === value));
-        this.filter.countTypes = studyTypesIndices;
-      },
-      immediate: true,
-    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -371,11 +339,9 @@ export default {
 
 <style lang="postcss">
 .fc-display-view-data-at-location {
-  max-height: 100%;
-  overflow: auto;
-  padding: var(--space-m) var(--space-l);
-  header > h1 {
-    font-size: 3rem;
+  max-height: 100vh;
+  & > section {
+    max-height: calc(100vh - 48px);
   }
   .bar-actions-bulk {
     align-items: center;
