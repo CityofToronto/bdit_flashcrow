@@ -3,7 +3,6 @@ import Router from 'vue-router';
 
 import store from '@/web/store';
 import {
-  // REQUEST_STUDY_REQUIRES_LOCATION,
   ROUTE_NOT_LOGGED_IN,
 } from '@/lib/i18n/Strings';
 
@@ -67,25 +66,6 @@ const router = new Router({
         name: 'requestStudyNew',
         meta: { title: 'New Request' },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudy.vue'),
-        /*
-        beforeEnter(to, from, next) {
-          const { location, requestStudy: { studyRequest } } = store.state;
-          if (location === null) {
-            store.dispatch('setToast', REQUEST_STUDY_REQUIRES_LOCATION);
-            next({ name: 'viewData' });
-          } else {
-            if (
-              studyRequest === null
-              || studyRequest.id !== undefined
-              || studyRequest.centrelineType !== location.centrelineType
-              || studyRequest.centrelineId !== location.centrelineId
-            ) {
-              store.commit('requestStudy/setNewStudyRequest', []);
-            }
-            next();
-          }
-        },
-        */
       }, {
         path: '/requests/study/:id/edit',
         name: 'requestStudyEdit',

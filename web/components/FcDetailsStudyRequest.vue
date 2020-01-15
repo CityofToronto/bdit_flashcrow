@@ -119,17 +119,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-details-study-request {
-  --outer-width: 640px;
-  --inner-width: 480px;
-
-  width: var(--outer-width);
-  margin: 0 auto var(--space-xl) auto;
-  & > .form-group .inner-container {
-    width: var(--inner-width);
-    margin: 0 auto;
-  }
-}
-</style>

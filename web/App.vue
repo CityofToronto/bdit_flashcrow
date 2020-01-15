@@ -39,11 +39,6 @@
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
           :disabled="!auth.loggedIn"
-          icon="folder-plus"
-          label="Request Study"
-          :to="{ name: 'requestStudyNew' }" />
-        <FcDashboardNavItem
-          :disabled="!auth.loggedIn"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
