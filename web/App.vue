@@ -103,7 +103,6 @@ import {
 } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import 'v-calendar/lib/v-calendar.min.css';
 import '@/web/components/tds/tds.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';

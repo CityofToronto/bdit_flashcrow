@@ -19,29 +19,16 @@
     </div>
     <div
       v-if="internalValue.priority === 'URGENT'"
-      class="form-group mt-xl">
+      class="mt-4">
       <span>When do you need the data by? *</span>
-      <div class="inner-container">
-        <DatePicker
+      <div>
+        <FcDatePicker
           v-model="v.dueDate.$model"
-          :invalid="v.dueDate.$error"
-          class="mb-m"
-          mode="single"
-          name="dueDate"
-          :pane-width="480"
-          show-icon
-          size="l"
-          v-bind="attrsDueDate">
-        </DatePicker>
+          class="mt-2"
+          :min="minDueDate"
+          mode="single">
+        </FcDatePicker>
       </div>
-      <TdsPanel
-        v-if="v.dueDate.$error"
-        class="inner-container"
-        variant="error">
-        <p>
-          Please select a due date for this request.
-        </p>
-      </TdsPanel>
     </div>
     <div class="mt-4">
       <span>What reasons are there for your request? *</span>
@@ -68,43 +55,22 @@ import { mapState } from 'vuex';
 import {
   REQUEST_STUDY_REQUIRES_REASONS,
 } from '@/lib/i18n/Strings';
-import DatePicker from '@/web/components/DatePicker.vue';
 import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
-import TdsPanel from '@/web/components/tds/TdsPanel.vue';
+import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 
 export default {
   name: 'FcDetailsStudyRequest',
   components: {
-    DatePicker,
+    FcDatePicker,
     FcInputTextArray,
     TdsRadioGroup,
-    TdsPanel,
   },
   props: {
     v: Object,
     value: Object,
   },
-  data() {
-    return {
-      /*
-       * Cache the due date in each priority state, in case the user switches
-       * back and forth between priorities.
-       */
-      dueDateCached: {
-        STANDARD: null,
-        URGENT: null,
-      },
-    };
-  },
   computed: {
-    attrsDueDate() {
-      const minDate = this.minDueDate;
-      return {
-        disabledDates: { start: null, end: minDate },
-        minDate,
-      };
-    },
     errorMessagesReasons() {
       const errors = [];
       if (!this.v.reasons.$dirty) {
