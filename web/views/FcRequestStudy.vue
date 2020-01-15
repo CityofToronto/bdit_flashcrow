@@ -10,9 +10,12 @@
     </v-toolbar>
     <section class="flex-grow-1 flex-shrink-0">
       <div class="fill-height pa-3 overflow-y-auto">
+        <h2>Request Details</h2>
         <FcDetailsStudyRequest
           v-model="studyRequest"
           :v="$v.studyRequest" />
+
+        <h2>Studies</h2>
         <FcDetailsStudy
             v-for="(_, i) in studyRequest.studies"
             :key="i"
@@ -24,7 +27,8 @@
             <v-btn
               v-bind="attrs"
               v-on="on"
-              block>
+              block
+              :color="$v.studyRequest.studies.required ? '' : 'primary'">
               <v-icon left>mdi-plus</v-icon>Add Study
             </v-btn>
           </template>
@@ -39,10 +43,15 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-messages
+          class="mt-1"
+          color="error"
+          :value="errorMessagesStudies"></v-messages>
         <v-btn
           block
           class="mt-6"
           color="primary"
+          :disabled="$v.$invalid"
           @click="onFinish">
           {{linkFinish.label}}
         </v-btn>
@@ -64,6 +73,9 @@ import {
   COUNT_TYPES,
 } from '@/lib/Constants';
 import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
+import {
+  REQUEST_STUDY_REQUIRES_STUDIES,
+} from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
@@ -117,6 +129,13 @@ export default {
     return { location, studyRequest };
   },
   computed: {
+    errorMessagesStudies() {
+      const errors = [];
+      if (!this.$v.studyRequest.studies.required) {
+        errors.push(REQUEST_STUDY_REQUIRES_STUDIES.text);
+      }
+      return errors;
+    },
     estimatedDeliveryDate() {
       const { now, studyRequest } = this;
       if (studyRequest === null) {

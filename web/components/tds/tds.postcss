@@ -211,53 +211,6 @@ body {
   flex: var(--flex-fill);
 }
 
-/* TYPOGRAPHY */
-h1,
-h2,
-h3 {
-  font-weight: var(--font-weight-bold);
-  margin: var(--space-m) 0;
-}
-h1 {
-  font-size: var(--font-size-2xl);
-}
-h2 {
-  font-size: var(--font-size-xl);
-}
-h3 {
-  font-size: var(--font-size-l);
-}
-strong {
-  font-weight: var(--font-weight-bold);
-}
-p {
-  margin: var(--space-m) 0;
-}
-hr {
-  align-self: stretch;
-  margin: var(--space-s) 0;
-}
-.text-muted {
-  color: var(--disabled-dark);
-}
-.text-left {
-  text-align: left;
-}
-.text-center {
-  text-align: center;
-}
-.text-right {
-  text-align: right;
-}
-.uppercase {
-  text-transform: uppercase;
-}
-.text-ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 /* BORDERS */
 .bt {
   border-top: var(--border-default);
@@ -610,9 +563,6 @@ hr {
 }
 
 /* FORMS */
-textarea {
-  resize: none;
-}
 select {
   background-color: var(--base-lightest);
   display: block;
@@ -621,46 +571,11 @@ select {
   padding: var(--space-s) var(--space-m);
   width: 100%;
 }
-label {
-  font-weight: var(--font-weight-bold);
-  vertical-align: middle;
-  & > span {
-    display: inline-block;
-    margin-bottom: var(--space-s);
-  }
-}
 .form-group {
   margin-bottom: var(--space-l);
   & > strong {
     display: inline-block;
     margin-bottom: var(--space-m);
-  }
-}
-fieldset {
-  border: var(--border-default);
-  & > legend {
-    & > .number-icon {
-      background-color: var(--white);
-      border: var(--border-default);
-      border-radius: 50%;
-      color: var(--ink);
-      display: inline-block;
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      height: calc(var(--font-size-xl) * 1.25);
-      line-height: calc(var(--font-size-xl) - 2px);
-      margin-right: var(--space-xs);
-      padding: var(--space-xs);
-      text-align: center;
-      vertical-align: middle;
-      width: calc(var(--font-size-xl) * 1.25);
-    }
-  }
-  & > .flex-container-row {
-    padding: var(--space-m) var(--space-m) 0 var(--space-m);
-    & > .form-group {
-      padding: 0 var(--space-l);
-    }
   }
 }
 
@@ -687,25 +602,6 @@ fieldset {
   &.tds-label-error {
     background-color: var(--error-light);
     color: var(--error-darker);
-  }
-}
-
-/* TEXT BADGES */
-.tds-badge {
-  background-color: var(--base-darker);
-  border-radius: var(--space-m);
-  color: var(--base-lighter);
-  display: inline-block;
-  min-width: calc(1em + var(--space-s) * 2);
-  padding: 0 var(--space-s);
-  text-align: center;
-  &.tds-badge-primary {
-    background-color: var(--primary-darker);
-    color: var(--primary-lighter);
-  }
-  &.tds-badge-success {
-    background-color: var(--success-darker);
-    color: var(--success-lighter);
   }
 }
 

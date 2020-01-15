@@ -7,8 +7,11 @@
     <v-radio
       v-for="{ label, sublabel, value } in options"
       :key="value"
-      :label="label"
-      :value="value"></v-radio>
+      :value="value">
+      <template slot="label">
+        <span :title="sublabel">{{label}}</span>
+      </template>
+    </v-radio>
   </v-radio-group>
 </template>
 

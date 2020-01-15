@@ -21,7 +21,7 @@
         </v-row>
         <v-messages
           class="mt-1"
-          :color="errorMessagesDaysOfWeek.length === 0 ? 'default' : 'error'"
+          color="error"
           :value="errorMessagesDaysOfWeek"></v-messages>
       </div>
       <div v-if="studyType.automatic" class="mb-4">
@@ -61,6 +61,13 @@
         @blur="v.notes.$touch()"></v-textarea>
     </v-card-text>
     <v-card-actions>
+      <v-btn
+        v-if="studyType.automatic"
+        text
+        @click="$emit('set-study-location')">
+        Set Location
+      </v-btn>
+      <v-spacer></v-spacer>
       <v-btn
         text
         @click="$emit('remove-study')">
