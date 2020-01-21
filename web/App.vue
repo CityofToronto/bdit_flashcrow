@@ -11,7 +11,7 @@
         Close
       </v-btn>
     </v-snackbar>
-    <div class="hide">
+    <div class="d-none">
       <form
         v-if="auth.loggedIn"
         ref="formSignOut"
