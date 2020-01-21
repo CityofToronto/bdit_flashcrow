@@ -21,15 +21,6 @@
           <span v-else>Open Requests</span>
         </h1>
         <div class="bar-actions-bulk flex-container-row p-l mb-xl">
-          <label class="tds-checkbox mr-l">
-            <input
-              type="checkbox"
-              name="selectAll"
-              :checked="selectionAll"
-              :disabled="selectableIds.length === 0"
-              :indeterminate.prop="selectionIndeterminate"
-              @change="onChangeSelectAll" />
-          </label>
           <template v-if="selectedItems.length > 0">
             <div
               v-if="closed"
@@ -86,34 +77,17 @@
           </div>
         </div>
       </header>
-      <div
-        v-if="loadingStudyRequests"
-        class="requests-loading-spinner">
-        <TdsLoadingSpinner />
-      </div>
-      <FcCardTable
-        v-else
+      <FcDataTable
+        v-model="selectedItems"
         class="fc-card-table-requests"
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
-        :items="itemsStudyRequestsVisible"
-        ref="table"
-        :search-keys="searchKeys"
-        :sort-by="sortBy"
-        :sort-direction="sortDirection"
-        :sort-keys="sortKeys"
-        @update-items-normalized="updateItemsNormalized">
-        <template v-slot:SELECTION="{ item, isChild }">
-          <label v-if="!isChild" class="tds-checkbox">
-            <input
-              type="checkbox"
-              name="selectionItems"
-              :value="item.id"
-              v-model="selection" />
-          </label>
-        </template>
-        <template v-slot:ID="{ item }">
+        :items="items"
+        :loading="loading"
+        show-select
+        :sort-keys="sortKeys">
+        <template v-slot:item.ID="{ item }">
           <div
             class="flex-container-row"
             :title="'Show Request #' + item.id"
@@ -121,7 +95,7 @@
             <u>{{item.id}}</u>
           </div>
         </template>
-        <template v-slot:LOCATION="{ item }">
+        <template v-slot:item.LOCATION="{ item }">
           <div class="text-ellipsis">
             <span
               v-if="item.location === null"
@@ -135,7 +109,7 @@
             </span>
           </div>
         </template>
-        <template v-slot:REQUESTER="{ item }">
+        <template v-slot:item.REQUESTER="{ item }">
           <span
             v-if="item.requestedBy === null"
             class="text-muted">
@@ -145,10 +119,10 @@
             {{item.requestedBy.uniqueName}}
           </span>
         </template>
-        <template v-slot:DATE="{ item }">
+        <template v-slot:item.DATE="{ item }">
           <span>{{item.dueDate | date}}</span>
         </template>
-        <template v-slot:PRIORITY="{ item }">
+        <template v-slot:item.PRIORITY="{ item }">
           <TdsActionDropdown
             v-if="isSupervisor"
             class="font-size-m full-width"
@@ -174,7 +148,7 @@
             <span> {{item.priority}}</span>
           </span>
         </template>
-        <template v-slot:ASSIGNED_TO="{ item }">
+        <template v-slot:item.ASSIGNED_TO="{ item }">
           <TdsActionDropdown
             v-if="isSupervisor"
             class="font-size-m full-width"
@@ -197,14 +171,14 @@
           </span>
           <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
         </template>
-        <template v-slot:STATUS="{ item }">
+        <template v-slot:item.STATUS="{ item }">
           <TdsLabel
             v-bind="RequestStatus[item.status]"
             class="full-width uppercase">
             {{RequestStatus[item.status].text}}
           </TdsLabel>
         </template>
-        <template v-slot:ACTIONS="{ item }">
+        <template v-slot:item.ACTIONS="{ item }">
           <template v-if="isSupervisor">
             <button
               class="font-size-m mr-m"
@@ -229,7 +203,7 @@
               :study-request="item" />
           </div>
         </template>
-      </FcCardTable>
+      </FcDataTable>
     </section>
   </div>
 </template>
@@ -249,7 +223,6 @@ import {
   COUNT_TYPES,
   RequestStatus,
   SearchKeys,
-  SortDirection,
   SortKeys,
 } from '@/lib/Constants';
 import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
@@ -261,11 +234,10 @@ import {
   REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
 } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcCardTable from '@/web/components/FcCardTable.vue';
+import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 
 function getItemFields(item) {
   const {
@@ -367,22 +339,18 @@ function getStudyRequestsHuman(studyRequests, action) {
 export default {
   name: 'FcRequestsTrack',
   components: {
-    FcCardTable,
+    FcDataTable,
     FcSummaryStudy,
     TdsActionDropdown,
     TdsLabel,
-    TdsLoadingSpinner,
   },
   data() {
     return {
       closed: false,
-      itemsNormalized: [],
-      loadingStudyRequests: false,
+      loading: false,
       RequestStatus,
       searchKeys: SearchKeys.Requests,
-      selection: [],
-      sortBy: 'ID',
-      sortDirection: SortDirection.DESC,
+      selectedItems: [],
       sortKeys: SortKeys.Requests,
       studyRequests: [],
       studyRequestLocations: new Map(),
@@ -392,38 +360,41 @@ export default {
   computed: {
     columns() {
       const columns = [{
-        name: 'SELECTION',
+        value: 'ID',
+        text: 'ID#',
       }, {
-        name: 'ID',
-        title: 'ID#',
+        value: 'LOCATION',
+        text: 'Location',
       }, {
-        name: 'LOCATION',
-        title: 'Location',
+        value: 'REQUESTER',
+        text: 'Requester',
       }, {
-        name: 'REQUESTER',
-        title: 'Requester',
+        value: 'DATE',
+        text: 'Due Date',
       }, {
-        name: 'DATE',
-        title: 'Due Date',
+        value: 'PRIORITY',
+        text: 'Priority',
       }, {
-        name: 'PRIORITY',
-        title: 'Priority',
+        value: 'ASSIGNED_TO',
+        text: 'Assign',
       }, {
-        name: 'ASSIGNED_TO',
-        title: 'Assign',
-      }, {
-        name: 'STATUS',
-        title: 'Status',
+        value: 'STATUS',
+        text: 'Status',
       }];
       if (this.isSupervisor) {
         columns.push({
-          name: 'ACTIONS',
+          value: 'ACTIONS',
+          text: 'Actions',
         });
       }
       return columns;
     },
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
+    items() {
+      return this.itemsStudyRequests
+        .filter(({ closed }) => closed === this.closed);
     },
     itemsStudyRequests() {
       return this.studyRequests.map((studyRequest) => {
@@ -446,29 +417,10 @@ export default {
 
         return {
           ...studyRequest,
-          expandable: true,
           location,
           requestedBy,
         };
       });
-    },
-    itemsStudyRequestsVisible() {
-      return this.itemsStudyRequests
-        .filter(({ closed }) => closed === this.closed);
-    },
-    selectableIds() {
-      return this.itemsNormalized.map(({ id }) => id);
-    },
-    selectedItems() {
-      return this.selection
-        .map(id => this.itemsNormalized.find(r => r.id === id));
-    },
-    selectionAll() {
-      return this.selectableIds.length > 0
-        && this.selectableIds.every(id => this.selection.includes(id));
-    },
-    selectionIndeterminate() {
-      return this.selection.length > 0 && !this.selectionAll;
     },
     ...mapState(['auth']),
   },
@@ -596,13 +548,6 @@ export default {
         },
       });
     },
-    onChangeSelectAll() {
-      if (this.selectionAll) {
-        this.selection = [];
-      } else {
-        this.selection = this.selectableIds;
-      }
-    },
     setClosed(closed) {
       this.closed = closed;
       this.selection = [];
@@ -616,7 +561,7 @@ export default {
       return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
     async syncFromRoute() {
-      this.loadingStudyRequests = true;
+      this.loading = true;
 
       const {
         studyRequests,
@@ -627,10 +572,7 @@ export default {
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
-      this.loadingStudyRequests = false;
-    },
-    updateItemsNormalized(itemsNormalized) {
-      this.itemsNormalized = itemsNormalized;
+      this.loading = false;
     },
     ...mapActions([
       'saveStudyRequest',
@@ -672,11 +614,6 @@ export default {
   .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);
-  }
-
-  .requests-loading-spinner {
-    height: var(--space-2xl);
-    width: var(--space-2xl);
   }
 
   .fc-card-table-requests {

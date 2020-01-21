@@ -2,7 +2,7 @@
   <div class="tds-modal-container">
     <div class="tds-modal-backdrop"></div>
     <aside class="tds-modal flex-container-column shadow-2">
-      <label class="tds-modal-close" @click="$emit('modal-close')">&times;</label>
+      <label class="tds-modal-close font-weight-bold" @click="$emit('modal-close')">&times;</label>
       <header>
         <slot name="header"></slot>
       </header>
@@ -66,7 +66,6 @@ export default {
       color: var(--base);
       cursor: pointer;
       font-size: var(--font-size-2xl);
-      font-weight: var(--font-weight-bold);
       height: 30px;
       position: absolute;
       right: 0;

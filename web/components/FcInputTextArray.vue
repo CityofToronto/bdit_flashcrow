@@ -3,26 +3,24 @@
     <div
       v-for="(s, i) in internalValue"
       :key="i"
-      class="flex-container-row mb-s">
-      <input
+      class="d-flex flex-row">
+      <v-text-field
         v-model="internalValue[i]"
-        class="flex-fill font-size-l"
-        :name="name"
-        type="text" />
-      <v-btn
-        class="full-width mb-m"
-        icon
-        @click.prevent="onRemove(i)">
-        <v-icon left>mdi-minus</v-icon>
-      </v-btn>
+        :error-messages="errorMessagesEach[i]"
+        :label="'Email #' + (i + 1)">
+        <v-btn
+          v-slot:append-outer
+          @click.prevent="onRemove(i)">
+          <v-icon left>mdi-minus</v-icon> Remove
+        </v-btn>
+      </v-text-field>
     </div>
-    <div class="flex-container-row">
-      <v-btn
-        class="full-width mb-m"
-        @click.prevent="onAdd">
-        <v-icon left>mdi-plus</v-icon> Add
-      </v-btn>
-    </div>
+    <v-btn
+      block
+      class="mt-2"
+      @click.prevent="onAdd">
+      <v-icon left>mdi-plus</v-icon> Add
+    </v-btn>
   </div>
 </template>
 
@@ -30,10 +28,25 @@
 export default {
   name: 'FcInputTextArray',
   props: {
-    name: String,
+    v: Object,
     value: Array,
   },
   computed: {
+    errorMessagesEach() {
+      return this.internalValue.map((_, i) => {
+        const errors = [];
+        if (!this.v.$each[i].$dirty) {
+          return errors;
+        }
+        if (!this.v.$each[i].required) {
+          errors.push('Please enter a value.');
+        }
+        if (!this.v.$each[i].torontoInternal) {
+          errors.push('Please enter a valid @toronto.ca email address.');
+        }
+        return errors;
+      });
+    },
     internalValue: {
       get() {
         return this.value;
@@ -57,11 +70,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-input-text-array {
-  & > div {
-    align-items: center;
-  }
-}
-</style>

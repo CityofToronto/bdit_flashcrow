@@ -4,10 +4,10 @@
     no-gutters>
     <v-col
       v-show="drawerOpen"
-      cols="4">
+      cols="6">
       <router-view></router-view>
     </v-col>
-    <v-col :cols="drawerOpen ? 8 : 12">
+    <v-col :cols="drawerOpen ? 6 : 12">
       <PaneMap />
     </v-col>
   </v-row>

@@ -17,16 +17,25 @@
         <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill mt-m">
           <div class="fc-modal-show-reports-master flex-1 px-m">
             <div class="fc-modal-show-reports-filters flex-container-row">
-              <TdsActionDropdown
-                class="font-size-l mb-m"
-                :options="optionsCounts"
-                @action-selected="onSelectActiveCount">
-                <template v-slot:default>
-                  <span>
+              <v-menu>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    v-on="on">
                     {{activeCount.date | date}} ({{activeCount.date | dayOfWeek}})
-                  </span>
+                  </v-btn>
                 </template>
-              </TdsActionDropdown>
+                <v-list>
+                  <v-list-item
+                    v-for="{ label, value } in optionsCounts"
+                    :key="value"
+                    @click="onSelectActiveCount(value)">
+                    <v-list-item-title>
+                      {{label}}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
               <div class="flex-fill"></div>
               <span
                 class="full-width tds-label uppercase"
@@ -49,25 +58,17 @@
               v-else
               class="flex-fill flex-container-row">
               <div class="flex-cross-scroll">
-                <div
-                  v-for="{ label, name, disabled } in optionsReports"
-                  :key="name"
-                  class="py-m">
-                  <label class="tds-radio">
-                    <input
-                      v-model="report"
-                      type="radio"
+                  <v-radio-group
+                    v-model="report"
+                    column>
+                    <v-radio
+                      v-for="{ label, name, disabled } in optionsReports"
+                      :key="name"
                       :disabled="activeCount.status === Status.REQUEST_IN_PROGRESS || disabled"
                       name="report"
-                      :value="name" />
-                    <span
-                      :class="{
-                        'text-muted': activeCount.status === Status.REQUEST_IN_PROGRESS || disabled,
-                      }">
-                      {{label}}
-                    </span>
-                  </label>
-                </div>
+                      :label="label"
+                      :value="name"></v-radio>
+                  </v-radio-group>
                 <component
                   v-if="report === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
                   :is="'FcReportParameters' + selectedReport.suffix"
@@ -114,32 +115,33 @@
                 <section
                   v-else
                   class="mb-xl">
-                  <div
-                    v-if="activeReportLayout === null"
-                    class="report-loading-spinner">
-                    <TdsLoadingSpinner />
-                  </div>
-                  <div
-                    v-else
-                    class="fc-report-wrapper">
+                  <div class="fc-report-wrapper">
+                    <v-progress-linear
+                      v-if="activeReportLayout === null"
+                      indeterminate />
                     <FcReport v-bind="activeReportLayout" />
-                    <TdsActionDropdown
-                      class="fc-report-download font-size-l"
-                      :options="optionsDownloadFormats"
-                      @action-selected="onSelectDownloadFormat">
-                      <template v-slot:default>
-                        <template v-if="downloadLoading">
-                          <div class="download-loading-spinner">
-                            <TdsLoadingSpinner />
-                          </div>
-                          <span> Downloading&hellip;</span>
-                        </template>
-                        <span v-else>
-                          <v-icon>mdi-download</v-icon>
-                          <span> Download</span>
-                        </span>
+                    <v-menu>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          class="fc-report-download"
+                          :loading="downloadLoading">
+                          <v-icon left>mdi-download</v-icon> Download
+                        </v-btn>
                       </template>
-                    </TdsActionDropdown>
+                      <v-list>
+                        <v-list-item
+                          v-for="{ label, value, disabled } in optionsDownloadFormats"
+                          :key="value"
+                          :disabled="disabled"
+                          @click="onSelectDownloadFormat(value)">
+                          <v-list-item-title>
+                            {{label}}
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </div>
                 </section>
               </div>
@@ -158,8 +160,6 @@ import { mapGetters } from 'vuex';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
-import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
 import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import {
@@ -211,8 +211,6 @@ export default {
   components: {
     FcReport,
     FcReportParametersWarrantTrafficSignalControl,
-    TdsActionDropdown,
-    TdsLoadingSpinner,
     TdsPanel,
   },
   data() {

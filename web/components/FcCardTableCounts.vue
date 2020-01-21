@@ -8,13 +8,10 @@
     :sort-direction="sortDirection"
     :sort-keys="sortKeys">
     <template v-slot:SELECTION="{ item }">
-      <label class="tds-checkbox">
-        <input
-          type="checkbox"
-          name="selectionItems"
-          :value="item.counts[item.activeIndex].id"
-          v-model="internalValue" />
-      </label>
+      <v-checkbox
+        v-model="internalValue"
+        name="selectionItems"
+        :value="item.counts[item.activeIndex].id"></v-checkbox>
     </template>
     <template v-slot:STUDY_TYPE="{ item }">
       <div

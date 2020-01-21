@@ -40,27 +40,6 @@ test('ValidationsStudyRequest.torontoInternal()', () => {
   expect(torontoInternal('@toronto.ca')).toBeFalsy();
 });
 
-test('ValidationsStudyRequest.needsValidDuration()', () => {
-  const { studyRequest } = ValidationsStudyRequest.validations;
-  const { needsValidDuration } = studyRequest.studies.$each.daysOfWeek;
-
-  expect(needsValidDuration([], { duration: 24 })).toBeFalsy();
-  expect(needsValidDuration([2, 3, 4], { duration: 24 })).toBeTruthy();
-  expect(needsValidDuration([2, 3, 4], { duration: 48 })).toBeTruthy();
-  expect(needsValidDuration([2, 3, 4], { duration: 72 })).toBeTruthy();
-  expect(needsValidDuration([2, 3, 4], { duration: 96 })).toBeFalsy();
-  let i;
-  for (i = 0; i < 7; i += 1) {
-    expect(needsValidDuration([i], { duration: 24 })).toBeTruthy();
-    expect(needsValidDuration([i], { duration: 48 })).toBeFalsy();
-    expect(needsValidDuration([i, (i + 3) % 7], { duration: 24 })).toBeTruthy();
-    expect(needsValidDuration([i, (i + 3) % 7], { duration: 48 })).toBeFalsy();
-    expect(needsValidDuration([i, (i + 1) % 7], { duration: 24 })).toBeTruthy();
-    expect(needsValidDuration([i, (i + 1) % 7], { duration: 48 })).toBeTruthy();
-    expect(needsValidDuration([i, (i + 1) % 7], { duration: 72 })).toBeFalsy();
-  }
-});
-
 test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
   const { studyRequest } = ValidationsStudyRequest.validations;
   const { needsValidDaysOfWeek } = studyRequest.studies.$each.duration;

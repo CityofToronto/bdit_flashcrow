@@ -6,35 +6,11 @@ import {
   COUNT_TYPES,
   FeatureCode,
 } from '@/lib/Constants';
-import { debounce } from '@/lib/FunctionUtils';
 import { apiFetch } from '@/lib/api/BackendClient';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
 
 Vue.use(Vuex);
-
-const TIMEOUT_TOAST = 10000;
-
-const clearToastDebounced = debounce((commit) => {
-  commit('clearToast');
-}, TIMEOUT_TOAST);
-
-// TODO: DRY with requestStudy module
-function studyRequestEstimatedDeliveryDate(now, studyRequest) {
-  if (studyRequest === null) {
-    return null;
-  }
-  const { dueDate, priority } = studyRequest;
-  if (priority === 'URGENT') {
-    return dueDate;
-  }
-  const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-  const twoMonthsOut = now.plus({ months: 2 });
-  if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-    return twoMonthsOut;
-  }
-  return oneWeekBeforeDueDate;
-}
 
 export default new Vuex.Store({
   modules: {
@@ -50,7 +26,7 @@ export default new Vuex.Store({
     now: DateTime.local(),
     requestReasons: [],
     // TOP-LEVEL UI
-    drawerOpen: true,
+    drawerOpen: false,
     modal: null,
     toast: null,
     // LOCATION
@@ -137,17 +113,11 @@ export default new Vuex.Store({
     // TOP-LEVEL UI
     async setToast({ commit }, toast) {
       commit('setToast', toast);
-      clearToastDebounced(commit);
       return toast;
     },
     // STUDY REQUESTS
     async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
-      const { now } = state;
-      const estimatedDeliveryDate = studyRequestEstimatedDeliveryDate(now, studyRequest);
-      const data = {
-        ...studyRequest,
-        estimatedDeliveryDate,
-      };
+      const data = studyRequest;
       const update = data.id !== undefined;
       if (update && isSupervisor) {
         data.isSupervisor = true;

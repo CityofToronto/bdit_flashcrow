@@ -1,11 +1,17 @@
 <template>
   <v-app id="fc_app">
-    <FcToast
-      v-if="toast"
-      :variant="toast.variant">
-      <span>{{toast.text}}</span>
-    </FcToast>
-    <div class="hide">
+    <v-snackbar
+      v-if="hasToast"
+      v-model="hasToast"
+      :color="toast.variant">
+      {{toast.text}}
+      <v-btn
+        text
+        @click="hasToast = false">
+        Close
+      </v-btn>
+    </v-snackbar>
+    <div class="d-none">
       <form
         v-if="auth.loggedIn"
         ref="formSignOut"
@@ -38,12 +44,6 @@
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
-          :disabled="!auth.loggedIn"
-          icon="folder-plus"
-          label="Request Study"
-          :to="{ name: 'requestStudy' }" />
-        <FcDashboardNavItem
-          :disabled="!auth.loggedIn"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
@@ -103,7 +103,6 @@ import {
 } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import 'v-calendar/lib/v-calendar.min.css';
 import '@/web/components/tds/tds.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
@@ -112,8 +111,6 @@ import FcDashboardNav from '@/web/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
-import FcToast from '@/web/components/FcToast.vue';
-import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
 
 export default {
@@ -124,14 +121,22 @@ export default {
     FcDashboardNavItem,
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
-    FcToast,
-    TdsActionDropdown,
     TdsConfirmDialog,
   },
   data() {
     return { nonce: null };
   },
   computed: {
+    hasToast: {
+      get() {
+        return this.toast !== null;
+      },
+      set(hasToast) {
+        if (!hasToast) {
+          this.clearToast();
+        }
+      },
+    },
     userActions() {
       return [{ label: 'Log out', value: 'logout' }];
     },
@@ -181,7 +186,7 @@ export default {
       });
     },
     ...mapActions(['setToast', 'webInit']),
-    ...mapMutations(['clearModal', 'setModal']),
+    ...mapMutations(['clearModal', 'setModal', 'clearToast']),
   },
 };
 </script>

@@ -6,77 +6,34 @@
       @click="$emit('update-report')">
       <v-icon left>mdi-sync</v-icon> Update
     </v-btn>
-    <div class="form-group">
-      <label class="tds-checkbox">
-        <input
-          type="checkbox"
-          name="adequateTrial"
-          v-model="internalValue.adequateTrial" />
+    <v-checkbox
+      name="adequateTrial"
+      v-model="internalValue.adequateTrial">
+      <template v-slot:label>
         <span>
           <abbr
             title="Has adequate trial of less restrictive remedies failed to reduce collisions?">
             Adequate Trial?
           </abbr>
         </span>
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        <span>Collisions: Start Year</span>
-        <input
-          type="number"
-          class="font-size-l full-width"
-          min="1985"
-          name="startYear"
-          v-model.number="internalValue.startYear" />
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        <span>Collisions: Preventable, {{internalValue.startYear}}</span>
-        <input
-          type="number"
-          class="font-size-l full-width"
-          min="0"
-          name="preventablesByYear0"
-          v-model.number="internalValue.preventablesByYear[0]" />
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        <span>Collisions: Preventable, {{internalValue.startYear + 1}}</span>
-        <input
-          type="number"
-          class="font-size-l full-width"
-          min="0"
-          name="preventablesByYear1"
-          v-model.number="internalValue.preventablesByYear[1]" />
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        <span>Collisions: Preventable, {{internalValue.startYear + 2}}</span>
-        <input
-          type="number"
-          class="font-size-l full-width"
-          min="0"
-          name="preventablesByYear2"
-          v-model.number="internalValue.preventablesByYear[2]" />
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        <span>
-          Collisions: Total, {{internalValue.startYear}} &ndash; {{internalValue.startYear + 2}}
-        </span>
-        <input
-          type="number"
-          class="font-size-l full-width"
-          min="0"
-          name="collisionsTotal"
-          v-model.number="internalValue.collisionsTotal" />
-      </label>
-    </div>
+      </template>
+    </v-checkbox>
+    <v-text-field
+      v-model.number="internalValue.startYear"
+      label="Collisions: Start Year"
+      min="1985"
+      type="number"></v-text-field>
+    <v-text-field
+      v-for="i in 3"
+      :key="internalValue.startYear + i - 1"
+      v-model.number="internalValue.preventablesByYear[i - 1]"
+      min="0"
+      :name="'preventablesByYear' + (i - 1)"
+      type="number">
+      <template v-slot:label>
+        <span>Collisions: Preventable, {{internalValue.startYear + i - 1}}</span>
+      </template>
+    </v-text-field>
   </div>
 </template>
 
