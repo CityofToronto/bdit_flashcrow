@@ -111,7 +111,6 @@ import FcDashboardNav from '@/web/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
-import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
 
 export default {
@@ -122,7 +121,6 @@ export default {
     FcDashboardNavItem,
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
-    TdsActionDropdown,
     TdsConfirmDialog,
   },
   data() {
