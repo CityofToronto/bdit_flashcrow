@@ -45,6 +45,10 @@ const router = new Router({
           title: 'View Map',
         },
         component: null,
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', false);
+          next();
+        },
       }, {
         path: '/auth/adfs-callback',
         name: 'adfsCallback',

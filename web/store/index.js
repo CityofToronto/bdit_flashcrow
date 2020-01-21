@@ -26,7 +26,7 @@ export default new Vuex.Store({
     now: DateTime.local(),
     requestReasons: [],
     // TOP-LEVEL UI
-    drawerOpen: true,
+    drawerOpen: false,
     modal: null,
     toast: null,
     // LOCATION
