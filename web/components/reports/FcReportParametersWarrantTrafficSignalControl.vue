@@ -30,7 +30,7 @@
       min="0"
       :name="'preventablesByYear' + (i - 1)"
       type="number">
-      <template slot="label">
+      <template v-slot:label>
         <span>Collisions: Preventable, {{internalValue.startYear + i - 1}}</span>
       </template>
     </v-text-field>

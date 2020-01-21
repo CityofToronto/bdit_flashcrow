@@ -8,7 +8,7 @@
       v-for="{ label, sublabel, value } in options"
       :key="value"
       :value="value">
-      <template slot="label">
+      <template v-slot:label>
         <span :title="sublabel">{{label}}</span>
       </template>
     </v-radio>

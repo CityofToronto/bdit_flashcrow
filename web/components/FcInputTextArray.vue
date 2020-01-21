@@ -9,7 +9,7 @@
         :error-messages="errorMessagesEach[i]"
         :label="'Email #' + (i + 1)">
         <v-btn
-          slot="append-outer"
+          v-slot:append-outer
           @click.prevent="onRemove(i)">
           <v-icon left>mdi-minus</v-icon> Remove
         </v-btn>

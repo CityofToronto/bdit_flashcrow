@@ -6,18 +6,11 @@ import {
   COUNT_TYPES,
   FeatureCode,
 } from '@/lib/Constants';
-import { debounce } from '@/lib/FunctionUtils';
 import { apiFetch } from '@/lib/api/BackendClient';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
 
 Vue.use(Vuex);
-
-const TIMEOUT_TOAST = 10000;
-
-const clearToastDebounced = debounce((commit) => {
-  commit('clearToast');
-}, TIMEOUT_TOAST);
 
 export default new Vuex.Store({
   modules: {
@@ -120,7 +113,6 @@ export default new Vuex.Store({
     // TOP-LEVEL UI
     async setToast({ commit }, toast) {
       commit('setToast', toast);
-      clearToastDebounced(commit);
       return toast;
     },
     // STUDY REQUESTS

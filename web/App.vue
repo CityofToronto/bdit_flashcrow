@@ -1,10 +1,16 @@
 <template>
   <v-app id="fc_app">
-    <FcToast
-      v-if="toast"
-      :variant="toast.variant">
-      <span>{{toast.text}}</span>
-    </FcToast>
+    <v-snackbar
+      v-if="hasToast"
+      v-model="hasToast"
+      :color="toast.variant">
+      {{toast.text}}
+      <v-btn
+        text
+        @click="hasToast = false">
+        Close
+      </v-btn>
+    </v-snackbar>
     <div class="hide">
       <form
         v-if="auth.loggedIn"
@@ -38,7 +44,6 @@
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
-          :disabled="!auth.loggedIn"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
@@ -106,7 +111,6 @@ import FcDashboardNav from '@/web/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
-import FcToast from '@/web/components/FcToast.vue';
 import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
 import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
 
@@ -118,7 +122,6 @@ export default {
     FcDashboardNavItem,
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
-    FcToast,
     TdsActionDropdown,
     TdsConfirmDialog,
   },
@@ -126,6 +129,16 @@ export default {
     return { nonce: null };
   },
   computed: {
+    hasToast: {
+      get() {
+        return this.toast !== null;
+      },
+      set(hasToast) {
+        if (!hasToast) {
+          this.clearToast();
+        }
+      },
+    },
     userActions() {
       return [{ label: 'Log out', value: 'logout' }];
     },
@@ -175,7 +188,7 @@ export default {
       });
     },
     ...mapActions(['setToast', 'webInit']),
-    ...mapMutations(['clearModal', 'setModal']),
+    ...mapMutations(['clearModal', 'setModal', 'clearToast']),
   },
 };
 </script>
