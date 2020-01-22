@@ -3,6 +3,7 @@ import Crumb from '@hapi/crumb';
 import hapiAuthCookie from '@hapi/cookie';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
+import Joi from '@hapi/joi';
 import Scooter from '@hapi/scooter';
 import Blankie from 'blankie';
 
@@ -73,6 +74,9 @@ if (config.https !== null) {
 const server = Hapi.server(options);
 
 async function initServer() {
+  // VALIDATION
+  server.validator(Joi);
+
   // PLUGINS
   await server.register([
     /*
