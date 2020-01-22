@@ -1,7 +1,10 @@
 <template>
   <v-autocomplete
     v-model="keystring"
+    append-icon="mdi-magnify"
     cache-items
+    class="fc-search-bar-location"
+    dense
     hide-no-data
     hide-details
     :items="items"
@@ -9,7 +12,6 @@
     item-value="KEYSTRING"
     label="Search"
     :loading="loading"
-    prepend-inner-icon="mdi-map-search-outline"
     :search-input.sync="query"
     solo />
 </template>
@@ -63,3 +65,9 @@ export default {
   },
 };
 </script>
+
+<style lang="postcss">
+.fc-search-bar-location {
+  width: 392px;
+}
+</style>
