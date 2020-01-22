@@ -20,7 +20,6 @@ import UserDAO from '@/lib/db/UserDAO';
 import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
-import Joi from '@/lib/model/Joi';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
@@ -424,7 +423,7 @@ test('StudyRequestDAO', async () => {
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
   expect(persistedStudyRequest.id).not.toBeNull();
   await expect(
-    Joi.validate(persistedStudyRequest, StudyRequest.read),
+    StudyRequest.read.validateAsync(persistedStudyRequest),
   ).resolves.toEqual(persistedStudyRequest);
 
   // fetch saved study request
@@ -550,7 +549,7 @@ test('StudyRequestCommentDAO', async () => {
   );
   expect(persistedComment1.id).not.toBeNull();
   await expect(
-    Joi.validate(persistedComment1, StudyRequestComment.read),
+    StudyRequestComment.read.validateAsync(persistedComment1),
   ).resolves.toEqual(persistedComment1);
 
   // fetch saved comment

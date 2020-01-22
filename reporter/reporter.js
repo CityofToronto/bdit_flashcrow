@@ -1,6 +1,7 @@
 import Boom from '@hapi/boom';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
+import Joi from '@hapi/joi';
 
 import config from '@/lib/config/MoveConfig';
 import ReportController from '@/lib/controller/ReportController';
@@ -65,6 +66,9 @@ if (config.https !== null) {
 const server = Hapi.server(options);
 
 async function initServer() {
+  // VALIDATION
+  server.validator(Joi);
+
   // PLUGINS
   await server.register([
     /*
