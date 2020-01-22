@@ -56,8 +56,8 @@ import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
-import rootStyle from '@/lib/geo/root.json';
-import metadata from '@/lib/geo/metadata.json';
+import rootStyleLight from '@/lib/geo/theme/light/root.json';
+import metadataLight from '@/lib/geo/theme/light/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
@@ -342,7 +342,7 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(rootStyle, metadata).get();
+    const mapStyle = new GeoStyle(rootStyleLight, metadataLight).get();
     this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
