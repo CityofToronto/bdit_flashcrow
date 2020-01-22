@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-display-view-data-at-location d-flex fill-height flex-column">
+  <div class="fc-display-view-data-at-location d-flex flex-column">
     <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
       <v-btn
         icon
@@ -8,23 +8,21 @@
       </v-btn>
       <v-toolbar-title>View Data</v-toolbar-title>
     </v-toolbar>
-    <section class="flex-grow-1 flex-shrink-0">
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loadingLocationData"
         indeterminate />
-      <div v-else class="fill-height pa-3 overflow-y-auto">
-        <div>
-          <div class="bar-actions-bulk flex-container-row pa-3 mb-4">
-            <v-checkbox
-              v-model="selectionAll"
-              :indeterminate="selectionIndeterminate"
-              name="selectAll"></v-checkbox>
-            <v-spacer></v-spacer>
-            <v-btn
-              @click="onActionBulk('request-study')">
-              <v-icon left>mdi-plus</v-icon> Request Study
-            </v-btn>
-          </div>
+      <div v-else class="pa-3">
+        <div class="bar-actions-bulk d-flex pa-3 mb-4">
+          <v-checkbox
+            v-model="selectionAll"
+            :indeterminate="selectionIndeterminate"
+            name="selectAll"></v-checkbox>
+          <v-spacer></v-spacer>
+          <v-btn
+            @click="onActionBulk('request-study')">
+            <v-icon left>mdi-plus</v-icon> Request Study
+          </v-btn>
         </div>
         <FcCardTableCounts
           v-model="selection"
@@ -340,9 +338,6 @@ export default {
 <style lang="postcss">
 .fc-display-view-data-at-location {
   max-height: 100vh;
-  & > section {
-    max-height: calc(100vh - 48px);
-  }
   .bar-actions-bulk {
     align-items: center;
     background-color: var(--base-lighter);

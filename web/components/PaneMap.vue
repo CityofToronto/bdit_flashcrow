@@ -719,6 +719,9 @@ export default {
 <style lang="postcss">
 .pane-map {
   background-color: var(--white);
+  &.mapboxgl-map {
+    font: inherit;
+  }
   & > .pane-map-progress {
     position: absolute;
     top: 0;
