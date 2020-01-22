@@ -1,9 +1,10 @@
 <template>
   <div class="pane-map-popup">
     <TdsPanel
+      class="elevation-2"
       :icon="icon"
       :variant="variant">
-      <div class="font-size-m ml-l pl-m">
+      <div class="font-size-m ml-4 pl-2">
         <strong v-if="description">{{description}}</strong>
         <span v-else> name unknown</span>
       </div>
@@ -203,10 +204,8 @@ export default {
 .pane-map-popup {
   & > .tds-panel {
     border-radius: var(--space-s);
-    box-shadow: var(--shadow-2);
   }
 
-  font-family: var(--font-family);
   position: absolute;
   right: var(--space-l);
   top: var(--space-m);

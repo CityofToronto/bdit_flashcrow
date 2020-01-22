@@ -4,7 +4,7 @@
     :class="{ invalid }">
     <slot name="title"></slot>
     <v-icon>mdi-menu-down</v-icon>
-    <div class="dropdown shadow-3 text-left">
+    <div class="dropdown elevation-3 text-left">
       <slot name="dropdown"></slot>
     </div>
   </button>

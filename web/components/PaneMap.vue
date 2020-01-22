@@ -34,12 +34,12 @@
       :hover="false" />
     <div
       v-if="$route.name !== 'viewData'"
-      class="pane-drawer-toggle flex-container-row font-size-xl"
+      class="pane-drawer-toggle elevation-2 flex-container-row font-size-xl"
       :class="{
         'drawer-open': drawerOpen,
       }"
       @click="setDrawerOpen(!drawerOpen)">
-      <div class="flex-fill text-center px-s">
+      <div class="flex-fill text-center px-1">
         <v-icon v-if="drawerOpen">mdi-chevron-left</v-icon>
         <v-icon v-else>mdi-chevron-right</v-icon>
       </div>
@@ -743,7 +743,6 @@ export default {
     border: var(--border-default);
     border-left: none;
     border-radius: 0 var(--space-s) var(--space-s) 0;
-    box-shadow: var(--shadow-2);
     color: var(--ink);
     cursor: pointer;
     height: calc(var(--space-xl) * 1.5);

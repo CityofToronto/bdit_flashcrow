@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-adfs-callback d-none mt-m px-l">
+  <div class="fc-adfs-callback d-none mt-2 px-4">
     <form
       ref="form"
       id="form_fc_adfs_callback"

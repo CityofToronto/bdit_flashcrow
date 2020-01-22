@@ -4,29 +4,29 @@
       <header>
         <div class="bar-tabs flex-container-row bb">
           <button
-            class="font-size-l px-l uppercase"
+            class="font-size-l px-4 uppercase"
             :class="{
               'tab-selected': !closed
             }"
             @click="setClosed(false)">Open</button>
           <button
-            class="font-size-l px-l uppercase"
+            class="font-size-l px-4 uppercase"
             :class="{
               'tab-selected': closed
             }"
             @click="setClosed(true)">Closed</button>
         </div>
-        <h1 class="my-l">
+        <h1 class="my-4">
           <span v-if="closed">Closed Requests</span>
           <span v-else>Open Requests</span>
         </h1>
-        <div class="bar-actions-bulk flex-container-row p-l mb-xl">
+        <div class="bar-actions-bulk flex-container-row pa-4 mb-8">
           <template v-if="selectedItems.length > 0">
             <div
               v-if="closed"
-              class="py-s">
+              class="py-1">
               <button
-                class="font-size-m ml-m uppercase"
+                class="font-size-m ml-2 uppercase"
                 @click="actionReopen(selectedItems)">
                 <v-icon>mdi-door-open</v-icon>
                 <span> Reopen</span>
@@ -35,29 +35,29 @@
             <template v-else>
               <div
                 v-if="isSupervisor"
-                class="br py-s">
+                class="br py-1">
                 <button
-                  class="font-size-m mr-m uppercase"
+                  class="font-size-m mr-2 uppercase"
                   @click="actionApprove(selectedItems)">
                   <v-icon>mdi-thumb-up</v-icon>
                   <span> Approve</span>
                 </button>
                 <button
-                  class="font-size-m mr-m uppercase"
+                  class="font-size-m mr-2 uppercase"
                   @click="actionComplete(selectedItems)">
                   <v-icon>mdi-clipboard-check</v-icon>
                   <span> Complete</span>
                 </button>
               </div>
-              <div class="py-s">
+              <div class="py-1">
                 <button
-                  class="font-size-m ml-m uppercase"
+                  class="font-size-m ml-2 uppercase"
                   @click="actionDownload(selectedItems)">
                   <v-icon>mdi-download</v-icon>
                   <span> Download</span>
                 </button>
                 <button
-                  class="font-size-m ml-m uppercase"
+                  class="font-size-m ml-2 uppercase"
                   @click="actionClose(selectedItems)">
                   <v-icon>mdi-door-closed-lock</v-icon>
                   <span> Close</span>
@@ -67,7 +67,7 @@
           </template>
           <div
             v-else
-            class="py-s">
+            class="py-1">
             <button
               class="font-size-m uppercase"
               @click="actionRefresh()">
@@ -181,13 +181,13 @@
         <template v-slot:item.ACTIONS="{ item }">
           <template v-if="isSupervisor">
             <button
-              class="font-size-m mr-m"
+              class="font-size-m mr-2"
               :title="'Approve Request #' + item.id"
               @click="actionApprove([item])">
               <v-icon>mdi-thumb-up</v-icon>
             </button>
             <button
-              class="font-size-m mr-m"
+              class="font-size-m mr-2"
               :title="'Ask for Changes to Request #' + item.id"
               @click="actionReject([item])">
               <v-icon>mdi-file-undo</v-icon>
