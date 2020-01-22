@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-404 px-l">
+  <div class="fc-404 px-4">
     <h1>Page Not Found</h1>
     <p class="font-size-l">
       Click

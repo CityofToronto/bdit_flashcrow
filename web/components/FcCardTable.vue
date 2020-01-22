@@ -61,6 +61,7 @@
       </tr>
       <tbody
         :key="item.id"
+        class="elevation-3"
         :class="{
           expanded: expandable && expanded === item.id
         }">
@@ -257,7 +258,6 @@ export default {
   }
   & > tbody {
     background-color: var(--white);
-    box-shadow: var(--shadow-3);
     & > tr {
       & > td {
         padding: var(--space-l) var(--space-m);

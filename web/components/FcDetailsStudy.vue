@@ -42,7 +42,7 @@
         <strong>What type of hours should we use? *</strong>
         <TdsRadioGroup
           v-model="internalValue.hours"
-          class="mb-m"
+          class="mb-2"
           :messages="messagesHours"
           :options="[
             { label: 'School', value: 'SCHOOL' },

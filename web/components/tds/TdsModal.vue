@@ -1,7 +1,7 @@
 <template>
   <div class="tds-modal-container">
     <div class="tds-modal-backdrop"></div>
-    <aside class="tds-modal flex-container-column shadow-2">
+    <aside class="tds-modal flex-container-column elevation-2">
       <label class="tds-modal-close font-weight-bold" @click="$emit('modal-close')">&times;</label>
       <header>
         <slot name="header"></slot>
@@ -11,7 +11,7 @@
       </div>
       <footer
         v-if="$scopedSlots.footer"
-        class="mt-m">
+        class="mt-2">
         <slot name="footer"></slot>
       </footer>
     </aside>

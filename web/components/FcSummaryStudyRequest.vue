@@ -3,7 +3,7 @@
     <div
       v-if="studyRequest.id"
       class="flex-container-row">
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>Status:</p>
         <TdsLabel
           class="font-size-l uppercase"
@@ -11,65 +11,65 @@
           {{RequestStatus[studyRequest.status].text}}
         </TdsLabel>
       </div>
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>Submitted:</p>
-        <p class="font-size-l mb-xl">
+        <p class="font-size-l mb-8">
           <strong>{{studyRequest.createdAt | date}}</strong>
         </p>
       </div>
     </div>
     <div class="flex-container-row">
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>Service Request Number:</p>
-        <p class="font-size-l mb-xl">
+        <p class="font-size-l mb-8">
           <strong v-if="serviceRequestId">{{serviceRequestId}}</strong>
           <span v-else class="text-muted">N/A</span>
         </p>
       </div>
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>Due Date:</p>
-        <p class="font-size-l mb-xl">
+        <p class="font-size-l mb-8">
           <strong>{{dueDate | date}}</strong>
         </p>
       </div>
     </div>
     <div class="flex-container-row">
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>
           <span v-if="reasons.length === 1">Reason for request:</span>
           <span v-else>Reasons for request:</span>
         </p>
-        <div class="font-size-l mt-m mb-xl">
+        <div class="font-size-l mt-2 mb-8">
           <div
             v-for="(reason, i) in reasonsHuman"
             :key="i"
-            class="mb-s">
+            class="mb-1">
             <strong>{{reason}}</strong>
           </div>
         </div>
         <p>Additional emails to notify:</p>
         <p
           v-if="ccEmailsHuman.length === 0"
-          class="font-size-l mb-xl text-muted">
+          class="font-size-l mb-8 text-muted">
           None
         </p>
-        <div v-else class="font-size-l mt-m mb-xl">
+        <div v-else class="font-size-l mt-2 mb-8">
           <div
             v-for="(ccEmail, i) in ccEmailsHuman"
             :key="i"
-            class="mb-s">
+            class="mb-1">
             <strong>{{ccEmail}}</strong>
           </div>
         </div>
       </div>
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <p>Priority:</p>
         <p class="font-size-l">
           <strong>{{priorityHuman}}</strong>
         </p>
         <TdsPanel
           v-if="priority === 'STANDARD'"
-          class="mb-xl"
+          class="mb-8"
           icon="calendar-check"
           variant="info">
           <p>
@@ -79,7 +79,7 @@
         </TdsPanel>
         <TdsPanel
           v-else-if="priority === 'URGENT'"
-          class="mb-xl"
+          class="mb-8"
           variant="warning">
           <p>
             You've marked this request urgent, which will mean reshuffling the request queue.

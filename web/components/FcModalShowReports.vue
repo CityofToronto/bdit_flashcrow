@@ -8,14 +8,14 @@
         <h2>
           <span>{{activeCount.type.label}} at </span>
           <v-icon>mdi-map-marker</v-icon>
-          <span class="px-s">{{activeCount.locationDesc}}</span>
+          <span class="px-1">{{activeCount.locationDesc}}</span>
         </h2>
       </div>
     </template>
     <template v-slot:content>
       <div class="flex-container-column full-height">
-        <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill mt-m">
-          <div class="fc-modal-show-reports-master flex-1 px-m">
+        <div class="fc-modal-show-reports-master-detail flex-container-row flex-fill mt-2">
+          <div class="fc-modal-show-reports-master flex-1 px-2">
             <div class="fc-modal-show-reports-filters flex-container-row">
               <v-menu>
                 <template v-slot:activator="{ on, attrs }">
@@ -77,9 +77,9 @@
               </div>
             </div>
           </div>
-          <section class="fc-modal-show-reports-detail flex-container-column flex-3 px-m">
+          <section class="fc-modal-show-reports-detail flex-container-column flex-3 px-2">
             <div class="flex-container-row flex-fill">
-              <div class="flex-cross-scroll px-m">
+              <div class="flex-cross-scroll px-2">
                 <TdsPanel
                   v-if="activeCount.status === Status.REQUEST_IN_PROGRESS"
                   variant="info">
@@ -114,7 +114,7 @@
                 </TdsPanel>
                 <section
                   v-else
-                  class="mb-xl">
+                  class="mb-8">
                   <div class="fc-report-wrapper">
                     <v-progress-linear
                       v-if="activeReportLayout === null"

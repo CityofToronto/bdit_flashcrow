@@ -1,17 +1,17 @@
 <template>
-  <div class="fc-comments-study-request mb-l">
+  <div class="fc-comments-study-request mb-4">
     <h2>Comments</h2>
     <div class="fc-comment-new">
       <textarea
         v-model="commentText"
-        class="font-size-m full-width my-m px-l py-m"
+        class="font-size-m full-width my-2 px-4 py-2"
         :disabled="loadingCommentNew"
         placeholder="Compose message"
         rows="5"></textarea>
       <div class="fc-comment-new-submit flex-container-row">
         <div
           v-if="loadingCommentNew"
-          class="fc-comment-new-spinner mx-s my-xs">
+          class="fc-comment-new-spinner ma-1">
           <TdsLoadingSpinner />
         </div>
         <button
@@ -22,7 +22,7 @@
           Submit
         </button>
         <div
-          class="fc-comment-chars-remaining ml-m"
+          class="fc-comment-chars-remaining ml-2"
           :class="{
             invalid: charsRemaining < 0,
           }">
@@ -32,17 +32,17 @@
     </div>
     <div
       v-if="studyRequestComments.length === 0"
-      class="mt-l">
+      class="mt-4">
       <span class="font-size-l text-muted">No comments.</span>
     </div>
     <section
       v-for="comment in studyRequestComments"
       :key="comment.id"
-      class="fc-comment font-size-s mt-l">
+      class="fc-comment font-size-s mt-4">
       <hr />
-      <header class="flex-container-row font-size-s mx-l">
+      <header class="flex-container-row font-size-s mx-4">
         <div>
-          <div class="mt-m">
+          <div class="mt-2">
             <strong
               v-if="comment.userId === auth.user.id">
               {{auth.user.uniqueName}}
@@ -55,7 +55,7 @@
               Author unknown
             </span>
           </div>
-          <div class="mt-s">
+          <div class="mt-1">
             {{comment.createdAt | dateTime}}
           </div>
         </div>
@@ -66,7 +66,7 @@
           <v-icon left>mdi-delete</v-icon> Delete
         </v-btn>
       </header>
-      <div class="font-size-m mt-l mx-l">
+      <div class="font-size-m mt-4 mx-4">
         {{ comment.comment }}
       </div>
     </section>

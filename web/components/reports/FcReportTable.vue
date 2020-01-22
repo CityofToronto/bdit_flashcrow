@@ -2,11 +2,11 @@
   <div class="fc-report-table">
     <h3 v-if="title">{{title}}</h3>
     <table
-      class="my-m"
+      class="my-2"
       :class="{ 'auto-width': autoWidthTable }">
       <caption
         v-if="caption"
-        class="font-size-m my-m text-left">
+        class="font-size-m my-2 text-left">
         {{caption}}
       </caption>
       <colgroup v-if="colgroup.length > 0">

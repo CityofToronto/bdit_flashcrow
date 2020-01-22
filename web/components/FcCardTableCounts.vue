@@ -24,7 +24,7 @@
         <div class="flex-fill"></div>
         <button
           v-if="item.counts[item.activeIndex].status !== Status.NO_EXISTING_COUNT"
-          class="font-size-m ml-m uppercase">
+          class="font-size-m ml-2 uppercase">
           <v-icon>mdi-dock-window</v-icon>
           <span> Reports</span>
         </button>
@@ -65,7 +65,7 @@
       </span>
     </template>
     <template v-slot:__expanded="{ item }">
-      <div class="mb-m text-muted">
+      <div class="mb-2 text-muted">
         <span>Request # not known</span>
       </div>
       <div class="flex-container-row">

@@ -1,23 +1,23 @@
 <template>
   <div class="fc-display-request-study-view flex-container-column">
-    <div class="nav-links flex-container-row px-l pt-l pb-s text-size-l">
+    <div class="nav-links flex-container-row px-4 pt-4 pb-1 text-size-l">
       <router-link :to="linkBack">
         <v-icon>mdi-arrow-left</v-icon> Back to All
       </router-link>
     </div>
     <div class="flex-fill flex-container-column">
-      <div class="px-l">
+      <div class="px-4">
         <hr />
       </div>
       <div
         v-if="loadingStudyRequest || studyRequest === null"
-        class="request-loading-spinner ml-l mt-l">
+        class="request-loading-spinner ml-4 mt-4">
         <TdsLoadingSpinner />
       </div>
       <div
         v-else
         class="flex-fill flex-container-column">
-        <header class="flex-container-row px-l">
+        <header class="flex-container-row px-4">
           <h2>
             Request #{{studyRequest.id}}
             <span
@@ -36,7 +36,7 @@
           </v-btn>
         </header>
         <section class="flex-fill flex-container-row">
-          <div class="flex-cross-scroll px-l">
+          <div class="flex-cross-scroll px-4">
             <FcSummaryStudyRequest
               :study-request="studyRequest" />
             <FcSummaryStudy

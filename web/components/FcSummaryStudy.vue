@@ -1,13 +1,13 @@
 <template>
-  <fieldset class="fc-details-study mb-l">
+  <fieldset class="fc-details-study mb-4">
     <legend>
       <span class="number-icon">{{indexHuman}}</span>
       {{studyType.label}}
     </legend>
-    <div class="flex-container-row mb-l">
-      <div class="flex-1 px-m">
+    <div class="flex-container-row mb-4">
+      <div class="flex-1 px-2">
         <p>The study will fall on these days of the week:</p>
-        <p class="font-size-l mb-xl">
+        <p class="font-size-l mb-8">
           <strong>{{daysOfWeekHuman}}</strong>
         </p>
         <template v-if="studyType.automatic">
@@ -44,7 +44,7 @@
           </TdsPanel>
         </template>
       </div>
-      <div class="flex-1 px-m">
+      <div class="flex-1 px-2">
         <template v-if="notes">
           <p>Additional notes:</p>
           <p class="font-size-l">
