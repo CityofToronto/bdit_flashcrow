@@ -27,7 +27,7 @@
     "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest --runInBand"
   },
   "dependencies": {
-    "@hapi/boom": "^8.0.1",
+    "@hapi/boom": "^9.0.0",
     "@hapi/cookie": "^11.0.0",
     "@hapi/crumb": "^8.0.0",
     "@hapi/good": "^9.0.0",
