@@ -37,12 +37,14 @@
       app
       mini-variant
       permanent>
-      <v-list-item>
+      <template v-slot:prepend>
         <v-img
           alt="MOVE Logo"
           src="/logo_square.png"></v-img>
-      </v-list-item>
-      <v-list dense>
+      </template>
+      <v-list
+        class="d-flex fill-height flex-column justify-center"
+        dense>
         <FcDashboardNavItem
           icon="map"
           label="View Map"

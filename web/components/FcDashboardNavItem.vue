@@ -1,5 +1,7 @@
 <template>
   <v-list-item
+    active-class="fc-nav-item-active"
+    class="fc-nav-item"
     :disabled="disabled"
     link
     :to="to">
@@ -16,7 +18,10 @@
 export default {
   name: 'FcDashboardNavItem',
   props: {
-    disabled: Boolean,
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     icon: String,
     label: String,
     to: Object,
@@ -32,3 +37,13 @@ export default {
   },
 };
 </script>
+
+<style lang="postcss">
+.fc-nav-item {
+  flex: 0;
+  &.fc-nav-item-active {
+    border-right: 3px solid #3088d6;
+  }
+}
+
+</style>
