@@ -20,7 +20,6 @@ import UserDAO from '@/lib/db/UserDAO';
 import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
-import Joi from '@/lib/model/Joi';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
@@ -423,9 +422,8 @@ test('StudyRequestDAO', async () => {
   // save study request
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
   expect(persistedStudyRequest.id).not.toBeNull();
-  await expect(
-    Joi.validate(persistedStudyRequest, StudyRequest.read),
-  ).resolves.toEqual(persistedStudyRequest);
+  const { value } = StudyRequest.read.validate(persistedStudyRequest);
+  expect(value).toEqual(persistedStudyRequest);
 
   // fetch saved study request
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
@@ -549,9 +547,8 @@ test('StudyRequestCommentDAO', async () => {
     transientComment1,
   );
   expect(persistedComment1.id).not.toBeNull();
-  await expect(
-    Joi.validate(persistedComment1, StudyRequestComment.read),
-  ).resolves.toEqual(persistedComment1);
+  const { value } = StudyRequestComment.read.validate(persistedComment1);
+  expect(value).toEqual(persistedComment1);
 
   // fetch saved comment
   let fetchedComment1 = await StudyRequestCommentDAO.byId(persistedComment1.id);
