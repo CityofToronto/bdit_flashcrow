@@ -13,10 +13,8 @@
     <div class="pane-map-mode">
       <v-btn
         class="mr-2"
-        fab
-        small
         @click="openGoogleMaps">
-        <v-icon>mdi-google-maps</v-icon>
+        Street View
       </v-btn>
       <v-btn
         @click="toggleSatellite">
@@ -387,6 +385,10 @@ export default {
       });
       this.updateCoordinates();
       this.map.addControl(
+        new mapboxgl.ScaleControl({ maxWidth: 192, unit: 'metric' }),
+        'bottom-right',
+      );
+      this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
@@ -735,9 +737,9 @@ export default {
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
-    bottom: var(--space-m);
+    bottom: 35px;
     position: absolute;
-    right: var(--space-l);
+    right: 54px;
     z-index: var(--z-index-controls);
   }
   & > .pane-drawer-toggle {
@@ -759,8 +761,13 @@ export default {
     }
   }
   .mapboxgl-ctrl-bottom-right {
-    bottom: 38px;
+    bottom: -2px;
     right: 6px;
+    & > .mapboxgl-ctrl-scale {
+      background-color: transparent;
+      border-color: #404040;
+      color: #404040;
+    }
   }
 }
 </style>

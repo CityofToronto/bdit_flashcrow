@@ -37,8 +37,12 @@
       app
       mini-variant
       permanent>
-      <FcDashboardBrand />
-      <FcDashboardNav>
+      <v-list-item>
+        <v-img
+          alt="MOVE Logo"
+          src="/logo_square.png"></v-img>
+      </v-list-item>
+      <v-list dense>
         <FcDashboardNavItem
           icon="map"
           label="View Map"
@@ -47,7 +51,7 @@
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
-      </FcDashboardNav>
+      </v-list>
       <template v-slot:append>
         <div class="text-center pb-2">
           <v-menu
@@ -55,8 +59,9 @@
             top>
             <template v-slot:activator="{ on }">
               <v-btn
-                color="primary"
-                v-on="on">
+                v-on="on"
+                icon
+                small>
                 <span class="text-ellipsis">
                   <v-icon>mdi-account</v-icon>
                 </span>
@@ -73,10 +78,11 @@
           </v-menu>
           <v-btn
             v-else
-            color="primary"
             :disabled="$route.name === 'adfsCallback'"
             fab
+            icon
             :loading="$route.name === 'adfsCallback'"
+            small
             @click="onClickLogin">
             <v-icon>mdi-login</v-icon>
           </v-btn>
@@ -106,8 +112,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/components/tds/tds.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
-import FcDashboardBrand from '@/web/components/FcDashboardBrand.vue';
-import FcDashboardNav from '@/web/components/FcDashboardNav.vue';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
 import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
 import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
@@ -116,8 +120,6 @@ import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
 export default {
   name: 'App',
   components: {
-    FcDashboardBrand,
-    FcDashboardNav,
     FcDashboardNavItem,
     FcModalShowReports,
     FcModalRequestStudyConfirmation,
