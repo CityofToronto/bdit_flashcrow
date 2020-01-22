@@ -422,8 +422,9 @@ test('StudyRequestDAO', async () => {
   // save study request
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
   expect(persistedStudyRequest.id).not.toBeNull();
-  const { value } = StudyRequest.read.validate(persistedStudyRequest);
-  expect(value).toEqual(persistedStudyRequest);
+  await expect(
+    StudyRequest.read.validateAsync(persistedStudyRequest),
+  ).resolves.toEqual(persistedStudyRequest);
 
   // fetch saved study request
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
@@ -547,8 +548,9 @@ test('StudyRequestCommentDAO', async () => {
     transientComment1,
   );
   expect(persistedComment1.id).not.toBeNull();
-  const { value } = StudyRequestComment.read.validate(persistedComment1);
-  expect(value).toEqual(persistedComment1);
+  await expect(
+    StudyRequestComment.read.validateAsync(persistedComment1),
+  ).resolves.toEqual(persistedComment1);
 
   // fetch saved comment
   let fetchedComment1 = await StudyRequestCommentDAO.byId(persistedComment1.id);
