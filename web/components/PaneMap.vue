@@ -8,8 +8,10 @@
         indeterminate />
     </div>
     <SearchBarLocation
-      class="search-bar-location"
-      v-model="internalLocation" />
+      v-if="!drawerOpen"
+      :class="{
+        'drawer-open': $route.name !== 'viewData',
+      }" />
     <div class="pane-map-mode">
       <v-btn
         class="mr-2"
@@ -32,14 +34,14 @@
       :hover="false" />
     <div
       v-if="$route.name !== 'viewData'"
-      class="pane-drawer-toggle elevation-2 flex-container-row font-size-xl"
+      class="pane-drawer-toggle d-flex elevation-3 font-size-xl"
       :class="{
         'drawer-open': drawerOpen,
       }"
       @click="setDrawerOpen(!drawerOpen)">
-      <div class="flex-fill text-center px-1">
-        <v-icon v-if="drawerOpen">mdi-chevron-left</v-icon>
-        <v-icon v-else>mdi-chevron-right</v-icon>
+      <div class="flex-fill text-center">
+        <v-icon v-if="drawerOpen">mdi-menu-left</v-icon>
+        <v-icon v-else>mdi-menu-right</v-icon>
       </div>
     </div>
   </div>
@@ -325,14 +327,6 @@ export default {
     };
   },
   computed: {
-    internalLocation: {
-      get() {
-        return this.location;
-      },
-      set(location) {
-        this.setLocation(location);
-      },
-    },
     ...mapState(['drawerOpen', 'location']),
   },
   created() {
@@ -730,11 +724,14 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .search-bar-location {
+  & > .fc-search-bar-location {
     top: var(--space-m);
     position: absolute;
     left: var(--space-l);
     z-index: var(--z-index-controls);
+    &.drawer-open {
+      left: calc(var(--space-m) + 24px);
+    }
   }
   & > .pane-map-mode {
     bottom: 35px;
@@ -744,16 +741,15 @@ export default {
   }
   & > .pane-drawer-toggle {
     align-items: center;
-    background-color: var(--base-lightest);
-    border: var(--border-default);
+    background-color: var(--white);
     border-left: none;
     border-radius: 0 var(--space-s) var(--space-s) 0;
     color: var(--ink);
     cursor: pointer;
-    height: calc(var(--space-xl) * 1.5);
+    height: 38px;
     left: 0;
     position: absolute;
-    top: calc(50% - var(--space-l) * 1.5);
+    top: var(--space-m);
     z-index: var(--z-index-controls);
 
     &:hover {

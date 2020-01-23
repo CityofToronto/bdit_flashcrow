@@ -5,8 +5,11 @@ import {
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
+  RoadIntersectionType,
+  RoadSegmentType,
 } from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
+import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
 
@@ -45,7 +48,24 @@ export default new Vuex.Store({
       }
       return uniqueName.slice(i + 1);
     },
-    // ACTIVE STUDY REQUEST
+    // LOCATION
+    locationFeatureType(state) {
+      const { location } = state;
+      if (location === null) {
+        return null;
+      }
+      const { centrelineType, featureCode = null } = location;
+      if (featureCode === null) {
+        return null;
+      }
+      if (centrelineType === CentrelineType.SEGMENT) {
+        return RoadSegmentType.enumValueOf(featureCode, 'featureCode');
+      }
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        return RoadIntersectionType.enumValueOf(featureCode, 'featureCode');
+      }
+      throw new InvalidCentrelineTypeError(centrelineType);
+    },
     studyTypesRelevantToLocation(state) {
       const countTypesAll = COUNT_TYPES.map(({ value }) => value);
       if (state.location === null) {

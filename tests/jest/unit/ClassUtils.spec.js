@@ -58,4 +58,13 @@ test('Enum enumValues', () => {
   colorValues.forEach((name) => {
     expect(Color.enumValueOf(name)).toBe(Color[name]);
   });
+  expect(CssColor.enumValueOf('#f00', 'hex')).toBe(CssColor.RED);
+  expect(CssColor.enumValueOf('#0f0', 'hex')).toBe(CssColor.GREEN);
+  expect(CssColor.enumValueOf('#00f', 'hex')).toBe(CssColor.BLUE);
+  expect(() => {
+    CssColor.enumValueOf('#caf', 'hex');
+  }).toThrow();
+  expect(() => {
+    CssColor.enumValueOf(1729, 'invalidProp');
+  }).toThrow();
 });

@@ -1,28 +1,17 @@
 <template>
   <div class="fc-display-view-data-at-location d-flex flex-column">
-    <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
-      <v-btn
-        icon
-        @click="$router.go(-1)">
-        <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
-      <v-toolbar-title>View Data</v-toolbar-title>
-    </v-toolbar>
+    <div class="flex-grow-0 flex-shrink-0 px-3 py-2">
+      <SearchBarLocation />
+    </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loadingLocationData"
         indeterminate />
       <div v-else class="pa-3">
-        <div class="bar-actions-bulk d-flex pa-3 mb-4">
-          <v-checkbox
-            v-model="selectionAll"
-            :indeterminate="selectionIndeterminate"
-            name="selectAll"></v-checkbox>
-          <v-spacer></v-spacer>
-          <v-btn
-            @click="onActionBulk('request-study')">
-            <v-icon left>mdi-plus</v-icon> Request Study
-          </v-btn>
+        <h1 class="display-2">{{location.description}}</h1>
+        <div>
+          <span v-if="locationFeatureType === null">&nbsp;</span>
+          <span v-else>{{locationFeatureType.description}}</span>
         </div>
         <FcCardTableCounts
           v-model="selection"
@@ -55,19 +44,13 @@ import {
   getStudiesByCentreline,
 } from '@/lib/api/WebApi';
 import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
-
-function idIsCount(id) {
-  return Number.isInteger(id);
-}
-
-function idIsStudy(id) {
-  return id.indexOf('STUDY:') === 0;
-}
+import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     FcCardTableCounts,
+    SearchBarLocation,
   },
   data() {
     const itemsCountsActive = {};
@@ -136,58 +119,11 @@ export default {
         };
       });
     },
-    selectableIds() {
-      const selectableIds = [];
-      this.itemsCounts.forEach(({ counts }) => {
-        counts.forEach(({ id }) => {
-          selectableIds.push(id);
-        });
-      });
-      return selectableIds;
-    },
-    selectedCounts() {
-      return this.selection
-        .filter(idIsCount)
-        .map(id => this.counts.find(c => c.id === id));
-    },
-    selectedTypes() {
-      const studyTypes = new Set(this.selection.map((id) => {
-        if (idIsCount(id)) {
-          const count = this.counts.find(c => c.id);
-          return count.type.value;
-        }
-        if (idIsStudy(id)) {
-          const studyId = parseInt(id.slice('STUDY:'.length), 10);
-          const study = this.studies.find(s => s.id === studyId);
-          return study.studyType;
-        }
-        return id;
-      }));
-      return Array.from(studyTypes);
-    },
-    selectionAll: {
-      get() {
-        return this.selectableIds.length > 0
-          && this.selectableIds.every(id => this.selection.includes(id));
-      },
-      set(selectionAll) {
-        if (selectionAll) {
-          this.selection = this.selectableIds;
-        } else {
-          this.selection = [];
-        }
-      },
-    },
-    selectionIndeterminate() {
-      return this.selection.length > 0 && !this.selectionAll;
-    },
-    ...mapGetters([
-      'studyTypesRelevantToLocation',
-    ]),
     ...mapState([
       'auth',
       'location',
     ]),
+    ...mapGetters(['locationFeatureType']),
   },
   watch: {
     location(location, locationPrev) {
