@@ -19,11 +19,15 @@
           <v-row class="mt-5">
             <v-col cols="2">
               <div>KSI</div>
-              <div class="headline">2</div>
+              <div class="headline">
+                {{collisionSummary.ksi}}
+              </div>
             </v-col>
             <v-col cols="2">
               <div>Collisions</div>
-              <div class="headline">6</div>
+              <div class="headline">
+                {{collisionSummary.total}}
+              </div>
             </v-col>
           </v-row>
           <div class="mt-5">
@@ -100,6 +104,7 @@ import {
   Status,
 } from '@/lib/Constants';
 import {
+  getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
   getLocationByFeature,
 } from '@/lib/api/WebApi';
@@ -117,6 +122,10 @@ export default {
   },
   data() {
     return {
+      collisionSummary: {
+        total: 0,
+        ksi: 0,
+      },
       countSummary: [],
       loadingLocationData: true,
     };
@@ -232,10 +241,16 @@ export default {
     async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
       const tasks = [
+        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }),
         getCountsByCentrelineSummary({ centrelineId, centrelineType }),
         getLocationByFeature({ centrelineId, centrelineType }),
       ];
-      const [countSummary, location] = await Promise.all(tasks);
+      const [
+        collisionSummary,
+        countSummary,
+        location,
+      ] = await Promise.all(tasks);
+      this.collisionSummary = collisionSummary;
       this.countSummary = countSummary;
 
       if (this.location === null

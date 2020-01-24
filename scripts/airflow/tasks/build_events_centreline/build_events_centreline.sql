@@ -3,8 +3,8 @@ CREATE TABLE collisions_new.events_centreline AS (
 	SELECT
 		e.collision_id,
 	  CASE
-	    WHEN ei.int_id IS NOT NULL THEN 1
-	    WHEN es.geo_id IS NOT NULL THEN 2
+	    WHEN ei.int_id IS NOT NULL THEN 2
+	    WHEN es.geo_id IS NOT NULL THEN 1
 	  END as centreline_type,
 	  COALESCE(ei.int_id, es.geo_id) AS centreline_id
 	FROM collisions_new.events e

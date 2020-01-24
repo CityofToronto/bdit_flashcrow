@@ -48,14 +48,14 @@ export default {
   },
   computed: {
     headers() {
-      return this.columns.map(({ text, value }) => {
+      return this.columns.map(({ value, ...options }) => {
         const sort = this.sortKeys[value] || null;
         const sortable = sort !== null;
         return {
           sort,
           sortable,
-          text,
           value,
+          ...options,
         };
       });
     },

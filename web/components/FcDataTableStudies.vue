@@ -58,6 +58,7 @@ export default {
       value: 'HOURS',
       text: 'Hours',
     }, {
+      align: 'end',
       value: 'VIEW_REPORT',
       text: ' ',
     }];
