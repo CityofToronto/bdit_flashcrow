@@ -33,33 +33,26 @@
           <div class="mt-5">
             <div>Nearby</div>
             <div class="mt-1">
-              <v-chip
-                class="mr-2"
-                color="teal lighten-4"
-                text-color="teal darken-1">
-                <v-avatar left>
-                  <v-icon>mdi-school</v-icon>
-                </v-avatar>
-                School Zone
-              </v-chip>
-              <v-chip
-                class="mr-2"
-                color="purple lighten-4"
-                text-color="purple darken-1">
-                <v-avatar left>
-                  <v-icon>mdi-hospital-box</v-icon>
-                </v-avatar>
-                Hospital
-              </v-chip>
-              <v-chip
-                class="mr-2"
-                color="brown lighten-4"
-                text-color="brown darken-1">
-                <v-avatar left>
-                  <v-icon>mdi-fire</v-icon>
-                </v-avatar>
-                Fire station
-              </v-chip>
+              <div v-if="!hasPoisNearby">
+                No points of interest nearby
+              </div>
+              <v-tooltip
+                v-if="poiSummary.school !== null"
+                bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip
+                    v-on="on"
+                    class="mr-2"
+                    color="teal lighten-4"
+                    text-color="teal darken-1">
+                    <v-avatar left>
+                      <v-icon>mdi-school</v-icon>
+                    </v-avatar>
+                    School Zone
+                  </v-chip>
+                </template>
+                <span>{{Math.round(poiSummary.school.geom_dist)}} m</span>
+              </v-tooltip>
             </div>
           </div>
         </header>
@@ -107,6 +100,7 @@ import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
   getLocationByFeature,
+  getPoiByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
@@ -128,6 +122,9 @@ export default {
       },
       countSummary: [],
       loadingLocationData: true,
+      poiSummary: {
+        school: null,
+      },
     };
   },
   computed: {
@@ -142,6 +139,10 @@ export default {
       );
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
       return `${nStr} (${mostRecentDateStr})`;
+    },
+    hasPoisNearby() {
+      // TODO: expand this to multiple types of POIs
+      return this.poiSummary.school !== null;
     },
     numCountsText() {
       const n = ArrayStats.sum(
@@ -244,14 +245,17 @@ export default {
         getCollisionsByCentrelineSummary({ centrelineId, centrelineType }),
         getCountsByCentrelineSummary({ centrelineId, centrelineType }),
         getLocationByFeature({ centrelineId, centrelineType }),
+        getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
       const [
         collisionSummary,
         countSummary,
         location,
+        poiSummary,
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.countSummary = countSummary;
+      this.poiSummary = poiSummary;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
