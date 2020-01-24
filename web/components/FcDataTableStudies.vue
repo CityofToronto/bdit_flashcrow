@@ -4,7 +4,7 @@
     :columns="columns"
     disable-sort
     :loading="loading"
-    :items="counts">
+    :items="countSummary">
     <template v-slot:item.STUDY_REPORTS="{ item }">
       <span>{{item.count.type.label}}</span>
     </template>
@@ -41,7 +41,7 @@ export default {
     FcDataTable,
   },
   props: {
-    counts: Array,
+    countSummary: Array,
     loading: {
       type: Boolean,
       default: false,

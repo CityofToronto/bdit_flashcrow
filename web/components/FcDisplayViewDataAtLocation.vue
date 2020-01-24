@@ -14,9 +14,7 @@
             <span v-if="locationFeatureType !== null">
               {{locationFeatureType.description}} &#x2022;
             </span>
-            <span>
-              2 Studies (9/12/18)
-            </span>
+            <span>{{countSummaryHeaderText}}</span>
           </div>
           <v-row class="mt-5">
             <v-col cols="2">
@@ -66,7 +64,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="subtitle-1">Studies</h2>
-              <div class="caption pl-3">19 total</div>
+              <div class="caption pl-3">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <v-btn
                 color="primary"
@@ -82,7 +80,7 @@
             </div>
           </header>
           <FcDataTableStudies
-            :counts="counts"
+            :count-summary="countSummary"
             @action-item="onActionItem" />
         </section>
       </template>
@@ -105,6 +103,9 @@ import {
   getCountsByCentrelineSummary,
   getLocationByFeature,
 } from '@/lib/api/WebApi';
+import ArrayStats from '@/lib/math/ArrayStats';
+import DateTime from '@/lib/time/DateTime';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 
@@ -116,11 +117,29 @@ export default {
   },
   data() {
     return {
-      counts: [],
+      countSummary: [],
       loadingLocationData: true,
     };
   },
   computed: {
+    countSummaryHeaderText() {
+      const n = this.countSummary.length;
+      if (n === 0) {
+        return 'No Studies';
+      }
+      const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
+      const mostRecentDate = DateTime.max(
+        ...this.countSummary.map(({ count: { date } }) => date),
+      );
+      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
+      return `${nStr} (${mostRecentDateStr})`;
+    },
+    numCountsText() {
+      const n = ArrayStats.sum(
+        this.countSummary.map(({ numPerCategory }) => numPerCategory),
+      );
+      return `${n} total`;
+    },
     ...mapState([
       'auth',
       'location',
@@ -216,8 +235,8 @@ export default {
         getCountsByCentrelineSummary({ centrelineId, centrelineType }),
         getLocationByFeature({ centrelineId, centrelineType }),
       ];
-      const [counts, location] = await Promise.all(tasks);
-      this.counts = counts;
+      const [countSummary, location] = await Promise.all(tasks);
+      this.countSummary = countSummary;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
