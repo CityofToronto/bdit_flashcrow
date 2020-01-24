@@ -40,8 +40,10 @@
       }"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="flex-fill text-center">
-        <v-icon v-if="drawerOpen">mdi-menu-left</v-icon>
-        <v-icon v-else>mdi-menu-right</v-icon>
+        <v-icon
+          small>
+          {{drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right'}}
+        </v-icon>
       </div>
     </div>
   </div>
@@ -725,12 +727,12 @@ export default {
     z-index: var(--z-index-controls);
   }
   & > .fc-search-bar-location {
-    top: var(--space-m);
+    top: 20px;
     position: absolute;
     left: var(--space-l);
     z-index: var(--z-index-controls);
     &.drawer-open {
-      left: calc(var(--space-m) + 24px);
+      left: 20px;
     }
   }
   & > .pane-map-mode {
@@ -740,7 +742,6 @@ export default {
     z-index: var(--z-index-controls);
   }
   & > .pane-drawer-toggle {
-    align-items: center;
     background-color: var(--white);
     border-left: none;
     border-radius: 0 var(--space-s) var(--space-s) 0;
@@ -749,7 +750,7 @@ export default {
     height: 38px;
     left: 0;
     position: absolute;
-    top: var(--space-m);
+    top: 20px;
     z-index: var(--z-index-controls);
 
     &:hover {

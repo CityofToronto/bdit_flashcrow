@@ -38,9 +38,11 @@
       mini-variant
       permanent>
       <template v-slot:prepend>
-        <v-img
-          alt="MOVE Logo"
-          src="/logo_square.png"></v-img>
+        <div class="pa-2 pt-3">
+          <v-img
+            alt="MOVE Logo"
+            src="/logo_square.png"></v-img>
+        </div>
       </template>
       <v-list
         class="d-flex fill-height flex-column justify-center"

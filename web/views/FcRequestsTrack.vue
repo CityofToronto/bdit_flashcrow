@@ -79,7 +79,7 @@
       </header>
       <FcDataTable
         v-model="selectedItems"
-        class="fc-card-table-requests"
+        class="fc-data-table-requests"
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
@@ -616,40 +616,9 @@ export default {
     background-color: var(--base-lighter);
   }
 
-  .fc-card-table-requests {
+  .fc-data-table-requests {
     .priority-urgent {
       color: var(--error);
-    }
-    & > colgroup {
-      & > .col-ID {
-        width: calc(var(--space-2xl) * 1.5);
-      }
-      & > .col-DATE,
-      & > .col-PRIORITY,
-      & > .col-ASSIGNED_TO {
-        width: var(--space-3xl);
-      }
-    }
-    &.supervisor > colgroup {
-      & > .col-PRIORITY {
-        width: calc(var(--space-3xl) + var(--space-l));
-      }
-      & > .col-ASSIGNED_TO {
-        width: calc(var(--space-3xl) + var(--space-xl));
-      }
-    }
-    .cell-ID > div {
-      align-items: center;
-      cursor: pointer;
-      & > u {
-        color: var(--primary-vivid);
-      }
-    }
-    .cell-ACTIONS > div {
-      display: inline-block;
-    }
-    .cell-LOCATION > div {
-      width: var(--space-4xl);
     }
   }
 }

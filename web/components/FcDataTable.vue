@@ -5,6 +5,7 @@
     disable-filtering
     disable-pagination
     :headers="headers"
+    hide-default-footer
     item-key="id"
     :items="items"
     :loading="loading"
