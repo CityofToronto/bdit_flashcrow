@@ -4,6 +4,7 @@
     no-gutters>
     <v-col
       v-show="drawerOpen"
+      class="elevation-3"
       cols="6">
       <router-view></router-view>
     </v-col>

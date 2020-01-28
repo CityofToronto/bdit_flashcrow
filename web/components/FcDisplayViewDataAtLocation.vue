@@ -65,13 +65,15 @@
               <v-spacer></v-spacer>
               <v-btn
                 color="primary"
-                outlined>
+                outlined
+                @click="actionEditFilters">
                 <v-icon left>mdi-filter-variant</v-icon>
                 Filter
               </v-btn>
               <v-btn
                 class="ml-3"
-                color="primary">
+                color="primary"
+                @click="actionRequestStudy">
                 Request Study
               </v-btn>
             </div>
@@ -213,6 +215,12 @@ export default {
       });
   },
   methods: {
+    actionEditFilters() {
+      this.setDialog({
+        component: 'FcDialogStudyFilters',
+        data: {},
+      });
+    },
     actionRequestStudy() {
       this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
@@ -225,7 +233,7 @@ export default {
       if (count.status === Status.NO_EXISTING_COUNT) {
         return;
       }
-      this.setModal({
+      this.setDialog({
         component: 'FcModalShowReports',
         data: item,
       });
@@ -241,8 +249,16 @@ export default {
     },
     async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;
+      const now = DateTime.local();
+      const collisionsDateRange = {
+        start: now.minus({ years: 1 }),
+        end: now,
+      };
+      const collisionsFilters = {
+        ...collisionsDateRange,
+      };
       const tasks = [
-        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }),
+        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
         getCountsByCentrelineSummary({ centrelineId, centrelineType }),
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
@@ -271,9 +287,9 @@ export default {
       'setNewStudyRequest',
     ]),
     ...mapMutations([
+      'setDialog',
       'setFilterCountTypes',
       'setLocation',
-      'setModal',
     ]),
   },
 };

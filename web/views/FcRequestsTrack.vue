@@ -538,7 +538,7 @@ export default {
       }
       const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
       const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
-      this.setModal({
+      this.setDialog({
         component: 'TdsConfirmDialog',
         data: {
           title,
@@ -579,7 +579,7 @@ export default {
       'setToast',
     ]),
     ...mapMutations([
-      'setModal',
+      'setDialog',
     ]),
   },
 };

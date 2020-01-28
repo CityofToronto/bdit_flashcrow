@@ -135,7 +135,6 @@ function routeMetaKey(to, key, defaultValue) {
  * otherwise the route to redirect to
  */
 async function beforeEachCheckAuth(to) {
-  const { path } = to;
   try {
     const { loggedIn } = await store.dispatch('checkAuth');
     /*
@@ -145,31 +144,29 @@ async function beforeEachCheckAuth(to) {
      */
     const metaAuth = routeMetaKey(to, 'auth', true);
     if (metaAuth === true) {
-      // this route requires an authenticated user
-      if (loggedIn) {
-        return false;
+      if (!loggedIn) {
+        store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
       }
-      store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
-      return { name: 'home', query: { path, login: true } };
+      return loggedIn;
     }
     if (metaAuth === false) {
       // this route requires an unauthenticated user
-      return loggedIn ? { name: 'home' } : false;
+      return !loggedIn;
     }
-    return false;
+    return true;
   } catch (err) {
     // prevent infinite redirect to login
-    return { name: 'home' };
+    return false;
   }
 }
 
 router.beforeEach((to, from, next) => {
   beforeEachCheckAuth(to)
-    .then((redirect) => {
-      if (redirect) {
-        next(redirect);
-      } else {
+    .then((meetsAuthRequirements) => {
+      if (meetsAuthRequirements) {
         next();
+      } else {
+        next(false);
       }
     });
 });

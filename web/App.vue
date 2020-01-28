@@ -1,16 +1,5 @@
 <template>
   <v-app id="fc_app">
-    <v-snackbar
-      v-if="hasToast"
-      v-model="hasToast"
-      :color="toast.variant">
-      {{toast.text}}
-      <v-btn
-        text
-        @click="hasToast = false">
-        Close
-      </v-btn>
-    </v-snackbar>
     <div class="d-none">
       <form
         v-if="auth.loggedIn"
@@ -29,10 +18,22 @@
       </form>
     </div>
     <component
-      v-if="modal !== null"
-      :is="modal.component"
-      :data="modal.data"
-      @modal-close="clearModal"></component>
+      v-if="hasDialog"
+      v-model="hasDialog"
+      :is="dialog.component"
+      v-bind="dialog.data"
+      @dialog-close="hasDialog = false"></component>
+    <v-snackbar
+      v-if="hasToast"
+      v-model="hasToast"
+      :color="toast.variant">
+      {{toast.text}}
+      <v-btn
+        text
+        @click="hasToast = false">
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-navigation-drawer
       app
       mini-variant
@@ -117,22 +118,30 @@ import '@/web/components/tds/tds.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
-import FcModalShowReports from '@/web/components/FcModalShowReports.vue';
-import FcModalRequestStudyConfirmation from '@/web/components/FcModalRequestStudyConfirmation.vue';
-import TdsConfirmDialog from '@/web/components/tds/TdsConfirmDialog.vue';
+import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcModalRequestStudyConfirmation from '@/web/components/dialogs/FcModalRequestStudyConfirmation.vue';
 
 export default {
   name: 'App',
   components: {
     FcDashboardNavItem,
-    FcModalShowReports,
+    FcDialogStudyFilters,
     FcModalRequestStudyConfirmation,
-    TdsConfirmDialog,
   },
   data() {
     return { nonce: null };
   },
   computed: {
+    hasDialog: {
+      get() {
+        return this.dialog !== null;
+      },
+      set(hasDialog) {
+        if (!hasDialog) {
+          this.clearDialog();
+        }
+      },
+    },
     hasToast: {
       get() {
         return this.toast !== null;
@@ -148,8 +157,8 @@ export default {
     },
     ...mapState([
       'auth',
+      'dialog',
       'location',
-      'modal',
       'toast',
     ]),
     ...mapGetters(['username']),
@@ -192,7 +201,7 @@ export default {
       });
     },
     ...mapActions(['setToast', 'webInit']),
-    ...mapMutations(['clearModal', 'setModal', 'clearToast']),
+    ...mapMutations(['clearDialog', 'clearToast']),
   },
 };
 </script>

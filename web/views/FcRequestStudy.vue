@@ -294,7 +294,7 @@ export default {
         warning.data.action = () => {
           this.studyRequest.studies.push(item);
         };
-        this.setModal(warning);
+        this.setDialog(warning);
       }
     },
     onFinish() {
@@ -326,7 +326,7 @@ export default {
         this.$router.push({ name: 'viewData' });
       }
     },
-    ...mapMutations(['setLocation', 'setModal']),
+    ...mapMutations(['setDialog', 'setLocation']),
     ...mapActions(['saveStudyRequest', 'setToast']),
   },
 };
