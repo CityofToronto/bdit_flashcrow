@@ -86,7 +86,7 @@
           </header>
           <FcDataTableStudies
             :count-summary="countSummary"
-            @action-item="onActionItem" />
+            @show-reports="actionShowReports" />
         </section>
       </template>
     </section>
@@ -101,9 +101,6 @@ import {
   mapState,
 } from 'vuex';
 
-import {
-  Status,
-} from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
@@ -234,27 +231,17 @@ export default {
       this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
     },
-    actionShowReports(item) {
-      if (item.counts.length === 0) {
-        return;
-      }
-      const [count] = item.counts;
-      if (count.status === Status.NO_EXISTING_COUNT) {
-        return;
-      }
-      this.setDialog({
-        component: 'FcModalShowReports',
-        data: item,
+    actionShowReports({ category: { value: categoryValue } }) {
+      const { centrelineId, centrelineType } = this.$route.params;
+      const params = {
+        centrelineId,
+        centrelineType,
+        categoryValue,
+      };
+      this.$router.push({
+        name: 'viewReportsAtLocation',
+        params,
       });
-    },
-    onActionItem({ type, item, options }) {
-      const actionOptions = options || {};
-      if (type === 'request-study') {
-        const studyType = item.id;
-        this.actionRequestStudy([studyType], actionOptions);
-      } else if (type === 'show-reports') {
-        this.actionShowReports(item, actionOptions);
-      }
     },
     async syncFromRoute(to) {
       const { centrelineId, centrelineType } = to.params;

@@ -70,6 +70,14 @@ const router = new Router({
           next();
         },
       }, {
+        path: '/view/location/:centrelineType/:centrelineId/reports/:categoryValue',
+        name: 'viewReportsAtLocation',
+        meta: {
+          auth: { mode: 'try' },
+          title: 'View Reports',
+        },
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReportsAtLocation.vue'),
+      }, {
         path: '/requests/study/new',
         name: 'requestStudyNew',
         meta: { title: 'New Request' },

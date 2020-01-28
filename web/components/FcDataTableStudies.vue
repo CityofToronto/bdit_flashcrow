@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     onActionShowReports(item) {
-      this.$emit('action-item', { type: 'show-reports', item });
+      this.$emit('show-reports', item);
     },
   },
 };
