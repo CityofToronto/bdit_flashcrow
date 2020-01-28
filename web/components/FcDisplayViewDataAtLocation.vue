@@ -63,13 +63,19 @@
               <h2 class="subtitle-1">Studies</h2>
               <div class="caption pl-3">{{numCountsText}}</div>
               <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                outlined
-                @click="actionEditFilters">
-                <v-icon left>mdi-filter-variant</v-icon>
-                Filter
-              </v-btn>
+              <FcDialogStudyFilters
+                v-model="showFilters"
+                v-bind="filters">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    color="primary"
+                    outlined
+                    v-on="on">
+                    <v-icon left>mdi-filter-variant</v-icon>
+                    Filter
+                  </v-btn>
+                </template>
+              </FcDialogStudyFilters>
               <v-btn
                 class="ml-3"
                 color="primary"
@@ -109,11 +115,13 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
+import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
   components: {
     FcDataTableStudies,
+    FcDialogStudyFilters,
     SearchBarLocation,
   },
   data() {
@@ -123,10 +131,17 @@ export default {
         ksi: 0,
       },
       countSummary: [],
+      filters: {
+        datesFrom: -1,
+        daysOfWeek: [],
+        hours: [],
+        studyTypes: [],
+      },
       loadingLocationData: true,
       poiSummary: {
         school: null,
       },
+      showFilters: false,
     };
   },
   computed: {
@@ -215,12 +230,6 @@ export default {
       });
   },
   methods: {
-    actionEditFilters() {
-      this.setDialog({
-        component: 'FcDialogStudyFilters',
-        data: {},
-      });
-    },
     actionRequestStudy() {
       this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
@@ -298,13 +307,5 @@ export default {
 <style lang="postcss">
 .fc-display-view-data-at-location {
   max-height: 100vh;
-  .bar-actions-bulk {
-    align-items: center;
-    background-color: var(--base-lighter);
-  }
-  .location-data-loading-spinner {
-    height: var(--space-2xl);
-    width: var(--space-2xl);
-  }
 }
 </style>

@@ -225,7 +225,7 @@ import {
   SearchKeys,
   SortKeys,
 } from '@/lib/Constants';
-import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
+import { formatDuration } from '@/lib/StringFormatters';
 import {
   getUserStudyRequests,
   putStudyRequests,
@@ -311,6 +311,7 @@ function getItemRows(item) {
   });
 }
 
+/*
 function getStudyRequestsToast(studyRequests, action) {
   if (studyRequests.length > 0) {
     return null;
@@ -335,6 +336,7 @@ function getStudyRequestsHuman(studyRequests, action) {
 
   return { title, prompt };
 }
+*/
 
 export default {
   name: 'FcRequestsTrack',
@@ -523,7 +525,8 @@ export default {
       }
       this.$router.push(route);
     },
-    actionUpdateStudyRequests(studyRequests, actionName, updates) {
+    actionUpdateStudyRequests(/* studyRequests, actionName, updates */) {
+      /*
       const toast = getStudyRequestsToast(studyRequests, actionName);
       if (toast !== null) {
         this.setToast(toast);
@@ -547,6 +550,7 @@ export default {
           textOk: actionUppercase,
         },
       });
+      */
     },
     setClosed(closed) {
       this.closed = closed;

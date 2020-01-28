@@ -160,7 +160,6 @@ import { mapGetters } from 'vuex';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
-import TdsMixinModal from '@/web/components/tds/TdsMixinModal';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 import {
   ReportBlock,
@@ -207,7 +206,6 @@ const OPTIONS_REPORTS = {
 
 export default {
   name: 'FcModalShowReports',
-  mixins: [TdsMixinModal],
   components: {
     FcReport,
     FcReportParametersWarrantTrafficSignalControl,

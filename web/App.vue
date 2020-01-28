@@ -17,12 +17,6 @@
         <input type="hidden" name="nonce" :value="nonce" />
       </form>
     </div>
-    <component
-      v-if="hasDialog"
-      v-model="hasDialog"
-      :is="dialog.component"
-      v-bind="dialog.data"
-      @dialog-close="hasDialog = false"></component>
     <v-snackbar
       v-if="hasToast"
       v-model="hasToast"
@@ -118,30 +112,16 @@ import '@/web/components/tds/tds.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
-import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
-import FcModalRequestStudyConfirmation from '@/web/components/dialogs/FcModalRequestStudyConfirmation.vue';
 
 export default {
   name: 'App',
   components: {
     FcDashboardNavItem,
-    FcDialogStudyFilters,
-    FcModalRequestStudyConfirmation,
   },
   data() {
     return { nonce: null };
   },
   computed: {
-    hasDialog: {
-      get() {
-        return this.dialog !== null;
-      },
-      set(hasDialog) {
-        if (!hasDialog) {
-          this.clearDialog();
-        }
-      },
-    },
     hasToast: {
       get() {
         return this.toast !== null;
@@ -157,7 +137,6 @@ export default {
     },
     ...mapState([
       'auth',
-      'dialog',
       'location',
       'toast',
     ]),
@@ -201,7 +180,7 @@ export default {
       });
     },
     ...mapActions(['setToast', 'webInit']),
-    ...mapMutations(['clearDialog', 'clearToast']),
+    ...mapMutations(['clearToast']),
   },
 };
 </script>
