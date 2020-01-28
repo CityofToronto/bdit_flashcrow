@@ -32,20 +32,6 @@
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
-    <div
-      v-if="$route.name !== 'viewData'"
-      class="pane-drawer-toggle d-flex elevation-3 font-size-xl"
-      :class="{
-        'drawer-open': drawerOpen,
-      }"
-      @click="setDrawerOpen(!drawerOpen)">
-      <div class="flex-fill text-center">
-        <v-icon
-          small>
-          {{drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right'}}
-        </v-icon>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -740,22 +726,6 @@ export default {
     position: absolute;
     right: 54px;
     z-index: var(--z-index-controls);
-  }
-  & > .pane-drawer-toggle {
-    background-color: var(--white);
-    border-left: none;
-    border-radius: 0 var(--space-s) var(--space-s) 0;
-    color: var(--ink);
-    cursor: pointer;
-    height: 38px;
-    left: 0;
-    position: absolute;
-    top: 20px;
-    z-index: var(--z-index-controls);
-
-    &:hover {
-      background-color: var(--base-lighter);
-    }
   }
   .mapboxgl-ctrl-bottom-right {
     bottom: -2px;

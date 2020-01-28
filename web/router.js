@@ -77,6 +77,10 @@ const router = new Router({
           title: 'View Reports',
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReportsAtLocation.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', false);
+          next();
+        },
       }, {
         path: '/requests/study/new',
         name: 'requestStudyNew',
