@@ -5,7 +5,7 @@
     </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
-        v-if="loadingLocationData"
+        v-if="loading"
         indeterminate />
       <template v-else>
         <header class="px-5 pt-1 pb-5">
@@ -128,9 +128,11 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
+  mixins: [FcMixinRouteAsync],
   components: {
     FcDataTableStudies,
     FcDialogStudyFilters,
@@ -144,7 +146,6 @@ export default {
       },
       countSummary: [],
       loadingCounts: false,
-      loadingLocationData: true,
       poiSummary: {
         school: null,
       },
@@ -200,10 +201,7 @@ export default {
         });
         return;
       }
-      const {
-        centrelineId,
-        centrelineType,
-      } = location;
+      const { centrelineId, centrelineType } = location;
       if (locationPrev === null
         || locationPrev.centrelineId !== centrelineId
         || locationPrev.centrelineType !== centrelineType) {
@@ -229,25 +227,6 @@ export default {
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.syncFromRoute(to)
-        .then(() => {
-          /* eslint-disable-next-line no-param-reassign */
-          vm.loadingLocationData = false;
-        });
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.loadingLocationData = true;
-    this.syncFromRoute(to)
-      .then(() => {
-        next();
-        this.loadingLocationData = false;
-      }).catch((err) => {
-        next(err);
-      });
-  },
   methods: {
     actionRequestStudy() {
       this.setNewStudyRequest([]);
@@ -265,7 +244,7 @@ export default {
         params,
       });
     },
-    async syncFromRoute(to) {
+    async loadAsyncForRoute(to) {
       const { centrelineId, centrelineType } = to.params;
       const now = DateTime.local();
       const collisionsDateRange = {

@@ -1,9 +1,50 @@
 <template>
   <div class="fc-drawer-view-reports-at-location d-flex flex-column">
-    <div class="flex-grow-0 flex-shrink-0 pa-5">
-      <h1>header</h1>
+    <div>
+      <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
+        <v-btn
+          icon
+          @click="actionNavigateBack">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+        <h1 class="subtitle-1">Turning Movement Count</h1>
+        <div class="mx-1">&#x2022;</div>
+        <div>Lawrence Ave &amp; Warden Ave</div>
+
+        <div
+          v-if="filterChips.length > 0">
+          <v-chip
+            v-for="(filterChip, i) in filterChips"
+            :key="i"
+            class="ml-2"
+            close
+            color="blue lighten-4"
+            @click:close="removeFilter(filterChip)">
+            {{filterChip.label}}
+          </v-chip>
+        </div>
+
+        <v-spacer></v-spacer>
+
+        <v-overflow-btn
+          class="flex-grow-0 mt-0"
+          dense
+          hide-details
+          :items="[]"
+          label="10/19/2019 (Sat)">
+        </v-overflow-btn>
+      </div>
+
+      <v-tabs v-model="indexActiveReportType">
+        <v-tab
+          v-for="reportType in reportTypes"
+          :key="reportType.name">
+          {{reportType.label}}
+        </v-tab>
+      </v-tabs>
     </div>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
       <v-progress-linear
         v-if="loading"
         indeterminate />
@@ -58,16 +99,21 @@
 </template>
 
 <script>
-/*
+import { mapGetters } from 'vuex';
+
 import {
-  ReportFormat,
+  COUNT_TYPES,
+  // ReportFormat,
   ReportType,
 } from '@/lib/Constants';
+import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
+/*
 const DOWNLOAD_FORMATS_SUPPORTED = [
   ReportFormat.CSV,
   ReportFormat.PDF,
 ];
+*/
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
   ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
@@ -81,7 +127,6 @@ const OPTIONS_REPORTS = {
     ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED,
     ReportType.INTERSECTION_SUMMARY,
     ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL,
-    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_ILLUSTRATED,
   ],
   RESCU: OPTIONS_REPORTS_ATR_VOLUME,
   ATR_VOLUME: OPTIONS_REPORTS_ATR_VOLUME,
@@ -96,49 +141,50 @@ const OPTIONS_REPORTS = {
     ReportType.PED_DELAY_SUMMARY,
   ],
 };
-*/
-
-function getToast() {
-  return { variant: 'error', text: 'oops' };
-}
 
 export default {
   name: 'FcDrawerViewReportsAtLocation',
+  mixins: [FcMixinRouteAsync],
   data() {
     return {
-      loading: false,
+      indexActiveReportType: 0,
+      counts: [],
     };
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.syncFromRoute(to);
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.syncFromRoute(to)
-      .then(() => {
-        next();
-      }).catch((err) => {
-        next(err);
-      });
+  computed: {
+    activeReportType() {
+      const { indexActiveReportType, reportTypes } = this;
+      if (indexActiveReportType > reportTypes.length) {
+        return null;
+      }
+      return reportTypes[indexActiveReportType];
+    },
+    countType() {
+      const { categoryValue } = this.$route.params;
+      return COUNT_TYPES.find(({ value }) => value === categoryValue);
+    },
+    reportTypes() {
+      const { value } = this.countType;
+      if (value === undefined) {
+        return [];
+      }
+      return OPTIONS_REPORTS[value].filter(({ disabled }) => !disabled);
+    },
+    ...mapGetters('viewData', ['filterChips']),
   },
   methods: {
-    async syncFromRoute(to) {
-      this.loading = true;
+    actionNavigateBack() {
+      const { centrelineId, centrelineType } = this.$route.params;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      });
+    },
+    async loadAsyncForRoute(to) {
       const { categoryValue, centrelineId, centrelineType } = to.params;
-      try {
-        await new Promise((resolve) => {
-          setTimeout(() => resolve({ categoryValue, centrelineId, centrelineType }), 1000);
-        });
-        this.loading = false;
-      } catch (err) {
-        const toast = getToast(err);
-        this.setToast(toast);
-        this.$router.push({
-          name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
-        });
-      }
+      await new Promise((resolve) => {
+        setTimeout(() => resolve({ categoryValue, centrelineId, centrelineType }), 1000);
+      });
     },
   },
 };
