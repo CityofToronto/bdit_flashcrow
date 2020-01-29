@@ -2,15 +2,13 @@
   <div
     class="fc-layout-drawer-map fill-height"
     :class="{
+      'drawer-open': drawerOpen,
       horizontal: !vertical,
       vertical
     }">
     <div
       v-if="hasDrawer"
       class="pane-drawer-toggle elevation-3 font-size-xl"
-      :class="{
-        'drawer-open': drawerOpen,
-      }"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="text-center">
         <v-icon
@@ -80,6 +78,10 @@ export default {
   position: relative;
   width: 100%;
 
+  & > .fc-pane-wrapper > div {
+    flex-basis: 0;
+  }
+
   & > .pane-drawer-toggle {
     background-color: var(--white);
     color: var(--ink);
@@ -91,34 +93,43 @@ export default {
       background-color: var(--base-lighter);
     }
   }
+
   &.horizontal > .pane-drawer-toggle {
     border-radius: 0 var(--space-s) var(--space-s) 0;
     height: 38px;
     top: 20px;
-    &.drawer-open {
+  }
+
+  &.vertical {
+    & > .pane-drawer-toggle {
+      border-radius: var(--space-s) var(--space-s) 0 0;
+      bottom: 50%;
+      height: 16px;
+      left: calc(50% - 19px);
+      width: 38px;
+      & i {
+        margin-top: -22px;
+      }
+    }
+    & > .fc-pane-wrapper > div {
+      height: 50vh;
+    }
+  }
+
+  &.drawer-open {
+    &.horizontal > .pane-drawer-toggle {
       left: 50%;
     }
-  }
-  &.vertical > .pane-drawer-toggle {
-    border-radius: var(--space-s) var(--space-s) 0 0;
-    bottom: 50%;
-    height: 16px;
-    left: calc(50% - 19px);
-    width: 38px;
-    & i {
-      margin-top: -22px;
+    &.vertical {
+      & > .pane-drawer-toggle {
+        border-radius: 0 0 var(--space-s) var(--space-s);
+        bottom: auto;
+        top: 0;
+      }
+      & > .fc-pane-wrapper > div {
+        height: 100vh;
+      }
     }
-    &.drawer-open {
-      border-radius: 0 0 var(--space-s) var(--space-s);
-      bottom: auto;
-      top: 0;
-    }
-  }
-  & > .fc-pane-wrapper > div {
-    flex-basis: 0;
-  }
-  &.vertical > .fc-pane-wrapper > div {
-    height: 50vh;
   }
 }
 

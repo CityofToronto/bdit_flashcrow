@@ -32,7 +32,7 @@
 
           <v-overflow-btn
             v-model="indexActiveCount"
-            class="select-counts flex-grow-0 mt-0"
+            class="fc-select-active-count flex-grow-0 mt-0"
             dense
             hide-details
             :items="itemsCounts"
@@ -56,49 +56,29 @@
           indeterminate />
         <div
           v-else
-          class="pa-5">
-          <h2>TODO: SHOW REPORT HERE</h2>
-          <p>
-      Cornhole pug umami, vice coloring book selfies copper mug health goth trust
-      fund banjo iceland ethical. Quinoa iceland organic succulents vaporware
-      normcore. Gastropub hoodie farm-to-table iceland celiac gochujang.
-      Pour-over keffiyeh skateboard organic.
-      </p><p>
-      Ethical pinterest tacos kogi hot chicken banjo wolf, coloring book gastropub
-      chambray kinfolk vexillologist. Scenester austin air plant XOXO gentrify
-      swag retro. Asymmetrical pinterest small batch photo booth ramps vegan
-      affogato cardigan raw denim mustache. Godard polaroid typewriter ethical,
-      synth intelligentsia chambray cold-pressed.
-      </p><p>
-      Shabby chic banjo snackwave, pok pok selfies intelligentsia locavore umami
-      yr butcher enamel pin 8-bit. Pug farm-to-table yuccie direct trade
-      shoreditch lomo +1 hell of keffiyeh put a bird on it hot chicken vice
-      bespoke migas. Kogi la croix chicharrones flexitarian brooklyn vape
-      dreamcatcher heirloom tousled try-hard venmo whatever cronut. Portland
-      kitsch raclette +1 cred. Vape schlitz plaid, succulents pug affogato
-      la croix flexitarian aesthetic raclette kickstarter thundercats forage.
-      Narwhal listicle jianbing readymade sustainable portland, chartreuse
-      pickled mumblecore umami vice. Etsy ramps semiotics occupy, sustainable
-      poutine everyday carry synth.
-      </p><p>
-      Hot chicken hella disrupt, coloring book subway tile listicle gochujang.
-      Poke four dollar toast tbh marfa, scenester ramps crucifix vaporware
-      intelligentsia shaman waistcoat whatever. Shaman +1 vaporware everyday
-      carry, sartorial activated charcoal banjo gentrify yr organic truffaut
-      photo booth. Intelligentsia affogato knausgaard scenester banh mi, swag
-      ennui gastropub tattooed copper mug. Everyday carry readymade portland
-      man bun shaman. Subway tile tbh salvia etsy gentrify, tousled bitters
-      bushwick cornhole meh PBR&B bicycle rights kale chips. Gluten-free
-      hashtag 3 wolf moon ramps selfies meditation tumblr cliche enamel
-      pin bespoke squid.
-      </p><p>
-      Fingerstache whatever etsy, slow-carb la croix kickstarter shoreditch
-      actually. Seitan jean shorts flexitarian fixie knausgaard pinterest.
-      Four loko man braid portland ugh kogi. Tofu roof party vegan, meggings
-      viral tattooed tumblr brooklyn. PBR&B street art hella la croix selfies.
-      Sriracha ennui air plant, bicycle rights street art selvage tattooed
-      portland.
-      </p>
+          class="fc-report-wrapper pa-3">
+          <FcReport v-bind="reportLayout" />
+          <v-menu>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                class="fc-report-download ma-1"
+                :loading="loadingDownload">
+                <v-icon left>mdi-download</v-icon> Download
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="{ label, value } in itemsDownloadFormats"
+                :key="value"
+                @click="actionDownload(value)">
+                <v-list-item-title>
+                  {{label}}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </section>
     </template>
@@ -106,6 +86,7 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
@@ -120,14 +101,13 @@ import {
   getLocationByFeature,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
-/*
 const DOWNLOAD_FORMATS_SUPPORTED = [
   ReportFormat.CSV,
   ReportFormat.PDF,
 ];
-*/
 
 const OPTIONS_REPORTS_ATR_VOLUME = [
   ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
@@ -159,13 +139,27 @@ const OPTIONS_REPORTS = {
 export default {
   name: 'FcDrawerViewReportsAtLocation',
   mixins: [FcMixinRouteAsync],
+  components: {
+    FcReport,
+  },
   data() {
+    const reportUserParameters = {};
+    ReportType.enumValues.forEach(({ name, options = {} }) => {
+      const defaultParameters = {};
+      Object.entries(options).forEach(([parameterName, reportParameter]) => {
+        const defaultParameterValue = reportParameter.defaultValue(this.$store);
+        defaultParameters[parameterName] = defaultParameterValue;
+      });
+      reportUserParameters[name] = defaultParameters;
+    });
     return {
       counts: [],
       indexActiveCount: 0,
       indexActiveReportType: 0,
+      loadingDownload: false,
       loadingReportLayout: false,
       reportLayout: null,
+      reportUserParameters,
     };
   },
   computed: {
@@ -205,6 +199,14 @@ export default {
         return { text, value: i };
       });
     },
+    itemsDownloadFormats() {
+      if (this.downloadLoading || this.loadingReportLayout) {
+        return [];
+      }
+      return DOWNLOAD_FORMATS_SUPPORTED
+        .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
+        .map(({ name }) => ({ label: name, value: name }));
+    },
     labelActiveCount() {
       const { activeCount } = this;
       if (activeCount === null) {
@@ -213,6 +215,14 @@ export default {
       const date = TimeFormatters.formatDefault(activeCount.date);
       const dayOfWeek = TimeFormatters.formatDayOfWeek(activeCount.date);
       return `${date} (${dayOfWeek})`;
+    },
+    reportParameters() {
+      const { activeReportType, reportUserParameters } = this;
+      if (activeReportType === null) {
+        return {};
+      }
+      const { name: type } = activeReportType;
+      return reportUserParameters[type];
     },
     reportTypes() {
       const { value } = this.countType;
@@ -233,6 +243,33 @@ export default {
     },
   },
   methods: {
+    async actionDownload(format) {
+      const { activeCount, activeReportType, reportParameters } = this;
+      if (activeCount === null || activeReportType === null) {
+        return;
+      }
+      this.downloadLoading = true;
+
+      const type = activeReportType;
+      const countInfoId = activeCount.id;
+      const categoryId = activeCount.type.id;
+      const id = `${categoryId}/${countInfoId}`;
+      const options = {
+        method: 'GET',
+        data: {
+          type,
+          id,
+          format,
+          ...reportParameters,
+        },
+      };
+
+      const reportData = await reporterFetch('/reports', options);
+      const filename = `report.${format}`;
+      saveAs(reportData, filename);
+
+      this.downloadLoading = false;
+    },
     actionNavigateBack() {
       const { centrelineId, centrelineType } = this.$route.params;
       this.$router.push({
@@ -261,7 +298,7 @@ export default {
       }
     },
     async updateReportLayout() {
-      const { activeCount, activeReportType } = this;
+      const { activeCount, activeReportType, reportParameters } = this;
       if (activeCount === null || activeReportType === null) {
         return;
       }
@@ -277,9 +314,10 @@ export default {
           type,
           id,
           format: ReportFormat.WEB,
-          // ...this.reportParameters,
+          ...reportParameters,
         },
       };
+
       const {
         type: reportTypeStr,
         date: reportDate,
@@ -310,8 +348,21 @@ export default {
 .fc-drawer-view-reports-at-location {
   max-height: 50vh;
 
-  .select-counts {
+  .fc-select-active-count {
     width: 250px;
   }
+
+  .fc-report-wrapper {
+    position: relative;
+    & > .fc-report-download {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+.drawer-open .fc-drawer-view-reports-at-location {
+  max-height: 100vh;
 }
 </style>
