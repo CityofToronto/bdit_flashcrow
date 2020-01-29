@@ -67,7 +67,7 @@
                 v-if="showFilters"
                 v-model="showFilters"
                 v-bind="filters"
-                @set-filters="actionSetFilters">
+                @set-filters="setFilters">
               </FcDialogStudyFilters>
               <v-btn
                 color="primary"
@@ -93,13 +93,14 @@
                 class="mr-2"
                 close
                 color="blue lighten-4"
-                @click:close="actionRemoveFilterChip(filterChip)">
+                @click:close="removeFilter(filterChip)">
                 {{filterChip.label}}
               </v-chip>
             </div>
           </header>
           <FcDataTableStudies
             :count-summary="countSummary"
+            :loading="loadingCounts"
             @show-reports="actionShowReports" />
         </section>
       </template>
@@ -115,10 +116,6 @@ import {
   mapState,
 } from 'vuex';
 
-import {
-  COUNT_TYPES,
-  StudyHours,
-} from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
@@ -146,12 +143,7 @@ export default {
         ksi: 0,
       },
       countSummary: [],
-      filters: {
-        datesFrom: -1,
-        daysOfWeek: [],
-        hours: [],
-        studyTypes: [],
-      },
+      loadingCounts: false,
       loadingLocationData: true,
       poiSummary: {
         school: null,
@@ -172,38 +164,6 @@ export default {
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
       return `${nStr} (${mostRecentDateStr})`;
     },
-    filterChips() {
-      const {
-        datesFrom,
-        daysOfWeek,
-        hours,
-        studyTypes,
-      } = this.filters;
-      const filterChips = [];
-      studyTypes.forEach((studyType) => {
-        const countType = COUNT_TYPES.find(({ value }) => value === studyType);
-        const { label, value } = countType;
-        const filterChip = { filter: 'studyTypes', label, value };
-        filterChips.push(filterChip);
-      });
-      daysOfWeek.forEach((value) => {
-        const label = TimeFormatters.DAYS_OF_WEEK[value];
-        const filterChip = { filter: 'daysOfWeek', label, value };
-        filterChips.push(filterChip);
-      });
-      if (datesFrom !== -1) {
-        const label = `Studies \u2264 ${datesFrom} years`;
-        const value = datesFrom;
-        const filterChip = { filter: 'datesFrom', label, value };
-        filterChips.push(filterChip);
-      }
-      hours.forEach((value) => {
-        const label = StudyHours[value].description;
-        const filterChip = { filter: 'hours', label, value };
-        filterChips.push(filterChip);
-      });
-      return filterChips;
-    },
     hasPoisNearby() {
       // TODO: expand this to multiple types of POIs
       return this.poiSummary.school !== null;
@@ -214,13 +174,25 @@ export default {
       );
       return `${n} total`;
     },
-    ...mapState([
-      'auth',
-      'location',
-    ]),
+    ...mapState('viewData', ['filters']),
+    ...mapState(['auth', 'location']),
+    ...mapGetters('viewData', ['filterChips', 'filterParams']),
     ...mapGetters(['locationFeatureType']),
   },
   watch: {
+    async filterParams() {
+      this.loadingCounts = true;
+      const {
+        centrelineId,
+        centrelineType,
+      } = this.location;
+      const countSummary = await getCountsByCentrelineSummary(
+        { centrelineId, centrelineType },
+        this.filterParams,
+      );
+      this.countSummary = countSummary;
+      this.loadingCounts = false;
+    },
     location(location, locationPrev) {
       if (location === null) {
         this.$router.push({
@@ -277,22 +249,9 @@ export default {
       });
   },
   methods: {
-    actionRemoveFilterChip({ filter, value }) {
-      if (filter === 'datesFrom') {
-        this.filters.datesFrom = -1;
-      } else {
-        const i = this.filters[filter].indexOf(value);
-        if (i !== -1) {
-          this.filters[filter].splice(i, 1);
-        }
-      }
-    },
     actionRequestStudy() {
       this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
-    },
-    actionSetFilters(filters) {
-      this.filters = filters;
     },
     actionShowReports({ category: { value: categoryValue } }) {
       const { centrelineId, centrelineType } = this.$route.params;
@@ -318,7 +277,7 @@ export default {
       };
       const tasks = [
         getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
-        getCountsByCentrelineSummary({ centrelineId, centrelineType }),
+        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParams),
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
@@ -344,6 +303,10 @@ export default {
     ]),
     ...mapMutations('requestStudy', [
       'setNewStudyRequest',
+    ]),
+    ...mapMutations('viewData', [
+      'removeFilter',
+      'setFilters',
     ]),
     ...mapMutations([
       'setDialog',

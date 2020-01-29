@@ -4,7 +4,7 @@
     :columns="columns"
     disable-sort
     :loading="loading"
-    :items="countSummary">
+    :items="countSummaryOrLoading">
     <template v-slot:item.STUDY_REPORTS="{ item }">
       <span>{{item.count.type.label}}</span>
     </template>
@@ -65,6 +65,14 @@ export default {
     return {
       columns,
     };
+  },
+  computed: {
+    countSummaryOrLoading() {
+      if (this.loading) {
+        return [];
+      }
+      return this.countSummary;
+    },
   },
   methods: {
     onActionShowReports(item) {

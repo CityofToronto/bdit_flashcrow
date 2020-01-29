@@ -18,6 +18,8 @@ const cssColorValues = {
 };
 CssColor.init(cssColorValues);
 
+class NotAnEnum {}
+
 test('Enum non-tamperable', () => {
   /* eslint-disable no-new */
   // cannot instantiate Enum after init()
@@ -34,7 +36,15 @@ test('Enum non-tamperable', () => {
 test('Enum instanceof', () => {
   colorValues.forEach((name) => {
     expect(Color[name] instanceof Color).toBe(true);
+    expect(Color[name] instanceof Enum).toBe(true);
   });
+});
+
+test('Enum.isEnumClass', () => {
+  expect(Enum.isEnumClass(Color)).toBe(true);
+  expect(Enum.isEnumClass(CssColor)).toBe(true);
+  expect(Enum.isEnumClass(String)).toBe(false);
+  expect(Enum.isEnumClass(NotAnEnum)).toBe(false);
 });
 
 test('Enum name / ordinal', () => {

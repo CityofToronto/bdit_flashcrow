@@ -12,12 +12,14 @@ import { apiFetch } from '@/lib/api/BackendClient';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
+import viewData from '@/web/store/modules/viewData';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     requestStudy,
+    viewData,
   },
   // TODO: organize state below
   state: {
