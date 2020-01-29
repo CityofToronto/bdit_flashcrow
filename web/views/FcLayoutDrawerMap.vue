@@ -117,6 +117,9 @@ export default {
   & > .fc-pane-wrapper > div {
     flex-basis: 0;
   }
+  &.vertical > .fc-pane-wrapper > div {
+    height: 50vh;
+  }
 }
 
 </style>
