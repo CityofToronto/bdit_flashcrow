@@ -1,14 +1,16 @@
 <template>
   <v-dialog
     v-model="internalValue"
-    max-width="300">
+    max-width="300"
+    scrollable>
     <template v-slot:activator="{ on }">
       <slot name="activator" v-bind="{ on }"></slot>
     </template>
     <v-card>
       <v-card-title>Filter</v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
-        <h2 class="subtitle-2">Study Types</h2>
+        <h2 class="subtitle-2 mt-4">Study Types</h2>
         <v-checkbox
           v-for="{ label, value } in COUNT_TYPES"
           :key="value"
@@ -49,6 +51,7 @@
           :label="description"
           :value="name"></v-checkbox>
       </v-card-text>
+      <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn

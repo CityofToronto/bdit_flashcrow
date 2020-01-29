@@ -64,24 +64,38 @@
               <div class="caption pl-3">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
+                v-if="showFilters"
                 v-model="showFilters"
-                v-bind="filters">
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    color="primary"
-                    outlined
-                    v-on="on">
-                    <v-icon left>mdi-filter-variant</v-icon>
-                    Filter
-                  </v-btn>
-                </template>
+                v-bind="filters"
+                @set-filters="actionSetFilters">
               </FcDialogStudyFilters>
+              <v-btn
+                color="primary"
+                outlined
+                @click.stop="showFilters = true">
+                <v-icon left>mdi-filter-variant</v-icon>
+                Filter
+              </v-btn>
               <v-btn
                 class="ml-3"
                 color="primary"
                 @click="actionRequestStudy">
                 Request Study
               </v-btn>
+            </div>
+
+            <div
+              v-if="filterChips.length > 0"
+              class="mt-2">
+              <v-chip
+                v-for="(filterChip, i) in filterChips"
+                :key="i"
+                class="mr-2"
+                close
+                color="blue lighten-4"
+                @click:close="actionRemoveFilterChip(filterChip)">
+                {{filterChip.label}}
+              </v-chip>
             </div>
           </header>
           <FcDataTableStudies
@@ -101,6 +115,10 @@ import {
   mapState,
 } from 'vuex';
 
+import {
+  COUNT_TYPES,
+  StudyHours,
+} from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
@@ -153,6 +171,38 @@ export default {
       );
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
       return `${nStr} (${mostRecentDateStr})`;
+    },
+    filterChips() {
+      const {
+        datesFrom,
+        daysOfWeek,
+        hours,
+        studyTypes,
+      } = this.filters;
+      const filterChips = [];
+      studyTypes.forEach((studyType) => {
+        const countType = COUNT_TYPES.find(({ value }) => value === studyType);
+        const { label, value } = countType;
+        const filterChip = { filter: 'studyTypes', label, value };
+        filterChips.push(filterChip);
+      });
+      daysOfWeek.forEach((value) => {
+        const label = TimeFormatters.DAYS_OF_WEEK[value];
+        const filterChip = { filter: 'daysOfWeek', label, value };
+        filterChips.push(filterChip);
+      });
+      if (datesFrom !== -1) {
+        const label = `Studies \u2264 ${datesFrom} years`;
+        const value = datesFrom;
+        const filterChip = { filter: 'datesFrom', label, value };
+        filterChips.push(filterChip);
+      }
+      hours.forEach((value) => {
+        const label = StudyHours[value].description;
+        const filterChip = { filter: 'hours', label, value };
+        filterChips.push(filterChip);
+      });
+      return filterChips;
     },
     hasPoisNearby() {
       // TODO: expand this to multiple types of POIs
@@ -227,9 +277,22 @@ export default {
       });
   },
   methods: {
+    actionRemoveFilterChip({ filter, value }) {
+      if (filter === 'datesFrom') {
+        this.filters.datesFrom = -1;
+      } else {
+        const i = this.filters[filter].indexOf(value);
+        if (i !== -1) {
+          this.filters[filter].splice(i, 1);
+        }
+      }
+    },
     actionRequestStudy() {
       this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
+    },
+    actionSetFilters(filters) {
+      this.filters = filters;
     },
     actionShowReports({ category: { value: categoryValue } }) {
       const { centrelineId, centrelineType } = this.$route.params;
