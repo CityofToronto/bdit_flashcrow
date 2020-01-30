@@ -1,37 +1,16 @@
 <template>
-  <div class="fc-details-study-request">
+  <section>
     <div class="mt-4">
-      <span>Is there a service number for your request?</span>
+      <h3>311 Information</h3>
       <v-text-field
         v-model="internalValue.serviceRequestId"
-        :messages="messagesServiceRequestId">
+        :messages="[OPTIONAL.text]"
+        outlined
+        placeholder="Service Number">
       </v-text-field>
     </div>
     <div class="mt-4">
-      <span>What is the priority of your request? *</span>
-      <TdsRadioGroup
-        v-model="internalValue.priority"
-        :messages="messagesPriority"
-        :options="[
-          { label: 'Standard', value: 'STANDARD' },
-          { label: 'Urgent', value: 'URGENT' },
-        ]" />
-    </div>
-    <div
-      v-if="internalValue.priority === 'URGENT'"
-      class="mt-4">
-      <span>When do you need the data by? *</span>
-      <div>
-        <FcDatePicker
-          v-model="v.dueDate.$model"
-          class="mt-2"
-          :min="minDueDate"
-          mode="single">
-        </FcDatePicker>
-      </div>
-    </div>
-    <div class="mt-4">
-      <span>What reasons are there for your request? *</span>
+      <h3>Reasons</h3>
       <v-select
         v-model="v.reasons.$model"
         chips
@@ -41,34 +20,65 @@
         multiple></v-select>
     </div>
     <div class="mt-4">
-      <span>Any other staff you'd like to keep informed on the request?</span>
+      <h3>Escalate Priority</h3>
+      <v-checkbox
+        v-model="internalValue.urgent"
+        label="Urgent"
+        :messages="[OPTIONAL.text]" />
+      <div
+        v-if="internalValue.urgent"
+        class="mt-3">
+        <v-textarea
+          v-model="v.urgentReason.$model"
+          :error-messages="errorMessagesUrgentReason"
+          :messages="[REQUEST_STUDY_PROVIDE_URGENT_REASON.text]"
+          no-resize
+          outlined
+          rows="4"
+          @blur="v.urgentReason.$touch()"></v-textarea>
+      </div>
+      <FcDatePicker
+        v-model="v.dueDate.$model"
+        class="mt-4"
+        :min="minDueDate"
+        mode="single">
+      </FcDatePicker>
+    </div>
+    <div class="mt-4">
+      <h3>Inform Other Staff</h3>
       <FcInputTextArray
         v-model="v.ccEmails.$model"
         :v="v.ccEmails" />
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
 import {
+  OPTIONAL,
+  REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_REASONS,
 } from '@/lib/i18n/Strings';
 import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
-import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
 
 export default {
   name: 'FcDetailsStudyRequest',
   components: {
     FcDatePicker,
     FcInputTextArray,
-    TdsRadioGroup,
   },
   props: {
     v: Object,
     value: Object,
+  },
+  data() {
+    return {
+      OPTIONAL,
+      REQUEST_STUDY_PROVIDE_URGENT_REASON,
+    };
   },
   computed: {
     errorMessagesReasons() {
@@ -81,6 +91,16 @@ export default {
       }
       return errors;
     },
+    errorMessagesUrgentReason() {
+      const errors = [];
+      if (!this.v.urgentReason.$dirty) {
+        return errors;
+      }
+      if (!this.v.urgentReason.requiredIfUrgent) {
+        errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
+      }
+      return errors;
+    },
     internalValue: {
       get() {
         return this.value;
@@ -88,25 +108,6 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
-    },
-    messagesPriority() {
-      const { priority } = this.internalValue;
-      const messages = [];
-      if (priority === 'STANDARD') {
-        messages.push(
-          'Standard times to request counts are 2-3 months. Peak times are April-June and September-November.',
-        );
-      } else if (priority === 'URGENT') {
-        messages.push(
-          'This requires reshuffling other requests. The Traffic Safety Unit will contact you to discuss further.',
-        );
-      }
-      return messages;
-    },
-    messagesServiceRequestId() {
-      return [
-        'If this is related to a TMMS request, enter the service request ID here.',
-      ];
     },
     minDueDate() {
       const { now, internalValue: { priority } } = this;

@@ -1,70 +1,87 @@
 <template>
   <div class="fc-request-study d-flex fill-height flex-column">
-    <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
+    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
       <v-btn
         icon
-        @click="$router.go(-1)">
+        @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <v-toolbar-title>{{title}}</v-toolbar-title>
-    </v-toolbar>
-    <section class="flex-grow-1 flex-shrink-0">
+      <div class="flex-grow-1 text-center">
+        <span class="subtitle-1">
+          {{title}}:
+        </span>
+        <span>
+          {{subtitle}}
+        </span>
+      </div>
+    </div>
+    <v-divider></v-divider>
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
-        v-if="loadingStudyRequest"
+        v-if="loading"
         indeterminate />
-      <template v-else>
-        <div class="fill-height pa-3 overflow-y-auto">
-          <h2>Request Details</h2>
-          <v-messages
-            class="mt-1"
-            color="error"
-            :value="errorMessagesLocation"></v-messages>
-          <FcDetailsStudyRequest
-            v-model="studyRequest"
-            :v="$v.studyRequest" />
+      <div
+        v-else
+        class="pa-5">
+        <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
-          <h2 class="mt-4">Studies</h2>
-          <FcDetailsStudy
-              v-for="(_, i) in studyRequest.studies"
-              :key="i"
-              v-model="studyRequest.studies[i]"
-              :v="$v.studyRequest.studies.$each[i]"
-              @remove-study="onRemoveStudy(i)" />
-          <v-menu>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                block
-                :color="$v.studyRequest.studies.required ? '' : 'primary'">
-                <v-icon left>mdi-plus</v-icon>Add Study
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="{ label, value, warning } in studyTypesWithWarnings"
-                :key="value"
-                @click="onAddStudy(value)">
-                <v-list-item-title>
-                  <v-icon v-if="warning !== null">mdi-alert</v-icon> {{label}}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <section class="mt-5">
+          <h3>Study Type</h3>
+          <div class="mt-4">
+            <v-chip>
+              TODO: add selectable chips for study types
+            </v-chip>
+          </div>
           <v-messages
             class="mt-1"
             color="error"
             :value="errorMessagesStudies"></v-messages>
-          <v-btn
-            block
-            class="mt-6"
-            color="primary"
-            :disabled="$v.$invalid"
-            @click="onFinish">
-            {{labelFinish}}
-          </v-btn>
-        </div>
-      </template>
+        </section>
+
+        <FcDetailsStudyRequest
+          v-model="studyRequest"
+          :v="$v.studyRequest" />
+
+        <FcDetailsStudy
+            v-for="(_, i) in studyRequest.studies"
+            :key="i"
+            v-model="studyRequest.studies[i]"
+            :v="$v.studyRequest.studies.$each[i]" />
+
+        <v-menu>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-bind="attrs"
+              v-on="on"
+              block
+              :color="$v.studyRequest.studies.required ? '' : 'primary'">
+              <v-icon left>mdi-plus</v-icon>Add Study
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="{ label, value, warning } in studyTypesWithWarnings"
+              :key="value"
+              @click="onAddStudy(value)">
+              <v-list-item-title>
+                <v-icon v-if="warning !== null">mdi-alert</v-icon> {{label}}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn
+          block
+          class="mt-6"
+          color="primary"
+          :disabled="$v.$invalid"
+          @click="onFinish">
+          {{labelFinish}}
+        </v-btn>
+        <v-messages
+          class="mt-1"
+          color="error"
+          :value="errorMessagesLocation"></v-messages>
+      </div>
     </section>
   </div>
 </template>
@@ -77,22 +94,19 @@ import {
   mapState,
 } from 'vuex';
 
-import {
-  COUNT_TYPES,
-  HttpStatus,
-} from '@/lib/Constants';
+import { COUNT_TYPES } from '@/lib/Constants';
 import {
   getStudyRequest,
 } from '@/lib/api/WebApi';
 import {
-  REQUEST_STUDY_FORBIDDEN,
-  REQUEST_STUDY_NOT_FOUND,
   REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_REQUIRES_STUDIES,
+  REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
+import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudy(studyType) {
   return {
@@ -122,28 +136,16 @@ function makeStudyRequest(location, now) {
   return studyRequest;
 }
 
-function getToast(err) {
-  if (err.statusCode === HttpStatus.FORBIDDEN) {
-    return REQUEST_STUDY_FORBIDDEN;
-  }
-  if (err.statusCode === HttpStatus.NOT_FOUND) {
-    return REQUEST_STUDY_NOT_FOUND;
-  }
-  return {
-    variant: 'error',
-    text: err.message,
-  };
-}
-
 export default {
   name: 'FcRequestStudy',
+  mixins: [FcMixinRouteAsync],
   components: {
     FcDetailsStudy,
     FcDetailsStudyRequest,
   },
   data() {
     return {
-      loadingStudyRequest: true,
+      REQUEST_STUDY_TIME_TO_FULFILL,
       studyRequest: null,
     };
   },
@@ -228,9 +230,15 @@ export default {
         return { label, value, warning: null };
       });
     },
+    subtitle() {
+      if (this.location === null) {
+        return 'needs location';
+      }
+      return this.location.description;
+    },
     title() {
       if (this.isCreate) {
-        return 'New Study Request';
+        return 'Request Study';
       }
       const { id } = this.$route.params;
       return `Edit Request #${id}`;
@@ -269,20 +277,18 @@ export default {
     },
   },
   validations: ValidationsStudyRequest.validations,
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.syncFromRoute(to);
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.syncFromRoute(to)
-      .then(() => {
-        next();
-      }).catch((err) => {
-        next(err);
-      });
-  },
   methods: {
+    actionNavigateBack() {
+      if (this.location === null) {
+        this.$router.push({ name: 'viewData' });
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      });
+    },
     onAddStudy(studyType) {
       const { warning } = this.studyTypesWithWarnings
         .find(({ value }) => value === studyType);
@@ -304,29 +310,19 @@ export default {
     onRemoveStudy(i) {
       this.studyRequest.studies.splice(i, 1);
     },
-    async syncFromRoute(to) {
+    async loadAsyncForRoute(to) {
       if (this.isCreate) {
         const { location, now } = this;
         this.studyRequest = makeStudyRequest(location, now);
-        this.loadingStudyRequest = false;
         return;
       }
       const { id } = to.params;
-      try {
-        this.loadingStudyRequest = true;
-        const { studyRequest, studyRequestLocation } = await getStudyRequest(id);
-        this.setLocation(studyRequestLocation);
-        this.studyRequest = studyRequest;
-
-        this.loadingStudyRequest = false;
-      } catch (err) {
-        const toast = getToast(err);
-        this.setToast(toast);
-        this.$router.push({ name: 'viewData' });
-      }
+      const { studyRequest, studyRequestLocation } = await getStudyRequest(id);
+      this.setLocation(studyRequestLocation);
+      this.studyRequest = studyRequest;
     },
     ...mapMutations(['setLocation']),
-    ...mapActions(['saveStudyRequest', 'setToast']),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>
@@ -334,8 +330,5 @@ export default {
 <style lang="postcss">
 .fc-request-study {
   max-height: 100vh;
-  & > section {
-    max-height: calc(100vh - 48px);
-  }
 }
 </style>

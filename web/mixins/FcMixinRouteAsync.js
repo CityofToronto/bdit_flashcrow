@@ -4,10 +4,8 @@ export default {
       loading: true,
     };
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.loadAsync(to);
-    });
+  created() {
+    this.loadAsync(this.$route);
   },
   async beforeRouteUpdate(to, from, next) {
     await this.loadAsync(to);

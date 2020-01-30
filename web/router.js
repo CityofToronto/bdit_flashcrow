@@ -89,6 +89,10 @@ const router = new Router({
         name: 'requestStudyNew',
         meta: { title: 'New Request' },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudy.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', true);
+          next();
+        },
       }, {
         path: '/requests/study/:id/edit',
         name: 'requestStudyEdit',
@@ -98,6 +102,10 @@ const router = new Router({
           },
         },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudy.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', true);
+          next();
+        },
       }, {
         path: '/requests/study/:id',
         name: 'requestStudyView',
@@ -107,6 +115,10 @@ const router = new Router({
           },
         },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudyView.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', true);
+          next();
+        },
       }],
     },
     {
