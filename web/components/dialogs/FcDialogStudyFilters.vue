@@ -3,9 +3,6 @@
     v-model="internalValue"
     max-width="300"
     scrollable>
-    <template v-slot:activator="{ on }">
-      <slot name="activator" v-bind="{ on }"></slot>
-    </template>
     <v-card>
       <v-card-title>Filter</v-card-title>
       <v-divider></v-divider>

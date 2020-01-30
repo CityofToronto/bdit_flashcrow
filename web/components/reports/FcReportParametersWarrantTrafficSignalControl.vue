@@ -1,11 +1,6 @@
 <template>
   <div class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
     <hr class="mb-2">
-    <v-btn
-      class="fc-report-parameters-update"
-      @click="$emit('update-report')">
-      <v-icon left>mdi-sync</v-icon> Update
-    </v-btn>
     <v-checkbox
       name="adequateTrial"
       v-model="internalValue.adequateTrial">
@@ -55,9 +50,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-report-parameters-update {
-  float: right;
-}
-</style>

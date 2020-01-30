@@ -21,9 +21,7 @@
               v-for="(filterChip, i) in filterChips"
               :key="i"
               class="ml-2"
-              close
-              color="blue lighten-4"
-              @click:close="removeFilter(filterChip)">
+              color="blue lighten-4">
               {{filterChip.label}}
             </v-chip>
           </div>
@@ -51,34 +49,52 @@
       </div>
 
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
-        <v-progress-linear
+        <v-progress-circular
           v-if="loadingReportLayout"
-          indeterminate />
+          class="ma-3"
+          color="primary"
+          indeterminate
+          size="64" />
         <div
           v-else
           class="fc-report-wrapper pa-3">
           <FcReport v-bind="reportLayout" />
-          <v-menu>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                class="fc-report-download ma-1"
-                :loading="loadingDownload">
-                <v-icon left>mdi-download</v-icon> Download
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="{ label, value } in itemsDownloadFormats"
-                :key="value"
-                @click="actionDownload(value)">
-                <v-list-item-title>
-                  {{label}}
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <div class="fc-report-actions pa-3">
+            <FcDialogReportParameters
+              v-if="showReportParameters"
+              v-model="showReportParameters"
+              :report-parameters="reportParameters"
+              :report-type="activeReportType"
+              @set-report-parameters="setReportParameters">
+            </FcDialogReportParameters>
+            <v-btn
+              v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+              @click.stop="showReportParameters = true">
+              <v-icon left>mdi-settings</v-icon>
+              Set Parameters
+            </v-btn>
+            <v-menu>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  class="ml-2"
+                  :loading="loadingDownload">
+                  <v-icon left>mdi-download</v-icon> Download
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="{ label, value } in itemsDownloadFormats"
+                  :key="value"
+                  @click="actionDownload(value)">
+                  <v-list-item-title>
+                    {{label}}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
       </section>
     </template>
@@ -101,6 +117,7 @@ import {
   getLocationByFeature,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -140,6 +157,7 @@ export default {
   name: 'FcDrawerViewReportsAtLocation',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcDialogReportParameters,
     FcReport,
   },
   data() {
@@ -160,6 +178,7 @@ export default {
       loadingReportLayout: false,
       reportLayout: null,
       reportUserParameters,
+      showReportParameters: false,
     };
   },
   computed: {
@@ -216,13 +235,24 @@ export default {
       const dayOfWeek = TimeFormatters.formatDayOfWeek(activeCount.date);
       return `${date} (${dayOfWeek})`;
     },
-    reportParameters() {
-      const { activeReportType, reportUserParameters } = this;
-      if (activeReportType === null) {
-        return {};
-      }
-      const { name: type } = activeReportType;
-      return reportUserParameters[type];
+    reportParameters: {
+      get() {
+        const { activeReportType, reportUserParameters } = this;
+        if (activeReportType === null) {
+          return {};
+        }
+        const { name: type } = activeReportType;
+        return reportUserParameters[type];
+      },
+      set(reportParameters) {
+        console.log(reportParameters);
+        const { activeReportType, reportUserParameters } = this;
+        if (activeReportType === null) {
+          return;
+        }
+        const { name: type } = activeReportType;
+        reportUserParameters[type] = reportParameters;
+      },
     },
     reportTypes() {
       const { value } = this.countType;
@@ -297,6 +327,10 @@ export default {
         this.setLocation(location);
       }
     },
+    setReportParameters(reportParameters) {
+      this.reportParameters = reportParameters;
+      this.updateReportLayout();
+    },
     async updateReportLayout() {
       const { activeCount, activeReportType, reportParameters } = this;
       if (activeCount === null || activeReportType === null) {
@@ -354,7 +388,7 @@ export default {
 
   .fc-report-wrapper {
     position: relative;
-    & > .fc-report-download {
+    & > .fc-report-actions {
       position: absolute;
       top: 0;
       right: 0;
