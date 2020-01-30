@@ -15,18 +15,18 @@
           <div class="mx-1">&#x2022;</div>
           <div>{{location.description}}</div>
 
+          <v-spacer></v-spacer>
+
           <div
-            v-if="filterChips.length > 0">
+            v-if="filterChipsNoStudyTypes.length > 0">
             <v-chip
-              v-for="(filterChip, i) in filterChips"
+              v-for="(filterChip, i) in filterChipsNoStudyTypes"
               :key="i"
-              class="ml-2"
+              class="mr-2"
               color="blue lighten-4">
               {{filterChip.label}}
             </v-chip>
           </div>
-
-          <v-spacer></v-spacer>
 
           <v-overflow-btn
             v-model="indexActiveCount"
@@ -199,6 +199,10 @@ export default {
     countType() {
       const { categoryValue } = this.$route.params;
       return COUNT_TYPES.find(({ value }) => value === categoryValue);
+    },
+    filterChipsNoStudyTypes() {
+      return this.filterChips
+        .filter(({ filter }) => filter !== 'studyTypes');
     },
     filterParamsPaginated() {
       const { filterParams } = this;

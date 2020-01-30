@@ -8,19 +8,10 @@
     }">
     <div
       v-if="hasDrawer"
-      class="pane-drawer-toggle elevation-3 font-size-xl"
+      class="pane-drawer-toggle elevation-n1 font-size-xl"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="text-center">
-        <v-icon
-          v-if="vertical"
-          small>
-          {{drawerOpen ? 'mdi-menu-down' : 'mdi-menu-up'}}
-        </v-icon>
-        <v-icon
-          v-else
-          small>
-          {{drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right'}}
-        </v-icon>
+        <v-icon small>{{iconDrawerToggle}}</v-icon>
       </div>
     </div>
     <div
@@ -29,15 +20,15 @@
         'flex-column': vertical,
       }">
       <div
-        v-show="(hasDrawer && drawerOpen) || vertical"
-        class="elevation-3 flex-grow-1 flex-shrink-0"
+        v-show="showDrawer"
+        class="fc-drawer elevation-3 flex-grow-1 flex-shrink-0"
         :class="{
           'order-2': vertical,
         }">
         <router-view></router-view>
       </div>
       <div
-        v-show="!drawerOpen || !vertical"
+        v-show="showMap"
         class="flex-grow-1 flex-shrink-0"
         :class="{
           'order-1': vertical,
@@ -61,6 +52,21 @@ export default {
   computed: {
     hasDrawer() {
       return this.$route.name !== 'viewData';
+    },
+    iconDrawerToggle() {
+      const { drawerOpen, vertical } = this;
+      if (vertical) {
+        return drawerOpen ? 'mdi-menu-down' : 'mdi-menu-up';
+      }
+      return drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right';
+    },
+    showDrawer() {
+      const { drawerOpen, hasDrawer, vertical } = this;
+      return (hasDrawer && drawerOpen) || vertical;
+    },
+    showMap() {
+      const { drawerOpen, vertical } = this;
+      return !drawerOpen || !vertical;
     },
     vertical() {
       return this.$route.name === 'viewReportsAtLocation';
@@ -90,7 +96,7 @@ export default {
     z-index: var(--z-index-controls);
 
     &:hover {
-      background-color: var(--base-lighter);
+      background-color: var(--base-lightest);
     }
   }
 

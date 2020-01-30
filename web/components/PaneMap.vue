@@ -8,10 +8,7 @@
         indeterminate />
     </div>
     <SearchBarLocation
-      v-if="!drawerOpen"
-      :class="{
-        'drawer-open': $route.name !== 'viewData',
-      }" />
+      v-if="!drawerOpen" />
     <div class="pane-map-mode">
       <v-btn
         class="mr-2"
@@ -715,11 +712,8 @@ export default {
   & > .fc-search-bar-location {
     top: 20px;
     position: absolute;
-    left: var(--space-l);
+    left: 20px;
     z-index: var(--z-index-controls);
-    &.drawer-open {
-      left: 20px;
-    }
   }
   & > .pane-map-mode {
     bottom: 35px;

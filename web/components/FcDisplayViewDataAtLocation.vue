@@ -86,7 +86,7 @@
 
             <div
               v-if="filterChips.length > 0"
-              class="mt-2">
+              class="mt-5">
               <v-chip
                 v-for="(filterChip, i) in filterChips"
                 :key="i"
