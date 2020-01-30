@@ -8,15 +8,12 @@
         indeterminate />
     </div>
     <SearchBarLocation
-      class="search-bar-location"
-      v-model="internalLocation" />
+      v-if="!drawerOpen" />
     <div class="pane-map-mode">
       <v-btn
         class="mr-2"
-        fab
-        small
         @click="openGoogleMaps">
-        <v-icon>mdi-google-maps</v-icon>
+        Street View
       </v-btn>
       <v-btn
         @click="toggleSatellite">
@@ -32,18 +29,6 @@
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
-    <div
-      v-if="$route.name !== 'viewData'"
-      class="pane-drawer-toggle elevation-2 flex-container-row font-size-xl"
-      :class="{
-        'drawer-open': drawerOpen,
-      }"
-      @click="setDrawerOpen(!drawerOpen)">
-      <div class="flex-fill text-center px-1">
-        <v-icon v-if="drawerOpen">mdi-chevron-left</v-icon>
-        <v-icon v-else>mdi-chevron-right</v-icon>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -56,8 +41,8 @@ import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
-import rootStyle from '@/lib/geo/root.json';
-import metadata from '@/lib/geo/metadata.json';
+import rootStyleLight from '@/lib/geo/theme/light/root.json';
+import metadataLight from '@/lib/geo/theme/light/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
@@ -327,14 +312,6 @@ export default {
     };
   },
   computed: {
-    internalLocation: {
-      get() {
-        return this.location;
-      },
-      set(location) {
-        this.setLocation(location);
-      },
-    },
     ...mapState(['drawerOpen', 'location']),
   },
   created() {
@@ -342,7 +319,7 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(rootStyle, metadata).get();
+    const mapStyle = new GeoStyle(rootStyleLight, metadataLight).get();
     this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
@@ -386,6 +363,10 @@ export default {
         zoom: MapZoom.MIN,
       });
       this.updateCoordinates();
+      this.map.addControl(
+        new mapboxgl.ScaleControl({ maxWidth: 192, unit: 'metric' }),
+        'bottom-right',
+      );
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
@@ -728,39 +709,26 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .search-bar-location {
-    top: var(--space-m);
+  & > .fc-search-bar-location {
+    top: 20px;
     position: absolute;
-    left: var(--space-l);
+    left: 20px;
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
-    bottom: var(--space-m);
+    bottom: 35px;
     position: absolute;
-    right: var(--space-l);
+    right: 54px;
     z-index: var(--z-index-controls);
-  }
-  & > .pane-drawer-toggle {
-    align-items: center;
-    background-color: var(--base-lightest);
-    border: var(--border-default);
-    border-left: none;
-    border-radius: 0 var(--space-s) var(--space-s) 0;
-    color: var(--ink);
-    cursor: pointer;
-    height: calc(var(--space-xl) * 1.5);
-    left: 0;
-    position: absolute;
-    top: calc(50% - var(--space-l) * 1.5);
-    z-index: var(--z-index-controls);
-
-    &:hover {
-      background-color: var(--base-lighter);
-    }
   }
   .mapboxgl-ctrl-bottom-right {
-    bottom: 38px;
+    bottom: -2px;
     right: 6px;
+    & > .mapboxgl-ctrl-scale {
+      background-color: transparent;
+      border-color: #404040;
+      color: #404040;
+    }
   }
 }
 </style>

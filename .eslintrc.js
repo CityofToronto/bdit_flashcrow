@@ -12,6 +12,7 @@ module.exports = {
     'max-classes-per-file': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': 'error',
+    'no-mixed-operators': 'off',
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     /*
      * We haven't incorporated `@babel/plugin-transform-exponentiation-operator`,

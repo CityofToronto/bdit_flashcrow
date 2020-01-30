@@ -5,16 +5,21 @@ import {
   CentrelineType,
   COUNT_TYPES,
   FeatureCode,
+  RoadIntersectionType,
+  RoadSegmentType,
 } from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
+import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
+import viewData from '@/web/store/modules/viewData';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     requestStudy,
+    viewData,
   },
   // TODO: organize state below
   state: {
@@ -27,7 +32,6 @@ export default new Vuex.Store({
     requestReasons: [],
     // TOP-LEVEL UI
     drawerOpen: false,
-    modal: null,
     toast: null,
     // LOCATION
     location: null,
@@ -45,7 +49,24 @@ export default new Vuex.Store({
       }
       return uniqueName.slice(i + 1);
     },
-    // ACTIVE STUDY REQUEST
+    // LOCATION
+    locationFeatureType(state) {
+      const { location } = state;
+      if (location === null) {
+        return null;
+      }
+      const { centrelineType, featureCode = null } = location;
+      if (featureCode === null) {
+        return null;
+      }
+      if (centrelineType === CentrelineType.SEGMENT) {
+        return RoadSegmentType.enumValueOf(featureCode, 'featureCode');
+      }
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        return RoadIntersectionType.enumValueOf(featureCode, 'featureCode');
+      }
+      throw new InvalidCentrelineTypeError(centrelineType);
+    },
     studyTypesRelevantToLocation(state) {
       const countTypesAll = COUNT_TYPES.map(({ value }) => value);
       if (state.location === null) {
@@ -81,12 +102,6 @@ export default new Vuex.Store({
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
     },
-    clearModal(state) {
-      Vue.set(state, 'modal', null);
-    },
-    setModal(state, modal) {
-      Vue.set(state, 'modal', modal);
-    },
     clearToast(state) {
       Vue.set(state, 'toast', null);
     },
@@ -116,7 +131,7 @@ export default new Vuex.Store({
       return toast;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
+    async saveStudyRequest({ state }, { isSupervisor, studyRequest }) {
       const data = studyRequest;
       const update = data.id !== undefined;
       if (update && isSupervisor) {
@@ -129,16 +144,7 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequestNew = await apiFetch(url, options);
-      commit('setModal', {
-        component: 'FcModalRequestStudyConfirmation',
-        data: {
-          isSupervisor,
-          studyRequest: studyRequestNew,
-          update,
-        },
-      });
-      return studyRequestNew;
+      return apiFetch(url, options);
     },
   },
 });

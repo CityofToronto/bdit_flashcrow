@@ -79,7 +79,7 @@
       </header>
       <FcDataTable
         v-model="selectedItems"
-        class="fc-card-table-requests"
+        class="fc-data-table-requests"
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
         expandable
@@ -211,11 +211,7 @@
 <script>
 import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
-import {
-  mapActions,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import {
   centrelineKey,
@@ -225,7 +221,7 @@ import {
   SearchKeys,
   SortKeys,
 } from '@/lib/Constants';
-import { formatDuration, formatOxfordCommaList } from '@/lib/StringFormatters';
+import { formatDuration } from '@/lib/StringFormatters';
 import {
   getUserStudyRequests,
   putStudyRequests,
@@ -311,6 +307,7 @@ function getItemRows(item) {
   });
 }
 
+/*
 function getStudyRequestsToast(studyRequests, action) {
   if (studyRequests.length > 0) {
     return null;
@@ -335,6 +332,7 @@ function getStudyRequestsHuman(studyRequests, action) {
 
   return { title, prompt };
 }
+*/
 
 export default {
   name: 'FcRequestsTrack',
@@ -523,7 +521,8 @@ export default {
       }
       this.$router.push(route);
     },
-    actionUpdateStudyRequests(studyRequests, actionName, updates) {
+    actionUpdateStudyRequests(/* studyRequests, actionName, updates */) {
+      /*
       const toast = getStudyRequestsToast(studyRequests, actionName);
       if (toast !== null) {
         this.setToast(toast);
@@ -538,7 +537,7 @@ export default {
       }
       const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
       const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
-      this.setModal({
+      this.setDialog({
         component: 'TdsConfirmDialog',
         data: {
           title,
@@ -547,6 +546,7 @@ export default {
           textOk: actionUppercase,
         },
       });
+      */
     },
     setClosed(closed) {
       this.closed = closed;
@@ -577,9 +577,6 @@ export default {
     ...mapActions([
       'saveStudyRequest',
       'setToast',
-    ]),
-    ...mapMutations([
-      'setModal',
     ]),
   },
 };
@@ -616,40 +613,9 @@ export default {
     background-color: var(--base-lighter);
   }
 
-  .fc-card-table-requests {
+  .fc-data-table-requests {
     .priority-urgent {
       color: var(--error);
-    }
-    & > colgroup {
-      & > .col-ID {
-        width: calc(var(--space-2xl) * 1.5);
-      }
-      & > .col-DATE,
-      & > .col-PRIORITY,
-      & > .col-ASSIGNED_TO {
-        width: var(--space-3xl);
-      }
-    }
-    &.supervisor > colgroup {
-      & > .col-PRIORITY {
-        width: calc(var(--space-3xl) + var(--space-l));
-      }
-      & > .col-ASSIGNED_TO {
-        width: calc(var(--space-3xl) + var(--space-xl));
-      }
-    }
-    .cell-ID > div {
-      align-items: center;
-      cursor: pointer;
-      & > u {
-        color: var(--primary-vivid);
-      }
-    }
-    .cell-ACTIONS > div {
-      display: inline-block;
-    }
-    .cell-LOCATION > div {
-      width: var(--space-4xl);
     }
   }
 }

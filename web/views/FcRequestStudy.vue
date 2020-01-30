@@ -84,7 +84,6 @@ import {
 import {
   getStudyRequest,
 } from '@/lib/api/WebApi';
-import { STUDY_DUPLICATE, STUDY_IRRELEVANT_TYPE } from '@/lib/i18n/ConfirmDialog';
 import {
   REQUEST_STUDY_FORBIDDEN,
   REQUEST_STUDY_NOT_FOUND,
@@ -220,13 +219,13 @@ export default {
         studyTypesSelected.add(value);
       });
       return COUNT_TYPES.map(({ label, value }) => {
-        let warning = null;
+        // let warning = null;
         if (studyTypesSelected.has(value)) {
-          warning = STUDY_DUPLICATE.getModalOptions({ label });
+          // warning = STUDY_DUPLICATE.getModalOptions({ label });
         } else if (!this.studyTypesRelevantToLocation.includes(value)) {
-          warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
+          // warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
         }
-        return { label, value, warning };
+        return { label, value, warning: null };
       });
     },
     title() {
@@ -294,7 +293,7 @@ export default {
         warning.data.action = () => {
           this.studyRequest.studies.push(item);
         };
-        this.setModal(warning);
+        // this.setDialog(warning);
       }
     },
     onFinish() {
@@ -326,7 +325,7 @@ export default {
         this.$router.push({ name: 'viewData' });
       }
     },
-    ...mapMutations(['setLocation', 'setModal']),
+    ...mapMutations(['setLocation']),
     ...mapActions(['saveStudyRequest', 'setToast']),
   },
 };

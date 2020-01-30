@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# fetch-esri-style.sh []
+# fetch-esri-style.sh --styleId STYLE_ID
 #
 # Given the style ID of a map tile style from ESRI, fetch the root and metadata files and store them in
 # @/lib/geo for access by GeoStyle.

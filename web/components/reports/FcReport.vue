@@ -23,6 +23,7 @@
 
 <script>
 import { ReportType } from '@/lib/Constants';
+import DateTime from '@/lib/time/DateTime';
 import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
 import FcReportCountMetadata
@@ -39,7 +40,7 @@ export default {
   },
   props: {
     type: ReportType,
-    date: Date,
+    date: DateTime,
     content: Array,
   },
   data() {

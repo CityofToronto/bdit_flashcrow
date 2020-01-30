@@ -5,6 +5,7 @@
     disable-filtering
     disable-pagination
     :headers="headers"
+    hide-default-footer
     item-key="id"
     :items="items"
     :loading="loading"
@@ -47,14 +48,14 @@ export default {
   },
   computed: {
     headers() {
-      return this.columns.map(({ text, value }) => {
+      return this.columns.map(({ value, ...options }) => {
         const sort = this.sortKeys[value] || null;
         const sortable = sort !== null;
         return {
           sort,
           sortable,
-          text,
           value,
+          ...options,
         };
       });
     },

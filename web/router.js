@@ -1,10 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import store from '@/web/store';
+import { HttpStatus } from '@/lib/Constants';
 import {
   ROUTE_NOT_LOGGED_IN,
+  REQUEST_STUDY_FORBIDDEN,
+  REQUEST_STUDY_NOT_FOUND,
 } from '@/lib/i18n/Strings';
+import store from '@/web/store';
 
 Vue.use(Router);
 
@@ -67,6 +70,18 @@ const router = new Router({
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
+          next();
+        },
+      }, {
+        path: '/view/location/:centrelineType/:centrelineId/reports/:categoryValue',
+        name: 'viewReportsAtLocation',
+        meta: {
+          auth: { mode: 'try' },
+          title: 'View Reports',
+        },
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReportsAtLocation.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', false);
           next();
         },
       }, {
@@ -135,43 +150,33 @@ function routeMetaKey(to, key, defaultValue) {
  * otherwise the route to redirect to
  */
 async function beforeEachCheckAuth(to) {
-  const { path } = to;
-  try {
-    const { loggedIn } = await store.dispatch('checkAuth');
-    /*
-     * As part of "security by design", our default assumption is that a route
-     * requires authentication.  A route must manually override this to specify
-     * different behaviour.
-     */
-    const metaAuth = routeMetaKey(to, 'auth', true);
-    if (metaAuth === true) {
-      // this route requires an authenticated user
-      if (loggedIn) {
-        return false;
-      }
+  const { loggedIn } = await store.dispatch('checkAuth');
+  /*
+    * As part of "security by design", our default assumption is that a route
+    * requires authentication.  A route must manually override this to specify
+    * different behaviour.
+    */
+  const metaAuth = routeMetaKey(to, 'auth', true);
+  if (metaAuth === true) {
+    if (!loggedIn) {
       store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
-      return { name: 'home', query: { path, login: true } };
     }
-    if (metaAuth === false) {
-      // this route requires an unauthenticated user
-      return loggedIn ? { name: 'home' } : false;
-    }
-    return false;
-  } catch (err) {
-    // prevent infinite redirect to login
-    return { name: 'home' };
+    return loggedIn;
   }
+  if (metaAuth === false) {
+    // this route requires an unauthenticated user
+    return !loggedIn;
+  }
+  return true;
 }
 
-router.beforeEach((to, from, next) => {
-  beforeEachCheckAuth(to)
-    .then((redirect) => {
-      if (redirect) {
-        next(redirect);
-      } else {
-        next();
-      }
-    });
+router.beforeEach(async (to, from, next) => {
+  const meetsAuthRequirements = await beforeEachCheckAuth(to);
+  if (meetsAuthRequirements) {
+    next();
+  } else {
+    next(false);
+  }
 });
 
 function afterEachSetTitle(to) {
@@ -189,6 +194,28 @@ function afterEachSetTitle(to) {
 
 router.afterEach((to) => {
   afterEachSetTitle(to);
+});
+
+function onErrorShowToast(err) {
+  // TODO: only show this for study request stuff!
+  if (err.statusCode === HttpStatus.FORBIDDEN) {
+    return REQUEST_STUDY_FORBIDDEN;
+  }
+  if (err.statusCode === HttpStatus.NOT_FOUND) {
+    return REQUEST_STUDY_NOT_FOUND;
+  }
+  return {
+    variant: 'error',
+    text: err.message,
+  };
+}
+
+router.onError((err) => {
+  const { currentRoute } = router;
+  const toast = onErrorShowToast(err, currentRoute);
+  if (toast) {
+    store.dispatch('setToast', toast);
+  }
 });
 
 export default router;

@@ -1,40 +1,114 @@
 <template>
   <div class="fc-display-view-data-at-location d-flex flex-column">
-    <v-toolbar class="flex-grow-0 flex-shrink-0" dense>
-      <v-btn
-        icon
-        @click="$router.go(-1)">
-        <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
-      <v-toolbar-title>View Data</v-toolbar-title>
-    </v-toolbar>
+    <div class="flex-grow-0 flex-shrink-0 pa-5">
+      <SearchBarLocation />
+    </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
-        v-if="loadingLocationData"
+        v-if="loading"
         indeterminate />
-      <div v-else class="pa-3">
-        <div class="bar-actions-bulk d-flex pa-3 mb-4">
-          <v-checkbox
-            v-model="selectionAll"
-            :indeterminate="selectionIndeterminate"
-            name="selectAll"></v-checkbox>
-          <v-spacer></v-spacer>
-          <v-btn
-            @click="onActionBulk('request-study')">
-            <v-icon left>mdi-plus</v-icon> Request Study
-          </v-btn>
-        </div>
-        <FcCardTableCounts
-          v-model="selection"
-          :items-counts="itemsCounts"
-          @action-item="onActionItem" />
-      </div>
+      <template v-else>
+        <header class="px-5 pt-1 pb-5">
+          <h1 class="display-2">{{location.description}}</h1>
+          <div class="mt-2">
+            <span v-if="locationFeatureType !== null">
+              {{locationFeatureType.description}} &#x2022;
+            </span>
+            <span>{{countSummaryHeaderText}}</span>
+          </div>
+          <v-row class="mt-5">
+            <v-col cols="2">
+              <div>KSI</div>
+              <div class="headline">
+                {{collisionSummary.ksi}}
+              </div>
+            </v-col>
+            <v-col cols="2">
+              <div>Collisions</div>
+              <div class="headline">
+                {{collisionSummary.total}}
+              </div>
+            </v-col>
+          </v-row>
+          <div class="mt-5">
+            <div>Nearby</div>
+            <div class="mt-1">
+              <div v-if="!hasPoisNearby">
+                No points of interest nearby
+              </div>
+              <v-tooltip
+                v-if="poiSummary.school !== null"
+                bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip
+                    v-on="on"
+                    class="mr-2"
+                    color="teal lighten-4"
+                    text-color="teal darken-1">
+                    <v-avatar left>
+                      <v-icon>mdi-school</v-icon>
+                    </v-avatar>
+                    School Zone
+                  </v-chip>
+                </template>
+                <span>{{Math.round(poiSummary.school.geom_dist)}} m</span>
+              </v-tooltip>
+            </div>
+          </div>
+        </header>
+        <v-divider></v-divider>
+        <section>
+          <header class="pa-5">
+            <div class="align-center d-flex">
+              <h2 class="subtitle-1">Studies</h2>
+              <div class="caption pl-3">{{numCountsText}}</div>
+              <v-spacer></v-spacer>
+              <FcDialogStudyFilters
+                v-if="showFilters"
+                v-model="showFilters"
+                v-bind="filters"
+                @set-filters="setFilters">
+              </FcDialogStudyFilters>
+              <v-btn
+                color="primary"
+                outlined
+                @click.stop="showFilters = true">
+                <v-icon left>mdi-filter-variant</v-icon>
+                Filter
+              </v-btn>
+              <v-btn
+                class="ml-3"
+                color="primary"
+                @click="actionRequestStudy">
+                Request Study
+              </v-btn>
+            </div>
+
+            <div
+              v-if="filterChips.length > 0"
+              class="mt-5">
+              <v-chip
+                v-for="(filterChip, i) in filterChips"
+                :key="i"
+                class="mr-2"
+                close
+                color="blue lighten-4"
+                @click:close="removeFilter(filterChip)">
+                {{filterChip.label}}
+              </v-chip>
+            </div>
+          </header>
+          <FcDataTableStudies
+            :count-summary="countSummary"
+            :loading="loadingCounts"
+            @show-reports="actionShowReports" />
+        </section>
+      </template>
     </section>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
 import {
   mapActions,
   mapGetters,
@@ -42,154 +116,84 @@ import {
   mapState,
 } from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
 import {
-  COUNT_TYPES,
-  SortDirection,
-  SortKeys,
-  Status,
-} from '@/lib/Constants';
-import {
-  getCountsByCentreline,
+  getCollisionsByCentrelineSummary,
+  getCountsByCentrelineSummary,
   getLocationByFeature,
-  getStudiesByCentreline,
+  getPoiByCentrelineSummary,
 } from '@/lib/api/WebApi';
-import FcCardTableCounts from '@/web/components/FcCardTableCounts.vue';
-
-function idIsCount(id) {
-  return Number.isInteger(id);
-}
-
-function idIsStudy(id) {
-  return id.indexOf('STUDY:') === 0;
-}
+import ArrayStats from '@/lib/math/ArrayStats';
+import DateTime from '@/lib/time/DateTime';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
+import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
+import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDisplayViewDataAtLocation',
+  mixins: [FcMixinRouteAsync],
   components: {
-    FcCardTableCounts,
+    FcDataTableStudies,
+    FcDialogStudyFilters,
+    SearchBarLocation,
   },
   data() {
-    const itemsCountsActive = {};
-    COUNT_TYPES.forEach(({ value }) => {
-      itemsCountsActive[value] = 0;
-    });
     return {
-      counts: [],
-      itemsCountsActive,
-      loadingLocationData: true,
-      selection: [],
-      studies: [],
+      collisionSummary: {
+        total: 0,
+        ksi: 0,
+      },
+      countSummary: [],
+      loadingCounts: false,
+      poiSummary: {
+        school: null,
+      },
+      showFilters: false,
     };
   },
   computed: {
-    itemsCounts() {
-      const countTypes = [...COUNT_TYPES.keys()];
-      return countTypes.map((i) => {
-        const type = COUNT_TYPES[i];
-        const activeIndex = this.itemsCountsActive[type.value];
-        let countsOfType = this.counts
-          .filter(c => c.type.value === type.value);
-        let studiesOfType = this.studies
-          .filter(s => s.studyType === type.value);
-
-        const expandable = false;
-        if (countsOfType.length === 0 && studiesOfType.length === 0) {
-          const noExistingCount = {
-            id: type.value,
-            type,
-            date: null,
-            status: Status.NO_EXISTING_COUNT,
-          };
-          return {
-            activeIndex,
-            counts: [noExistingCount],
-            expandable,
-            id: type.value,
-          };
-        }
-        studiesOfType = studiesOfType.map((study) => {
-          const {
-            id,
-            createdAt,
-            studyRequestId,
-          } = study;
-          return {
-            id: `STUDY:${id}`,
-            type,
-            date: createdAt,
-            status: Status.REQUEST_IN_PROGRESS,
-            studyRequestId,
-          };
-        });
-        countsOfType = studiesOfType.concat(countsOfType);
-        const countsOfTypeSorted = ArrayUtils.sortBy(
-          countsOfType,
-          SortKeys.Counts.DATE,
-          SortDirection.DESC,
-        );
-        return {
-          activeIndex,
-          counts: countsOfTypeSorted,
-          expandable,
-          id: type.value,
-        };
-      });
+    countSummaryHeaderText() {
+      const n = this.countSummary.length;
+      if (n === 0) {
+        return 'No Studies';
+      }
+      const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
+      const mostRecentDate = DateTime.max(
+        ...this.countSummary.map(({ count: { date } }) => date),
+      );
+      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
+      return `${nStr} (${mostRecentDateStr})`;
     },
-    selectableIds() {
-      const selectableIds = [];
-      this.itemsCounts.forEach(({ counts }) => {
-        counts.forEach(({ id }) => {
-          selectableIds.push(id);
-        });
-      });
-      return selectableIds;
+    hasPoisNearby() {
+      // TODO: expand this to multiple types of POIs
+      return this.poiSummary.school !== null;
     },
-    selectedCounts() {
-      return this.selection
-        .filter(idIsCount)
-        .map(id => this.counts.find(c => c.id === id));
+    numCountsText() {
+      const n = ArrayStats.sum(
+        this.countSummary.map(({ numPerCategory }) => numPerCategory),
+      );
+      return `${n} total`;
     },
-    selectedTypes() {
-      const studyTypes = new Set(this.selection.map((id) => {
-        if (idIsCount(id)) {
-          const count = this.counts.find(c => c.id);
-          return count.type.value;
-        }
-        if (idIsStudy(id)) {
-          const studyId = parseInt(id.slice('STUDY:'.length), 10);
-          const study = this.studies.find(s => s.id === studyId);
-          return study.studyType;
-        }
-        return id;
-      }));
-      return Array.from(studyTypes);
-    },
-    selectionAll: {
-      get() {
-        return this.selectableIds.length > 0
-          && this.selectableIds.every(id => this.selection.includes(id));
-      },
-      set(selectionAll) {
-        if (selectionAll) {
-          this.selection = this.selectableIds;
-        } else {
-          this.selection = [];
-        }
-      },
-    },
-    selectionIndeterminate() {
-      return this.selection.length > 0 && !this.selectionAll;
-    },
-    ...mapGetters([
-      'studyTypesRelevantToLocation',
-    ]),
-    ...mapState([
-      'auth',
-      'location',
-    ]),
+    ...mapState('viewData', ['filters']),
+    ...mapState(['auth', 'location']),
+    ...mapGetters('viewData', ['filterChips', 'filterParams']),
+    ...mapGetters(['locationFeatureType']),
   },
   watch: {
+    async filterParams() {
+      this.loadingCounts = true;
+      const {
+        centrelineId,
+        centrelineType,
+      } = this.location;
+      const countSummary = await getCountsByCentrelineSummary(
+        { centrelineId, centrelineType },
+        this.filterParams,
+      );
+      this.countSummary = countSummary;
+      this.loadingCounts = false;
+    },
     location(location, locationPrev) {
       if (location === null) {
         this.$router.push({
@@ -197,10 +201,7 @@ export default {
         });
         return;
       }
-      const {
-        centrelineId,
-        centrelineType,
-      } = location;
+      const { centrelineId, centrelineType } = location;
       if (locationPrev === null
         || locationPrev.centrelineId !== centrelineId
         || locationPrev.centrelineType !== centrelineType) {
@@ -226,92 +227,48 @@ export default {
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.syncFromRoute(to)
-        .then(() => {
-          /* eslint-disable-next-line no-param-reassign */
-          vm.loadingLocationData = false;
-        });
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.loadingLocationData = true;
-    this.syncFromRoute(to)
-      .then(() => {
-        next();
-        this.loadingLocationData = false;
-      }).catch((err) => {
-        next(err);
-      });
-  },
   methods: {
-    actionRequestStudy(studyTypes) {
-      if (studyTypes.size === 0) {
-        return;
-      }
-      this.setNewStudyRequest(Array.from(studyTypes));
+    actionRequestStudy() {
+      this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
     },
-    actionSelectActiveIndex(item, { activeIndex }) {
-      const { id } = item;
-      Vue.set(this.itemsCountsActive, id, activeIndex);
-    },
-    actionShowReports(item) {
-      if (item.counts.length === 0) {
-        return;
-      }
-      const [count] = item.counts;
-      if (count.status === Status.NO_EXISTING_COUNT) {
-        return;
-      }
-      this.setModal({
-        component: 'FcModalShowReports',
-        data: item,
+    actionShowReports({ category: { value: categoryValue } }) {
+      const { centrelineId, centrelineType } = this.$route.params;
+      const params = {
+        centrelineId,
+        centrelineType,
+        categoryValue,
+      };
+      this.$router.push({
+        name: 'viewReportsAtLocation',
+        params,
       });
     },
-    onActionBulk(type, options) {
-      const actionOptions = options || {};
-      if (type === 'request-study') {
-        const studyTypes = this.selectedTypes;
-        this.actionRequestStudy(studyTypes, actionOptions);
-      }
-    },
-    onActionItem({ type, item, options }) {
-      const actionOptions = options || {};
-      if (type === 'request-study') {
-        const studyType = item.id;
-        this.actionRequestStudy([studyType], actionOptions);
-      } else if (type === 'select-active-index') {
-        this.actionSelectActiveIndex(item, actionOptions);
-      } else if (type === 'show-reports') {
-        this.actionShowReports(item, actionOptions);
-      }
-    },
-    async syncFromRoute(to) {
+    async loadAsyncForRoute(to) {
       const { centrelineId, centrelineType } = to.params;
+      const now = DateTime.local();
+      const collisionsDateRange = {
+        start: now.minus({ years: 1 }),
+        end: now,
+      };
+      const collisionsFilters = {
+        ...collisionsDateRange,
+      };
       const tasks = [
-        getCountsByCentreline({ centrelineId, centrelineType }),
+        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
+        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParams),
         getLocationByFeature({ centrelineId, centrelineType }),
+        getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
-      if (this.auth.loggedIn) {
-        tasks.push(
-          getStudiesByCentreline({ centrelineId, centrelineType }),
-        );
-      }
       const [
-        counts,
+        collisionSummary,
+        countSummary,
         location,
-        studies = [],
+        poiSummary,
       ] = await Promise.all(tasks);
-      this.counts = counts;
-      this.studies = studies;
-
-      const itemsCountsActive = {};
-      COUNT_TYPES.forEach(({ value }) => {
-        itemsCountsActive[value] = 0;
-      });
-      this.itemsCountsActive = itemsCountsActive;
+      this.collisionSummary = collisionSummary;
+      this.countSummary = countSummary;
+      this.poiSummary = poiSummary;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
@@ -326,10 +283,13 @@ export default {
     ...mapMutations('requestStudy', [
       'setNewStudyRequest',
     ]),
+    ...mapMutations('viewData', [
+      'removeFilter',
+      'setFilters',
+    ]),
     ...mapMutations([
       'setFilterCountTypes',
       'setLocation',
-      'setModal',
     ]),
   },
 };
@@ -338,13 +298,5 @@ export default {
 <style lang="postcss">
 .fc-display-view-data-at-location {
   max-height: 100vh;
-  .bar-actions-bulk {
-    align-items: center;
-    background-color: var(--base-lighter);
-  }
-  .location-data-loading-spinner {
-    height: var(--space-2xl);
-    width: var(--space-2xl);
-  }
 }
 </style>

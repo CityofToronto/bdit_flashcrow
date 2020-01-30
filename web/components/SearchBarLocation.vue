@@ -1,7 +1,10 @@
 <template>
   <v-autocomplete
     v-model="keystring"
+    append-icon="mdi-magnify"
     cache-items
+    class="fc-search-bar-location"
+    dense
     hide-no-data
     hide-details
     :items="items"
@@ -9,20 +12,18 @@
     item-value="KEYSTRING"
     label="Search"
     :loading="loading"
-    prepend-inner-icon="mdi-map-search-outline"
     :search-input.sync="query"
     solo />
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
+
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationByKeyString, getLocationSuggestions } from '@/lib/api/WebApi';
 
 export default {
   name: 'SearchBarLocation',
-  props: {
-    value: Object,
-  },
   data() {
     return {
       keystring: null,
@@ -32,19 +33,20 @@ export default {
     };
   },
   computed: {
-    internalValue: {
+    internalLocation: {
       get() {
-        return this.value;
+        return this.location;
       },
-      set(value) {
-        this.$emit('input', value);
+      set(location) {
+        this.setLocation(location);
       },
     },
+    ...mapState(['location']),
   },
   watch: {
     query: debounce(async function processQuery() {
       if (this.query === null) {
-        this.internalValue = null;
+        this.internalLocation = null;
         return;
       }
       this.loading = true;
@@ -53,13 +55,25 @@ export default {
     }, 250),
     async keystring() {
       if (this.keystring === null) {
-        this.internalValue = null;
+        this.internalLocation = null;
         return;
       }
       this.loading = true;
-      this.internalValue = await getLocationByKeyString(this.keystring);
+      this.internalLocation = await getLocationByKeyString(this.keystring);
       this.loading = false;
     },
   },
+  methods: {
+    ...mapMutations(['setLocation']),
+  },
 };
 </script>
+
+<style lang="postcss">
+.fc-search-bar-location {
+  width: 392px;
+  &.v-select.v-select--is-menu-active .v-input__icon--append .v-icon {
+    transform: none;
+  }
+}
+</style>
