@@ -288,7 +288,6 @@ export default {
       'setFilters',
     ]),
     ...mapMutations([
-      'setDialog',
       'setFilterCountTypes',
       'setLocation',
     ]),

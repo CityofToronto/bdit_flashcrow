@@ -211,11 +211,7 @@
 <script>
 import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
-import {
-  mapActions,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import {
   centrelineKey,
@@ -581,9 +577,6 @@ export default {
     ...mapActions([
       'saveStudyRequest',
       'setToast',
-    ]),
-    ...mapMutations([
-      'setDialog',
     ]),
   },
 };

@@ -150,40 +150,33 @@ function routeMetaKey(to, key, defaultValue) {
  * otherwise the route to redirect to
  */
 async function beforeEachCheckAuth(to) {
-  try {
-    const { loggedIn } = await store.dispatch('checkAuth');
-    /*
-     * As part of "security by design", our default assumption is that a route
-     * requires authentication.  A route must manually override this to specify
-     * different behaviour.
-     */
-    const metaAuth = routeMetaKey(to, 'auth', true);
-    if (metaAuth === true) {
-      if (!loggedIn) {
-        store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
-      }
-      return loggedIn;
+  const { loggedIn } = await store.dispatch('checkAuth');
+  /*
+    * As part of "security by design", our default assumption is that a route
+    * requires authentication.  A route must manually override this to specify
+    * different behaviour.
+    */
+  const metaAuth = routeMetaKey(to, 'auth', true);
+  if (metaAuth === true) {
+    if (!loggedIn) {
+      store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
     }
-    if (metaAuth === false) {
-      // this route requires an unauthenticated user
-      return !loggedIn;
-    }
-    return true;
-  } catch (err) {
-    // prevent infinite redirect to login
-    return false;
+    return loggedIn;
   }
+  if (metaAuth === false) {
+    // this route requires an unauthenticated user
+    return !loggedIn;
+  }
+  return true;
 }
 
-router.beforeEach((to, from, next) => {
-  beforeEachCheckAuth(to)
-    .then((meetsAuthRequirements) => {
-      if (meetsAuthRequirements) {
-        next();
-      } else {
-        next(false);
-      }
-    });
+router.beforeEach(async (to, from, next) => {
+  const meetsAuthRequirements = await beforeEachCheckAuth(to);
+  if (meetsAuthRequirements) {
+    next();
+  } else {
+    next(false);
+  }
 });
 
 function afterEachSetTitle(to) {
@@ -221,7 +214,7 @@ router.onError((err) => {
   const { currentRoute } = router;
   const toast = onErrorShowToast(err, currentRoute);
   if (toast) {
-    store.dispatch('setToast', false);
+    store.dispatch('setToast', toast);
   }
 });
 

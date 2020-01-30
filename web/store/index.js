@@ -31,7 +31,6 @@ export default new Vuex.Store({
     now: DateTime.local(),
     requestReasons: [],
     // TOP-LEVEL UI
-    dialog: null,
     drawerOpen: false,
     toast: null,
     // LOCATION
@@ -100,12 +99,6 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     // TOP-LEVEL UI
-    clearDialog(state) {
-      Vue.set(state, 'dialog', null);
-    },
-    setDialog(state, dialog) {
-      Vue.set(state, 'dialog', dialog);
-    },
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
     },
@@ -138,7 +131,7 @@ export default new Vuex.Store({
       return toast;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ commit, state }, { isSupervisor, studyRequest }) {
+    async saveStudyRequest({ state }, { isSupervisor, studyRequest }) {
       const data = studyRequest;
       const update = data.id !== undefined;
       if (update && isSupervisor) {
@@ -151,16 +144,7 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequestNew = await apiFetch(url, options);
-      commit('setDialog', {
-        component: 'FcModalRequestStudyConfirmation',
-        data: {
-          isSupervisor,
-          studyRequest: studyRequestNew,
-          update,
-        },
-      });
-      return studyRequestNew;
+      return apiFetch(url, options);
     },
   },
 });

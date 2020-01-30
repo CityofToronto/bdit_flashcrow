@@ -25,7 +25,7 @@
       <v-btn
         color="primary"
         text
-        @click="onActionShowReports(item)">
+        @click="$emit('show-reports', item)">
         <span>View Report</span>
       </v-btn>
     </template>
@@ -69,14 +69,13 @@ export default {
   computed: {
     countSummaryOrLoading() {
       if (this.loading) {
+        /*
+         * The "loading..." text in `<v-data-table>` is only shown when there are no items, so
+         * we use this to forcibly show a loading state.
+         */
         return [];
       }
       return this.countSummary;
-    },
-  },
-  methods: {
-    onActionShowReports(item) {
-      this.$emit('show-reports', item);
     },
   },
 };
