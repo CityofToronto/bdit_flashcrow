@@ -459,7 +459,8 @@ test('StudyRequestDAO', async () => {
     status: 'REQUESTED',
     closed: false,
     serviceRequestId: null,
-    priority: 'STANDARD',
+    urgent: false,
+    urgentReason: null,
     assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
@@ -482,6 +483,7 @@ test('StudyRequestDAO', async () => {
 
   // save study request
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  console.log(persistedStudyRequest);
   expect(persistedStudyRequest.id).not.toBeNull();
   await expect(
     StudyRequest.read.validateAsync(persistedStudyRequest),
@@ -507,6 +509,13 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
   persistedStudyRequest.studies[0].hours = 'SCHOOL';
   persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // set as urgent
+  persistedStudyRequest.urgent = true;
+  persistedStudyRequest.urgentReason = 'because I said so';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -569,7 +578,8 @@ test('StudyRequestCommentDAO', async () => {
     status: 'REQUESTED',
     closed: false,
     serviceRequestId: 12345,
-    priority: 'STANDARD',
+    urgent: false,
+    urgentReason: null,
     assignedTo: 'FIELD STAFF',
     dueDate: now.plus({ months: 4 }),
     estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
