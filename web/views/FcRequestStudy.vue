@@ -22,10 +22,10 @@
         indeterminate />
       <div
         v-else
-        class="pa-5">
+        class="pl-5 py-5">
         <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
-        <section class="mt-5">
+        <section class="mt-5 pr-5">
           <h3>Study Type</h3>
           <FcCheckboxGroupChips
             v-model="studyTypes"
@@ -39,26 +39,30 @@
 
         <FcDetailsStudyRequest
           v-model="studyRequest"
+          class="pr-5"
           :v="$v.studyRequest" />
 
         <FcDetailsStudy
             v-for="(_, i) in studyRequest.studies"
             :key="i"
             v-model="studyRequest.studies[i]"
+            class="pr-5"
             :v="$v.studyRequest.studies.$each[i]" />
 
-        <v-btn
-          block
-          class="mt-6"
-          color="primary"
-          :disabled="$v.$invalid"
-          @click="onFinish">
-          {{labelFinish}}
-        </v-btn>
-        <v-messages
-          class="mt-1"
-          color="error"
-          :value="errorMessagesLocation"></v-messages>
+        <section class="pr-5">
+          <v-btn
+            block
+            class="mt-6"
+            color="primary"
+            :disabled="$v.$invalid"
+            @click="onFinish">
+            {{labelFinish}}
+          </v-btn>
+          <v-messages
+            class="mt-1"
+            color="error"
+            :value="errorMessagesLocation"></v-messages>
+        </section>
       </div>
     </section>
   </div>

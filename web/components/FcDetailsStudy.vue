@@ -1,31 +1,24 @@
 <template>
-  <section class="mt-4">
-    <v-divider></v-divider>
+  <section>
+    <v-divider class="my-3"></v-divider>
     <h2>{{studyType.label}}</h2>
+
     <div class="mt-4">
       <h3>Study Days</h3>
-      <v-row class="pl-1">
-        <v-checkbox
-          v-for="(label, i) in DAYS_OF_WEEK"
-          :key="i"
-          v-model="v.daysOfWeek.$model"
-          class="mx-2"
-          :error-messages="errorMessagesDaysOfWeek"
-          hide-details
-          :label="label"
-          :value="i"></v-checkbox>
-      </v-row>
+      <FcCheckboxGroupChips
+        v-model="v.daysOfWeek.$model"
+        :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
       <v-messages
         class="mt-1"
         color="error"
         :value="errorMessagesDaysOfWeek"></v-messages>
     </div>
+
     <div v-if="studyType.automatic" class="mt-4">
-      <strong>Study Duration</strong>
-      <TdsRadioGroup
+      <h3>Study Duration</h3>
+      <FcRadioGroup
         v-model="v.duration.$model"
-        :error-messages="errorMessagesDuration"
-        :options="[
+        :items="[
           { label: '1 day', sublabel: '24 hours', value: 24 },
           { label: '2 days', sublabel: '48 hours', value: 48 },
           { label: '3 days', sublabel: '72 hours', value: 72 },
@@ -34,21 +27,18 @@
           { label: '1 week', sublabel: '168 hours', value: 168 },
         ]" />
     </div>
-    <div v-else class="mb-4">
+    <div
+      v-else
+      class="mt-4">
       <h3>Study Hours</h3>
-      <TdsRadioGroup
+      <FcRadioGroup
         v-model="internalValue.hours"
-        class="mb-2"
-        :messages="messagesHours"
-        :options="[
-          { label: 'School', value: 'SCHOOL' },
-          { label: 'Routine', value: 'ROUTINE' },
-          { label: 'Other', value: 'OTHER' },
-        ]" />
+        :items="itemsHours" />
     </div>
+
     <v-textarea
       v-model="v.notes.$model"
-      ref="notes"
+      class="mt-4"
       :error-messages="errorMessagesNotes"
       :messages="messagesNotes"
       no-resize
@@ -59,29 +49,32 @@
 </template>
 
 <script>
-import { CountHours, COUNT_TYPES } from '@/lib/Constants';
+import {
+  COUNT_TYPES,
+  StudyHours,
+} from '@/lib/Constants';
 import {
   OPTIONAL,
   STUDY_OTHER_HOURS_REQUIRES_NOTES,
   STUDY_REQUIRES_DAYS_OF_WEEK,
 } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
+import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
+import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDetailsStudy',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
-    TdsRadioGroup,
+    FcCheckboxGroupChips,
+    FcRadioGroup,
   },
   props: {
     v: Object,
   },
   data() {
-    const { DAYS_OF_WEEK } = TimeFormatters;
     return {
-      DAYS_OF_WEEK,
       OPTIONAL,
     };
   },
@@ -119,20 +112,18 @@ export default {
       }
       return errors;
     },
-    messagesHours() {
-      const { hours } = this.internalValue;
-      if (hours !== 'SCHOOL' && hours !== 'ROUTINE') {
-        return 'Please specify your desired schedule below';
-      }
-      const countHoursParts = CountHours[hours].map(
-        ([start, end]) => `${start}\u2013${end}`,
-      );
-      const countHoursMessage = countHoursParts.join(', ');
-      return [countHoursMessage];
+    itemsDaysOfWeek() {
+      return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
+    },
+    itemsHours() {
+      return StudyHours.enumValues.map((value) => {
+        const { hint, description: label } = value;
+        return { hint, label, value };
+      });
     },
     messagesNotes() {
       const { hours } = this.internalValue;
-      if (hours !== 'SCHOOL' && hours !== 'ROUTINE') {
+      if (hours === StudyHours.OTHER) {
         return [];
       }
       return [OPTIONAL.text];
