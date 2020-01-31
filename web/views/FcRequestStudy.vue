@@ -76,7 +76,7 @@ import {
   mapState,
 } from 'vuex';
 
-import { COUNT_TYPES } from '@/lib/Constants';
+import { COUNT_TYPES, StudyHours } from '@/lib/Constants';
 import {
   getStudyRequest,
 } from '@/lib/api/WebApi';
@@ -96,7 +96,7 @@ function makeStudy(studyType) {
     studyType,
     daysOfWeek: [2, 3, 4],
     duration: 24,
-    hours: 'ROUTINE',
+    hours: StudyHours.ROUTINE,
     notes: '',
   };
 }
@@ -105,7 +105,8 @@ function makeStudyRequest(location, now) {
   const dueDate = now.plus({ months: 3 });
   const studyRequest = {
     serviceRequestId: null,
-    priority: 'STANDARD',
+    urgent: false,
+    urgentReason: null,
     assignedTo: null,
     dueDate,
     estimatedDeliveryDate: null,
@@ -157,8 +158,8 @@ export default {
       if (studyRequest === null) {
         return null;
       }
-      const { dueDate, priority } = studyRequest;
-      if (priority === 'URGENT') {
+      const { dueDate, urgent } = studyRequest;
+      if (urgent) {
         return dueDate;
       }
       const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });

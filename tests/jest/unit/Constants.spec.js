@@ -31,7 +31,7 @@ test('Constants.SearchKeys', () => {
     dueDate,
     id: 42,
     location: null,
-    priority: 'STANDARD',
+    urgent: false,
     assignedTo: null,
     requestedBy: null,
     status: 'ACCEPTED',
@@ -56,11 +56,6 @@ test('Constants.SearchKeys', () => {
   REQUEST.location = location;
   expect(SearchKeys.Requests.LOCATION('foo ave', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.LOCATION('Bar St', REQUEST)).toBe(true);
-
-  expect(SearchKeys.Requests.PRIORITY('foo', REQUEST)).toBe(false);
-  expect(SearchKeys.Requests.PRIORITY('standard', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.PRIORITY('st', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.PRIORITY('URGENT', REQUEST)).toBe(false);
 
   expect(SearchKeys.Requests.REQUESTER('', REQUEST)).toBe(true);
   REQUEST.requestedBy = requestedBy;
@@ -120,14 +115,14 @@ test('Constants.SortKeys', () => {
     dueDate: now,
     id: 42,
     location,
-    priority: 'STANDARD',
+    urgent: false,
     assignedTo: 'FIELD STAFF',
     requestedBy,
     status: 'REVIEWED',
   };
   const REQUEST_URGENT = {
     ...REQUEST_STANDARD,
-    priority: 'URGENT',
+    urgent: true,
     assignedTo: null,
   };
   expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_STANDARD))
@@ -140,14 +135,14 @@ test('Constants.SortKeys', () => {
     .toEqual(REQUEST_STANDARD.id);
   expect(SortKeys.Requests.LOCATION(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.location.description);
-  expect(SortKeys.Requests.PRIORITY(REQUEST_STANDARD))
-    .toEqual(0);
-  expect(SortKeys.Requests.PRIORITY(REQUEST_URGENT))
-    .toEqual(1);
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.status);
+  expect(SortKeys.Requests.URGENT(REQUEST_STANDARD))
+    .toEqual(0);
+  expect(SortKeys.Requests.URGENT(REQUEST_URGENT))
+    .toEqual(1);
 
   const STUDY = {
     createdAt: now,

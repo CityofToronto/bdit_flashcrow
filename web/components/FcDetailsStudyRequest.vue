@@ -127,8 +127,8 @@ export default {
       return errors;
     },
     minDueDate() {
-      const { now, internalValue: { priority } } = this;
-      if (priority === 'URGENT') {
+      const { now, internalValue: { urgent } } = this;
+      if (urgent) {
         return now;
       }
       return now.plus({ months: 2 });

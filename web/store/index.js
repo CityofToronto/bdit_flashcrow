@@ -10,6 +10,7 @@ import {
 } from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
+import { REQUEST_STUDY_SUBMITTED } from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
 import requestStudy from '@/web/store/modules/requestStudy';
 import viewData from '@/web/store/modules/viewData';
@@ -131,7 +132,7 @@ export default new Vuex.Store({
       return toast;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ state }, { isSupervisor, studyRequest }) {
+    async saveStudyRequest({ state, commit }, { isSupervisor, studyRequest }) {
       const data = studyRequest;
       const update = data.id !== undefined;
       if (update && isSupervisor) {
@@ -144,7 +145,9 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      return apiFetch(url, options);
+      const studyRequestSaved = apiFetch(url, options);
+      commit('setToast', REQUEST_STUDY_SUBMITTED);
+      return studyRequestSaved;
     },
   },
 });

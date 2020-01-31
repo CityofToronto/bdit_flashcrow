@@ -49,7 +49,8 @@ export default {
       const studies = studyTypes.map(makeStudy);
       const studyRequest = {
         serviceRequestId: null,
-        priority: 'STANDARD',
+        urgent: false,
+        urgentReason: null,
         assignedTo: null,
         dueDate,
         reasons: [],

@@ -37,7 +37,7 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcRadioGroup',
-  mixins: [FcMixinVModelProxy([Boolean, Number, String])],
+  mixins: [FcMixinVModelProxy([Boolean, Number, Object, String])],
   props: {
     items: {
       type: Array,
