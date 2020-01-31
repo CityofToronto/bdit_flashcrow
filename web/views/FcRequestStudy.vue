@@ -197,21 +197,6 @@ export default {
       }
       return route;
     },
-    studyTypesWithWarnings() {
-      const studyTypesSelected = new Set();
-      this.studyRequest.studies.forEach(({ studyType: value }) => {
-        studyTypesSelected.add(value);
-      });
-      return COUNT_TYPES.map(({ label, value }) => {
-        // let warning = null;
-        if (studyTypesSelected.has(value)) {
-          // warning = STUDY_DUPLICATE.getModalOptions({ label });
-        } else if (!this.studyTypesRelevantToLocation.includes(value)) {
-          // warning = STUDY_IRRELEVANT_TYPE.getModalOptions({ label });
-        }
-        return { label, value, warning: null };
-      });
-    },
     subtitle() {
       if (this.location === null) {
         return 'needs location';
@@ -257,9 +242,25 @@ export default {
       this.$v.studyRequest.centrelineType.$touch();
       this.$v.studyRequest.geom.$touch();
     },
+    studyTypes(studyTypes, studyTypesPrev) {
+      studyTypes.forEach((studyType) => {
+        if (!studyTypesPrev.includes(studyType)) {
+          this.actionAddStudy(studyType);
+        }
+      });
+      studyTypesPrev.forEach((studyType) => {
+        if (!studyTypes.includes(studyType)) {
+          this.actionRemoveStudy(studyType);
+        }
+      });
+    },
   },
   validations: ValidationsStudyRequest.validations,
   methods: {
+    actionAddStudy(studyType) {
+      const item = makeStudy(studyType);
+      this.studyRequest.studies.push(item);
+    },
     actionNavigateBack() {
       if (this.location === null) {
         this.$router.push({ name: 'viewData' });
@@ -271,26 +272,18 @@ export default {
         params: { centrelineId, centrelineType },
       });
     },
-    onAddStudy(studyType) {
-      const { warning } = this.studyTypesWithWarnings
-        .find(({ value }) => value === studyType);
-      const item = makeStudy(studyType);
-      if (warning === null) {
-        this.studyRequest.studies.push(item);
-      } else {
-        warning.data.action = () => {
-          this.studyRequest.studies.push(item);
-        };
-        // this.setDialog(warning);
+    actionRemoveStudy(studyType) {
+      const i = this.studyRequest.studies.findIndex(
+        ({ studyType: studyType0 }) => studyType0 === studyType,
+      );
+      if (i !== -1) {
+        this.studyRequest.studies.splice(i, 1);
       }
     },
     onFinish() {
       const { isSupervisor, studyRequest } = this;
       this.saveStudyRequest({ isSupervisor, studyRequest });
       this.$router.push(this.routeFinish);
-    },
-    onRemoveStudy(i) {
-      this.studyRequest.studies.splice(i, 1);
     },
     async loadAsyncForRoute(to) {
       if (this.isCreate) {

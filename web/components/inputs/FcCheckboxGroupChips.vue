@@ -6,7 +6,7 @@
     <v-chip
       v-for="{ selected, text, value } in itemsNormalized"
       :key="value"
-      class="ml-2"
+      class="mr-2"
       :color="selected ? 'blue lighten-4' : null"
       filter
       :value="value">
