@@ -1,52 +1,22 @@
 <template>
-  <div class="fc-input-text-array">
-    <div
-      v-for="(s, i) in internalValue"
-      :key="i"
-      class="d-flex flex-row">
-      <v-text-field
-        v-model="internalValue[i]"
-        :error-messages="errorMessagesEach[i]"
-        :label="'Email #' + (i + 1)">
-        <v-btn
-          v-slot:append-outer
-          @click.prevent="onRemove(i)">
-          <v-icon left>mdi-minus</v-icon> Remove
-        </v-btn>
-      </v-text-field>
-    </div>
-    <v-btn
-      block
-      class="mt-2"
-      @click.prevent="onAdd">
-      <v-icon left>mdi-plus</v-icon> Add
-    </v-btn>
-  </div>
+  <v-combobox
+    v-model="internalValue"
+    append-icon="mdi-plus"
+    chips
+    deletable-chips
+    dense
+    hide-details
+    multiple
+    outlined></v-combobox>
 </template>
 
 <script>
 export default {
   name: 'FcInputTextArray',
   props: {
-    v: Object,
     value: Array,
   },
   computed: {
-    errorMessagesEach() {
-      return this.internalValue.map((_, i) => {
-        const errors = [];
-        if (!this.v.$each[i].$dirty) {
-          return errors;
-        }
-        if (!this.v.$each[i].required) {
-          errors.push('Please enter a value.');
-        }
-        if (!this.v.$each[i].torontoInternal) {
-          errors.push('Please enter a valid @toronto.ca email address.');
-        }
-        return errors;
-      });
-    },
     internalValue: {
       get() {
         return this.value;

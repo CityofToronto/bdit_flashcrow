@@ -100,10 +100,15 @@ export default {
     }
   }
 
-  &.horizontal > .pane-drawer-toggle {
-    border-radius: 0 var(--space-s) var(--space-s) 0;
-    height: 38px;
-    top: 20px;
+  &.horizontal {
+    & > .pane-drawer-toggle {
+      border-radius: 0 var(--space-s) var(--space-s) 0;
+      height: 38px;
+      top: 20px;
+    }
+    & > .fc-pane-wrapper > div {
+      width: 50%;
+    }
   }
 
   &.vertical {
@@ -118,7 +123,7 @@ export default {
       }
     }
     & > .fc-pane-wrapper > div {
-      height: 50vh;
+      height: 50%;
     }
   }
 
@@ -133,7 +138,7 @@ export default {
         top: 0;
       }
       & > .fc-pane-wrapper > div {
-        height: 100vh;
+        height: 100%;
       }
     }
   }

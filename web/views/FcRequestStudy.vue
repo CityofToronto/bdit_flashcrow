@@ -27,11 +27,10 @@
 
         <section class="mt-5">
           <h3>Study Type</h3>
-          <div class="mt-4">
-            <v-chip>
-              TODO: add selectable chips for study types
-            </v-chip>
-          </div>
+          <FcCheckboxGroupChips
+            v-model="studyTypes"
+            item-text="label"
+            :items="COUNT_TYPES"></FcCheckboxGroupChips>
           <v-messages
             class="mt-1"
             color="error"
@@ -48,27 +47,6 @@
             v-model="studyRequest.studies[i]"
             :v="$v.studyRequest.studies.$each[i]" />
 
-        <v-menu>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              v-bind="attrs"
-              v-on="on"
-              block
-              :color="$v.studyRequest.studies.required ? '' : 'primary'">
-              <v-icon left>mdi-plus</v-icon>Add Study
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="{ label, value, warning } in studyTypesWithWarnings"
-              :key="value"
-              @click="onAddStudy(value)">
-              <v-list-item-title>
-                <v-icon v-if="warning !== null">mdi-alert</v-icon> {{label}}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
         <v-btn
           block
           class="mt-6"
@@ -106,6 +84,7 @@ import {
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
+import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudy(studyType) {
@@ -140,13 +119,16 @@ export default {
   name: 'FcRequestStudy',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcCheckboxGroupChips,
     FcDetailsStudy,
     FcDetailsStudyRequest,
   },
   data() {
     return {
+      COUNT_TYPES,
       REQUEST_STUDY_TIME_TO_FULFILL,
       studyRequest: null,
+      studyTypes: [],
     };
   },
   computed: {
