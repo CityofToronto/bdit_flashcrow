@@ -67,15 +67,16 @@ import {
 } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDetailsStudy',
+  mixins: [FcMixinVModelProxy(Object)],
   components: {
     TdsRadioGroup,
   },
   props: {
     v: Object,
-    value: Object,
   },
   data() {
     const { DAYS_OF_WEEK } = TimeFormatters;
@@ -85,14 +86,6 @@ export default {
     };
   },
   computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
     errorMessagesDaysOfWeek() {
       const errors = [];
       if (!this.v.daysOfWeek.$dirty) {

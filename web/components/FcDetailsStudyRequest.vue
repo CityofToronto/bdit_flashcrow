@@ -42,8 +42,8 @@
         <FcDatePicker
           v-model="v.dueDate.$model"
           class="mt-3"
-          :min="minDueDate"
-          mode="single">
+          label="Due Date"
+          :min="minDueDate">
         </FcDatePicker>
       </template>
     </div>
@@ -71,9 +71,11 @@ import {
 import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDetailsStudyRequest',
+  mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcCheckboxGroupChips,
     FcDatePicker,
@@ -81,7 +83,6 @@ export default {
   },
   props: {
     v: Object,
-    value: Object,
   },
   data() {
     return {
@@ -124,14 +125,6 @@ export default {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
       }
       return errors;
-    },
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
     },
     minDueDate() {
       const { now, internalValue: { priority } } = this;
