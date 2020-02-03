@@ -2,6 +2,7 @@
   <v-data-table
     v-model="internalValue"
     :caption="caption"
+    :custom-sort="customSort"
     disable-filtering
     disable-pagination
     :headers="headers"
@@ -9,7 +10,8 @@
     item-key="id"
     :items="items"
     :loading="loading"
-    :show-select="showSelect">
+    :show-select="showSelect"
+    v-bind="$attrs">
     <template
       v-for="(_, slot) of $scopedSlots"
       v-slot:[slot]="scope">
@@ -19,6 +21,19 @@
 </template>
 
 <script>
+function compareKeys(ka, kb, kf) {
+  const n = ka.length;
+  for (let i = 0; i < n; i++) {
+    if (ka[i] < kb[i]) {
+      return -kf[i];
+    }
+    if (ka[i] > kb[i]) {
+      return kf[i];
+    }
+  }
+  return 0;
+}
+
 export default {
   name: 'FcDataTable',
   props: {
@@ -49,10 +64,8 @@ export default {
   computed: {
     headers() {
       return this.columns.map(({ value, ...options }) => {
-        const sort = this.sortKeys[value] || null;
-        const sortable = sort !== null;
+        const sortable = Object.prototype.hasOwnProperty.call(this.sortKeys, value);
         return {
-          sort,
           sortable,
           value,
           ...options,
@@ -66,6 +79,16 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+  },
+  methods: {
+    customSort(items, sortBy, sortDesc) {
+      const kf = sortDesc.map(desc => (desc ? -1 : 1));
+      return [...items].sort((a, b) => {
+        const ka = sortBy.map(k => this.sortKeys[k](a));
+        const kb = sortBy.map(k => this.sortKeys[k](b));
+        return compareKeys(ka, kb, kf);
+      });
     },
   },
 };

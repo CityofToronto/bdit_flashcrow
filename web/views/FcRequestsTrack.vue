@@ -12,13 +12,22 @@
           <span v-else>Open Requests</span>
         </h1>
         <div class="align-center d-flex mt-8 mb-2">
-          <template v-if="selectedItems.length > 0">
+          <v-btn
+            v-if="selectedItems.length === 0"
+            class="mr-2"
+            :loading="loadingRefresh"
+            outlined
+            @click="actionRefresh()">
+            <v-icon left>mdi-refresh</v-icon>
+            Refresh
+          </v-btn>
+          <template v-else>
             <v-btn
               v-if="closed"
               class="mr-2"
               outlined
               @click="actionReopen(selectedItems)">
-              <v-icon left>mdi-door-open</v-icon>
+              <v-icon left>mdi-lock-open-outline</v-icon>
               Reopen
             </v-btn>
             <template v-else>
@@ -43,26 +52,18 @@
                 class="mr-2"
                 outlined
                 @click="actionDownload(selectedItems)">
-                <v-icon left>mdi-download</v-icon>
+                <v-icon left>mdi-cloud-download</v-icon>
                 Download
               </v-btn>
               <v-btn
                 class="mr-2"
                 outlined
                 @click="actionClose(selectedItems)">
-                <v-icon left>mdi-door-closed-lock</v-icon>
+                <v-icon left>mdi-lock</v-icon>
                 Close
               </v-btn>
             </template>
           </template>
-          <v-btn
-            v-else
-            class="mr-2"
-            outlined
-            @click="actionRefresh()">
-            <v-icon left>mdi-refresh</v-icon>
-            Refresh
-          </v-btn>
         </div>
         <v-divider></v-divider>
       </div>
@@ -75,8 +76,11 @@
         :columns="columns"
         expandable
         :items="items"
-        :loading="loading"
+        :loading="loading || loadingRefresh"
+        must-sort
         show-select
+        sort-by="ID"
+        :sort-desc="true"
         :sort-keys="sortKeys">
         <template v-slot:item.ID="{ item }">
           <span>{{item.id}}</span>
@@ -114,20 +118,44 @@
           </span>
         </template>
         <template v-slot:item.ACTIONS="{ item }">
-          <template v-if="isSupervisor">
-            <button
-              class="font-size-m mr-2"
-              :title="'Approve Request #' + item.id"
-              @click="actionApprove([item])">
-              <v-icon>mdi-thumb-up</v-icon>
-            </button>
-            <button
-              class="font-size-m mr-2"
-              :title="'Ask for Changes to Request #' + item.id"
-              @click="actionReject([item])">
-              <v-icon>mdi-file-undo</v-icon>
-            </button>
-          </template>
+          <div class="text-right">
+            <v-btn
+              v-if="isSupervisor"
+              class="mr-2"
+              icon
+              @click="actionUrgentToggle(item)">
+              <v-icon :color="item.urgent ? 'warning' : ''">mdi-clipboard-alert</v-icon>
+            </v-btn>
+            <v-icon
+              v-else-if="item.urgent"
+              class="mr-2"
+              color="warning"
+              title="Urgent">mdi-clipboard-alert</v-icon>
+
+            <template v-if="isSupervisor">
+              <v-btn
+                class="mr-2"
+                icon
+                :title="'Approve Request #' + item.id"
+                @click="actionApprove([item])">
+                <v-icon>mdi-thumb-up</v-icon>
+              </v-btn>
+              <v-btn
+                class="mr-2"
+                icon
+                :title="'Ask for Changes to Request #' + item.id"
+                @click="actionReject([item])">
+                <v-icon>mdi-clipboard-arrow-left</v-icon>
+              </v-btn>
+            </template>
+
+            <v-btn
+              icon
+              :title="'View Request #' + item.id"
+              @click="actionShowRequest(item)">
+              <v-icon>mdi-file-eye</v-icon>
+            </v-btn>
+          </div>
         </template>
         <template v-slot:__expanded="{ item }">
           <div>
@@ -154,15 +182,13 @@ import {
   COUNT_TYPES,
   SearchKeys,
   SortKeys,
+  StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import {
   getUserStudyRequests,
   putStudyRequests,
 } from '@/lib/api/WebApi';
-import {
-  REQUESTS_STUDY_DOWNLOAD_NO_SELECTION,
-} from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
@@ -242,33 +268,6 @@ function getItemRows(item) {
   });
 }
 
-/*
-function getStudyRequestsToast(studyRequests, action) {
-  if (studyRequests.length > 0) {
-    return null;
-  }
-  // TODO: make it possible to parameterize entries in lib/i18n/Strings
-  return {
-    variant: 'warning',
-    text: `Please select one or more requests to ${action}.`,
-  };
-}
-
-function getStudyRequestsHuman(studyRequests, action) {
-  const n = studyRequests.length;
-  const actionUppercase = action[0].toUpperCase() + action.slice(1);
-  const title = n > 1 ? `${actionUppercase} ${n} Requests?` : `${actionUppercase} Request?`;
-
-  const studyRequestsHumanParts = studyRequests.map(
-    ({ id, location }) => `Request #${id} at ${location.description}`,
-  );
-  const studyRequestsHuman = formatOxfordCommaList(studyRequestsHumanParts);
-  const prompt = `You are about to ${action} ${studyRequestsHuman}.  Is that OK?`;
-
-  return { title, prompt };
-}
-*/
-
 export default {
   name: 'FcRequestsTrack',
   mixins: [FcMixinRouteAsync],
@@ -279,7 +278,7 @@ export default {
   data() {
     return {
       indexClosed: 0,
-      loading: false,
+      loadingRefresh: false,
       searchKeys: SearchKeys.Requests,
       selectedItems: [],
       sortKeys: SortKeys.Requests,
@@ -358,28 +357,29 @@ export default {
     },
     ...mapState(['auth']),
   },
+  watch: {
+    closed() {
+      this.selection = [];
+    },
+  },
   methods: {
     actionApprove(studyRequests) {
-      this.actionUpdateStudyRequests(studyRequests, 'approve', {
-        status: 'ACCEPTED',
+      this.setStudyRequests(studyRequests, {
+        status: StudyRequestStatus.ACCEPTED,
       });
     },
     actionClose(studyRequests) {
-      this.actionUpdateStudyRequests(studyRequests, 'close', {
+      this.setStudyRequests(studyRequests, {
         closed: true,
       });
     },
     actionComplete(studyRequests) {
-      this.actionUpdateStudyRequests(studyRequests, 'approve', {
+      this.setStudyRequests(studyRequests, {
         closed: true,
-        status: 'COMPLETED',
+        status: StudyRequestStatus.COMPLETED,
       });
     },
     actionDownload(studyRequests) {
-      if (studyRequests.length === 0) {
-        this.setToast(REQUESTS_STUDY_DOWNLOAD_NO_SELECTION);
-        return;
-      }
       const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRows));
       const columns = [
         'id',
@@ -405,35 +405,20 @@ export default {
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
-    actionRefresh() {
-      this.syncFromRoute(this.$route);
+    async actionRefresh() {
+      this.loadingRefresh = true;
+      await this.loadAsyncForRoute();
+      this.loadingRefresh = false;
     },
     actionReject(studyRequests) {
-      this.actionUpdateStudyRequests(studyRequests, 'reject', {
-        status: 'REJECTED',
+      this.setStudyRequests(studyRequests, {
+        status: StudyRequestStatus.REJECTED,
       });
     },
     actionReopen(studyRequests) {
-      this.actionUpdateStudyRequests(studyRequests, 'reopen', {
+      this.setStudyRequests(studyRequests, {
         closed: false,
       });
-    },
-    actionSetAssignedTo({ item, assignedTo }) {
-      const { isSupervisor } = this;
-      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
-      studyRequest.assignedTo = assignedTo;
-      if (assignedTo === null) {
-        studyRequest.status = 'ACCEPTED';
-      } else {
-        studyRequest.status = 'IN_PROGRESS';
-      }
-      this.saveStudyRequest({ isSupervisor, studyRequest });
-    },
-    actionSetPriority({ item, priority }) {
-      const { isSupervisor } = this;
-      const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
-      studyRequest.priority = priority;
-      this.saveStudyRequest({ isSupervisor, studyRequest });
     },
     actionShowRequest(item) {
       const route = {
@@ -445,44 +430,11 @@ export default {
       }
       this.$router.push(route);
     },
-    actionUpdateStudyRequests(/* studyRequests, actionName, updates */) {
-      /*
-      const toast = getStudyRequestsToast(studyRequests, actionName);
-      if (toast !== null) {
-        this.setToast(toast);
-        return;
-      }
-      const action = () => {
-        this.setStudyRequests(studyRequests, updates);
-      };
-      if (studyRequests.length === 1) {
-        action();
-        return;
-      }
-      const { title, prompt } = getStudyRequestsHuman(studyRequests, actionName);
-      const actionUppercase = actionName[0].toUpperCase() + actionName.slice(1);
-      this.setDialog({
-        component: 'TdsConfirmDialog',
-        data: {
-          title,
-          prompt,
-          action,
-          textOk: actionUppercase,
-        },
+    actionUrgentToggle(item) {
+      const { urgent } = item;
+      this.setStudyRequests([item], {
+        urgent: !urgent,
       });
-      */
-    },
-    setClosed(closed) {
-      this.closed = closed;
-      this.selection = [];
-    },
-    async setStudyRequests(items, updates) {
-      const { isSupervisor } = this;
-      const studyRequests = items.map((item) => {
-        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
-        return Object.assign(studyRequest, updates);
-      });
-      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
     async loadAsyncForRoute() {
       const {
@@ -494,6 +446,14 @@ export default {
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
+    },
+    async setStudyRequests(items, updates) {
+      const { isSupervisor } = this;
+      const studyRequests = items.map((item) => {
+        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
+        return Object.assign(studyRequest, updates);
+      });
+      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
     ...mapActions([
       'saveStudyRequest',
