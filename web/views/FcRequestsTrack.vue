@@ -122,9 +122,10 @@
             <v-btn
               v-if="isSupervisor"
               class="mr-2"
+              :color="item.urgent ? 'warning' : ''"
               icon
               @click="actionUrgentToggle(item)">
-              <v-icon :color="item.urgent ? 'warning' : ''">mdi-clipboard-alert</v-icon>
+              <v-icon>mdi-clipboard-alert</v-icon>
             </v-btn>
             <v-icon
               v-else-if="item.urgent"
@@ -135,6 +136,7 @@
             <template v-if="isSupervisor">
               <v-btn
                 class="mr-2"
+                :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : ''"
                 icon
                 :title="'Approve Request #' + item.id"
                 @click="actionApprove([item])">
@@ -142,6 +144,7 @@
               </v-btn>
               <v-btn
                 class="mr-2"
+                :color="item.status === StudyRequestStatus.REJECTED ? 'error' : ''"
                 icon
                 :title="'Ask for Changes to Request #' + item.id"
                 @click="actionReject([item])">
@@ -155,15 +158,6 @@
               @click="actionShowRequest(item)">
               <v-icon>mdi-file-eye</v-icon>
             </v-btn>
-          </div>
-        </template>
-        <template v-slot:__expanded="{ item }">
-          <div>
-            <FcSummaryStudy
-              v-for="(study, i) in item.studies"
-              :key="'study_' + item.id + '_' + i"
-              :index="i"
-              :study-request="item" />
           </div>
         </template>
       </FcDataTable>
@@ -191,7 +185,6 @@ import {
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
-import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemFields(item) {
@@ -273,10 +266,32 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcDataTable,
-    FcSummaryStudy,
   },
   data() {
+    const columns = [{
+      value: 'ID',
+      text: 'ID',
+    }, {
+      value: 'LOCATION',
+      text: 'Location',
+    }, {
+      value: 'REQUESTER',
+      text: 'Requester',
+    }, {
+      value: 'DATE',
+      text: 'Due Date',
+    }, {
+      value: 'ASSIGNED_TO',
+      text: 'Assign',
+    }, {
+      value: 'STATUS',
+      text: 'Status',
+    }, {
+      value: 'ACTIONS',
+      text: '',
+    }];
     return {
+      columns,
       indexClosed: 0,
       loadingRefresh: false,
       searchKeys: SearchKeys.Requests,
@@ -284,43 +299,13 @@ export default {
       sortKeys: SortKeys.Requests,
       studyRequests: [],
       studyRequestLocations: new Map(),
+      StudyRequestStatus,
       studyRequestUsers: new Map(),
     };
   },
   computed: {
     closed() {
       return this.indexClosed === 1;
-    },
-    columns() {
-      const columns = [{
-        value: 'ID',
-        text: 'ID',
-      }, {
-        value: 'LOCATION',
-        text: 'Location',
-      }, {
-        value: 'REQUESTER',
-        text: 'Requester',
-      }, {
-        value: 'DATE',
-        text: 'Due Date',
-      }, {
-        value: 'ASSIGNED_TO',
-        text: 'Assign',
-      }, {
-        value: 'STATUS',
-        text: 'Status',
-      }, {
-        value: 'ACTIONS',
-        text: '',
-      }];
-      if (this.isSupervisor) {
-        columns.push({
-          value: 'ACTIONS',
-          text: 'Actions',
-        });
-      }
-      return columns;
     },
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
