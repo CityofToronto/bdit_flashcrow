@@ -483,7 +483,6 @@ test('StudyRequestDAO', async () => {
 
   // save study request
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
-  console.log(persistedStudyRequest);
   expect(persistedStudyRequest.id).not.toBeNull();
   await expect(
     StudyRequest.read.validateAsync(persistedStudyRequest),
@@ -577,7 +576,7 @@ test('StudyRequestCommentDAO', async () => {
     userId: userCreated1.id,
     status: StudyRequestStatus.REQUESTED,
     closed: false,
-    serviceRequestId: 12345,
+    serviceRequestId: '12345',
     urgent: false,
     urgentReason: null,
     assignedTo: 'FIELD STAFF',
