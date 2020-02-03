@@ -15,8 +15,7 @@
       <h3>Reasons</h3>
       <FcCheckboxGroupChips
         v-model="v.reasons.$model"
-        item-text="label"
-        :items="requestReasons"></FcCheckboxGroupChips>
+        :items="itemsReasons"></FcCheckboxGroupChips>
       <v-messages
         class="mt-1"
         color="error"
@@ -63,6 +62,9 @@
 <script>
 import { mapState } from 'vuex';
 
+import {
+  StudyRequestReason,
+} from '@/lib/Constants';
 import {
   OPTIONAL,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
@@ -126,6 +128,12 @@ export default {
       }
       return errors;
     },
+    itemsReasons() {
+      return StudyRequestReason.enumValues.map((value) => {
+        const { text } = value;
+        return { text, value };
+      });
+    },
     minDueDate() {
       const { now, internalValue: { urgent } } = this;
       if (urgent) {
@@ -133,7 +141,7 @@ export default {
       }
       return now.plus({ months: 2 });
     },
-    ...mapState(['now', 'requestReasons']),
+    ...mapState(['now']),
   },
 };
 </script>

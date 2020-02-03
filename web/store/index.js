@@ -30,7 +30,6 @@ export default new Vuex.Store({
       loggedIn: false,
     },
     now: DateTime.local(),
-    requestReasons: [],
     // TOP-LEVEL UI
     drawerOpen: false,
     toast: null,
@@ -93,9 +92,6 @@ export default new Vuex.Store({
   },
   mutations: {
     // AUTH / HELPERS STATE
-    webInit(state, { reasons }) {
-      Vue.set(state, 'requestReasons', reasons);
-    },
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
     },

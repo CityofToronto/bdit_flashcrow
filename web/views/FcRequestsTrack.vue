@@ -1,82 +1,73 @@
 <template>
-  <div class="fc-requests-track flex-container-column flex-fill">
-    <section>
-      <header>
-        <div class="bar-tabs flex-container-row bb">
-          <button
-            class="font-size-l px-4 uppercase"
-            :class="{
-              'tab-selected': !closed
-            }"
-            @click="setClosed(false)">Open</button>
-          <button
-            class="font-size-l px-4 uppercase"
-            :class="{
-              'tab-selected': closed
-            }"
-            @click="setClosed(true)">Closed</button>
-        </div>
-        <h1 class="my-4">
+  <section class="fc-requests-track d-flex flex-column fill-height">
+    <header class="flex-grow-0 flex-shrink-0">
+      <v-tabs v-model="indexClosed">
+        <v-tab>Open</v-tab>
+        <v-tab>Closed</v-tab>
+      </v-tabs>
+      <v-divider></v-divider>
+      <div class="pa-5">
+        <h1 class="display-2">
           <span v-if="closed">Closed Requests</span>
           <span v-else>Open Requests</span>
         </h1>
-        <div class="bar-actions-bulk flex-container-row pa-4 mb-8">
+        <div class="align-center d-flex mt-8 mb-2">
           <template v-if="selectedItems.length > 0">
-            <div
+            <v-btn
               v-if="closed"
-              class="py-1">
-              <button
-                class="font-size-m ml-2 uppercase"
-                @click="actionReopen(selectedItems)">
-                <v-icon>mdi-door-open</v-icon>
-                <span> Reopen</span>
-              </button>
-            </div>
+              class="mr-2"
+              outlined
+              @click="actionReopen(selectedItems)">
+              <v-icon left>mdi-door-open</v-icon>
+              Reopen
+            </v-btn>
             <template v-else>
-              <div
-                v-if="isSupervisor"
-                class="br py-1">
-                <button
-                  class="font-size-m mr-2 uppercase"
+              <template
+                v-if="isSupervisor">
+                <v-btn
+                  class="mr-2"
+                  outlined
                   @click="actionApprove(selectedItems)">
-                  <v-icon>mdi-thumb-up</v-icon>
-                  <span> Approve</span>
-                </button>
-                <button
-                  class="font-size-m mr-2 uppercase"
+                  <v-icon left>mdi-thumb-up</v-icon>
+                  Approve
+                </v-btn>
+                <v-btn
+                  class="mr-2"
+                  outlined
                   @click="actionComplete(selectedItems)">
-                  <v-icon>mdi-clipboard-check</v-icon>
-                  <span> Complete</span>
-                </button>
-              </div>
-              <div class="py-1">
-                <button
-                  class="font-size-m ml-2 uppercase"
-                  @click="actionDownload(selectedItems)">
-                  <v-icon>mdi-download</v-icon>
-                  <span> Download</span>
-                </button>
-                <button
-                  class="font-size-m ml-2 uppercase"
-                  @click="actionClose(selectedItems)">
-                  <v-icon>mdi-door-closed-lock</v-icon>
-                  <span> Close</span>
-                </button>
-              </div>
+                  <v-icon left>mdi-clipboard-check</v-icon>
+                  Complete
+                </v-btn>
+              </template>
+              <v-btn
+                class="mr-2"
+                outlined
+                @click="actionDownload(selectedItems)">
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+              <v-btn
+                class="mr-2"
+                outlined
+                @click="actionClose(selectedItems)">
+                <v-icon left>mdi-door-closed-lock</v-icon>
+                Close
+              </v-btn>
             </template>
           </template>
-          <div
+          <v-btn
             v-else
-            class="py-1">
-            <button
-              class="font-size-m uppercase"
-              @click="actionRefresh()">
-              <v-icon>mdi-refresh</v-icon>
-              <span> Refresh</span>
-            </button>
-          </div>
+            class="mr-2"
+            outlined
+            @click="actionRefresh()">
+            <v-icon left>mdi-refresh</v-icon>
+            Refresh
+          </v-btn>
         </div>
-      </header>
+        <v-divider></v-divider>
+      </div>
+    </header>
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
       <FcDataTable
         v-model="selectedItems"
         class="fc-data-table-requests"
@@ -88,95 +79,39 @@
         show-select
         :sort-keys="sortKeys">
         <template v-slot:item.ID="{ item }">
-          <div
-            class="flex-container-row"
-            :title="'Show Request #' + item.id"
-            @click.prevent="actionShowRequest(item)">
-            <u>{{item.id}}</u>
-          </div>
+          <span>{{item.id}}</span>
         </template>
         <template v-slot:item.LOCATION="{ item }">
-          <div class="text-ellipsis">
+          <div class="text-truncate">
             <span
-              v-if="item.location === null"
-              class="text-muted">
-              N/A
-            </span>
-            <span
-              v-else
+              v-if="item.location !== null"
               :title="item.location.description">
               {{item.location.description}}
             </span>
           </div>
         </template>
         <template v-slot:item.REQUESTER="{ item }">
-          <span
-            v-if="item.requestedBy === null"
-            class="text-muted">
-            N/A
-          </span>
-          <span v-else>
-            {{item.requestedBy.uniqueName}}
-          </span>
+          <div class="text-truncate">
+            <span
+              v-if="item.requestedBy !== null"
+              :title="item.requestedBy.uniqueName">
+              {{item.requestedBy.uniqueName}}
+            </span>
+          </div>
         </template>
         <template v-slot:item.DATE="{ item }">
           <span>{{item.dueDate | date}}</span>
         </template>
-        <template v-slot:item.PRIORITY="{ item }">
-          <TdsActionDropdown
-            v-if="isSupervisor"
-            class="font-size-m full-width"
-            :options="[
-              { label: 'STANDARD', value: { item, priority: 'STANDARD' } },
-              { label: 'URGENT', value: { item, priority: 'URGENT' } },
-            ]"
-            @action-selected="actionSetPriority">
-            <span
-              :class="{
-                'priority-urgent': item.priority === 'URGENT',
-              }">
-              <v-icon v-if="item.priority === 'URGENT'">mdi-exclamation</v-icon>
-              <span> {{item.priority}}</span>
-            </span>
-          </TdsActionDropdown>
-          <span
-            v-else
-            :class="{
-              'priority-urgent': item.priority === 'URGENT',
-            }">
-            <v-icon v-if="item.priority === 'URGENT'">mdi-exclamation</v-icon>
-            <span> {{item.priority}}</span>
-          </span>
-        </template>
         <template v-slot:item.ASSIGNED_TO="{ item }">
-          <TdsActionDropdown
-            v-if="isSupervisor"
-            class="font-size-m full-width"
-            :options="[
-              { label: 'NONE', value: { item, assignedTo: null } },
-              { label: 'OTI', value: { item, assignedTo: 'OTI' } },
-              { label: 'FIELD STAFF', value: { item, assignedTo: 'FIELD_STAFF' } },
-            ]"
-            @action-selected="actionSetAssignedTo">
-            <span
-              v-if="item.assignedTo === null">
-              NONE
-            </span>
-            <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
-          </TdsActionDropdown>
-          <span
-            v-else-if="item.assignedTo === null"
-            class="text-muted">
+          <span v-if="item.assignedTo === null">
             NONE
           </span>
           <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
         </template>
         <template v-slot:item.STATUS="{ item }">
-          <TdsLabel
-            v-bind="RequestStatus[item.status]"
-            class="full-width uppercase">
-            {{RequestStatus[item.status].text}}
-          </TdsLabel>
+          <span>
+            {{item.status.text}}
+          </span>
         </template>
         <template v-slot:item.ACTIONS="{ item }">
           <template v-if="isSupervisor">
@@ -205,7 +140,7 @@
         </template>
       </FcDataTable>
     </section>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -217,7 +152,6 @@ import {
   centrelineKey,
   CentrelineType,
   COUNT_TYPES,
-  RequestStatus,
   SearchKeys,
   SortKeys,
 } from '@/lib/Constants';
@@ -232,14 +166,14 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
-import TdsActionDropdown from '@/web/components/tds/TdsActionDropdown.vue';
-import TdsLabel from '@/web/components/tds/TdsLabel.vue';
+import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemFields(item) {
   const {
     centrelineType,
     id,
-    priority,
+    urgent,
+    urgentReason,
     assignedTo,
     status,
   } = item;
@@ -258,7 +192,8 @@ function getItemFields(item) {
     requester,
     dueDate,
     estimatedDeliveryDate,
-    priority,
+    urgent,
+    urgentReason,
     assignedTo,
     status,
     lng,
@@ -336,17 +271,15 @@ function getStudyRequestsHuman(studyRequests, action) {
 
 export default {
   name: 'FcRequestsTrack',
+  mixins: [FcMixinRouteAsync],
   components: {
     FcDataTable,
     FcSummaryStudy,
-    TdsActionDropdown,
-    TdsLabel,
   },
   data() {
     return {
-      closed: false,
+      indexClosed: 0,
       loading: false,
-      RequestStatus,
       searchKeys: SearchKeys.Requests,
       selectedItems: [],
       sortKeys: SortKeys.Requests,
@@ -356,10 +289,13 @@ export default {
     };
   },
   computed: {
+    closed() {
+      return this.indexClosed === 1;
+    },
     columns() {
       const columns = [{
         value: 'ID',
-        text: 'ID#',
+        text: 'ID',
       }, {
         value: 'LOCATION',
         text: 'Location',
@@ -370,14 +306,14 @@ export default {
         value: 'DATE',
         text: 'Due Date',
       }, {
-        value: 'PRIORITY',
-        text: 'Priority',
-      }, {
         value: 'ASSIGNED_TO',
         text: 'Assign',
       }, {
         value: 'STATUS',
         text: 'Status',
+      }, {
+        value: 'ACTIONS',
+        text: '',
       }];
       if (this.isSupervisor) {
         columns.push({
@@ -422,19 +358,6 @@ export default {
     },
     ...mapState(['auth']),
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.syncFromRoute(to);
-    });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.syncFromRoute(to)
-      .then(() => {
-        next();
-      }).catch((err) => {
-        next(err);
-      });
-  },
   methods: {
     actionApprove(studyRequests) {
       this.actionUpdateStudyRequests(studyRequests, 'approve', {
@@ -464,7 +387,8 @@ export default {
         'requester',
         'dueDate',
         'estimatedDeliveryDate',
-        'priority',
+        'urgent',
+        'urgentReason',
         'assignedTo',
         'status',
         'lng',
@@ -560,9 +484,7 @@ export default {
       });
       return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
     },
-    async syncFromRoute() {
-      this.loading = true;
-
+    async loadAsyncForRoute() {
       const {
         studyRequests,
         studyRequestLocations,
@@ -572,7 +494,6 @@ export default {
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
-      this.loading = false;
     },
     ...mapActions([
       'saveStudyRequest',
@@ -585,33 +506,7 @@ export default {
 <style lang="postcss">
 .fc-requests-track {
   max-height: 100%;
-  overflow: auto;
-  padding: var(--space-m) var(--space-l);
-
-  header > h1 {
-    font-size: 3rem;
-  }
-
-  .bar-tabs > button {
-    background-color: transparent;
-    border: none;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    box-shadow: none;
-    color: var(--base);
-    &:hover {
-      color: var(--ink);
-    }
-    &.tab-selected {
-      background-color: var(--base-lighter);
-      color: var(--ink);
-    }
-  }
-
-  .bar-actions-bulk {
-    align-items: center;
-    background-color: var(--base-lighter);
-  }
+  width: 100%;
 
   .fc-data-table-requests {
     .priority-urgent {

@@ -5,6 +5,8 @@ import {
   CardinalDirection,
   centrelineKey,
   CentrelineType,
+  StudyRequestReason,
+  StudyRequestStatus,
 } from '@/lib/Constants';
 import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
@@ -14,8 +16,6 @@ import CountDataDAO from '@/lib/db/CountDataDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
-import StudyRequestReasonDAO from '@/lib/db/StudyRequestReasonDAO';
-import StudyRequestStatusDAO from '@/lib/db/StudyRequestStatusDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import {
   InvalidCentrelineTypeError,
@@ -456,7 +456,7 @@ test('StudyRequestDAO', async () => {
   const now = DateTime.local();
   const transientStudyRequest = {
     userId: persistedUser.id,
-    status: 'REQUESTED',
+    status: StudyRequestStatus.REQUESTED,
     closed: false,
     serviceRequestId: null,
     urgent: false,
@@ -464,7 +464,7 @@ test('StudyRequestDAO', async () => {
     assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reasons: ['TSC', 'PED_SAFETY'],
+    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
     centrelineId: 1729,
     centrelineType: CentrelineType.INTERSECTION,
@@ -575,7 +575,7 @@ test('StudyRequestCommentDAO', async () => {
   const now = DateTime.local();
   const transientStudyRequest = {
     userId: userCreated1.id,
-    status: 'REQUESTED',
+    status: StudyRequestStatus.REQUESTED,
     closed: false,
     serviceRequestId: 12345,
     urgent: false,
@@ -583,7 +583,7 @@ test('StudyRequestCommentDAO', async () => {
     assignedTo: 'FIELD STAFF',
     dueDate: now.plus({ months: 4 }),
     estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
-    reasons: ['TSC', 'PED_SAFETY'],
+    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
     centrelineId: 42,
     centrelineType: CentrelineType.INTERSECTION,
@@ -660,42 +660,6 @@ test('StudyRequestCommentDAO', async () => {
   await StudyRequestDAO.delete(persistedStudyRequest);
   byStudyRequest = await StudyRequestCommentDAO.byStudyRequest(persistedStudyRequest);
   expect(byStudyRequest).toEqual([]);
-});
-
-test('StudyRequestReasonDAO', async () => {
-  expect(StudyRequestReasonDAO.isInited()).toBe(false);
-
-  let reason = await StudyRequestReasonDAO.byValue('TSC');
-  expect(StudyRequestReasonDAO.isInited()).toBe(true);
-  expect(reason.value).toBe('TSC');
-  expect(reason.label).toBe('Traffic Signal Control');
-  expect(StudyRequestReasonDAO.isInited()).toBe(true);
-
-  reason = await StudyRequestReasonDAO.byValue('FOOBAR');
-  expect(reason).toBeUndefined();
-
-  StudyRequestReasonDAO.uninit();
-  expect(StudyRequestReasonDAO.isInited()).toBe(false);
-  await expect(StudyRequestReasonDAO.all()).resolves.toBeInstanceOf(Map);
-  expect(StudyRequestReasonDAO.isInited()).toBe(true);
-});
-
-test('StudyRequestStatusDAO', async () => {
-  expect(StudyRequestStatusDAO.isInited()).toBe(false);
-
-  let status = await StudyRequestStatusDAO.byValue('REQUESTED');
-  expect(StudyRequestStatusDAO.isInited()).toBe(true);
-  expect(status.value).toBe('REQUESTED');
-  expect(status.label).toBe('Requested');
-  expect(StudyRequestStatusDAO.isInited()).toBe(true);
-
-  status = await StudyRequestStatusDAO.byValue('FOOBAR');
-  expect(status).toBeUndefined();
-
-  StudyRequestStatusDAO.uninit();
-  expect(StudyRequestStatusDAO.isInited()).toBe(false);
-  await expect(StudyRequestStatusDAO.all()).resolves.toBeInstanceOf(Map);
-  expect(StudyRequestStatusDAO.isInited()).toBe(true);
 });
 
 test('UserDAO', async () => {

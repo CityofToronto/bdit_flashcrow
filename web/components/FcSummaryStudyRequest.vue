@@ -94,7 +94,6 @@
 <script>
 import { mapState } from 'vuex';
 
-import { RequestStatus } from '@/lib/Constants';
 import TdsLabel from '@/web/components/tds/TdsLabel.vue';
 import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
@@ -106,11 +105,6 @@ export default {
   },
   props: {
     studyRequest: Object,
-  },
-  data() {
-    return {
-      RequestStatus,
-    };
   },
   computed: {
     ccEmails() {

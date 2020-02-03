@@ -101,7 +101,7 @@ function makeStudy(studyType) {
   };
 }
 
-function makeStudyRequest(location, now) {
+function makeStudyRequest(now) {
   const dueDate = now.plus({ months: 3 });
   const studyRequest = {
     serviceRequestId: null,
@@ -223,29 +223,7 @@ export default {
       this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
     },
     location() {
-      const { location } = this;
-      if (location === null) {
-        this.studyRequest.centrelineId = null;
-        this.studyRequest.centrelineType = null;
-        this.studyRequest.geom = null;
-      } else {
-        const {
-          centrelineId,
-          centrelineType,
-          lng,
-          lat,
-        } = location;
-        const geom = {
-          type: 'Point',
-          coordinates: [lng, lat],
-        };
-        this.studyRequest.centrelineId = centrelineId;
-        this.studyRequest.centrelineType = centrelineType;
-        this.studyRequest.geom = geom;
-      }
-      this.$v.studyRequest.centrelineId.$touch();
-      this.$v.studyRequest.centrelineType.$touch();
-      this.$v.studyRequest.geom.$touch();
+      this.updateStudyRequestLocation();
     },
     studyTypes(studyTypes, studyTypesPrev) {
       studyTypes.forEach((studyType) => {
@@ -291,15 +269,46 @@ export default {
       this.$router.push(this.routeFinish);
     },
     async loadAsyncForRoute(to) {
+      let studyRequest;
+      let studyRequestLocation;
       if (this.isCreate) {
         const { location, now } = this;
-        this.studyRequest = makeStudyRequest(location, now);
-        return;
+        studyRequest = makeStudyRequest(now);
+        studyRequestLocation = location;
+      } else {
+        const { id } = to.params;
+        const result = await getStudyRequest(id);
+        studyRequest = result.studyRequest;
+        studyRequestLocation = result.studyRequestLocation;
       }
-      const { id } = to.params;
-      const { studyRequest, studyRequestLocation } = await getStudyRequest(id);
-      this.setLocation(studyRequestLocation);
       this.studyRequest = studyRequest;
+      this.setLocation(studyRequestLocation);
+      this.updateStudyRequestLocation();
+    },
+    updateStudyRequestLocation() {
+      const { location } = this;
+      if (location === null) {
+        this.studyRequest.centrelineId = null;
+        this.studyRequest.centrelineType = null;
+        this.studyRequest.geom = null;
+      } else {
+        const {
+          centrelineId,
+          centrelineType,
+          lng,
+          lat,
+        } = location;
+        const geom = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        this.studyRequest.centrelineId = centrelineId;
+        this.studyRequest.centrelineType = centrelineType;
+        this.studyRequest.geom = geom;
+      }
+      this.$v.studyRequest.centrelineId.$touch();
+      this.$v.studyRequest.centrelineType.$touch();
+      this.$v.studyRequest.geom.$touch();
     },
     ...mapMutations(['setLocation']),
     ...mapActions(['saveStudyRequest']),
