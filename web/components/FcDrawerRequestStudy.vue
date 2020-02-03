@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-request-study d-flex fill-height flex-column">
+  <div class="fc-drawer-request-study d-flex fill-height flex-column">
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
       <v-btn
         icon
@@ -121,7 +121,7 @@ function makeStudyRequest(now) {
 }
 
 export default {
-  name: 'FcRequestStudy',
+  name: 'FcDrawerRequestStudy',
   mixins: [FcMixinRouteAsync],
   components: {
     FcCheckboxGroupChips,
@@ -245,15 +245,21 @@ export default {
       this.studyRequest.studies.push(item);
     },
     actionNavigateBack() {
-      if (this.location === null) {
+      if (this.isCreate) {
+        const { id } = this.$route.params;
+        this.$router.push({
+          name: 'requestStudyView',
+          params: { id },
+        });
+      } else if (this.location === null) {
         this.$router.push({ name: 'viewData' });
-        return;
+      } else {
+        const { centrelineId, centrelineType } = this.location;
+        this.$router.push({
+          name: 'viewDataAtLocation',
+          params: { centrelineId, centrelineType },
+        });
       }
-      const { centrelineId, centrelineType } = this.location;
-      this.$router.push({
-        name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
-      });
     },
     actionRemoveStudy(studyType) {
       const i = this.studyRequest.studies.findIndex(
@@ -317,7 +323,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-request-study {
+.fc-drawer-request-study {
   max-height: 100vh;
 }
 </style>

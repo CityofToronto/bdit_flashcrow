@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-display-view-data-at-location d-flex flex-column">
+  <div class="fc-drawer-view-data d-flex flex-column">
     <div class="flex-grow-0 flex-shrink-0 pa-5">
       <SearchBarLocation />
     </div>
@@ -131,7 +131,7 @@ import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
-  name: 'FcDisplayViewDataAtLocation',
+  name: 'FcDrawerViewData',
   mixins: [FcMixinRouteAsync],
   components: {
     FcDataTableStudies,
@@ -229,7 +229,6 @@ export default {
   },
   methods: {
     actionRequestStudy() {
-      this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
     },
     actionShowReports({ category: { value: categoryValue } }) {
@@ -280,9 +279,6 @@ export default {
     ...mapActions([
       'fetchCountsByCentreline',
     ]),
-    ...mapMutations('requestStudy', [
-      'setNewStudyRequest',
-    ]),
     ...mapMutations('viewData', [
       'removeFilter',
       'setFilters',
@@ -296,7 +292,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-display-view-data-at-location {
+.fc-drawer-view-data {
   max-height: 100vh;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-drawer-view-reports-at-location d-flex flex-column">
+  <div class="fc-drawer-view-reports d-flex flex-column">
     <v-progress-linear
       v-if="loading"
       indeterminate />
@@ -154,7 +154,7 @@ const OPTIONS_REPORTS = {
 };
 
 export default {
-  name: 'FcDrawerViewReportsAtLocation',
+  name: 'FcDrawerViewReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcDialogReportParameters,
@@ -383,7 +383,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-drawer-view-reports-at-location {
+.fc-drawer-view-reports {
   max-height: 50%;
 
   .fc-select-active-count {
@@ -400,7 +400,7 @@ export default {
   }
 }
 
-.drawer-open .fc-drawer-view-reports-at-location {
+.drawer-open .fc-drawer-view-reports {
   max-height: 100%;
 }
 </style>

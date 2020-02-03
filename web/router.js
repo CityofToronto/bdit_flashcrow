@@ -67,7 +67,7 @@ const router = new Router({
           auth: { mode: 'try' },
           title: 'View Data',
         },
-        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDisplayViewDataAtLocation.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewData.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
@@ -79,7 +79,7 @@ const router = new Router({
           auth: { mode: 'try' },
           title: 'View Reports',
         },
-        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReportsAtLocation.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReports.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', false);
           next();
@@ -88,7 +88,7 @@ const router = new Router({
         path: '/requests/study/new',
         name: 'requestStudyNew',
         meta: { title: 'New Request' },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudy.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudy.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
@@ -101,7 +101,7 @@ const router = new Router({
             return `Edit Request #${id}`;
           },
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudy.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudy.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
@@ -114,7 +114,7 @@ const router = new Router({
             return `View Request #${id}`;
           },
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDisplayRequestStudyView.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerViewRequest.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
