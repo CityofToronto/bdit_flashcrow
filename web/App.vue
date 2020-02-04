@@ -106,7 +106,7 @@ import {
 } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import '@/web/components/tds/tds.postcss';
+import '@/web/css/main.postcss';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
 import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
