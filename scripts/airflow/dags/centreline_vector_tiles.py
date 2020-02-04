@@ -2,7 +2,7 @@
 centreline_vector_tiles
 
 Generate vector tiles from City of Toronto centreline geometry.  These are then
-served from `/tiles` on our web tier, where they are used by `PaneMap` in the web
+served from `/tiles` on our web tier, where they are used by `FcPaneMap` in the web
 frontend to render interactive centreline features.
 """
 # pylint: disable=pointless-statement

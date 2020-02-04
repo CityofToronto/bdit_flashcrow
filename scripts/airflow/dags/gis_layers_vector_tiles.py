@@ -2,7 +2,7 @@
 gis_layers_vector_tiles
 
 Generate vector tiles from GIS layers provided by GCC.  These are then
-served from `/tiles` on our web tier, where they are used by `PaneMap`
+served from `/tiles` on our web tier, where they are used by `FcPaneMap`
 in the web frontend to render school features at lower zoom levels.
 """
 # pylint: disable=pointless-statement

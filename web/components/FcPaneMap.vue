@@ -20,12 +20,12 @@
         {{ satellite ? 'Map' : 'Aerial' }}
       </v-btn>
     </div>
-    <PaneMapPopup
+    <FcPaneMapPopup
       v-if="hoveredFeature"
       :feature="hoveredFeature"
       :hover="true"
       @mouseenter.native="clearHoveredFeature" />
-    <PaneMapPopup
+    <FcPaneMapPopup
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
@@ -44,7 +44,7 @@ import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
-import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
+import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -287,10 +287,10 @@ function injectSourcesAndLayers(rawStyle) {
 }
 
 export default {
-  name: 'PaneMap',
+  name: 'FcPaneMap',
   components: {
+    FcPaneMapPopup,
     FcSearchBarLocation,
-    PaneMapPopup,
   },
   provide() {
     const self = this;
