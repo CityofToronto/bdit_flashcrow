@@ -1,10 +1,10 @@
 <template>
   <div class="pane-map-popup">
-    <TdsPanel
+    <v-alert
       class="elevation-2"
-      :icon="icon"
-      :variant="variant">
-      <div class="font-size-m ml-4 pl-2">
+      :color="color"
+      :icon="icon">
+      <div>
         <strong v-if="description">{{description}}</strong>
         <span v-else> name unknown</span>
       </div>
@@ -14,7 +14,7 @@
         @click="onViewData">
         <v-icon left>mdi-table-eye</v-icon> View Data
       </v-btn>
-    </TdsPanel>
+    </v-alert>
   </div>
 </template>
 
@@ -26,7 +26,6 @@ import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import TdsPanel from '@/web/components/tds/TdsPanel.vue';
 
 const SELECTABLE_LAYERS = [
   'counts',
@@ -36,9 +35,6 @@ const SELECTABLE_LAYERS = [
 
 export default {
   name: 'PaneMapPopup',
-  components: {
-    TdsPanel,
-  },
   props: {
     feature: Object,
     hover: Boolean,
@@ -67,6 +63,9 @@ export default {
         return CentrelineType.SEGMENT;
       }
       return null;
+    },
+    color() {
+      return this.hover ? 'warning' : 'success';
     },
     coordinates() {
       const { coordinates } = this.feature.geometry;
@@ -149,25 +148,22 @@ export default {
     },
     icon() {
       if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
-        return 'car-brake-alert';
+        return 'mdi-car-brake-alert';
       }
       if (this.layerId === 'counts') {
-        return this.hover ? 'format-list-numbered' : 'map-marker';
+        return this.hover ? 'mdi-format-list-numbered' : 'mdi-map-marker';
       }
       if (this.layerId === 'schoolsLevel2' || this.layerId === 'schoolsLevel1') {
         const { schoolType } = this.feature.properties;
         if (schoolType === 'U' || schoolType === 'C') {
-          return 'school';
+          return 'mdi-school';
         }
-        return 'teach';
+        return 'mdi-teach';
       }
-      return this.hover ? 'road-variant' : 'map-marker';
+      return this.hover ? 'mdi-road-variant' : 'mdi-map-marker';
     },
     layerId() {
       return this.feature.layer.id;
-    },
-    variant() {
-      return this.hover ? 'warning' : 'success';
     },
   },
   methods: {
@@ -202,10 +198,6 @@ export default {
 
 <style lang="postcss">
 .pane-map-popup {
-  & > .tds-panel {
-    border-radius: var(--space-s);
-  }
-
   position: absolute;
   right: var(--space-l);
   top: var(--space-m);
