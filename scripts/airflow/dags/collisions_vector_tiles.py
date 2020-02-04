@@ -2,7 +2,7 @@
 collisions_vector_tiles
 
 Generate vector tiles from collisions data.  These are then
-served from `/tiles` on our web tier, where they are used by `PaneMap`
+served from `/tiles` on our web tier, where they are used by `FcPaneMap`
 in the web frontend to render collisions heatmaps at lower zoom levels.
 """
 # pylint: disable=pointless-statement

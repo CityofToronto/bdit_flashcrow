@@ -63,15 +63,9 @@
   --border-default: 1px solid var(--base);
 
   --flex-1: 1 0 0;
-  --flex-2: 2 0 0;
-  --flex-3: 3 0 0;
   --flex-fill: 1 0 0;
 
-  --transition-short: 0.15s ease-in-out;
-
   --z-index-controls: 99;
-  --z-index-modal-backdrop: 1000;
-  --z-index-modal-content: 1001;
 }
 
 /* BOX SIZING */
@@ -90,9 +84,6 @@ body {
   padding: 0;
   overflow: hidden;
 }
-.full-width {
-  width: 100%;
-}
 
 /* FLEX LAYOUT */
 .flex-container-row {
@@ -100,31 +91,9 @@ body {
   flex-direction: row;
   min-height: 0;
   min-width: 0;
-  & > .flex-cross-scroll {
-    flex: var(--flex-fill);
-    max-height: 100%;
-    overflow: auto;
-  }
-}
-.flex-container-column {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-  & > .flex-cross-scroll {
-    flex: var(--flex-fill);
-    max-width: 100%;
-    overflow: auto hidden;
-  }
 }
 .flex-1 {
   flex: var(--flex-1);
-}
-.flex-2 {
-  flex: var(--flex-2);
-}
-.flex-3 {
-  flex: var(--flex-3);
 }
 .flex-fill {
   flex: var(--flex-fill);
@@ -162,73 +131,6 @@ body {
 }
 .font-size-2xl {
   font-size: var(--font-size-2xl);
-}
-
-/* TEXT LABELS */
-.tds-label {
-  background-color: var(--base-light);
-  border-radius: var(--space-m);
-  color: var(--base-darker);
-  display: inline-block;
-  padding: var(--space-s) var(--space-m);
-  text-align: center;
-  &.tds-label-success {
-    background-color: var(--success-light);
-    color: var(--success-darker);
-  }
-  &.tds-label-info {
-    background-color: var(--info-light);
-    color: var(--info-darker);
-  }
-  &.tds-label-warning {
-    background-color: var(--warning-light);
-    color: var(--warning-darker);
-  }
-  &.tds-label-error {
-    background-color: var(--error-light);
-    color: var(--error-darker);
-  }
-}
-
-/* TEXT PANELS */
-.tds-panel {
-  background-color: var(--base-lightest);
-  border: var(--border-default);
-  padding: var(--space-m);
-  position: relative;
-  margin-bottom: var(--space-s);
-  & > i {
-    font-size: 125%;
-    left: var(--space-m);
-    position: absolute;
-    top: var(--space-m);
-  }
-  & > p {
-    margin: 0 0 var(--space-m) var(--space-xl);
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  &.tds-panel-success {
-    background-color: var(--success-lighter);
-    border-color: var(--success-darker);
-    color: var(--success-darker);
-  }
-  &.tds-panel-info {
-    background-color: var(--info-lighter);
-    border-color: var(--info-darker);
-    color: var(--info-darker);
-  }
-  &.tds-panel-warning {
-    background-color: var(--warning-lighter);
-    border-color: var(--warning-darker);
-    color: var(--warning-darker);
-  }
-  &.tds-panel-error {
-    background-color: var(--error-lighter);
-    border-color: var(--error-darker);
-    color: var(--error-darker);
-  }
 }
 
 /* ELEVATION */

@@ -40,13 +40,13 @@
 
         <h2 class="mt-4 subtitle-2">Hours</h2>
         <v-checkbox
-          v-for="{ description, name } in StudyHours.enumValues"
-          :key="name"
+          v-for="studyHours in StudyHours.enumValues"
+          :key="studyHours.name"
           v-model="internalHours"
           class="mt-2"
           hide-details
           :label="description"
-          :value="name"></v-checkbox>
+          :value="studyHours"></v-checkbox>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>

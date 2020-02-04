@@ -113,14 +113,19 @@
           <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
         </template>
         <template v-slot:item.STATUS="{ item }">
-          <span>
-            {{item.status.text}}
-          </span>
+          <div class="align-center d-flex">
+            <v-icon
+              :color="item.status.color"
+              left>mdi-circle-medium</v-icon>
+            <span>
+              {{item.status.text}}
+            </span>
+          </div>
         </template>
         <template v-slot:item.ACTIONS="{ item }">
           <div class="text-right">
             <v-btn
-              v-if="isSupervisor"
+              v-if="isSupervisor && !closed"
               class="mr-2"
               :color="item.urgent ? 'warning' : ''"
               icon
@@ -133,7 +138,7 @@
               color="warning"
               title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="isSupervisor">
+            <template v-if="isSupervisor && !closed">
               <v-btn
                 class="mr-2"
                 :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : ''"

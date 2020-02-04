@@ -10,16 +10,17 @@ import {
 } from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
-import { REQUEST_STUDY_SUBMITTED } from '@/lib/i18n/Strings';
+import {
+  REQUEST_STUDY_SUBMITTED,
+  REQUEST_STUDY_UPDATED,
+} from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
-import requestStudy from '@/web/store/modules/requestStudy';
 import viewData from '@/web/store/modules/viewData';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    requestStudy,
     viewData,
   },
   // TODO: organize state below
@@ -141,7 +142,8 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      commit('setToast', REQUEST_STUDY_SUBMITTED);
+      const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
+      commit('setToast', toast);
       return apiFetch(url, options);
     },
   },

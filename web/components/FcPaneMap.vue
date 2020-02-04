@@ -7,7 +7,7 @@
         :active="loading"
         indeterminate />
     </div>
-    <SearchBarLocation
+    <FcSearchBarLocation
       v-if="!drawerOpen" />
     <div class="pane-map-mode">
       <v-btn
@@ -20,12 +20,12 @@
         {{ satellite ? 'Map' : 'Aerial' }}
       </v-btn>
     </div>
-    <PaneMapPopup
+    <FcPaneMapPopup
       v-if="hoveredFeature"
       :feature="hoveredFeature"
       :hover="true"
       @mouseenter.native="clearHoveredFeature" />
-    <PaneMapPopup
+    <FcPaneMapPopup
       v-else-if="selectedFeature"
       :feature="selectedFeature"
       :hover="false" />
@@ -44,8 +44,8 @@ import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
-import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
-import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
+import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
+import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -287,10 +287,10 @@ function injectSourcesAndLayers(rawStyle) {
 }
 
 export default {
-  name: 'PaneMap',
+  name: 'FcPaneMap',
   components: {
-    PaneMapPopup,
-    SearchBarLocation,
+    FcPaneMapPopup,
+    FcSearchBarLocation,
   },
   provide() {
     const self = this;

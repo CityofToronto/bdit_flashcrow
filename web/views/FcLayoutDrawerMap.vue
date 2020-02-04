@@ -33,7 +33,7 @@
         :class="{
           'order-1': vertical,
         }">
-        <PaneMap />
+        <FcPaneMap />
       </div>
     </div>
   </div>
@@ -42,12 +42,12 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import PaneMap from '@/web/components/PaneMap.vue';
+import FcPaneMap from '@/web/components/FcPaneMap.vue';
 
 export default {
   name: 'FcLayoutDrawerMap',
   components: {
-    PaneMap,
+    FcPaneMap,
   },
   computed: {
     hasDrawer() {

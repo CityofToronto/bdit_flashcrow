@@ -1,11 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import { HttpStatus } from '@/lib/Constants';
 import {
   ROUTE_NOT_LOGGED_IN,
-  REQUEST_STUDY_FORBIDDEN,
-  REQUEST_STUDY_NOT_FOUND,
 } from '@/lib/i18n/Strings';
 import store from '@/web/store';
 
@@ -209,13 +206,6 @@ router.afterEach((to) => {
 });
 
 function onErrorShowToast(err) {
-  // TODO: only show this for study request stuff!
-  if (err.statusCode === HttpStatus.FORBIDDEN) {
-    return REQUEST_STUDY_FORBIDDEN;
-  }
-  if (err.statusCode === HttpStatus.NOT_FOUND) {
-    return REQUEST_STUDY_NOT_FOUND;
-  }
   return {
     variant: 'error',
     text: err.message,

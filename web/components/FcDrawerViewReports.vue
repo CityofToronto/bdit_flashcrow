@@ -384,7 +384,7 @@ export default {
 
 <style lang="postcss">
 .fc-drawer-view-reports {
-  max-height: 50%;
+  max-height: 50vh;
 
   .fc-select-active-count {
     width: 250px;
@@ -401,6 +401,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-reports {
-  max-height: 100%;
+  max-height: 100vh;
 }
 </style>

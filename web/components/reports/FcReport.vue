@@ -1,16 +1,18 @@
 <template>
   <section class="fc-report">
-    <header class="fc-report-header flex-container-row">
-      <div class="flex-1">
-        <img src="/cot_logo.png" alt="City of Toronto" />
+    <header class="fc-report-header align-bottom d-flex">
+      <div>
+        <img
+          alt="City of Toronto"
+          src="/cot_logo.png"
+          width="175" />
       </div>
-      <div class="flex-1 text-center">
-        <h2>{{ORG_NAME}}</h2>
-        <h3>{{type.label}}</h3>
+      <div class="ml-3">
+        <div>{{ORG_NAME}}</div>
+        <div class="title">{{type.label}}</div>
       </div>
-      <div class="flex-1">&nbsp;</div>
     </header>
-    <div class="fc-report-content">
+    <div>
       <component
         v-for="({ type: blockType, options }, i) in content"
         :key="'block_' + i"
@@ -55,13 +57,7 @@ export default {
 .fc-report {
   & > .fc-report-header {
     border-bottom: 1px solid var(--primary-dark);
-    img {
-      height: var(--space-2xl);
-    }
-    h2,
-    h3 {
-      color: var(--primary-dark);
-    }
+    color: var(--primary-dark);
   }
 }
 </style>

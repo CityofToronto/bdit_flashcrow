@@ -5,6 +5,7 @@ import {
   CardinalDirection,
   centrelineKey,
   CentrelineType,
+  StudyHours,
   StudyRequestReason,
   StudyRequestStatus,
 } from '@/lib/Constants';
@@ -476,7 +477,7 @@ test('StudyRequestDAO', async () => {
       studyType: 'TMC',
       daysOfWeek: [2, 3, 4],
       duration: null,
-      hours: 'ROUTINE',
+      hours: StudyHours.ROUTINE,
       notes: 'completely normal routine turning movement count',
     }],
   };
@@ -506,7 +507,7 @@ test('StudyRequestDAO', async () => {
 
   // update existing study fields
   persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
-  persistedStudyRequest.studies[0].hours = 'SCHOOL';
+  persistedStudyRequest.studies[0].hours = StudyHours.SCHOOL;
   persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
@@ -536,7 +537,7 @@ test('StudyRequestDAO', async () => {
     studyType: 'TMC',
     daysOfWeek: [0, 6],
     duration: null,
-    hours: 'OTHER',
+    hours: StudyHours.OTHER,
     notes: 'complete during shopping mall peak hours',
   });
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
@@ -594,7 +595,7 @@ test('StudyRequestCommentDAO', async () => {
       studyType: 'TMC',
       daysOfWeek: [2, 3, 4],
       duration: null,
-      hours: 'ROUTINE',
+      hours: StudyHours.ROUTINE,
       notes: 'completely normal routine turning movement count',
     }],
   };
