@@ -45,7 +45,7 @@
           v-model="internalHours"
           class="mt-2"
           hide-details
-          :label="description"
+          :label="studyHours.description"
           :value="studyHours"></v-checkbox>
       </v-card-text>
       <v-divider></v-divider>
@@ -70,15 +70,16 @@ import {
   StudyHours,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDialogStudyFilters',
+  mixins: [FcMixinVModelProxy(Boolean)],
   props: {
     datesFrom: Number,
     daysOfWeek: Array,
     hours: Array,
     studyTypes: Array,
-    value: Boolean,
   },
   data() {
     return {
@@ -99,14 +100,6 @@ export default {
         hours: this.internalHours,
         studyTypes: this.internalStudyTypes,
       };
-    },
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
     },
   },
   methods: {
