@@ -15,9 +15,6 @@
           </span>
           <span v-else>None</span>
         </div>
-        <div class="mt-1 title">
-          {{studyRequest.createdAt | date}}
-        </div>
       </v-col>
       <v-col cols="6">
         <div>Submitted</div>
