@@ -17,9 +17,9 @@
               :value="[study.duration + ' hours']"></v-messages>
           </template>
           <template v-else>
-            <div>{{studyHours.description}}</div>
+            <div>{{study.hours.description}}</div>
             <v-messages
-              :value="[studyHours.hint]"></v-messages>
+              :value="[study.hours.hint]"></v-messages>
           </template>
         </div>
       </v-col>
@@ -36,9 +36,7 @@
 
 <script>
 import {
-  CountHours,
   COUNT_TYPES,
-  StudyHours,
 } from '@/lib/Constants';
 
 export default {
@@ -46,15 +44,7 @@ export default {
   props: {
     study: Object,
   },
-  data() {
-    return {
-      CountHours,
-    };
-  },
   computed: {
-    studyHours() {
-      return StudyHours[this.study.hours];
-    },
     studyType() {
       const { studyType } = this.study;
       return COUNT_TYPES.find(({ value }) => value === studyType);
