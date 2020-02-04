@@ -117,7 +117,7 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
-    .toEqual(REQUEST_STANDARD.status);
+    .toEqual(REQUEST_STANDARD.status.ordinal);
   expect(SortKeys.Requests.URGENT(REQUEST_STANDARD))
     .toEqual(0);
   expect(SortKeys.Requests.URGENT(REQUEST_URGENT))
