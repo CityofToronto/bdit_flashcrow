@@ -141,9 +141,8 @@ export default new Vuex.Store({
         csrf: state.auth.csrf,
         data,
       };
-      const studyRequestSaved = apiFetch(url, options);
       commit('setToast', REQUEST_STUDY_SUBMITTED);
-      return studyRequestSaved;
+      return apiFetch(url, options);
     },
   },
 });

@@ -16,8 +16,11 @@
 </template>
 
 <script>
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
 export default {
   name: 'FcCheckboxGroupChips',
+  mixins: [FcMixinVModelProxy(Array)],
   props: {
     itemText: {
       type: String,
@@ -28,17 +31,8 @@ export default {
       default: 'value',
     },
     items: Array,
-    value: Array,
   },
   computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
     itemsNormalized() {
       const { internalValue, itemText, itemValue } = this;
       return this.items.map((item) => {

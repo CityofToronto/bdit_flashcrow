@@ -5,6 +5,12 @@ export default {
     };
   },
   created() {
+    /*
+     * We use `created()` instead of `beforeRouteEnter()` here for two reasons: it
+     * reduces time-to-interact, and it works better with hot-reload.  Hot reloading
+     * neither re-enters nor updates the current route, but it *does* re-create the
+     * relevant component.
+     */
     this.loadAsync(this.$route);
   },
   async beforeRouteUpdate(to, from, next) {

@@ -41,8 +41,8 @@ import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
-import rootStyleLight from '@/lib/geo/theme/light/root.json';
-import metadataLight from '@/lib/geo/theme/light/metadata.json';
+import rootStyleDark from '@/lib/geo/theme/dark/root.json';
+import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
 import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
@@ -319,7 +319,7 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(rootStyleLight, metadataLight).get();
+    const mapStyle = new GeoStyle(rootStyleDark, metadataDark).get();
     this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
@@ -726,8 +726,8 @@ export default {
     right: 6px;
     & > .mapboxgl-ctrl-scale {
       background-color: transparent;
-      border-color: #404040;
-      color: #404040;
+      border-color: #dcdee0;
+      color: #dcdee0;
     }
   }
 }
