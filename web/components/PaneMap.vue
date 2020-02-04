@@ -7,7 +7,7 @@
         :active="loading"
         indeterminate />
     </div>
-    <SearchBarLocation
+    <FcSearchBarLocation
       v-if="!drawerOpen" />
     <div class="pane-map-mode">
       <v-btn
@@ -45,7 +45,7 @@ import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import PaneMapPopup from '@/web/components/PaneMapPopup.vue';
-import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
+import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -289,8 +289,8 @@ function injectSourcesAndLayers(rawStyle) {
 export default {
   name: 'PaneMap',
   components: {
+    FcSearchBarLocation,
     PaneMapPopup,
-    SearchBarLocation,
   },
   provide() {
     const self = this;

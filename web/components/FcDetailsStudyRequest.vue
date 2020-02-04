@@ -70,9 +70,9 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_REASONS,
 } from '@/lib/i18n/Strings';
-import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
+import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {

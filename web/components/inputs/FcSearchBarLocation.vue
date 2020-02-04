@@ -23,7 +23,7 @@ import { debounce } from '@/lib/FunctionUtils';
 import { getLocationByKeyString, getLocationSuggestions } from '@/lib/api/WebApi';
 
 export default {
-  name: 'SearchBarLocation',
+  name: 'FcSearchBarLocation',
   data() {
     return {
       keystring: null,

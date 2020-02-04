@@ -1,7 +1,7 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
     <div class="flex-grow-0 flex-shrink-0 pa-5">
-      <SearchBarLocation />
+      <FcSearchBarLocation />
     </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
@@ -140,8 +140,8 @@ import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
-import SearchBarLocation from '@/web/components/SearchBarLocation.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -150,7 +150,7 @@ export default {
   components: {
     FcDataTableStudies,
     FcDialogStudyFilters,
-    SearchBarLocation,
+    FcSearchBarLocation,
   },
   data() {
     return {
