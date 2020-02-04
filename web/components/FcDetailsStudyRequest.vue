@@ -1,76 +1,113 @@
 <template>
-  <div class="fc-details-study-request">
+  <section>
     <div class="mt-4">
-      <span>Is there a service number for your request?</span>
+      <h3>311 Information</h3>
       <v-text-field
         v-model="internalValue.serviceRequestId"
-        :messages="messagesServiceRequestId">
+        class="mt-2"
+        :messages="[OPTIONAL.text]"
+        outlined
+        placeholder="Service Number">
       </v-text-field>
     </div>
+
     <div class="mt-4">
-      <span>What is the priority of your request? *</span>
-      <TdsRadioGroup
-        v-model="internalValue.priority"
-        :messages="messagesPriority"
-        :options="[
-          { label: 'Standard', value: 'STANDARD' },
-          { label: 'Urgent', value: 'URGENT' },
-        ]" />
+      <h3>Reasons</h3>
+      <FcCheckboxGroupChips
+        v-model="v.reasons.$model"
+        :items="itemsReasons"></FcCheckboxGroupChips>
+      <v-messages
+        class="mt-1"
+        color="error"
+        :value="errorMessagesReasons"></v-messages>
     </div>
-    <div
-      v-if="internalValue.priority === 'URGENT'"
-      class="mt-4">
-      <span>When do you need the data by? *</span>
-      <div>
+
+    <div class="mt-4">
+      <h3>Escalate Priority</h3>
+      <v-checkbox
+        v-model="internalValue.urgent"
+        label="Urgent"
+        :messages="[OPTIONAL.text]" />
+      <template v-if="internalValue.urgent">
+        <v-textarea
+          v-model="v.urgentReason.$model"
+          class="mt-3"
+          :error-messages="errorMessagesUrgentReason"
+          :messages="[REQUEST_STUDY_PROVIDE_URGENT_REASON.text]"
+          no-resize
+          outlined
+          rows="4"
+          @blur="v.urgentReason.$touch()"></v-textarea>
         <FcDatePicker
           v-model="v.dueDate.$model"
-          class="mt-2"
-          :min="minDueDate"
-          mode="single">
+          class="mt-3"
+          label="Due Date"
+          :min="minDueDate">
         </FcDatePicker>
-      </div>
+      </template>
     </div>
+
     <div class="mt-4">
-      <span>What reasons are there for your request? *</span>
-      <v-select
-        v-model="v.reasons.$model"
-        chips
-        :error-messages="errorMessagesReasons"
-        item-text="label"
-        :items="requestReasons"
-        multiple></v-select>
-    </div>
-    <div class="mt-4">
-      <span>Any other staff you'd like to keep informed on the request?</span>
+      <h3>Inform Other Staff</h3>
       <FcInputTextArray
-        v-model="v.ccEmails.$model"
-        :v="v.ccEmails" />
+        v-model="v.ccEmails.$model" />
+      <v-messages
+        class="mt-1"
+        color="error"
+        :value="errorMessagesCcEmails"></v-messages>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
 import {
+  StudyRequestReason,
+} from '@/lib/Constants';
+import {
+  OPTIONAL,
+  REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_REASONS,
 } from '@/lib/i18n/Strings';
 import FcInputTextArray from '@/web/components/FcInputTextArray.vue';
+import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
-import TdsRadioGroup from '@/web/components/tds/TdsRadioGroup.vue';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDetailsStudyRequest',
+  mixins: [FcMixinVModelProxy(Object)],
   components: {
+    FcCheckboxGroupChips,
     FcDatePicker,
     FcInputTextArray,
-    TdsRadioGroup,
   },
   props: {
     v: Object,
-    value: Object,
+  },
+  data() {
+    return {
+      OPTIONAL,
+      REQUEST_STUDY_PROVIDE_URGENT_REASON,
+    };
   },
   computed: {
+    errorMessagesCcEmails() {
+      const errors = [];
+      this.internalValue.ccEmails.forEach((_, i) => {
+        if (!this.v.ccEmails.$each[i].$dirty) {
+          return;
+        }
+        if (!this.v.ccEmails.$each[i].required) {
+          errors.push('Please enter a value.');
+        }
+        if (!this.v.ccEmails.$each[i].torontoInternal) {
+          errors.push('Please enter a valid @toronto.ca email address.');
+        }
+      });
+      return errors;
+    },
     errorMessagesReasons() {
       const errors = [];
       if (!this.v.reasons.$dirty) {
@@ -81,41 +118,30 @@ export default {
       }
       return errors;
     },
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
-    messagesPriority() {
-      const { priority } = this.internalValue;
-      const messages = [];
-      if (priority === 'STANDARD') {
-        messages.push(
-          'Standard times to request counts are 2-3 months. Peak times are April-June and September-November.',
-        );
-      } else if (priority === 'URGENT') {
-        messages.push(
-          'This requires reshuffling other requests. The Traffic Safety Unit will contact you to discuss further.',
-        );
+    errorMessagesUrgentReason() {
+      const errors = [];
+      if (!this.v.urgentReason.$dirty) {
+        return errors;
       }
-      return messages;
+      if (!this.v.urgentReason.requiredIfUrgent) {
+        errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
+      }
+      return errors;
     },
-    messagesServiceRequestId() {
-      return [
-        'If this is related to a TMMS request, enter the service request ID here.',
-      ];
+    itemsReasons() {
+      return StudyRequestReason.enumValues.map((value) => {
+        const { text } = value;
+        return { text, value };
+      });
     },
     minDueDate() {
-      const { now, internalValue: { priority } } = this;
-      if (priority === 'URGENT') {
+      const { now, internalValue: { urgent } } = this;
+      if (urgent) {
         return now;
       }
       return now.plus({ months: 2 });
     },
-    ...mapState(['now', 'requestReasons']),
+    ...mapState(['now']),
   },
 };
 </script>

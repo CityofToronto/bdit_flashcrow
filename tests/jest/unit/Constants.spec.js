@@ -1,9 +1,8 @@
 import {
   CentrelineType,
-  COUNT_TYPES,
   SearchKeys,
   SortKeys,
-  Status,
+  StudyRequestStatus,
 } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 
@@ -31,10 +30,10 @@ test('Constants.SearchKeys', () => {
     dueDate,
     id: 42,
     location: null,
-    priority: 'STANDARD',
+    urgent: false,
     assignedTo: null,
     requestedBy: null,
-    status: 'ACCEPTED',
+    status: StudyRequestStatus.ACCEPTED,
   };
 
   expect(SearchKeys.Requests.ASSIGNED_TO('', REQUEST)).toBe(true);
@@ -57,11 +56,6 @@ test('Constants.SearchKeys', () => {
   expect(SearchKeys.Requests.LOCATION('foo ave', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.LOCATION('Bar St', REQUEST)).toBe(true);
 
-  expect(SearchKeys.Requests.PRIORITY('foo', REQUEST)).toBe(false);
-  expect(SearchKeys.Requests.PRIORITY('standard', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.PRIORITY('st', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.PRIORITY('URGENT', REQUEST)).toBe(false);
-
   expect(SearchKeys.Requests.REQUESTER('', REQUEST)).toBe(true);
   REQUEST.requestedBy = requestedBy;
   expect(SearchKeys.Requests.REQUESTER('BAZ', REQUEST)).toBe(true);
@@ -81,27 +75,6 @@ test('Constants.SortKeys', () => {
   });
 
   const now = DateTime.local();
-  const COUNT_DATE_NULL = {
-    date: null,
-    status: Status.NO_EXISTING_COUNT,
-    type: COUNT_TYPES[1],
-  };
-  const COUNT_DATE_NOW = {
-    date: now,
-    status: Status.RECENT,
-    type: COUNT_TYPES[3],
-  };
-  expect(SortKeys.Counts.DATE(COUNT_DATE_NULL)).toEqual(-Infinity);
-  expect(SortKeys.Counts.DATE(COUNT_DATE_NOW))
-    .toEqual(COUNT_DATE_NOW.date.valueOf());
-  expect(SortKeys.Counts.DAY(COUNT_DATE_NULL)).toEqual(-Infinity);
-  expect(SortKeys.Counts.DAY(COUNT_DATE_NOW))
-    .toEqual(COUNT_DATE_NOW.date.weekday);
-  expect(SortKeys.Counts.STATUS(COUNT_DATE_NOW))
-    .toEqual(COUNT_DATE_NOW.status);
-  expect(SortKeys.Counts.STUDY_TYPE(COUNT_DATE_NOW))
-    .toEqual(COUNT_DATE_NOW.type.label);
-
   const location = {
     centrelineId: 1234,
     centrelineType: CentrelineType.INTERSECTION,
@@ -120,16 +93,17 @@ test('Constants.SortKeys', () => {
     dueDate: now,
     id: 42,
     location,
-    priority: 'STANDARD',
+    urgent: false,
     assignedTo: 'FIELD STAFF',
     requestedBy,
     status: 'REVIEWED',
   };
   const REQUEST_URGENT = {
     ...REQUEST_STANDARD,
-    priority: 'URGENT',
+    urgent: true,
     assignedTo: null,
   };
+
   expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_STANDARD))
     .toEqual('FIELD STAFF');
   expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_URGENT))
@@ -140,18 +114,12 @@ test('Constants.SortKeys', () => {
     .toEqual(REQUEST_STANDARD.id);
   expect(SortKeys.Requests.LOCATION(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.location.description);
-  expect(SortKeys.Requests.PRIORITY(REQUEST_STANDARD))
-    .toEqual(0);
-  expect(SortKeys.Requests.PRIORITY(REQUEST_URGENT))
-    .toEqual(1);
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.status);
-
-  const STUDY = {
-    createdAt: now,
-  };
-  expect(SortKeys.Studies.CREATED_AT(STUDY))
-    .toEqual(now.valueOf());
+  expect(SortKeys.Requests.URGENT(REQUEST_STANDARD))
+    .toEqual(0);
+  expect(SortKeys.Requests.URGENT(REQUEST_URGENT))
+    .toEqual(1);
 });

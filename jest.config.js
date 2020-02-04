@@ -39,6 +39,7 @@ module.exports = {
   snapshotSerializers: [
     'jest-serializer-vue',
   ],
+  testEnvironment: 'node',
   testMatch: [
     `**/tests/jest/${TEST_DIR}/*.spec.js`,
   ],

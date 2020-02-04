@@ -1,48 +1,33 @@
 <template>
-  <div class="fc-comments-study-request mb-4">
+  <div class="fc-comments-study-request mb-4 pa-5">
     <h2>Comments</h2>
     <div class="fc-comment-new">
-      <textarea
+      <v-textarea
         v-model="commentText"
-        class="font-size-m full-width my-2 px-4 py-2"
-        :disabled="loadingCommentNew"
+        class="mt-4"
+        :counter="sizeLimit"
+        :loading="loadingAddComment"
+        no-resize
+        outlined
         placeholder="Compose message"
-        rows="5"></textarea>
-      <div class="fc-comment-new-submit flex-container-row">
-        <div
-          v-if="loadingCommentNew"
-          class="fc-comment-new-spinner ma-1">
-          <TdsLoadingSpinner />
-        </div>
-        <button
-          v-else
-          class="font-size-m tds-button-primary uppercase"
-          :disabled="commentText.length === 0 || charsRemaining < 0 || loadingCommentNew"
-          @click="onSubmitCommentNew">
+        rows="4"></v-textarea>
+      <div class="text-right">
+        <v-btn
+          color="primary"
+          :disabled="commentText.length === 0 || charsRemaining < 0"
+          :loading="loadingAddComment"
+          @click="actionAddComment">
           Submit
-        </button>
-        <div
-          class="fc-comment-chars-remaining ml-2"
-          :class="{
-            invalid: charsRemaining < 0,
-          }">
-          {{charsRemaining}}
-        </div>
+        </v-btn>
       </div>
     </div>
-    <div
-      v-if="studyRequestComments.length === 0"
-      class="mt-4">
-      <span class="font-size-l text-muted">No comments.</span>
-    </div>
     <section
-      v-for="comment in studyRequestComments"
+      v-for="(comment, i) in studyRequestComments"
       :key="comment.id"
-      class="fc-comment font-size-s mt-4">
-      <hr />
-      <header class="flex-container-row font-size-s mx-4">
+      class="mt-4">
+      <header class="align-top d-flex">
         <div>
-          <div class="mt-2">
+          <div>
             <strong
               v-if="comment.userId === auth.user.id">
               {{auth.user.uniqueName}}
@@ -51,102 +36,72 @@
               v-else-if="studyRequestCommentUsers.has(comment.userId)">
               {{studyRequestCommentUsers.get(comment.userId).uniqueName}}
             </strong>
-            <span v-else class="text-muted">
-              Author unknown
-            </span>
           </div>
-          <div class="mt-1">
+          <div>
             {{comment.createdAt | dateTime}}
           </div>
         </div>
         <div class="flex-fill"></div>
         <v-btn
           v-if="auth.user.id === comment.userId"
-          @click="actionDelete(comment)">
-          <v-icon left>mdi-delete</v-icon> Delete
+          icon
+          @click="actionDeleteComment(i)">
+          <v-icon>mdi-delete</v-icon>
         </v-btn>
       </header>
-      <div class="font-size-m mt-4 mx-4">
+      <div class="mt-2 mb-4">
         {{ comment.comment }}
       </div>
+      <v-divider></v-divider>
     </section>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-
-import TdsLoadingSpinner from '@/web/components/tds/TdsLoadingSpinner.vue';
+import { mapState } from 'vuex';
+import {
+  deleteStudyRequestComment,
+  postStudyRequestComment,
+} from '@/lib/api/WebApi';
 
 export default {
   name: 'FcCommentsStudyRequest',
-  components: {
-    TdsLoadingSpinner,
-  },
   props: {
     sizeLimit: Number,
     studyRequest: Object,
+    studyRequestComments: Array,
+    studyRequestCommentUsers: Map,
   },
   data() {
     return {
       commentText: '',
-      loadingCommentNew: false,
+      loadingAddComment: false,
     };
   },
   computed: {
     charsRemaining() {
       return this.sizeLimit - this.commentText.length;
     },
-    ...mapState('requestStudy', [
-      'studyRequestComments',
-      'studyRequestCommentUsers',
-    ]),
-    ...mapState([
-      'auth',
-    ]),
+    ...mapState(['auth']),
   },
   methods: {
-    actionDelete(comment) {
-      const { studyRequest } = this;
-      this.deleteStudyRequestComment({ studyRequest, comment });
-    },
-    async onSubmitCommentNew() {
-      const { studyRequest } = this;
+    async actionAddComment() {
+      const { auth: { csrf }, studyRequest } = this;
       const comment = {
         comment: this.commentText,
       };
       this.commentText = '';
-      this.loadingCommentNew = true;
-      await this.saveStudyRequestComment({ studyRequest, comment });
-      this.loadingCommentNew = false;
+      this.loadingAddComment = true;
+      const persistedComment = await postStudyRequestComment(csrf, studyRequest, comment);
+      this.$emit('add-comment', persistedComment);
+      this.loadingAddComment = false;
     },
-    ...mapActions('requestStudy', [
-      'saveStudyRequestComment',
-      'deleteStudyRequestComment',
-    ]),
+    async actionDeleteComment(i) {
+      const { auth: { csrf }, studyRequest, studyRequestComments } = this;
+      const comment = studyRequestComments[i];
+      this.$emit('delete-comment', i);
+      await deleteStudyRequestComment(csrf, studyRequest, comment);
+    },
   },
 };
 </script>
-
-<style lang="postcss">
-.fc-comments-study-request {
-  & > .fc-comment-new {
-    & > textarea {
-      resize: none;
-    }
-    & > .fc-comment-new-submit {
-      align-items: center;
-      & > .fc-comment-new-spinner {
-        height: var(--font-size-l);
-        width: var(--font-size-l);
-      }
-      & > .fc-comment-chars-remaining.invalid {
-        color: var(--error-dark);
-      }
-    }
-    & > .fc-comment > header {
-      align-items: center;
-    }
-  }
-}
-</style>

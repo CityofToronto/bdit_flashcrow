@@ -61,9 +61,7 @@
                 v-on="on"
                 icon
                 small>
-                <span class="text-ellipsis">
-                  <v-icon>mdi-account</v-icon>
-                </span>
+                <v-icon>mdi-account</v-icon>
               </v-btn>
             </template>
             <v-list>
@@ -142,15 +140,6 @@ export default {
     ]),
     ...mapGetters(['username']),
   },
-  created() {
-    this.webInit()
-      .catch((err) => {
-        this.setToast({
-          variant: 'error',
-          text: err.message,
-        });
-      });
-  },
   methods: {
     onClickLogin() {
       this.nonce = ClientNonce.get(16);
@@ -179,7 +168,7 @@ export default {
         params: { centrelineId, centrelineType },
       });
     },
-    ...mapActions(['setToast', 'webInit']),
+    ...mapActions(['setToast']),
     ...mapMutations(['clearToast']),
   },
 };

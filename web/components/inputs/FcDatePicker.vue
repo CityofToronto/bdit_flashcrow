@@ -1,77 +1,91 @@
 <template>
-  <v-date-picker
-    v-model="internalValue"
-    :max="internalMax"
-    :min="internalMin"
-    :range="mode === 'range'">
-  </v-date-picker>
+  <div>
+    <v-menu
+      v-model="showMenu"
+      :close-on-content-click="false"
+      max-width="290px"
+      min-width="290px"
+      offset-y
+      transition="scale-transition">
+      <template v-slot:activator="{ on }">
+        <v-text-field
+          v-model="valueFormatted"
+          append-icon="mdi-calendar"
+          hide-details
+          label="Due Date"
+          outlined
+          readonly
+          v-on="on"></v-text-field>
+      </template>
+      <v-date-picker
+        v-model="internalValue"
+        :max="internalMax"
+        :min="internalMin"
+        no-title
+        @input="showMenu = false">
+      </v-date-picker>
+    </v-menu>
+  </div>
 </template>
 
 <script>
 import DateTime from '@/lib/time/DateTime';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 
-function fromInternalValue(mode, internalValue) {
+function fromInternalValue(internalValue) {
   if (internalValue === null) {
     return null;
   }
-  if (mode === 'range') {
-    let [start, end] = internalValue;
-    start = fromInternalValue('single', start);
-    end = fromInternalValue('single', end);
-    return [start, end];
-  }
-  // single
   return DateTime.fromISO(internalValue);
 }
 
-function toInternalValue(mode, value) {
+function toInternalValue(value) {
   if (value === null) {
     return null;
   }
-  if (mode === 'range') {
-    let [start, end] = value;
-    start = toInternalValue('single', start);
-    end = toInternalValue('single', end);
-    return [start, end];
-  }
-  // single
   return value.toISODate();
 }
 
 export default {
   name: 'FcDatePicker',
   props: {
+    label: {
+      type: String,
+      default: null,
+    },
     max: {
-      type: Object,
+      type: DateTime,
       default() { return null; },
     },
     min: {
-      type: Object,
+      type: DateTime,
       default() { return null; },
     },
-    mode: {
-      type: String,
-      default: 'single',
-    },
-    value: Object,
+    value: DateTime,
+  },
+  data() {
+    return {
+      showMenu: false,
+    };
   },
   computed: {
     internalMax() {
-      return toInternalValue('single', this.max);
+      return toInternalValue(this.max);
     },
     internalMin() {
-      return toInternalValue('single', this.min);
+      return toInternalValue(this.min);
     },
     internalValue: {
       get() {
-        const { mode } = this;
-        return toInternalValue(mode, this.value);
+        return toInternalValue(this.value);
       },
       set(internalValue) {
-        const { mode } = this;
-        const value = fromInternalValue(mode, internalValue);
+        const value = fromInternalValue(internalValue);
         this.$emit('input', value);
       },
+    },
+    valueFormatted() {
+      return TimeFormatters.formatDefault(this.value);
     },
   },
 };

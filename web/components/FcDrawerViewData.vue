@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-display-view-data-at-location d-flex flex-column">
+  <div class="fc-drawer-view-data d-flex flex-column">
     <div class="flex-grow-0 flex-shrink-0 pa-5">
       <SearchBarLocation />
     </div>
@@ -102,6 +102,19 @@
             :count-summary="countSummary"
             :loading="loadingCounts"
             @show-reports="actionShowReports" />
+          <div class="pa-5">
+            <div
+              v-for="study in studiesPending"
+              :key="study.id"
+              class="align-center d-flex">
+              <v-icon
+                color="warning"
+                left>mdi-information</v-icon>
+              <div>
+                {{study.studyType}} has been requested on {{study.createdAt | date}}.
+              </div>
+            </div>
+          </div>
         </section>
       </template>
     </section>
@@ -121,6 +134,7 @@ import {
   getCountsByCentrelineSummary,
   getLocationByFeature,
   getPoiByCentrelineSummary,
+  getStudiesByCentrelinePending,
 } from '@/lib/api/WebApi';
 import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
@@ -131,7 +145,7 @@ import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
-  name: 'FcDisplayViewDataAtLocation',
+  name: 'FcDrawerViewData',
   mixins: [FcMixinRouteAsync],
   components: {
     FcDataTableStudies,
@@ -150,6 +164,7 @@ export default {
         school: null,
       },
       showFilters: false,
+      studiesPending: [],
     };
   },
   computed: {
@@ -229,7 +244,6 @@ export default {
   },
   methods: {
     actionRequestStudy() {
-      this.setNewStudyRequest([]);
       this.$router.push({ name: 'requestStudyNew' });
     },
     actionShowReports({ category: { value: categoryValue } }) {
@@ -260,15 +274,20 @@ export default {
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
+      if (this.auth.loggedIn) {
+        tasks.push(getStudiesByCentrelinePending({ centrelineId, centrelineType }));
+      }
       const [
         collisionSummary,
         countSummary,
         location,
         poiSummary,
+        studiesPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.countSummary = countSummary;
       this.poiSummary = poiSummary;
+      this.studiesPending = studiesPending;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
@@ -279,9 +298,6 @@ export default {
     },
     ...mapActions([
       'fetchCountsByCentreline',
-    ]),
-    ...mapMutations('requestStudy', [
-      'setNewStudyRequest',
     ]),
     ...mapMutations('viewData', [
       'removeFilter',
@@ -296,7 +312,7 @@ export default {
 </script>
 
 <style lang="postcss">
-.fc-display-view-data-at-location {
+.fc-drawer-view-data {
   max-height: 100vh;
 }
 </style>
