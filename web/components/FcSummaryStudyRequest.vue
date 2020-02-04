@@ -33,7 +33,7 @@
         <div
           v-if="studyRequest.urgent"
           class="align-center d-flex">
-          <v-icon color="warning">mdi-clipboard-alert</v-icon>
+          <v-icon color="warning" left>mdi-clipboard-alert</v-icon>
           <v-messages
             :value="['This request has been marked as urgent.']"></v-messages>
         </div>

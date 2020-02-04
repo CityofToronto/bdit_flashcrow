@@ -31,12 +31,11 @@
         <div class="pa-5">
           <FcSummaryStudyRequest
             :study-request="studyRequest" />
-          <template v-for="(_, i) in studyRequest.studies">
+          <template v-for="(study, i) in studyRequest.studies">
             <v-divider :key="'divider_' + i"></v-divider>
             <FcSummaryStudy
               :key="'study_' + i"
-              :index="i"
-              :study-request="studyRequest" />
+              :study="study" />
           </template>
         </div>
         <v-divider></v-divider>

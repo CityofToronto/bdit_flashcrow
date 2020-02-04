@@ -1,116 +1,59 @@
 <template>
-  <fieldset class="fc-details-study mb-4">
-    <legend>
-      <span class="number-icon">{{indexHuman}}</span>
-      {{studyType.label}}
-    </legend>
-    <div class="flex-container-row mb-4">
-      <div class="flex-1 px-2">
-        <p>The study will fall on these days of the week:</p>
-        <p class="font-size-l mb-8">
-          <strong>{{daysOfWeekHuman}}</strong>
-        </p>
-        <template v-if="studyType.automatic">
-          <p>The duration of the study will be:</p>
-          <p class="font-size-l">
-            <strong>{{duration | durationHuman}}</strong><br />
-            <small>{{duration}} hours</small>
-          </p>
-        </template>
-        <template v-else>
-          <p>We'll use these hours:</p>
-          <p class="font-size-l">
-            <strong>{{hoursHuman}}</strong>
-          </p>
-          <TdsPanel
-            v-if="hours === 'SCHOOL' || hours === 'ROUTINE'"
-            icon="clock"
-            variant="info">
-            <p>
-              <small>
-                <span
-                  v-for="([start, end], i) in CountHours[hours]"
-                  :key="'count-hours-' + i">{{i > 0 ? ', ' : ''}}{{start}}&ndash;{{end}}</span>
-              </small>
-            </p>
-          </TdsPanel>
-          <TdsPanel
-            v-else-if="hours === 'OTHER'"
-            icon="clock"
-            variant="warning">
-            <p>
-              Schedule specified in additional notes.
-            </p>
-          </TdsPanel>
-        </template>
-      </div>
-      <div class="flex-1 px-2">
-        <template v-if="notes">
-          <p>Additional notes:</p>
-          <p class="font-size-l">
-            <strong>{{notes}}</strong>
-          </p>
-        </template>
-        <p v-else>{{COUNT_NO_ADDITIONAL_NOTES.text}}</p>
-      </div>
-    </div>
-  </fieldset>
+  <section class="fc-summary-study">
+    <h2 class="mt-6">{{studyType.label}}</h2>
+    <v-row class="mt-5 mb-6">
+      <v-col cols="6">
+        <div>Study Days</div>
+        <div class="mt-1 title">
+          {{study.daysOfWeek | daysOfWeek}}
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Study Hours</div>
+        <div class="mt-1 title">
+          <template v-if="studyType.automatic">
+            <div>{{study.duration | durationHuman}}</div>
+            <v-messages
+              :value="[study.duration + ' hours']"></v-messages>
+          </template>
+          <template v-else>
+            <div>{{studyHours.description}}</div>
+            <v-messages
+              :value="[studyHours.hint]"></v-messages>
+          </template>
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Additional Information</div>
+        <div class="mt-1 title">
+          <span v-if="study.notes">{{study.notes}}</span>
+          <span v-else>None</span>
+        </div>
+      </v-col>
+    </v-row>
+  </section>
 </template>
 
 <script>
-import TdsPanel from '@/web/components/tds/TdsPanel.vue';
-import { CountHours, COUNT_TYPES } from '@/lib/Constants';
-import { COUNT_NO_ADDITIONAL_NOTES } from '@/lib/i18n/Strings';
-import TimeFormatters from '@/lib/time/TimeFormatters';
+import {
+  CountHours,
+  COUNT_TYPES,
+  StudyHours,
+} from '@/lib/Constants';
 
 export default {
   name: 'FcSummaryStudy',
-  components: {
-    TdsPanel,
-  },
   props: {
-    index: Number,
-    studyRequest: Object,
+    study: Object,
   },
   data() {
     return {
       CountHours,
-      COUNT_NO_ADDITIONAL_NOTES,
     };
   },
   computed: {
-    dateRange() {
-      return this.study.dateRange;
-    },
-    daysOfWeek() {
-      return this.study.daysOfWeek;
-    },
-    daysOfWeekHuman() {
-      return TimeFormatters.formatDaysOfWeek(this.daysOfWeek);
-    },
-    duration() {
-      return this.study.duration;
-    },
-    hours() {
-      return this.study.hours;
-    },
-    hoursHuman() {
-      if (this.hours === 'ROUTINE') {
-        return 'Routine';
-      }
-      if (this.hours === 'SCHOOL') {
-        return 'School';
-      }
-      return 'Other';
-    },
-    indexHuman() {
-      return this.index + 1;
-    },
-    notes() {
-      return this.study.notes;
-    },
-    study() {
-      return this.studyRequest.studies[this.index];
+    studyHours() {
+      return StudyHours[this.study.hours];
     },
     studyType() {
       const { studyType } = this.study;
