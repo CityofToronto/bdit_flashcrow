@@ -1,154 +1,87 @@
 <template>
   <section class="fc-summary-study-request">
-    <div
-      v-if="studyRequest.id"
-      class="flex-container-row">
-      <div class="flex-1 px-2">
-        <p>Status:</p>
-        <TdsLabel
-          class="font-size-l uppercase"
-          v-bind="RequestStatus[studyRequest.status]">
-          {{RequestStatus[studyRequest.status].text}}
-        </TdsLabel>
-      </div>
-      <div class="flex-1 px-2">
-        <p>Submitted:</p>
-        <p class="font-size-l mb-8">
-          <strong>{{studyRequest.createdAt | date}}</strong>
-        </p>
-      </div>
-    </div>
-    <div class="flex-container-row">
-      <div class="flex-1 px-2">
-        <p>Service Request Number:</p>
-        <p class="font-size-l mb-8">
-          <strong v-if="serviceRequestId">{{serviceRequestId}}</strong>
-          <span v-else class="text-muted">N/A</span>
-        </p>
-      </div>
-      <div class="flex-1 px-2">
-        <p>Due Date:</p>
-        <p class="font-size-l mb-8">
-          <strong>{{dueDate | date}}</strong>
-        </p>
-      </div>
-    </div>
-    <div class="flex-container-row">
-      <div class="flex-1 px-2">
-        <p>
-          <span v-if="reasons.length === 1">Reason for request:</span>
-          <span v-else>Reasons for request:</span>
-        </p>
-        <div class="font-size-l mt-2 mb-8">
+    <v-row class="mt-1 mb-6">
+      <v-col cols="6">
+        <div>Status</div>
+        <div class="mt-1 title">
+          {{studyRequest.status.text}}
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Service Request Number</div>
+        <div class="mt-1 title">
+          <span v-if="studyRequest.serviceRequestId">
+            {{studyRequest.serviceRequestId}}
+          </span>
+          <span v-else>None</span>
+        </div>
+        <div class="mt-1 title">
+          {{studyRequest.createdAt | date}}
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Submitted</div>
+        <div class="mt-1 title">
+          {{studyRequest.createdAt | date}}
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Due Date</div>
+        <div class="mt-1 title">
+          {{studyRequest.dueDate | date}}
+        </div>
+        <div
+          v-if="studyRequest.urgent"
+          class="align-center d-flex">
+          <v-icon color="warning">mdi-clipboard-alert</v-icon>
+          <v-messages
+            :value="['This request has been marked as urgent.']"></v-messages>
+        </div>
+        <v-messages
+          v-else
+          :value="['Standard times to request counts are 2-3 months.']"></v-messages>
+      </v-col>
+      <v-col
+        v-if="studyRequest.urgent"
+        cols="6">
+        <div>Additional Information</div>
+        <div class="mt-1 title">
+          <span v-if="studyRequest.urgentReason">
+            {{studyRequest.urgentReason}}
+          </span>
+          <span v-else>None</span>
+        </div>
+      </v-col>
+      <v-col cols="6">
+        <div>Reasons</div>
+        <div class="mt-1 title">
           <div
-            v-for="(reason, i) in reasonsHuman"
-            :key="i"
-            class="mb-1">
-            <strong>{{reason}}</strong>
+            v-for="(reason, i) in studyRequest.reasons"
+            :key="i">
+            {{reason.text}}
           </div>
         </div>
-        <p>Additional emails to notify:</p>
-        <p
-          v-if="ccEmailsHuman.length === 0"
-          class="font-size-l mb-8 text-muted">
-          None
-        </p>
-        <div v-else class="font-size-l mt-2 mb-8">
+      </v-col>
+      <v-col cols="6">
+        <div>Informed Staff</div>
+        <div class="mt-1 title">
+          <span v-if="studyRequest.ccEmails.length === 0">None</span>
           <div
-            v-for="(ccEmail, i) in ccEmailsHuman"
-            :key="i"
-            class="mb-1">
-            <strong>{{ccEmail}}</strong>
+            v-for="(ccEmail, i) in studyRequest.ccEmails"
+            :key="i">
+            {{ccEmail}}
           </div>
         </div>
-      </div>
-      <div class="flex-1 px-2">
-        <p>Priority:</p>
-        <p class="font-size-l">
-          <strong>{{priorityHuman}}</strong>
-        </p>
-        <TdsPanel
-          v-if="priority === 'STANDARD'"
-          class="mb-8"
-          icon="calendar-check"
-          variant="info">
-          <p>
-            Standard times to request counts are 2-3 months.
-            Estimated Delivery Date: {{studyRequest.estimatedDeliveryDate | date}}
-          </p>
-        </TdsPanel>
-        <TdsPanel
-          v-else-if="priority === 'URGENT'"
-          class="mb-8"
-          variant="warning">
-          <p>
-            You've marked this request urgent, which will mean reshuffling the request queue.
-            The Traffic Safety Unit will contact you to make adjustments to the schedule.
-          </p>
-        </TdsPanel>
-      </div>
-    </div>
+      </v-col>
+    </v-row>
   </section>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import TdsLabel from '@/web/components/tds/TdsLabel.vue';
-import TdsPanel from '@/web/components/tds/TdsPanel.vue';
-
 export default {
   name: 'FcSummaryStudyRequest',
-  components: {
-    TdsLabel,
-    TdsPanel,
-  },
   props: {
     studyRequest: Object,
-  },
-  computed: {
-    ccEmails() {
-      return this.studyRequest.ccEmails;
-    },
-    ccEmailsHuman() {
-      /*
-       * TODO: this is a workaround to handle previously persisted study requests, until such
-       * time as we can get a proper ORM / validation layer in place here.
-       */
-      if (Array.isArray(this.ccEmails)) {
-        return this.ccEmails;
-      }
-      return this.ccEmails
-        .trim()
-        .split(',')
-        .map(ccEmail => ccEmail.trim())
-        .filter(ccEmail => !!ccEmail);
-    },
-    dueDate() {
-      return this.studyRequest.dueDate;
-    },
-    priority() {
-      return this.studyRequest.priority;
-    },
-    priorityHuman() {
-      if (this.priority === 'URGENT') {
-        return 'Urgent';
-      }
-      return 'Standard';
-    },
-    reasons() {
-      return this.studyRequest.reasons;
-    },
-    reasonsHuman() {
-      return this.studyRequest.reasons.map((reasonValue) => {
-        const { label } = this.requestReasons.find(({ value }) => value === reasonValue);
-        return label;
-      });
-    },
-    serviceRequestId() {
-      return this.studyRequest.serviceRequestId;
-    },
-    ...mapState(['requestReasons']),
   },
 };
 </script>
