@@ -33,20 +33,10 @@
 </template>
 
 <script>
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
 export default {
   name: 'FcReportParametersWarrantTrafficSignalControl',
-  props: {
-    value: Object,
-  },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
-  },
+  mixins: [FcMixinVModelProxy(Object)],
 };
 </script>

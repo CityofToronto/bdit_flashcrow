@@ -31,32 +31,23 @@
 import { ReportType } from '@/lib/Constants';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDialogReportParameters',
+  mixins: [FcMixinVModelProxy(Boolean)],
   components: {
     FcReportParametersWarrantTrafficSignalControl,
   },
   props: {
     reportParameters: Object,
     reportType: ReportType,
-    value: Boolean,
   },
   data() {
     const internalReportParameters = JSON.parse(JSON.stringify(this.reportParameters));
     return {
       internalReportParameters,
     };
-  },
-  computed: {
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
-    },
   },
   methods: {
     onClickSave() {

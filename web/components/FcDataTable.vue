@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
 function compareKeys(ka, kb, kf) {
   const n = ka.length;
   for (let i = 0; i < n; i++) {
@@ -36,6 +38,7 @@ function compareKeys(ka, kb, kf) {
 
 export default {
   name: 'FcDataTable',
+  mixins: [FcMixinVModelProxy(Array)],
   props: {
     caption: {
       type: String,
@@ -59,7 +62,6 @@ export default {
       type: Object,
       default() { return {}; },
     },
-    value: Array,
   },
   computed: {
     headers() {
@@ -71,14 +73,6 @@ export default {
           ...options,
         };
       });
-    },
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit('input', value);
-      },
     },
   },
   methods: {
