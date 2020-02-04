@@ -102,6 +102,19 @@
             :count-summary="countSummary"
             :loading="loadingCounts"
             @show-reports="actionShowReports" />
+          <div class="pa-5">
+            <div
+              v-for="study in studiesPending"
+              :key="study.id"
+              class="align-center d-flex">
+              <v-icon
+                color="warning"
+                left>mdi-information</v-icon>
+              <div>
+                {{study.studyType}} has been requested on {{study.createdAt | date}}.
+              </div>
+            </div>
+          </div>
         </section>
       </template>
     </section>
@@ -121,6 +134,7 @@ import {
   getCountsByCentrelineSummary,
   getLocationByFeature,
   getPoiByCentrelineSummary,
+  getStudiesByCentrelinePending,
 } from '@/lib/api/WebApi';
 import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
@@ -150,6 +164,7 @@ export default {
         school: null,
       },
       showFilters: false,
+      studiesPending: [],
     };
   },
   computed: {
@@ -259,15 +274,20 @@ export default {
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
+      if (this.auth.loggedIn) {
+        tasks.push(getStudiesByCentrelinePending({ centrelineId, centrelineType }));
+      }
       const [
         collisionSummary,
         countSummary,
         location,
         poiSummary,
+        studiesPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.countSummary = countSummary;
       this.poiSummary = poiSummary;
+      this.studiesPending = studiesPending;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
