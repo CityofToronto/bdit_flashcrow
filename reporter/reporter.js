@@ -1,7 +1,7 @@
 import Boom from '@hapi/boom';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
-import Joi from '@hapi/joi';
+import Joi from '@/lib/model/Joi';
 
 import config from '@/lib/config/MoveConfig';
 import ReportController from '@/lib/controller/ReportController';
