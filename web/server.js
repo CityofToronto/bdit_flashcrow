@@ -3,9 +3,9 @@ import Crumb from '@hapi/crumb';
 import hapiAuthCookie from '@hapi/cookie';
 import Good from '@hapi/good';
 import Hapi from '@hapi/hapi';
-import Joi from '@hapi/joi';
 import Scooter from '@hapi/scooter';
 import Blankie from 'blankie';
+import Joi from '@/lib/model/Joi';
 
 import config from '@/lib/config/MoveConfig';
 import AuthController from '@/lib/controller/AuthController';

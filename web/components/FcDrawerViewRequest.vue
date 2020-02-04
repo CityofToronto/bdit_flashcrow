@@ -16,7 +16,7 @@
         </span>
       </div>
       <v-btn
-        v-if="auth.user.id === studyRequest.userId || isSupervisor"
+        v-if="!loading && (auth.user.id === studyRequest.userId || isSupervisor)"
         outlined
         @click="actionEdit">
         <v-icon left>mdi-pencil</v-icon> Edit
