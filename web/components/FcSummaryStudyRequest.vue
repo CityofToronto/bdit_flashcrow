@@ -4,7 +4,14 @@
       <v-col cols="6">
         <div>Status</div>
         <div class="mt-1 title">
-          {{studyRequest.status.text}}
+          <div class="align-center d-flex">
+            <v-icon
+              :color="studyRequest.status.color"
+              left>mdi-circle-medium</v-icon>
+            <span>
+              {{studyRequest.status.text}}
+            </span>
+          </div>
         </div>
       </v-col>
       <v-col cols="6">
