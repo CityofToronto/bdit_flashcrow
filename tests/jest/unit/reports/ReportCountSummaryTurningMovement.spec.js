@@ -2,6 +2,7 @@
 import path from 'path';
 
 import ArrayUtils from '@/lib/ArrayUtils';
+import { StudyType } from '@/lib/Constants';
 import Random from '@/lib/Random';
 import ArrayStats from '@/lib/math/ArrayStats';
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
@@ -41,7 +42,7 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   /*
@@ -64,7 +65,7 @@ test('ReportCountSummaryTurningMovement#generateCsv [Gerrard and Sumach: 5/36781
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   const transformedData = reportInstance.transformData(count, countData_5_36781);

@@ -178,7 +178,6 @@ import { mapActions, mapState } from 'vuex';
 import {
   centrelineKey,
   CentrelineType,
-  COUNT_TYPES,
   SearchKeys,
   SortKeys,
   StudyRequestStatus,
@@ -232,13 +231,9 @@ function getStudyFields(study, i) {
     hours,
     notes,
   } = study;
-  let {
-    daysOfWeek,
-    duration,
-    studyType,
-  } = study;
+  const { studyType } = study;
+  let { daysOfWeek, duration } = study;
   daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
-  studyType = COUNT_TYPES.find(({ value }) => value === studyType);
   if (studyType.automatic) {
     duration = formatDuration(duration);
   } else {

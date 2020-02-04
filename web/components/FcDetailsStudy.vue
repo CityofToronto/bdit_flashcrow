@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-divider class="my-3"></v-divider>
-    <h2>{{studyType.label}}</h2>
+    <h2>{{study.studyType.label}}</h2>
 
     <div class="mt-4">
       <h3>Study Days</h3>
@@ -14,7 +14,7 @@
         :value="errorMessagesDaysOfWeek"></v-messages>
     </div>
 
-    <div v-if="studyType.automatic" class="mt-4">
+    <div v-if="study.studyType.automatic" class="mt-4">
       <h3>Study Duration</h3>
       <FcRadioGroup
         v-model="v.duration.$model"
@@ -50,7 +50,6 @@
 
 <script>
 import {
-  COUNT_TYPES,
   StudyHours,
 } from '@/lib/Constants';
 import {
@@ -127,10 +126,6 @@ export default {
         return [];
       }
       return [OPTIONAL.text];
-    },
-    studyType() {
-      const { studyType } = this.internalValue;
-      return COUNT_TYPES.find(({ value }) => value === studyType);
     },
   },
 };

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { CardinalDirection, FeatureCode } from '@/lib/Constants';
+import { CardinalDirection, FeatureCode, StudyType } from '@/lib/Constants';
 import { NotImplementedError } from '@/lib/error/MoveErrors';
 import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 import ReportWarrantTrafficSignalControl from '@/lib/reports/ReportWarrantTrafficSignalControl';
@@ -59,7 +59,7 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
   const count = {
     date: DateTime.fromSQL('2019-04-13 00:00:00'),
     locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);
@@ -95,7 +95,7 @@ test('ReportWarrantTrafficSignalControl#generateCsv [Overlea and Thorncliffe: 5/
   const count = {
     date: DateTime.fromSQL('2019-04-13 00:00:00'),
     locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   const hourlyData = ReportBaseFlowDirectional.sumHourly(countData_5_38661);

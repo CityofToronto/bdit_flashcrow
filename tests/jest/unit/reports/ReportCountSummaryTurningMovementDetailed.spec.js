@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
+import { StudyType } from '@/lib/Constants';
 import ReportCountSummaryTurningMovementDetailed
   from '@/lib/reports/ReportCountSummaryTurningMovementDetailed';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -22,7 +23,7 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumac
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   const transformedData = reportInstance.transformData(count, countData_5_36781);
@@ -35,7 +36,7 @@ test('ReportCountSummaryTurningMovementDetailed#generateCsv [Gerrard and Sumach:
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
-    type: { name: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
 
   const transformedData = reportInstance.transformData(count, countData_5_36781);

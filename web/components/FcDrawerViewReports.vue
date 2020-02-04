@@ -106,10 +106,10 @@ import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
-  COUNT_TYPES,
   ReportBlock,
   ReportFormat,
   ReportType,
+  StudyType,
 } from '@/lib/Constants';
 import { reporterFetch } from '@/lib/api/BackendClient';
 import {
@@ -125,33 +125,6 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
   ReportFormat.CSV,
   ReportFormat.PDF,
 ];
-
-const OPTIONS_REPORTS_ATR_VOLUME = [
-  ReportType.COUNT_SUMMARY_24H_GRAPHICAL,
-  ReportType.COUNT_SUMMARY_24H_DETAILED,
-  ReportType.COUNT_SUMMARY_24H,
-];
-const OPTIONS_REPORTS = {
-  ATR_VOLUME_BICYCLE: OPTIONS_REPORTS_ATR_VOLUME,
-  TMC: [
-    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
-    ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED,
-    ReportType.INTERSECTION_SUMMARY,
-    ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL,
-  ],
-  RESCU: OPTIONS_REPORTS_ATR_VOLUME,
-  ATR_VOLUME: OPTIONS_REPORTS_ATR_VOLUME,
-  ATR_SPEED_VOLUME: [
-    ReportType.SPEED_PERCENTILE,
-    ...OPTIONS_REPORTS_ATR_VOLUME,
-  ],
-  PXO_OBSERVE: [
-    ReportType.CROSSWALK_OBSERVANCE_SUMMARY,
-  ],
-  PED_DELAY: [
-    ReportType.PED_DELAY_SUMMARY,
-  ],
-};
 
 export default {
   name: 'FcDrawerViewReports',
@@ -195,10 +168,6 @@ export default {
         return null;
       }
       return reportTypes[indexActiveReportType];
-    },
-    countType() {
-      const { categoryValue } = this.$route.params;
-      return COUNT_TYPES.find(({ value }) => value === categoryValue);
     },
     filterChipsNoStudyTypes() {
       return this.filterChips
@@ -259,11 +228,11 @@ export default {
       },
     },
     reportTypes() {
-      const { value } = this.countType;
-      if (value === undefined) {
-        return [];
-      }
-      return OPTIONS_REPORTS[value].filter(({ disabled }) => !disabled);
+      return this.studyType.reportTypes;
+    },
+    studyType() {
+      const { studyTypeName } = this.$route.params;
+      return StudyType.enumValueOf(studyTypeName);
     },
     ...mapState(['location']),
     ...mapGetters('viewData', ['filterChips', 'filterParams']),
@@ -312,7 +281,8 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType, categoryValue: studyType } = to.params;
+      const { centrelineId, centrelineType, studyTypeName } = to.params;
+      const studyType = StudyType.enumValueOf(studyTypeName);
       const tasks = [
         getCountsByCentreline(
           { centrelineId, centrelineType },

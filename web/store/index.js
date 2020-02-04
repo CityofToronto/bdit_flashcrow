@@ -3,8 +3,6 @@ import Vuex from 'vuex';
 
 import {
   CentrelineType,
-  COUNT_TYPES,
-  FeatureCode,
   RoadIntersectionType,
   RoadSegmentType,
 } from '@/lib/Constants';
@@ -67,28 +65,6 @@ export default new Vuex.Store({
         return RoadIntersectionType.enumValueOf(featureCode, 'featureCode');
       }
       throw new InvalidCentrelineTypeError(centrelineType);
-    },
-    studyTypesRelevantToLocation(state) {
-      const countTypesAll = COUNT_TYPES.map(({ value }) => value);
-      if (state.location === null) {
-        return countTypesAll;
-      }
-      const { centrelineType, featureCode = null } = state.location;
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        return ['TMC'];
-      }
-      if (featureCode === null) {
-        return countTypesAll;
-      }
-      if (featureCode === FeatureCode.EXPRESSWAY || featureCode === FeatureCode.EXPRESSWAY_RAMP) {
-        return ['RESCU'];
-      }
-      if (featureCode === FeatureCode.MAJOR_ARTERIAL) {
-        return countTypesAll
-          .filter(value => value !== 'TMC');
-      }
-      return countTypesAll
-        .filter(value => value !== 'TMC' && value !== 'RESCU');
     },
   },
   mutations: {

@@ -9,13 +9,13 @@
       <v-card-text>
         <h2 class="subtitle-2 mt-4">Study Types</h2>
         <v-checkbox
-          v-for="{ label, value } in COUNT_TYPES"
-          :key="value"
+          v-for="studyType in StudyType.enumValues"
+          :key="studyType.name"
           v-model="internalStudyTypes"
           class="mt-2"
           hide-details
-          :label="label"
-          :value="value"></v-checkbox>
+          :label="studyType.label"
+          :value="studyType"></v-checkbox>
 
         <h2 class="mt-4 subtitle-2">Days of the Week</h2>
         <v-checkbox
@@ -66,8 +66,8 @@
 
 <script>
 import {
-  COUNT_TYPES,
   StudyHours,
+  StudyType,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -83,13 +83,13 @@ export default {
   },
   data() {
     return {
-      COUNT_TYPES,
       DAYS_OF_WEEK: TimeFormatters.DAYS_OF_WEEK,
       internalDatesFrom: this.datesFrom,
       internalDaysOfWeek: this.daysOfWeek,
       internalHours: this.hours,
       internalStudyTypes: this.studyTypes,
       StudyHours,
+      StudyType,
     };
   },
   computed: {

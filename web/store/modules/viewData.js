@@ -1,7 +1,3 @@
-import {
-  COUNT_TYPES,
-  StudyHours,
-} from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
@@ -24,9 +20,8 @@ export default {
       } = state.filters;
       const filterChips = [];
       studyTypes.forEach((studyType) => {
-        const countType = COUNT_TYPES.find(({ value }) => value === studyType);
-        const { label, value } = countType;
-        const filterChip = { filter: 'studyTypes', label, value };
+        const { label } = studyType;
+        const filterChip = { filter: 'studyTypes', label, value: studyType };
         filterChips.push(filterChip);
       });
       daysOfWeek.forEach((value) => {
@@ -40,9 +35,9 @@ export default {
         const filterChip = { filter: 'datesFrom', label, value };
         filterChips.push(filterChip);
       }
-      hours.forEach((value) => {
-        const label = StudyHours[value].description;
-        const filterChip = { filter: 'hours', label, value };
+      hours.forEach((studyHours) => {
+        const label = studyHours.description;
+        const filterChip = { filter: 'hours', label, value: studyHours };
         filterChips.push(filterChip);
       });
       return filterChips;
