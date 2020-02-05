@@ -111,7 +111,11 @@
                 color="warning"
                 left>mdi-information</v-icon>
               <div>
-                {{study.studyType}} has been requested on {{study.createdAt | date}}.
+                {{study.studyType.label}} has been requested on {{study.createdAt | date}}.
+                <router-link :to="{
+                  name: 'requestStudyView',
+                  params: { id: study.studyRequestId },
+                }">View details.</router-link>
               </div>
             </div>
           </div>
@@ -246,12 +250,12 @@ export default {
     actionRequestStudy() {
       this.$router.push({ name: 'requestStudyNew' });
     },
-    actionShowReports({ category: { value: categoryValue } }) {
+    actionShowReports({ category: { studyType } }) {
       const { centrelineId, centrelineType } = this.$route.params;
       const params = {
         centrelineId,
         centrelineType,
-        categoryValue,
+        studyTypeName: studyType.name,
       };
       this.$router.push({
         name: 'viewReportsAtLocation',

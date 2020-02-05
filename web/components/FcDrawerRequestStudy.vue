@@ -29,8 +29,7 @@
           <h3>Study Type</h3>
           <FcCheckboxGroupChips
             v-model="studyTypes"
-            item-text="label"
-            :items="COUNT_TYPES"></FcCheckboxGroupChips>
+            :items="itemsStudyType"></FcCheckboxGroupChips>
           <v-messages
             class="mt-1"
             color="error"
@@ -71,12 +70,11 @@
 <script>
 import {
   mapActions,
-  mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
 
-import { COUNT_TYPES, StudyHours } from '@/lib/Constants';
+import { StudyHours, StudyType } from '@/lib/Constants';
 import {
   getStudyRequest,
 } from '@/lib/api/WebApi';
@@ -130,7 +128,6 @@ export default {
   },
   data() {
     return {
-      COUNT_TYPES,
       REQUEST_STUDY_TIME_TO_FULFILL,
       studyRequest: null,
       studyTypes: [],
@@ -175,6 +172,12 @@ export default {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
+    itemsStudyType() {
+      return StudyType.enumValues.map((studyType) => {
+        const { label: text } = studyType;
+        return { text, value: studyType };
+      });
+    },
     labelFinish() {
       if (this.isCreate) {
         return 'Submit';
@@ -215,7 +218,6 @@ export default {
       const { id } = this.$route.params;
       return `Edit Request #${id}`;
     },
-    ...mapGetters(['studyTypesRelevantToLocation']),
     ...mapState(['location', 'now']),
   },
   watch: {

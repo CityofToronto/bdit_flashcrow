@@ -1,3 +1,4 @@
+import { StudyType } from '@/lib/Constants';
 import CountDAO from '@/lib/db/CountDAO';
 import { InvalidReportIdError } from '@/lib/error/MoveErrors';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
@@ -25,14 +26,14 @@ test('ReportBaseFlow#parseId', async () => {
   await expect(reportInstance.parseId(rawId)).rejects.toThrow(InvalidReportIdError);
 
   let count = {
-    type: { value: 'TMC' },
+    type: { studyType: StudyType.TMC },
   };
   CountDAO.byIdAndCategory.mockResolvedValue(count);
   rawId = '5/17';
   await expect(reportInstance.parseId(rawId)).rejects.toThrow(InvalidReportIdError);
 
   count = {
-    type: { value: 'ATR_SPEED_VOLUME' },
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
   };
   CountDAO.byIdAndCategory.mockResolvedValue(count);
   rawId = '4/17';

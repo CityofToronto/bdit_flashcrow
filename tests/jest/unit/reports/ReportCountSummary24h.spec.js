@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { CardinalDirection } from '@/lib/Constants';
+import { CardinalDirection, StudyType } from '@/lib/Constants';
 import ReportCountSummary24h from '@/lib/reports/ReportCountSummary24h';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import DateTime from '@/lib/time/DateTime';
@@ -88,7 +88,7 @@ test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]
     count: {
       date: DateTime.fromSQL('2019-03-07 00:00:00'),
       locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-      type: { name: 'SPEED' },
+      type: { studyType: StudyType.ATR_SPEED_VOLUME },
     },
   };
 
@@ -109,7 +109,7 @@ test('ReportCountSummary24h#generateCsv [Morningside S of Lawrence: 4/2156283]',
     count: {
       date: DateTime.fromSQL('2019-03-07 00:00:00'),
       locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-      type: { name: 'SPEED' },
+      type: { studyType: StudyType.ATR_SPEED_VOLUME },
     },
   };
 

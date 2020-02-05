@@ -70,7 +70,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:centrelineType/:centrelineId/reports/:categoryValue',
+        path: '/view/location/:centrelineType/:centrelineId/reports/:studyTypeName',
         name: 'viewReportsAtLocation',
         meta: {
           auth: { mode: 'try' },

@@ -8,6 +8,7 @@ import {
   StudyHours,
   StudyRequestReason,
   StudyRequestStatus,
+  StudyType,
 } from '@/lib/Constants';
 import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
@@ -21,6 +22,9 @@ import UserDAO from '@/lib/db/UserDAO';
 import {
   InvalidCentrelineTypeError,
 } from '@/lib/error/MoveErrors';
+import Category from '@/lib/model/Category';
+import Count from '@/lib/model/Count';
+import Joi from '@/lib/model/Joi';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
@@ -127,8 +131,10 @@ test('CategoryDAO', async () => {
 
   let category = await CategoryDAO.byId(1);
   expect(category.id).toBe(1);
-  expect(category.value).toBe('ATR_VOLUME');
-  expect(category.automatic).toBe(true);
+  expect(category.studyType).toBe(StudyType.ATR_VOLUME);
+  await expect(
+    Category.read.validateAsync(category),
+  ).resolves.toEqual(category);
   expect(CategoryDAO.isInited()).toBe(true);
 
   category = await CategoryDAO.byId(-1);
@@ -216,7 +222,7 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
 test('CountDAO.byCentreline()', async () => {
   // invalid feature
   let counts = await CountDAO.byCentreline(
-    -1, -1, 'TMC',
+    -1, -1, StudyType.TMC,
     null,
     null,
     null,
@@ -228,7 +234,7 @@ test('CountDAO.byCentreline()', async () => {
   let start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let end = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   counts = await CountDAO.byCentreline(
-    30000549, CentrelineType.INTERSECTION, 'TMC',
+    30000549, CentrelineType.INTERSECTION, StudyType.TMC,
     { start, end },
     null,
     null,
@@ -238,20 +244,23 @@ test('CountDAO.byCentreline()', async () => {
 
   // valid feature with less than maxPerCategory counts
   counts = await CountDAO.byCentreline(
-    14659630, CentrelineType.SEGMENT, 'ATR_SPEED_VOLUME',
+    14659630, CentrelineType.SEGMENT, StudyType.ATR_SPEED_VOLUME,
     null,
     null,
     null,
     10, 0,
   );
   expect(counts).toHaveLength(6);
+  await expect(
+    Joi.array().items(Count.read).validateAsync(counts),
+  ).resolves.toEqual(counts);
 
   // valid feature with less than maxPerCategory counts, date range
   // filters to empty
   start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   end = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
   counts = await CountDAO.byCentreline(
-    14659630, CentrelineType.SEGMENT, 'ATR_SPEED_VOLUME',
+    14659630, CentrelineType.SEGMENT, StudyType.ATR_SPEED_VOLUME,
     { start, end },
     null,
     null,
@@ -261,7 +270,7 @@ test('CountDAO.byCentreline()', async () => {
 
   // valid feature with more than maxPerCategory counts
   counts = await CountDAO.byCentreline(
-    1145768, CentrelineType.SEGMENT, 'RESCU',
+    1145768, CentrelineType.SEGMENT, StudyType.RESCU,
     null,
     null,
     null,
@@ -274,7 +283,7 @@ test('CountDAO.byCentreline()', async () => {
   start = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
   end = DateTime.fromObject({ year: 2016, month: 1, day: 1 });
   counts = await CountDAO.byCentreline(
-    1145768, CentrelineType.SEGMENT, 'RESCU',
+    1145768, CentrelineType.SEGMENT, StudyType.RESCU,
     { start, end },
     null,
     null,
@@ -288,13 +297,13 @@ test('CountDAO.byCentreline()', async () => {
     { start, end },
     null,
     null,
-    ['RESCU'],
+    [StudyType.RESCU],
   );
   const { numPerCategory } = results[0];
   for (let i = 0; i < numPerCategory; i += 100) {
     /* eslint-disable-next-line no-await-in-loop */
     counts = await CountDAO.byCentreline(
-      1145768, CentrelineType.SEGMENT, 'RESCU',
+      1145768, CentrelineType.SEGMENT, StudyType.RESCU,
       { start, end },
       null,
       null,
@@ -308,7 +317,7 @@ test('CountDAO.byCentreline()', async () => {
 function expectNumPerCategory(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([n0, value0], i) => {
-    const { category: { value }, numPerCategory } = actual[i];
+    const { category: { studyType: { name: value } }, numPerCategory } = actual[i];
     expect(numPerCategory).toBe(n0);
     expect(value).toBe(value0);
   });
@@ -355,7 +364,17 @@ test('CountDAO.byCentrelineSummary()', async () => {
     null,
     null,
   );
+  const resultsSchema = Joi.array().items(
+    Joi.object().keys({
+      category: Category.read,
+      count: Count.read,
+      numPerCategory: Joi.number().integer().positive().required(),
+    }),
+  );
   expectNumPerCategory(results, [[10, 'ATR_VOLUME'], [6, 'ATR_SPEED_VOLUME']]);
+  await expect(
+    resultsSchema.validateAsync(results),
+  ).resolves.toEqual(results);
 
   // valid feature with some counts, date range filters to empty
   start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
@@ -474,7 +493,7 @@ test('StudyRequestDAO', async () => {
       coordinates: [-79.333251, 43.709012],
     },
     studies: [{
-      studyType: 'TMC',
+      studyType: StudyType.TMC,
       daysOfWeek: [2, 3, 4],
       duration: null,
       hours: StudyHours.ROUTINE,
@@ -534,7 +553,7 @@ test('StudyRequestDAO', async () => {
 
   // add new study to study request
   persistedStudyRequest.studies.push({
-    studyType: 'TMC',
+    studyType: StudyType.TMC,
     daysOfWeek: [0, 6],
     duration: null,
     hours: StudyHours.OTHER,
@@ -592,7 +611,7 @@ test('StudyRequestCommentDAO', async () => {
       coordinates: [-79.333251, 43.709012],
     },
     studies: [{
-      studyType: 'TMC',
+      studyType: StudyType.TMC,
       daysOfWeek: [2, 3, 4],
       duration: null,
       hours: StudyHours.ROUTINE,
