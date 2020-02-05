@@ -246,12 +246,12 @@ export default {
     actionRequestStudy() {
       this.$router.push({ name: 'requestStudyNew' });
     },
-    actionShowReports({ category: { value: categoryValue } }) {
+    actionShowReports({ category: { studyType } }) {
       const { centrelineId, centrelineType } = this.$route.params;
       const params = {
         centrelineId,
         centrelineType,
-        categoryValue,
+        studyTypeName: studyType.name,
       };
       this.$router.push({
         name: 'viewReportsAtLocation',

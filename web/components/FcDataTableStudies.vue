@@ -6,7 +6,7 @@
     :loading="loading"
     :items="countSummaryOrLoading">
     <template v-slot:item.STUDY_REPORTS="{ item }">
-      <span>{{item.count.type.label}}</span>
+      <span>{{item.count.type.studyType.label}}</span>
     </template>
     <template v-slot:item.DATE="{ item }">
       <span>
@@ -14,7 +14,7 @@
       </span>
     </template>
     <template v-slot:item.HOURS="{ item }">
-      <span v-if="item.count.type.automatic">
+      <span v-if="item.count.type.studyType.automatic">
         {{item.count.duration | durationHuman}} ({{item.count.duration}} hrs)
       </span>
       <span v-else>
