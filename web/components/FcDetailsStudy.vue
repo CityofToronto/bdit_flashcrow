@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-divider class="my-3"></v-divider>
-    <h2>{{study.studyType.label}}</h2>
+    <h2>{{internalValue.studyType.label}}</h2>
 
     <div class="mt-4">
       <h3>Study Days</h3>
@@ -14,7 +14,7 @@
         :value="errorMessagesDaysOfWeek"></v-messages>
     </div>
 
-    <div v-if="study.studyType.automatic" class="mt-4">
+    <div v-if="internalValue.studyType.automatic" class="mt-4">
       <h3>Study Duration</h3>
       <FcRadioGroup
         v-model="v.duration.$model"

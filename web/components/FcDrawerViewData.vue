@@ -111,7 +111,11 @@
                 color="warning"
                 left>mdi-information</v-icon>
               <div>
-                {{study.studyType}} has been requested on {{study.createdAt | date}}.
+                {{study.studyType.label}} has been requested on {{study.createdAt | date}}.
+                <router-link :to="{
+                  name: 'requestStudyView',
+                  params: { id: study.studyRequestId },
+                }">View details.</router-link>
               </div>
             </div>
           </div>

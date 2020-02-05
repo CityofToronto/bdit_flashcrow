@@ -29,7 +29,6 @@
           <h3>Study Type</h3>
           <FcCheckboxGroupChips
             v-model="studyTypes"
-            item-text="label"
             :items="itemsStudyType"></FcCheckboxGroupChips>
           <v-messages
             class="mt-1"
