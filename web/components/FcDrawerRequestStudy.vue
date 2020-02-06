@@ -247,7 +247,7 @@ export default {
       this.studyRequest.studies.push(item);
     },
     actionNavigateBack() {
-      if (this.isCreate) {
+      if (!this.isCreate) {
         const { id } = this.$route.params;
         this.$router.push({
           name: 'requestStudyView',

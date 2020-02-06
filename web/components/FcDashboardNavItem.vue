@@ -32,23 +32,14 @@ export default {
     label: String,
     to: Object,
   },
-  computed: {
-    title() {
-      if (!this.disabled) {
-        return null;
-      }
-      const { label } = this;
-      return `${label} (Log in to access)`;
-    },
-  },
 };
 </script>
 
 <style lang="postcss">
-.fc-nav-item {
+.fc-nav-item.v-list-item {
   flex: 0;
   &.fc-nav-item-active {
-    border-right: 3px solid #3088d6;
+    border-right: 3px solid var(--v-primary-base);
   }
 }
 

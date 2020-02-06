@@ -1,7 +1,7 @@
 import { format } from 'd3-format';
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
-import Vuetify from 'vuetify/lib';
+import Vuetify from 'vuetify/lib/framework';
 
 import App from '@/web/App.vue';
 import router from '@/web/router';
@@ -23,9 +23,17 @@ Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 
 Vue.config.productionTip = false;
 
+const vuetify = new Vuetify({
+  theme: {
+    options: {
+      customProperties: true,
+    },
+  },
+});
+
 new Vue({
   render: h => h(App),
   router,
   store,
-  vuetify: new Vuetify({}),
+  vuetify,
 }).$mount('#app');
