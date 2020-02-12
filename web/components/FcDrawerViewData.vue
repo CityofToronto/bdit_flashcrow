@@ -1,6 +1,6 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <div class="flex-grow-0 flex-shrink-0 pa-5">
+    <div class="flex-grow-0 flex-shrink-0 pa-5 shading">
       <FcSearchBarLocation />
     </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
@@ -8,9 +8,9 @@
         v-if="loading"
         indeterminate />
       <template v-else>
-        <header class="px-5 pt-1 pb-5">
-          <h1 class="display-2">{{location.description}}</h1>
-          <div class="mt-2">
+        <header class="px-5 pt-1 pb-5 shading">
+          <h1 class="display-4">{{location.description}}</h1>
+          <div class="label mt-2">
             <span v-if="locationFeatureType !== null">
               {{locationFeatureType.description}} &#x2022;
             </span>
@@ -18,21 +18,21 @@
           </div>
           <v-row class="mt-5">
             <v-col cols="2">
-              <div>KSI</div>
-              <div class="headline">
+              <div class="label mb-1">KSI</div>
+              <h3 class="display-2">
                 {{collisionSummary.ksi}}
-              </div>
+              </h3>
             </v-col>
             <v-col cols="2">
-              <div>Collisions</div>
-              <div class="headline">
+              <div class="label mb-1">Collisions</div>
+              <h3 class="display-2">
                 {{collisionSummary.total}}
-              </div>
+              </h3>
             </v-col>
           </v-row>
           <div class="mt-5">
-            <div>Nearby</div>
-            <div class="mt-1">
+            <div class="label mb-1">Nearby</div>
+            <div>
               <div v-if="!hasPoisNearby">
                 No points of interest nearby
               </div>
@@ -60,8 +60,8 @@
         <section>
           <header class="pa-5">
             <div class="align-center d-flex">
-              <h2 class="subtitle-1">Studies</h2>
-              <div class="caption pl-3">{{numCountsText}}</div>
+              <h5 class="headline">Studies</h5>
+              <div class="pl-3 subtitle-2">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
                 v-if="showFilters"
@@ -70,16 +70,19 @@
                 @set-filters="setFilters">
               </FcDialogStudyFilters>
               <v-btn
-                color="primary"
+                color="secondary"
                 outlined
                 @click.stop="showFilters = true">
-                <v-icon left>mdi-filter-variant</v-icon>
+                <v-icon
+                  :color="colorIconFilter"
+                  left>mdi-filter-variant</v-icon>
                 Filter
               </v-btn>
               <v-btn
                 class="ml-3"
                 color="primary"
                 @click="actionRequestStudy">
+                <v-icon left>mdi-plus-box</v-icon>
                 Request Study
               </v-btn>
             </div>
@@ -90,10 +93,10 @@
               <v-chip
                 v-for="(filterChip, i) in filterChips"
                 :key="i"
-                class="mr-2"
-                close
-                color="blue lighten-4"
-                @click:close="removeFilter(filterChip)">
+                class="mb-2 mr-2 primary--text"
+                color="light-blue lighten-5"
+                @click="removeFilter(filterChip)">
+                <v-icon left>mdi-check</v-icon>
                 {{filterChip.label}}
               </v-chip>
             </div>
@@ -172,6 +175,12 @@ export default {
     };
   },
   computed: {
+    colorIconFilter() {
+      if (this.filterChips.length === 0) {
+        return 'unselected';
+      }
+      return 'primary';
+    },
     countSummaryHeaderText() {
       const n = this.countSummary.length;
       if (n === 0) {

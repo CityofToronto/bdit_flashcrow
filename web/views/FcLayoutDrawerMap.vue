@@ -8,7 +8,11 @@
     }">
     <div
       v-if="hasDrawer"
-      class="pane-drawer-toggle elevation-n1 font-size-xl"
+      class="pane-drawer-toggle"
+      :class="{
+        'align-center': !vertical,
+        'd-flex': !vertical,
+      }"
       @click="setDrawerOpen(!drawerOpen)">
       <div class="text-center">
         <v-icon small>{{iconDrawerToggle}}</v-icon>
@@ -21,7 +25,7 @@
       }">
       <div
         v-show="showDrawer"
-        class="fc-drawer elevation-3 flex-grow-1 flex-shrink-0"
+        class="fc-drawer elevation-2 flex-grow-1 flex-shrink-0"
         :class="{
           'order-2': vertical,
         }">
@@ -96,7 +100,7 @@ export default {
     z-index: var(--z-index-controls);
 
     &:hover {
-      background-color: var(--base-lightest);
+      background-color: var(--v-shading-base);
     }
   }
 
@@ -113,13 +117,14 @@ export default {
 
   &.vertical {
     & > .pane-drawer-toggle {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
       border-radius: var(--space-s) var(--space-s) 0 0;
       bottom: 50%;
       height: 16px;
       left: calc(50% - 19px);
       width: 38px;
       & i {
-        margin-top: -22px;
+        margin-top: -6px;
       }
     }
     & > .fc-pane-wrapper > div {
@@ -129,11 +134,14 @@ export default {
 
   &.drawer-open {
     &.horizontal > .pane-drawer-toggle {
+      border-left: 1px solid rgba(0, 0, 0, 0.12);
       left: 50%;
     }
     &.vertical {
       & > .pane-drawer-toggle {
+        border-left: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 0 0 var(--space-s) var(--space-s);
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
         bottom: auto;
         top: 0;
       }

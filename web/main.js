@@ -28,6 +28,15 @@ const vuetify = new Vuetify({
     options: {
       customProperties: true,
     },
+    themes: {
+      light: {
+        default: '#272727',
+        primary: '#3088d6',
+        secondary: '#757575',
+        shading: '#fafafa',
+        unselected: '#acacac',
+      },
+    },
   },
 });
 

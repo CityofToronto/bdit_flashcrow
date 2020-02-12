@@ -85,6 +85,7 @@ export default {
 
 <style lang="scss">
 #fc_app {
+  color: var(--v-default-base);
   font-size: 0.875rem;
   font-weight: normal;
   line-height: 1.25rem;
