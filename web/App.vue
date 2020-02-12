@@ -49,7 +49,7 @@
 import { mapMutations, mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import '@/web/css/main.postcss';
+import '@/web/css/main.scss';
 
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';

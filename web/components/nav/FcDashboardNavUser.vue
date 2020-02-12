@@ -28,7 +28,7 @@
               icon
               small
               v-on="{ ...onMenu, ...onTooltip }">
-              <v-icon>mdi-account</v-icon>
+              <v-icon>mdi-account-circle</v-icon>
             </v-btn>
           </template>
           <span>{{username}}</span>

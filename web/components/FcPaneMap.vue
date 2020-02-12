@@ -364,6 +364,15 @@ export default {
       });
       this.updateCoordinates();
       this.map.addControl(
+        new mapboxgl.AttributionControl({
+          customAttribution: [
+            '<a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a>',
+            'Powered by <a href="https://www.esri.com/">Esri</a>',
+          ],
+        }),
+        'bottom-right',
+      );
+      this.map.addControl(
         new mapboxgl.ScaleControl({ maxWidth: 192, unit: 'metric' }),
         'bottom-right',
       );
@@ -722,12 +731,32 @@ export default {
     z-index: var(--z-index-controls);
   }
   .mapboxgl-ctrl-bottom-right {
-    bottom: -2px;
-    right: 6px;
+    & > .mapboxgl-ctrl-group {
+      bottom: 25px;
+      position: absolute;
+      right: 6px;
+    }
     & > .mapboxgl-ctrl-scale {
-      background-color: transparent;
+      background-color: rgba(0, 0, 0, 0.2);
       border-color: #dcdee0;
+      bottom: 0;
       color: #dcdee0;
+      font-size: 0.75rem;
+      height: 17px;
+      line-height: 0.875rem;
+      position: absolute;
+      right: 170px;
+    }
+    & > .mapboxgl-ctrl-attrib {
+      background-color: rgba(0, 0, 0, 0.2);
+      bottom: 10px;
+      color: #dcdee0;
+      font-size: 0.75rem;
+      line-height: 0.875rem;
+      padding: 2px 5px;
+      position: absolute;
+      right: 5px;
+      width: 170px;
     }
   }
 }

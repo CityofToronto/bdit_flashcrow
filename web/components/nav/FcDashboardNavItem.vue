@@ -5,6 +5,7 @@
         v-on="on"
         active-class="fc-nav-item-active"
         class="fc-nav-item"
+        color="primary"
         :disabled="disabled"
         link
         :to="to">
@@ -40,6 +41,9 @@ export default {
   flex: 0;
   &.fc-nav-item-active {
     border-right: 3px solid var(--v-primary-base);
+    &.v-list-item--link::before {
+      background-color: transparent;
+    }
   }
 }
 
