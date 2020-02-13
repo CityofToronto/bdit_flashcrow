@@ -11,23 +11,24 @@
             @click="actionNavigateBack">
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
-          <h1 class="subtitle-1">Turning Movement Count</h1>
-          <div class="mx-1">&#x2022;</div>
-          <div>{{location.description}}</div>
-
-          <v-spacer></v-spacer>
-
+          <h1 class="headline">{{studyType.label}}</h1>
+          <div
+            class="ml-1 font-weight-regular headline secondary--text">
+            <span>&#x2022; {{location.description}}</span>
+            <span v-if="filterChipsNoStudyTypes.length > 0"> &#x2022;</span>
+          </div>
           <div
             v-if="filterChipsNoStudyTypes.length > 0">
             <v-chip
               v-for="(filterChip, i) in filterChipsNoStudyTypes"
               :key="i"
-              class="mr-2"
-              color="blue lighten-4">
+              class="ml-2 my-1"
+              filter
+              :input-value="true">
               {{filterChip.label}}
             </v-chip>
           </div>
-
+          <v-spacer></v-spacer>
           <v-overflow-btn
             v-model="indexActiveCount"
             class="fc-select-active-count flex-grow-0 mt-0"
@@ -67,21 +68,23 @@
               :report-type="activeReportType"
               @set-report-parameters="setReportParameters">
             </FcDialogReportParameters>
-            <v-btn
+            <FcButton
               v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+              type="secondary"
               @click.stop="showReportParameters = true">
-              <v-icon left>mdi-settings</v-icon>
+              <v-icon color="primary" left>mdi-settings</v-icon>
               Set Parameters
-            </v-btn>
+            </FcButton>
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
+                <FcButton
                   v-bind="attrs"
                   v-on="on"
                   class="ml-2"
+                  type="secondary"
                   :loading="loadingDownload">
-                  <v-icon left>mdi-download</v-icon> Download
-                </v-btn>
+                  <v-icon color="primary" left>mdi-cloud-download</v-icon> Download
+                </FcButton>
               </template>
               <v-list>
                 <v-list-item
@@ -118,6 +121,7 @@ import {
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -130,6 +134,7 @@ export default {
   name: 'FcDrawerViewReports',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcDialogReportParameters,
     FcReport,
   },

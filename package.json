@@ -124,7 +124,7 @@
     "*.js": [
       "vue-cli-service lint"
     ],
-    "*.postcss": [
+    "*.scss": [
       "stylelint"
     ],
     "*.py": [
