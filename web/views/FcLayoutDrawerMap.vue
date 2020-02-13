@@ -25,7 +25,7 @@
       }">
       <div
         v-show="showDrawer"
-        class="fc-drawer elevation-2 flex-grow-1 flex-shrink-0"
+        class="fc-drawer flex-grow-1 flex-shrink-0"
         :class="{
           'order-2': vertical,
         }">
@@ -87,6 +87,13 @@ export default {
 .fc-layout-drawer-map {
   position: relative;
   width: 100%;
+
+  & .fc-drawer {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      0 1px 10px rgba(0, 0, 0, 0.12),
+      0 4px 5px rgba(0, 0, 0, 0.14);
+  }
 
   & > .fc-pane-wrapper > div {
     flex-basis: 0;

@@ -69,22 +69,21 @@
                 v-bind="filters"
                 @set-filters="setFilters">
               </FcDialogStudyFilters>
-              <v-btn
-                color="secondary"
-                outlined
+              <FcButton
+                type="secondary"
                 @click.stop="showFilters = true">
                 <v-icon
                   :color="colorIconFilter"
                   left>mdi-filter-variant</v-icon>
                 Filter
-              </v-btn>
-              <v-btn
+              </FcButton>
+              <FcButton
                 class="ml-3"
-                color="primary"
+                type="primary"
                 @click="actionRequestStudy">
                 <v-icon left>mdi-plus-box</v-icon>
                 Request Study
-              </v-btn>
+              </FcButton>
             </div>
 
             <div
@@ -148,6 +147,7 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -155,6 +155,7 @@ export default {
   name: 'FcDrawerViewData',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcDataTableStudies,
     FcDialogStudyFilters,
     FcSearchBarLocation,

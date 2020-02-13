@@ -10,15 +10,17 @@
     <FcSearchBarLocation
       v-if="!drawerOpen" />
     <div class="pane-map-mode">
-      <v-btn
+      <FcButton
         class="mr-2"
+        type="fab-text"
         @click="openGoogleMaps">
         Street View
-      </v-btn>
-      <v-btn
+      </FcButton>
+      <FcButton
+        type="fab-text"
         @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
-      </v-btn>
+      </FcButton>
     </div>
     <FcPaneMapPopup
       v-if="hoveredFeature"
@@ -45,6 +47,7 @@ import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -289,6 +292,7 @@ function injectSourcesAndLayers(rawStyle) {
 export default {
   name: 'FcPaneMap',
   components: {
+    FcButton,
     FcPaneMapPopup,
     FcSearchBarLocation,
   },

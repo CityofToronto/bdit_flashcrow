@@ -73,13 +73,6 @@ body {
   color: var(--v-secondary-base);
 }
 
-/* BUTTONS */
-button.v-btn.secondary--text {
-  & > .v-btn__content {
-    color: var(--v-default-base);
-  }
-}
-
 /* FLEX LAYOUT */
 .flex-container-row {
   display: flex;
