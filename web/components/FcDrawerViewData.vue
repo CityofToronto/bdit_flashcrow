@@ -33,8 +33,10 @@
           <div class="mt-5">
             <div class="label mb-1">Nearby</div>
             <div>
-              <div v-if="!hasPoisNearby">
-                No points of interest nearby
+              <div
+                v-if="!hasPoisNearby"
+                class="display-2 secondary--text">
+                None
               </div>
               <v-tooltip
                 v-if="poiSummary.school !== null"
