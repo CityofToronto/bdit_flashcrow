@@ -40,14 +40,21 @@
           :messages="[REQUEST_STUDY_PROVIDE_URGENT_REASON.text]"
           no-resize
           outlined
+          placeholder="Additional Information"
           rows="4"
           @blur="v.urgentReason.$touch()"></v-textarea>
-        <FcDatePicker
-          v-model="v.dueDate.$model"
-          class="mt-3"
-          label="Due Date"
-          :min="minDueDate">
-        </FcDatePicker>
+        <v-row>
+          <v-col cols="8">
+            <FcDatePicker
+              v-model="v.dueDate.$model"
+              class="mt-3"
+              :error-messages="errorMessagesDueDate"
+              :messages="[REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text]"
+              :min="minDueDate"
+              placeholder="Due Date">
+            </FcDatePicker>
+          </v-col>
+        </v-row>
       </template>
     </div>
 
@@ -56,11 +63,10 @@
       <v-row>
         <v-col cols="8">
           <FcInputTextArray
-            v-model="v.ccEmails.$model" />
-          <v-messages
-            class="mt-1"
-            color="error"
-            :value="errorMessagesCcEmails"></v-messages>
+            v-model="v.ccEmails.$model"
+            :error-messages="errorMessagesCcEmails"
+            :messages="[OPTIONAL.text]"
+            placeholder="Staff Email" />
         </v-col>
       </v-row>
     </div>
@@ -76,6 +82,7 @@ import {
 } from '@/lib/Constants';
 import {
   OPTIONAL,
+  REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_REASONS,
 } from '@/lib/i18n/Strings';
@@ -98,6 +105,7 @@ export default {
   data() {
     return {
       OPTIONAL,
+      REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
     };
   },
@@ -115,6 +123,16 @@ export default {
           errors.push('Please enter a valid @toronto.ca email address.');
         }
       });
+      return errors;
+    },
+    errorMessagesDueDate() {
+      const errors = [];
+      if (!this.v.dueDate.$dirty) {
+        return errors;
+      }
+      if (!this.v.dueDate.required) {
+        errors.push(REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text);
+      }
       return errors;
     },
     errorMessagesReasons() {
