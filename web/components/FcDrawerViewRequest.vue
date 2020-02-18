@@ -28,13 +28,15 @@
         v-if="loading"
         indeterminate />
       <div v-else>
-        <div class="pa-5">
+        <div class="pl-5">
           <FcSummaryStudyRequest
+            class="pr-5"
             :study-request="studyRequest" />
           <template v-for="(study, i) in studyRequest.studies">
             <v-divider :key="'divider_' + i"></v-divider>
             <FcSummaryStudy
               :key="'study_' + i"
+              class="pr-5"
               :study="study" />
           </template>
         </div>

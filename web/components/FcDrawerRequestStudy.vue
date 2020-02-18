@@ -2,6 +2,7 @@
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
       <FcButton
+        v-if="isCreate"
         type="icon"
         @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>
@@ -14,6 +15,19 @@
           {{subtitle}}
         </span>
       </h1>
+      <div v-if="!isCreate">
+        <FcButton
+          type="tertiary"
+          @click="actionNavigateBack">
+          Cancel
+        </FcButton>
+        <FcButton
+          :disabled="$v.$invalid"
+          type="primary"
+          @click="onFinish">
+          Save
+        </FcButton>
+      </div>
     </div>
     <v-divider></v-divider>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
@@ -47,13 +61,15 @@
             :key="'divider_' + i"
             class="my-3"></v-divider>
           <FcDetailsStudy
-            :key="'details_' + i"
+            :key="'study_' + i"
             v-model="studyRequest.studies[i]"
             class="pr-5"
             :v="$v.studyRequest.studies.$each[i]" />
         </template>
 
-        <section class="pr-5 mt-6 text-right">
+        <section
+          v-if="isCreate"
+          class="pr-5 mt-6 text-right">
           <div>
             <FcButton
               type="tertiary"
@@ -64,7 +80,7 @@
               :disabled="$v.$invalid"
               type="primary"
               @click="onFinish">
-              {{labelFinish}}
+              Submit Request
             </FcButton>
           </div>
         </section>
@@ -191,12 +207,6 @@ export default {
         return { text, value: studyType };
       });
       return ArrayUtils.sortBy(itemsStudyType, ({ text }) => text);
-    },
-    labelFinish() {
-      if (this.isCreate) {
-        return 'Submit Request';
-      }
-      return 'Save Request';
     },
     routeFinish() {
       if (this.isCreate) {
