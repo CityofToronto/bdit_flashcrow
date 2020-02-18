@@ -3,7 +3,6 @@
     <template v-slot:activator="{ on }">
       <v-list-item
         v-on="on"
-        active-class="fc-nav-item-active"
         class="fc-nav-item"
         :class="{
           'fc-nav-item-active': isActive,

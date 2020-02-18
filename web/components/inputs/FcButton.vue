@@ -23,6 +23,11 @@ const BUTTON_ATTRS = {
     color: 'primary',
     text: true,
   },
+  'fab-icon': {
+    fab: true,
+    icon: true,
+    small: true,
+  },
   'fab-text': {
     class: 'elevation-2',
   },

@@ -6,11 +6,11 @@
     <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <v-btn
-            icon
+          <FcButton
+            type="icon"
             @click="actionNavigateBack">
             <v-icon>mdi-chevron-left</v-icon>
-          </v-btn>
+          </FcButton>
           <h1 class="headline">{{studyType.label}}</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">

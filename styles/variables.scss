@@ -46,8 +46,8 @@ $headings: (
   )
 );
 
-$data-table-regular-header-font-size: 0.875rem;
-$data-table-regular-row-font-size: 0.875rem;
-$tab-font-size: 0.875rem;
-$tab-font-weight: 500;
+$data-table-regular-header-font-size: map-get(map-get($headings, 'h6'), 'size');
+$data-table-regular-row-font-size: map-get(map-get($headings, 'body-1'), 'size');
+$tab-font-size: map-get(map-get($headings, 'h6'), 'size');
+$tab-font-weight: map-get(map-get($headings, 'h6'), 'weight');
 $tabs-item-letter-spacing: 0;

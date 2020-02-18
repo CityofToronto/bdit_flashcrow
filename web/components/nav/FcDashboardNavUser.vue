@@ -23,13 +23,11 @@
       <template v-slot:activator="{ on: onMenu }">
         <v-tooltip right>
           <template v-slot:activator="{ on: onTooltip }">
-            <v-btn
-              fab
-              icon
-              small
+            <FcButton
+              type="fab-icon"
               v-on="{ ...onMenu, ...onTooltip }">
               <v-icon>mdi-account-circle</v-icon>
-            </v-btn>
+            </FcButton>
           </template>
           <span>{{username}}</span>
         </v-tooltip>
@@ -45,16 +43,14 @@
       v-else
       right>
       <template v-slot:activator="{ on }">
-        <v-btn
+        <FcButton
           :disabled="$route.name === 'adfsCallback'"
-          fab
-          icon
           :loading="$route.name === 'adfsCallback'"
-          small
+          type="fab-icon"
           @click="actionSignIn()"
           v-on="on">
           <v-icon>mdi-login</v-icon>
-        </v-btn>
+        </FcButton>
       </template>
       <span>Sign In</span>
     </v-tooltip>
@@ -66,9 +62,13 @@ import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
 import ClientNonce from '@/lib/auth/ClientNonce';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDashboardNavUser',
+  components: {
+    FcButton,
+  },
   data() {
     return { nonce: null };
   },

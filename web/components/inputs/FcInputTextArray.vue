@@ -3,7 +3,6 @@
     v-model="internalValue"
     append-icon="mdi-plus"
     chips
-    class="fc-input-text-array"
     deletable-chips
     dense
     multiple

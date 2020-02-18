@@ -8,12 +8,13 @@
         <strong v-if="description">{{description}}</strong>
         <span v-else> name unknown</span>
       </div>
-      <v-btn
+      <FcButton
         v-if="featureSelectable"
         class="mt-1"
+        type="secondary"
         @click="onViewData">
         <v-icon left>mdi-table-eye</v-icon> View Data
-      </v-btn>
+      </FcButton>
     </v-alert>
   </div>
 </template>
@@ -26,6 +27,7 @@ import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 const SELECTABLE_LAYERS = [
   'counts',
@@ -35,6 +37,9 @@ const SELECTABLE_LAYERS = [
 
 export default {
   name: 'PaneMapPopup',
+  components: {
+    FcButton,
+  },
   props: {
     feature: Object,
     hover: Boolean,
