@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    class="fc-button"
     v-bind="{
       ...typeAttrs,
       ...$attrs,
@@ -45,6 +46,7 @@ export default {
 
 <style lang="scss">
 button.fc-button.v-btn.secondary--text {
+  background-color: white;
   & > .v-btn__content {
     color: var(--v-default-base);
   }

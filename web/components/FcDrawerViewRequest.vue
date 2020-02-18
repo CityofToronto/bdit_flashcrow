@@ -1,26 +1,26 @@
 <template>
   <div class="fc-drawer-view-request d-flex flex-column">
-    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
-      <v-btn
-        outlined
+    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
+      <FcButton
+        type="secondary"
         @click="actionNavigateBack">
         <v-icon left>mdi-chevron-left</v-icon>
         Requests
-      </v-btn>
-      <div class="flex-grow-1 text-center">
-        <span class="subtitle-1">
+      </FcButton>
+      <h1 class="flex-grow-1 headline text-center">
+        <span>
           {{title}}:
         </span>
-        <span>
+        <span class="font-weight-regular">
           {{subtitle}}
         </span>
-      </div>
-      <v-btn
+      </h1>
+      <FcButton
         v-if="!loading && (auth.user.id === studyRequest.userId || isSupervisor)"
-        outlined
+        type="secondary"
         @click="actionEdit">
-        <v-icon left>mdi-pencil</v-icon> Edit
-      </v-btn>
+        <v-icon color="primary" left>mdi-pencil</v-icon> Edit
+      </FcButton>
     </div>
     <v-divider></v-divider>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
@@ -60,12 +60,14 @@ import {
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewRequest',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcCommentsStudyRequest,
     FcSummaryStudy,
     FcSummaryStudyRequest,
