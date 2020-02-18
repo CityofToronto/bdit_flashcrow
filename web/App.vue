@@ -89,5 +89,10 @@ export default {
   font-size: 0.875rem;
   font-weight: normal;
   line-height: 1.25rem;
+
+  & .v-input--selection-controls__input + .v-label {
+    color: var(--v-default-base);
+    padding-left: 24px;
+  }
 }
 </style>

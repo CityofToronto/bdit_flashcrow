@@ -7,7 +7,10 @@
       v-for="{ selected, text, value } in itemsNormalized"
       :key="'' + value"
       class="mr-2"
-      :color="selected ? 'blue lighten-4' : null"
+      :class="{
+        'primary--text': selected,
+      }"
+      :color="selected ? 'light-blue lighten-5' : null"
       filter
       :value="value">
       {{text}}

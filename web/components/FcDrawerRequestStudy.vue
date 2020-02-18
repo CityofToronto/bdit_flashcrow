@@ -1,19 +1,19 @@
 <template>
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
-    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
       <v-btn
         icon
         @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <div class="flex-grow-1 text-center">
-        <span class="subtitle-1">
+      <h1 class="flex-grow-1 headline text-center">
+        <span>
           {{title}}:
         </span>
-        <span>
+        <span class="font-weight-regular">
           {{subtitle}}
         </span>
-      </div>
+      </h1>
     </div>
     <v-divider></v-divider>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
@@ -26,7 +26,7 @@
         <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
         <section class="mt-5 pr-5">
-          <h3>Study Type</h3>
+          <h2 class="headline">Study Type</h2>
           <FcCheckboxGroupChips
             v-model="studyTypes"
             :items="itemsStudyType"></FcCheckboxGroupChips>
@@ -74,6 +74,7 @@ import {
   mapState,
 } from 'vuex';
 
+import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
 import {
   getStudyRequest,
@@ -173,10 +174,11 @@ export default {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
     itemsStudyType() {
-      return StudyType.enumValues.map((studyType) => {
+      const itemsStudyType = StudyType.enumValues.map((studyType) => {
         const { label: text } = studyType;
         return { text, value: studyType };
       });
+      return ArrayUtils.sortBy(itemsStudyType, ({ text }) => text);
     },
     labelFinish() {
       if (this.isCreate) {

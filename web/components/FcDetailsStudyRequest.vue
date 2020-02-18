@@ -1,18 +1,21 @@
 <template>
   <section>
     <div class="mt-4">
-      <h3>311 Information</h3>
-      <v-text-field
-        v-model="internalValue.serviceRequestId"
-        class="mt-2"
-        :messages="[OPTIONAL.text]"
-        outlined
-        placeholder="Service Number">
-      </v-text-field>
+      <h3 class="headline">311 Information</h3>
+      <v-row>
+        <v-col cols="8">
+          <v-text-field
+            v-model="internalValue.serviceRequestId"
+            :messages="[OPTIONAL.text]"
+            outlined
+            placeholder="Service Number">
+          </v-text-field>
+        </v-col>
+      </v-row>
     </div>
 
     <div class="mt-4">
-      <h3>Reasons</h3>
+      <h3 class="headline">Reasons</h3>
       <FcCheckboxGroupChips
         v-model="v.reasons.$model"
         :items="itemsReasons"></FcCheckboxGroupChips>
@@ -23,9 +26,10 @@
     </div>
 
     <div class="mt-4">
-      <h3>Escalate Priority</h3>
+      <h3 class="headline">Escalate Priority</h3>
       <v-checkbox
         v-model="internalValue.urgent"
+        class="mt-1"
         label="Urgent"
         :messages="[OPTIONAL.text]" />
       <template v-if="internalValue.urgent">
@@ -48,13 +52,17 @@
     </div>
 
     <div class="mt-4">
-      <h3>Inform Other Staff</h3>
-      <FcInputTextArray
-        v-model="v.ccEmails.$model" />
-      <v-messages
-        class="mt-1"
-        color="error"
-        :value="errorMessagesCcEmails"></v-messages>
+      <h3 class="headline">Inform Other Staff</h3>
+      <v-row>
+        <v-col cols="8">
+          <FcInputTextArray
+            v-model="v.ccEmails.$model" />
+          <v-messages
+            class="mt-1"
+            color="error"
+            :value="errorMessagesCcEmails"></v-messages>
+        </v-col>
+      </v-row>
     </div>
   </section>
 </template>
@@ -62,6 +70,7 @@
 <script>
 import { mapState } from 'vuex';
 
+import ArrayUtils from '@/lib/ArrayUtils';
 import {
   StudyRequestReason,
 } from '@/lib/Constants';
@@ -129,10 +138,11 @@ export default {
       return errors;
     },
     itemsReasons() {
-      return StudyRequestReason.enumValues.map((value) => {
+      const itemsReasons = StudyRequestReason.enumValues.map((value) => {
         const { text } = value;
         return { text, value };
       });
+      return ArrayUtils.sortBy(itemsReasons, ({ text }) => text);
     },
     minDueDate() {
       const { now, internalValue: { urgent } } = this;

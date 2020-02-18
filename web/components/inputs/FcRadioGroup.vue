@@ -16,7 +16,7 @@
             <span>{{item.label}}</span>
             <template v-if="item.sublabel">
               <br>
-              <span class="caption">{{item.sublabel}}</span>
+              <span class="subtitle-2">{{item.sublabel}}</span>
             </template>
           </div>
         </template>
