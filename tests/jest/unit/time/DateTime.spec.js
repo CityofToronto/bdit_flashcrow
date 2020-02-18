@@ -14,6 +14,16 @@ test('DateTime.local', () => {
   });
 });
 
+test('DateTime.fromLocaleString', () => {
+  const actual = DateTime.fromLocaleString('2/18/2020');
+  const expected = DateTime.fromObject({
+    year: 2020,
+    month: 2,
+    day: 18,
+  });
+  expect(actual.equals(expected)).toBe(true);
+});
+
 test('DateTime.fromJSDate', () => {
   const dt = DateTime.fromJSDate(new Date());
   expect(dt.zone).toEqual({

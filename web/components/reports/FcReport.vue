@@ -8,8 +8,8 @@
           width="175" />
       </div>
       <div class="ml-3">
-        <div>{{ORG_NAME}}</div>
-        <div class="title">{{type.label}}</div>
+        <div class="title">{{ORG_NAME}}</div>
+        <div class="display-1">{{type.label}}</div>
       </div>
     </header>
     <div>

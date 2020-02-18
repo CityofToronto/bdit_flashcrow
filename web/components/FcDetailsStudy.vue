@@ -1,10 +1,9 @@
 <template>
   <section>
-    <v-divider class="my-3"></v-divider>
-    <h2>{{internalValue.studyType.label}}</h2>
+    <h2 class="display-1">{{internalValue.studyType.label}}</h2>
 
     <div class="mt-4">
-      <h3>Study Days</h3>
+      <h3 class="headline">Study Days</h3>
       <FcCheckboxGroupChips
         v-model="v.daysOfWeek.$model"
         :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
@@ -15,7 +14,7 @@
     </div>
 
     <div v-if="internalValue.studyType.automatic" class="mt-4">
-      <h3>Study Duration</h3>
+      <h3 class="headline">Study Duration</h3>
       <FcRadioGroup
         v-model="v.duration.$model"
         :items="[
@@ -30,9 +29,10 @@
     <div
       v-else
       class="mt-4">
-      <h3>Study Hours</h3>
+      <h3 class="headline">Study Hours</h3>
       <FcRadioGroup
         v-model="internalValue.hours"
+        hide-details
         :items="itemsHours" />
     </div>
 
@@ -43,6 +43,7 @@
       :messages="messagesNotes"
       no-resize
       outlined
+      placeholder="Additional Information"
       rows="4"
       @blur="v.notes.$touch()"></v-textarea>
   </section>

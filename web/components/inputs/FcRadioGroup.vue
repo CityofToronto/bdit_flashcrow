@@ -1,6 +1,7 @@
 <template>
   <v-radio-group
-    v-model="internalValue">
+    v-model="internalValue"
+    v-bind="$attrs">
     <template v-for="(item, i) in items">
       <v-radio
         :key="'radio_' + item.value"
@@ -16,7 +17,7 @@
             <span>{{item.label}}</span>
             <template v-if="item.sublabel">
               <br>
-              <span class="caption">{{item.sublabel}}</span>
+              <span class="subtitle-2">{{item.sublabel}}</span>
             </template>
           </div>
         </template>

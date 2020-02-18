@@ -1,7 +1,7 @@
 import { format } from 'd3-format';
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
-import Vuetify from 'vuetify/lib';
+import Vuetify from 'vuetify/lib/framework';
 
 import App from '@/web/App.vue';
 import router from '@/web/router';
@@ -23,9 +23,39 @@ Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 
 Vue.config.productionTip = false;
 
+/*
+ * Vuetify offers two major entry points to customization: SASS variables (as in
+ * `styles/variables.scss`) and JavaScript options.
+ *
+ * In JavaScript options, we can define custom colors for light and dark themes.
+ * By also enabling `customProperties`, we can use these colors in several ways:
+ *
+ * - via classes (`.{color}` for backgrounds, `.{color}--text` for text);
+ * - via CSS variables (`--v-{color}-{shade}`);
+ * - via JavaScript (`this.$vuetify.theme.themes.light.primary`).
+ *
+ * This offers us flexibility in developing a standard look-and-feel across the application.
+ */
+const vuetify = new Vuetify({
+  theme: {
+    options: {
+      customProperties: true,
+    },
+    themes: {
+      light: {
+        default: '#272727',
+        primary: '#3088d6',
+        secondary: '#757575',
+        shading: '#fafafa',
+        unselected: '#acacac',
+      },
+    },
+  },
+});
+
 new Vue({
   render: h => h(App),
   router,
   store,
-  vuetify: new Vuetify({}),
+  vuetify,
 }).$mount('#app');

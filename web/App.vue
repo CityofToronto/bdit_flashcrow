@@ -1,32 +1,14 @@
 <template>
   <v-app id="fc_app">
-    <div class="d-none">
-      <form
-        v-if="auth.loggedIn"
-        ref="formSignOut"
-        method="POST"
-        action="/api/auth/logout">
-        <input type="hidden" name="csrf" :value="auth.csrf" />
-      </form>
-      <form
-        v-if="$route.name !== 'adfsCallback'"
-        ref="formSignIn"
-        method="POST"
-        action="/api/auth/adfs-init">
-        <input type="hidden" name="csrf" :value="auth.csrf" />
-        <input type="hidden" name="nonce" :value="nonce" />
-      </form>
-    </div>
     <v-snackbar
       v-if="hasToast"
       v-model="hasToast"
-      :color="toast.variant">
-      {{toast.text}}
-      <v-btn
-        text
-        @click="hasToast = false">
-        Close
-      </v-btn>
+      bottom
+      class="fc-toast"
+      :color="toast.variant"
+      left
+      :timeout="10000">
+      <span class="body-1">{{toast.text}}</span>
     </v-snackbar>
     <v-navigation-drawer
       app
@@ -43,6 +25,13 @@
         class="d-flex fill-height flex-column justify-center"
         dense>
         <FcDashboardNavItem
+          :active-route-names="[
+            'requestStudyEdit',
+            'requestStudyNew',
+            'requestStudyView',
+            'viewDataAtLocation',
+            'viewReportsAtLocation',
+          ]"
           icon="map"
           label="View Map"
           :to="{ name: 'viewData' }" />
@@ -52,38 +41,7 @@
           :to="{ name: 'requestsTrack' }" />
       </v-list>
       <template v-slot:append>
-        <div class="text-center pb-2">
-          <v-menu
-            v-if="auth.loggedIn"
-            top>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                icon
-                small>
-                <v-icon>mdi-account</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="({ label, value }, i) in userActions"
-                :key="i"
-                @click="onUserAction(value)">
-                <v-list-item-title>{{label}}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <v-btn
-            v-else
-            :disabled="$route.name === 'adfsCallback'"
-            fab
-            icon
-            :loading="$route.name === 'adfsCallback'"
-            small
-            @click="onClickLogin">
-            <v-icon>mdi-login</v-icon>
-          </v-btn>
-        </div>
+        <FcDashboardNavUser />
       </template>
     </v-navigation-drawer>
     <v-content>
@@ -97,27 +55,19 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import {
-  mapActions,
-  mapGetters,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import '@/web/css/main.postcss';
+import '@/web/css/main.scss';
 
-import ClientNonce from '@/lib/auth/ClientNonce';
-import FcDashboardNavItem from '@/web/components/FcDashboardNavItem.vue';
+import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
+import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
 
 export default {
   name: 'App',
   components: {
     FcDashboardNavItem,
-  },
-  data() {
-    return { nonce: null };
+    FcDashboardNavUser,
   },
   computed: {
     hasToast: {
@@ -130,46 +80,32 @@ export default {
         }
       },
     },
-    userActions() {
-      return [{ label: 'Log out', value: 'logout' }];
-    },
     ...mapState([
       'auth',
       'location',
       'toast',
     ]),
-    ...mapGetters(['username']),
   },
   methods: {
-    onClickLogin() {
-      this.nonce = ClientNonce.get(16);
-      window.localStorage.setItem('nonce', this.nonce);
-      Vue.nextTick(() => {
-        this.$refs.formSignIn.submit();
-      });
-    },
-    onModalToggle() {
-      if (!this.$refs.modalToggle.checked) {
-        this.clearModal();
-      }
-    },
-    onUserAction(action) {
-      if (action === 'logout') {
-        this.$refs.formSignOut.submit();
-      }
-    },
-    onViewData() {
-      if (this.location === null) {
-        return;
-      }
-      const { centrelineId, centrelineType } = this.location;
-      this.$router.push({
-        name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
-      });
-    },
-    ...mapActions(['setToast']),
     ...mapMutations(['clearToast']),
   },
 };
 </script>
+
+<style lang="scss">
+#fc_app {
+  color: var(--v-default-base);
+  font-size: 0.875rem;
+  font-weight: normal;
+  line-height: 1.25rem;
+
+  & .fc-toast {
+    left: 76px;
+  }
+
+  & .v-input--selection-controls__input + .v-label {
+    color: var(--v-default-base);
+    padding-left: 24px;
+  }
+}
+</style>

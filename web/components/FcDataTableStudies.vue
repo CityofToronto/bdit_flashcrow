@@ -22,22 +22,23 @@
       </span>
     </template>
     <template v-slot:item.VIEW_REPORT="{ item }">
-      <v-btn
-        color="primary"
-        text
+      <FcButton
+        type="tertiary"
         @click="$emit('show-reports', item)">
         <span>View Report</span>
-      </v-btn>
+      </FcButton>
     </template>
   </FcDataTable>
 </template>
 
 <script>
 import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDataTableStudies',
   components: {
+    FcButton,
     FcDataTable,
   },
   props: {

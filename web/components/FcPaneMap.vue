@@ -10,15 +10,17 @@
     <FcSearchBarLocation
       v-if="!drawerOpen" />
     <div class="pane-map-mode">
-      <v-btn
+      <FcButton
         class="mr-2"
+        type="fab-text"
         @click="openGoogleMaps">
         Street View
-      </v-btn>
-      <v-btn
+      </FcButton>
+      <FcButton
+        type="fab-text"
         @click="toggleSatellite">
         {{ satellite ? 'Map' : 'Aerial' }}
-      </v-btn>
+      </FcButton>
     </div>
     <FcPaneMapPopup
       v-if="hoveredFeature"
@@ -45,6 +47,7 @@ import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -289,6 +292,7 @@ function injectSourcesAndLayers(rawStyle) {
 export default {
   name: 'FcPaneMap',
   components: {
+    FcButton,
     FcPaneMapPopup,
     FcSearchBarLocation,
   },
@@ -363,6 +367,15 @@ export default {
         zoom: MapZoom.MIN,
       });
       this.updateCoordinates();
+      this.map.addControl(
+        new mapboxgl.AttributionControl({
+          customAttribution: [
+            '<a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a>',
+            'Powered by <a href="https://www.esri.com/">Esri</a>',
+          ],
+        }),
+        'bottom-right',
+      );
       this.map.addControl(
         new mapboxgl.ScaleControl({ maxWidth: 192, unit: 'metric' }),
         'bottom-right',
@@ -722,12 +735,32 @@ export default {
     z-index: var(--z-index-controls);
   }
   .mapboxgl-ctrl-bottom-right {
-    bottom: -2px;
-    right: 6px;
+    & > .mapboxgl-ctrl-group {
+      bottom: 25px;
+      position: absolute;
+      right: 6px;
+    }
     & > .mapboxgl-ctrl-scale {
-      background-color: transparent;
+      background-color: rgba(0, 0, 0, 0.2);
       border-color: #dcdee0;
+      bottom: 0;
       color: #dcdee0;
+      font-size: 0.75rem;
+      height: 17px;
+      line-height: 0.875rem;
+      position: absolute;
+      right: 170px;
+    }
+    & > .mapboxgl-ctrl-attrib {
+      background-color: rgba(0, 0, 0, 0.2);
+      bottom: 10px;
+      color: #dcdee0;
+      font-size: 0.75rem;
+      line-height: 0.875rem;
+      padding: 2px 5px;
+      position: absolute;
+      right: 5px;
+      width: 170px;
     }
   }
 }

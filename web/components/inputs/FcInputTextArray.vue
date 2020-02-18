@@ -5,9 +5,9 @@
     chips
     deletable-chips
     dense
-    hide-details
     multiple
-    outlined></v-combobox>
+    outlined
+    v-bind="$attrs"></v-combobox>
 </template>
 
 <script>

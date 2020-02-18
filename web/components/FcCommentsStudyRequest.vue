@@ -1,6 +1,6 @@
 <template>
   <div class="fc-comments-study-request mb-4 pa-5">
-    <h2>Comments</h2>
+    <h2 class="headline">Comments</h2>
     <div class="fc-comment-new">
       <v-textarea
         v-model="commentText"
@@ -12,13 +12,13 @@
         placeholder="Compose message"
         rows="4"></v-textarea>
       <div class="text-right">
-        <v-btn
-          color="primary"
+        <FcButton
           :disabled="commentText.length === 0 || charsRemaining < 0"
           :loading="loadingAddComment"
+          type="primary"
           @click="actionAddComment">
           Submit
-        </v-btn>
+        </FcButton>
       </div>
     </div>
     <section
@@ -27,27 +27,27 @@
       class="mt-4">
       <header class="align-top d-flex">
         <div>
-          <div>
-            <strong
+          <div class="default--text font-weight-medium subtitle-2">
+            <span
               v-if="comment.userId === auth.user.id">
               {{auth.user.uniqueName}}
-            </strong>
-            <strong
+            </span>
+            <span
               v-else-if="studyRequestCommentUsers.has(comment.userId)">
               {{studyRequestCommentUsers.get(comment.userId).uniqueName}}
-            </strong>
+            </span>
           </div>
-          <div>
+          <div class="subtitle-1 mt-1">
             {{comment.createdAt | dateTime}}
           </div>
         </div>
         <div class="flex-fill"></div>
-        <v-btn
+        <FcButton
           v-if="auth.user.id === comment.userId"
-          icon
+          type="icon"
           @click="actionDeleteComment(i)">
           <v-icon>mdi-delete</v-icon>
-        </v-btn>
+        </FcButton>
       </header>
       <div class="mt-2 mb-4">
         {{ comment.comment }}
@@ -63,9 +63,13 @@ import {
   deleteStudyRequestComment,
   postStudyRequestComment,
 } from '@/lib/api/WebApi';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcCommentsStudyRequest',
+  components: {
+    FcButton,
+  },
   props: {
     sizeLimit: Number,
     studyRequest: Object,

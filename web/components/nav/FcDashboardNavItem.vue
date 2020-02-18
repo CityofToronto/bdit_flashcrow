@@ -3,8 +3,11 @@
     <template v-slot:activator="{ on }">
       <v-list-item
         v-on="on"
-        active-class="fc-nav-item-active"
         class="fc-nav-item"
+        :class="{
+          'fc-nav-item-active': isActive,
+        }"
+        color="primary"
         :disabled="disabled"
         link
         :to="to">
@@ -24,6 +27,10 @@
 export default {
   name: 'FcDashboardNavItem',
   props: {
+    activeRouteNames: {
+      type: Array,
+      default() { return []; },
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -33,22 +40,26 @@ export default {
     to: Object,
   },
   computed: {
-    title() {
-      if (!this.disabled) {
-        return null;
-      }
-      const { label } = this;
-      return `${label} (Log in to access)`;
+    isActive() {
+      const { name } = this.$route;
+      const { name: toName } = this.to;
+      return name === toName || this.activeRouteNames.includes(name);
     },
   },
 };
 </script>
 
 <style lang="postcss">
-.fc-nav-item {
+.fc-nav-item.v-list-item {
   flex: 0;
   &.fc-nav-item-active {
-    border-right: 3px solid #3088d6;
+    border-right: 3px solid var(--v-primary-base);
+    &.v-list-item--link::before {
+      background-color: transparent;
+    }
+    & .v-icon.v-icon {
+      color: var(--v-primary-base);
+    }
   }
 }
 

@@ -11,10 +11,11 @@
         <v-text-field
           v-model="valueFormatted"
           append-icon="mdi-calendar"
-          hide-details
-          label="Due Date"
+          offset-y
           outlined
-          readonly
+          v-bind="$attrs"
+          @blur="resetValueFormatted"
+          @input="updateValueFormatted"
           v-on="on"></v-text-field>
       </template>
       <v-date-picker
@@ -39,6 +40,17 @@ function fromInternalValue(internalValue) {
   return DateTime.fromISO(internalValue);
 }
 
+function fromValueFormatted(valueFormatted) {
+  if (valueFormatted === null) {
+    return null;
+  }
+  const dt = DateTime.fromLocaleString(valueFormatted);
+  if (!dt.isValid) {
+    return null;
+  }
+  return dt;
+}
+
 function toInternalValue(value) {
   if (value === null) {
     return null;
@@ -49,10 +61,6 @@ function toInternalValue(value) {
 export default {
   name: 'FcDatePicker',
   props: {
-    label: {
-      type: String,
-      default: null,
-    },
     max: {
       type: DateTime,
       default() { return null; },
@@ -66,6 +74,7 @@ export default {
   data() {
     return {
       showMenu: false,
+      valueFormatted: TimeFormatters.formatDefault(this.value),
     };
   },
   computed: {
@@ -84,8 +93,22 @@ export default {
         this.$emit('input', value);
       },
     },
-    valueFormatted() {
-      return TimeFormatters.formatDefault(this.value);
+  },
+  watch: {
+    value() {
+      this.resetValueFormatted();
+    },
+  },
+  methods: {
+    resetValueFormatted() {
+      this.valueFormatted = TimeFormatters.formatDefault(this.value);
+    },
+    updateValueFormatted() {
+      const value = fromValueFormatted(this.valueFormatted);
+      if (value === null && this.valueFormatted !== '') {
+        return;
+      }
+      this.$emit('input', value);
     },
   },
 };

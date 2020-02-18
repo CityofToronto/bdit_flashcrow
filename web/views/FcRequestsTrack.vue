@@ -6,75 +6,76 @@
         <v-tab>Closed</v-tab>
       </v-tabs>
       <v-divider></v-divider>
-      <div class="pa-5">
-        <h1 class="display-2">
+      <div class="px-5">
+        <h1 class="display-4 mt-5">
           <span v-if="closed">Closed Requests</span>
           <span v-else>Open Requests</span>
         </h1>
         <div class="align-center d-flex mt-8 mb-2">
-          <v-btn
+          <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
             :loading="loadingRefresh"
-            outlined
+            type="secondary"
             @click="actionRefresh()">
-            <v-icon left>mdi-refresh</v-icon>
+            <v-icon
+              color="primary"
+              left>mdi-refresh</v-icon>
             Refresh
-          </v-btn>
+          </FcButton>
           <template v-else>
-            <v-btn
+            <FcButton
               v-if="closed"
               class="mr-2"
-              outlined
+              type="secondary"
               @click="actionReopen(selectedItems)">
-              <v-icon left>mdi-lock-open-outline</v-icon>
+              <v-icon color="primary" left>mdi-lock-open-outline</v-icon>
               Reopen
-            </v-btn>
+            </FcButton>
             <template v-else>
               <template
                 v-if="isSupervisor">
-                <v-btn
+                <FcButton
                   class="mr-2"
-                  outlined
+                  type="secondary"
                   @click="actionApprove(selectedItems)">
-                  <v-icon left>mdi-thumb-up</v-icon>
+                  <v-icon color="primary" left>mdi-thumb-up</v-icon>
                   Approve
-                </v-btn>
-                <v-btn
+                </FcButton>
+                <FcButton
                   class="mr-2"
-                  outlined
+                  type="secondary"
                   @click="actionComplete(selectedItems)">
-                  <v-icon left>mdi-clipboard-check</v-icon>
+                  <v-icon color="primary" left>mdi-clipboard-check</v-icon>
                   Complete
-                </v-btn>
+                </FcButton>
               </template>
-              <v-btn
+              <FcButton
                 class="mr-2"
-                outlined
+                type="secondary"
                 @click="actionDownload(selectedItems)">
-                <v-icon left>mdi-cloud-download</v-icon>
+                <v-icon color="primary" left>mdi-cloud-download</v-icon>
                 Download
-              </v-btn>
-              <v-btn
+              </FcButton>
+              <FcButton
                 class="mr-2"
-                outlined
+                type="secondary"
                 @click="actionClose(selectedItems)">
-                <v-icon left>mdi-lock</v-icon>
+                <v-icon color="primary" left>mdi-lock</v-icon>
                 Close
-              </v-btn>
+              </FcButton>
             </template>
           </template>
         </div>
         <v-divider></v-divider>
       </div>
     </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
       <FcDataTable
         v-model="selectedItems"
         class="fc-data-table-requests"
         :class="{ supervisor: isSupervisor }"
         :columns="columns"
-        expandable
         :items="items"
         :loading="loading || loadingRefresh"
         must-sort
@@ -124,45 +125,37 @@
         </template>
         <template v-slot:item.ACTIONS="{ item }">
           <div class="text-right">
-            <v-btn
-              v-if="isSupervisor && !closed"
-              class="mr-2"
-              :color="item.urgent ? 'warning' : ''"
-              icon
-              @click="actionUrgentToggle(item)">
-              <v-icon>mdi-clipboard-alert</v-icon>
-            </v-btn>
             <v-icon
-              v-else-if="item.urgent"
+              v-if="item.urgent"
               class="mr-2"
               color="warning"
               title="Urgent">mdi-clipboard-alert</v-icon>
 
             <template v-if="isSupervisor && !closed">
-              <v-btn
+              <FcButton
                 class="mr-2"
-                :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : ''"
-                icon
+                :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
                 :title="'Approve Request #' + item.id"
+                type="icon"
                 @click="actionApprove([item])">
                 <v-icon>mdi-thumb-up</v-icon>
-              </v-btn>
-              <v-btn
+              </FcButton>
+              <FcButton
                 class="mr-2"
-                :color="item.status === StudyRequestStatus.REJECTED ? 'error' : ''"
-                icon
+                :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
                 :title="'Ask for Changes to Request #' + item.id"
+                type="icon"
                 @click="actionReject([item])">
                 <v-icon>mdi-clipboard-arrow-left</v-icon>
-              </v-btn>
+              </FcButton>
             </template>
 
-            <v-btn
-              icon
+            <FcButton
               :title="'View Request #' + item.id"
+              type="icon"
               @click="actionShowRequest(item)">
               <v-icon>mdi-file-eye</v-icon>
-            </v-btn>
+            </FcButton>
           </div>
         </template>
       </FcDataTable>
@@ -189,6 +182,7 @@ import {
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemFields(item) {
@@ -265,6 +259,7 @@ export default {
   name: 'FcRequestsTrack',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcDataTable,
   },
   data() {
@@ -344,7 +339,7 @@ export default {
   },
   watch: {
     closed() {
-      this.selection = [];
+      this.selectedItems = [];
     },
   },
   methods: {
@@ -415,12 +410,6 @@ export default {
       }
       this.$router.push(route);
     },
-    actionUrgentToggle(item) {
-      const { urgent } = item;
-      this.setStudyRequests([item], {
-        urgent: !urgent,
-      });
-    },
     async loadAsyncForRoute() {
       const {
         studyRequests,
@@ -450,13 +439,7 @@ export default {
 
 <style lang="postcss">
 .fc-requests-track {
-  max-height: 100%;
+  max-height: 100vh;
   width: 100%;
-
-  .fc-data-table-requests {
-    .priority-urgent {
-      color: var(--error);
-    }
-  }
 }
 </style>

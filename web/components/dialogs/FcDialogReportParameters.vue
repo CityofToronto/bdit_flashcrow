@@ -14,14 +14,12 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="primary"
-          text
-          @click="internalValue = false">Cancel</v-btn>
-        <v-btn
-          color="primary"
-          text
-          @click="onClickSave">Save</v-btn>
+        <FcButton
+          type="tertiary"
+          @click="internalValue = false">Cancel</FcButton>
+        <FcButton
+          type="tertiary"
+          @click="onClickSave">Save</FcButton>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -29,6 +27,7 @@
 
 <script>
 import { ReportType } from '@/lib/Constants';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -37,6 +36,7 @@ export default {
   name: 'FcDialogReportParameters',
   mixins: [FcMixinVModelProxy(Boolean)],
   components: {
+    FcButton,
     FcReportParametersWarrantTrafficSignalControl,
   },
   props: {

@@ -1,18 +1,32 @@
 <template>
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
-    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
-      <v-btn
-        icon
+    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
+      <FcButton
+        v-if="isCreate"
+        type="icon"
         @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
-      <div class="flex-grow-1 text-center">
-        <span class="subtitle-1">
+      </FcButton>
+      <h1 class="flex-grow-1 headline text-center">
+        <span>
           {{title}}:
         </span>
-        <span>
+        <span class="font-weight-regular">
           {{subtitle}}
         </span>
+      </h1>
+      <div v-if="!isCreate">
+        <FcButton
+          type="tertiary"
+          @click="actionNavigateBack">
+          Cancel
+        </FcButton>
+        <FcButton
+          :disabled="$v.$invalid"
+          type="primary"
+          @click="onFinish">
+          Save
+        </FcButton>
       </div>
     </div>
     <v-divider></v-divider>
@@ -23,10 +37,11 @@
       <div
         v-else
         class="pl-5 py-5">
-        <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
+        <v-messages
+          v-bind="attrsMessagesTop"></v-messages>
 
         <section class="mt-5 pr-5">
-          <h3>Study Type</h3>
+          <h2 class="headline">Study Type</h2>
           <FcCheckboxGroupChips
             v-model="studyTypes"
             :items="itemsStudyType"></FcCheckboxGroupChips>
@@ -41,26 +56,33 @@
           class="pr-5"
           :v="$v.studyRequest" />
 
-        <FcDetailsStudy
-            v-for="(_, i) in studyRequest.studies"
-            :key="i"
+        <template v-for="(_, i) in studyRequest.studies">
+          <v-divider
+            :key="'divider_' + i"
+            class="my-3"></v-divider>
+          <FcDetailsStudy
+            :key="'study_' + i"
             v-model="studyRequest.studies[i]"
             class="pr-5"
             :v="$v.studyRequest.studies.$each[i]" />
+        </template>
 
-        <section class="pr-5">
-          <v-btn
-            block
-            class="mt-6"
-            color="primary"
-            :disabled="$v.$invalid"
-            @click="onFinish">
-            {{labelFinish}}
-          </v-btn>
-          <v-messages
-            class="mt-1"
-            color="error"
-            :value="errorMessagesLocation"></v-messages>
+        <section
+          v-if="isCreate"
+          class="pr-5 mt-6 text-right">
+          <div>
+            <FcButton
+              type="tertiary"
+              @click="actionNavigateBack">
+              Cancel
+            </FcButton>
+            <FcButton
+              :disabled="$v.$invalid"
+              type="primary"
+              @click="onFinish">
+              Submit Request
+            </FcButton>
+          </div>
         </section>
       </div>
     </section>
@@ -74,6 +96,7 @@ import {
   mapState,
 } from 'vuex';
 
+import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
 import {
   getStudyRequest,
@@ -84,6 +107,7 @@ import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
@@ -122,6 +146,7 @@ export default {
   name: 'FcDrawerRequestStudy',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcCheckboxGroupChips,
     FcDetailsStudy,
     FcDetailsStudyRequest,
@@ -134,14 +159,18 @@ export default {
     };
   },
   computed: {
-    errorMessagesLocation() {
-      const errors = [];
+    attrsMessagesTop() {
       if (!this.$v.studyRequest.centrelineId.required
         || !this.$v.studyRequest.centrelineType.required
         || !this.$v.studyRequest.geom.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_LOCATION.text);
+        return {
+          color: 'error',
+          value: [REQUEST_STUDY_REQUIRES_LOCATION.text],
+        };
       }
-      return errors;
+      return {
+        value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
+      };
     },
     errorMessagesStudies() {
       const errors = [];
@@ -173,16 +202,11 @@ export default {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
     itemsStudyType() {
-      return StudyType.enumValues.map((studyType) => {
+      const itemsStudyType = StudyType.enumValues.map((studyType) => {
         const { label: text } = studyType;
         return { text, value: studyType };
       });
-    },
-    labelFinish() {
-      if (this.isCreate) {
-        return 'Submit';
-      }
-      return 'Save';
+      return ArrayUtils.sortBy(itemsStudyType, ({ text }) => text);
     },
     routeFinish() {
       if (this.isCreate) {
@@ -247,7 +271,7 @@ export default {
       this.studyRequest.studies.push(item);
     },
     actionNavigateBack() {
-      if (this.isCreate) {
+      if (!this.isCreate) {
         const { id } = this.$route.params;
         this.$router.push({
           name: 'requestStudyView',

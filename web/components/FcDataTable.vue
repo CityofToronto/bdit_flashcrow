@@ -2,6 +2,7 @@
   <v-data-table
     v-model="internalValue"
     :caption="caption"
+    class="fc-data-table"
     :custom-sort="customSort"
     disable-filtering
     disable-pagination
@@ -45,10 +46,6 @@ export default {
       default: null,
     },
     columns: Array,
-    expandable: {
-      type: Boolean,
-      default: false,
-    },
     items: Array,
     loading: {
       type: Boolean,
@@ -87,3 +84,14 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-data-table.v-data-table {
+  &.theme--light tbody tr.v-data-table__selected {
+    background: var(--v-accent-lighten2);
+    & .v-data-table__checkbox .v-icon.v-icon {
+      color: var(--v-primary-base);
+    }
+  }
+}
+</style>

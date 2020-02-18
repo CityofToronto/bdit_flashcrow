@@ -1,0 +1,53 @@
+$headings: (
+  'h1': (
+    'size': 3rem,
+    'weight': normal,
+    'line-height': 3.5rem
+  ),
+  'h2': (
+    'size': 2.25rem,
+    'weight': normal,
+    'line-height': 2.5rem
+  ),
+  'h3': (
+    'size': 1.5rem,
+    'weight': 500,
+    'line-height': 1.6875rem
+  ),
+  'h4': (
+    'size': 1.25rem,
+    'weight': normal,
+    'line-height': 1.4375rem
+  ),
+  'h5': (
+    'size': 1rem,
+    'weight': 500,
+    'line-height': 1.25rem
+  ),
+  'h6': (
+    'size': 0.875rem,
+    'weight': 500,
+    'line-height': 1.25rem
+  ),
+  'subtitle-1': (
+    'size': 0.875rem,
+    'weight': normal,
+    'line-height': 1rem
+  ),
+  'subtitle-2': (
+    'size': 0.75rem,
+    'weight': normal,
+    'line-height': 1rem
+  ),
+  'body-1': (
+    'size': 0.875rem,
+    'weight': normal,
+    'line-height': 1.25rem
+  )
+);
+
+$data-table-regular-header-font-size: map-get(map-get($headings, 'h6'), 'size');
+$data-table-regular-row-font-size: map-get(map-get($headings, 'body-1'), 'size');
+$tab-font-size: map-get(map-get($headings, 'h6'), 'size');
+$tab-font-weight: map-get(map-get($headings, 'h6'), 'weight');
+$tabs-item-letter-spacing: 0;

@@ -4,10 +4,18 @@
     max-width="300"
     scrollable>
     <v-card>
-      <v-card-title>Filter</v-card-title>
+      <v-card-title>
+        <h1 class="headline">Filter</h1>
+        <v-spacer></v-spacer>
+        <FcButton
+          type="secondary"
+          @click="actionClearAll">
+          Clear All
+        </FcButton>
+      </v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <h2 class="subtitle-2 mt-4">Study Types</h2>
+        <h2 class="body-1 mt-4">Study Types</h2>
         <v-checkbox
           v-for="studyType in StudyType.enumValues"
           :key="studyType.name"
@@ -17,7 +25,7 @@
           :label="studyType.label"
           :value="studyType"></v-checkbox>
 
-        <h2 class="mt-4 subtitle-2">Days of the Week</h2>
+        <h2 class="body-1 mt-4">Days of the Week</h2>
         <v-checkbox
           v-for="(label, i) in DAYS_OF_WEEK"
           :key="i"
@@ -27,7 +35,7 @@
           :label="label"
           :value="i"></v-checkbox>
 
-        <h2 class="mt-4 subtitle-2">Dates from</h2>
+        <h2 class="body-1 mt-4">Dates from</h2>
         <v-radio-group
           v-model="internalDatesFrom"
           class="mt-2"
@@ -38,7 +46,7 @@
           <v-radio label="All" :value="-1"></v-radio>
         </v-radio-group>
 
-        <h2 class="mt-4 subtitle-2">Hours</h2>
+        <h2 class="body-1 mt-4">Hours</h2>
         <v-checkbox
           v-for="studyHours in StudyHours.enumValues"
           :key="studyHours.name"
@@ -51,14 +59,16 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="primary"
-          text
-          @click="internalValue = false">Cancel</v-btn>
-        <v-btn
-          color="primary"
-          text
-          @click="onClickSave">Save</v-btn>
+        <FcButton
+          type="tertiary"
+          @click="internalValue = false">
+          Cancel
+        </FcButton>
+        <FcButton
+          type="tertiary"
+          @click="actionSave">
+          Save
+        </FcButton>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -70,11 +80,15 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDialogStudyFilters',
   mixins: [FcMixinVModelProxy(Boolean)],
+  components: {
+    FcButton,
+  },
   props: {
     datesFrom: Number,
     daysOfWeek: Array,
@@ -103,7 +117,13 @@ export default {
     },
   },
   methods: {
-    onClickSave() {
+    actionClearAll() {
+      this.internalDatesFrom = -1;
+      this.internalDaysOfWeek = [];
+      this.internalHours = [];
+      this.internalStudyTypes = [];
+    },
+    actionSave() {
       this.$emit('set-filters', this.internalFilters);
       this.internalValue = false;
     },

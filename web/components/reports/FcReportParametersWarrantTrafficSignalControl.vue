@@ -1,6 +1,5 @@
 <template>
   <div class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
-    <hr class="mb-2">
     <v-checkbox
       name="adequateTrial"
       v-model="internalValue.adequateTrial">

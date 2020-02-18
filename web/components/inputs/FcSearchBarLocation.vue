@@ -3,7 +3,7 @@
     v-model="keystring"
     append-icon="mdi-magnify"
     cache-items
-    class="fc-search-bar-location"
+    class="fc-search-bar-location elevation-2"
     dense
     hide-no-data
     hide-details
