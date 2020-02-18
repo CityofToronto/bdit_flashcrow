@@ -4,9 +4,11 @@
       v-if="hasToast"
       v-model="hasToast"
       bottom
+      class="fc-toast"
       :color="toast.variant"
-      left>
-      {{toast.text}}
+      left
+      :timeout="10000">
+      <span class="body-1">{{toast.text}}</span>
     </v-snackbar>
     <v-navigation-drawer
       app
@@ -96,6 +98,10 @@ export default {
   font-size: 0.875rem;
   font-weight: normal;
   line-height: 1.25rem;
+
+  & .fc-toast {
+    left: 76px;
+  }
 
   & .v-input--selection-controls__input + .v-label {
     color: var(--v-default-base);
