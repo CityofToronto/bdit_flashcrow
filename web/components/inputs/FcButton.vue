@@ -25,6 +25,9 @@ const BUTTON_ATTRS = {
   'fab-text': {
     class: 'elevation-2',
   },
+  icon: {
+    icon: true,
+  },
 };
 
 export default {

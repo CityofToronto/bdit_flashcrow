@@ -1,6 +1,7 @@
 <template>
   <v-radio-group
-    v-model="internalValue">
+    v-model="internalValue"
+    v-bind="$attrs">
     <template v-for="(item, i) in items">
       <v-radio
         :key="'radio_' + item.value"

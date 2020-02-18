@@ -23,6 +23,13 @@
         class="d-flex fill-height flex-column justify-center"
         dense>
         <FcDashboardNavItem
+          :active-route-names="[
+            'requestStudyEdit',
+            'requestStudyNew',
+            'requestStudyView',
+            'viewDataAtLocation',
+            'viewReportsAtLocation',
+          ]"
           icon="map"
           label="View Map"
           :to="{ name: 'viewData' }" />

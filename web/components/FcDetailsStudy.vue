@@ -1,6 +1,5 @@
 <template>
   <section>
-    <v-divider class="my-3"></v-divider>
     <h2 class="display-1">{{internalValue.studyType.label}}</h2>
 
     <div class="mt-4">
@@ -33,6 +32,7 @@
       <h3 class="headline">Study Hours</h3>
       <FcRadioGroup
         v-model="internalValue.hours"
+        hide-details
         :items="itemsHours" />
     </div>
 
@@ -43,6 +43,7 @@
       :messages="messagesNotes"
       no-resize
       outlined
+      placeholder="Additional Information"
       rows="4"
       @blur="v.notes.$touch()"></v-textarea>
   </section>

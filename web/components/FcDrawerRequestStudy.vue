@@ -1,11 +1,11 @@
 <template>
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
-      <v-btn
-        icon
+      <FcButton
+        type="icon"
         @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
+      </FcButton>
       <h1 class="flex-grow-1 headline text-center">
         <span>
           {{title}}:
@@ -23,7 +23,8 @@
       <div
         v-else
         class="pl-5 py-5">
-        <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
+        <v-messages
+          v-bind="attrsMessagesTop"></v-messages>
 
         <section class="mt-5 pr-5">
           <h2 class="headline">Study Type</h2>
@@ -41,26 +42,31 @@
           class="pr-5"
           :v="$v.studyRequest" />
 
-        <FcDetailsStudy
-            v-for="(_, i) in studyRequest.studies"
-            :key="i"
+        <template v-for="(_, i) in studyRequest.studies">
+          <v-divider
+            :key="'divider_' + i"
+            class="my-3"></v-divider>
+          <FcDetailsStudy
+            :key="'details_' + i"
             v-model="studyRequest.studies[i]"
             class="pr-5"
             :v="$v.studyRequest.studies.$each[i]" />
+        </template>
 
-        <section class="pr-5">
-          <v-btn
-            block
-            class="mt-6"
-            color="primary"
-            :disabled="$v.$invalid"
-            @click="onFinish">
-            {{labelFinish}}
-          </v-btn>
-          <v-messages
-            class="mt-1"
-            color="error"
-            :value="errorMessagesLocation"></v-messages>
+        <section class="pr-5 mt-6 text-right">
+          <div>
+            <FcButton
+              type="tertiary"
+              @click="actionNavigateBack">
+              Cancel
+            </FcButton>
+            <FcButton
+              :disabled="$v.$invalid"
+              type="primary"
+              @click="onFinish">
+              {{labelFinish}}
+            </FcButton>
+          </div>
         </section>
       </div>
     </section>
@@ -85,6 +91,7 @@ import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
@@ -123,6 +130,7 @@ export default {
   name: 'FcDrawerRequestStudy',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcButton,
     FcCheckboxGroupChips,
     FcDetailsStudy,
     FcDetailsStudyRequest,
@@ -135,14 +143,18 @@ export default {
     };
   },
   computed: {
-    errorMessagesLocation() {
-      const errors = [];
+    attrsMessagesTop() {
       if (!this.$v.studyRequest.centrelineId.required
         || !this.$v.studyRequest.centrelineType.required
         || !this.$v.studyRequest.geom.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_LOCATION.text);
+        return {
+          color: 'error',
+          value: [REQUEST_STUDY_REQUIRES_LOCATION.text],
+        };
       }
-      return errors;
+      return {
+        value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
+      };
     },
     errorMessagesStudies() {
       const errors = [];
@@ -182,9 +194,9 @@ export default {
     },
     labelFinish() {
       if (this.isCreate) {
-        return 'Submit';
+        return 'Submit Request';
       }
-      return 'Save';
+      return 'Save Request';
     },
     routeFinish() {
       if (this.isCreate) {

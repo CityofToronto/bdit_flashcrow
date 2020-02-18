@@ -5,6 +5,9 @@
         v-on="on"
         active-class="fc-nav-item-active"
         class="fc-nav-item"
+        :class="{
+          'fc-nav-item-active': isActive,
+        }"
         color="primary"
         :disabled="disabled"
         link
@@ -25,6 +28,10 @@
 export default {
   name: 'FcDashboardNavItem',
   props: {
+    activeRouteNames: {
+      type: Array,
+      default() { return []; },
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -32,6 +39,13 @@ export default {
     icon: String,
     label: String,
     to: Object,
+  },
+  computed: {
+    isActive() {
+      const { name } = this.$route;
+      const { name: toName } = this.to;
+      return name === toName || this.activeRouteNames.includes(name);
+    },
   },
 };
 </script>
@@ -43,6 +57,9 @@ export default {
     border-right: 3px solid var(--v-primary-base);
     &.v-list-item--link::before {
       background-color: transparent;
+    }
+    & .v-icon.v-icon {
+      color: var(--v-primary-base);
     }
   }
 }
