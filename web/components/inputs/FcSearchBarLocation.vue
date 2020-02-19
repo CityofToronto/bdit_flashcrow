@@ -69,7 +69,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-search-bar-location {
   width: 392px;
   &.v-select.v-select--is-menu-active .v-input__icon--append .v-icon {

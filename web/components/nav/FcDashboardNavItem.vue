@@ -49,7 +49,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-nav-item.v-list-item {
   flex: 0;
   &.fc-nav-item-active {

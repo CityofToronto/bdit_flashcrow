@@ -201,7 +201,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .pane-map-popup {
   position: absolute;
   right: var(--space-l);

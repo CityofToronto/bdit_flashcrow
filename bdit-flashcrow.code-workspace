@@ -1,7 +1,6 @@
 {
 	"extensions": {
 		"recommendations": [
-			"cpylua.language-postcss",
 			"dbaeumer.vscode-eslint",
 			"ms-python.python",
       "ms-vscode-remote.vscode-remote-extensionpack",

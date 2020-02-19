@@ -83,7 +83,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-layout-drawer-map {
   position: relative;
   width: 100%;

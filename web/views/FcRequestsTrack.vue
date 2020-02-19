@@ -437,7 +437,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-requests-track {
   max-height: 100vh;
   width: 100%;

@@ -710,7 +710,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .pane-map {
   background-color: var(--white);
   &.mapboxgl-map {

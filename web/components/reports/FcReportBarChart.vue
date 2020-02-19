@@ -68,7 +68,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-report-bar-chart {
   height: calc(var(--space-3xl) * 4);
   & > svg {
