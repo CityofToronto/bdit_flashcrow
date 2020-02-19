@@ -53,7 +53,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-report {
   & > .fc-report-header {
     border-bottom: 1px solid var(--primary-dark);

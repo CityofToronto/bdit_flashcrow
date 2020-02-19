@@ -135,7 +135,7 @@ This web application was originally generated from the following [Vue CLI preset
   "router": true,
   "routerHistoryMode": true,
   "vuex": true,
-  "cssPreprocessor": "postcss"
+  "cssPreprocessor": "sass"
 }
 ```
 
@@ -156,6 +156,5 @@ These files configure various tools used in MOVE:
 - `jest.config.js`: Jest configuration for unit, database, and REST API tests;
 - `LICENSE`: open-source license that MOVE is released under;
 - `package.json`: `npm` package configuration and dependencies;
-- `postcss.config.js`: PostCSS configuration for preprocessing CSS;
 - `requirements.txt`: Python dependencies;
 - `vue.config.js`: Vue project configuration, including webpack configuration for `webpack-dev-server` in development.

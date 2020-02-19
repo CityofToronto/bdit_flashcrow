@@ -327,7 +327,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-drawer-view-data {
   max-height: 100vh;
 }

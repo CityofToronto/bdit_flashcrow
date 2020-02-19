@@ -228,7 +228,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .fc-report-table {
   & > table {
     border-collapse: separate;
