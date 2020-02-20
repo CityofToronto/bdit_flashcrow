@@ -73,13 +73,10 @@ export default {
   height: calc(var(--space-3xl) * 4);
   & > svg {
     & rect.bar {
-      fill: var(--base);
+      fill: var(--v-secondary-base);
     }
     & .tick {
       font-size: var(--font-size-m);
-    }
-    & .axis-label {
-      font-size: var(--font-size-l);
     }
   }
 }
