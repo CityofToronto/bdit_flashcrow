@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="internalValue"
-    max-width="300"
+    max-width="336"
     scrollable>
     <v-card>
       <v-card-title>

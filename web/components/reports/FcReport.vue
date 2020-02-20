@@ -1,6 +1,6 @@
 <template>
   <section class="fc-report">
-    <header class="fc-report-header align-bottom d-flex">
+    <header class="fc-report-header align-center d-flex">
       <div>
         <img
           alt="City of Toronto"
@@ -56,8 +56,7 @@ export default {
 <style lang="scss">
 .fc-report {
   & > .fc-report-header {
-    border-bottom: 1px solid var(--primary-dark);
-    color: var(--primary-dark);
+    color: var(--v-primary-darken3);
   }
 }
 </style>

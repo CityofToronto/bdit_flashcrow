@@ -44,9 +44,6 @@
 
   --border-default: 1px solid var(--base);
 
-  --flex-1: 1 0 0;
-  --flex-fill: 1 0 0;
-
   --z-index-controls: 99;
 }
 
@@ -72,20 +69,6 @@ body {
 .subtitle-1,
 .subtitle-2 {
   color: var(--v-secondary-base);
-}
-
-/* FLEX LAYOUT */
-.flex-container-row {
-  display: flex;
-  flex-direction: row;
-  min-height: 0;
-  min-width: 0;
-}
-.flex-1 {
-  flex: var(--flex-1);
-}
-.flex-fill {
-  flex: var(--flex-fill);
 }
 
 /* BORDERS */
