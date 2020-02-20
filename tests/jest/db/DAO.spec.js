@@ -528,26 +528,26 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
   persistedStudyRequest.studies[0].hours = StudyHours.SCHOOL;
   persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // set as urgent
   persistedStudyRequest.urgent = true;
   persistedStudyRequest.urgentReason = 'because I said so';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // close
   persistedStudyRequest.closed = true;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // reopen
   persistedStudyRequest.closed = false;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
@@ -559,13 +559,13 @@ test('StudyRequestDAO', async () => {
     hours: StudyHours.OTHER,
     notes: 'complete during shopping mall peak hours',
   });
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // remove study from study request
   persistedStudyRequest.studies.pop();
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 

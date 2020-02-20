@@ -50,6 +50,12 @@ test('Joi.dateTime [optional / required]', () => {
 
   result = Joi.dateTime().required().validate(undefined);
   expect(result.error).not.toBeUndefined();
+
+  result = Joi.dateTime().allow(null).required().validate(null);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.dateTime().required().validate(null);
+  expect(result.error).not.toBeUndefined();
 });
 
 test('Joi.enum', () => {
@@ -110,5 +116,18 @@ test('Joi.enum [optional / required]', () => {
   expect(result.error).toBeUndefined();
 
   result = Joi.enum().ofType(Color).required().validate(undefined);
+  expect(result.error).not.toBeUndefined();
+
+  result = Joi.enum().allow(null).required().validate(null);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.enum().required().validate(null);
+  expect(result.error).not.toBeUndefined();
+
+  result = Joi.enum().ofType(Color).allow(null).required()
+    .validate(null);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.enum().ofType(Color).required().validate(null);
   expect(result.error).not.toBeUndefined();
 });
