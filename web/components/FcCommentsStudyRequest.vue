@@ -41,7 +41,7 @@
             {{comment.createdAt | dateTime}}
           </div>
         </div>
-        <div class="flex-fill"></div>
+        <v-spacer></v-spacer>
         <FcButton
           v-if="auth.user.id === comment.userId"
           type="icon"
