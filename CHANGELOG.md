@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2019-02-21
+### Changed
+- Revamped frontend based on Material Design / Vuetify
+- Changed CSS preprocessor from PostCSS to SASS
+
+### Added
+- Integration with QA and sandbox ADFS environments
+- More robust tools for study request management
+- Additional validation on several REST API endpoints
+
+### Removed
+- Dropped old "stub" login flow
+- Dropped Edge support (for now)
+
 ## [0.2.4] - 2019-12-18
 ### Fixed
 - Fix performance issues relating to vector tile loading in MOVE
@@ -97,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.5] - 2019-09-26
 ### Added
 - MOVE Reporter introduced as new backend service for generating CSV, JSON, and PDF reports
-- CSV and JSON versions of several high-priority reports added 
+- CSV and JSON versions of several high-priority reports added
 
 ## [0.1.4] - 2019-09-10
 ### Fixed
@@ -132,7 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Development VM now based off image in Vagrant Cloud
 - Map now includes informational popups when clicking on features
-- MOVE application now mounted at `/` instead of `/flashcrow` 
+- MOVE application now mounted at `/` instead of `/flashcrow`
 
 ### Added
 - Unit testing and coverage metrics

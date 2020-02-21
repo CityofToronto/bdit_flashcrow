@@ -1,6 +1,6 @@
 {
   "name": "bdit_flashcrow",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
   "scripts": {
@@ -36,8 +36,8 @@
     "@hapi/hapi": "^19.1.1",
     "@hapi/joi": "^17.1.0",
     "@hapi/scooter": "^6.0.0",
-    "@sendgrid/mail": "^6.5.2",
-    "aws-sdk": "^2.622.0",
+    "@sendgrid/mail": "^6.5.3",
+    "aws-sdk": "^2.623.0",
     "blankie": "^4.1.1",
     "core-js": "^3.6.4",
     "csv-generate": "^3.2.4",
@@ -53,12 +53,12 @@
     "file-saver": "^2.0.2",
     "jsdom": "^16.2.0",
     "luxon": "^1.22.0",
-    "mapbox-gl": "^1.7.0",
+    "mapbox-gl": "^1.8.0",
     "module-alias": "^2.2.2",
     "mustache": "^4.0.0",
     "openid-client": "^3.11.0",
     "pdfmake": "^0.1.64",
-    "pg-promise": "^10.4.3",
+    "pg-promise": "^10.4.4",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "uuid": "^3.4.0",
@@ -66,12 +66,12 @@
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vuelidate": "^0.7.5",
-    "vuetify": "^2.2.13",
+    "vuetify": "^2.2.14",
     "vuex": "^3.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
-    "@mapbox/mapbox-gl-style-spec": "^13.11.0",
+    "@mapbox/mapbox-gl-style-spec": "^13.12.0",
     "@vue/cli": "^4.2.2",
     "@vue/cli-plugin-babel": "^4.2.2",
     "@vue/cli-plugin-eslint": "^4.2.2",
@@ -105,8 +105,7 @@
   },
   "browserslist": [
     "last 1 Firefox version",
-    "last 1 Chrome version",
-    "last 1 Edge version"
+    "last 1 Chrome version"
   ],
   "_moduleAliases": {
     "@": "."
