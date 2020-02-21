@@ -1,6 +1,5 @@
 BEGIN;
 
--- backward migration SQL goes here
 ALTER TABLE "study_requests" DROP COLUMN "lastEditedAt";
 ALTER TABLE "study_requests" DROP COLUMN "lastEditorId";
 
