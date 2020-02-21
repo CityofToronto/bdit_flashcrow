@@ -223,7 +223,6 @@ export default {
         return reportUserParameters[type];
       },
       set(reportParameters) {
-        console.log(reportParameters);
         const { activeReportType, reportUserParameters } = this;
         if (activeReportType === null) {
           return;
