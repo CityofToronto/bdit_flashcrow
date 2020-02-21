@@ -50,14 +50,6 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/auth/adfs-callback',
-        name: 'adfsCallback',
-        meta: {
-          auth: { mode: 'try' },
-          title: 'Log In: City of Toronto',
-        },
-        component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcAdfsCallback.vue'),
-      }, {
         path: '/view/location/:centrelineType/:centrelineId',
         name: 'viewDataAtLocation',
         meta: {

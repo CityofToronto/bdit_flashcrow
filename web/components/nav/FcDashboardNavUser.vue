@@ -9,12 +9,10 @@
         <input type="hidden" name="csrf" :value="auth.csrf" />
       </form>
       <form
-        v-if="$route.name !== 'adfsCallback'"
         ref="formSignIn"
         method="POST"
         action="/api/auth/adfs-init">
         <input type="hidden" name="csrf" :value="auth.csrf" />
-        <input type="hidden" name="nonce" :value="nonce" />
       </form>
     </div>
     <v-menu
@@ -44,8 +42,6 @@
       right>
       <template v-slot:activator="{ on }">
         <FcButton
-          :disabled="$route.name === 'adfsCallback'"
-          :loading="$route.name === 'adfsCallback'"
           type="fab-icon"
           @click="actionSignIn()"
           v-on="on">
@@ -61,7 +57,6 @@
 import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
-import ClientNonce from '@/lib/auth/ClientNonce';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -69,17 +64,12 @@ export default {
   components: {
     FcButton,
   },
-  data() {
-    return { nonce: null };
-  },
   computed: {
     ...mapState(['auth']),
     ...mapGetters(['username']),
   },
   methods: {
     actionSignIn() {
-      this.nonce = ClientNonce.get(16);
-      window.localStorage.setItem('nonce', this.nonce);
       Vue.nextTick(() => {
         this.$refs.formSignIn.submit();
       });
