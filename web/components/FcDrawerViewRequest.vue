@@ -29,6 +29,13 @@
         indeterminate />
       <div v-else>
         <div class="pl-5">
+          <div
+            v-if="studyRequest.lastEditorId !== null
+              && studyRequestUsers.has(studyRequest.lastEditorId)"
+            class="subtitle-2 mt-4 mb-3">
+            Last edited by {{studyRequestUsers.get(studyRequest.lastEditorId).uniqueName}}
+            on {{studyRequest.lastEditedAt | dateTime}}.
+          </div>
           <FcSummaryStudyRequest
             class="pr-5"
             :study-request="studyRequest" />
@@ -45,7 +52,7 @@
           :size-limit="240"
           :study-request="studyRequest"
           :study-request-comments="studyRequestComments"
-          :study-request-comment-users="studyRequestCommentUsers"
+          :study-request-users="studyRequestUsers"
           @add-comment="onAddComment"
           @delete-comment="onDeleteComment" />
       </div>
@@ -78,7 +85,7 @@ export default {
     return {
       studyRequest: null,
       studyRequestComments: [],
-      studyRequestCommentUsers: new Map(),
+      studyRequestUsers: new Map(),
     };
   },
   computed: {
@@ -121,12 +128,12 @@ export default {
       const {
         studyRequest,
         studyRequestComments,
-        studyRequestCommentUsers,
         studyRequestLocation,
+        studyRequestUsers,
       } = await getStudyRequest(id);
       this.studyRequest = studyRequest;
       this.studyRequestComments = studyRequestComments;
-      this.studyRequestCommentUsers = studyRequestCommentUsers;
+      this.studyRequestUsers = studyRequestUsers;
       this.setLocation(studyRequestLocation);
     },
     onAddComment(comment) {

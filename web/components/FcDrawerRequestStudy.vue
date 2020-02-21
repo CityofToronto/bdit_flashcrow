@@ -251,14 +251,18 @@ export default {
     location() {
       this.updateStudyRequestLocation();
     },
-    studyTypes(studyTypes, studyTypesPrev) {
-      studyTypes.forEach((studyType) => {
+    studyTypes() {
+      let studyTypesPrev = [];
+      if (this.studyRequest !== null) {
+        studyTypesPrev = this.studyRequest.studies.map(({ studyType }) => studyType);
+      }
+      this.studyTypes.forEach((studyType) => {
         if (!studyTypesPrev.includes(studyType)) {
           this.actionAddStudy(studyType);
         }
       });
       studyTypesPrev.forEach((studyType) => {
-        if (!studyTypes.includes(studyType)) {
+        if (!this.studyTypes.includes(studyType)) {
           this.actionRemoveStudy(studyType);
         }
       });
@@ -314,6 +318,7 @@ export default {
         studyRequestLocation = result.studyRequestLocation;
       }
       this.studyRequest = studyRequest;
+      this.studyTypes = studyRequest.studies.map(({ studyType }) => studyType);
       this.setLocation(studyRequestLocation);
       this.updateStudyRequestLocation();
     },

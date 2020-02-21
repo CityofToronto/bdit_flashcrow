@@ -33,8 +33,8 @@
               {{auth.user.uniqueName}}
             </span>
             <span
-              v-else-if="studyRequestCommentUsers.has(comment.userId)">
-              {{studyRequestCommentUsers.get(comment.userId).uniqueName}}
+              v-else-if="studyRequestUsers.has(comment.userId)">
+              {{studyRequestUsers.get(comment.userId).uniqueName}}
             </span>
           </div>
           <div class="subtitle-1 mt-1">
@@ -74,7 +74,7 @@ export default {
     sizeLimit: Number,
     studyRequest: Object,
     studyRequestComments: Array,
-    studyRequestCommentUsers: Map,
+    studyRequestUsers: Map,
   },
   data() {
     return {
