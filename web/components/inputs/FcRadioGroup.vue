@@ -5,15 +5,10 @@
     <template v-for="(item, i) in items">
       <v-radio
         :key="'radio_' + item.value"
-        :class="{
-          'mb-6': !!item.sublabel && i !== items.length - 1
-        }"
         :hint="item.hint"
         :value="item.value">
         <template v-slot:label>
-          <div :class="{
-            'pt-5': !!item.sublabel,
-          }">
+          <div>
             <span>{{item.label}}</span>
             <template v-if="item.sublabel">
               <br>
