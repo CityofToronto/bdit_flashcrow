@@ -113,7 +113,6 @@
   "gitHooks": {
     "pre-commit": "npm-run-all pre-commit:*"
   },
-  "homepage": "https://move.intra.dev-toronto.ca",
   "license": "MIT",
   "lint-staged": {
     "lib/**/*.js": [
