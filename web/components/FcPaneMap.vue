@@ -105,7 +105,7 @@ function addTippecanoeSource(style, id, minLevel, maxLevel, crossfade = 0) {
   /* eslint-disable-next-line no-param-reassign */
   style.sources[id] = {
     type: 'vector',
-    tiles: [`https://move.intra.dev-toronto.ca/tiles/${id}/{z}/{x}/{y}.pbf`],
+    tiles: [`https://flashcrow-etladmin.intra.dev-toronto.ca/tiles/${id}/{z}/{x}/{y}.pbf`],
     minzoom: minLevel.minzoom,
     maxzoom: maxLevel.maxzoomSource + crossfade,
   };
@@ -138,7 +138,7 @@ function addLayer(style, id, type, options) {
 function injectSourcesAndLayers(rawStyle) {
   const STYLE = { ...rawStyle };
 
-  STYLE.glyphs = 'https://move.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
+  STYLE.glyphs = 'https://flashcrow-etladmin.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
   addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 2);
   addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
