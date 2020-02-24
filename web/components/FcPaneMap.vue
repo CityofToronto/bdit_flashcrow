@@ -101,24 +101,11 @@ const PAINT_WIDTH_MIDBLOCKS = interactionAttr(3, 5, 5);
 const PAINT_RADIUS_INTERSECTIONS = interactionAttr(8, 10, 10);
 const PAINT_RADIUS_COUNTS = interactionAttr(10, 12, 12);
 
-function getTileOrigin() {
-  const { origin } = window.location;
-  if (origin.startsWith('https://localhost')) {
-    return 'https://move.intra.dev-toronto.ca';
-  }
-  /*
-   * TODO: verify whether we need to serve these under a different domain in different
-   * AWS environments
-   */
-  return origin;
-}
-const TILE_ORIGIN = getTileOrigin();
-
 function addTippecanoeSource(style, id, minLevel, maxLevel, crossfade = 0) {
   /* eslint-disable-next-line no-param-reassign */
   style.sources[id] = {
     type: 'vector',
-    tiles: [`${TILE_ORIGIN}/tiles/${id}/{z}/{x}/{y}.pbf`],
+    tiles: [`https://flashcrow-etladmin.intra.dev-toronto.ca/tiles/${id}/{z}/{x}/{y}.pbf`],
     minzoom: minLevel.minzoom,
     maxzoom: maxLevel.maxzoomSource + crossfade,
   };
@@ -151,7 +138,7 @@ function addLayer(style, id, type, options) {
 function injectSourcesAndLayers(rawStyle) {
   const STYLE = { ...rawStyle };
 
-  STYLE.glyphs = `${TILE_ORIGIN}/glyphs/{fontstack}/{range}.pbf`;
+  STYLE.glyphs = 'https://flashcrow-etladmin.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
 
   addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 2);
   addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
