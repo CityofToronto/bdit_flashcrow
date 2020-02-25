@@ -1,30 +1,35 @@
 <template>
-  <div class="pane-map-popup">
-    <v-alert
-      class="elevation-2"
-      :color="color"
-      :icon="icon">
-      <div>
-        <strong v-if="description">{{description}}</strong>
-        <span v-else> name unknown</span>
+  <v-card width="220">
+    <v-card-title>
+      <div class="display-1">
+        <span v-if="description">{{description}}</span>
+        <span
+          v-else
+          class="unselected--text">name unknown</span>
       </div>
+      <v-spacer></v-spacer>
+      <v-icon v-if="icon">{{icon}}</v-icon>
+    </v-card-title>
+    <v-card-text>
+      <span>TODO: description</span>
+    </v-card-text>
+    <v-card-actions v-if="featureSelectable">
       <FcButton
-        v-if="featureSelectable"
-        class="mt-1"
-        type="secondary"
+        type="tertiary"
         @click="onViewData">
-        <v-icon left>mdi-table-eye</v-icon> View Data
+        View Data
       </FcButton>
-    </v-alert>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
-import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -42,7 +47,11 @@ export default {
   },
   props: {
     feature: Object,
-    hover: Boolean,
+  },
+  inject: {
+    map: {
+      default: null,
+    },
   },
   computed: {
     centrelineId() {
@@ -69,15 +78,8 @@ export default {
       }
       return null;
     },
-    color() {
-      return this.hover ? 'warning' : 'success';
-    },
     coordinates() {
-      const { coordinates } = this.feature.geometry;
-      if (this.layerId === 'midblocks') {
-        return getLineStringMidpoint(coordinates);
-      }
-      return coordinates;
+      return getGeometryMidpoint(this.feature.geometry);
     },
     description() {
       if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
@@ -171,6 +173,27 @@ export default {
       return this.feature.layer.id;
     },
   },
+  watch: {
+    coordinates() {
+      this.popup.setLngLat(this.coordinates);
+    },
+  },
+  created() {
+    this.popup = new mapboxgl.Popup({
+      className: 'fc-pane-map-popup elevation-2',
+      closeButton: false,
+      closeOnClick: false,
+      offset: 40,
+    });
+    this.popup.setLngLat(this.coordinates);
+  },
+  mounted() {
+    this.popup.setDOMContent(this.$el);
+    this.popup.addTo(this.map);
+  },
+  beforeDestroy() {
+    this.popup.remove();
+  },
   methods: {
     onViewData() {
       // update location
@@ -202,11 +225,12 @@ export default {
 </script>
 
 <style lang="scss">
-.pane-map-popup {
-  position: absolute;
-  right: var(--space-l);
-  top: var(--space-m);
-  width: var(--space-4xl);
-  z-index: var(--z-index-controls);
+.fc-pane-map-popup {
+  & > .mapboxgl-popup-tip {
+    display: none;
+  }
+  & > .mapboxgl-popup-content {
+    padding: 0;
+  }
 }
 </style>
