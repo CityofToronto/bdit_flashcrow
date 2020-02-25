@@ -6,10 +6,10 @@
         v-model="commentText"
         class="mt-4"
         :counter="sizeLimit"
+        label="Compose message"
         :loading="loadingAddComment"
         no-resize
         outlined
-        placeholder="Compose message"
         rows="4"></v-textarea>
       <div class="text-right">
         <FcButton
