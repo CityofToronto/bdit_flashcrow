@@ -13,7 +13,19 @@
     label="Search"
     :loading="loading"
     :search-input.sync="query"
-    solo />
+    solo>
+    <template v-slot:item="{ attrs, item, on, parent }">
+      <v-list-item
+        v-bind="attrs"
+        v-on="on">
+        <v-list-item-content>
+          <v-list-item-title>
+            <span>{{item[parent.itemText]}}</span>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </template>
+  </v-autocomplete>
 </template>
 
 <script>
