@@ -15,11 +15,7 @@
       mini-variant
       permanent>
       <template v-slot:prepend>
-        <div class="pa-2 pt-3">
-          <v-img
-            alt="MOVE Logo"
-            src="/logo_square.png"></v-img>
-        </div>
+        <FcDashboardNavBrand />
       </template>
       <v-list
         class="d-flex fill-height flex-column justify-center"
@@ -60,12 +56,14 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 
+import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
 
 export default {
   name: 'App',
   components: {
+    FcDashboardNavBrand,
     FcDashboardNavItem,
     FcDashboardNavUser,
   },
