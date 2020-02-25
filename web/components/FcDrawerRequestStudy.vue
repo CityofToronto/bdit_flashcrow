@@ -3,7 +3,7 @@
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
       <FcButton
         v-if="isCreate"
-        title="Back"
+        aria-label="Back"
         type="icon"
         @click="actionNavigateBack">
         <v-icon>mdi-chevron-left</v-icon>

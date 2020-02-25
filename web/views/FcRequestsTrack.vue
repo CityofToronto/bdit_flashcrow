@@ -123,6 +123,9 @@
             </span>
           </div>
         </template>
+        <template v-slot:header.ACTIONS>
+          <span class="sr-only">Actions</span>
+        </template>
         <template v-slot:item.ACTIONS="{ item }">
           <div class="text-right">
             <v-icon
@@ -133,17 +136,17 @@
 
             <template v-if="isSupervisor && !closed">
               <FcButton
+                :aria-label="'Approve Request #' + item.id"
                 class="mr-2"
                 :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                :title="'Approve Request #' + item.id"
                 type="icon"
                 @click="actionApprove([item])">
                 <v-icon>mdi-thumb-up</v-icon>
               </FcButton>
               <FcButton
+                :aria-label="'Ask for Changes to Request #' + item.id"
                 class="mr-2"
                 :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                :title="'Ask for Changes to Request #' + item.id"
                 type="icon"
                 @click="actionReject([item])">
                 <v-icon>mdi-clipboard-arrow-left</v-icon>
@@ -151,7 +154,7 @@
             </template>
 
             <FcButton
-              :title="'View Request #' + item.id"
+              :aria-label="'View Request #' + item.id"
               type="icon"
               @click="actionShowRequest(item)">
               <v-icon>mdi-file-eye</v-icon>

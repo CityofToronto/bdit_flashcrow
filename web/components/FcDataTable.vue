@@ -14,6 +14,15 @@
     :show-select="showSelect"
     v-bind="$attrs">
     <template
+      v-if="showSelect"
+      v-slot:header.data-table-select="{ on, props }">
+      <v-simple-checkbox
+        v-bind="props"
+        v-on="on">
+      </v-simple-checkbox>
+      <span class="sr-only">Select</span>
+    </template>
+    <template
       v-for="(_, slot) of $scopedSlots"
       v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />

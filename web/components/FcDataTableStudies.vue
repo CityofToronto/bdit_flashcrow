@@ -21,6 +21,9 @@
         {{item.count.hours}}
       </span>
     </template>
+    <template v-slot:header.VIEW_REPORT>
+      <span class="sr-only">Reports</span>
+    </template>
     <template v-slot:item.VIEW_REPORT="{ item }">
       <FcButton
         type="tertiary"
