@@ -40,5 +40,15 @@ export default {
       default() { return []; },
     },
   },
+  mounted() {
+    if (!this.$attrs.label) {
+      /*
+       * In this case, Vuetify still generates an `aria-labelledby` attribute, but does not
+       * generate a label to go along with it.
+       */
+      const radioGroup = this.$el.querySelector('[role=radiogroup]');
+      radioGroup.removeAttribute('aria-labelledby');
+    }
+  },
 };
 </script>

@@ -36,15 +36,17 @@
           :value="i"></v-checkbox>
 
         <h2 class="body-1 mt-4">Dates from</h2>
-        <v-radio-group
+        <FcRadioGroup
           v-model="internalDatesFrom"
           class="mt-2"
-          hide-details>
-          <v-radio label="3 years" :value="3"></v-radio>
-          <v-radio label="5 years" :value="5"></v-radio>
-          <v-radio label="10 years" :value="10"></v-radio>
-          <v-radio label="All" :value="-1"></v-radio>
-        </v-radio-group>
+          hide-details
+          :items="[
+            { label: '3 years', value: 3 },
+            { label: '5 years', value: 5 },
+            { label: '10 years', value: 10 },
+            { label: 'All', value: -1 },
+          ]">
+        </FcRadioGroup>
 
         <h2 class="body-1 mt-4">Hours</h2>
         <v-checkbox
@@ -81,6 +83,7 @@ import {
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -88,6 +91,7 @@ export default {
   mixins: [FcMixinVModelProxy(Boolean)],
   components: {
     FcButton,
+    FcRadioGroup,
   },
   props: {
     datesFrom: Number,
