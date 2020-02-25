@@ -81,6 +81,11 @@ body {
   width: 1px;
 }
 
+/* FORM ELEMENTS */
+fieldset {
+  border: none;
+}
+
 /* BORDERS */
 .bt {
   border-top: var(--border-default);
