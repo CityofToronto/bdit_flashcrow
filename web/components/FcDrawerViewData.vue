@@ -19,15 +19,15 @@
           <v-row class="mt-5">
             <v-col cols="2">
               <div class="label mb-1">KSI</div>
-              <h3 class="display-2">
+              <div class="display-2">
                 {{collisionSummary.ksi}}
-              </h3>
+              </div>
             </v-col>
             <v-col cols="2">
               <div class="label mb-1">Collisions</div>
-              <h3 class="display-2">
+              <div class="display-2">
                 {{collisionSummary.total}}
-              </h3>
+              </div>
             </v-col>
           </v-row>
           <div class="mt-5">
@@ -62,7 +62,7 @@
         <section>
           <header class="pa-5">
             <div class="align-center d-flex">
-              <h5 class="headline">Studies</h5>
+              <h2 class="headline">Studies</h2>
               <div class="pl-3 subtitle-2">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters

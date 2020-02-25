@@ -64,11 +64,26 @@ body {
   padding: 0;
 }
 
-/* VUETIFY OVERRIDES */
+/* TYPOGRAPHY */
 .label,
 .subtitle-1,
 .subtitle-2 {
   color: var(--v-secondary-base);
+}
+
+/* see https://webaim.org/techniques/css/invisiblecontent/ */
+.sr-only {
+  height: 1px;
+  left: -10000px;
+  overflow: hidden;
+  position: absolute;
+  top: auto;
+  width: 1px;
+}
+
+/* FORM ELEMENTS */
+fieldset {
+  border: none;
 }
 
 /* BORDERS */
@@ -103,12 +118,4 @@ body {
 }
 .font-size-2xl {
   font-size: var(--font-size-2xl);
-}
-
-/* ELEVATION */
-.elevation-n1 {
-  box-shadow:
-    inset 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    inset 0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
 }

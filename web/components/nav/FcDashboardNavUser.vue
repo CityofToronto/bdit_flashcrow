@@ -22,6 +22,7 @@
         <v-tooltip right>
           <template v-slot:activator="{ on: onTooltip }">
             <FcButton
+              :aria-label="username"
               type="fab-icon"
               v-on="{ ...onMenu, ...onTooltip }">
               <v-icon>mdi-account-circle</v-icon>
@@ -42,6 +43,7 @@
       right>
       <template v-slot:activator="{ on }">
         <FcButton
+          aria-label="Sign In"
           type="fab-icon"
           @click="actionSignIn()"
           v-on="on">

@@ -3,7 +3,7 @@
     v-model="internalValue"
     max-width="300"
     scrollable>
-    <v-card>
+    <v-card role="dialog">
       <v-card-title>Set Parameters</v-card-title>
       <v-divider></v-divider>
       <v-card-text>

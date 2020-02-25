@@ -154,7 +154,7 @@ function getSectionRows(section, header, tableStyle) {
       header: cellHeader,
       style: cellStyle,
     } = TableUtils.normalizeCell(cell, header, tableStyle);
-    const tag = cellHeader ? 'th' : 'td';
+    const tag = (value && cellHeader) ? 'th' : 'td';
     const attrs = {};
     if (rowspan !== 1) {
       attrs.rowspan = rowspan;

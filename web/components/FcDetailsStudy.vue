@@ -14,7 +14,6 @@
     </div>
 
     <div v-if="internalValue.studyType.automatic" class="mt-4">
-      <h3 class="headline">Study Duration</h3>
       <FcRadioGroup
         v-model="v.duration.$model"
         :items="[
@@ -24,26 +23,33 @@
           { label: '4 days', sublabel: '96 hours', value: 96 },
           { label: '5 days', sublabel: '120 hours', value: 120 },
           { label: '1 week', sublabel: '168 hours', value: 168 },
-        ]" />
+        ]">
+        <template v-slot:legend>
+          <h3 class="headline">Study Duration</h3>
+        </template>
+      </FcRadioGroup>
     </div>
     <div
       v-else
       class="mt-4">
-      <h3 class="headline">Study Hours</h3>
       <FcRadioGroup
         v-model="internalValue.hours"
         hide-details
-        :items="itemsHours" />
+        :items="itemsHours">
+        <template v-slot:legend>
+          <h3 class="headline">Study Hours</h3>
+        </template>
+      </FcRadioGroup>
     </div>
 
     <v-textarea
       v-model="v.notes.$model"
       class="mt-4"
       :error-messages="errorMessagesNotes"
+      label="Additional Information"
       :messages="messagesNotes"
       no-resize
       outlined
-      placeholder="Additional Information"
       rows="4"
       @blur="v.notes.$touch()"></v-textarea>
   </section>
