@@ -40,10 +40,10 @@
       v-model="v.notes.$model"
       class="mt-4"
       :error-messages="errorMessagesNotes"
+      label="Additional Information"
       :messages="messagesNotes"
       no-resize
       outlined
-      placeholder="Additional Information"
       rows="4"
       @blur="v.notes.$touch()"></v-textarea>
   </section>

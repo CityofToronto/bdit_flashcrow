@@ -6,9 +6,9 @@
         <v-col cols="8">
           <v-text-field
             v-model="internalValue.serviceRequestId"
+            label="Service Number"
             :messages="[OPTIONAL.text]"
-            outlined
-            placeholder="Service Number">
+            outlined>
           </v-text-field>
         </v-col>
       </v-row>
@@ -37,10 +37,10 @@
           v-model="v.urgentReason.$model"
           class="mt-3"
           :error-messages="errorMessagesUrgentReason"
+          label="Additional Information"
           :messages="[REQUEST_STUDY_PROVIDE_URGENT_REASON.text]"
           no-resize
           outlined
-          placeholder="Additional Information"
           rows="4"
           @blur="v.urgentReason.$touch()"></v-textarea>
         <v-row>
@@ -49,9 +49,9 @@
               v-model="v.dueDate.$model"
               class="mt-3"
               :error-messages="errorMessagesDueDate"
+              label="Due Date"
               :messages="[REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text]"
-              :min="minDueDate"
-              placeholder="Due Date">
+              :min="minDueDate">
             </FcDatePicker>
           </v-col>
         </v-row>
@@ -65,8 +65,8 @@
           <FcInputTextArray
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
-            :messages="[OPTIONAL.text]"
-            placeholder="Staff Email" />
+            label="Staff Email"
+            :messages="[OPTIONAL.text]" />
         </v-col>
       </v-row>
     </div>
