@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="pa-2 pt-3"
-    v-on="on">
+  <div class="pa-2 pt-3">
     <h1 class="sr-only">MOVE</h1>
     <v-img
       alt="MOVE Logo"

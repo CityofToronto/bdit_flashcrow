@@ -1,8 +1,39 @@
 import {
+  formatCombinedStreet,
   formatCountLocationDescription,
   formatDuration,
   formatOxfordCommaList,
 } from '@/lib/StringFormatters';
+
+test('StringFormatters.formatCombinedStreet', async () => {
+  expect(formatCombinedStreet(null, null, null)).toBe(null);
+  expect(formatCombinedStreet(null, 'Ave', 'W')).toBe(null);
+
+  expect(formatCombinedStreet(
+    'BROWNS LINE',
+    null,
+    null,
+  )).toBe('BROWNS LINE');
+  expect(formatCombinedStreet(
+    'ADANAC',
+    'DR',
+    null,
+  )).toBe('ADANAC DR');
+  expect(formatCombinedStreet(
+    'DUNDAS',
+    'ST',
+    'W',
+  )).toBe('DUNDAS ST W');
+
+  /*
+   * Some of the `ARTERYDATA` entries have spaces in street names.
+   */
+  expect(formatCombinedStreet(
+    'CACTUS ',
+    'AVE',
+    null,
+  )).toBe('CACTUS AVE');
+});
 
 test('StringFormatters.formatCountLocationDescription', () => {
   expect(formatCountLocationDescription('')).toEqual('');

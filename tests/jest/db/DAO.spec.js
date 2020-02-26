@@ -58,36 +58,6 @@ test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('W')).toBe(CardinalDirection.EAST);
 });
 
-test('ArteryDAO.getCombinedStreet', async () => {
-  expect(ArteryDAO.getCombinedStreet(null, null, null)).toBe(null);
-  expect(ArteryDAO.getCombinedStreet(null, 'Ave', 'W')).toBe(null);
-
-  expect(ArteryDAO.getCombinedStreet(
-    'BROWNS LINE',
-    null,
-    null,
-  )).toBe('BROWNS LINE');
-  expect(ArteryDAO.getCombinedStreet(
-    'ADANAC',
-    'DR',
-    null,
-  )).toBe('ADANAC DR');
-  expect(ArteryDAO.getCombinedStreet(
-    'DUNDAS',
-    'ST',
-    'W',
-  )).toBe('DUNDAS ST W');
-
-  /*
-   * Some of the `ARTERYDATA` entries have spaces in street names.
-   */
-  expect(ArteryDAO.getCombinedStreet(
-    'CACTUS ',
-    'AVE',
-    null,
-  )).toBe('CACTUS AVE');
-});
-
 test('ArteryDAO.byArteryCode', async () => {
   // intersection
   let result = await ArteryDAO.byArteryCode(1146);

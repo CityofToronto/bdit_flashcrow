@@ -23,14 +23,8 @@
       </FcButton>
     </div>
     <FcPaneMapPopup
-      v-if="hoveredFeature"
-      :feature="hoveredFeature"
-      :hover="true"
-      @mouseenter.native="clearHoveredFeature" />
-    <FcPaneMapPopup
-      v-else-if="selectedFeature"
-      :feature="selectedFeature"
-      :hover="false" />
+      v-if="popupFeature"
+      :feature="popupFeature" />
   </div>
 </template>
 
@@ -42,7 +36,7 @@ import { mapMutations, mapState } from 'vuex';
 import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { getLineStringMidpoint } from '@/lib/geo/GeometryUtils';
+import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import rootStyleDark from '@/lib/geo/theme/dark/root.json';
 import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
@@ -316,6 +310,9 @@ export default {
     };
   },
   computed: {
+    popupFeature() {
+      return this.hoveredFeature || this.selectedFeature;
+    },
     ...mapState(['drawerOpen', 'location']),
   },
   created() {
@@ -632,8 +629,7 @@ export default {
       this.setLocation(elementInfo);
     },
     onMidblocksClick(feature) {
-      const { coordinates } = feature.geometry;
-      const [lng, lat] = getLineStringMidpoint(coordinates);
+      const [lng, lat] = getGeometryMidpoint(feature.geometry);
       const elementInfo = {
         centrelineId: feature.properties.geo_id,
         centrelineType: CentrelineType.SEGMENT,
