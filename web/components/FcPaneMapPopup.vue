@@ -1,5 +1,5 @@
 <template>
-  <v-card width="220">
+  <v-card min-width="220">
     <v-card-title>
       <div class="display-1">{{title}}</div>
       <v-spacer></v-spacer>
@@ -34,8 +34,13 @@ import { mapMutations } from 'vuex';
 
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
+import {
+  getCollisionPopupDetails,
+  getCountsByCentrelineSummary,
+  getLocationByFeature,
+} from '@/lib/api/WebApi';
+import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
-import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -45,66 +50,227 @@ const SELECTABLE_LAYERS = [
   'midblocks',
 ];
 
-async function getCollisionDescription(layerId, feature) {
-  const { accdate, acctime } = feature.properties;
-  let dt;
-  if (layerId === 'collisionsLevel2') {
-    dt = DateTime.fromISO(accdate);
-  } else {
-    dt = DateTime.fromJSON(accdate);
+async function getCollisionDetails(feature) {
+  const { id } = feature;
+  return getCollisionPopupDetails(id);
+}
+
+function getCollisionDescription(feature, { event, involved }) {
+  const description = [];
+  if (event === null) {
+    return description;
   }
 
-  const hhmm = parseInt(acctime, 10);
-  const hour = Math.floor(hhmm / 100);
-  const minute = hhmm % 100;
-  dt = dt.set({ hour, minute });
-  const dtStr = TimeFormatters.formatDateTime(dt);
-  return [dtStr];
-}
+  involved.forEach(({ invtype, invage }) => {
+    const invageRange = `${invage} to ${invage + 4}`;
+    if (invtype === 3) {
+      description.push(`Pedestrian \u00b7 ${invageRange}`);
+    } else if (invtype === 4) {
+      description.push(`Cyclist \u00b7 ${invageRange}`);
+    }
+  });
 
-async function getCountDescription(/* layerId, feature */) {
-  return [];
-}
+  const { dateTime } = event;
+  const dateTimeStr = TimeFormatters.formatDateTime(dateTime);
+  description.push(dateTimeStr);
 
-async function getIntersectionDescription(layerId, feature) {
-  let description = feature.properties.intersec5;
-  if (description) {
-    description = formatCountLocationDescription(description);
+  let { street1, street2 } = event;
+  if (street1 !== null) {
+    street1 = formatCountLocationDescription(street1);
+    if (street2 !== null) {
+      street2 = formatCountLocationDescription(street2);
+      description.push(`${street1} and ${street2}`);
+    } else {
+      description.push(street1);
+    }
   }
-  return [description];
+
+  return description;
 }
 
-async function getMidblockDescription(layerId, feature) {
-  let description = feature.properties.lf_name;
-  if (description) {
-    description = formatCountLocationDescription(description);
+function getCollisionIcon(feature, { involved }) {
+  const n = involved.length;
+  for (let i = 0; i < n; i++) {
+    const { invtype } = involved[i];
+    if (invtype === 3) {
+      return 'mdi-walk';
+    }
+    if (invtype === 4) {
+      return 'mdi-bike';
+    }
   }
-  return [description];
+  return null;
 }
 
-async function getSchoolDescription(layerId, feature) {
+async function getCountDetails(feature) {
+  const { centrelineId, centrelineType } = feature.properties;
+  // TODO: incorporate date range
+  const tasks = [
+    getCountsByCentrelineSummary({ centrelineId, centrelineType }, {}),
+    getLocationByFeature({ centrelineId, centrelineType }),
+  ];
+  const [countSummary, location] = await Promise.all(tasks);
+  return { countSummary, location };
+}
+
+function getCountDescription(feature, { countSummary, location }) {
+  const description = [];
+
+  countSummary.forEach(({ count }) => {
+    const { label } = count.type.studyType;
+    const { date } = count;
+    const dateStr = TimeFormatters.formatDefault(date);
+    const countStr = `${label} (${dateStr})`;
+    description.push(countStr);
+  });
+
+  const locationFeatureType = getLocationFeatureType(location);
+  if (locationFeatureType !== null) {
+    const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
+    description.push(locationStr);
+  }
+
+  return description;
+}
+
+function getCountIcon() {
+  return null;
+}
+
+async function getIntersectionDetails(feature) {
+  const { int_id: centrelineId } = feature.properties;
+  const centrelineType = CentrelineType.INTERSECTION;
+  const location = await getLocationByFeature({ centrelineId, centrelineType });
+  return { location };
+}
+
+function getIntersectionDescription(feature, { location }) {
+  const description = [];
+
+  let { intersec5: name } = feature.properties;
+  if (name) {
+    name = formatCountLocationDescription(name);
+  }
+  description.push(name);
+
+  const locationFeatureType = getLocationFeatureType(location);
+  if (locationFeatureType !== null) {
+    description.push(locationFeatureType.description);
+  }
+
+  return description;
+}
+
+function getIntersectionIcon() {
+  return null;
+}
+
+async function getMidblockDetails(feature) {
+  const { geo_id: centrelineId } = feature.properties;
+  const centrelineType = CentrelineType.SEGMENT;
+  const location = await getLocationByFeature({ centrelineId, centrelineType });
+  return { location };
+}
+
+function getMidblockDescription(feature, { location }) {
+  const description = [];
+
+  let { lf_name: name } = feature.properties;
+  if (name) {
+    name = formatCountLocationDescription(name);
+  }
+  description.push(name);
+
+  const locationFeatureType = getLocationFeatureType(location);
+  if (locationFeatureType !== null) {
+    description.push(locationFeatureType.description);
+  }
+
+  return description;
+}
+
+function getMidblockIcon() {
+  return null;
+}
+
+async function getSchoolDetails() {
+  return null;
+}
+
+function getSchoolDescription(feature) {
   return [feature.properties.name];
 }
 
-async function getFeatureDescription(layerId, feature) {
-  await new Promise(resolve => setTimeout(resolve, 500));
+function getSchoolIcon(feature) {
+  const { schoolType } = feature.properties;
+  if (schoolType === 'U' || schoolType === 'C') {
+    return 'mdi-school';
+  }
+  return 'mdi-teach';
+}
+
+async function getFeatureDetailsImpl(layerId, feature) {
   if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
-    return getCollisionDescription(layerId, feature);
+    return getCollisionDetails(feature);
   }
   if (layerId === 'counts') {
-    return getCountDescription(layerId, feature);
+    return getCountDetails(feature);
   }
   if (layerId === 'intersections') {
-    return getIntersectionDescription(layerId, feature);
+    return getIntersectionDetails(feature);
   }
   if (layerId === 'midblocks') {
-    return getMidblockDescription(layerId, feature);
+    return getMidblockDetails(feature);
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
-    return getSchoolDescription(layerId, feature);
+    return getSchoolDetails(feature);
+  }
+  return null;
+}
+
+async function getFeatureDetails(layerId, feature) {
+  const details = await getFeatureDetailsImpl(layerId, feature);
+  return { layerId, feature, details };
+}
+
+function getFeatureDescription({ layerId, feature, details }) {
+  if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
+    return getCollisionDescription(feature, details);
+  }
+  if (layerId === 'counts') {
+    return getCountDescription(feature, details);
+  }
+  if (layerId === 'intersections') {
+    return getIntersectionDescription(feature, details);
+  }
+  if (layerId === 'midblocks') {
+    return getMidblockDescription(feature, details);
+  }
+  if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
+    return getSchoolDescription(feature, details);
   }
   return [];
 }
+
+function getFeatureIcon({ layerId, feature, details }) {
+  if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
+    return getCollisionIcon(feature, details);
+  }
+  if (layerId === 'counts') {
+    return getCountIcon(feature, details);
+  }
+  if (layerId === 'intersections') {
+    return getIntersectionIcon(feature, details);
+  }
+  if (layerId === 'midblocks') {
+    return getMidblockIcon(feature, details);
+  }
+  if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
+    return getSchoolIcon(feature, details);
+  }
+  return null;
+}
+
 
 export default {
   name: 'PaneMapPopup',
@@ -121,37 +287,19 @@ export default {
   },
   data() {
     return {
-      description: [],
+      featureDetails: null,
       loading: true,
     };
   },
   computed: {
-    centrelineId() {
-      if (this.layerId === 'intersections') {
-        return this.feature.properties.int_id;
-      }
-      if (this.layerId === 'counts') {
-        return this.feature.properties.centrelineId;
-      }
-      if (this.layerId === 'midblocks') {
-        return this.feature.properties.geo_id;
-      }
-      return null;
-    },
-    centrelineType() {
-      if (this.layerId === 'intersections') {
-        return CentrelineType.INTERSECTION;
-      }
-      if (this.layerId === 'counts') {
-        return this.feature.properties.centrelineType;
-      }
-      if (this.layerId === 'midblocks') {
-        return CentrelineType.SEGMENT;
-      }
-      return null;
-    },
     coordinates() {
       return getGeometryMidpoint(this.feature.geometry);
+    },
+    description() {
+      if (this.loading || this.featureDetails === null) {
+        return [];
+      }
+      return getFeatureDescription(this.featureDetails);
     },
     featureCode() {
       if (this.layerId === 'intersections') {
@@ -167,28 +315,17 @@ export default {
       return null;
     },
     featureKey() {
-      const { layerId } = this;
-      const { id } = this.feature.properties.id;
+      const { layerId, feature: { id } } = this;
       return `${layerId}:${id}`;
     },
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.layerId);
     },
     icon() {
-      if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
-        // TODO: determine if pedestrian, cyclist, etc. was involved
-        // pedestrian: 'mdi-walk'
-        // cyclist: 'mdi-bike'
+      if (this.loading || this.featureDetails === null) {
         return null;
       }
-      if (this.layerId === 'schoolsLevel2' || this.layerId === 'schoolsLevel1') {
-        const { schoolType } = this.feature.properties;
-        if (schoolType === 'U' || schoolType === 'C') {
-          return 'mdi-school';
-        }
-        return 'mdi-teach';
-      }
-      return null;
+      return getFeatureIcon(this.featureDetails);
     },
     layerId() {
       return this.feature.layer.id;
@@ -258,32 +395,21 @@ export default {
     this.popup.remove();
   },
   methods: {
-    actionViewData() {
+    async actionViewData() {
       // update location
-      const [lng, lat] = this.coordinates;
-      const elementInfo = {
-        centrelineId: this.centrelineId,
-        centrelineType: this.centrelineType,
-        description: this.description,
-        featureCode: this.featureCode,
-        lng,
-        lat,
-      };
-      this.setLocation(elementInfo);
+      const { centrelineId, centrelineType } = this;
+      const location = await getLocationByFeature({ centrelineId, centrelineType });
+      this.setLocation(location);
 
       // open the view data window
-      const routerParameters = {
-        centrelineId: this.centrelineId,
-        centrelineType: this.centrelineType,
-      };
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: routerParameters,
+        params: { centrelineId, centrelineType },
       });
     },
     async loadAsyncForFeature() {
       this.loading = true;
-      this.description = await getFeatureDescription(this.layerId, this.feature);
+      this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
     },
     ...mapMutations(['setLocation']),

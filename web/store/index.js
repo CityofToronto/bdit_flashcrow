@@ -1,13 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import {
-  CentrelineType,
-  RoadIntersectionType,
-  RoadSegmentType,
-} from '@/lib/Constants';
 import { apiFetch } from '@/lib/api/BackendClient';
-import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
+import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
@@ -51,20 +46,7 @@ export default new Vuex.Store({
     // LOCATION
     locationFeatureType(state) {
       const { location } = state;
-      if (location === null) {
-        return null;
-      }
-      const { centrelineType, featureCode = null } = location;
-      if (featureCode === null) {
-        return null;
-      }
-      if (centrelineType === CentrelineType.SEGMENT) {
-        return RoadSegmentType.enumValueOf(featureCode, 'featureCode');
-      }
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        return RoadIntersectionType.enumValueOf(featureCode, 'featureCode');
-      }
-      throw new InvalidCentrelineTypeError(centrelineType);
+      return getLocationFeatureType(location);
     },
   },
   mutations: {
