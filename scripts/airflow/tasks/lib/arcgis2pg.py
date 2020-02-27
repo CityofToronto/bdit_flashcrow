@@ -121,6 +121,15 @@ def dump_init_table(target_schema, target_validation_schema, table_name, respons
   Prints `TRUNCATE` / `MATERIALIZED VIEW` commands for the given layer, as well as a `COPY`
   command to preface the dumped rows.
   """
+  # schemas (required for tables / views)
+  sql = 'CREATE SCHEMA IF NOT EXISTS "{target_schema}";'.format(
+    target_schema=target_schema)
+  print(sql)
+
+  sql = 'CREATE SCHEMA IF NOT EXISTS "{target_validation_schema}";'.format(
+    target_validation_schema=target_validation_schema)
+  print(sql)
+
   new_columns = []
   fields = response['fields']
   for field in fields:
@@ -164,14 +173,21 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS "{target_schema}"."{table_name}" AS
     table_name=table_name)
   print(sql)
 
+  # unique index (for REFRESH MATERIALIZED VIEW CONCURRENTLY)
+  sql = '''\
+CREATE UNIQUE INDEX IF NOT EXISTS "{table_name}_objectid"
+ON "{target_schema}"."{table_name}" (objectid);'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
   # WGS84 (for lat/long lookups)
   sql = '''\
 CREATE INDEX IF NOT EXISTS "{table_name}_geom"
 ON "{target_schema}"."{table_name}"
 USING GIST (geom);'''.format(
     target_schema=target_schema,
-    table_name=table_name
-  )
+    table_name=table_name)
   print(sql)
 
   # Web Mercator (for vector tile generation)
@@ -180,8 +196,7 @@ CREATE INDEX IF NOT EXISTS "{table_name}_srid3857_geom"
 ON "{target_schema}"."{table_name}"
 USING GIST (ST_Transform(geom, 3857));'''.format(
     target_schema=target_schema,
-    table_name=table_name
-  )
+    table_name=table_name)
   print(sql)
 
   # NAD83 / MTM zone 10 (for distance calculations in metres)
@@ -190,14 +205,12 @@ CREATE INDEX IF NOT EXISTS "{table_name}_srid2952_geom"
 ON "{target_schema}"."{table_name}"
 USING GIST (ST_Transform(geom, 2952));'''.format(
     target_schema=target_schema,
-    table_name=table_name
-  )
+    table_name=table_name)
   print(sql)
 
   sql = 'COPY "{target_validation_schema}"."{table_name}" FROM stdin CSV;'.format(
     target_validation_schema=target_validation_schema,
-    table_name=table_name
-  )
+    table_name=table_name)
   print(sql)
 
 def get_data(
@@ -212,8 +225,7 @@ def get_data(
   url = '{base_url}/{mapserver_name}/MapServer/{layer_id}/query'.format(
     base_url=base_url,
     mapserver_name=mapserver_name,
-    layer_id=layer_id
-  )
+    layer_id=layer_id)
   params = {
     "where":"1=1",
     "outFields": "*",
