@@ -1,16 +1,20 @@
 COPY (
-WITH schools AS (
-  SELECT objectid, geom, name, school_type AS "schoolType"
+WITH features AS (
+  SELECT
+    objectid AS "id",
+    geom,
+    name,
+    school_type AS "schoolType"
   FROM gis.school
 ),
 geojson_features AS (
   SELECT jsonb_build_object(
     'type', 'Feature',
-    'id', objectid,
+    'id', id,
     'geometry', ST_AsGeoJSON(geom)::jsonb,
-    'properties', to_jsonb(schools.*) - 'objectid' - 'geom'
+    'properties', to_jsonb(features.*) - 'id' - 'geom'
   ) AS feature
-  FROM schools
+  FROM features
 )
 SELECT jsonb_build_object(
   'type', 'FeatureCollection',

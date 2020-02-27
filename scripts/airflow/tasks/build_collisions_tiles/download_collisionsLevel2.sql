@@ -6,11 +6,11 @@ WITH event_injury AS (
   WHERE e.accdate >= now() - interval '1 year'
   GROUP BY i.collision_id
 ),
-collisions AS (
+features AS (
   SELECT
-    ei.collision_id, ei.injury,
-    e.geom, e.accnb, e.accdate, e.acctime,
-    ec.centreline_id, ec.centreline_type
+    ei.collision_id AS "id",
+    e.geom,
+    ei.injury
   FROM event_injury ei
   JOIN collisions.events e ON ei.collision_id = e.collision_id
   JOIN collisions.events_centreline ec ON ei.collision_id = ec.collision_id
@@ -18,11 +18,11 @@ collisions AS (
 geojson_features AS (
   SELECT jsonb_build_object(
     'type', 'Feature',
-    'id', collision_id,
+    'id', id,
     'geometry', ST_AsGeoJSON(geom)::jsonb,
-    'properties', to_jsonb(collisions.*) - 'collision_id' - 'geom'
+    'properties', to_jsonb(features.*) - 'id' - 'geom'
   ) AS feature
-  FROM collisions
+  FROM features
 )
 SELECT jsonb_build_object(
   'type', 'FeatureCollection',
