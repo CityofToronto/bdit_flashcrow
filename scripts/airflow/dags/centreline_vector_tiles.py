@@ -14,9 +14,7 @@ START_DATE = datetime(2019, 5, 5)
 SCHEDULE_INTERVAL = '0 4 * * 6'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-COPY_CENTRELINE = create_bash_task(DAG, 'copy_centreline')
 BUILD_VECTOR_TILES = create_bash_task(DAG, 'build_vector_tiles')
 EXTRACT_VECTOR_TILES = create_bash_task(DAG, 'extract_vector_tiles')
 
-COPY_CENTRELINE >> BUILD_VECTOR_TILES
 BUILD_VECTOR_TILES >> EXTRACT_VECTOR_TILES

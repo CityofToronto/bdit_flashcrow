@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS prj_volume.artery_intersections;
-CREATE TABLE prj_volume.artery_intersections AS (
+CREATE SCHEMA IF NOT EXISTS prj_volume;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume.artery_intersections AS (
   WITH initial AS (
     WITH ind AS (
       SELECT
@@ -82,3 +83,5 @@ CREATE TABLE prj_volume.artery_intersections AS (
     GROUP BY initial.arterycode
   ) b USING (arterycode, ranking)
 );
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY prj_volume.artery_intersections;
