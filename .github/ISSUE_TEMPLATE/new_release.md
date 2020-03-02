@@ -11,10 +11,12 @@ assignees: candu
 
 - [ ] `ci:jest-coverage` passes
 - [ ] `npm outdated` red dependencies are updated
+- [ ] `npm audit` passes
+- [ ] `npm run build` completes successfully
 - [ ] manually tested in all supported browsers
-- [ ] version bumped to `[NEW_VERSION]` in `package.json`
+- [ ] `CHANGELOG.md` is updated to include details of new release
+- [ ] version bumped to `[NEW_VERSION]` in `package.json` using `npm run [patch|minor|major]`
 - [ ] above changes reviewed and merged to `master`
 - [ ] push to CodeCommit succeeds
-- [ ] `#prj_move` notified: MOVE down for new version deployment
 - [ ] deployment to AWS succeeds
 - [ ] `#prj_move` notified: MOVE back up after new version deployment
