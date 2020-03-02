@@ -13,7 +13,7 @@ START_DATE = datetime(2019, 5, 6)
 SCHEDULE_INTERVAL = '30 4 * * *'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-COPY_ARTERY_TCL = create_bash_task(DAG, 'copy_artery_tcl')
+BUILD_ARTERY_INTERSECTIONS = create_bash_task(DAG, 'build_artery_intersections')
 BUILD_ARTERY_CENTRELINE = create_bash_task(DAG, 'build_artery_centreline')
 
-COPY_ARTERY_TCL >> BUILD_ARTERY_CENTRELINE
+BUILD_ARTERY_INTERSECTIONS >> BUILD_ARTERY_CENTRELINE

@@ -1,7 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS collisions_new;
+CREATE SCHEMA IF NOT EXISTS collisions;
 
-DROP TABLE IF EXISTS collisions_new.events;
-CREATE TABLE collisions_new.events AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events AS (
   SELECT
     row_number() OVER (ORDER BY "ACCDATE", "ACCNB") AS collision_id,
     "ACCNB" AS accnb,
@@ -53,16 +52,18 @@ CREATE TABLE collisions_new.events AS (
     max("TRAFCTLCOND") AS trafctlcond,
     ST_SetSRID(ST_MakePoint(max("LONGITUDE"), max("LATITUDE")), 4326) AS geom
     FROM "TRAFFIC"."ACC"
+    WHERE "LONGITUDE" < 0 AND "LATITUDE" > 0
     GROUP BY "ACCDATE", "ACCNB"
 );
-CREATE UNIQUE INDEX events_collision_id ON collisions_new.events (collision_id);
-CREATE INDEX events_accdate ON collisions_new.events (accdate);
-CREATE INDEX events_geom ON collisions_new.events USING GIST (geom);
-CREATE INDEX events_srid3857_geom ON collisions_new.events USING GIST (ST_Transform(geom, 3857));
+CREATE UNIQUE INDEX IF NOT EXISTS events_collision_id ON collisions.events (collision_id);
+CREATE INDEX IF NOT EXISTS events_accdate ON collisions.events (accdate);
+CREATE INDEX IF NOT EXISTS events_geom ON collisions.events USING GIST (geom);
+CREATE INDEX IF NOT EXISTS events_srid3857_geom ON collisions.events USING GIST (ST_Transform(geom, 3857));
+CREATE INDEX IF NOT EXISTS events_srid2952_geom ON collisions.events USING GIST (ST_Transform(geom, 2952));
 
-DROP TABLE IF EXISTS collisions_new.involved;
-CREATE TABLE collisions_new.involved AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.involved AS (
   SELECT
+    row_number() OVER (ORDER BY e.collision_id, a."PER_NO") AS id,
     e.collision_id,
     a."VEH_NO" AS veh_no,
     a."VEHTYPE" AS vehtype,
@@ -106,6 +107,11 @@ CREATE TABLE collisions_new.involved AS (
     a."FATAL_NO" AS fatal_no,
     a."ACTUAL_SPEED" AS actual_speed,
     a."POSTED_SPEED" AS posted_speed
-  FROM "TRAFFIC"."ACC" a JOIN collisions_new.events AS e ON a."ACCDATE" = e.accdate AND a."ACCNB" = e.accnb
+  FROM "TRAFFIC"."ACC" a
+  INNER JOIN collisions.events AS e ON a."ACCDATE" = e.accdate AND a."ACCNB" = e.accnb
 );
-CREATE INDEX involved_collision_id ON collisions_new.involved (collision_id);
+CREATE UNIQUE INDEX IF NOT EXISTS involved_id ON collisions.involved (id);
+CREATE INDEX IF NOT EXISTS involved_collision_id ON collisions.involved (collision_id);
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.events;
+REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.involved;

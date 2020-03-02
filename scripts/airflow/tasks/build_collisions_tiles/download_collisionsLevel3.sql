@@ -6,9 +6,11 @@ WITH event_injury AS (
   WHERE e.accdate >= now() - interval '1 year'
   GROUP BY i.collision_id
 ),
-collisions AS (
+features AS (
   SELECT
-    ei.collision_id, ei.injury, e.geom,
+    ei.collision_id AS "id",
+    e.geom,
+    ei.injury,
     CASE
       WHEN ei.injury = 4 THEN 10
       WHEN ei.injury = 3 THEN 3
@@ -22,11 +24,11 @@ collisions AS (
 geojson_features AS (
   SELECT jsonb_build_object(
     'type', 'Feature',
-    'id', collision_id,
+    'id', id,
     'geometry', ST_AsGeoJSON(geom)::jsonb,
-    'properties', to_jsonb(collisions.*) - 'collision_id' - 'geom'
+    'properties', to_jsonb(features.*) - 'id' - 'geom'
   ) AS feature
-  FROM collisions
+  FROM features
 )
 SELECT jsonb_build_object(
   'type', 'FeatureCollection',

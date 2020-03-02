@@ -1,19 +1,19 @@
-CREATE INDEX IF NOT EXISTS centreline_srid26917_geom_idx ON gis.centreline USING gist (ST_Transform(geom, 26917));
+CREATE SCHEMA IF NOT EXISTS collisions;
+CREATE INDEX IF NOT EXISTS centreline_srid2952_geom_idx ON gis.centreline USING gist (ST_Transform(geom, 2952));
 
-DROP TABLE IF EXISTS collisions_new.events_segments;
-CREATE TABLE collisions_new.events_segments AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_segments AS (
   SELECT e.collision_id, u.geo_id FROM
-		(SELECT collision_id, latitude, longitude FROM collisions_new.events) e
+		(SELECT collision_id, latitude, longitude FROM collisions.events) e
 	  INNER JOIN LATERAL
 		(SELECT geo_id, ST_Distance(
-			ST_Transform(geom, 26917),
-			ST_Transform(ST_SetSRID(ST_MakePoint(e.longitude, e.latitude), 4326), 26917)
+			ST_Transform(geom, 2952),
+			ST_Transform(ST_SetSRID(ST_MakePoint(e.longitude, e.latitude), 4326), 2952)
 	  ) AS geom_dist
 		FROM gis.centreline
 		WHERE
 			ST_DWithin(
-		    ST_Transform(geom, 26917),
-				ST_Transform(ST_SetSRID(ST_MakePoint(e.longitude, e.latitude), 4326), 26917),
+		    ST_Transform(geom, 2952),
+				ST_Transform(ST_SetSRID(ST_MakePoint(e.longitude, e.latitude), 4326), 2952),
 		    30
 		  )
 			AND (fcode <= 201500 OR fcode = 201800)
@@ -21,4 +21,6 @@ CREATE TABLE collisions_new.events_segments AS (
 	  LIMIT 1
 	) u ON true
 );
-CREATE UNIQUE INDEX events_segments_collision_id ON collisions_new.events_segments (collision_id);
+CREATE UNIQUE INDEX IF NOT EXISTS events_segments_collision_id ON collisions.events_segments (collision_id);
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.events_segments;

@@ -116,19 +116,21 @@ def get_pg_geometry_type(geometry_type):
     msg = 'invalid geometry type {geometry_type}'.format(geometry_type=geometry_type)
     raise ValueError(msg)
 
-def dump_init_table(target_schema, table_name, response):
+def dump_init_table(target_schema, target_validation_schema, table_name, response):
   """
-  Prints `DROP TABLE` / `CREATE TABLE` commands for the given layer, as well as a `COPY`
+  Prints `TRUNCATE` / `MATERIALIZED VIEW` commands for the given layer, as well as a `COPY`
   command to preface the dumped rows.
   """
-  sql = 'DROP TABLE IF EXISTS "{target_schema}"."{table_name}";'.format(
-    target_schema=target_schema,
-    table_name=table_name,
-  )
+  # schemas (required for tables / views)
+  sql = 'CREATE SCHEMA IF NOT EXISTS "{target_schema}";'.format(
+    target_schema=target_schema)
+  print(sql)
+
+  sql = 'CREATE SCHEMA IF NOT EXISTS "{target_validation_schema}";'.format(
+    target_validation_schema=target_validation_schema)
   print(sql)
 
   new_columns = []
-
   fields = response['fields']
   for field in fields:
     field_name = field['name']
@@ -149,37 +151,22 @@ def dump_init_table(target_schema, table_name, response):
     pg_geometry_type=pg_geometry_type
   )
   new_columns.append(new_column)
+  new_columns_clause = ',\n  '.join(new_columns)
 
-  new_columns_clause = '(\n  {0})'.format(',\n  '.join(new_columns))
-  sql = 'CREATE TABLE "{target_schema}"."{table_name}" {new_columns_clause};'.format(
-    target_schema=target_schema,
+  # validation table (replication jobs update data here)
+  sql = '''\
+CREATE TABLE IF NOT EXISTS "{target_validation_schema}"."{table_name}" (
+  {new_columns_clause}
+);
+TRUNCATE TABLE "{target_validation_schema}"."{table_name}" RESTART IDENTITY;'''.format(
+    target_validation_schema=target_validation_schema,
     table_name=table_name,
-    new_columns_clause=new_columns_clause
-  )
+    new_columns_clause=new_columns_clause)
   print(sql)
 
-  sql = '''\
-CREATE INDEX "{table_name}_geom"
-ON "{target_schema}"."{table_name}"
-USING GIST (geom);'''.format(
-    target_schema=target_schema,
-    table_name=table_name
-  )
-  print(sql)
-
-  sql = '''\
-CREATE INDEX "{table_name}_srid3857_geom"
-ON "{target_schema}"."{table_name}"
-USING GIST (ST_Transform(geom, 3857));'''.format(
-    target_schema=target_schema,
-    table_name=table_name
-  )
-  print(sql)
-
-  sql = 'COPY "{target_schema}"."{table_name}" FROM stdin CSV;'.format(
-    target_schema=target_schema,
-    table_name=table_name
-  )
+  sql = 'COPY "{target_validation_schema}"."{table_name}" FROM stdin CSV;'.format(
+    target_validation_schema=target_validation_schema,
+    table_name=table_name)
   print(sql)
 
 def get_data(
@@ -194,8 +181,7 @@ def get_data(
   url = '{base_url}/{mapserver_name}/MapServer/{layer_id}/query'.format(
     base_url=base_url,
     mapserver_name=mapserver_name,
-    layer_id=layer_id
-  )
+    layer_id=layer_id)
   params = {
     "where":"1=1",
     "outFields": "*",
@@ -300,12 +286,67 @@ def has_more_results(response):
   """
   return response.get('exceededTransferLimit', False)
 
+def dump_finish_table(target_schema, target_validation_schema, table_name):
+  """
+  Finishes layer copy by creating and refreshing the materialized view.
+  """
+  # materialized view (applications access data here)
+  sql = '''\
+CREATE MATERIALIZED VIEW IF NOT EXISTS "{target_schema}"."{table_name}" AS
+  SELECT * FROM "{target_validation_schema}"."{table_name}";'''.format(
+    target_schema=target_schema,
+    target_validation_schema=target_validation_schema,
+    table_name=table_name)
+  print(sql)
+
+  # unique index (for REFRESH MATERIALIZED VIEW CONCURRENTLY)
+  sql = '''\
+CREATE UNIQUE INDEX IF NOT EXISTS "{table_name}_objectid"
+ON "{target_schema}"."{table_name}" (objectid);'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # WGS84 (for lat/long lookups)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (geom);'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # Web Mercator (for vector tile generation)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_srid3857_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (ST_Transform(geom, 3857));'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # NAD83 / MTM zone 10 (for distance calculations in metres)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_srid2952_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (ST_Transform(geom, 2952));'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # validation table (replication jobs update data here)
+  sql = 'REFRESH MATERIALIZED VIEW CONCURRENTLY "{target_schema}"."{table_name}";'.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
 def get_layer(
     base_url,
     mapserver_name,
     layer_id,
     target_schema='gis',
-    per_page=100):
+    target_validation_schema='gis_new',
+    per_page=500):
   """
   This function fetches layer metadata and records from the given ArcGIS server.  It then creates
   a table based on layer attribute types before inserting records into that table.
@@ -343,7 +384,7 @@ def get_layer(
       per_page
     )
     if not has_inited_table:
-      dump_init_table(target_schema, table_name, response)
+      dump_init_table(target_schema, target_validation_schema, table_name, response)
       has_inited_table = True
     dump_data(response)
     if has_more_results(response):
@@ -351,8 +392,12 @@ def get_layer(
       page_offset += len(features)
     else:
       break
+
   # Signal that the data dump is complete.
   print('\\.')
+
+  # Finish off by refreshing the materialized view.
+  dump_finish_table(target_schema, target_validation_schema, table_name)
 
 if __name__ == '__main__':
   def main():

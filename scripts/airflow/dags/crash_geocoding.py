@@ -17,10 +17,8 @@ CRASH_NORM = create_bash_task(DAG, 'crash_norm')
 BUILD_EVENTS_INTERSECTIONS = create_bash_task(DAG, 'build_events_intersections')
 BUILD_EVENTS_SEGMENTS = create_bash_task(DAG, 'build_events_segments')
 BUILD_EVENTS_CENTRELINE = create_bash_task(DAG, 'build_events_centreline')
-CRASH_CUTOVER = create_bash_task(DAG, 'crash_cutover')
 
 CRASH_NORM >> BUILD_EVENTS_INTERSECTIONS
 CRASH_NORM >> BUILD_EVENTS_SEGMENTS
 BUILD_EVENTS_INTERSECTIONS >> BUILD_EVENTS_CENTRELINE
 BUILD_EVENTS_SEGMENTS >> BUILD_EVENTS_CENTRELINE
-BUILD_EVENTS_CENTRELINE >> CRASH_CUTOVER

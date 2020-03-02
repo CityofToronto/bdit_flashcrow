@@ -4,22 +4,18 @@
     [
       "all",
       [ ">=", "$zoom", 15 ],
-      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL", "LSRML", "LSRSL", "CDSSL" ]
-    ],
-    [
-      "all",
-      [ ">=", "$zoom", 14 ],
-      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL", "LSRML", "LSRSL" ]
+      [ "<=", "featureCode", 501700 ]
     ],
     [
       "all",
       [ ">=", "$zoom", 13 ],
-      [ "in", "classifi6",   "XICSL", "MJRML", "MJRSL", "MNRML", "MNRSL" ]
+      [ "<=", "featureCode", 501300 ]
     ],
     [
       "all",
       [ ">=", "$zoom", 12 ],
-      [ "in", "classifi6",  "XICSL", "MJRML", "MJRSL" ]
-    ]
+      [ "<=", "featureCode", 501200 ]
+    ],
+    [ "<=", "featureCode", 501100 ]
   ]
 }

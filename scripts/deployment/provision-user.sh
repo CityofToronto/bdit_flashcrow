@@ -58,7 +58,7 @@ pip install --upgrade pip
 echo "installing node@lts/*..."
 nvm install lts/*
 echo "lts/*" > "$HOME/.nvmrc"
-npm install -g npm@latest shellcheck
+npm install -g npm@latest shapefile shellcheck
 
 # configure git
 echo "configuring git..."

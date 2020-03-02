@@ -1,5 +1,6 @@
-DROP TABLE IF EXISTS prj_volume.artery_intersections;
-CREATE TABLE prj_volume.artery_intersections AS (
+CREATE SCHEMA IF NOT EXISTS prj_volume;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume.artery_intersections AS (
   WITH initial AS (
     WITH ind AS (
       SELECT
@@ -69,10 +70,10 @@ CREATE TABLE prj_volume.artery_intersections AS (
   SELECT
     a.arterycode,
     a.int_id,
-    a.location,
-    a.px,
-    a.latitude,
-    a.longitude
+    MAX(a.location) AS location,
+    MAX(a.px) AS px,
+    MAX(a.latitude) AS latitude,
+    MAX(a.longitude) AS longitude
   FROM initial a
   JOIN (
     SELECT
@@ -81,4 +82,9 @@ CREATE TABLE prj_volume.artery_intersections AS (
     FROM initial
     GROUP BY initial.arterycode
   ) b USING (arterycode, ranking)
+  GROUP BY a.arterycode, a.int_id
 );
+CREATE UNIQUE INDEX IF NOT EXISTS artery_intersections_arterycode
+  ON prj_volume.artery_intersections (arterycode);
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY prj_volume.artery_intersections;

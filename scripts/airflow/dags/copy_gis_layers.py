@@ -14,6 +14,9 @@ START_DATE = datetime(2019, 11, 13)
 SCHEDULE_INTERVAL = '30 4 * * 6'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
+# GCC's ArcGIS REST API server exposes a series of "services", each with a name like
+# `cot_geospatial2`.  Within those services, individual layers have an ID
+# (in parentheses, after the layer name).
 TASKS = {
   'bikeway': ('cot_geospatial2', 2),
   'accessible_signal': ('cot_geospatial2', 4),

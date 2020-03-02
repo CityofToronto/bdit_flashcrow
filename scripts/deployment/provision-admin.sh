@@ -30,7 +30,7 @@ service nginx start
 
 # install yum packages
 yum install -y gcc gcc-c++ make git patch openssl-devel zlib-devel readline-devel sqlite sqlite-devel bzip2 bzip2-devel libffi-devel xz xz-devel
-yum install -y jq mailx
+yum install -y jq mailx postgis
 
 # install EPEL repository (see https://aws.amazon.com/blogs/compute/extending-amazon-linux-2-with-epel-and-lets-encrypt/)
 curl https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm > /tmp/epel.rpm
