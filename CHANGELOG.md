@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2019-03-02
+### Changed
+- Data pipelines are now zero-downtime
+- Initial a11y sweep (except for colour contrast, coming soon!)
+- Updated ADFS config to use Cloud Services sandbox instance in AWS
+
+### Added
+- Domain-aware configuration on AWS
+
 ## [0.3.0] - 2019-02-21
 ### Changed
 - Revamped frontend based on Material Design / Vuetify
