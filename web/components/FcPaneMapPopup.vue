@@ -133,21 +133,16 @@ function getCountDescription(feature, { countSummary, location }) {
   return description;
 }
 
-function getCountIcon() {
-  return null;
-}
-
-async function getIntersectionDetails(feature) {
-  const { int_id: centrelineId } = feature.properties;
-  const centrelineType = CentrelineType.INTERSECTION;
+async function getCentrelineDetails(feature, centrelineType) {
+  const { centrelineId } = feature.properties;
   const location = await getLocationByFeature({ centrelineId, centrelineType });
   return { location };
 }
 
-function getIntersectionDescription(feature, { location }) {
+function getCentrelineDescription(feature, { location }) {
   const description = [];
 
-  let { intersec5: name } = feature.properties;
+  let { name } = feature.properties;
   if (name) {
     name = formatCountLocationDescription(name);
   }
@@ -159,38 +154,6 @@ function getIntersectionDescription(feature, { location }) {
   }
 
   return description;
-}
-
-function getIntersectionIcon() {
-  return null;
-}
-
-async function getMidblockDetails(feature) {
-  const { geo_id: centrelineId } = feature.properties;
-  const centrelineType = CentrelineType.SEGMENT;
-  const location = await getLocationByFeature({ centrelineId, centrelineType });
-  return { location };
-}
-
-function getMidblockDescription(feature, { location }) {
-  const description = [];
-
-  let { lf_name: name } = feature.properties;
-  if (name) {
-    name = formatCountLocationDescription(name);
-  }
-  description.push(name);
-
-  const locationFeatureType = getLocationFeatureType(location);
-  if (locationFeatureType !== null) {
-    description.push(locationFeatureType.description);
-  }
-
-  return description;
-}
-
-function getMidblockIcon() {
-  return null;
 }
 
 async function getSchoolDetails() {
@@ -217,10 +180,10 @@ async function getFeatureDetailsImpl(layerId, feature) {
     return getCountDetails(feature);
   }
   if (layerId === 'intersections') {
-    return getIntersectionDetails(feature);
+    return getCentrelineDetails(feature, CentrelineType.INTERSECTION);
   }
   if (layerId === 'midblocks') {
-    return getMidblockDetails(feature);
+    return getCentrelineDetails(feature, CentrelineType.SEGMENT);
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolDetails(feature);
@@ -240,11 +203,8 @@ function getFeatureDescription({ layerId, feature, details }) {
   if (layerId === 'counts') {
     return getCountDescription(feature, details);
   }
-  if (layerId === 'intersections') {
-    return getIntersectionDescription(feature, details);
-  }
-  if (layerId === 'midblocks') {
-    return getMidblockDescription(feature, details);
+  if (layerId === 'intersections' || layerId === 'midblocks') {
+    return getCentrelineDescription(feature, details);
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolDescription(feature, details);
@@ -255,15 +215,6 @@ function getFeatureDescription({ layerId, feature, details }) {
 function getFeatureIcon({ layerId, feature, details }) {
   if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
     return getCollisionIcon(feature, details);
-  }
-  if (layerId === 'counts') {
-    return getCountIcon(feature, details);
-  }
-  if (layerId === 'intersections') {
-    return getIntersectionIcon(feature, details);
-  }
-  if (layerId === 'midblocks') {
-    return getMidblockIcon(feature, details);
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolIcon(feature, details);
@@ -300,19 +251,6 @@ export default {
         return [];
       }
       return getFeatureDescription(this.featureDetails);
-    },
-    featureCode() {
-      if (this.layerId === 'intersections') {
-        return this.feature.properties.elevatio9;
-      }
-      if (this.layerId === 'midblocks') {
-        return this.feature.properties.fcode;
-      }
-      /*
-       * In this case, we don't have a reliable feature code we can use.  Eventually, we should
-       * change `CountDAO` to provide this when returning counts.
-       */
-      return null;
     },
     featureKey() {
       const { layerId, feature: { id } } = this;
@@ -380,6 +318,7 @@ export default {
   },
   created() {
     this.popup = new mapboxgl.Popup({
+      anchor: 'bottom',
       className: 'fc-pane-map-popup elevation-2',
       closeButton: false,
       closeOnClick: false,
@@ -397,7 +336,7 @@ export default {
   methods: {
     async actionViewData() {
       // update location
-      const { centrelineId, centrelineType } = this;
+      const { centrelineId, centrelineType } = this.feature.properties;
       const location = await getLocationByFeature({ centrelineId, centrelineType });
       this.setLocation(location);
 
