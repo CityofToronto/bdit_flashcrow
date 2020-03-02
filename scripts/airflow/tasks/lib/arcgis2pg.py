@@ -164,50 +164,6 @@ TRUNCATE TABLE "{target_validation_schema}"."{table_name}" RESTART IDENTITY;'''.
     new_columns_clause=new_columns_clause)
   print(sql)
 
-  # materialized view (applications access data here)
-  sql = '''\
-CREATE MATERIALIZED VIEW IF NOT EXISTS "{target_schema}"."{table_name}" AS
-  SELECT * FROM "{target_validation_schema}"."{table_name}";'''.format(
-    target_schema=target_schema,
-    target_validation_schema=target_validation_schema,
-    table_name=table_name)
-  print(sql)
-
-  # unique index (for REFRESH MATERIALIZED VIEW CONCURRENTLY)
-  sql = '''\
-CREATE UNIQUE INDEX IF NOT EXISTS "{table_name}_objectid"
-ON "{target_schema}"."{table_name}" (objectid);'''.format(
-    target_schema=target_schema,
-    table_name=table_name)
-  print(sql)
-
-  # WGS84 (for lat/long lookups)
-  sql = '''\
-CREATE INDEX IF NOT EXISTS "{table_name}_geom"
-ON "{target_schema}"."{table_name}"
-USING GIST (geom);'''.format(
-    target_schema=target_schema,
-    table_name=table_name)
-  print(sql)
-
-  # Web Mercator (for vector tile generation)
-  sql = '''\
-CREATE INDEX IF NOT EXISTS "{table_name}_srid3857_geom"
-ON "{target_schema}"."{table_name}"
-USING GIST (ST_Transform(geom, 3857));'''.format(
-    target_schema=target_schema,
-    table_name=table_name)
-  print(sql)
-
-  # NAD83 / MTM zone 10 (for distance calculations in metres)
-  sql = '''\
-CREATE INDEX IF NOT EXISTS "{table_name}_srid2952_geom"
-ON "{target_schema}"."{table_name}"
-USING GIST (ST_Transform(geom, 2952));'''.format(
-    target_schema=target_schema,
-    table_name=table_name)
-  print(sql)
-
   sql = 'COPY "{target_validation_schema}"."{table_name}" FROM stdin CSV;'.format(
     target_validation_schema=target_validation_schema,
     table_name=table_name)
@@ -330,10 +286,54 @@ def has_more_results(response):
   """
   return response.get('exceededTransferLimit', False)
 
-def dump_finish_table(target_schema, table_name):
+def dump_finish_table(target_schema, target_validation_schema, table_name):
   """
-  Finishes layer copy by refreshing the materialized view.
+  Finishes layer copy by creating and refreshing the materialized view.
   """
+  # materialized view (applications access data here)
+  sql = '''\
+CREATE MATERIALIZED VIEW IF NOT EXISTS "{target_schema}"."{table_name}" AS
+  SELECT * FROM "{target_validation_schema}"."{table_name}";'''.format(
+    target_schema=target_schema,
+    target_validation_schema=target_validation_schema,
+    table_name=table_name)
+  print(sql)
+
+  # unique index (for REFRESH MATERIALIZED VIEW CONCURRENTLY)
+  sql = '''\
+CREATE UNIQUE INDEX IF NOT EXISTS "{table_name}_objectid"
+ON "{target_schema}"."{table_name}" (objectid);'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # WGS84 (for lat/long lookups)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (geom);'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # Web Mercator (for vector tile generation)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_srid3857_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (ST_Transform(geom, 3857));'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
+  # NAD83 / MTM zone 10 (for distance calculations in metres)
+  sql = '''\
+CREATE INDEX IF NOT EXISTS "{table_name}_srid2952_geom"
+ON "{target_schema}"."{table_name}"
+USING GIST (ST_Transform(geom, 2952));'''.format(
+    target_schema=target_schema,
+    table_name=table_name)
+  print(sql)
+
   # validation table (replication jobs update data here)
   sql = 'REFRESH MATERIALIZED VIEW CONCURRENTLY "{target_schema}"."{table_name}";'.format(
     target_schema=target_schema,
@@ -397,7 +397,7 @@ def get_layer(
   print('\\.')
 
   # Finish off by refreshing the materialized view.
-  dump_finish_table(target_schema, table_name)
+  dump_finish_table(target_schema, target_validation_schema, table_name)
 
 if __name__ == '__main__':
   def main():
