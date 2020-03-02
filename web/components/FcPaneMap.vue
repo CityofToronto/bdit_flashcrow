@@ -498,7 +498,7 @@ export default {
       if (centrelineType === CentrelineType.SEGMENT) {
         return this.getFeatureForLayerAndProperty(
           'midblocks',
-          'geo_id',
+          'centrelineId',
           centrelineId,
         );
       }
@@ -511,7 +511,7 @@ export default {
         if (feature === null) {
           feature = this.getFeatureForLayerAndProperty(
             'intersections',
-            'int_id',
+            'centrelineId',
             centrelineId,
           );
         }
@@ -597,46 +597,30 @@ export default {
       // get feature code from the visible layer, if possible
       const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
       if (locationFeature !== null) {
-        if (centrelineType === CentrelineType.SEGMENT) {
-          const {
-            fcode: featureCode,
-            lf_name: descriptionVisible,
-          } = locationFeature.properties;
-          elementInfo.description = descriptionVisible;
-          elementInfo.featureCode = featureCode;
-        } else if (centrelineType === CentrelineType.INTERSECTION) {
-          const {
-            intersec5: descriptionVisible,
-            elevatio9: featureCode,
-          } = locationFeature.properties;
-          elementInfo.description = descriptionVisible;
-          elementInfo.featureCode = featureCode;
-        }
+        const {
+          featureCode,
+          name: descriptionVisible,
+        } = locationFeature.properties;
+        elementInfo.description = descriptionVisible;
+        elementInfo.featureCode = featureCode;
       }
       this.setLocation(elementInfo);
     },
-    onIntersectionsClick(feature) {
+    onCentrelineClick(feature, centrelineType) {
       // update location
-      const [lng, lat] = feature.geometry.coordinates;
-      const elementInfo = {
-        centrelineId: feature.properties.int_id,
-        centrelineType: CentrelineType.INTERSECTION,
-        description: feature.properties.intersec5,
-        featureCode: feature.properties.elevatio9,
-        lat,
-        lng,
-      };
-      this.setLocation(elementInfo);
-    },
-    onMidblocksClick(feature) {
       const [lng, lat] = getGeometryMidpoint(feature.geometry);
+      const {
+        centrelineId,
+        featureCode,
+        name: description,
+      } = feature.properties;
       const elementInfo = {
-        centrelineId: feature.properties.geo_id,
-        centrelineType: CentrelineType.SEGMENT,
-        description: feature.properties.lf_name,
-        featureCode: feature.properties.fcode,
-        lng,
+        centrelineId,
+        centrelineType,
+        description,
+        featureCode,
         lat,
+        lng,
       };
       this.setLocation(elementInfo);
     },
@@ -652,9 +636,9 @@ export default {
       if (layerId === 'counts') {
         this.onCountsClick(feature);
       } else if (layerId === 'intersections') {
-        this.onIntersectionsClick(feature);
+        this.onCentrelineClick(feature, CentrelineType.INTERSECTION);
       } else if (layerId === 'midblocks') {
-        this.onMidblocksClick(feature);
+        this.onCentrelineClick(feature, CentrelineType.SEGMENT);
       }
     },
     onMapMousemove(e) {
