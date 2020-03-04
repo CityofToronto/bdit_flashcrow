@@ -410,10 +410,10 @@ export default {
       });
       this.map.on('idle', () => {
         this.loading = false;
-      });
-      this.map.once('idle', () => {
         this.updateSelectedFeature();
       });
+      this.updateSelectedFeature();
+      this.updateSelectedMarker();
     });
   },
   beforeDestroy() {
@@ -433,6 +433,7 @@ export default {
     },
     location(location, oldLocation) {
       this.easeToLocation(location, oldLocation);
+      this.updateSelectedFeature();
       this.updateSelectedMarker();
     },
     $route() {
@@ -466,7 +467,6 @@ export default {
       if (feature !== null) {
         this.map.setFeatureState(feature, { selected: true });
         this.selectedFeature = feature;
-        this.clearHoveredFeature();
       }
     },
     easeToLocation(location, oldLocation) {
@@ -477,6 +477,7 @@ export default {
         const zoom = Math.max(this.map.getZoom(), MapZoom.LEVEL_1.minzoom);
         this.map.easeTo({
           center,
+          duration: 1000,
           zoom,
         });
       } else if (oldLocation === null) {
@@ -488,6 +489,7 @@ export default {
         const center = BOUNDS_TORONTO.getCenter();
         this.map.easeTo({
           center,
+          duration: 1000,
           zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
@@ -690,11 +692,14 @@ export default {
     },
     updateSelectedFeature() {
       const feature = this.getFeatureForLocation(this.location);
-      this.setSelectedFeature(feature);
+      if (feature === null) {
+        this.clearSelectedFeature();
+      } else {
+        this.setSelectedFeature(feature);
+      }
     },
     updateSelectedMarker() {
       if (this.location === null) {
-        this.clearSelectedFeature();
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;
