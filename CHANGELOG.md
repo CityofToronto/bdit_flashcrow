@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2019-03-04
+### Changed
+- Several fixes to map navigation, popups, and drawer integration
+- MOVE icon now links to View Map page
+
 ## [0.3.1] - 2019-03-02
 ### Changed
 - Data pipelines are now zero-downtime
