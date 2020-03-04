@@ -23,8 +23,15 @@
       </FcButton>
     </div>
     <FcPaneMapPopup
-      v-if="popupFeature"
-      :feature="popupFeature" />
+      v-if="hoveredFeature"
+      :key="keyHoveredFeaturePopup"
+      :feature="hoveredFeature"
+      :hovered="true" />
+    <FcPaneMapPopup
+      v-if="selectedFeature"
+      :key="keySelectedFeaturePopup"
+      :feature="selectedFeature"
+      :hovered="false" />
   </div>
 </template>
 
@@ -283,6 +290,17 @@ function injectSourcesAndLayers(rawStyle) {
   return STYLE;
 }
 
+function getFeaturePopupKey(prefix, feature) {
+  if (feature === null) {
+    return null;
+  }
+  const { layer: { id: layerId }, id } = feature;
+  return `${prefix}:${layerId}:${id}`;
+}
+
+const PREFIX_HOVERED = 'h';
+const PREFIX_SELECTED = 's';
+
 export default {
   name: 'FcPaneMap',
   components: {
@@ -310,8 +328,11 @@ export default {
     };
   },
   computed: {
-    popupFeature() {
-      return this.hoveredFeature || this.selectedFeature;
+    keyHoveredFeaturePopup() {
+      return getFeaturePopupKey(PREFIX_HOVERED, this.hoveredFeature);
+    },
+    keySelectedFeaturePopup() {
+      return getFeaturePopupKey(PREFIX_SELECTED, this.selectedFeature);
     },
     ...mapState(['drawerOpen', 'location']),
   },

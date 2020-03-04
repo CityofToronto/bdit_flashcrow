@@ -1,31 +1,33 @@
 <template>
-  <v-card min-width="220">
-    <v-card-title>
-      <div class="display-1">{{title}}</div>
-      <v-spacer></v-spacer>
-      <v-icon v-if="icon">{{icon}}</v-icon>
-    </v-card-title>
-    <v-card-text>
-      <v-progress-linear
-        v-if="loading"
-        indeterminate />
-      <template v-else>
-        <div
-          v-for="(line, i) in description"
-          :key="i"
-          class="body-1">
-          {{line}}
-        </div>
-      </template>
-    </v-card-text>
-    <v-card-actions v-if="!loading && featureSelectable">
-      <FcButton
-        type="tertiary"
-        @click="actionViewData">
-        View Data
-      </FcButton>
-    </v-card-actions>
-  </v-card>
+  <div class="d-none">
+    <v-card ref="content" min-width="220">
+      <v-card-title>
+        <div class="display-1">{{title}}</div>
+        <v-spacer></v-spacer>
+        <v-icon v-if="icon">{{icon}}</v-icon>
+      </v-card-title>
+      <v-card-text>
+        <v-progress-linear
+          v-if="loading"
+          indeterminate />
+        <template v-else>
+          <div
+            v-for="(line, i) in description"
+            :key="i"
+            class="body-1">
+            {{line}}
+          </div>
+        </template>
+      </v-card-text>
+      <v-card-actions v-if="!loading && featureSelectable">
+        <FcButton
+          type="tertiary"
+          @click="actionViewData">
+          View Data
+        </FcButton>
+      </v-card-actions>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -230,6 +232,7 @@ export default {
   },
   props: {
     feature: Object,
+    hovered: Boolean,
   },
   inject: {
     map: {
@@ -317,17 +320,12 @@ export default {
     },
   },
   created() {
-    this.popup = new mapboxgl.Popup({
-      anchor: 'bottom',
-      className: 'fc-pane-map-popup elevation-2',
-      closeButton: false,
-      closeOnClick: false,
-      offset: 40,
-    });
-    this.popup.setLngLat(this.coordinates);
+    this.createPopup();
   },
   mounted() {
-    this.popup.setDOMContent(this.$el);
+    this.createPopup();
+    this.popup.setLngLat(this.coordinates);
+    this.popup.setDOMContent(this.$refs.content.$el);
     this.popup.addTo(this.map);
   },
   beforeDestroy() {
@@ -346,6 +344,17 @@ export default {
         params: { centrelineId, centrelineType },
       });
     },
+    createPopup() {
+      const hoveredClassName = this.hovered ? ' hovered' : '';
+      const offset = this.hovered ? 0 : 40;
+      this.popup = new mapboxgl.Popup({
+        anchor: 'bottom',
+        className: `fc-pane-map-popup elevation-2${hoveredClassName}`,
+        closeButton: false,
+        closeOnClick: false,
+        offset,
+      });
+    },
     async loadAsyncForFeature() {
       this.loading = true;
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
@@ -358,6 +367,10 @@ export default {
 
 <style lang="scss">
 .fc-pane-map-popup {
+  z-index: calc(var(--z-index-controls) - 1);
+  &.hovered {
+    z-index: calc(var(--z-index-controls) - 2);
+  }
   & > .mapboxgl-popup-tip {
     display: none;
   }
