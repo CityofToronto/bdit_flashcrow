@@ -6,18 +6,25 @@
       horizontal: !vertical,
       vertical
     }">
-    <div
+    <v-tooltip
       v-if="hasDrawer"
-      class="pane-drawer-toggle"
-      :class="{
-        'align-center': !vertical,
-        'd-flex': !vertical,
-      }"
-      @click="setDrawerOpen(!drawerOpen)">
-      <div class="text-center">
-        <v-icon small>{{iconDrawerToggle}}</v-icon>
-      </div>
-    </div>
+      :bottom="vertical && drawerOpen"
+      :right="!vertical"
+      :top="vertical && !drawerOpen"
+      :z-index="100">
+      <template v-slot:activator="{ on }">
+        <FcButton
+          :aria-label="labelDrawerToggle"
+          class="pane-drawer-toggle"
+          type="icon"
+          @click="setDrawerOpen(!drawerOpen)"
+          v-on="on">
+          <v-icon>{{iconDrawerToggle}}</v-icon>
+        </FcButton>
+      </template>
+      <span>{{labelDrawerToggle}}</span>
+    </v-tooltip>
+
     <div
       class="fc-pane-wrapper d-flex fill-height"
       :class="{
@@ -46,11 +53,13 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 
 export default {
   name: 'FcLayoutDrawerMap',
   components: {
+    FcButton,
     FcPaneMap,
   },
   computed: {
@@ -63,6 +72,13 @@ export default {
         return drawerOpen ? 'mdi-menu-down' : 'mdi-menu-up';
       }
       return drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right';
+    },
+    labelDrawerToggle() {
+      const { drawerOpen, vertical } = this;
+      if (vertical) {
+        return drawerOpen ? 'Shrink bottom panel' : 'Expand bottom panel';
+      }
+      return drawerOpen ? 'Collapse side panel' : 'Expand side panel';
     },
     showDrawer() {
       const { drawerOpen, hasDrawer, vertical } = this;
@@ -116,6 +132,7 @@ export default {
       border-radius: 0 var(--space-s) var(--space-s) 0;
       height: 38px;
       top: 20px;
+      width: 16px;
     }
     & > .fc-pane-wrapper > div {
       width: 50%;

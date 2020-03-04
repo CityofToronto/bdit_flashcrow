@@ -23,8 +23,17 @@
       </FcButton>
     </div>
     <FcPaneMapPopup
-      v-if="popupFeature"
-      :feature="popupFeature" />
+      v-if="hoveredFeature
+        && featureKeyHovered !== featureKeySelected
+        && featureKeyHovered === featureKeyHoveredPopup"
+      :key="'h:' + featureKeyHovered"
+      :feature="hoveredFeature"
+      :hovered="true" />
+    <FcPaneMapPopup
+      v-if="!drawerOpen && selectedFeature"
+      :key="'s:' + featureKeySelected"
+      :feature="selectedFeature"
+      :hovered="false" />
   </div>
 </template>
 
@@ -283,6 +292,14 @@ function injectSourcesAndLayers(rawStyle) {
   return STYLE;
 }
 
+function getFeatureKey(feature) {
+  if (feature === null) {
+    return null;
+  }
+  const { layer: { id: layerId }, id } = feature;
+  return `${layerId}:${id}`;
+}
+
 export default {
   name: 'FcPaneMap',
   components: {
@@ -305,13 +322,18 @@ export default {
       satellite: false,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
+      // used to add slight debounce delay (250ms) to hovered popup
+      featureKeyHoveredPopup: false,
       // keeps track of currently selected feature
       selectedFeature: null,
     };
   },
   computed: {
-    popupFeature() {
-      return this.hoveredFeature || this.selectedFeature;
+    featureKeyHovered() {
+      return getFeatureKey(this.hoveredFeature);
+    },
+    featureKeySelected() {
+      return getFeatureKey(this.selectedFeature);
     },
     ...mapState(['drawerOpen', 'location']),
   },
@@ -392,10 +414,9 @@ export default {
       });
       this.map.on('idle', () => {
         this.loading = false;
-      });
-      this.map.once('idle', () => {
         this.updateSelectedFeature();
       });
+      this.updateSelectedMarker();
     });
   },
   beforeDestroy() {
@@ -413,9 +434,21 @@ export default {
         this.map.resize();
       });
     },
+    hoveredFeature: debounce(function watchHoveredFeature() {
+      this.featureKeyHoveredPopup = this.featureKeyHovered;
+    }, 250),
     location(location, oldLocation) {
-      this.easeToLocation(location, oldLocation);
       this.updateSelectedMarker();
+      if (this.location === null) {
+        this.clearSelectedFeature();
+        return;
+      }
+      const feature = this.getFeatureForLocation(this.location);
+      if (this.selectedFeature !== null && feature !== null) {
+        this.setSelectedFeature(feature);
+      } else {
+        this.easeToLocation(location, oldLocation);
+      }
     },
     $route() {
       Vue.nextTick(() => {
@@ -448,7 +481,6 @@ export default {
       if (feature !== null) {
         this.map.setFeatureState(feature, { selected: true });
         this.selectedFeature = feature;
-        this.clearHoveredFeature();
       }
     },
     easeToLocation(location, oldLocation) {
@@ -459,6 +491,7 @@ export default {
         const zoom = Math.max(this.map.getZoom(), MapZoom.LEVEL_1.minzoom);
         this.map.easeTo({
           center,
+          duration: 1000,
           zoom,
         });
       } else if (oldLocation === null) {
@@ -470,6 +503,7 @@ export default {
         const center = BOUNDS_TORONTO.getCenter();
         this.map.easeTo({
           center,
+          duration: 1000,
           zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
@@ -672,11 +706,14 @@ export default {
     },
     updateSelectedFeature() {
       const feature = this.getFeatureForLocation(this.location);
-      this.setSelectedFeature(feature);
+      if (feature === null) {
+        this.clearSelectedFeature();
+      } else {
+        this.setSelectedFeature(feature);
+      }
     },
     updateSelectedMarker() {
       if (this.location === null) {
-        this.clearSelectedFeature();
         this.selectedMarker.remove();
       } else {
         const { lng, lat } = this.location;
