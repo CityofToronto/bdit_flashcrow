@@ -23,7 +23,9 @@
       </FcButton>
     </div>
     <FcPaneMapPopup
-      v-if="hoveredFeature && featureKeyHovered !== featureKeySelected"
+      v-if="hoveredFeature
+        && featureKeyHovered !== featureKeySelected
+        && featureKeyHovered === featureKeyHoveredPopup"
       :key="'h:' + featureKeyHovered"
       :feature="hoveredFeature"
       :hovered="true" />
@@ -320,6 +322,8 @@ export default {
       satellite: false,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
+      // used to add slight debounce delay (250ms) to hovered popup
+      featureKeyHoveredPopup: false,
       // keeps track of currently selected feature
       selectedFeature: null,
     };
@@ -430,10 +434,21 @@ export default {
         this.map.resize();
       });
     },
+    hoveredFeature: debounce(function watchHoveredFeature() {
+      this.featureKeyHoveredPopup = this.featureKeyHovered;
+    }, 250),
     location(location, oldLocation) {
-      this.easeToLocation(location, oldLocation);
-      this.updateSelectedFeature();
       this.updateSelectedMarker();
+      if (this.location === null) {
+        this.clearSelectedFeature();
+        return;
+      }
+      const feature = this.getFeatureForLocation(this.location);
+      if (this.selectedFeature !== null && feature !== null) {
+        this.setSelectedFeature(feature);
+      } else {
+        this.easeToLocation(location, oldLocation);
+      }
     },
     $route() {
       Vue.nextTick(() => {
