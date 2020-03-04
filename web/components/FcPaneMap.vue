@@ -412,7 +412,6 @@ export default {
         this.loading = false;
         this.updateSelectedFeature();
       });
-      this.updateSelectedFeature();
       this.updateSelectedMarker();
     });
   },
