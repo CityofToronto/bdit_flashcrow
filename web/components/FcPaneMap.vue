@@ -23,13 +23,13 @@
       </FcButton>
     </div>
     <FcPaneMapPopup
-      v-if="hoveredFeature"
-      :key="keyHoveredFeaturePopup"
+      v-if="hoveredFeature && featureKeyHovered !== featureKeySelected"
+      :key="'h:' + featureKeyHovered"
       :feature="hoveredFeature"
       :hovered="true" />
     <FcPaneMapPopup
-      v-if="selectedFeature"
-      :key="keySelectedFeaturePopup"
+      v-if="!drawerOpen && selectedFeature"
+      :key="'s:' + featureKeySelected"
       :feature="selectedFeature"
       :hovered="false" />
   </div>
@@ -290,16 +290,13 @@ function injectSourcesAndLayers(rawStyle) {
   return STYLE;
 }
 
-function getFeaturePopupKey(prefix, feature) {
+function getFeatureKey(feature) {
   if (feature === null) {
     return null;
   }
   const { layer: { id: layerId }, id } = feature;
-  return `${prefix}:${layerId}:${id}`;
+  return `${layerId}:${id}`;
 }
-
-const PREFIX_HOVERED = 'h';
-const PREFIX_SELECTED = 's';
 
 export default {
   name: 'FcPaneMap',
@@ -328,11 +325,11 @@ export default {
     };
   },
   computed: {
-    keyHoveredFeaturePopup() {
-      return getFeaturePopupKey(PREFIX_HOVERED, this.hoveredFeature);
+    featureKeyHovered() {
+      return getFeatureKey(this.hoveredFeature);
     },
-    keySelectedFeaturePopup() {
-      return getFeaturePopupKey(PREFIX_SELECTED, this.selectedFeature);
+    featureKeySelected() {
+      return getFeatureKey(this.selectedFeature);
     },
     ...mapState(['drawerOpen', 'location']),
   },

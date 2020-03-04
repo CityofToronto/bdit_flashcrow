@@ -333,6 +333,8 @@ export default {
   },
   methods: {
     async actionViewData() {
+      this.setDrawerOpen(true);
+
       // update location
       const { centrelineId, centrelineType } = this.feature.properties;
       const location = await getLocationByFeature({ centrelineId, centrelineType });
@@ -360,7 +362,7 @@ export default {
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLocation']),
   },
 };
 </script>
