@@ -147,7 +147,7 @@ function injectSourcesAndLayers(rawStyle) {
   addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
   addDynamicTileSource(STYLE, 'collisionsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
   addDynamicTileSource(STYLE, 'counts', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
+  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
   addTippecanoeSource(STYLE, 'schoolsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
   addDynamicTileSource(STYLE, 'schoolsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
@@ -758,7 +758,7 @@ export default {
       right: 6px;
     }
     & > .mapboxgl-ctrl-scale {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(0, 0, 0, 0.3);
       border-color: #dcdee0;
       bottom: 0;
       color: #dcdee0;
@@ -769,7 +769,7 @@ export default {
       right: 170px;
     }
     & > .mapboxgl-ctrl-attrib {
-      background-color: rgba(0, 0, 0, 0.2);
+      background-color: rgba(0, 0, 0, 0.3);
       bottom: 10px;
       color: #dcdee0;
       font-size: 0.75rem;
@@ -778,6 +778,9 @@ export default {
       position: absolute;
       right: 5px;
       width: 170px;
+      & a {
+        color: #dcdee0;
+      }
     }
   }
 }

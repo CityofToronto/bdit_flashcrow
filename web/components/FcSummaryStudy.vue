@@ -29,9 +29,7 @@
         <div class="subtitle-1">Additional Information</div>
         <div class="mt-1 display-1">
           <span v-if="study.notes">{{study.notes}}</span>
-          <span
-            v-else
-            class="unselected--text">None</span>
+          <span v-else>None</span>
         </div>
       </v-col>
     </v-row>

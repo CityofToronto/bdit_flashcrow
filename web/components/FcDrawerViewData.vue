@@ -35,7 +35,7 @@
             <div>
               <div
                 v-if="!hasPoisNearby"
-                class="display-2 secondary--text">
+                class="display-2">
                 None
               </div>
               <v-tooltip
@@ -46,7 +46,7 @@
                     v-on="on"
                     class="mr-2"
                     color="teal lighten-4"
-                    text-color="teal darken-1">
+                    text-color="teal darken-4">
                     <v-avatar left>
                       <v-icon>mdi-school</v-icon>
                     </v-avatar>
@@ -63,7 +63,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-2">{{numCountsText}}</div>
+              <div class="pl-3 subtitle-1">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
                 v-if="showFilters"
