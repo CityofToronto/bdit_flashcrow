@@ -6,9 +6,7 @@
       :cols="cols">
       <div class="subtitle-1">{{name}}</div>
       <div class="mt-1 display-1">
-        <span
-          v-if="value === null"
-          class="unselected--text">None</span>
+        <span v-if="value === null">None</span>
         <span v-else>{{value}}</span>
       </div>
     </v-col>

@@ -83,6 +83,29 @@
         sort-by="ID"
         :sort-desc="true"
         :sort-keys="sortKeys">
+        <template v-slot:no-data>
+          <v-row
+            class="mt-8"
+            no-gutters>
+            <v-col
+              class="pt-7 secondary--text"
+              cols="4"
+              offset="4">
+              <span v-if="itemsStudyRequests.length === 0">
+                You have not requested a study,<br>
+                please view the map <router-link :to="{name: 'viewData'}">here</router-link>
+              </span>
+              <span v-else-if="closed">
+                You have not closed any requests,<br>
+                please view open requests <a href="#" @click.prevent="indexClosed = 0">here</a>
+              </span>
+              <span v-else>
+                You have no remaining open requests,<br>
+                please view closed requests <a href="#" @click.prevent="indexClosed = 1">here</a>
+              </span>
+            </v-col>
+          </v-row>
+        </template>
         <template v-slot:item.ID="{ item }">
           <span>{{item.id}}</span>
         </template>

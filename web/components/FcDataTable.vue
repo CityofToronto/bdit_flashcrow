@@ -22,10 +22,16 @@
       </v-simple-checkbox>
       <span class="sr-only">Select</span>
     </template>
+    <template v-slot:loading>
+      <span class="secondary--text">Loading items...</span>
+    </template>
     <template
       v-for="(_, slot) of $scopedSlots"
       v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />
+    </template>
+    <template v-slot:no-data>
+      <slot name="no-data" />
     </template>
   </v-data-table>
 </template>

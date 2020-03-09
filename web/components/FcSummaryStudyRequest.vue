@@ -69,9 +69,7 @@
       <v-col cols="6">
         <div class="subtitle-1">Informed Staff</div>
         <div class="mt-1 display-1">
-          <span
-            v-if="studyRequest.ccEmails.length === 0"
-            class="unselected--text">None</span>
+          <span v-if="studyRequest.ccEmails.length === 0">None</span>
           <div
             v-for="(ccEmail, i) in studyRequest.ccEmails"
             :key="i">

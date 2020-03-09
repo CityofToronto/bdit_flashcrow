@@ -56,7 +56,7 @@ export default {
 <style lang="scss">
 .fc-report {
   & > .fc-report-header {
-    color: var(--v-primary-darken3);
+    color: var(--v-primary-base);
   }
 }
 </style>

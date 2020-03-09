@@ -7,6 +7,11 @@
     :items="countSummaryOrLoading">
     <template v-slot:item.STUDY_REPORTS="{ item }">
       <span>{{item.count.type.studyType.label}}</span>
+      <span
+        v-if="item.numPerCategory > 1"
+        class="secondary--text">
+        &#x2022; {{item.numPerCategory}}
+      </span>
     </template>
     <template v-slot:item.DATE="{ item }">
       <span>
@@ -57,7 +62,7 @@ export default {
       text: 'Study Reports',
     }, {
       value: 'DATE',
-      text: 'Date',
+      text: 'Most Recent Date',
     }, {
       value: 'HOURS',
       text: 'Hours',

@@ -35,7 +35,7 @@
             <div>
               <div
                 v-if="!hasPoisNearby"
-                class="display-2 secondary--text">
+                class="display-2">
                 None
               </div>
               <v-tooltip
@@ -46,7 +46,7 @@
                     v-on="on"
                     class="mr-2"
                     color="teal lighten-4"
-                    text-color="teal darken-1">
+                    text-color="teal darken-4">
                     <v-avatar left>
                       <v-icon>mdi-school</v-icon>
                     </v-avatar>
@@ -63,7 +63,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-2">{{numCountsText}}</div>
+              <div class="pl-3 subtitle-1">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
                 v-if="showFilters"
@@ -72,6 +72,7 @@
                 @set-filters="setFilters">
               </FcDialogStudyFilters>
               <FcButton
+                v-if="countSummary.length > 0"
                 type="secondary"
                 @click.stop="showFilters = true">
                 <v-icon
@@ -102,7 +103,22 @@
               </v-chip>
             </div>
           </header>
+          <v-row
+            v-if="countSummary.length === 0"
+            class="mt-8"
+            no-gutters>
+            <v-col
+              class="pt-12"
+              cols="4"
+              offset="4">
+              <span class="secondary--text">
+                There are no studies for this location,<br>
+                please request a study if necessary
+              </span>
+            </v-col>
+          </v-row>
           <FcDataTableStudies
+            v-else
             :count-summary="countSummary"
             :loading="loadingCounts"
             @show-reports="actionShowReports" />
@@ -204,6 +220,9 @@ export default {
       const n = ArrayStats.sum(
         this.countSummary.map(({ numPerCategory }) => numPerCategory),
       );
+      if (n === 0) {
+        return 'None';
+      }
       return `${n} total`;
     },
     ...mapState('viewData', ['filters']),

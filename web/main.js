@@ -44,8 +44,8 @@ const vuetify = new Vuetify({
     themes: {
       light: {
         default: '#272727',
-        primary: '#3088d6',
-        secondary: '#757575',
+        primary: '#005695',
+        secondary: '#696969',
         shading: '#fafafa',
         unselected: '#acacac',
       },
