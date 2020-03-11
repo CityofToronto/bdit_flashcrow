@@ -6,10 +6,10 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "backend": "node -r ./globalWindowShim -r esm -r module-alias/register web/server.js",
-    "backend:inspect": "node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9281 web/server.js",
-    "backend:inspect-brk": "node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9281 web/server.js",
-    "backend:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node  -r ./globalWindowShim -r esm -r module-alias/register web/server.js",
+    "backend": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register web/server.js",
+    "backend:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9281 web/server.js",
+    "backend:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9281 web/server.js",
+    "backend:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node  -r ./globalWindowShim -r esm -r module-alias/register web/server.js",
     "ci:jest-coverage": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage",
     "ci:npm-audit": "npm audit || true",
     "ci:npm-outdated": "npm outdated || true",
@@ -19,12 +19,12 @@
     "frontend:build": "vue-cli-service build",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"unit/**\" jest --changedSince=master",
-    "reporter": "node  -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
-    "reporter:inspect": "node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9282 reporter/reporter.js",
-    "reporter:inspect-brk": "node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js",
-    "reporter:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
-    "test:test-api": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"api/**\" jest",
-    "test:test-db": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest"
+    "reporter": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
+    "reporter:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9282 reporter/reporter.js",
+    "reporter:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js",
+    "reporter:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
+    "test:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"api/**\" jest",
+    "test:test-db": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"db/**\" jest"
   },
   "dependencies": {
     "@hapi/boom": "^9.0.0",
