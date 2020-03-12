@@ -40,7 +40,7 @@ sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 
 # start flashcrow
 # shellcheck disable=SC2046
-env $(xargs < /home/ec2-user/cot-env.config) NODE_ENV=production forever start /home/ec2-user/forever.json
+env $(xargs < /home/ec2-user/cot-env.config) NODE_ENV=production NODE_EXTRA_CA_CERTS=/home/ec2-user/flashcrow/ssl/extra-ca-certs.cer forever start /home/ec2-user/forever.json
 
 # need to restart nginx
 sudo service nginx restart
