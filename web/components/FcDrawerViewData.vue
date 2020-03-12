@@ -103,20 +103,12 @@
               </v-chip>
             </div>
           </header>
-          <v-row
+          <div
             v-if="countSummary.length === 0"
-            class="mt-8"
-            no-gutters>
-            <v-col
-              class="pt-12"
-              cols="4"
-              offset="4">
-              <span class="secondary--text">
-                There are no studies for this location,<br>
-                please request a study if necessary
-              </span>
-            </v-col>
-          </v-row>
+            class="mt-8 pt-12 secondary--text text-center">
+            There are no studies for this location,<br>
+            please request a study if necessary
+          </div>
           <FcDataTableStudies
             v-else
             :count-summary="countSummary"

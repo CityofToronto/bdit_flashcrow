@@ -15,7 +15,7 @@ assignees: candu
 - [ ] `npm run build` completes successfully
 - [ ] manually tested in all supported browsers
 - [ ] `CHANGELOG.md` is updated to include details of new release
-- [ ] version bumped to `[NEW_VERSION]` in `package.json` using `npm run [patch|minor|major]`
+- [ ] version bumped to `[NEW_VERSION]` in `package.json` using `npm version [patch|minor|major]`
 - [ ] above changes reviewed and merged to `master`
 - [ ] push to CodeCommit succeeds
 - [ ] deployment to AWS succeeds
