@@ -10,6 +10,7 @@
       </form>
       <form
         ref="formSignIn"
+        id="formSignIn"
         method="POST"
         action="/api/auth/adfs-init">
         <input type="hidden" name="csrf" :value="auth.csrf" />
