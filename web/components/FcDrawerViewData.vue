@@ -72,7 +72,7 @@
                 @set-filters="setFilters">
               </FcDialogStudyFilters>
               <FcButton
-                v-if="countSummary.length > 0"
+                v-if="countSummary.length > 0 || filterChips.length > 0"
                 type="secondary"
                 @click.stop="showFilters = true">
                 <v-icon
