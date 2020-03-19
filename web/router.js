@@ -1,12 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import {
-  ROUTE_NOT_LOGGED_IN,
-} from '@/lib/i18n/Strings';
 import store from '@/web/store';
 
 Vue.use(Router);
+
+const STORAGE_KEY_LOGIN_STATE = 'ca.toronto.move.loginState';
 
 const router = new Router({
   mode: 'history',
@@ -143,40 +142,66 @@ function routeMetaKey(to, key, defaultValue) {
   return routeWithKey.meta[key];
 }
 
-/**
- * Determines if the user has necessary permissions to view `to`.
- *
- * @param to {Object} - route to check permissions for
- * @returns {Boolean|Object} false if user has necessary permissions (i.e. no redirect needed),
- * otherwise the route to redirect to
- */
-async function beforeEachCheckAuth(to) {
-  const { loggedIn } = await store.dispatch('checkAuth');
-  /*
-    * As part of "security by design", our default assumption is that a route
-    * requires authentication.  A route must manually override this to specify
-    * different behaviour.
-    */
-  const metaAuth = routeMetaKey(to, 'auth', true);
-  if (metaAuth === true) {
-    if (!loggedIn) {
-      store.dispatch('setToast', ROUTE_NOT_LOGGED_IN);
+function restoreLoginState(next) {
+  const loginState = window.sessionStorage.getItem(STORAGE_KEY_LOGIN_STATE);
+  if (loginState === null) {
+    return false;
+  }
+  window.sessionStorage.removeItem(STORAGE_KEY_LOGIN_STATE);
+  try {
+    const { location, name, params } = JSON.parse(loginState);
+    store.commit('setLocation', location);
+    next({ name, params });
+    return true;
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      return false;
     }
-    return loggedIn;
+    throw err;
   }
-  if (metaAuth === false) {
-    // this route requires an unauthenticated user
-    return !loggedIn;
-  }
-  return true;
+}
+
+function saveLoginState(to) {
+  const { location } = store.state;
+  const { name, params = {} } = to;
+  const loginState = JSON.stringify({ location, name, params });
+  window.sessionStorage.setItem(STORAGE_KEY_LOGIN_STATE, loginState);
 }
 
 router.beforeEach(async (to, from, next) => {
-  const meetsAuthRequirements = await beforeEachCheckAuth(to);
-  if (meetsAuthRequirements) {
-    next();
+  /*
+   * Handle login redirects using `window.sessionStorage`.
+   */
+  if (restoreLoginState(next)) {
+    return;
+  }
+
+  const { loggedIn } = await store.dispatch('checkAuth');
+  /*
+   * As part of "security by design", our default assumption is that a route
+   * requires authentication.  A route must manually override this to specify
+   * different behaviour.
+   */
+  const metaAuth = routeMetaKey(to, 'auth', true);
+  if (metaAuth === true) {
+    // This route requires authenticated users.
+    if (loggedIn) {
+      next();
+    } else {
+      next(false);
+      saveLoginState(to);
+      document.forms.formSignIn.submit();
+    }
+  } else if (metaAuth === false) {
+    // This route requires unauthenticated users.
+    if (loggedIn) {
+      next(false);
+    } else {
+      next();
+    }
   } else {
-    next(false);
+    // This route accepts both unauthenticated and authenticated users.
+    next();
   }
 });
 
