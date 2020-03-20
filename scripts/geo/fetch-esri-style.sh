@@ -41,8 +41,8 @@ METADATA_FILE="$DIR_LIB_GEO/metadata.json"
 STYLE_URL="http://www.arcgis.com/sharing/rest/content/items/$STYLE_ID/resources/styles/root.json"
 
 # fetch style root
-curl -s "$STYLE_URL" > "$STYLE_FILE"
+curl -s "$STYLE_URL" | jq . > "$STYLE_FILE"
 
 # fetch style metadata
 METADATA_URL=$(jq -r ".sources.esri.url" "$STYLE_FILE")
-curl -s "$METADATA_URL" > "$METADATA_FILE"
+curl -s "$METADATA_URL" | jq . > "$METADATA_FILE"

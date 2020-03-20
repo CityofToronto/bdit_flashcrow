@@ -46,8 +46,8 @@ import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
-import rootStyleDark from '@/lib/geo/theme/dark/root.json';
-import metadataDark from '@/lib/geo/theme/dark/metadata.json';
+import rootStyleLight from '@/lib/geo/theme/light/root.json';
+import metadataLight from '@/lib/geo/theme/light/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -342,7 +342,7 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(rootStyleDark, metadataDark).get();
+    const mapStyle = new GeoStyle(rootStyleLight, metadataLight).get();
     this.mapStyle = injectSourcesAndLayers(mapStyle);
     this.satelliteStyle = injectSourcesAndLayers({
       version: 8,
