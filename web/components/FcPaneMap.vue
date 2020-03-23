@@ -186,11 +186,8 @@ export default {
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 250),
-    mapStyle: {
-      handler() {
-        this.map.setStyle(this.mapStyle);
-      },
-      immediate: true,
+    mapStyle() {
+      this.map.setStyle(this.mapStyle);
     },
     location(location, oldLocation) {
       this.updateSelectedMarker();
