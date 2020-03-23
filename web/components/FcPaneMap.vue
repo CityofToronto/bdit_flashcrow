@@ -18,8 +18,8 @@
       </FcButton>
       <FcButton
         type="fab-text"
-        @click="toggleSatellite">
-        {{ satellite ? 'Map' : 'Aerial' }}
+        @click="aerial = !aerial">
+        {{ aerial ? 'Map' : 'Aerial' }}
       </FcButton>
     </div>
     <FcPaneMapPopup
@@ -42,12 +42,9 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
-import { Enum } from '@/lib/ClassUtils';
-import { CentrelineType } from '@/lib/Constants';
+import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
-import rootStyleDark from '@/lib/geo/theme/dark/root.json';
-import metadataDark from '@/lib/geo/theme/dark/metadata.json';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -57,240 +54,6 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
-
-class MapZoom extends Enum {
-  get maxzoomSource() {
-    return this.maxzoomLayer - 1;
-  }
-}
-MapZoom.init({
-  LEVEL_3: {
-    minzoom: 10,
-    maxzoomLayer: 14,
-  },
-  LEVEL_2: {
-    minzoom: 14,
-    maxzoomLayer: 17,
-  },
-  LEVEL_1: {
-    minzoom: 17,
-    maxzoomLayer: 20,
-  },
-});
-MapZoom.MIN = MapZoom.LEVEL_3.minzoom;
-MapZoom.MAX = MapZoom.LEVEL_1.maxzoomSource;
-
-function interactionAttr(base, hovered, selected) {
-  return [
-    'case',
-    ['boolean', ['feature-state', 'selected'], false], selected,
-    ['boolean', ['feature-state', 'hover'], false], hovered,
-    base,
-  ];
-}
-
-const PAINT_OPACITY = interactionAttr(0.45, 0.6, 0.6);
-const PAINT_COLOR_CENTRELINE = interactionAttr(
-  '#dcdee0',
-  '#e5a000',
-  '#00a91c',
-);
-const PAINT_COLOR_COUNTS = interactionAttr(
-  '#00bde3',
-  '#e5a000',
-  '#00a91c',
-);
-const PAINT_WIDTH_MIDBLOCKS = interactionAttr(3, 5, 5);
-const PAINT_RADIUS_INTERSECTIONS = interactionAttr(8, 10, 10);
-const PAINT_RADIUS_COUNTS = interactionAttr(10, 12, 12);
-
-function addTippecanoeSource(style, id, minLevel, maxLevel, crossfade = 0) {
-  /* eslint-disable-next-line no-param-reassign */
-  style.sources[id] = {
-    type: 'vector',
-    tiles: [`https://flashcrow-etladmin.intra.dev-toronto.ca/tiles/${id}/{z}/{x}/{y}.pbf`],
-    minzoom: minLevel.minzoom,
-    maxzoom: maxLevel.maxzoomSource + crossfade,
-  };
-}
-
-function addDynamicTileSource(style, id, minLevel, maxLevel) {
-  const { origin } = window.location;
-  /* eslint-disable-next-line no-param-reassign */
-  style.sources[id] = {
-    type: 'vector',
-    tiles: [`${origin}/api/dynamicTiles/${id}/{z}/{x}/{y}.pbf`],
-    minzoom: minLevel.minzoom,
-    maxzoom: maxLevel.maxzoomSource,
-  };
-}
-
-function addLayer(style, id, type, options) {
-  const source = style.sources[id];
-  style.layers.push({
-    id,
-    source: id,
-    'source-layer': id,
-    type,
-    minzoom: source.minzoom,
-    maxzoom: source.maxzoom + 1,
-    ...options,
-  });
-}
-
-function injectSourcesAndLayers(rawStyle) {
-  const STYLE = { ...rawStyle };
-
-  STYLE.glyphs = 'https://flashcrow-etladmin.intra.dev-toronto.ca/glyphs/{fontstack}/{range}.pbf';
-
-  addTippecanoeSource(STYLE, 'collisionsLevel3', MapZoom.LEVEL_3, MapZoom.LEVEL_3, 2);
-  addTippecanoeSource(STYLE, 'collisionsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
-  addDynamicTileSource(STYLE, 'collisionsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
-  addDynamicTileSource(STYLE, 'counts', MapZoom.LEVEL_2, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'intersections', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'midblocks', MapZoom.LEVEL_3, MapZoom.LEVEL_1);
-  addTippecanoeSource(STYLE, 'schoolsLevel2', MapZoom.LEVEL_2, MapZoom.LEVEL_2);
-  addDynamicTileSource(STYLE, 'schoolsLevel1', MapZoom.LEVEL_1, MapZoom.LEVEL_1);
-
-  addLayer(STYLE, 'midblocks', 'line', {
-    paint: {
-      'line-color': PAINT_COLOR_CENTRELINE,
-      'line-width': PAINT_WIDTH_MIDBLOCKS,
-      'line-opacity': PAINT_OPACITY,
-    },
-  });
-  addLayer(STYLE, 'intersections', 'circle', {
-    paint: {
-      'circle-color': PAINT_COLOR_CENTRELINE,
-      'circle-radius': PAINT_RADIUS_INTERSECTIONS,
-      'circle-opacity': PAINT_OPACITY,
-    },
-  });
-  addLayer(STYLE, 'counts', 'circle', {
-    paint: {
-      'circle-color': PAINT_COLOR_COUNTS,
-      'circle-radius': PAINT_RADIUS_COUNTS,
-      'circle-opacity': PAINT_OPACITY,
-    },
-  });
-  addLayer(STYLE, 'collisionsLevel3', 'heatmap', {
-    paint: {
-      'heatmap-color': [
-        'interpolate',
-        ['linear'],
-        ['heatmap-density'],
-        0, 'rgba(244, 227, 219, 0)',
-        0.5, '#f39268',
-        1, '#d63e04',
-      ],
-      'heatmap-intensity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        STYLE.sources.collisionsLevel3.minzoom, 1,
-        STYLE.sources.collisionsLevel3.maxzoom, 3,
-      ],
-      'heatmap-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        STYLE.sources.collisionsLevel3.maxzoom, 0.8,
-        STYLE.sources.collisionsLevel3.maxzoom + 1, 0,
-      ],
-      'heatmap-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        STYLE.sources.collisionsLevel3.minzoom, 5,
-        STYLE.sources.collisionsLevel3.maxzoom, 10,
-      ],
-      'heatmap-weight': ['get', 'heatmap_weight'],
-    },
-  });
-  addLayer(STYLE, 'collisionsLevel2', 'circle', {
-    layout: {
-      'circle-sort-key': ['get', 'injury'],
-    },
-    paint: {
-      'circle-color': [
-        'case',
-        ['>=', ['get', 'injury'], 3], '#b51d09',
-        '#d63e04',
-      ],
-      'circle-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        STYLE.sources.collisionsLevel2.minzoom, 0.2,
-        STYLE.sources.collisionsLevel2.minzoom + 1, [
-          'case',
-          ['>=', ['get', 'injury'], 3], 0.8,
-          0.6,
-        ],
-      ],
-      'circle-radius': [
-        'case',
-        ['>=', ['get', 'injury'], 3], 10,
-        5,
-      ],
-    },
-  });
-  addLayer(STYLE, 'collisionsLevel1', 'circle', {
-    layout: {
-      'circle-sort-key': ['get', 'injury'],
-    },
-    paint: {
-      'circle-color': [
-        'case',
-        ['>=', ['get', 'injury'], 3], '#b51d09',
-        '#d63e04',
-      ],
-      'circle-opacity': [
-        'case',
-        ['>=', ['get', 'injury'], 3], 0.8,
-        0.6,
-      ],
-      'circle-radius': [
-        'case',
-        ['>=', ['get', 'injury'], 3], 10,
-        5,
-      ],
-    },
-  });
-  addLayer(STYLE, 'schoolsLevel2', 'symbol', {
-    layout: {
-      'text-field': [
-        'match',
-        ['get', 'schoolType'],
-        'U', '\uf19d',
-        'C', '\uf19d',
-        '\uf549',
-      ],
-      'text-font': ['literal', ['Font Awesome 5 Free']],
-      'text-size': 16,
-    },
-    paint: {
-      'text-color': '#00a91c',
-    },
-  });
-  addLayer(STYLE, 'schoolsLevel1', 'symbol', {
-    layout: {
-      'text-field': [
-        'match',
-        ['get', 'schoolType'],
-        'U', '\uf19d',
-        'C', '\uf19d',
-        '\uf549',
-      ],
-      'text-font': ['literal', ['Font Awesome 5 Free']],
-      'text-size': 20,
-    },
-    paint: {
-      'text-color': '#00a91c',
-    },
-  });
-  return STYLE;
-}
 
 function getFeatureKey(feature) {
   if (feature === null) {
@@ -319,7 +82,7 @@ export default {
     return {
       coordinates: null,
       loading: false,
-      satellite: false,
+      aerial: false,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
       // used to add slight debounce delay (250ms) to hovered popup
@@ -335,6 +98,15 @@ export default {
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
     },
+    mapStyle() {
+      const { aerial } = this;
+      const { dark } = this.$vuetify.theme;
+      const options = {
+        aerial,
+        dark,
+      };
+      return GeoStyle.get(options);
+    },
     ...mapState(['drawerOpen', 'location']),
   },
   created() {
@@ -342,29 +114,6 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-    const mapStyle = new GeoStyle(rootStyleDark, metadataDark).get();
-    this.mapStyle = injectSourcesAndLayers(mapStyle);
-    this.satelliteStyle = injectSourcesAndLayers({
-      version: 8,
-      sources: {
-        'gcc-ortho-webm': {
-          type: 'raster',
-          tiles: [
-            'https://gis.toronto.ca/arcgis/rest/services/primary/cot_ortho_webm/MapServer/tile/{z}/{y}/{x}',
-          ],
-          tileSize: 256,
-        },
-      },
-      layers: [
-        {
-          id: 'gcc-ortho-webm',
-          type: 'raster',
-          source: 'gcc-ortho-webm',
-          minzoom: MapZoom.LEVEL_3.minzoom,
-          maxzoom: MapZoom.LEVEL_1.maxzoomLayer,
-        },
-      ],
-    });
 
     // marker
     this.selectedMarker = new mapboxgl.Marker()
@@ -437,6 +186,9 @@ export default {
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 250),
+    mapStyle() {
+      this.map.setStyle(this.mapStyle);
+    },
     location(location, oldLocation) {
       this.updateSelectedMarker();
       if (this.location === null) {
@@ -690,14 +442,6 @@ export default {
       const z = Math.round(zoom);
       const url = `https://www.google.com/maps/@${lat},${lng},${z}z`;
       window.open(url, '_blank');
-    },
-    toggleSatellite() {
-      this.satellite = !this.satellite;
-      if (this.satellite) {
-        this.map.setStyle(this.satelliteStyle, { diff: false });
-      } else {
-        this.map.setStyle(this.mapStyle, { diff: false });
-      }
     },
     updateCoordinates() {
       const { lat, lng } = this.map.getCenter();
