@@ -3,4 +3,8 @@ import Blob from 'node-blob';
 
 global.Blob = Blob;
 global.URL.createObjectURL = jest.fn();
-global.window = {};
+global.window = {
+  location: {
+    origin: 'https://localhost:8081',
+  },
+};
