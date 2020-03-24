@@ -9,6 +9,8 @@
     </div>
     <FcSearchBarLocation
       v-if="!drawerOpen" />
+    <FcPaneMapLegend
+      v-model="legendOptions" />
     <div class="pane-map-mode">
       <FcButton
         class="mr-2"
@@ -48,6 +50,7 @@ import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
@@ -67,6 +70,7 @@ export default {
   name: 'FcPaneMap',
   components: {
     FcButton,
+    FcPaneMapLegend,
     FcPaneMapPopup,
     FcSearchBarLocation,
   },
@@ -80,13 +84,21 @@ export default {
   },
   data() {
     return {
-      coordinates: null,
-      loading: false,
       aerial: false,
-      // keeps track of which feature we are currently hovering over
-      hoveredFeature: null,
+      coordinates: null,
       // used to add slight debounce delay (250ms) to hovered popup
       featureKeyHoveredPopup: false,
+      // keeps track of which feature we are currently hovering over
+      hoveredFeature: null,
+      legendOptions: {
+        datesFrom: 3,
+        layers: {
+          counts: true,
+          collisions: true,
+          volume: true,
+        },
+      },
+      loading: false,
       // keeps track of currently selected feature
       selectedFeature: null,
     };
@@ -486,9 +498,15 @@ export default {
     z-index: var(--z-index-controls);
   }
   & > .fc-search-bar-location {
+    left: 20px;
     top: 20px;
     position: absolute;
-    left: 20px;
+    z-index: var(--z-index-controls);
+  }
+  & > .fc-pane-map-legend {
+    top: 20px;
+    position: absolute;
+    right: 20px;
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
@@ -504,10 +522,9 @@ export default {
       right: 6px;
     }
     & > .mapboxgl-ctrl-scale {
-      background-color: rgba(0, 0, 0, 0.3);
-      border-color: #dcdee0;
+      border-color: #272727;
       bottom: 0;
-      color: #dcdee0;
+      color: #272727;
       font-size: 0.75rem;
       height: 17px;
       line-height: 0.875rem;
@@ -515,9 +532,8 @@ export default {
       right: 170px;
     }
     & > .mapboxgl-ctrl-attrib {
-      background-color: rgba(0, 0, 0, 0.3);
       bottom: 10px;
-      color: #dcdee0;
+      color: #272727;
       font-size: 0.75rem;
       line-height: 0.875rem;
       padding: 2px 5px;
@@ -525,7 +541,7 @@ export default {
       right: 5px;
       width: 170px;
       & a {
-        color: #dcdee0;
+        color: #272727;
       }
     }
   }
