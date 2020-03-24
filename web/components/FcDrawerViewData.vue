@@ -39,6 +39,23 @@
                 None
               </div>
               <v-tooltip
+                v-if="poiSummary.hospital !== null"
+                bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip
+                    v-on="on"
+                    class="mr-2"
+                    color="pink lighten-4"
+                    text-color="pink darken-4">
+                    <v-avatar left>
+                      <v-icon>mdi-hospital-box</v-icon>
+                    </v-avatar>
+                    Hospital Zone
+                  </v-chip>
+                </template>
+                <span>{{Math.round(poiSummary.hospital.geom_dist)}} m</span>
+              </v-tooltip>
+              <v-tooltip
                 v-if="poiSummary.school !== null"
                 bottom>
                 <template v-slot:activator="{ on }">
@@ -205,8 +222,8 @@ export default {
       return `${nStr} (${mostRecentDateStr})`;
     },
     hasPoisNearby() {
-      // TODO: expand this to multiple types of POIs
-      return this.poiSummary.school !== null;
+      const { hospital, school } = this.poiSummary;
+      return hospital !== null || school !== null;
     },
     numCountsText() {
       const n = ArrayStats.sum(
