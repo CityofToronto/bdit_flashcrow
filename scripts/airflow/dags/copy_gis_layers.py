@@ -22,6 +22,7 @@ TASKS = {
   'accessible_signal': ('cot_geospatial2', 4),
   'pedestrian_crossover': ('cot_geospatial2', 7),
   'traffic_signal': ('cot_geospatial2', 9),
+  'hospital': ('cot_geospatial10', 21),
   'toinview_program_point': ('cot_geospatial12', 46),
   'toinview_program_line': ('cot_geospatial12', 47),
   'toinview_program_polygon': ('cot_geospatial12', 48),
