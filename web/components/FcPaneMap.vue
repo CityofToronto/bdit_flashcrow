@@ -341,6 +341,8 @@ export default {
         layers.push(
           'collisionsLevel2',
           'collisionsLevel1',
+          'hospitalsLevel2',
+          'hospitalsLevel1',
           'schoolsLevel2',
           'schoolsLevel1',
         );

@@ -158,6 +158,18 @@ function getCentrelineDescription(feature, { location }) {
   return description;
 }
 
+async function getHospitalDetails() {
+  return null;
+}
+
+function getHospitalDescription(feature) {
+  return [feature.properties.name];
+}
+
+function getHospitalIcon() {
+  return 'mdi-hospital-box';
+}
+
 async function getSchoolDetails() {
   return null;
 }
@@ -180,6 +192,9 @@ async function getFeatureDetailsImpl(layerId, feature) {
   }
   if (layerId === 'counts') {
     return getCountDetails(feature);
+  }
+  if (layerId === 'hospitalsLevel2' || layerId === 'hospitalsLevel1') {
+    return getHospitalDetails(feature);
   }
   if (layerId === 'intersections') {
     return getCentrelineDetails(feature, CentrelineType.INTERSECTION);
@@ -205,6 +220,9 @@ function getFeatureDescription({ layerId, feature, details }) {
   if (layerId === 'counts') {
     return getCountDescription(feature, details);
   }
+  if (layerId === 'hospitalsLevel2' || layerId === 'hospitalsLevel1') {
+    return getHospitalDescription(feature, details);
+  }
   if (layerId === 'intersections' || layerId === 'midblocks') {
     return getCentrelineDescription(feature, details);
   }
@@ -217,6 +235,9 @@ function getFeatureDescription({ layerId, feature, details }) {
 function getFeatureIcon({ layerId, feature, details }) {
   if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
     return getCollisionIcon(feature, details);
+  }
+  if (layerId === 'hospitalsLevel2' || layerId === 'hospitalsLevel1') {
+    return getHospitalIcon(feature, details);
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolIcon(feature, details);
@@ -288,6 +309,9 @@ export default {
           return '1 Station';
         }
         return `${numArteryCodes} Stations`;
+      }
+      if (this.layerId === 'hospitalsLevel2' || this.layerId === 'hospitalsLevel1') {
+        return 'Hospital';
       }
       if (this.layerId === 'intersections') {
         return 'Intersection';
