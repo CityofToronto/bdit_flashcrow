@@ -129,7 +129,14 @@ export default {
     const bounds = BOUNDS_TORONTO;
 
     // marker
-    this.selectedMarker = new mapboxgl.Marker()
+    const $marker = document.createElement('div');
+    $marker.className = 'fc-pane-map-marker';
+
+    const markerOptions = {
+      anchor: 'bottom',
+      element: $marker,
+    };
+    this.selectedMarker = new mapboxgl.Marker(markerOptions)
       .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
@@ -515,6 +522,12 @@ export default {
     position: absolute;
     right: 54px;
     z-index: var(--z-index-controls);
+  }
+  .fc-pane-map-marker {
+    background-image: url('/icons/map/pin.png');
+    background-size: cover;
+    height: 40px;
+    width: 29px;
   }
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {
