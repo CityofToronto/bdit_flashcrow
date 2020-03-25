@@ -10,7 +10,7 @@
     <FcSearchBarLocation
       v-if="!drawerOpen" />
     <FcPaneMapLegend
-      v-model="legendOptions" />
+      v-model="internalLegendOptions" />
     <div class="pane-map-mode">
       <FcButton
         class="mr-2"
@@ -90,14 +90,6 @@ export default {
       featureKeyHoveredPopup: false,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
-      legendOptions: {
-        datesFrom: 3,
-        layers: {
-          counts: true,
-          collisions: true,
-          volume: true,
-        },
-      },
       loading: false,
       // keeps track of currently selected feature
       selectedFeature: null,
@@ -110,6 +102,14 @@ export default {
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
     },
+    internalLegendOptions: {
+      get() {
+        return this.legendOptions;
+      },
+      set(legendOptions) {
+        this.setLegendOptions(legendOptions);
+      },
+    },
     mapStyle() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
@@ -120,7 +120,7 @@ export default {
       };
       return GeoStyle.get(options);
     },
-    ...mapState(['drawerOpen', 'location']),
+    ...mapState(['drawerOpen', 'legendOptions', 'location']),
   },
   created() {
     this.map = null;
@@ -488,7 +488,7 @@ export default {
           .addTo(this.map);
       }
     },
-    ...mapMutations(['setDrawerOpen', 'setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLegendOptions', 'setLocation']),
   },
 };
 </script>
