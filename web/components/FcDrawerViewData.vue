@@ -19,13 +19,27 @@
           <v-row class="mt-5">
             <v-col cols="2">
               <div class="label mb-1">KSI</div>
-              <div class="display-2">
+              <v-progress-circular
+                v-if="loadingCollisions"
+                color="primary"
+                indeterminate
+                size="27" />
+              <div
+                v-else
+                class="display-2">
                 {{collisionSummary.ksi}}
               </div>
             </v-col>
             <v-col cols="2">
               <div class="label mb-1">Collisions</div>
-              <div class="display-2">
+              <v-progress-circular
+                v-if="loadingCollisions"
+                color="primary"
+                indeterminate
+                size="27" />
+              <div
+                v-else
+                class="display-2">
                 {{collisionSummary.total}}
               </div>
             </v-col>
@@ -194,6 +208,7 @@ export default {
         ksi: 0,
       },
       countSummary: [],
+      loadingCollisions: false,
       loadingCounts: false,
       poiSummary: {
         school: null,
@@ -235,7 +250,7 @@ export default {
       return `${n} total`;
     },
     ...mapState('viewData', ['filters']),
-    ...mapState(['auth', 'location']),
+    ...mapState(['auth', 'legendOptions', 'location']),
     ...mapGetters('viewData', ['filterChips', 'filterParams']),
     ...mapGetters(['locationFeatureType']),
   },
@@ -252,6 +267,27 @@ export default {
       );
       this.countSummary = countSummary;
       this.loadingCounts = false;
+    },
+    'legendOptions.datesFrom': async function legendOptionsDatesFrom() {
+      this.loadingCollisions = true;
+      const { datesFrom } = this.legendOptions;
+
+      const { centrelineId, centrelineType } = this.$route.params;
+      const now = DateTime.local();
+      const collisionsDateRange = {
+        start: now.minus({ years: datesFrom }),
+        end: now,
+      };
+      const collisionsFilters = {
+        ...collisionsDateRange,
+      };
+
+      const collisionSummary = await getCollisionsByCentrelineSummary(
+        { centrelineId, centrelineType },
+        collisionsFilters,
+      );
+      this.collisionSummary = collisionSummary;
+      this.loadingCollisions = false;
     },
     location(location, locationPrev) {
       if (location === null) {
@@ -303,10 +339,11 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
+      const { datesFrom } = this.legendOptions;
       const { centrelineId, centrelineType } = to.params;
       const now = DateTime.local();
       const collisionsDateRange = {
-        start: now.minus({ years: 1 }),
+        start: now.minus({ years: datesFrom }),
         end: now,
       };
       const collisionsFilters = {

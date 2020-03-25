@@ -29,6 +29,14 @@ export default new Vuex.Store({
     toast: null,
     // LOCATION
     location: null,
+    legendOptions: {
+      datesFrom: 3,
+      layers: {
+        counts: true,
+        collisions: true,
+        volume: true,
+      },
+    },
   },
   getters: {
     // AUTH / HELPERS STATE
@@ -67,6 +75,9 @@ export default new Vuex.Store({
     // LOCATION
     setLocation(state, location) {
       Vue.set(state, 'location', location);
+    },
+    setLegendOptions(state, legendOptions) {
+      Vue.set(state, 'legendOptions', legendOptions);
     },
   },
   actions: {
