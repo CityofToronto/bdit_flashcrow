@@ -3,7 +3,7 @@ WITH event_injury AS (
   SELECT i.collision_id, MAX(CONCAT('0', i.injury)::int) AS injury
   FROM collisions.events e
   JOIN collisions.involved i ON e.collision_id = i.collision_id
-  WHERE e.accdate >= now() - interval '1 year'
+  WHERE e.accdate >= now() - interval :datesFromInterval
   GROUP BY i.collision_id
 ),
 features AS (
