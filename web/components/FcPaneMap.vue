@@ -111,11 +111,12 @@ export default {
       return getFeatureKey(this.selectedFeature);
     },
     mapStyle() {
-      const { aerial } = this;
+      const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
       const options = {
         aerial,
         dark,
+        ...legendOptions,
       };
       return GeoStyle.get(options);
     },
