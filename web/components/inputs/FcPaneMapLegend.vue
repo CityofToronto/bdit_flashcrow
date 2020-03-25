@@ -7,38 +7,34 @@
         hide-details
         :items="itemsDatesFrom"></v-select>
       <h2 class="headline mt-6">Legend</h2>
-      <div class="align-center d-flex my-3">
-        <div class="icon-layer-counts mr-5"></div>
-        <div class="body-1 flex-grow-1 mt-1">Studies</div>
-        <v-checkbox
-          v-model="internalValue.layers.counts"
-          class="mt-0"
-          color="secondary"
-          hide-details
-          off-icon="mdi-eye-off"
-          on-icon="mdi-eye"></v-checkbox>
-      </div>
-      <div class="align-center d-flex my-3">
-        <div class="icon-layer-collisions mr-5"></div>
-        <div class="body-1 flex-grow-1 mt-1">Collisions</div>
-        <v-checkbox
-          v-model="internalValue.layers.collisions"
-          class="mt-0"
-          color="secondary"
-          hide-details
-          off-icon="mdi-eye-off"
-          on-icon="mdi-eye"></v-checkbox>
-      </div>
-      <div class="align-center d-flex my-3">
-        <div class="icon-layer-volume mr-5"></div>
-        <div class="body-1 flex-grow-1 mt-1">Volume</div>
-        <v-checkbox
-          v-model="internalValue.layers.volume"
-          class="mt-0"
-          color="secondary"
-          hide-details
-          off-icon="mdi-eye-off"
-          on-icon="mdi-eye"></v-checkbox>
+      <div
+        v-for="layer in layers"
+        :key="layer.value"
+        class="align-center d-flex my-3">
+        <div
+          :class="'icon-layer-' + layer.value"
+          class="mr-5"></div>
+        <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
+        <v-tooltip left>
+          <template v-slot:activator="{ on }">
+            <v-checkbox
+              v-model="internalValue.layers[layer.value]"
+              class="mt-0"
+              color="secondary"
+              hide-details
+              off-icon="mdi-eye-off"
+              on-icon="mdi-eye"
+              v-on="on"></v-checkbox>
+          </template>
+          <span>
+            <span v-if="internalValue.layers[layer.value]">
+              Hide {{layer.text}}
+            </span>
+            <span v-else>
+              Show {{layer.text}}
+            </span>
+          </span>
+        </v-tooltip>
       </div>
     </v-card-text>
   </v-card>
@@ -57,8 +53,14 @@ export default {
       { text: 'Last 5 years', value: 5 },
       { text: 'Last 10 years', value: 10 },
     ];
+    const layers = [
+      { text: 'Studies', value: 'counts' },
+      { text: 'Collisions', value: 'collisions' },
+      { text: 'Volume', value: 'volume' },
+    ];
     return {
       itemsDatesFrom,
+      layers,
     };
   },
 };
