@@ -24,6 +24,16 @@
         {{ aerial ? 'Map' : 'Aerial' }}
       </FcButton>
     </div>
+    <div
+      v-if="location !== null"
+      class="pane-map-navigate">
+      <FcButton
+        class="px-0 py-1"
+        type="fab-text"
+        @click="easeToLocation(location, null)">
+        <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
+      </FcButton>
+    </div>
     <FcPaneMapPopup
       v-if="hoveredFeature
         && featureKeyHovered !== featureKeySelected
@@ -63,6 +73,10 @@ function getFeatureKey(feature) {
     return null;
   }
   const { layer: { id: layerId }, id } = feature;
+  if (layerId === 'counts' || layerId === 'intersections' || layerId === 'midblocks') {
+    const { centrelineType, centrelineId } = feature.properties;
+    return `c:${centrelineType}:${centrelineId}`;
+  }
   return `${layerId}:${id}`;
 }
 
@@ -520,8 +534,18 @@ export default {
   & > .pane-map-mode {
     bottom: 35px;
     position: absolute;
-    right: 54px;
+    right: 58px;
     z-index: var(--z-index-controls);
+  }
+  & > .pane-map-navigate {
+    bottom: 102px;
+    position: absolute;
+    right: 20px;
+    z-index: var(--z-index-controls);
+    & > .fc-button {
+      min-width: 30px;
+      width: 30px;
+    }
   }
   .fc-pane-map-marker {
     background-image: url('/icons/map/pin.png');
@@ -533,7 +557,7 @@ export default {
     & > .mapboxgl-ctrl-group {
       bottom: 25px;
       position: absolute;
-      right: 6px;
+      right: 10px;
     }
     & > .mapboxgl-ctrl-scale {
       border-color: #272727;
@@ -543,17 +567,17 @@ export default {
       height: 17px;
       line-height: 0.875rem;
       position: absolute;
-      right: 170px;
+      right: 174px;
     }
     & > .mapboxgl-ctrl-attrib {
       bottom: 10px;
       color: #272727;
       font-size: 0.75rem;
       line-height: 0.875rem;
-      padding: 2px 5px;
+      padding: 2px;
       position: absolute;
-      right: 5px;
-      width: 170px;
+      right: 19px;
+      width: 160px;
       & a {
         color: #272727;
       }

@@ -155,6 +155,16 @@ function getCentrelineDescription(feature, { location }) {
     description.push(locationFeatureType.description);
   }
 
+  const { centrelineType } = feature.properties;
+  if (centrelineType === CentrelineType.SEGMENT) {
+    let { aadt } = feature.properties;
+    if (aadt !== null) {
+      aadt = Math.round(aadt);
+      aadt = `AADT (est. 2018): ${aadt}`;
+      description.push(aadt);
+    }
+  }
+
   return description;
 }
 
