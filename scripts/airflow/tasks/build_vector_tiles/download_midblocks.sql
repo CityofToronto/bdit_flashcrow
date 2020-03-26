@@ -1,13 +1,15 @@
 COPY (
 WITH features AS (
   SELECT
-    gid AS "id",
-    geom,
-    geo_id AS "centrelineId",
+    gc.gid AS "id",
+    gc.geom,
+    gc.geo_id AS "centrelineId",
     1 AS "centrelineType",
-    lf_name AS "name",
-    fcode AS "featureCode"
-  FROM gis.centreline
+    gc.lf_name AS "name",
+    gc.fcode AS "featureCode",
+    pva.aadt
+  FROM gis.centreline gc
+  LEFT JOIN prj_volume.aadt pva ON gc.geo_id = pva.centreline_id
 ),
 geojson_features AS (
   SELECT jsonb_build_object(
