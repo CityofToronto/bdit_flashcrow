@@ -63,6 +63,10 @@ function getFeatureKey(feature) {
     return null;
   }
   const { layer: { id: layerId }, id } = feature;
+  if (layerId === 'counts' || layerId === 'intersections' || layerId === 'midblocks') {
+    const { centrelineType, centrelineId } = feature.properties;
+    return `c:${centrelineType}:${centrelineId}`;
+  }
   return `${layerId}:${id}`;
 }
 
