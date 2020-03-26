@@ -18,6 +18,23 @@ const cssColorValues = {
 };
 CssColor.init(cssColorValues);
 
+class GetterTest extends Enum {
+  get plusOne() {
+    return this.x + 1;
+  }
+}
+const getterTestValues = {
+  ONE: {
+    x: 1,
+    get other() { return GetterTest.TWO; },
+  },
+  TWO: {
+    x: 2,
+    get other() { return GetterTest.ONE; },
+  },
+};
+GetterTest.init(getterTestValues);
+
 class NotAnEnum {}
 
 test('Enum non-tamperable', () => {
@@ -77,4 +94,10 @@ test('Enum enumValues', () => {
   expect(() => {
     CssColor.enumValueOf(1729, 'invalidProp');
   }).toThrow();
+});
+
+test('Enum with getters', () => {
+  expect(GetterTest.ONE).toBe(GetterTest.ONE);
+  expect(GetterTest.ONE.plusOne).toBe(2);
+  expect(GetterTest.TWO.other).toBe(GetterTest.ONE);
 });
