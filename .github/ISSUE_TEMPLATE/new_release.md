@@ -9,8 +9,8 @@ assignees: candu
 
 **Release Checklist**
 
-- [ ] `ci:jest-coverage` passes
-- [ ] `npm outdated` red dependencies are updated
+- [ ] `npm run ci:jest-coverage` passes
+- [ ] `npm run ci:npm-outdated` passes
 - [ ] `npm audit` passes
 - [ ] `npm run build` completes successfully
 - [ ] manually tested in all supported browsers
