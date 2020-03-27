@@ -217,6 +217,11 @@ export default {
     drawerOpen() {
       Vue.nextTick(() => {
         this.map.resize();
+        this.map.once('resize', () => {
+          if (this.location !== null) {
+            this.easeToLocation(this.location, null);
+          }
+        });
       });
     },
     hoveredFeature: debounce(function watchHoveredFeature() {
