@@ -124,15 +124,17 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
-    mapStyle() {
+    mapOptions() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
-      const options = {
+      return {
         aerial,
         dark,
         ...legendOptions,
       };
-      return GeoStyle.get(options);
+    },
+    mapStyle() {
+      return GeoStyle.get(this.mapOptions);
     },
     ...mapState(['drawerOpen', 'legendOptions', 'location']),
   },

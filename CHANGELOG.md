@@ -4,16 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.3] - 2019-03-12
+## [0.4.0] - 2020-03-27
+### Fixed
+- CHANGELOG entries for MOVE versions 0.3.0+ now have correct release dates
+
+### Changed
+- Map layer styles updated for greater visibility / contrast
+- Map text labels added in Aerial mode
+
+### Added
+- AADT volume layer based on 2018 estimates
+- 1, 3, 5, 10-year layers for collisions and counts
+- Map legend with time range selection and layer toggle controls
+- Points of interest: hospitals
+
+## [0.3.3] - 2020-03-12
 ### Changed
 - Colour contrast now WCAG 2.0 AA compliant
 
-## [0.3.2] - 2019-03-04
+## [0.3.2] - 2020-03-04
 ### Changed
 - Several fixes to map navigation, popups, and drawer integration
 - MOVE icon now links to View Map page
 
-## [0.3.1] - 2019-03-02
+## [0.3.1] - 2020-03-02
 ### Changed
 - Data pipelines are now zero-downtime
 - Initial a11y sweep (except for colour contrast, coming soon!)
@@ -22,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Domain-aware configuration on AWS
 
-## [0.3.0] - 2019-02-21
+## [0.3.0] - 2020-02-21
 ### Changed
 - Revamped frontend based on Material Design / Vuetify
 - Changed CSS preprocessor from PostCSS to SASS

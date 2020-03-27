@@ -84,6 +84,9 @@ export default {
 <style lang="scss">
 .fc-search-bar-location {
   width: 392px;
+  &.v-select .v-input__append-inner .v-input__icon--append .v-icon {
+    margin-top: 0;
+  }
   &.v-select.v-select--is-menu-active .v-input__icon--append .v-icon {
     transform: none;
   }

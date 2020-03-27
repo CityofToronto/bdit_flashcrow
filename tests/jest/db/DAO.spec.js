@@ -86,7 +86,7 @@ test('ArteryDAO.byArteryCode', async () => {
     centrelineType: CentrelineType.SEGMENT,
     geom: {
       type: 'Point',
-      coordinates: [-79.2289101129868, 43.7396537576817],
+      coordinates: [-79.2289317526363, 43.7396311942705],
     },
     locationDesc: 'ADANAC DR E/B W OF BELLAMY RD',
     stationCode: '1',

@@ -1,0 +1,6 @@
+{
+  "error-level": 2,
+  "reject": [
+    "openid-client"
+  ]
+}

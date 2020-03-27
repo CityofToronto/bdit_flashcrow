@@ -157,7 +157,7 @@ function getCentrelineDescription(feature, { location }) {
 
   const { centrelineType } = feature.properties;
   if (centrelineType === CentrelineType.SEGMENT) {
-    let { aadt } = feature.properties;
+    let { aadt = null } = feature.properties;
     if (aadt !== null) {
       aadt = Math.round(aadt);
       aadt = `AADT (est. 2018): ${aadt}`;
@@ -188,12 +188,8 @@ function getSchoolDescription(feature) {
   return [feature.properties.name];
 }
 
-function getSchoolIcon(feature) {
-  const { schoolType } = feature.properties;
-  if (schoolType === 'U' || schoolType === 'C') {
-    return 'mdi-school';
-  }
-  return 'mdi-teach';
+function getSchoolIcon() {
+  return 'mdi-school';
 }
 
 async function getFeatureDetailsImpl(layerId, feature) {
