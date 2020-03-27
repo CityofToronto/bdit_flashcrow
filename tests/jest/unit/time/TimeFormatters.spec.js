@@ -73,6 +73,12 @@ test('TimeFormatters.formatTimeOfDay()', () => {
   expect(TimeFormatters.formatTimeOfDay(t)).toEqual('01:23');
 });
 
+test('TimeFormatters.formatRangeTimeOfDay()', () => {
+  const start = DateTime.fromSQL('1986-07-31 21:16:00');
+  const end = DateTime.fromSQL('1986-07-31 22:16:00');
+  expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('21:16\u201322:16');
+});
+
 test('TimeFormatters.formatYearMonth()', () => {
   let t = null;
   expect(TimeFormatters.formatYearMonth(t)).toEqual('');
