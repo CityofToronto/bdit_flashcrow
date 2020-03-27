@@ -10,7 +10,7 @@ assignees: candu
 **Release Checklist**
 
 - [ ] `npm run ci:jest-coverage` passes
-- [ ] `npm run ci:npm-outdated` passes (use `npx ncu -u && npm install` to address issues)
+- [ ] `npm run ci:npm-outdated` passes (use `npx ncu -u`, `npm install`, and `npm update` as needed to address issues)
 - [ ] `npm run ci:npm-audit` passes (use `npx resolve-audit` to address issues)
 - [ ] `npm run build` passes
 - [ ] manually tested in all supported browsers
