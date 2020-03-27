@@ -16,7 +16,10 @@ git pull
 npx npm-run-all ci:*
 
 # attempt to build frontend
-npm run build
+npm run frontend:build
+
+# attempt to build docs
+npm run docs:build
 
 # notify prj_move on Slack
 CURRENT_REVISION=$(git rev-parse HEAD)
