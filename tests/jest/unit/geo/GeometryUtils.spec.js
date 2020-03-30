@@ -2,6 +2,7 @@ import { CardinalDirection } from '@/lib/Constants';
 import {
   getBearingDifference,
   getDirectionCandidatesFrom,
+  getGeometryMidpoint,
   getGreatCircleBearing,
   getLineStringBearingFrom,
   getLineStringMidpoint,
@@ -57,6 +58,40 @@ test('GeometryUtils.getDirectionCandidatesFrom', () => {
   expect(candidates.get(CardinalDirection.SOUTH)).toBe(0);
 });
 
+test('GeometryUtils.getGeometryMidpoint', () => {
+  let feature = {
+    coordinates: [0, 1],
+    type: 'Point',
+  };
+  expect(getGeometryMidpoint(feature)).toEqual(feature.coordinates);
+
+  feature = {
+    coordinates: [[0, 1], [3, 5]],
+    type: 'LineString',
+  };
+  expect(getGeometryMidpoint(feature)).toEqual([1.5, 3]);
+
+  feature = {
+    coordinates: [
+      [[0, 1], [3, 5]],
+      [[5, 4], [4, 2]],
+    ],
+    type: 'MultiLineString',
+  };
+  expect(getGeometryMidpoint(feature)).toEqual([3, 3]);
+
+  feature = {
+    coordinates: [
+      [[0, 1], [3, 5]],
+      [[5, 4], [4, 2]],
+    ],
+    type: 'Polygon',
+  };
+  expect(() => {
+    getGeometryMidpoint(feature);
+  }).toThrow();
+});
+
 test('GeometryUtils.getGreatCircleBearing', () => {
   // raw cardinal directions
   expect(getGreatCircleBearing([0, 0], [0, 1])).toBeCloseTo(0);
@@ -75,6 +110,22 @@ test('GeometryUtils.getGreatCircleBearing', () => {
 });
 
 test('GeometryUtils.getLineStringBearingFrom', () => {
+  expect(() => {
+    getLineStringBearingFrom(
+      [LOCATION_703_DM],
+      LOCATION_703_DM,
+    );
+  }).toThrow();
+
+  expect(getLineStringBearingFrom(
+    [LOCATION_CITY_HALL, [0, 0]],
+    LOCATION_703_DM,
+  )).toBeNull();
+  expect(getLineStringBearingFrom(
+    [LOCATION_CITY_HALL, LOCATION_703_DM, [0, 0]],
+    LOCATION_703_DM,
+  )).toBeNull();
+
   expect(getLineStringBearingFrom(
     [LOCATION_703_DM, LOCATION_CITY_HALL],
     LOCATION_703_DM,

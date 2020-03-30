@@ -31,7 +31,7 @@ npm install
 pip install -r requirements.txt
 
 # build static files into dist
-npm run build
+npm run frontend:build
 
 # copy to web root
 sudo rm -r $WEB_ROOT
@@ -39,6 +39,7 @@ sudo cp -r dist $WEB_ROOT
 
 # update database
 . "$HOME/psqlArgs.config"
+# shellcheck disable=SC2154
 "$GIT_ROOT/scripts/db/db-update.sh" --psqlArgs "$psqlArgs"
 
 # start application again

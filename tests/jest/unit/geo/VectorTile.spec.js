@@ -1,4 +1,5 @@
 import VectorTile from '@/lib/geo/VectorTile';
+import DateTime from '@/lib/time/DateTime';
 
 test('VectorTile.Utils', () => {
   const p = [17, -42];
@@ -12,22 +13,29 @@ test('VectorTile.Utils', () => {
     { x: q[0], y: q[1] },
     { x: r[0], y: r[1] },
   ]]);
+
+  expect(() => {
+    VectorTile.Utils.coordinatesToGeometry(-1, [p, q, r]);
+  }).toThrow();
 });
 
 
 test('VectorTile.Feature', () => {
+  const createdAt = DateTime.local();
   let featureOptions = {
     id: 1729,
     geom: {
       type: 'Point',
       coordinates: [17, -42],
     },
+    createdAt,
     foo: 'bar',
     quux: false,
   };
   let feature = new VectorTile.Feature(featureOptions);
   expect(feature.id).toEqual(featureOptions.id);
   expect(feature.properties).toEqual({
+    createdAt: createdAt.toJSON(),
     foo: 'bar',
     quux: false,
   });

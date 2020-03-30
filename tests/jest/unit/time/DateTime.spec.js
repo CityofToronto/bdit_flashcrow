@@ -62,3 +62,12 @@ test('DateTime [JSON parsing]', () => {
     expect(dt.equals(dt2)).toBe(true);
   }
 });
+
+test('DateTime [string parsing]', () => {
+  for (let i = 0; i < 100; i++) {
+    const t = Random.range(TIME_MIN, TIME_MAX);
+    const dt = DateTime.fromMillis(t);
+    const dt2 = DateTime.fromString(dt.toString());
+    expect(dt.equals(dt2)).toBe(true);
+  }
+});
