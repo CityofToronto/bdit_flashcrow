@@ -28,7 +28,7 @@
       v-if="location !== null"
       class="pane-map-navigate">
       <FcButton
-        class="px-0 py-1"
+        class="pa-0"
         type="fab-text"
         @click="easeToLocation(location, null)">
         <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
@@ -42,7 +42,9 @@
       :feature="hoveredFeature"
       :hovered="true" />
     <FcPaneMapPopup
-      v-if="!drawerOpen && selectedFeature"
+      v-if="selectedFeature
+        && !drawerOpen
+        && $route.name !== 'viewReportsAtLocation'"
       :key="'s:' + featureKeySelected"
       :feature="selectedFeature"
       :hovered="false" />
@@ -521,7 +523,7 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .fc-search-bar-location {
+  & > .fc-search-bar-location-wrapper {
     left: 20px;
     top: 20px;
     position: absolute;
@@ -545,6 +547,7 @@ export default {
     right: 20px;
     z-index: var(--z-index-controls);
     & > .fc-button {
+      height: 32px;
       min-width: 30px;
       width: 30px;
     }
@@ -558,8 +561,17 @@ export default {
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {
       bottom: 25px;
+      box-shadow:
+        0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
       position: absolute;
       right: 10px;
+      & > button {
+        transition-duration: 0.28s;
+        transition-property: background-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
     }
     & > .mapboxgl-ctrl-scale {
       border-color: #272727;

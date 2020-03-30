@@ -30,6 +30,7 @@ const BUTTON_ATTRS = {
   },
   'fab-text': {
     class: 'elevation-2',
+    color: 'white',
   },
   icon: {
     icon: true,
