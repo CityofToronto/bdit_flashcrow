@@ -269,7 +269,7 @@ export default {
       });
     },
   },
-  validations: ValidationsStudyRequest.validations,
+  validations: ValidationsStudyRequest,
   methods: {
     actionAddStudy(studyType) {
       const item = makeStudy(studyType);

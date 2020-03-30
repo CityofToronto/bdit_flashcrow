@@ -7,11 +7,11 @@
       </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-4 mt-5">
-          <span v-if="closed">Closed Requests</span>
-          <span v-else>Open Requests</span>
+        <h1 class="display-3 mt-5">
+          <span v-if="closed">My Closed Requests</span>
+          <span v-else>My Requests</span>
         </h1>
-        <div class="align-center d-flex mt-8 mb-2">
+        <div class="align-center d-flex mt-6 mb-2">
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
