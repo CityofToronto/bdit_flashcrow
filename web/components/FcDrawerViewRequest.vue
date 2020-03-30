@@ -5,7 +5,7 @@
         type="secondary"
         @click="actionNavigateBack">
         <v-icon left>mdi-chevron-left</v-icon>
-        Requests
+        {{labelNavigateBack}}
       </FcButton>
       <h1 class="flex-grow-1 headline text-center">
         <span>
@@ -83,6 +83,7 @@ export default {
   },
   data() {
     return {
+      prevRoute: null,
       studyRequest: null,
       studyRequestComments: [],
       studyRequestUsers: new Map(),
@@ -91,6 +92,24 @@ export default {
   computed: {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    },
+    labelNavigateBack() {
+      const { name } = this.prevRouteNormalized;
+      if (name === 'viewDataAtLocation') {
+        return 'View Data';
+      }
+      return 'Requests';
+    },
+    prevRouteNormalized() {
+      const { prevRoute } = this;
+      if (prevRoute === null) {
+        return { name: 'requestsTrack' };
+      }
+      const { name } = prevRoute;
+      if (name === 'viewDataAtLocation') {
+        return prevRoute;
+      }
+      return { name: 'requestsTrack' };
     },
     subtitle() {
       if (this.location === null) {
@@ -103,6 +122,12 @@ export default {
       return `Request #${id}`;
     },
     ...mapState(['auth', 'location']),
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      /* eslint-disable-next-line no-param-reassign */
+      vm.prevRoute = from;
+    });
   },
   methods: {
     actionEdit() {
@@ -117,7 +142,7 @@ export default {
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const route = { name: 'requestsTrack' };
+      const route = this.prevRouteNormalized;
       if (this.isSupervisor) {
         route.query = { isSupervisor: true };
       }

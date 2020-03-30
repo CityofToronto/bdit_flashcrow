@@ -159,7 +159,7 @@ function getCentrelineDescription(feature, { location }) {
   if (centrelineType === CentrelineType.SEGMENT) {
     let { aadt = null } = feature.properties;
     if (aadt !== null) {
-      aadt = Math.round(aadt);
+      aadt = 100 * Math.round(aadt / 100);
       aadt = `AADT (est. 2018): ${aadt}`;
       description.push(aadt);
     }

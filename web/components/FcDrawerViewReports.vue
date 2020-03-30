@@ -30,14 +30,29 @@
             </v-chip>
           </div>
           <v-spacer></v-spacer>
-          <v-overflow-btn
-            v-model="indexActiveCount"
-            class="fc-select-active-count flex-grow-0 mt-0"
-            dense
-            hide-details
-            :items="itemsCounts"
-            :label="labelActiveCount">
-          </v-overflow-btn>
+          <v-menu>
+            <template v-slot:activator="{ on, attrs }">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0"
+                type="secondary">
+                <v-icon color="primary" left>mdi-history</v-icon>
+                {{labelActiveCount}}
+                <v-icon>mdi-menu-down</v-icon>
+              </FcButton>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="{ text, value } in itemsCounts"
+                :key="value"
+                @click="indexActiveCount = value">
+                <v-list-item-title>
+                  {{text}}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
 
         <v-tabs v-model="indexActiveReportType">
@@ -360,10 +375,6 @@ export default {
 <style lang="scss">
 .fc-drawer-view-reports {
   max-height: 50vh;
-
-  .fc-select-active-count {
-    width: 250px;
-  }
 
   .fc-report-wrapper {
     position: relative;
