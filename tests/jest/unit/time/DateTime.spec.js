@@ -4,7 +4,7 @@ import Random from '@/lib/Random';
 import DateTime from '@/lib/time/DateTime';
 
 const TIME_MIN = 0;
-const TIME_MAX = new Date().valueOf();
+const TIME_MAX = 1500000000000;
 
 test('DateTime.local', () => {
   const dt = DateTime.local();
