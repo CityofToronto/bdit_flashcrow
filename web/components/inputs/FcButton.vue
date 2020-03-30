@@ -52,6 +52,7 @@ export default {
 <style lang="scss">
 button.fc-button.v-btn.secondary--text {
   background-color: white;
+  border-color: #e0e0e0;
   & > .v-btn__content {
     color: var(--v-default-base);
   }

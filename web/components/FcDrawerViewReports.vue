@@ -7,12 +7,12 @@
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
           <FcButton
-            aria-label="Back"
-            type="icon"
+            type="secondary"
             @click="actionNavigateBack">
-            <v-icon>mdi-chevron-left</v-icon>
+            <v-icon left>mdi-chevron-left</v-icon>
+            View Data
           </FcButton>
-          <h1 class="headline">{{studyType.label}}</h1>
+          <h1 class="headline ml-4">{{studyType.label}}</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
             <span>&#x2022; {{location.description}}</span>

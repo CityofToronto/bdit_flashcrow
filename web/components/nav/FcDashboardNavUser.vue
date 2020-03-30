@@ -61,6 +61,7 @@ import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
   name: 'FcDashboardNavUser',
@@ -74,6 +75,7 @@ export default {
   methods: {
     actionSignIn() {
       Vue.nextTick(() => {
+        saveLoginState(this.$route);
         this.$refs.formSignIn.submit();
       });
     },

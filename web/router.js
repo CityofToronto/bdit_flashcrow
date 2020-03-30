@@ -2,10 +2,9 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/web/store';
+import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
 Vue.use(Router);
-
-const STORAGE_KEY_LOGIN_STATE = 'ca.toronto.move.loginState';
 
 const router = new Router({
   mode: 'history',
@@ -140,32 +139,6 @@ function routeMetaKey(to, key, defaultValue) {
     return defaultValue;
   }
   return routeWithKey.meta[key];
-}
-
-function restoreLoginState(next) {
-  const loginState = window.sessionStorage.getItem(STORAGE_KEY_LOGIN_STATE);
-  if (loginState === null) {
-    return false;
-  }
-  window.sessionStorage.removeItem(STORAGE_KEY_LOGIN_STATE);
-  try {
-    const { location, name, params } = JSON.parse(loginState);
-    store.commit('setLocation', location);
-    next({ name, params });
-    return true;
-  } catch (err) {
-    if (err instanceof SyntaxError) {
-      return false;
-    }
-    throw err;
-  }
-}
-
-function saveLoginState(to) {
-  const { location } = store.state;
-  const { name, params = {} } = to;
-  const loginState = JSON.stringify({ location, name, params });
-  window.sessionStorage.setItem(STORAGE_KEY_LOGIN_STATE, loginState);
 }
 
 router.beforeEach(async (to, from, next) => {
