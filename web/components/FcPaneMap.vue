@@ -2,52 +2,57 @@
   <div
     class="fill-height pane-map"
     @mouseleave="clearHoveredFeature">
-    <div class="pane-map-progress">
-      <v-progress-linear
-        :active="loading"
-        indeterminate />
-    </div>
-    <FcSearchBarLocation
-      v-if="!drawerOpen" />
-    <FcPaneMapLegend
-      v-model="internalLegendOptions" />
-    <div class="pane-map-mode">
-      <FcButton
-        class="mr-2"
-        type="fab-text"
-        @click="openGoogleMaps">
-        Street View
-      </FcButton>
-      <FcButton
-        type="fab-text"
-        @click="aerial = !aerial">
-        {{ aerial ? 'Map' : 'Aerial' }}
-      </FcButton>
-    </div>
+    <template v-if="!background">
+      <div class="pane-map-progress">
+        <v-progress-linear
+          :active="loading"
+          indeterminate />
+      </div>
+      <FcSearchBarLocation
+        v-if="!drawerOpen" />
+      <FcPaneMapLegend
+        v-model="internalLegendOptions" />
+      <div class="pane-map-mode">
+        <FcButton
+          class="mr-2"
+          type="fab-text"
+          @click="openGoogleMaps">
+          Street View
+        </FcButton>
+        <FcButton
+          type="fab-text"
+          @click="aerial = !aerial">
+          {{ aerial ? 'Map' : 'Aerial' }}
+        </FcButton>
+      </div>
+      <div
+        v-if="location !== null"
+        class="pane-map-navigate">
+        <FcButton
+          class="pa-0"
+          type="fab-text"
+          @click="easeToLocation(location, null)">
+          <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
+        </FcButton>
+      </div>
+      <FcPaneMapPopup
+        v-if="hoveredFeature
+          && featureKeyHovered !== featureKeySelected
+          && featureKeyHovered === featureKeyHoveredPopup"
+        :key="'h:' + featureKeyHovered"
+        :feature="hoveredFeature"
+        :hovered="true" />
+      <FcPaneMapPopup
+        v-if="selectedFeature
+          && !drawerOpen
+          && $route.name !== 'viewReportsAtLocation'"
+        :key="'s:' + featureKeySelected"
+        :feature="selectedFeature"
+        :hovered="false" />
+    </template>
     <div
-      v-if="location !== null"
-      class="pane-map-navigate">
-      <FcButton
-        class="pa-0"
-        type="fab-text"
-        @click="easeToLocation(location, null)">
-        <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
-      </FcButton>
-    </div>
-    <FcPaneMapPopup
-      v-if="hoveredFeature
-        && featureKeyHovered !== featureKeySelected
-        && featureKeyHovered === featureKeyHoveredPopup"
-      :key="'h:' + featureKeyHovered"
-      :feature="hoveredFeature"
-      :hovered="true" />
-    <FcPaneMapPopup
-      v-if="selectedFeature
-        && !drawerOpen
-        && $route.name !== 'viewReportsAtLocation'"
-      :key="'s:' + featureKeySelected"
-      :feature="selectedFeature"
-      :hovered="false" />
+      v-else
+      class="pane-map-background-overlay"></div>
   </div>
 </template>
 
@@ -97,6 +102,12 @@ export default {
         return self.map;
       },
     };
+  },
+  props: {
+    background: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -596,6 +607,15 @@ export default {
         color: #272727;
       }
     }
+  }
+  & > .pane-map-background-overlay {
+    background-color: rgba(39, 39, 39, 0.4);
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: calc(var(--z-index-controls) - 1);
   }
 }
 </style>
