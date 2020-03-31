@@ -169,12 +169,18 @@
               </FcButton>
             </template>
 
-            <FcButton
-              :aria-label="'View Request #' + item.id"
-              type="icon"
-              @click="actionShowRequest(item)">
-              <v-icon>mdi-file-eye</v-icon>
-            </FcButton>
+            <v-tooltip left>
+              <template v-slot:activator="{ on }">
+                <FcButton
+                  :aria-label="'View Request #' + item.id"
+                  type="icon"
+                  @click="actionShowRequest(item)"
+                  v-on="on">
+                  <v-icon>mdi-file-eye</v-icon>
+                </FcButton>
+              </template>
+              <span>View Request #{{item.id}}</span>
+            </v-tooltip>
           </div>
         </template>
       </FcDataTable>

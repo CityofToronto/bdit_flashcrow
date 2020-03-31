@@ -28,12 +28,22 @@
         </v-list-item>
       </template>
     </v-autocomplete>
-    <FcButton
+    <v-tooltip
       v-else
-      class="fc-search-bar-open"
-      type="fab-text">
-      <v-icon>mdi-magnify</v-icon>
-    </FcButton>
+      right
+      :z-index="100">
+      <template v-slot:activator="{ on }">
+        <FcButton
+          aria-label="Search for new location"
+          class="fc-search-bar-open"
+          type="fab-text"
+          @click="actionOpenSearch()"
+          v-on="on">
+          <v-icon>mdi-magnify</v-icon>
+        </FcButton>
+      </template>
+      <span>Search for new location</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -89,6 +99,9 @@ export default {
     },
   },
   methods: {
+    actionOpenSearch() {
+      // TODO: implement this
+    },
     ...mapMutations(['setLocation']),
   },
 };

@@ -28,12 +28,21 @@
       <div
         v-if="location !== null"
         class="pane-map-navigate">
-        <FcButton
-          class="pa-0"
-          type="fab-text"
-          @click="easeToLocation(location, null)">
-          <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
-        </FcButton>
+        <v-tooltip
+          left
+          :z-index="100">
+          <template v-slot:activator="{ on }">
+            <FcButton
+              aria-label="Recenter location"
+              class="pa-0"
+              type="fab-text"
+              @click="easeToLocation(location, null)"
+              v-on="on">
+              <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
+            </FcButton>
+          </template>
+          <span>Recenter location</span>
+        </v-tooltip>
       </div>
       <FcPaneMapPopup
         v-if="hoveredFeature
