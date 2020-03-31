@@ -25,6 +25,8 @@ export default new Vuex.Store({
     },
     now: DateTime.local(),
     // TOP-LEVEL UI
+    alert: null,
+    alertData: {},
     drawerOpen: false,
     toast: null,
     // LOCATION
@@ -63,11 +65,19 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     // TOP-LEVEL UI
-    setDrawerOpen(state, drawerOpen) {
-      Vue.set(state, 'drawerOpen', drawerOpen);
+    clearAlert(state) {
+      Vue.set(state, 'alert', null);
+      Vue.set(state, 'alertData', {});
     },
     clearToast(state) {
       Vue.set(state, 'toast', null);
+    },
+    setAlert(state, { alert, alertData = {} }) {
+      Vue.set(state, 'alert', alert);
+      Vue.set(state, 'alertData', alertData);
+    },
+    setDrawerOpen(state, drawerOpen) {
+      Vue.set(state, 'drawerOpen', drawerOpen);
     },
     setToast(state, toast) {
       Vue.set(state, 'toast', toast);
@@ -92,27 +102,31 @@ export default new Vuex.Store({
       commit('setAuth', auth);
       return auth;
     },
-    // TOP-LEVEL UI
-    async setToast({ commit }, toast) {
-      commit('setToast', toast);
-      return toast;
-    },
     // STUDY REQUESTS
     async saveStudyRequest({ state, commit }, { isSupervisor, studyRequest }) {
+      const { id, urgent } = studyRequest;
+      const update = id !== undefined;
+      if (urgent) {
+        commit('setAlert', {
+          alert: 'StudyRequestUrgent',
+          alertData: { update },
+        });
+      } else {
+        const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
+        commit('setToast', toast);
+      }
+
       const data = studyRequest;
-      const update = data.id !== undefined;
       if (update && isSupervisor) {
         data.isSupervisor = true;
       }
       const method = update ? 'PUT' : 'POST';
-      const url = update ? `/requests/study/${data.id}` : '/requests/study';
+      const url = update ? `/requests/study/${id}` : '/requests/study';
       const options = {
         method,
         csrf: state.auth.csrf,
         data,
       };
-      const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
-      commit('setToast', toast);
       return apiFetch(url, options);
     },
   },

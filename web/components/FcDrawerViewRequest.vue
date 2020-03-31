@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import {
   getStudyRequest,
@@ -167,7 +167,6 @@ export default {
     onDeleteComment(i) {
       this.studyRequestComments.splice(i, 1);
     },
-    ...mapActions(['setToast']),
     ...mapMutations(['setLocation']),
   },
 };

@@ -456,7 +456,6 @@ export default {
     },
     ...mapActions([
       'saveStudyRequest',
-      'setToast',
     ]),
   },
 };

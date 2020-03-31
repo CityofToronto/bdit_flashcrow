@@ -207,7 +207,7 @@ router.onError((err) => {
   const { currentRoute } = router;
   const toast = onErrorShowToast(err, currentRoute);
   if (toast) {
-    store.dispatch('setToast', toast);
+    store.commit('setToast', toast);
   }
 });
 
