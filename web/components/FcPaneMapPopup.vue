@@ -362,17 +362,13 @@ export default {
     this.popup.remove();
   },
   methods: {
-    async actionViewData() {
+    actionViewData() {
       if (this.$route.name === 'viewDataAtLocation') {
         this.setDrawerOpen(true);
       }
 
-      // update location
-      const { centrelineId, centrelineType } = this.feature.properties;
-      const location = await getLocationByFeature({ centrelineId, centrelineType });
-      this.setLocation(location);
-
       // open the view data window
+      const { centrelineId, centrelineType } = this.feature.properties;
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { centrelineId, centrelineType },

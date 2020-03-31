@@ -40,7 +40,7 @@
           type="fab-text"
           @click="$router.push({ name: 'viewData' })"
           v-on="on">
-          <v-icon>mdi-magnify</v-icon>
+          <v-icon class="unselected--text">mdi-magnify</v-icon>
         </FcButton>
       </template>
       <span>Search for new location</span>

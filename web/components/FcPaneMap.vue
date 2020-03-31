@@ -68,7 +68,6 @@ import { mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -186,7 +185,7 @@ export default {
       if (vertical) {
         return !featureMatchesRoute;
       }
-      return !this.drawerOpen && !featureMatchesRoute;
+      return !this.drawerOpen || !featureMatchesRoute;
     },
     ...mapState(['drawerOpen', 'legendOptions', 'location']),
   },
@@ -204,7 +203,7 @@ export default {
       anchor: 'bottom',
       element: $marker,
     };
-    this.selectedMarker = new mapboxgl.Marker(markerOptions)
+    this.locationMarker = new mapboxgl.Marker(markerOptions)
       .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
@@ -251,9 +250,8 @@ export default {
       });
       this.map.on('idle', () => {
         this.loading = false;
-        this.updateSelectedFeature();
       });
-      this.updateSelectedMarker();
+      this.updateLocationMarker();
     });
   },
   beforeDestroy() {
@@ -278,7 +276,7 @@ export default {
       this.map.setStyle(this.mapStyle);
     },
     location(location, oldLocation) {
-      this.updateSelectedMarker();
+      this.updateLocationMarker();
       if (this.location === null) {
         this.clearSelectedFeature();
         return;
@@ -288,6 +286,9 @@ export default {
         this.setSelectedFeature(feature);
       } else {
         this.easeToLocation(location, oldLocation);
+        this.map.once('idle', () => {
+          this.updateSelectedFeature();
+        });
       }
     },
     $route() {
@@ -450,72 +451,11 @@ export default {
       }
       return features[0];
     },
-    onCountsClick(feature) {
-      const [lng, lat] = feature.geometry.coordinates;
-      const { centrelineId, centrelineType, numArteryCodes } = feature.properties;
-      let description;
-      if (numArteryCodes === 1) {
-        description = '1 count station';
-      }
-      description = `${numArteryCodes} count stations`;
-      const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
-        /*
-         * The backend doesn't provide these feature codes, so we have to fetch it from
-         * the visible layer.
-         */
-        featureCode: null,
-        lat,
-        lng,
-      };
-      // get feature code from the visible layer, if possible
-      const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
-      if (locationFeature !== null) {
-        const {
-          featureCode,
-          name: descriptionVisible,
-        } = locationFeature.properties;
-        elementInfo.description = descriptionVisible;
-        elementInfo.featureCode = featureCode;
-      }
-      this.setLocation(elementInfo);
-    },
-    onCentrelineClick(feature, centrelineType) {
-      // update location
-      const [lng, lat] = getGeometryMidpoint(feature.geometry);
-      const {
-        centrelineId,
-        featureCode,
-        name: description,
-      } = feature.properties;
-      const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
-        featureCode,
-        lat,
-        lng,
-      };
-      this.setLocation(elementInfo);
-    },
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point, {
         selectableOnly: true,
       });
       this.setSelectedFeature(feature);
-      if (feature === null) {
-        return;
-      }
-      const layerId = feature.layer.id;
-      if (layerId === 'counts') {
-        this.onCountsClick(feature);
-      } else if (layerId === 'intersections') {
-        this.onCentrelineClick(feature, CentrelineType.INTERSECTION);
-      } else if (layerId === 'midblocks') {
-        this.onCentrelineClick(feature, CentrelineType.SEGMENT);
-      }
     },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
@@ -538,22 +478,22 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
+    updateLocationMarker() {
+      if (this.location === null) {
+        this.locationMarker.remove();
+      } else {
+        const { lng, lat } = this.location;
+        this.locationMarker
+          .setLngLat([lng, lat])
+          .addTo(this.map);
+      }
+    },
     updateSelectedFeature() {
       const feature = this.getFeatureForLocation(this.location);
       if (feature === null) {
         this.clearSelectedFeature();
       } else {
         this.setSelectedFeature(feature);
-      }
-    },
-    updateSelectedMarker() {
-      if (this.location === null) {
-        this.selectedMarker.remove();
-      } else {
-        const { lng, lat } = this.location;
-        this.selectedMarker
-          .setLngLat([lng, lat])
-          .addTo(this.map);
       }
     },
     ...mapMutations(['setDrawerOpen', 'setLegendOptions', 'setLocation']),
