@@ -4,6 +4,7 @@
       v-if="$route.name !== 'viewReportsAtLocation'"
       v-model="keystring"
       append-icon="mdi-magnify"
+      autofocus
       cache-items
       class="fc-search-bar-location elevation-2"
       dense
@@ -28,22 +29,34 @@
         </v-list-item>
       </template>
     </v-autocomplete>
-    <v-tooltip
-      v-else
-      right
-      :z-index="100">
-      <template v-slot:activator="{ on }">
-        <FcButton
-          aria-label="Search for new location"
-          class="fc-search-bar-open"
-          type="fab-text"
-          @click="actionOpenSearch()"
-          v-on="on">
-          <v-icon>mdi-magnify</v-icon>
-        </FcButton>
-      </template>
-      <span>Search for new location</span>
-    </v-tooltip>
+    <template v-else>
+      <FcDialogConfirm
+        v-model="showConfirmLeave"
+        textCancel="Stay on this page"
+        textOk="Leave"
+        title="Leave Reports"
+        @action-ok="actionLeave">
+        <span class="body-1">
+          Leaving this page will cause you to switch to another location.
+          Are you sure you want to leave?
+        </span>
+      </FcDialogConfirm>
+      <v-tooltip
+        right
+        :z-index="100">
+        <template v-slot:activator="{ on }">
+          <FcButton
+            aria-label="Search for new location"
+            class="fc-search-bar-open"
+            type="fab-text"
+            @click="showConfirmLeave = true"
+            v-on="on">
+            <v-icon>mdi-magnify</v-icon>
+          </FcButton>
+        </template>
+        <span>Search for new location</span>
+      </v-tooltip>
+    </template>
   </div>
 </template>
 
@@ -52,12 +65,14 @@ import { mapMutations, mapState } from 'vuex';
 
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationByKeyString, getLocationSuggestions } from '@/lib/api/WebApi';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcSearchBarLocation',
   components: {
     FcButton,
+    FcDialogConfirm,
   },
   data() {
     return {
@@ -65,6 +80,7 @@ export default {
       items: [],
       loading: false,
       query: null,
+      showConfirmLeave: false,
     };
   },
   computed: {
@@ -99,8 +115,8 @@ export default {
     },
   },
   methods: {
-    actionOpenSearch() {
-      // TODO: implement this
+    actionLeave() {
+      this.$router.push({ name: 'viewData' });
     },
     ...mapMutations(['setLocation']),
   },

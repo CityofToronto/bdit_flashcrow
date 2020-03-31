@@ -1,0 +1,45 @@
+<template>
+  <v-dialog
+    v-model="internalValue"
+    max-width="560">
+    <v-card role="dialog">
+      <v-card-title>
+        <h1 class="display-1">{{title}}</h1>
+      </v-card-title>
+      <v-card-text>
+        <slot></slot>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <FcButton
+          type="tertiary"
+          @click="internalValue = false">
+          {{textOk}}
+        </FcButton>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+export default {
+  name: 'FcDialogAlert',
+  mixins: [FcMixinVModelProxy(Boolean)],
+  components: {
+    FcButton,
+  },
+  props: {
+    textOk: {
+      type: String,
+      default: 'OK',
+    },
+    title: {
+      type: String,
+      default: 'Alert',
+    },
+  },
+};
+</script>
