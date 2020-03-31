@@ -36,7 +36,7 @@
               aria-label="Recenter location"
               class="pa-0"
               type="fab-text"
-              @click="easeToLocation(location, null)"
+              @click="recenterLocation()"
               v-on="on">
               <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
             </FcButton>
@@ -348,6 +348,15 @@ export default {
           zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
+    },
+    recenterLocation() {
+      if (this.location === null) {
+        return;
+      }
+      this.easeToLocation(this.location, null);
+      this.map.once('idle', () => {
+        this.updateSelectedFeature();
+      });
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({

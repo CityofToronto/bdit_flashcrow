@@ -91,6 +91,7 @@
           class="pr-5 mt-6 text-right">
           <div>
             <FcButton
+              class="mr-2"
               type="tertiary"
               @click="actionNavigateBack">
               Cancel

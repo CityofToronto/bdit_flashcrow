@@ -151,25 +151,37 @@
               title="Urgent">mdi-clipboard-alert</v-icon>
 
             <template v-if="isSupervisor && !closed">
-              <FcButton
-                :aria-label="'Approve Request #' + item.id"
-                class="mr-2"
-                :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                type="icon"
-                @click="actionApprove([item])">
-                <v-icon>mdi-thumb-up</v-icon>
-              </FcButton>
-              <FcButton
-                :aria-label="'Ask for Changes to Request #' + item.id"
-                class="mr-2"
-                :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                type="icon"
-                @click="actionReject([item])">
-                <v-icon>mdi-clipboard-arrow-left</v-icon>
-              </FcButton>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <FcButton
+                    :aria-label="'Approve Request #' + item.id"
+                    class="mr-2"
+                    :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
+                    type="icon"
+                    @click="actionApprove([item])"
+                    v-on="on">
+                    <v-icon>mdi-thumb-up</v-icon>
+                  </FcButton>
+                </template>
+                <span>Approve Request #{{item.id}}</span>
+              </v-tooltip>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <FcButton
+                    :aria-label="'Ask for Changes to Request #' + item.id"
+                    class="mr-2"
+                    :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
+                    type="icon"
+                    @click="actionReject([item])"
+                    v-on="on">
+                    <v-icon>mdi-clipboard-arrow-left</v-icon>
+                  </FcButton>
+                </template>
+                <span>Ask for Changes to Request #{{item.id}}</span>
+              </v-tooltip>
             </template>
 
-            <v-tooltip left>
+            <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <FcButton
                   :aria-label="'View Request #' + item.id"
