@@ -45,16 +45,12 @@
         </v-tooltip>
       </div>
       <FcPaneMapPopup
-        v-if="hoveredFeature
-          && featureKeyHovered !== featureKeySelected
-          && featureKeyHovered === featureKeyHoveredPopup"
+        v-if="showHoveredPopup"
         :key="'h:' + featureKeyHovered"
         :feature="hoveredFeature"
         :hovered="true" />
       <FcPaneMapPopup
-        v-if="selectedFeature
-          && !drawerOpen
-          && $route.name !== 'viewReportsAtLocation'"
+        v-if="showSelectedPopup"
         :key="'s:' + featureKeySelected"
         :feature="selectedFeature"
         :hovered="false" />
@@ -96,6 +92,19 @@ function getFeatureKey(feature) {
   return `${layerId}:${id}`;
 }
 
+function getFeatureKeyRoute($route) {
+  const {
+    params: {
+      centrelineId = null,
+      centrelineType = null,
+    },
+  } = $route;
+  if (centrelineType === null || centrelineId === null) {
+    return null;
+  }
+  return `c:${centrelineType}:${centrelineId}`;
+}
+
 export default {
   name: 'FcPaneMap',
   components: {
@@ -135,6 +144,9 @@ export default {
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
     },
+    featureKeyRoute() {
+      return getFeatureKeyRoute(this.$route);
+    },
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
     },
@@ -157,6 +169,24 @@ export default {
     },
     mapStyle() {
       return GeoStyle.get(this.mapOptions);
+    },
+    showHoveredPopup() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      return this.featureKeyHovered !== this.featureKeySelected
+        && this.featureKeyHovered === this.featureKeyHoveredPopup;
+    },
+    showSelectedPopup() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const { vertical = false } = this.$route.meta;
+      const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
+      if (vertical) {
+        return !featureMatchesRoute;
+      }
+      return !this.drawerOpen && !featureMatchesRoute;
     },
     ...mapState(['drawerOpen', 'legendOptions', 'location']),
   },

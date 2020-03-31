@@ -65,6 +65,7 @@ const router = new Router({
         meta: {
           auth: { mode: 'try' },
           title: 'View Reports',
+          vertical: true,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReports.vue'),
         beforeEnter(to, from, next) {

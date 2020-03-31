@@ -1,5 +1,16 @@
 <template>
   <div class="fc-drawer-view-reports d-flex flex-column">
+    <FcDialogConfirm
+      v-model="showConfirmLeave"
+      textCancel="Stay on this page"
+      textOk="Leave"
+      title="Leave Reports"
+      @action-ok="actionLeave">
+      <span class="body-1">
+        Leaving this page will cause you to switch to another location.
+        Are you sure you want to leave?
+      </span>
+    </FcDialogConfirm>
     <v-progress-linear
       v-if="loading"
       indeterminate />
@@ -136,6 +147,7 @@ import {
   getLocationByFeature,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
@@ -151,6 +163,7 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
+    FcDialogConfirm,
     FcDialogReportParameters,
     FcReport,
   },
@@ -168,10 +181,13 @@ export default {
       counts: [],
       indexActiveCount: 0,
       indexActiveReportType: 0,
+      leaveConfirmed: false,
       loadingDownload: false,
       loadingReportLayout: false,
+      nextRoute: null,
       reportLayout: null,
       reportUserParameters,
+      showConfirmLeave: false,
       showReportParameters: false,
     };
   },
@@ -265,6 +281,27 @@ export default {
       this.updateReportLayout();
     },
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.leaveConfirmed) {
+      /*
+       * The user clicked Leave on the confirmation dialog, and it is safe to leave.
+       */
+      next();
+      return;
+    }
+    const { centrelineId, centrelineType } = from.params;
+    const { name } = to;
+    if (name === 'viewDataAtLocation') {
+      const { centrelineId: nextCentrelineId, centrelineType: nextCentrelineType } = to.params;
+      if (centrelineType === nextCentrelineType && centrelineId === nextCentrelineId) {
+        next();
+        return;
+      }
+    }
+    this.nextRoute = to;
+    this.showConfirmLeave = true;
+    next(false);
+  },
   methods: {
     async actionDownload(format) {
       const { activeCount, activeReportType, reportParameters } = this;
@@ -292,6 +329,10 @@ export default {
       saveAs(reportData, filename);
 
       this.downloadLoading = false;
+    },
+    actionLeave() {
+      this.leaveConfirmed = true;
+      this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
       const { centrelineId, centrelineType } = this.$route.params;

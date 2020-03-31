@@ -99,7 +99,8 @@ export default {
       return (hasDrawer && drawerOpen) || vertical;
     },
     vertical() {
-      return this.$route.name === 'viewReportsAtLocation';
+      const { vertical = false } = this.$route.meta;
+      return vertical;
     },
     ...mapState(['drawerOpen']),
   },

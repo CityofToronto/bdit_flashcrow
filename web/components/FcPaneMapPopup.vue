@@ -363,7 +363,9 @@ export default {
   },
   methods: {
     async actionViewData() {
-      this.setDrawerOpen(true);
+      if (this.$route.name === 'viewDataAtLocation') {
+        this.setDrawerOpen(true);
+      }
 
       // update location
       const { centrelineId, centrelineType } = this.feature.properties;
