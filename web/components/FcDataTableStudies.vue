@@ -33,7 +33,7 @@
       <FcButton
         type="tertiary"
         @click="$emit('show-reports', item)">
-        <span>View Report</span>
+        <span>View Reports</span>
       </FcButton>
     </template>
   </FcDataTable>

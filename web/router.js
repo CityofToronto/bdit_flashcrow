@@ -2,10 +2,9 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import store from '@/web/store';
+import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
 Vue.use(Router);
-
-const STORAGE_KEY_LOGIN_STATE = 'ca.toronto.move.loginState';
 
 const router = new Router({
   mode: 'history',
@@ -23,6 +22,10 @@ const router = new Router({
         },
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
+      beforeEnter(to, from, next) {
+        store.commit('setBackViewRequest', to);
+        next();
+      },
     },
     // DRAWER ROUTES
     {
@@ -57,6 +60,7 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewData.vue'),
         beforeEnter(to, from, next) {
+          store.commit('setBackViewRequest', to);
           store.commit('setDrawerOpen', true);
           next();
         },
@@ -66,6 +70,7 @@ const router = new Router({
         meta: {
           auth: { mode: 'try' },
           title: 'View Reports',
+          vertical: true,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReports.vue'),
         beforeEnter(to, from, next) {
@@ -142,32 +147,6 @@ function routeMetaKey(to, key, defaultValue) {
   return routeWithKey.meta[key];
 }
 
-function restoreLoginState(next) {
-  const loginState = window.sessionStorage.getItem(STORAGE_KEY_LOGIN_STATE);
-  if (loginState === null) {
-    return false;
-  }
-  window.sessionStorage.removeItem(STORAGE_KEY_LOGIN_STATE);
-  try {
-    const { location, name, params } = JSON.parse(loginState);
-    store.commit('setLocation', location);
-    next({ name, params });
-    return true;
-  } catch (err) {
-    if (err instanceof SyntaxError) {
-      return false;
-    }
-    throw err;
-  }
-}
-
-function saveLoginState(to) {
-  const { location } = store.state;
-  const { name, params = {} } = to;
-  const loginState = JSON.stringify({ location, name, params });
-  window.sessionStorage.setItem(STORAGE_KEY_LOGIN_STATE, loginState);
-}
-
 router.beforeEach(async (to, from, next) => {
   /*
    * Handle login redirects using `window.sessionStorage`.
@@ -233,7 +212,7 @@ router.onError((err) => {
   const { currentRoute } = router;
   const toast = onErrorShowToast(err, currentRoute);
   if (toast) {
-    store.dispatch('setToast', toast);
+    store.commit('setToast', toast);
   }
 });
 

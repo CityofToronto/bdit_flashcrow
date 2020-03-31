@@ -2,50 +2,62 @@
   <div
     class="fill-height pane-map"
     @mouseleave="clearHoveredFeature">
-    <div class="pane-map-progress">
-      <v-progress-linear
-        :active="loading"
-        indeterminate />
-    </div>
-    <FcSearchBarLocation
-      v-if="!drawerOpen" />
-    <FcPaneMapLegend
-      v-model="internalLegendOptions" />
-    <div class="pane-map-mode">
-      <FcButton
-        class="mr-2"
-        type="fab-text"
-        @click="openGoogleMaps">
-        Street View
-      </FcButton>
-      <FcButton
-        type="fab-text"
-        @click="aerial = !aerial">
-        {{ aerial ? 'Map' : 'Aerial' }}
-      </FcButton>
-    </div>
+    <template v-if="!background">
+      <div class="pane-map-progress">
+        <v-progress-linear
+          :active="loading"
+          indeterminate />
+      </div>
+      <FcSearchBarLocation
+        v-if="!drawerOpen" />
+      <FcPaneMapLegend
+        v-model="internalLegendOptions" />
+      <div class="pane-map-mode">
+        <FcButton
+          class="mr-2"
+          type="fab-text"
+          @click="openGoogleMaps">
+          Street View
+        </FcButton>
+        <FcButton
+          type="fab-text"
+          @click="aerial = !aerial">
+          {{ aerial ? 'Map' : 'Aerial' }}
+        </FcButton>
+      </div>
+      <div
+        v-if="location !== null"
+        class="pane-map-navigate">
+        <v-tooltip
+          left
+          :z-index="100">
+          <template v-slot:activator="{ on }">
+            <FcButton
+              aria-label="Recenter location"
+              class="pa-0"
+              type="fab-text"
+              @click="recenterLocation()"
+              v-on="on">
+              <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
+            </FcButton>
+          </template>
+          <span>Recenter location</span>
+        </v-tooltip>
+      </div>
+      <FcPaneMapPopup
+        v-if="showHoveredPopup"
+        :key="'h:' + featureKeyHovered"
+        :feature="hoveredFeature"
+        :hovered="true" />
+      <FcPaneMapPopup
+        v-if="showSelectedPopup"
+        :key="'s:' + featureKeySelected"
+        :feature="selectedFeature"
+        :hovered="false" />
+    </template>
     <div
-      v-if="location !== null"
-      class="pane-map-navigate">
-      <FcButton
-        class="px-0 py-1"
-        type="fab-text"
-        @click="easeToLocation(location, null)">
-        <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
-      </FcButton>
-    </div>
-    <FcPaneMapPopup
-      v-if="hoveredFeature
-        && featureKeyHovered !== featureKeySelected
-        && featureKeyHovered === featureKeyHoveredPopup"
-      :key="'h:' + featureKeyHovered"
-      :feature="hoveredFeature"
-      :hovered="true" />
-    <FcPaneMapPopup
-      v-if="!drawerOpen && selectedFeature"
-      :key="'s:' + featureKeySelected"
-      :feature="selectedFeature"
-      :hovered="false" />
+      v-else
+      class="pane-map-background-overlay"></div>
   </div>
 </template>
 
@@ -56,7 +68,6 @@ import { mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -80,6 +91,19 @@ function getFeatureKey(feature) {
   return `${layerId}:${id}`;
 }
 
+function getFeatureKeyRoute($route) {
+  const {
+    params: {
+      centrelineId = null,
+      centrelineType = null,
+    },
+  } = $route;
+  if (centrelineType === null || centrelineId === null) {
+    return null;
+  }
+  return `c:${centrelineType}:${centrelineId}`;
+}
+
 export default {
   name: 'FcPaneMap',
   components: {
@@ -95,6 +119,12 @@ export default {
         return self.map;
       },
     };
+  },
+  props: {
+    background: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -112,6 +142,9 @@ export default {
   computed: {
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
+    },
+    featureKeyRoute() {
+      return getFeatureKeyRoute(this.$route);
     },
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
@@ -136,6 +169,24 @@ export default {
     mapStyle() {
       return GeoStyle.get(this.mapOptions);
     },
+    showHoveredPopup() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      return this.featureKeyHovered !== this.featureKeySelected
+        && this.featureKeyHovered === this.featureKeyHoveredPopup;
+    },
+    showSelectedPopup() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const { vertical = false } = this.$route.meta;
+      const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
+      if (vertical) {
+        return !featureMatchesRoute;
+      }
+      return !this.drawerOpen || !featureMatchesRoute;
+    },
     ...mapState(['drawerOpen', 'legendOptions', 'location']),
   },
   created() {
@@ -152,7 +203,7 @@ export default {
       anchor: 'bottom',
       element: $marker,
     };
-    this.selectedMarker = new mapboxgl.Marker(markerOptions)
+    this.locationMarker = new mapboxgl.Marker(markerOptions)
       .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
@@ -199,9 +250,8 @@ export default {
       });
       this.map.on('idle', () => {
         this.loading = false;
-        this.updateSelectedFeature();
       });
-      this.updateSelectedMarker();
+      this.updateLocationMarker();
     });
   },
   beforeDestroy() {
@@ -226,7 +276,7 @@ export default {
       this.map.setStyle(this.mapStyle);
     },
     location(location, oldLocation) {
-      this.updateSelectedMarker();
+      this.updateLocationMarker();
       if (this.location === null) {
         this.clearSelectedFeature();
         return;
@@ -236,6 +286,9 @@ export default {
         this.setSelectedFeature(feature);
       } else {
         this.easeToLocation(location, oldLocation);
+        this.map.once('idle', () => {
+          this.updateSelectedFeature();
+        });
       }
     },
     $route() {
@@ -295,6 +348,15 @@ export default {
           zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
+    },
+    recenterLocation() {
+      if (this.location === null) {
+        return;
+      }
+      this.easeToLocation(this.location, null);
+      this.map.once('idle', () => {
+        this.updateSelectedFeature();
+      });
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -398,72 +460,11 @@ export default {
       }
       return features[0];
     },
-    onCountsClick(feature) {
-      const [lng, lat] = feature.geometry.coordinates;
-      const { centrelineId, centrelineType, numArteryCodes } = feature.properties;
-      let description;
-      if (numArteryCodes === 1) {
-        description = '1 count station';
-      }
-      description = `${numArteryCodes} count stations`;
-      const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
-        /*
-         * The backend doesn't provide these feature codes, so we have to fetch it from
-         * the visible layer.
-         */
-        featureCode: null,
-        lat,
-        lng,
-      };
-      // get feature code from the visible layer, if possible
-      const locationFeature = this.getFeatureForLocation({ centrelineId, centrelineType });
-      if (locationFeature !== null) {
-        const {
-          featureCode,
-          name: descriptionVisible,
-        } = locationFeature.properties;
-        elementInfo.description = descriptionVisible;
-        elementInfo.featureCode = featureCode;
-      }
-      this.setLocation(elementInfo);
-    },
-    onCentrelineClick(feature, centrelineType) {
-      // update location
-      const [lng, lat] = getGeometryMidpoint(feature.geometry);
-      const {
-        centrelineId,
-        featureCode,
-        name: description,
-      } = feature.properties;
-      const elementInfo = {
-        centrelineId,
-        centrelineType,
-        description,
-        featureCode,
-        lat,
-        lng,
-      };
-      this.setLocation(elementInfo);
-    },
     onMapClick(e) {
       const feature = this.getFeatureForPoint(e.point, {
         selectableOnly: true,
       });
       this.setSelectedFeature(feature);
-      if (feature === null) {
-        return;
-      }
-      const layerId = feature.layer.id;
-      if (layerId === 'counts') {
-        this.onCountsClick(feature);
-      } else if (layerId === 'intersections') {
-        this.onCentrelineClick(feature, CentrelineType.INTERSECTION);
-      } else if (layerId === 'midblocks') {
-        this.onCentrelineClick(feature, CentrelineType.SEGMENT);
-      }
     },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
@@ -486,22 +487,22 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
+    updateLocationMarker() {
+      if (this.location === null) {
+        this.locationMarker.remove();
+      } else {
+        const { lng, lat } = this.location;
+        this.locationMarker
+          .setLngLat([lng, lat])
+          .addTo(this.map);
+      }
+    },
     updateSelectedFeature() {
       const feature = this.getFeatureForLocation(this.location);
       if (feature === null) {
         this.clearSelectedFeature();
       } else {
         this.setSelectedFeature(feature);
-      }
-    },
-    updateSelectedMarker() {
-      if (this.location === null) {
-        this.selectedMarker.remove();
-      } else {
-        const { lng, lat } = this.location;
-        this.selectedMarker
-          .setLngLat([lng, lat])
-          .addTo(this.map);
       }
     },
     ...mapMutations(['setDrawerOpen', 'setLegendOptions', 'setLocation']),
@@ -521,7 +522,7 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .fc-search-bar-location {
+  & > .fc-search-bar-location-wrapper {
     left: 20px;
     top: 20px;
     position: absolute;
@@ -545,6 +546,7 @@ export default {
     right: 20px;
     z-index: var(--z-index-controls);
     & > .fc-button {
+      height: 32px;
       min-width: 30px;
       width: 30px;
     }
@@ -558,8 +560,17 @@ export default {
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {
       bottom: 25px;
+      box-shadow:
+        0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
       position: absolute;
       right: 10px;
+      & > button {
+        transition-duration: 0.28s;
+        transition-property: background-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
     }
     & > .mapboxgl-ctrl-scale {
       border-color: #272727;
@@ -584,6 +595,15 @@ export default {
         color: #272727;
       }
     }
+  }
+  & > .pane-map-background-overlay {
+    background-color: rgba(39, 39, 39, 0.4);
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: calc(var(--z-index-controls) - 1);
   }
 }
 </style>

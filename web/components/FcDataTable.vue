@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import { Ripple } from 'vuetify/lib/directives';
+
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 function compareKeys(ka, kb, kf) {
@@ -55,6 +57,9 @@ function compareKeys(ka, kb, kf) {
 export default {
   name: 'FcDataTable',
   mixins: [FcMixinVModelProxy(Array)],
+  directives: {
+    Ripple,
+  },
   props: {
     caption: {
       type: String,

@@ -1,5 +1,10 @@
 <template>
   <v-app id="fc_app">
+    <component
+      v-if="hasAlert"
+      v-model="hasAlert"
+      :is="'FcDialogAlert' + alert"
+      v-bind="alertData" />
     <v-snackbar
       v-if="hasToast"
       v-model="hasToast"
@@ -56,6 +61,8 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 
+import FcDialogAlertStudyRequestUrgent from
+  '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
@@ -66,8 +73,19 @@ export default {
     FcDashboardNavBrand,
     FcDashboardNavItem,
     FcDashboardNavUser,
+    FcDialogAlertStudyRequestUrgent,
   },
   computed: {
+    hasAlert: {
+      get() {
+        return this.alert !== null;
+      },
+      set(hasAlert) {
+        if (!hasAlert) {
+          this.clearAlert();
+        }
+      },
+    },
     hasToast: {
       get() {
         return this.toast !== null;
@@ -80,12 +98,14 @@ export default {
     },
     ...mapState([
       'auth',
+      'alert',
+      'alertData',
       'location',
       'toast',
     ]),
   },
   methods: {
-    ...mapMutations(['clearToast']),
+    ...mapMutations(['clearAlert', 'clearToast']),
   },
 };
 </script>

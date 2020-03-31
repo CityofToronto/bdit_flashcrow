@@ -6,25 +6,34 @@
       horizontal: !vertical,
       vertical
     }">
-    <v-tooltip
-      v-if="hasDrawer"
-      :bottom="vertical && drawerOpen"
-      :right="!vertical"
-      :top="vertical && !drawerOpen"
-      :z-index="100">
-      <template v-slot:activator="{ on }">
-        <FcButton
-          :aria-label="labelDrawerToggle"
-          class="pane-drawer-toggle"
-          type="icon"
-          @click="setDrawerOpen(!drawerOpen)"
-          v-on="on">
-          <v-icon>{{iconDrawerToggle}}</v-icon>
-        </FcButton>
-      </template>
-      <span>{{labelDrawerToggle}}</span>
-    </v-tooltip>
-
+    <template v-if="hasDrawer">
+      <FcButton
+        v-if="vertical"
+        class="pane-drawer-toggle mb-2"
+        type="fab-text"
+        @click="setDrawerOpen(!drawerOpen)">
+        <v-icon
+          color="primary"
+          left>{{iconDrawerToggle}}</v-icon>
+        {{labelDrawerToggle}}
+      </FcButton>
+      <v-tooltip
+        v-else
+        right
+        :z-index="100">
+        <template v-slot:activator="{ on }">
+          <FcButton
+            :aria-label="labelDrawerToggle"
+            class="pane-drawer-toggle"
+            type="icon"
+            @click="setDrawerOpen(!drawerOpen)"
+            v-on="on">
+            <v-icon>{{iconDrawerToggle}}</v-icon>
+          </FcButton>
+        </template>
+        <span>{{labelDrawerToggle}}</span>
+      </v-tooltip>
+    </template>
     <div
       class="fc-pane-wrapper d-flex fill-height"
       :class="{
@@ -39,12 +48,13 @@
         <router-view></router-view>
       </div>
       <div
-        v-show="showMap"
-        class="flex-grow-1 flex-shrink-0"
+        class="fc-map flex-shrink-0"
         :class="{
+          'flex-grow-1': !mapBackground,
           'order-1': vertical,
         }">
-        <FcPaneMap />
+        <FcPaneMap
+          :background="mapBackground" />
       </div>
     </div>
   </div>
@@ -69,27 +79,28 @@ export default {
     iconDrawerToggle() {
       const { drawerOpen, vertical } = this;
       if (vertical) {
-        return drawerOpen ? 'mdi-menu-down' : 'mdi-menu-up';
+        return drawerOpen ? 'mdi-arrow-collapse' : 'mdi-arrow-expand';
       }
       return drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right';
     },
     labelDrawerToggle() {
       const { drawerOpen, vertical } = this;
       if (vertical) {
-        return drawerOpen ? 'Shrink bottom panel' : 'Expand bottom panel';
+        return drawerOpen ? 'Collapse page' : 'Expand page';
       }
       return drawerOpen ? 'Collapse side panel' : 'Expand side panel';
+    },
+    mapBackground() {
+      const { drawerOpen, vertical } = this;
+      return drawerOpen && vertical;
     },
     showDrawer() {
       const { drawerOpen, hasDrawer, vertical } = this;
       return (hasDrawer && drawerOpen) || vertical;
     },
-    showMap() {
-      const { drawerOpen, vertical } = this;
-      return !drawerOpen || !vertical;
-    },
     vertical() {
-      return this.$route.name === 'viewReportsAtLocation';
+      const { vertical = false } = this.$route.meta;
+      return vertical;
     },
     ...mapState(['drawerOpen']),
   },
@@ -104,73 +115,75 @@ export default {
   position: relative;
   width: 100%;
 
-  & .fc-drawer {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.2),
-      0 1px 10px rgba(0, 0, 0, 0.12),
-      0 4px 5px rgba(0, 0, 0, 0.14);
-  }
-
   & > .fc-pane-wrapper > div {
     flex-basis: 0;
   }
 
   & > .pane-drawer-toggle {
-    background-color: var(--white);
-    color: var(--ink);
     cursor: pointer;
     position: absolute;
     z-index: var(--z-index-controls);
+  }
 
-    &:hover {
-      background-color: var(--v-shading-base);
+  &.vertical {
+    & > .pane-drawer-toggle {
+      bottom: 50%;
+      left: calc(50% - 80px);
+      width: 160px;
+    }
+    & > .fc-pane-wrapper > div {
+      height: 50%;
+      &.fc-drawer {
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+      }
     }
   }
 
   &.horizontal {
     & > .pane-drawer-toggle {
+      background-color: var(--white);
       border-radius: 0 var(--space-s) var(--space-s) 0;
+
+      /* modified version of .elevation-1 */
+      box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        2px 1px 3px 0 rgba(0, 0, 0, 0.12);
+      color: var(--ink);
       height: 38px;
       top: 20px;
       width: 16px;
+
+      &:hover {
+        background-color: var(--v-shading-base);
+      }
     }
     & > .fc-pane-wrapper > div {
       width: 50%;
     }
   }
 
-  &.vertical {
-    & > .pane-drawer-toggle {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-      border-radius: var(--space-s) var(--space-s) 0 0;
-      bottom: 50%;
-      height: 16px;
-      left: calc(50% - 19px);
-      width: 38px;
-      & i {
-        margin-top: -6px;
-      }
-    }
-    & > .fc-pane-wrapper > div {
-      height: 50%;
-    }
-  }
-
   &.drawer-open {
-    &.horizontal > .pane-drawer-toggle {
-      border-left: 1px solid rgba(0, 0, 0, 0.12);
-      left: 50%;
+    &.horizontal {
+      & > .pane-drawer-toggle {
+        border-left: 1px solid rgba(0, 0, 0, 0.12);
+        left: 50%;
+      }
+      & > .fc-pane-wrapper > .fc-drawer {
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+      }
     }
     &.vertical {
       & > .pane-drawer-toggle {
-        border-left: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 0 0 var(--space-s) var(--space-s);
-        border-right: 1px solid rgba(0, 0, 0, 0.12);
-        bottom: auto;
-        top: 0;
+        bottom: calc(100% - 60px);
+        left: calc(50% - 90px);
+        width: 180px;
       }
-      & > .fc-pane-wrapper > div {
-        height: 100%;
+      & > .fc-pane-wrapper > .fc-map {
+        height: 60px;
+      }
+      & > .fc-pane-wrapper > .fc-drawer {
+        height: calc(100% - 60px);
       }
     }
   }

@@ -159,7 +159,7 @@ function getCentrelineDescription(feature, { location }) {
   if (centrelineType === CentrelineType.SEGMENT) {
     let { aadt = null } = feature.properties;
     if (aadt !== null) {
-      aadt = Math.round(aadt);
+      aadt = 100 * Math.round(aadt / 100);
       aadt = `AADT (est. 2018): ${aadt}`;
       description.push(aadt);
     }
@@ -362,15 +362,13 @@ export default {
     this.popup.remove();
   },
   methods: {
-    async actionViewData() {
-      this.setDrawerOpen(true);
-
-      // update location
-      const { centrelineId, centrelineType } = this.feature.properties;
-      const location = await getLocationByFeature({ centrelineId, centrelineType });
-      this.setLocation(location);
+    actionViewData() {
+      if (this.$route.name === 'viewDataAtLocation') {
+        this.setDrawerOpen(true);
+      }
 
       // open the view data window
+      const { centrelineId, centrelineType } = this.feature.properties;
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { centrelineId, centrelineType },

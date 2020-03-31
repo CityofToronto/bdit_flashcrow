@@ -9,14 +9,14 @@
         indeterminate />
       <template v-else>
         <header class="px-5 pt-1 pb-5 shading">
-          <h1 class="display-4">{{location.description}}</h1>
-          <div class="label mt-2">
+          <h1 class="display-3">{{location.description}}</h1>
+          <div class="label mt-1">
             <span v-if="locationFeatureType !== null">
               {{locationFeatureType.description}} &#x2022;
             </span>
             <span>{{countSummaryHeaderText}}</span>
           </div>
-          <v-row class="mt-5">
+          <v-row class="mt-4">
             <v-col cols="2">
               <div class="label mb-1">KSI</div>
               <v-progress-circular
@@ -44,7 +44,7 @@
               </div>
             </v-col>
           </v-row>
-          <div class="mt-5">
+          <div class="mt-4">
             <div class="label mb-1">Nearby</div>
             <div>
               <div
@@ -136,7 +136,7 @@
           </header>
           <div
             v-if="countSummary.length === 0"
-            class="mt-8 pt-12 secondary--text text-center">
+            class="my-8 py-12 secondary--text text-center">
             There are no studies for this location,<br>
             please request a study if necessary
           </div>

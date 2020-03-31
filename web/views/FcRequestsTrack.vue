@@ -7,11 +7,11 @@
       </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-4 mt-5">
-          <span v-if="closed">Closed Requests</span>
-          <span v-else>Open Requests</span>
+        <h1 class="display-3 mt-5">
+          <span v-if="closed">My Closed Requests</span>
+          <span v-else>My Requests</span>
         </h1>
-        <div class="align-center d-flex mt-8 mb-2">
+        <div class="align-center d-flex mt-6 mb-2">
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
@@ -151,30 +151,48 @@
               title="Urgent">mdi-clipboard-alert</v-icon>
 
             <template v-if="isSupervisor && !closed">
-              <FcButton
-                :aria-label="'Approve Request #' + item.id"
-                class="mr-2"
-                :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                type="icon"
-                @click="actionApprove([item])">
-                <v-icon>mdi-thumb-up</v-icon>
-              </FcButton>
-              <FcButton
-                :aria-label="'Ask for Changes to Request #' + item.id"
-                class="mr-2"
-                :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                type="icon"
-                @click="actionReject([item])">
-                <v-icon>mdi-clipboard-arrow-left</v-icon>
-              </FcButton>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <FcButton
+                    :aria-label="'Approve Request #' + item.id"
+                    class="mr-2"
+                    :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
+                    type="icon"
+                    @click="actionApprove([item])"
+                    v-on="on">
+                    <v-icon>mdi-thumb-up</v-icon>
+                  </FcButton>
+                </template>
+                <span>Approve Request #{{item.id}}</span>
+              </v-tooltip>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <FcButton
+                    :aria-label="'Ask for Changes to Request #' + item.id"
+                    class="mr-2"
+                    :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
+                    type="icon"
+                    @click="actionReject([item])"
+                    v-on="on">
+                    <v-icon>mdi-clipboard-arrow-left</v-icon>
+                  </FcButton>
+                </template>
+                <span>Ask for Changes to Request #{{item.id}}</span>
+              </v-tooltip>
             </template>
 
-            <FcButton
-              :aria-label="'View Request #' + item.id"
-              type="icon"
-              @click="actionShowRequest(item)">
-              <v-icon>mdi-file-eye</v-icon>
-            </FcButton>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <FcButton
+                  :aria-label="'View Request #' + item.id"
+                  type="icon"
+                  @click="actionShowRequest(item)"
+                  v-on="on">
+                  <v-icon>mdi-file-eye</v-icon>
+                </FcButton>
+              </template>
+              <span>View Request #{{item.id}}</span>
+            </v-tooltip>
           </div>
         </template>
       </FcDataTable>
@@ -450,7 +468,6 @@ export default {
     },
     ...mapActions([
       'saveStudyRequest',
-      'setToast',
     ]),
   },
 };

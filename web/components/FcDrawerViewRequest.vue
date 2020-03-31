@@ -5,7 +5,7 @@
         type="secondary"
         @click="actionNavigateBack">
         <v-icon left>mdi-chevron-left</v-icon>
-        Requests
+        {{labelNavigateBack}}
       </FcButton>
       <h1 class="flex-grow-1 headline text-center">
         <span>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import {
   getStudyRequest,
@@ -92,6 +92,13 @@ export default {
     isSupervisor() {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
+    labelNavigateBack() {
+      const { backViewRequest: { name } } = this;
+      if (name === 'viewDataAtLocation') {
+        return 'View Data';
+      }
+      return 'Requests';
+    },
     subtitle() {
       if (this.location === null) {
         return '';
@@ -102,7 +109,7 @@ export default {
       const { id } = this.$route.params;
       return `Request #${id}`;
     },
-    ...mapState(['auth', 'location']),
+    ...mapState(['auth', 'backViewRequest', 'location']),
   },
   methods: {
     actionEdit() {
@@ -117,7 +124,8 @@ export default {
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const route = { name: 'requestsTrack' };
+      const { backViewRequest } = this;
+      const route = { ...backViewRequest };
       if (this.isSupervisor) {
         route.query = { isSupervisor: true };
       }
@@ -142,7 +150,6 @@ export default {
     onDeleteComment(i) {
       this.studyRequestComments.splice(i, 1);
     },
-    ...mapActions(['setToast']),
     ...mapMutations(['setLocation']),
   },
 };
