@@ -1,5 +1,22 @@
 <template>
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
+    <FcDialogConfirm
+      v-model="showConfirmLeave"
+      :textCancel="isCreate ? 'Stay on this page' : 'Keep editing'"
+      :textOk="isCreate ? 'Quit' : 'Discard'"
+      :title="isCreate ? 'Quit study request?' : 'Discard changes?'"
+      @action-ok="actionLeave">
+      <span class="body-1">
+        <span v-if="isCreate">
+          Leaving this page will cause a loss of all entered data.
+          Are you sure you want to quit?
+        </span>
+        <span v-else>
+          You have made changes to the study request that have not been saved.
+          Do you wish to discard these changes?
+        </span>
+      </span>
+    </FcDialogConfirm>
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
       <FcButton
         v-if="isCreate"
@@ -18,6 +35,7 @@
       </h1>
       <div v-if="!isCreate">
         <FcButton
+          class="mr-2"
           type="tertiary"
           @click="actionNavigateBack">
           Cancel
@@ -108,9 +126,10 @@ import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -151,10 +170,14 @@ export default {
     FcCheckboxGroupChips,
     FcDetailsStudy,
     FcDetailsStudyRequest,
+    FcDialogConfirm,
   },
   data() {
     return {
+      leaveConfirmed: false,
+      nextRoute: null,
       REQUEST_STUDY_TIME_TO_FULFILL,
+      showConfirmLeave: false,
       studyRequest: null,
       studyTypes: [],
     };
@@ -270,10 +293,23 @@ export default {
     },
   },
   validations: ValidationsStudyRequest,
+  beforeRouteLeave(to, from, next) {
+    if (this.leaveConfirmed) {
+      next();
+      return;
+    }
+    this.nextRoute = to;
+    this.showConfirmLeave = true;
+    next(false);
+  },
   methods: {
     actionAddStudy(studyType) {
       const item = makeStudy(studyType);
       this.studyRequest.studies.push(item);
+    },
+    actionLeave() {
+      this.leaveConfirmed = true;
+      this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
       if (!this.isCreate) {
@@ -303,6 +339,7 @@ export default {
     onFinish() {
       const { isSupervisor, studyRequest } = this;
       this.saveStudyRequest({ isSupervisor, studyRequest });
+      this.leaveConfirmed = true;
       this.$router.push(this.routeFinish);
     },
     async loadAsyncForRoute(to) {
