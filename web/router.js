@@ -22,6 +22,10 @@ const router = new Router({
         },
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
+      beforeEnter(to, from, next) {
+        store.commit('setBackViewRequest', to);
+        next();
+      },
     },
     // DRAWER ROUTES
     {
@@ -56,6 +60,7 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewData.vue'),
         beforeEnter(to, from, next) {
+          store.commit('setBackViewRequest', to);
           store.commit('setDrawerOpen', true);
           next();
         },

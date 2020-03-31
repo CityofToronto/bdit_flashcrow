@@ -29,6 +29,8 @@ export default new Vuex.Store({
     alertData: {},
     drawerOpen: false,
     toast: null,
+    // NAVIGATION
+    backViewRequest: { name: 'requestsTrack' },
     // LOCATION
     location: null,
     legendOptions: {
@@ -81,6 +83,10 @@ export default new Vuex.Store({
     },
     setToast(state, toast) {
       Vue.set(state, 'toast', toast);
+    },
+    // NAVIGATION
+    setBackViewRequest(state, backViewRequest) {
+      Vue.set(state, 'backViewRequest', backViewRequest);
     },
     // LOCATION
     setLocation(state, location) {

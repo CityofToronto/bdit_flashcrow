@@ -83,7 +83,6 @@ export default {
   },
   data() {
     return {
-      prevRoute: null,
       studyRequest: null,
       studyRequestComments: [],
       studyRequestUsers: new Map(),
@@ -94,22 +93,11 @@ export default {
       return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
     labelNavigateBack() {
-      const { name } = this.prevRouteNormalized;
+      const { backViewRequest: { name } } = this;
       if (name === 'viewDataAtLocation') {
         return 'View Data';
       }
       return 'Requests';
-    },
-    prevRouteNormalized() {
-      const { prevRoute } = this;
-      if (prevRoute === null) {
-        return { name: 'requestsTrack' };
-      }
-      const { name } = prevRoute;
-      if (name === 'viewDataAtLocation') {
-        return prevRoute;
-      }
-      return { name: 'requestsTrack' };
     },
     subtitle() {
       if (this.location === null) {
@@ -121,13 +109,7 @@ export default {
       const { id } = this.$route.params;
       return `Request #${id}`;
     },
-    ...mapState(['auth', 'location']),
-  },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      /* eslint-disable-next-line no-param-reassign */
-      vm.prevRoute = from;
-    });
+    ...mapState(['auth', 'backViewRequest', 'location']),
   },
   methods: {
     actionEdit() {
@@ -142,7 +124,8 @@ export default {
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const route = this.prevRouteNormalized;
+      const { backViewRequest } = this;
+      const route = { ...backViewRequest };
       if (this.isSupervisor) {
         route.query = { isSupervisor: true };
       }
