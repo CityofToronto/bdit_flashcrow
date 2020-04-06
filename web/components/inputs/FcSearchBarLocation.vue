@@ -4,11 +4,10 @@
       v-if="$route.name !== 'viewReportsAtLocation'"
       v-model="internalLocation"
       append-icon="mdi-magnify"
-      autofocus
       class="fc-search-bar-location elevation-2"
       dense
-      hide-no-data
       hide-details
+      hide-no-data
       :items="items"
       item-text="description"
       label="Search"
@@ -80,13 +79,30 @@ export default {
     ...mapState(['location']),
   },
   watch: {
+    location: {
+      handler() {
+        if (this.location !== null) {
+          this.query = this.location.description;
+        }
+      },
+      immediate: true,
+    },
     query: debounce(async function processQuery() {
-      if (this.query === null) {
-        return;
+      if (this.location !== null) {
+        if (this.query === null) {
+          this.query = this.location.description;
+          return;
+        }
+        if (this.query === this.location.description) {
+          this.items = [this.location];
+          return;
+        }
       }
-      this.loading = true;
-      this.items = await getLocationSuggestions(this.query);
-      this.loading = false;
+      if (this.query !== null) {
+        this.loading = true;
+        this.items = await getLocationSuggestions(this.query);
+        this.loading = false;
+      }
     }, 250),
   },
   methods: {
