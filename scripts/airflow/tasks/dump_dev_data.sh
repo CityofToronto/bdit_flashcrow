@@ -86,5 +86,8 @@ echo '\.' >> "${FLASHCROW_DEV_DATA}"
 # copy view definitions where appropriate
 env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t location_search.centreline_intersection -x --no-owner --clean --if-exists --schema-only >> "${FLASHCROW_DEV_DATA}"
 
+# refresh data for view definitions
+echo 'REFRESH MATERIALIZED VIEW location_search.centreline_intersection;' >> "${FLASHCROW_DEV_DATA}"
+
 # compress to reduce copying bandwidth
 tar czvf "${FLASHCROW_DEV_DATA}.tar.gz" "${FLASHCROW_DEV_DATA}"
