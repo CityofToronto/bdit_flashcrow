@@ -2,19 +2,19 @@
   <div class="fc-search-bar-location-wrapper">
     <v-autocomplete
       v-if="$route.name !== 'viewReportsAtLocation'"
-      v-model="keystring"
+      v-model="internalLocation"
       append-icon="mdi-magnify"
       autofocus
-      cache-items
       class="fc-search-bar-location elevation-2"
       dense
       hide-no-data
       hide-details
       :items="items"
-      item-text="ADDRESS"
-      item-value="KEYSTRING"
+      item-text="description"
       label="Search"
       :loading="loading"
+      no-filter
+      return-object
       :search-input.sync="query"
       solo>
       <template v-slot:item="{ attrs, item, on, parent }">
@@ -52,7 +52,7 @@
 import { mapMutations, mapState } from 'vuex';
 
 import { debounce } from '@/lib/FunctionUtils';
-import { getLocationByKeyString, getLocationSuggestions } from '@/lib/api/WebApi';
+import { getLocationSuggestions } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -62,8 +62,8 @@ export default {
   },
   data() {
     return {
-      keystring: null,
       items: [],
+      key: null,
       loading: false,
       query: null,
     };
@@ -73,8 +73,8 @@ export default {
       get() {
         return this.location;
       },
-      set(location) {
-        this.setLocation(location);
+      set(internalLocation) {
+        this.setLocation(internalLocation);
       },
     },
     ...mapState(['location']),
@@ -82,22 +82,12 @@ export default {
   watch: {
     query: debounce(async function processQuery() {
       if (this.query === null) {
-        this.internalLocation = null;
         return;
       }
       this.loading = true;
       this.items = await getLocationSuggestions(this.query);
       this.loading = false;
     }, 250),
-    async keystring() {
-      if (this.keystring === null) {
-        this.internalLocation = null;
-        return;
-      }
-      this.loading = true;
-      this.internalLocation = await getLocationByKeyString(this.keystring);
-      this.loading = false;
-    },
   },
   methods: {
     ...mapMutations(['setLocation']),
