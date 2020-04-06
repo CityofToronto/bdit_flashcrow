@@ -83,5 +83,8 @@ echo 'COPY "TRAFFIC"."CNT_SPD" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
 env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_spd) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
 echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
+# copy view definitions where appropriate
+env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t location_search.centreline_intersection -x --no-owner --clean --if-exists --schema-only >> "${FLASHCROW_DEV_DATA}"
+
 # compress to reduce copying bandwidth
 tar czvf "${FLASHCROW_DEV_DATA}.tar.gz" "${FLASHCROW_DEV_DATA}"

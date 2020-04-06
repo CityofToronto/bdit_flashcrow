@@ -12,7 +12,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS location_search.centreline_intersection A
   GROUP BY int_id;
 
 CREATE UNIQUE INDEX IF NOT EXISTS ls_centreline_intersection_int_id ON location_search.centreline_intersection (int_id);
-CREATE INDEX ls_centreline_intersection_tsvector_intersec5 ON location_search.centreline_intersection USING GIN (to_tsvector('english', intersec5));
-CREATE INDEX ls_centreline_intersection_trgm_intersec5 ON location_search.centreline_intersection USING GIN (intersec5 gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS ls_centreline_intersection_tsvector_intersec5 ON location_search.centreline_intersection USING GIN (to_tsvector('english', intersec5));
+CREATE INDEX IF NOT EXISTS ls_centreline_intersection_trgm_intersec5 ON location_search.centreline_intersection USING GIN (intersec5 gin_trgm_ops);
 
 REFRESH MATERIALIZED VIEW CONCURRENTLY location_search.centreline_intersection;
