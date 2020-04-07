@@ -17,7 +17,6 @@ import PoiController from '@/lib/controller/PoiController';
 import StudyController from '@/lib/controller/StudyController';
 import StudyRequestController from '@/lib/controller/StudyRequestController';
 import UserController from '@/lib/controller/UserController';
-import SignalSuggestionController from '@/lib/controller/SignalSuggestionController';
 import db from '@/lib/db/db';
 import LogTag from '@/lib/log/LogTag';
 import vueConfig from '@/vue.config';
@@ -197,7 +196,6 @@ async function initServer() {
   server.route(StudyController);
   server.route(StudyRequestController);
   server.route(UserController);
-  server.route(SignalSuggestionController);
 
   // START SERVER
   await server.start();
