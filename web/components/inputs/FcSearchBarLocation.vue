@@ -2,19 +2,18 @@
   <div class="fc-search-bar-location-wrapper">
     <v-autocomplete
       v-if="$route.name !== 'viewReportsAtLocation'"
-      v-model="keystring"
+      v-model="internalLocation"
       append-icon="mdi-magnify"
-      autofocus
-      cache-items
       class="fc-search-bar-location elevation-2"
       dense
-      hide-no-data
       hide-details
+      hide-no-data
       :items="items"
-      item-text="ADDRESS"
-      item-value="KEYSTRING"
+      item-text="description"
       label="Search"
       :loading="loading"
+      no-filter
+      return-object
       :search-input.sync="query"
       solo>
       <template v-slot:item="{ attrs, item, on, parent }">
@@ -52,7 +51,7 @@
 import { mapMutations, mapState } from 'vuex';
 
 import { debounce } from '@/lib/FunctionUtils';
-import { getLocationByKeyString, getLocationSuggestions } from '@/lib/api/WebApi';
+import { getLocationSuggestions } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -62,8 +61,8 @@ export default {
   },
   data() {
     return {
-      keystring: null,
       items: [],
+      key: null,
       loading: false,
       query: null,
     };
@@ -73,31 +72,81 @@ export default {
       get() {
         return this.location;
       },
-      set(location) {
-        this.setLocation(location);
+      set(internalLocation) {
+        this.setLocation(internalLocation);
       },
     },
     ...mapState(['location']),
   },
+  /*
+   * To understand the following watchers, imagine a state machine:
+   *
+   * 1. selected location...
+   *   a. empty query
+   *   b. query that matches location
+   *   c. query that doesn't match location
+   * 2. no selected location...
+   *   a. empty query
+   *   b. non-empty query
+   *
+   * Transitions between these are explained below.
+   */
   watch: {
-    query: debounce(async function processQuery() {
-      if (this.query === null) {
-        this.internalLocation = null;
-        return;
-      }
-      this.loading = true;
-      this.items = await getLocationSuggestions(this.query);
-      this.loading = false;
-    }, 250),
-    async keystring() {
-      if (this.keystring === null) {
-        this.internalLocation = null;
-        return;
-      }
-      this.loading = true;
-      this.internalLocation = await getLocationByKeyString(this.keystring);
-      this.loading = false;
+    location: {
+      handler() {
+        if (this.location !== null) {
+          /*
+           * 1c -> 1b: the user just selected a location, either via the autocomplete
+           * dropdown or via map interaction.  We need to update the search bar to match.
+           */
+          this.query = this.location.description;
+        }
+      },
+      immediate: true,
     },
+    query: debounce(async function processQuery() {
+      if (this.location !== null) {
+        if (this.query === null) {
+          /*
+           * 1a -> 1b: a new search bar instance was just loaded, and we already have a
+           * selected location.  We need to update the search bar to match.
+           *
+           * While setting a value in its own watcher is unusual, we can avoid infinite
+           * recursion by moving through the state machine.
+           */
+          this.query = this.location.description;
+          return;
+        }
+        if (this.query === this.location.description) {
+          /*
+           * 1b: `<v-autocomplete>` gets confused if the list of items doesn't contain
+           * the `v-model` value, so we make a special items list with the selected
+           * location to un-confuse it.
+           */
+          this.items = [this.location];
+          return;
+        }
+        /*
+         * 1c: we already have a selected location, but the user is currently typing
+         * a new query...
+         */
+      }
+      if (this.query !== null) {
+        /*
+         * 1c / 2b: the user is currently typing a query.  We need to fetch suggested
+         * locations for that query.
+         *
+         * Once the user selects a suggested location, `location` is updated, triggering
+         * the location watcher to move us into 1b.
+         */
+        this.loading = true;
+        this.items = await getLocationSuggestions(this.query);
+        this.loading = false;
+      }
+      /*
+       * 2a: there is no selected location, and no query to search for.  Do nothing.
+       */
+    }, 250),
   },
   methods: {
     ...mapMutations(['setLocation']),

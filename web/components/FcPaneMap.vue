@@ -131,7 +131,7 @@ export default {
       aerial: false,
       coordinates: null,
       // used to add slight debounce delay (250ms) to hovered popup
-      featureKeyHoveredPopup: false,
+      featureKeyHoveredPopup: null,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
       loading: false,
@@ -239,19 +239,22 @@ export default {
         new mapboxgl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
+
+      this.updateLocationMarker();
       this.easeToLocation(this.location, null);
+
+      this.map.on('dataloading', () => {
+        this.loading = true;
+      });
+      this.map.on('data', this.onMapData.bind(this));
+      this.map.on('idle', () => {
+        this.loading = false;
+      });
       this.map.on('load', () => {
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
-      this.map.on('dataloading', () => {
-        this.loading = true;
-      });
-      this.map.on('idle', () => {
-        this.loading = false;
-      });
-      this.updateLocationMarker();
     });
   },
   beforeDestroy() {
@@ -286,9 +289,6 @@ export default {
         this.setSelectedFeature(feature);
       } else {
         this.easeToLocation(location, oldLocation);
-        this.map.once('idle', () => {
-          this.updateSelectedFeature();
-        });
       }
     },
     $route() {
@@ -354,9 +354,6 @@ export default {
         return;
       }
       this.easeToLocation(this.location, null);
-      this.map.once('idle', () => {
-        this.updateSelectedFeature();
-      });
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -466,6 +463,55 @@ export default {
       });
       this.setSelectedFeature(feature);
     },
+    /**
+     * Mapbox GL fires the `data` event whenever a map tile is loaded.  This allows us to trigger
+     * the selected location popup as soon as the associated map feature has been loaded, instead
+     * of waiting for the `idle` event (i.e. everything is finished loading).
+     */
+    onMapData(e) {
+      if (this.location === null || this.map.isMoving() || !e.tile) {
+        /*
+         * Wait until the map stops moving (e.g. as part of an `easeToLocation` call), and
+         * ignore any non-tile data events (`data` is also fired for other reasons, such as
+         * loading new styles).
+         */
+        return;
+      }
+      const { centrelineType } = this.location;
+      if ((centrelineType === CentrelineType.SEGMENT && e.sourceId !== 'midblocks')
+        || (centrelineType === CentrelineType.INTERSECTION && e.sourceId === 'intersections')) {
+        /*
+         * If this tile event doesn't match the appropriate layer for the selected location,
+         * ignore it.
+         */
+        return;
+      }
+      const { lat, lng } = this.location;
+      const {
+        latRange: [latMin, latMax],
+        lngRange: [lngMin, lngMax],
+      } = e.target.transform;
+      if (lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) {
+        /*
+         * If this tile event is for a tile that doesn't contain the selected location, ignore it.
+         */
+        return;
+      }
+      /*
+       * At this point, this is a tile event for the tile containing the selected location.  This
+       * means that we can reliably fetch the location using `getFeatureForLocation`, which itself
+       * relies on `queryRenderedFeatures`.
+       *
+       * Ignoring other tile events here allows us to limit the number of times we make these
+       * (relatively) expensive `queryRenderedFeatures` calls, which helps with performance.
+       */
+      const feature = this.getFeatureForLocation(this.location);
+      if (feature === null) {
+        this.clearSelectedFeature();
+      } else {
+        this.setSelectedFeature(feature);
+      }
+    },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
       this.setHoveredFeature(feature);
@@ -495,14 +541,6 @@ export default {
         this.locationMarker
           .setLngLat([lng, lat])
           .addTo(this.map);
-      }
-    },
-    updateSelectedFeature() {
-      const feature = this.getFeatureForLocation(this.location);
-      if (feature === null) {
-        this.clearSelectedFeature();
-      } else {
-        this.setSelectedFeature(feature);
       }
     },
     ...mapMutations(['setDrawerOpen', 'setLegendOptions', 'setLocation']),
