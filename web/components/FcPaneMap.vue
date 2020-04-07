@@ -463,13 +463,27 @@ export default {
       });
       this.setSelectedFeature(feature);
     },
+    /**
+     * Mapbox GL fires the `data` event whenever a map tile is loaded.  This allows us to trigger
+     * the selected location popup as soon as the associated map feature has been loaded, instead
+     * of waiting for the `idle` event (i.e. everything is finished loading).
+     */
     onMapData(e) {
       if (this.location === null || this.map.isMoving() || !e.tile) {
+        /*
+         * Wait until the map stops moving (e.g. as part of an `easeToLocation` call), and
+         * ignore any non-tile data events (`data` is also fired for other reasons, such as
+         * loading new styles).
+         */
         return;
       }
       const { centrelineType } = this.location;
       if ((centrelineType === CentrelineType.SEGMENT && e.sourceId !== 'midblocks')
         || (centrelineType === CentrelineType.INTERSECTION && e.sourceId === 'intersections')) {
+        /*
+         * If this tile event doesn't match the appropriate layer for the selected location,
+         * ignore it.
+         */
         return;
       }
       const { lat, lng } = this.location;
@@ -478,13 +492,23 @@ export default {
         lngRange: [lngMin, lngMax],
       } = e.target.transform;
       if (lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) {
+        /*
+         * If this tile event is for a tile that doesn't contain the selected location, ignore it.
+         */
         return;
       }
+      /*
+       * At this point, this is a tile event for the tile containing the selected location.  This
+       * means that we can reliably fetch the location using `getFeatureForLocation`, which itself
+       * relies on `queryRenderedFeatures`.
+       *
+       * Ignoring other tile events here allows us to limit the number of times we make these
+       * (relatively) expensive `queryRenderedFeatures` calls, which helps with performance.
+       */
       const feature = this.getFeatureForLocation(this.location);
       if (feature === null) {
         this.clearSelectedFeature();
       } else {
-        console.log('selected', feature);
         this.setSelectedFeature(feature);
       }
     },
