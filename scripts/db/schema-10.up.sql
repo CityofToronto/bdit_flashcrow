@@ -1,0 +1,8 @@
+BEGIN;
+
+ALTER TABLE "users" ADD COLUMN "scope" VARCHAR[];
+UPDATE "users" SET "scope" = '{"STUDY_REQUESTS"}';
+ALTER TABLE "users" ALTER COLUMN "scope" SET NOT NULL;
+
+UPDATE "APP_META"."DB_UPDATE" SET "currentVersion" = 10;
+COMMIT;
