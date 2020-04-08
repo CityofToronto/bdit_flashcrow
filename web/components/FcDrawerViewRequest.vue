@@ -16,7 +16,8 @@
         </span>
       </h1>
       <FcButton
-        v-if="!loading && (auth.user.id === studyRequest.userId || isSupervisor)"
+        v-if="canEdit"
+        :disabled="loading"
         type="secondary"
         @click="actionEdit">
         <v-icon color="primary" left>mdi-pencil</v-icon> Edit
@@ -63,18 +64,21 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import {
-  getStudyRequest,
-} from '@/lib/api/WebApi';
+import { AuthScope } from '@/lib/Constants';
+import { getStudyRequest } from '@/lib/api/WebApi';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewRequest',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcCommentsStudyRequest,
@@ -89,8 +93,14 @@ export default {
     };
   },
   computed: {
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    canEdit() {
+      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
+        return true;
+      }
+      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS_EDIT)) {
+        return this.auth.user.id === this.studyRequest.userId;
+      }
+      return false;
     },
     labelNavigateBack() {
       const { backViewRequest: { name } } = this;
@@ -118,17 +128,10 @@ export default {
         name: 'requestStudyEdit',
         params: { id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const { backViewRequest } = this;
-      const route = { ...backViewRequest };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
+      const { backViewRequest: route } = this;
       this.$router.push(route);
     },
     async loadAsyncForRoute(to) {

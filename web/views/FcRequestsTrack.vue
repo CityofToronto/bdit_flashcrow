@@ -34,7 +34,7 @@
             </FcButton>
             <template v-else>
               <template
-                v-if="isSupervisor">
+                v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
                 <FcButton
                   class="mr-2"
                   type="secondary"
@@ -74,7 +74,6 @@
       <FcDataTable
         v-model="selectedItems"
         class="fc-data-table-requests"
-        :class="{ supervisor: isSupervisor }"
         :columns="columns"
         :items="items"
         :loading="loading || loadingRefresh"
@@ -150,7 +149,7 @@
               color="warning"
               title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="isSupervisor && !closed">
+            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN) && !closed">
               <v-tooltip top>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -214,12 +213,13 @@ import {
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import {
-  getUserStudyRequests,
+  getStudyRequests,
   putStudyRequests,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemFields(item) {
@@ -294,7 +294,10 @@ function getItemRows(item) {
 
 export default {
   name: 'FcRequestsTrack',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcDataTable,
@@ -338,9 +341,6 @@ export default {
   computed: {
     closed() {
       return this.indexClosed === 1;
-    },
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
     },
     items() {
       return this.itemsStudyRequests
@@ -442,9 +442,6 @@ export default {
         name: 'requestStudyView',
         params: { id: item.id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
       this.$router.push(route);
     },
     async loadAsyncForRoute() {
@@ -452,19 +449,18 @@ export default {
         studyRequests,
         studyRequestLocations,
         studyRequestUsers,
-      } = await getUserStudyRequests(this.isSupervisor);
+      } = await getStudyRequests();
 
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
     async setStudyRequests(items, updates) {
-      const { isSupervisor } = this;
       const studyRequests = items.map((item) => {
         const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
         return Object.assign(studyRequest, updates);
       });
-      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
+      return putStudyRequests(this.auth.csrf, studyRequests);
     },
     ...mapActions([
       'saveStudyRequest',
