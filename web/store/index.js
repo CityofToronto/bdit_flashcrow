@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { apiFetch } from '@/lib/api/BackendClient';
+import {
+  getAuth,
+  postStudyRequest,
+  putStudyRequests,
+} from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
@@ -98,13 +102,8 @@ export default new Vuex.Store({
   },
   actions: {
     // AUTH / HELPERS STATE
-    async webInit({ commit }) {
-      const response = await apiFetch('/web/init');
-      commit('webInit', response);
-      return response;
-    },
     async checkAuth({ commit }) {
-      const auth = await apiFetch('/auth');
+      const auth = await getAuth('/auth');
       commit('setAuth', auth);
       return auth;
     },
@@ -122,18 +121,11 @@ export default new Vuex.Store({
         commit('setToast', toast);
       }
 
-      const data = studyRequest;
-      if (update && isSupervisor) {
-        data.isSupervisor = true;
+      const { csrf } = state.auth;
+      if (update) {
+        return putStudyRequests(csrf, isSupervisor, [studyRequest]);
       }
-      const method = update ? 'PUT' : 'POST';
-      const url = update ? `/requests/study/${id}` : '/requests/study';
-      const options = {
-        method,
-        csrf: state.auth.csrf,
-        data,
-      };
-      return apiFetch(url, options);
+      return postStudyRequest(csrf, studyRequest);
     },
   },
 });

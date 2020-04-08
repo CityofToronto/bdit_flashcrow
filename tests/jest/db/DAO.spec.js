@@ -2,6 +2,7 @@
 import path from 'path';
 
 import {
+  AuthScope,
   CardinalDirection,
   centrelineKey,
   CentrelineType,
@@ -676,7 +677,11 @@ test('UserDAO', async () => {
   const email = generateEmail(name);
   const uniqueName = generateUniqueName(name);
   Object.assign(persistedUser1, { email, uniqueName });
-  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
+  Object.assign(persistedUser1, {
+    scope: [AuthScope.STUDY_REQUESTS, AuthScope.STUDY_REQUESTS_EDIT],
+  });
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
 
   let users = await UserDAO.byIds([]);
