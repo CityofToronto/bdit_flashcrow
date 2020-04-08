@@ -16,11 +16,8 @@
         </span>
       </h1>
       <FcButton
-        v-if="!loading
-          && (
-            auth.user.id === studyRequest.userId
-            || hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
-          )"
+        v-if="canEdit"
+        :disabled="loading"
         type="secondary"
         @click="actionEdit">
         <v-icon color="primary" left>mdi-pencil</v-icon> Edit
@@ -67,9 +64,8 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import {
-  getStudyRequest,
-} from '@/lib/api/WebApi';
+import { AuthScope } from '@/lib/Constants';
+import { getStudyRequest } from '@/lib/api/WebApi';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
@@ -97,6 +93,15 @@ export default {
     };
   },
   computed: {
+    canEdit() {
+      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
+        return true;
+      }
+      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS_EDIT)) {
+        return this.auth.user.id === this.studyRequest.userId;
+      }
+      return false;
+    },
     labelNavigateBack() {
       const { backViewRequest: { name } } = this;
       if (name === 'viewDataAtLocation') {

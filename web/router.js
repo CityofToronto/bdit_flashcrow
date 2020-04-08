@@ -24,19 +24,11 @@ const router = new Router({
       children: [{
         path: '',
         name: 'admin',
-        meta: {
-          auth: {
-            scope: [AuthScope.ADMIN],
-          },
-        },
         redirect: { name: 'adminPermissions' },
       }, {
         path: '/admin/metrics',
         name: 'adminMetrics',
         meta: {
-          auth: {
-            scope: [AuthScope.ADMIN],
-          },
           title: 'Admin Console: Metrics',
         },
         component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminMetrics.vue'),
@@ -44,9 +36,6 @@ const router = new Router({
         path: '/admin/permissions',
         name: 'adminPermissions',
         meta: {
-          auth: {
-            scope: [AuthScope.ADMIN],
-          },
           title: 'Admin Console: Permissions',
         },
         component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminPermissions.vue'),
