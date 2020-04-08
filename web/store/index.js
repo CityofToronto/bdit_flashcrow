@@ -108,7 +108,7 @@ export default new Vuex.Store({
       return auth;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ state, commit }, { isSupervisor, studyRequest }) {
+    async saveStudyRequest({ state, commit }, studyRequest) {
       const { id, urgent } = studyRequest;
       const update = id !== undefined;
       if (urgent) {
@@ -123,7 +123,7 @@ export default new Vuex.Store({
 
       const { csrf } = state.auth;
       if (update) {
-        return putStudyRequests(csrf, isSupervisor, [studyRequest]);
+        return putStudyRequests(csrf, [studyRequest]);
       }
       return postStudyRequest(csrf, studyRequest);
     },

@@ -214,7 +214,7 @@ import {
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import {
-  getUserStudyRequests,
+  getStudyRequests,
   putStudyRequests,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -339,9 +339,6 @@ export default {
     closed() {
       return this.indexClosed === 1;
     },
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
-    },
     items() {
       return this.itemsStudyRequests
         .filter(({ closed }) => closed === this.closed);
@@ -442,9 +439,6 @@ export default {
         name: 'requestStudyView',
         params: { id: item.id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
       this.$router.push(route);
     },
     async loadAsyncForRoute() {
@@ -452,19 +446,18 @@ export default {
         studyRequests,
         studyRequestLocations,
         studyRequestUsers,
-      } = await getUserStudyRequests(this.isSupervisor);
+      } = await getStudyRequests();
 
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
     async setStudyRequests(items, updates) {
-      const { isSupervisor } = this;
       const studyRequests = items.map((item) => {
         const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
         return Object.assign(studyRequest, updates);
       });
-      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
+      return putStudyRequests(this.auth.csrf, studyRequests);
     },
     ...mapActions([
       'saveStudyRequest',

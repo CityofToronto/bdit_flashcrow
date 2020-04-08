@@ -89,9 +89,6 @@ export default {
     };
   },
   computed: {
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
-    },
     labelNavigateBack() {
       const { backViewRequest: { name } } = this;
       if (name === 'viewDataAtLocation') {
@@ -118,17 +115,10 @@ export default {
         name: 'requestStudyEdit',
         params: { id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const { backViewRequest } = this;
-      const route = { ...backViewRequest };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
+      const { backViewRequest: route } = this;
       this.$router.push(route);
     },
     async loadAsyncForRoute(to) {

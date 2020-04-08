@@ -223,9 +223,6 @@ export default {
     isCreate() {
       return this.$route.name === 'requestStudyNew';
     },
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
-    },
     itemsStudyType() {
       const itemsStudyType = StudyType.enumValues.map((studyType) => {
         const { label: text } = studyType;
@@ -245,14 +242,10 @@ export default {
         return null;
       }
       const { id } = this.studyRequest;
-      const route = {
+      return {
         name: 'requestStudyView',
         params: { id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
-      return route;
     },
     subtitle() {
       if (this.location === null) {
@@ -338,8 +331,8 @@ export default {
       }
     },
     onFinish() {
-      const { isSupervisor, studyRequest } = this;
-      this.saveStudyRequest({ isSupervisor, studyRequest });
+      const { studyRequest } = this;
+      this.saveStudyRequest(studyRequest);
       this.leaveConfirmed = true;
       this.$router.push(this.routeFinish);
     },

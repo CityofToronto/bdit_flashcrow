@@ -14,12 +14,7 @@ const router = new Router({
       path: '/requests/track',
       name: 'requestsTrack',
       meta: {
-        title({ query: { isSupervisor = null } }) {
-          if (isSupervisor) {
-            return 'Manage Requests';
-          }
-          return 'Track Requests';
-        },
+        title: 'Track Requests',
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
       beforeEnter(to, from, next) {
