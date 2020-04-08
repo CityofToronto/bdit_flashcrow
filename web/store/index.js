@@ -26,11 +26,12 @@ export default new Vuex.Store({
     auth: {
       csrf: '',
       loggedIn: false,
+      user: null,
     },
     now: DateTime.local(),
     // TOP-LEVEL UI
-    alert: null,
-    alertData: {},
+    dialog: null,
+    dialogData: {},
     drawerOpen: false,
     toast: null,
     // NAVIGATION
@@ -59,6 +60,13 @@ export default new Vuex.Store({
       }
       return uniqueName.slice(i + 1);
     },
+    userScope(state) {
+      if (!state.auth.loggedIn) {
+        return [];
+      }
+      const { scope } = state.auth.user;
+      return scope;
+    },
     // LOCATION
     locationFeatureType(state) {
       const { location } = state;
@@ -71,16 +79,16 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     // TOP-LEVEL UI
-    clearAlert(state) {
-      Vue.set(state, 'alert', null);
-      Vue.set(state, 'alertData', {});
+    clearDialog(state) {
+      Vue.set(state, 'dialog', null);
+      Vue.set(state, 'dialogData', {});
     },
     clearToast(state) {
       Vue.set(state, 'toast', null);
     },
-    setAlert(state, { alert, alertData = {} }) {
-      Vue.set(state, 'alert', alert);
-      Vue.set(state, 'alertData', alertData);
+    setDialog(state, { dialog, dialogData = {} }) {
+      Vue.set(state, 'dialog', dialog);
+      Vue.set(state, 'dialogData', dialogData);
     },
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
@@ -112,9 +120,9 @@ export default new Vuex.Store({
       const { id, urgent } = studyRequest;
       const update = id !== undefined;
       if (urgent) {
-        commit('setAlert', {
-          alert: 'StudyRequestUrgent',
-          alertData: { update },
+        commit('setDialog', {
+          dialog: 'StudyRequestUrgent',
+          dialogData: { update },
         });
       } else {
         const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;

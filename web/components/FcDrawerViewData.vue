@@ -176,6 +176,7 @@ import {
   mapState,
 } from 'vuex';
 
+import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
@@ -190,11 +191,15 @@ import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewData',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcDataTableStudies,
@@ -355,7 +360,7 @@ export default {
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
-      if (this.auth.loggedIn) {
+      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         tasks.push(getStudiesByCentrelinePending({ centrelineId, centrelineType }));
       }
       const [

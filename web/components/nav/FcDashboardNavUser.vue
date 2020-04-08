@@ -33,6 +33,15 @@
         </v-tooltip>
       </template>
       <v-list>
+        <template
+          v-if="hasAuthScope(AuthScope.ADMIN)">
+          <v-list-item
+            link
+            :to="{ name: 'admin' }">
+            <v-list-item-title>Admin Console</v-list-item-title>
+          </v-list-item>
+          <v-divider></v-divider>
+        </template>
         <v-list-item
           @click="actionSignOut()">
           <v-list-item-title>Sign out</v-list-item-title>
@@ -61,10 +70,14 @@ import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
   name: 'FcDashboardNavUser',
+  mixins: [
+    FcMixinAuthScope,
+  ],
   components: {
     FcButton,
   },

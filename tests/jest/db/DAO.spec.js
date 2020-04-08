@@ -672,6 +672,7 @@ test('UserDAO', async () => {
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
   await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
   await expect(UserDAO.byEmail(transientUser1.email)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.all()).resolves.toContainEqual(persistedUser1);
 
   const name = generateName();
   const email = generateEmail(name);
@@ -696,7 +697,9 @@ test('UserDAO', async () => {
   expect(users.size).toBe(2);
   expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
   expect(users.get(persistedUser2.id)).toEqual(persistedUser2);
+  await expect(UserDAO.all()).resolves.toContainEqual(persistedUser2);
 
   await expect(UserDAO.delete(persistedUser1)).resolves.toEqual(true);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
+  await expect(UserDAO.all()).resolves.not.toContainEqual(persistedUser1);
 });

@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+import { AuthScope } from '@/lib/Constants';
+import { hasAuthScope } from '@/lib/auth/ScopeMatcher';
 import store from '@/web/store';
 import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
@@ -11,9 +13,52 @@ const router = new Router({
   routes: [
     // NON-DRAWER ROUTES
     {
+      path: '/admin',
+      meta: {
+        auth: {
+          scope: [AuthScope.ADMIN],
+        },
+        title: 'Admin Console',
+      },
+      component: () => import(/* webpackChunkName: "admin" */ '@/web/views/FcAdmin.vue'),
+      children: [{
+        path: '',
+        name: 'admin',
+        meta: {
+          auth: {
+            scope: [AuthScope.ADMIN],
+          },
+        },
+        redirect: { name: 'adminPermissions' },
+      }, {
+        path: '/admin/metrics',
+        name: 'adminMetrics',
+        meta: {
+          auth: {
+            scope: [AuthScope.ADMIN],
+          },
+          title: 'Admin Console: Metrics',
+        },
+        component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminMetrics.vue'),
+      }, {
+        path: '/admin/permissions',
+        name: 'adminPermissions',
+        meta: {
+          auth: {
+            scope: [AuthScope.ADMIN],
+          },
+          title: 'Admin Console: Permissions',
+        },
+        component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminPermissions.vue'),
+      }],
+    },
+    {
       path: '/requests/track',
       name: 'requestsTrack',
       meta: {
+        auth: {
+          scope: [AuthScope.STUDY_REQUESTS],
+        },
         title: 'Track Requests',
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
@@ -75,7 +120,12 @@ const router = new Router({
       }, {
         path: '/requests/study/new',
         name: 'requestStudyNew',
-        meta: { title: 'New Request' },
+        meta: {
+          auth: {
+            scope: [AuthScope.STUDY_REQUESTS_EDIT],
+          },
+          title: 'New Request',
+        },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudy.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
@@ -85,6 +135,9 @@ const router = new Router({
         path: '/requests/study/:id/edit',
         name: 'requestStudyEdit',
         meta: {
+          auth: {
+            scope: [AuthScope.STUDY_REQUESTS_EDIT],
+          },
           title({ params: { id } }) {
             return `Edit Request #${id}`;
           },
@@ -98,6 +151,9 @@ const router = new Router({
         path: '/requests/study/:id',
         name: 'requestStudyView',
         meta: {
+          auth: {
+            scope: [AuthScope.STUDY_REQUESTS],
+          },
           title({ params: { id } }) {
             return `View Request #${id}`;
           },
@@ -142,6 +198,25 @@ function routeMetaKey(to, key, defaultValue) {
   return routeWithKey.meta[key];
 }
 
+
+/**
+ * As part of "security by design", our default assumption is that a route requires
+ * authentication, and that no specific scopes are required.  A route must manually
+ * override this to specify different behaviour.
+ *
+ * @param {Array<Object>} to - routes matched from `router` above
+ * @returns {Object} value of `meta.auth` from most specific matched route, filled
+ * in with default values for any missing auth configuration fields
+ */
+function routeMetaAuth(to) {
+  const metaAuth = routeMetaKey(to, 'auth', {});
+  return {
+    mode: 'required',
+    scope: [],
+    ...metaAuth,
+  };
+}
+
 router.beforeEach(async (to, from, next) => {
   /*
    * Handle login redirects using `window.sessionStorage`.
@@ -150,23 +225,26 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
 
-  const { loggedIn } = await store.dispatch('checkAuth');
-  /*
-   * As part of "security by design", our default assumption is that a route
-   * requires authentication.  A route must manually override this to specify
-   * different behaviour.
-   */
-  const metaAuth = routeMetaKey(to, 'auth', true);
-  if (metaAuth === true) {
+  const { loggedIn, user } = await store.dispatch('checkAuth');
+  const { mode, scope } = routeMetaAuth(to, 'auth', {});
+  if (mode === 'required') {
     // This route requires authenticated users.
     if (loggedIn) {
-      next();
+      if (hasAuthScope(user, scope)) {
+        next();
+      } else {
+        next(false);
+        store.commit('setDialog', {
+          dialog: 'ConfirmUnauthorized',
+          dialogData: { scope },
+        });
+      }
     } else {
       next(false);
       saveLoginState(to);
       document.forms.formSignIn.submit();
     }
-  } else if (metaAuth === false) {
+  } else if (mode === 'optional') {
     // This route requires unauthenticated users.
     if (loggedIn) {
       next(false);

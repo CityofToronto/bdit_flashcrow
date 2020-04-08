@@ -16,7 +16,11 @@
         </span>
       </h1>
       <FcButton
-        v-if="!loading && (auth.user.id === studyRequest.userId || isSupervisor)"
+        v-if="!loading
+          && (
+            auth.user.id === studyRequest.userId
+            || hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
+          )"
         type="secondary"
         @click="actionEdit">
         <v-icon color="primary" left>mdi-pencil</v-icon> Edit
@@ -70,11 +74,15 @@ import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue'
 import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewRequest',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcCommentsStudyRequest,

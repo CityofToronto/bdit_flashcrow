@@ -34,7 +34,7 @@
             </FcButton>
             <template v-else>
               <template
-                v-if="isSupervisor">
+                v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
                 <FcButton
                   class="mr-2"
                   type="secondary"
@@ -74,7 +74,6 @@
       <FcDataTable
         v-model="selectedItems"
         class="fc-data-table-requests"
-        :class="{ supervisor: isSupervisor }"
         :columns="columns"
         :items="items"
         :loading="loading || loadingRefresh"
@@ -150,7 +149,7 @@
               color="warning"
               title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="isSupervisor && !closed">
+            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN) && !closed">
               <v-tooltip top>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -220,6 +219,7 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemFields(item) {
@@ -294,7 +294,10 @@ function getItemRows(item) {
 
 export default {
   name: 'FcRequestsTrack',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcDataTable,
