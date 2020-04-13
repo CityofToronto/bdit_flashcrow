@@ -23,20 +23,17 @@ REFRESH MATERIALIZED VIEW CONCURRENTLY prj_volume_tmp.nodes_corrected;
 CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume_tmp.nodes_intersection AS (
   SELECT
     nc.link_id,
-    u.int_id,
-    u.geom_dist,
-    COALESCE(u.geom, nc.geom) AS geom
+    COALESCE(u.int_id, ci.int_id) AS int_id,
+    COALESCE(u.geom, ci.geom, nc.geom) AS geom
   FROM prj_volume_tmp.nodes_corrected nc
+  LEFT JOIN prj_volume_tmp.centreline_intersection ci ON nc.link_id = ci.int_id
   LEFT JOIN LATERAL (
     SELECT
       int_id,
       geom,
       ST_Distance(ST_Transform(nc.geom, 2952), ST_Transform(geom, 2952)) AS geom_dist
-    FROM gis.centreline_intersection
-    WHERE
-      ST_DWithin(ST_Transform(nc.geom, 2952), ST_Transform(geom, 2952), 10)
-      AND (intersec5 NOT LIKE '% Trl /% Trl%' OR intersec5 LIKE '%/%/%')
-      AND intersec5 NOT LIKE '% Trl /% Trl /% Trl%'
+    FROM prj_volume_tmp.centreline_intersection
+    WHERE ST_DWithin(ST_Transform(nc.geom, 2952), ST_Transform(geom, 2952), 10)
     ORDER BY geom_dist ASC
     LIMIT 1
   ) u ON true

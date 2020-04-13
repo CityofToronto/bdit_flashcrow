@@ -14,7 +14,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume_tmp.arteries_intersection AS (
     ni.int_id,
     ni.geom
   FROM artery_links al
-  JOIN prj_volume_tmp.nodes_intersection ni USING (link_id)
+  LEFT JOIN prj_volume_tmp.nodes_intersection ni USING (link_id)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS arteries_intersection_arterycode ON prj_volume_tmp.arteries_intersection (arterycode);
 
@@ -37,8 +37,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume_tmp.arteries_midblock AS (
     ni_to.int_id AS to_int_id,
     ST_MakeLine(ni_from.geom, ni_to.geom) AS geom
   FROM artery_links al
-  JOIN prj_volume_tmp.nodes_intersection ni_from ON al.from_link_id = ni_from.link_id
-  JOIN prj_volume_tmp.nodes_intersection ni_to ON al.to_link_id = ni_to.link_id
+  LEFT JOIN prj_volume_tmp.nodes_intersection ni_from ON al.from_link_id = ni_from.link_id
+  LEFT JOIN prj_volume_tmp.nodes_intersection ni_to ON al.to_link_id = ni_to.link_id
 );
 CREATE UNIQUE INDEX IF NOT EXISTS arteries_midblock_arterycode ON prj_volume_tmp.arteries_midblock (arterycode);
 
