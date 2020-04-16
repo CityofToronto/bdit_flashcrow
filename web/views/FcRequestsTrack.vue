@@ -380,7 +380,7 @@ export default {
       });
     },
     actionDownload(studyRequests) {
-      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRow));
+      const rows = studyRequests.map(getItemRow);
       const columns = [
         'id',
         'location',

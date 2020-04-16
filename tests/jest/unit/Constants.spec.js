@@ -3,6 +3,7 @@ import {
   SearchKeys,
   SortKeys,
   StudyRequestStatus,
+  StudyType,
 } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 
@@ -97,6 +98,7 @@ test('Constants.SortKeys', () => {
     assignedTo: 'FIELD STAFF',
     requestedBy,
     status: 'REVIEWED',
+    studyType: StudyType.TMC,
   };
   const REQUEST_URGENT = {
     ...REQUEST_STANDARD,
@@ -118,6 +120,8 @@ test('Constants.SortKeys', () => {
     .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.status.ordinal);
+  expect(SortKeys.Requests.STUDY_TYPE(REQUEST_STANDARD))
+    .toEqual(REQUEST_STANDARD.studyType.label);
   expect(SortKeys.Requests.URGENT(REQUEST_STANDARD))
     .toEqual(0);
   expect(SortKeys.Requests.URGENT(REQUEST_URGENT))
