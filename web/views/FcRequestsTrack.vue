@@ -110,6 +110,11 @@
             </span>
           </div>
         </template>
+        <template v-slot:item.STUDY_TYPE="{ item }">
+          <div class="text-truncate">
+            {{item.studyType.label}}
+          </div>
+        </template>
         <template v-slot:item.REQUESTER="{ item }">
           <div class="text-truncate">
             <span
@@ -206,7 +211,6 @@ import { mapActions, mapState } from 'vuex';
 
 import {
   centrelineKey,
-  CentrelineType,
   SearchKeys,
   SortKeys,
   StudyRequestStatus,
@@ -222,74 +226,50 @@ import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
-function getItemFields(item) {
+function getItemRow(item) {
   const {
-    centrelineType,
+    assignedTo,
+    hours,
     id,
+    notes,
+    status,
+    studyType: { label: studyType },
     urgent,
     urgentReason,
-    assignedTo,
-    status,
   } = item;
-  let [lng, lat] = item.geom.coordinates;
+
+  const [lng, lat] = item.geom.coordinates;
   const location = (item.location && item.location.description) || null;
   const requester = (item.requestedBy && item.requestedBy.uniqueName) || null;
   const dueDate = TimeFormatters.formatDefault(item.dueDate);
   const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
-  if (centrelineType !== CentrelineType.INTERSECTION) {
-    lng = null;
-    lat = null;
-  }
-  return {
-    id,
-    location,
-    requester,
-    dueDate,
-    estimatedDeliveryDate,
-    urgent,
-    urgentReason,
-    assignedTo,
-    status,
-    lng,
-    lat,
-  };
-}
 
-function getStudyFields(study, i) {
-  const studyIndex = i + 1;
-  const {
-    id: studyId,
-    hours,
-    notes,
-  } = study;
-  const { studyType } = study;
-  let { daysOfWeek, duration } = study;
+  let { daysOfWeek, duration } = item;
   daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
   if (studyType.automatic) {
     duration = formatDuration(duration);
   } else {
     duration = null;
   }
-  return {
-    studyId,
-    studyIndex,
-    studyType: studyType.label,
-    daysOfWeek,
-    duration,
-    hours,
-    notes,
-  };
-}
 
-function getItemRows(item) {
-  const itemFields = getItemFields(item);
-  return item.studies.map((study, i) => {
-    const studyFields = getStudyFields(study, i);
-    return {
-      ...itemFields,
-      ...studyFields,
-    };
-  });
+  return {
+    assignedTo,
+    daysOfWeek,
+    dueDate,
+    duration,
+    estimatedDeliveryDate,
+    hours,
+    id,
+    lat,
+    lng,
+    location,
+    notes,
+    requester,
+    status,
+    studyType,
+    urgent,
+    urgentReason,
+  };
 }
 
 export default {
@@ -309,6 +289,9 @@ export default {
     }, {
       value: 'LOCATION',
       text: 'Location',
+    }, {
+      value: 'STUDY_TYPE',
+      text: 'Type',
     }, {
       value: 'REQUESTER',
       text: 'Requester',
@@ -397,7 +380,7 @@ export default {
       });
     },
     actionDownload(studyRequests) {
-      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRows));
+      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRow));
       const columns = [
         'id',
         'location',
@@ -410,8 +393,6 @@ export default {
         'status',
         'lng',
         'lat',
-        'studyId',
-        'studyIndex',
         'studyType',
         'daysOfWeek',
         'duration',
