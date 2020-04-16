@@ -16,7 +16,6 @@ import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
-import StudyDAO from '@/lib/db/StudyDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
 import UserDAO from '@/lib/db/UserDAO';
@@ -446,9 +445,6 @@ test('StudyRequestDAO', async () => {
   const persistedUser = await UserDAO.create(transientUser);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userId: persistedUser.id,
-    status: StudyRequestStatus.REQUESTED,
-    closed: false,
     serviceRequestId: null,
     urgent: false,
     urgentReason: null,
@@ -457,19 +453,17 @@ test('StudyRequestDAO', async () => {
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
     reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
     centrelineId: 1729,
     centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
       coordinates: [-79.333251, 43.709012],
     },
-    studies: [{
-      studyType: StudyType.TMC,
-      daysOfWeek: [2, 3, 4],
-      duration: null,
-      hours: StudyHours.ROUTINE,
-      notes: 'completely normal routine turning movement count',
-    }],
   };
 
   // generate second user for multi-user updates
@@ -477,8 +471,11 @@ test('StudyRequestDAO', async () => {
   const persistedUser2 = await UserDAO.create(transientUser2);
 
   // save study request
-  let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, persistedUser);
   expect(persistedStudyRequest.id).not.toBeNull();
+  expect(persistedStudyRequest.userId).toBe(persistedUser.id);
+  expect(persistedStudyRequest.status).toBe(StudyRequestStatus.REQUESTED);
+  expect(persistedStudyRequest.closed).toBe(false);
   await expect(
     StudyRequest.read.validateAsync(persistedStudyRequest),
   ).resolves.toEqual(persistedStudyRequest);
@@ -500,9 +497,9 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.serviceRequestId = '12345';
 
   // update existing study fields
-  persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
-  persistedStudyRequest.studies[0].hours = StudyHours.SCHOOL;
-  persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
+  persistedStudyRequest.daysOfWeek = [3, 4];
+  persistedStudyRequest.hours = StudyHours.SCHOOL;
+  persistedStudyRequest.notes = 'oops, this is actually a school count';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -529,20 +526,12 @@ test('StudyRequestDAO', async () => {
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
-  // add new study to study request
-  persistedStudyRequest.studies.push({
-    studyType: StudyType.TMC,
-    daysOfWeek: [0, 6],
-    duration: null,
-    hours: StudyHours.OTHER,
-    notes: 'complete during shopping mall peak hours',
-  });
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
-  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-
-  // remove study from study request
-  persistedStudyRequest.studies.pop();
+  // change study details
+  persistedStudyRequest.studyType = StudyType.TMC;
+  persistedStudyRequest.daysOfWeek = [0, 6];
+  persistedStudyRequest.duration = null;
+  persistedStudyRequest.hours = StudyHours.OTHER;
+  persistedStudyRequest.notes = 'complete during shopping mall peak hours';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -551,8 +540,6 @@ test('StudyRequestDAO', async () => {
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(true);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toBeNull();
-  const studies = await StudyDAO.byStudyRequests([persistedStudyRequest]);
-  expect(studies).toHaveLength(0);
 
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
@@ -571,9 +558,6 @@ test('StudyRequestCommentDAO', async () => {
   const userCreated1 = await UserDAO.create(user1);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userId: userCreated1.id,
-    status: StudyRequestStatus.REQUESTED,
-    closed: false,
     serviceRequestId: '12345',
     urgent: false,
     urgentReason: null,
@@ -582,21 +566,19 @@ test('StudyRequestCommentDAO', async () => {
     estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
     reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
     centrelineId: 42,
     centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
       coordinates: [-79.333251, 43.709012],
     },
-    studies: [{
-      studyType: StudyType.TMC,
-      daysOfWeek: [2, 3, 4],
-      duration: null,
-      hours: StudyHours.ROUTINE,
-      notes: 'completely normal routine turning movement count',
-    }],
   };
-  const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, userCreated1);
 
   const transientComment1 = {
     userId: userCreated1.id,

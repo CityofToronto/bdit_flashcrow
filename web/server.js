@@ -14,7 +14,6 @@ import CountController from '@/lib/controller/CountController';
 import DynamicTileController from '@/lib/controller/DynamicTileController';
 import LocationController from '@/lib/controller/LocationController';
 import PoiController from '@/lib/controller/PoiController';
-import StudyController from '@/lib/controller/StudyController';
 import StudyRequestController from '@/lib/controller/StudyRequestController';
 import UserController from '@/lib/controller/UserController';
 import db from '@/lib/db/db';
@@ -193,7 +192,6 @@ async function initServer() {
   server.route(DynamicTileController);
   server.route(LocationController);
   server.route(PoiController);
-  server.route(StudyController);
   server.route(StudyRequestController);
   server.route(UserController);
 

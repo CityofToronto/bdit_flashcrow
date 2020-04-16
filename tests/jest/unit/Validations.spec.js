@@ -44,7 +44,7 @@ test('ValidationsStudyRequest.torontoInternal()', () => {
 });
 
 test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
-  const { needsValidDaysOfWeek } = ValidationsStudyRequest.studyRequest.studies.$each.duration;
+  const { needsValidDaysOfWeek } = ValidationsStudyRequest.studyRequest.duration;
 
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [] })).toBeFalsy();
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
@@ -64,7 +64,7 @@ test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
 });
 
 test('ValidationsStudyRequest.requiredIfOtherHours()', () => {
-  const { requiredIfOtherHours } = ValidationsStudyRequest.studyRequest.studies.$each.notes;
+  const { requiredIfOtherHours } = ValidationsStudyRequest.studyRequest.notes;
 
   expect(requiredIfOtherHours(null, { hours: StudyHours.ROUTINE })).toBeTruthy();
   expect(requiredIfOtherHours('', { hours: StudyHours.SCHOOL })).toBeTruthy();
@@ -73,16 +73,4 @@ test('ValidationsStudyRequest.requiredIfOtherHours()', () => {
   expect(requiredIfOtherHours(null, { hours: StudyHours.OTHER })).toBeFalsy();
   expect(requiredIfOtherHours('', { hours: StudyHours.OTHER })).toBeFalsy();
   expect(requiredIfOtherHours('shopping mall hours', { hours: StudyHours.OTHER })).toBeTruthy();
-});
-
-test('ValidationsStudyRequest.requiredIfUrgent()', () => {
-  const { requiredIfUrgent } = ValidationsStudyRequest.studyRequest.urgentReason;
-
-  expect(requiredIfUrgent(null, { urgent: false })).toBeTruthy();
-  expect(requiredIfUrgent('', { urgent: false })).toBeTruthy();
-  expect(requiredIfUrgent('this is urgent!', { urgent: false })).toBeFalsy();
-
-  expect(requiredIfUrgent(null, { urgent: true })).toBeFalsy();
-  expect(requiredIfUrgent('', { urgent: true })).toBeFalsy();
-  expect(requiredIfUrgent('this is urgent!', { urgent: true })).toBeTruthy();
 });

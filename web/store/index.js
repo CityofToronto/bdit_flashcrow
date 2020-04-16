@@ -121,7 +121,7 @@ export default new Vuex.Store({
       const update = id !== undefined;
       if (urgent) {
         commit('setDialog', {
-          dialog: 'StudyRequestUrgent',
+          dialog: 'AlertStudyRequestUrgent',
           dialogData: { update },
         });
       } else {

@@ -40,13 +40,6 @@
           <FcSummaryStudyRequest
             class="pr-5"
             :study-request="studyRequest" />
-          <template v-for="(study, i) in studyRequest.studies">
-            <v-divider :key="'divider_' + i"></v-divider>
-            <FcSummaryStudy
-              :key="'study_' + i"
-              class="pr-5"
-              :study="study" />
-          </template>
         </div>
         <v-divider></v-divider>
         <FcCommentsStudyRequest
@@ -67,7 +60,6 @@ import { mapMutations, mapState } from 'vuex';
 import { AuthScope } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
-import FcSummaryStudy from '@/web/components/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -82,7 +74,6 @@ export default {
   components: {
     FcButton,
     FcCommentsStudyRequest,
-    FcSummaryStudy,
     FcSummaryStudyRequest,
   },
   data() {
