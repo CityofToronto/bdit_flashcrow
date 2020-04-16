@@ -27,9 +27,6 @@
         dense>
         <FcDashboardNavItem
           :active-route-names="[
-            'requestStudyEdit',
-            'requestStudyNew',
-            'requestStudyView',
             'viewDataAtLocation',
             'viewReportsAtLocation',
           ]"
@@ -37,6 +34,11 @@
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
+          :active-route-names="[
+            'requestStudyEdit',
+            'requestStudyNew',
+            'requestStudyView',
+          ]"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />

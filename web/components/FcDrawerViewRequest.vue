@@ -139,7 +139,7 @@ export default {
       this.setLocation(studyRequestLocation);
     },
     onAddComment(comment) {
-      this.studyRequestComments.push(comment);
+      this.studyRequestComments.unshift(comment);
     },
     onDeleteComment(i) {
       this.studyRequestComments.splice(i, 1);
