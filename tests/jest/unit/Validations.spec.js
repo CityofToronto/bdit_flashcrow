@@ -74,15 +74,3 @@ test('ValidationsStudyRequest.requiredIfOtherHours()', () => {
   expect(requiredIfOtherHours('', { hours: StudyHours.OTHER })).toBeFalsy();
   expect(requiredIfOtherHours('shopping mall hours', { hours: StudyHours.OTHER })).toBeTruthy();
 });
-
-test('ValidationsStudyRequest.requiredIfUrgent()', () => {
-  const { requiredIfUrgent } = ValidationsStudyRequest.studyRequest.urgentReason;
-
-  expect(requiredIfUrgent(null, { urgent: false })).toBeTruthy();
-  expect(requiredIfUrgent('', { urgent: false })).toBeTruthy();
-  expect(requiredIfUrgent('this is urgent!', { urgent: false })).toBeFalsy();
-
-  expect(requiredIfUrgent(null, { urgent: true })).toBeFalsy();
-  expect(requiredIfUrgent('', { urgent: true })).toBeFalsy();
-  expect(requiredIfUrgent('this is urgent!', { urgent: true })).toBeTruthy();
-});

@@ -107,7 +107,7 @@ import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudyRequest(now) {
   const dueDate = now.plus({ months: 3 });
-  const studyRequest = {
+  return {
     serviceRequestId: null,
     urgent: false,
     urgentReason: null,
@@ -124,9 +124,7 @@ function makeStudyRequest(now) {
     centrelineId: null,
     centrelineType: null,
     geom: null,
-    studies: [],
   };
-  return studyRequest;
 }
 
 export default {
