@@ -10,7 +10,7 @@
         </template>
       </FcRadioGroup>
       <v-messages
-        class="mt-2"
+        class="mt-1"
         color="error"
         :value="errorMessagesStudyType"></v-messages>
     </div>
@@ -141,7 +141,7 @@
         class="mt-3"
         :error-messages="errorMessagesUrgentReason"
         label="Additional Information"
-        :messages="[REQUEST_STUDY_PROVIDE_URGENT_REASON.text]"
+        :messages="messagesUrgentReason"
         no-resize
         outlined
         rows="4"
@@ -212,11 +212,17 @@ export default {
     },
     errorMessagesDaysOfWeek() {
       const errors = [];
-      if (!this.v.daysOfWeek.$dirty) {
+      if (!this.v.daysOfWeek.$dirty && !this.v.duration.$dirty) {
         return errors;
       }
       if (!this.v.daysOfWeek.required) {
         errors.push(REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK.text);
+      }
+      const { duration } = this.internalValue;
+      if (!this.v.duration.needsValidDaysOfWeek) {
+        const days = duration / 24;
+        const msg = `Please select ${days} consecutive days or reduce study duration.`;
+        errors.push(msg);
       }
       return errors;
     },
@@ -227,19 +233,6 @@ export default {
       }
       if (!this.v.dueDate.required) {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text);
-      }
-      return errors;
-    },
-    errorMessagesDuration() {
-      const errors = [];
-      if (!this.v.duration.$dirty) {
-        return errors;
-      }
-      const { duration } = this.internalValue;
-      if (!this.v.duration.needsValidDaysOfWeek) {
-        const days = duration / 24;
-        const msg = `Please select ${days} consecutive days or reduce study duration.`;
-        errors.push(msg);
       }
       return errors;
     },
@@ -301,12 +294,19 @@ export default {
         const { label } = studyType;
         return { label, value: studyType };
       });
-      return ArrayUtils.sortBy(itemsStudyType, ({ text }) => text);
+      return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
     },
     messagesNotes() {
       const { hours } = this.internalValue;
       if (hours === StudyHours.OTHER) {
         return [];
+      }
+      return [OPTIONAL.text];
+    },
+    messagesUrgentReason() {
+      const { urgent } = this.internalValue;
+      if (urgent) {
+        return [REQUEST_STUDY_PROVIDE_URGENT_REASON.text];
       }
       return [OPTIONAL.text];
     },
@@ -318,6 +318,17 @@ export default {
       return now.plus({ months: 2 });
     },
     ...mapState(['now']),
+  },
+  watch: {
+    'internalValue.studyType.automatic': function studyTypeAutomatic() {
+      if (this.internalValue.studyType.automatic) {
+        this.internalValue.duration = 24;
+        this.internalValue.hours = null;
+      } else {
+        this.internalValue.duration = null;
+        this.internalValue.hours = StudyHours.ROUTINE;
+      }
+    },
   },
 };
 </script>

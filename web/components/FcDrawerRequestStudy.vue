@@ -94,7 +94,6 @@ import {
   mapState,
 } from 'vuex';
 
-import { StudyHours } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import {
   REQUEST_STUDY_REQUIRES_LOCATION,
@@ -119,8 +118,8 @@ function makeStudyRequest(now) {
     ccEmails: [],
     studyType: null,
     daysOfWeek: [2, 3, 4],
-    duration: 24,
-    hours: StudyHours.ROUTINE,
+    duration: null,
+    hours: null,
     notes: '',
     centrelineId: null,
     centrelineType: null,
