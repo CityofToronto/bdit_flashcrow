@@ -44,7 +44,7 @@ test('ValidationsStudyRequest.torontoInternal()', () => {
 });
 
 test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
-  const { needsValidDaysOfWeek } = ValidationsStudyRequest.studyRequest.studies.$each.duration;
+  const { needsValidDaysOfWeek } = ValidationsStudyRequest.studyRequest.duration;
 
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [] })).toBeFalsy();
   expect(needsValidDaysOfWeek(24, { daysOfWeek: [2, 3, 4] })).toBeTruthy();
@@ -64,7 +64,7 @@ test('ValidationsStudyRequest.needsValidDaysOfWeek()', () => {
 });
 
 test('ValidationsStudyRequest.requiredIfOtherHours()', () => {
-  const { requiredIfOtherHours } = ValidationsStudyRequest.studyRequest.studies.$each.notes;
+  const { requiredIfOtherHours } = ValidationsStudyRequest.studyRequest.notes;
 
   expect(requiredIfOtherHours(null, { hours: StudyHours.ROUTINE })).toBeTruthy();
   expect(requiredIfOtherHours('', { hours: StudyHours.SCHOOL })).toBeTruthy();

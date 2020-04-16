@@ -41,7 +41,7 @@
           Cancel
         </FcButton>
         <FcButton
-          :disabled="$v.$invalid"
+          :disabled="$v.studyRequest.$invalid"
           type="primary"
           @click="onFinish">
           Save
@@ -59,32 +59,10 @@
         <v-messages
           v-bind="attrsMessagesTop"></v-messages>
 
-        <section class="mt-5 pr-5">
-          <h2 class="headline">Study Type</h2>
-          <FcCheckboxGroupChips
-            v-model="studyTypes"
-            :items="itemsStudyType"></FcCheckboxGroupChips>
-          <v-messages
-            class="mt-1"
-            color="error"
-            :value="errorMessagesStudies"></v-messages>
-        </section>
-
         <FcDetailsStudyRequest
           v-model="studyRequest"
           class="pr-5"
           :v="$v.studyRequest" />
-
-        <template v-for="(_, i) in studyRequest.studies">
-          <v-divider
-            :key="'divider_' + i"
-            class="my-3"></v-divider>
-          <FcDetailsStudy
-            :key="'study_' + i"
-            v-model="studyRequest.studies[i]"
-            class="pr-5"
-            :v="$v.studyRequest.studies.$each[i]" />
-        </template>
 
         <section
           v-if="isCreate"
@@ -97,7 +75,7 @@
               Cancel
             </FcButton>
             <FcButton
-              :disabled="$v.$invalid"
+              :disabled="$v.studyRequest.$invalid"
               type="primary"
               @click="onFinish">
               Submit Request
@@ -116,33 +94,17 @@ import {
   mapState,
 } from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
-import { StudyHours, StudyType } from '@/lib/Constants';
-import {
-  getStudyRequest,
-} from '@/lib/api/WebApi';
+import { StudyHours } from '@/lib/Constants';
+import { getStudyRequest } from '@/lib/api/WebApi';
 import {
   REQUEST_STUDY_REQUIRES_LOCATION,
-  REQUEST_STUDY_REQUIRES_STUDIES,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
-import FcDetailsStudy from '@/web/components/FcDetailsStudy.vue';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-
-function makeStudy(studyType) {
-  return {
-    studyType,
-    daysOfWeek: [2, 3, 4],
-    duration: 24,
-    hours: StudyHours.ROUTINE,
-    notes: '',
-  };
-}
 
 function makeStudyRequest(now) {
   const dueDate = now.plus({ months: 3 });
@@ -155,6 +117,11 @@ function makeStudyRequest(now) {
     estimatedDeliveryDate: null,
     reasons: [],
     ccEmails: [],
+    studyType: null,
+    daysOfWeek: [2, 3, 4],
+    duration: 24,
+    hours: StudyHours.ROUTINE,
+    notes: '',
     centrelineId: null,
     centrelineType: null,
     geom: null,
@@ -168,8 +135,6 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
-    FcCheckboxGroupChips,
-    FcDetailsStudy,
     FcDetailsStudyRequest,
     FcDialogConfirm,
   },
@@ -180,7 +145,6 @@ export default {
       REQUEST_STUDY_TIME_TO_FULFILL,
       showConfirmLeave: false,
       studyRequest: null,
-      studyTypes: [],
     };
   },
   computed: {
@@ -196,13 +160,6 @@ export default {
       return {
         value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
       };
-    },
-    errorMessagesStudies() {
-      const errors = [];
-      if (!this.$v.studyRequest.studies.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_STUDIES.text);
-      }
-      return errors;
     },
     estimatedDeliveryDate() {
       const { now, studyRequest } = this;
@@ -222,13 +179,6 @@ export default {
     },
     isCreate() {
       return this.$route.name === 'requestStudyNew';
-    },
-    itemsStudyType() {
-      const itemsStudyType = StudyType.enumValues.map((studyType) => {
-        const { label: text } = studyType;
-        return { text, value: studyType };
-      });
-      return ArrayUtils.sortBy(itemsStudyType, ({ text }) => text);
     },
     routeFinish() {
       if (this.isCreate) {
@@ -269,22 +219,6 @@ export default {
     location() {
       this.updateStudyRequestLocation();
     },
-    studyTypes() {
-      let studyTypesPrev = [];
-      if (this.studyRequest !== null) {
-        studyTypesPrev = this.studyRequest.studies.map(({ studyType }) => studyType);
-      }
-      this.studyTypes.forEach((studyType) => {
-        if (!studyTypesPrev.includes(studyType)) {
-          this.actionAddStudy(studyType);
-        }
-      });
-      studyTypesPrev.forEach((studyType) => {
-        if (!this.studyTypes.includes(studyType)) {
-          this.actionRemoveStudy(studyType);
-        }
-      });
-    },
   },
   validations: ValidationsStudyRequest,
   beforeRouteLeave(to, from, next) {
@@ -297,10 +231,6 @@ export default {
     next(false);
   },
   methods: {
-    actionAddStudy(studyType) {
-      const item = makeStudy(studyType);
-      this.studyRequest.studies.push(item);
-    },
     actionLeave() {
       this.leaveConfirmed = true;
       this.$router.push(this.nextRoute);
@@ -320,14 +250,6 @@ export default {
           name: 'viewDataAtLocation',
           params: { centrelineId, centrelineType },
         });
-      }
-    },
-    actionRemoveStudy(studyType) {
-      const i = this.studyRequest.studies.findIndex(
-        ({ studyType: studyType0 }) => studyType0 === studyType,
-      );
-      if (i !== -1) {
-        this.studyRequest.studies.splice(i, 1);
       }
     },
     onFinish() {
@@ -350,7 +272,6 @@ export default {
         studyRequestLocation = result.studyRequestLocation;
       }
       this.studyRequest = studyRequest;
-      this.studyTypes = studyRequest.studies.map(({ studyType }) => studyType);
       this.setLocation(studyRequestLocation);
       this.updateStudyRequestLocation();
     },
