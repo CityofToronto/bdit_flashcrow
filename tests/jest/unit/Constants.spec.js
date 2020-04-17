@@ -34,7 +34,7 @@ test('Constants.SearchKeys', () => {
     urgent: false,
     assignedTo: null,
     requestedBy: null,
-    status: StudyRequestStatus.ACCEPTED,
+    status: StudyRequestStatus.ASSIGNED,
   };
 
   expect(SearchKeys.Requests.ASSIGNED_TO('', REQUEST)).toBe(true);
@@ -62,9 +62,8 @@ test('Constants.SearchKeys', () => {
   expect(SearchKeys.Requests.REQUESTER('BAZ', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.REQUESTER('quux', REQUEST)).toBe(true);
 
-  expect(SearchKeys.Requests.STATUS('ac', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.STATUS('acc', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.STATUS('app', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.STATUS('ass', REQUEST)).toBe(true);
+  expect(SearchKeys.Requests.STATUS('assign', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.STATUS('req', REQUEST)).toBe(false);
 });
 
