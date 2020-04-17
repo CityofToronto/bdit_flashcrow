@@ -3,8 +3,15 @@
     <header class="flex-grow-0 flex-shrink-0">
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-5">Track Requests</h1>
-        <div class="align-center d-flex mt-6 mb-2">
+        <h1 class="display-3 mt-8">Track Requests</h1>
+      </div>
+    </header>
+
+    <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
+      <v-card class="fc-requests-track-card">
+        <v-card-title class="align-center d-flex py-2">
+          <v-simple-checkbox class="mr-6"></v-simple-checkbox>
+
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
@@ -23,6 +30,7 @@
             <v-icon color="primary" left>mdi-cloud-download</v-icon>
             Download
           </FcButton>
+
           <FcButton
             v-if="items.length > 0 || filterChips.length > 0"
             type="secondary"
@@ -32,106 +40,113 @@
               left>mdi-filter-variant</v-icon>
             Filter
           </FcButton>
-          <v-spacer></v-spacer>
-        </div>
-        <v-divider></v-divider>
-      </div>
-    </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
-      <FcDataTable
-        v-model="selectedItems"
-        class="fc-data-table-requests"
-        :columns="columns"
-        :items="items"
-        :loading="loading || loadingRefresh"
-        must-sort
-        show-select
-        sort-by="ID"
-        :sort-desc="true"
-        :sort-keys="sortKeys">
-        <template v-slot:no-data>
-          <div class="mt-8 pt-7 secondary--text">
-            <span v-if="itemsStudyRequests.length === 0">
-              You have not requested a study,<br>
-              please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-            </span>
-            <span v-else>
-              No requests match the active filters,<br>
-              <a href="#" @click.prevent="actionClearAllFilters">clear filters</a> to see requests
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.ID="{ item }">
-          <span>{{item.id}}</span>
-        </template>
-        <template v-slot:item.LOCATION="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.location !== null"
-              :title="item.location.description">
-              {{item.location.description}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.STUDY_TYPE="{ item }">
-          <div class="text-truncate">
-            {{item.studyType.label}}
-          </div>
-        </template>
-        <template v-slot:item.REQUESTER="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.requestedBy !== null"
-              :title="item.requestedBy.uniqueName">
-              {{item.requestedBy.uniqueName}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.DATE="{ item }">
-          <span>{{item.dueDate | date}}</span>
-        </template>
-        <template v-slot:item.ASSIGNED_TO="{ item }">
-          <span v-if="item.assignedTo === null">
-            NONE
-          </span>
-          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
-        </template>
-        <template v-slot:item.STATUS="{ item }">
-          <div class="align-center d-flex">
-            <v-icon
-              :color="item.status.color"
-              left>mdi-circle-medium</v-icon>
-            <span>
-              {{item.status.text}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:header.ACTIONS>
-          <span class="sr-only">Actions</span>
-        </template>
-        <template v-slot:item.ACTIONS="{ item }">
-          <div class="text-right">
-            <v-icon
-              v-if="item.urgent"
-              class="mr-2"
-              color="warning"
-              title="Urgent">mdi-clipboard-alert</v-icon>
+        </v-card-title>
 
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <FcButton
-                  :aria-label="'View Request #' + item.id"
-                  type="icon"
-                  @click="actionShowRequest(item)"
-                  v-on="on">
-                  <v-icon>mdi-file-eye</v-icon>
-                </FcButton>
-              </template>
-              <span>View Request #{{item.id}}</span>
-            </v-tooltip>
-          </div>
-        </template>
-      </FcDataTable>
+        <v-divider></v-divider>
+
+        <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
+          <FcDataTable
+            v-model="selectedItems"
+            class="fc-data-table-requests"
+            :columns="columns"
+            fixed-header
+            height="100%"
+            :items="items"
+            :loading="loading || loadingRefresh"
+            must-sort
+            show-select
+            sort-by="ID"
+            :sort-desc="true"
+            :sort-keys="sortKeys">
+            <template v-slot:no-data>
+              <div class="mt-8 pt-7 secondary--text">
+                <span v-if="itemsStudyRequests.length === 0">
+                  You have not requested a study,<br>
+                  please view the map <router-link :to="{name: 'viewData'}">here</router-link>
+                </span>
+                <span v-else>
+                  No requests match the active filters,<br>
+                  <a href="#" @click.prevent="actionClearAllFilters">
+                    clear filters
+                  </a> to see requests
+                </span>
+              </div>
+            </template>
+            <template v-slot:header.data-table-select>
+            </template>
+            <template v-slot:item.ID="{ item }">
+              <span>{{item.id}}</span>
+            </template>
+            <template v-slot:item.LOCATION="{ item }">
+              <div class="text-truncate">
+                <span
+                  v-if="item.location !== null"
+                  :title="item.location.description">
+                  {{item.location.description}}
+                </span>
+              </div>
+            </template>
+            <template v-slot:item.STUDY_TYPE="{ item }">
+              <div class="text-truncate">
+                {{item.studyType.label}}
+              </div>
+            </template>
+            <template v-slot:item.REQUESTER="{ item }">
+              <div class="text-truncate">
+                <span
+                  v-if="item.requestedBy !== null"
+                  :title="item.requestedBy.uniqueName">
+                  {{item.requestedBy.uniqueName}}
+                </span>
+              </div>
+            </template>
+            <template v-slot:item.DATE="{ item }">
+              <span>{{item.dueDate | date}}</span>
+            </template>
+            <template v-slot:item.ASSIGNED_TO="{ item }">
+              <span v-if="item.assignedTo === null">
+                NONE
+              </span>
+              <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+            </template>
+            <template v-slot:item.STATUS="{ item }">
+              <div class="align-center d-flex">
+                <v-icon
+                  :color="item.status.color"
+                  left>mdi-circle-medium</v-icon>
+                <span>
+                  {{item.status.text}}
+                </span>
+              </div>
+            </template>
+            <template v-slot:header.ACTIONS>
+              <span class="sr-only">Actions</span>
+            </template>
+            <template v-slot:item.ACTIONS="{ item }">
+              <div class="text-right">
+                <v-icon
+                  v-if="item.urgent"
+                  class="mr-2"
+                  color="warning"
+                  title="Urgent">mdi-clipboard-alert</v-icon>
+
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <FcButton
+                      :aria-label="'View Request #' + item.id"
+                      type="icon"
+                      @click="actionShowRequest(item)"
+                      v-on="on">
+                      <v-icon>mdi-file-eye</v-icon>
+                    </FcButton>
+                  </template>
+                  <span>View Request #{{item.id}}</span>
+                </v-tooltip>
+              </div>
+            </template>
+          </FcDataTable>
+        </v-card-text>
+      </v-card>
     </section>
   </section>
 </template>
@@ -358,7 +373,19 @@ export default {
 
 <style lang="scss">
 .fc-requests-track {
+  background-color: var(--v-shading-base);
   max-height: 100vh;
   width: 100%;
+
+  & .fc-requests-track-card {
+    height: calc(100% - 4px);
+  }
+
+  & .fc-data-table-requests-wrapper {
+    height: calc(100% - 53px);
+    & > .fc-data-table-requests {
+      height: calc(100% - 1px);
+    }
+  }
 }
 </style>
