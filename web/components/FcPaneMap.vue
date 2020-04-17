@@ -38,7 +38,7 @@
               type="fab-text"
               @click="recenterLocation()"
               v-on="on">
-              <v-icon class="display-1">mdi-crosshairs-gps</v-icon>
+              <v-icon class="display-2">mdi-map-marker-circle</v-icon>
             </FcButton>
           </template>
           <span>Recenter location</span>

@@ -22,6 +22,36 @@
         @click="actionEdit">
         <v-icon color="primary" left>mdi-pencil</v-icon> Edit
       </FcButton>
+      <v-menu
+        v-if="itemsMoreActions.length > 0"
+        left>
+        <template v-slot:activator="{ on: onMenu }">
+          <v-tooltip
+            right
+            :z-index="100">
+            <template v-slot:activator="{ on: onTooltip }">
+              <FcButton
+                aria-label="More Actions"
+                class="ml-2"
+                type="icon"
+                v-on="{ ...onMenu, ...onTooltip }">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </FcButton>
+            </template>
+            <span>More Actions</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="{ label, value } in itemsMoreActions"
+            :key="value"
+            @click="actionMoreActions(value)">
+            <v-list-item-title>
+              {{label}}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
     <v-divider></v-divider>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
@@ -29,18 +59,9 @@
         v-if="loading"
         indeterminate />
       <div v-else>
-        <div class="pl-5">
-          <div
-            v-if="studyRequest.lastEditorId !== null
-              && studyRequestUsers.has(studyRequest.lastEditorId)"
-            class="subtitle-2 mt-4 mb-3">
-            Last edited by {{studyRequestUsers.get(studyRequest.lastEditorId).uniqueName}}
-            on {{studyRequest.lastEditedAt | dateTime}}.
-          </div>
-          <FcSummaryStudyRequest
-            class="pr-5"
-            :study-request="studyRequest" />
-        </div>
+        <FcSummaryStudyRequest
+          :study-request="studyRequest"
+          :study-request-users="studyRequestUsers" />
         <v-divider></v-divider>
         <FcCommentsStudyRequest
           :size-limit="240"
@@ -57,7 +78,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
@@ -84,6 +105,17 @@ export default {
     };
   },
   computed: {
+    canCancel() {
+      return this.canEdit
+        && this.studyRequest !== null
+        && this.studyRequest.status.canTransitionTo(StudyRequestStatus.CANCELLED);
+    },
+    canClose() {
+      return this.canEdit
+        && this.studyRequest !== null
+        && this.studyRequest.status === StudyRequestStatus.COMPLETED
+        && !this.studyRequest.closed;
+    },
     canEdit() {
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
         return true;
@@ -92,6 +124,32 @@ export default {
         return this.auth.user.id === this.studyRequest.userId;
       }
       return false;
+    },
+    canReopen() {
+      return this.canEdit
+        && this.studyRequest !== null
+        && this.studyRequest.status === StudyRequestStatus.CANCELLED;
+    },
+    canRequestChanges() {
+      return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
+        && this.studyRequest !== null
+        && this.studyRequest.status.canTransitionTo(StudyRequestStatus.CHANGES_NEEDED);
+    },
+    itemsMoreActions() {
+      const items = [];
+      if (this.canCancel) {
+        items.push({ label: 'Cancel', value: 'cancel' });
+      }
+      if (this.canClose) {
+        items.push({ label: 'Close', value: 'close' });
+      }
+      if (this.canReopen) {
+        items.push({ label: 'Reopen', value: 'reopen' });
+      }
+      if (this.canRequestChanges) {
+        items.push({ label: 'Request Changes', value: 'requestChanges' });
+      }
+      return items;
     },
     labelNavigateBack() {
       const { backViewRequest: { name } } = this;
@@ -113,6 +171,12 @@ export default {
     ...mapState(['auth', 'backViewRequest', 'location']),
   },
   methods: {
+    actionCancel() {
+      // TODO: implement this
+    },
+    actionClose() {
+      // TODO: implement this
+    },
     actionEdit() {
       const { id } = this.studyRequest;
       const route = {
@@ -121,9 +185,26 @@ export default {
       };
       this.$router.push(route);
     },
+    actionMoreActions(value) {
+      if (value === 'cancel') {
+        this.actionCancel();
+      } else if (value === 'close') {
+        this.actionClose();
+      } else if (value === 'reopen') {
+        this.actionReopen();
+      } else if (value === 'requestChanges') {
+        this.actionRequestChanges();
+      }
+    },
     actionNavigateBack() {
       const { backViewRequest: route } = this;
       this.$router.push(route);
+    },
+    actionReopen() {
+      // TODO: implement this
+    },
+    actionRequestChanges() {
+      // TODO: implement this
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
@@ -133,13 +214,16 @@ export default {
         studyRequestLocation,
         studyRequestUsers,
       } = await getStudyRequest(id);
+      const { user } = this.auth;
+      this.studyRequestUsers.set(user.id, user);
+
       this.studyRequest = studyRequest;
       this.studyRequestComments = studyRequestComments;
       this.studyRequestUsers = studyRequestUsers;
       this.setLocation(studyRequestLocation);
     },
     onAddComment(comment) {
-      this.studyRequestComments.push(comment);
+      this.studyRequestComments.unshift(comment);
     },
     onDeleteComment(i) {
       this.studyRequestComments.splice(i, 1);

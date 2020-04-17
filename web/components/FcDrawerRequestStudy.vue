@@ -20,10 +20,10 @@
     <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
       <FcButton
         v-if="isCreate"
-        aria-label="Back"
-        type="icon"
+        type="secondary"
         @click="actionNavigateBack">
-        <v-icon>mdi-chevron-left</v-icon>
+        <v-icon left>mdi-chevron-left</v-icon>
+        {{labelNavigateBack}}
       </FcButton>
       <h1 class="flex-grow-1 headline text-center">
         <span>
@@ -176,6 +176,12 @@ export default {
     },
     isCreate() {
       return this.$route.name === 'requestStudyNew';
+    },
+    labelNavigateBack() {
+      if (this.isCreate && this.location === null) {
+        return 'View Map';
+      }
+      return 'View Data';
     },
     routeFinish() {
       if (this.isCreate) {
