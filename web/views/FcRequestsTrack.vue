@@ -4,6 +4,20 @@
       <v-divider></v-divider>
       <div class="px-5">
         <h1 class="display-3 mt-8">Track Requests</h1>
+
+        <div class="align-center d-flex mt-6">
+          <v-chip-group
+            v-model="activeShortcutChip"
+            active-class="fc-shortcut-chip-active"
+            class="fc-shortcut-chips"
+            color="primary">
+            <v-chip outlined>All</v-chip>
+            <v-chip outlined>New</v-chip>
+            <v-chip outlined>Recently Updated</v-chip>
+            <v-chip outlined>Cancelled</v-chip>
+            <v-chip outlined>Closed</v-chip>
+          </v-chip-group>
+        </div>
       </div>
     </header>
 
@@ -267,6 +281,10 @@ export default {
     };
   },
   computed: {
+    activeShortcutChip() {
+      // TODO: implement this
+      return 0;
+    },
     colorIconFilter() {
       if (this.filterChips.length === 0) {
         return 'unselected';
@@ -376,6 +394,15 @@ export default {
   background-color: var(--v-shading-base);
   max-height: 100vh;
   width: 100%;
+
+  & .fc-shortcut-chips .v-chip.v-chip {
+    &:not(:hover) {
+      background-color: #fff !important;
+    }
+    &.fc-shortcut-chip-active {
+      border: 1px solid var(--v-primary-base);
+    }
+  }
 
   & .fc-requests-track-card {
     height: calc(100% - 4px);
