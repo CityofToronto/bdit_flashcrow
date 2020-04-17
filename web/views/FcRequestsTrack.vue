@@ -1,16 +1,9 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
     <header class="flex-grow-0 flex-shrink-0">
-      <v-tabs v-model="indexClosed">
-        <v-tab>Open</v-tab>
-        <v-tab>Closed</v-tab>
-      </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-5">
-          <span v-if="closed">My Closed Requests</span>
-          <span v-else>My Requests</span>
-        </h1>
+        <h1 class="display-3 mt-5">Track Requests</h1>
         <div class="align-center d-flex mt-6 mb-2">
           <FcButton
             v-if="selectedItems.length === 0"
@@ -23,49 +16,23 @@
               left>mdi-refresh</v-icon>
             Refresh
           </FcButton>
-          <template v-else>
-            <FcButton
-              v-if="closed"
-              class="mr-2"
-              type="secondary"
-              @click="actionReopen(selectedItems)">
-              <v-icon color="primary" left>mdi-lock-open-outline</v-icon>
-              Reopen
-            </FcButton>
-            <template v-else>
-              <template
-                v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionApprove(selectedItems)">
-                  <v-icon color="primary" left>mdi-thumb-up</v-icon>
-                  Approve
-                </FcButton>
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionComplete(selectedItems)">
-                  <v-icon color="primary" left>mdi-clipboard-check</v-icon>
-                  Complete
-                </FcButton>
-              </template>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionDownload(selectedItems)">
-                <v-icon color="primary" left>mdi-cloud-download</v-icon>
-                Download
-              </FcButton>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionClose(selectedItems)">
-                <v-icon color="primary" left>mdi-lock</v-icon>
-                Close
-              </FcButton>
-            </template>
-          </template>
+          <FcButton
+            v-else
+            type="secondary"
+            @click="actionDownload(selectedItems)">
+            <v-icon color="primary" left>mdi-cloud-download</v-icon>
+            Download
+          </FcButton>
+          <FcButton
+            v-if="items.length > 0 || filterChips.length > 0"
+            type="secondary"
+            @click.stop="showFilters = true">
+            <v-icon
+              :color="colorIconFilter"
+              left>mdi-filter-variant</v-icon>
+            Filter
+          </FcButton>
+          <v-spacer></v-spacer>
         </div>
         <v-divider></v-divider>
       </div>
@@ -88,13 +55,9 @@
               You have not requested a study,<br>
               please view the map <router-link :to="{name: 'viewData'}">here</router-link>
             </span>
-            <span v-else-if="closed">
-              You have not closed any requests,<br>
-              please view open requests <a href="#" @click.prevent="indexClosed = 0">here</a>
-            </span>
             <span v-else>
-              You have no remaining open requests,<br>
-              please view closed requests <a href="#" @click.prevent="indexClosed = 1">here</a>
+              No requests match the active filters,<br>
+              <a href="#" @click.prevent="actionClearAllFilters">clear filters</a> to see requests
             </span>
           </div>
         </template>
@@ -154,37 +117,6 @@
               color="warning"
               title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN) && !closed">
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Approve Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                    type="icon"
-                    @click="actionApprove([item])"
-                    v-on="on">
-                    <v-icon>mdi-thumb-up</v-icon>
-                  </FcButton>
-                </template>
-                <span>Approve Request #{{item.id}}</span>
-              </v-tooltip>
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Ask for Changes to Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                    type="icon"
-                    @click="actionReject([item])"
-                    v-on="on">
-                    <v-icon>mdi-clipboard-arrow-left</v-icon>
-                  </FcButton>
-                </template>
-                <span>Ask for Changes to Request #{{item.id}}</span>
-              </v-tooltip>
-            </template>
-
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <FcButton
@@ -213,7 +145,6 @@ import {
   centrelineKey,
   SearchKeys,
   SortKeys,
-  StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import {
@@ -310,24 +241,30 @@ export default {
     }];
     return {
       columns,
-      indexClosed: 0,
       loadingRefresh: false,
       searchKeys: SearchKeys.Requests,
       selectedItems: [],
+      showFilters: false,
       sortKeys: SortKeys.Requests,
       studyRequests: [],
       studyRequestLocations: new Map(),
-      StudyRequestStatus,
       studyRequestUsers: new Map(),
     };
   },
   computed: {
-    closed() {
-      return this.indexClosed === 1;
+    colorIconFilter() {
+      if (this.filterChips.length === 0) {
+        return 'unselected';
+      }
+      return 'primary';
+    },
+    filterChips() {
+      // TODO: implement this
+      return [];
     },
     items() {
-      return this.itemsStudyRequests
-        .filter(({ closed }) => closed === this.closed);
+      // TODO: implement filters
+      return this.itemsStudyRequests;
     },
     itemsStudyRequests() {
       return this.studyRequests.map((studyRequest) => {
@@ -357,28 +294,7 @@ export default {
     },
     ...mapState(['auth']),
   },
-  watch: {
-    closed() {
-      this.selectedItems = [];
-    },
-  },
   methods: {
-    actionApprove(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.ACCEPTED,
-      });
-    },
-    actionClose(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-      });
-    },
-    actionComplete(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-        status: StudyRequestStatus.COMPLETED,
-      });
-    },
     actionDownload(studyRequests) {
       const rows = studyRequests.map(getItemRow);
       const columns = [
@@ -407,16 +323,6 @@ export default {
       this.loadingRefresh = true;
       await this.loadAsyncForRoute();
       this.loadingRefresh = false;
-    },
-    actionReject(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.REJECTED,
-      });
-    },
-    actionReopen(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: false,
-      });
     },
     actionShowRequest(item) {
       const route = {
