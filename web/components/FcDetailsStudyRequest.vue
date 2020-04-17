@@ -51,9 +51,14 @@
           v-model="v.daysOfWeek.$model"
           :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
         <v-messages
+          v-if="errorMessagesDaysOfWeek.length > 0"
           class="mt-1"
           color="error"
           :value="errorMessagesDaysOfWeek"></v-messages>
+        <v-messages
+          v-else
+          class="mt-1"
+          :value="messagesDaysOfWeek"></v-messages>
       </div>
 
       <div v-if="internalValue.studyType.automatic" class="mt-4">
@@ -220,8 +225,8 @@ export default {
       }
       const { duration } = this.internalValue;
       if (!this.v.duration.needsValidDaysOfWeek) {
-        const days = duration / 24;
-        const msg = `Please select ${days} consecutive days or reduce study duration.`;
+        const n = duration / 24;
+        const msg = `Please select ${n} consecutive days or reduce study duration.`;
         errors.push(msg);
       }
       return errors;
@@ -295,6 +300,17 @@ export default {
         return { label, value: studyType };
       });
       return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
+    },
+    messagesDaysOfWeek() {
+      const { duration, studyType } = this.internalValue;
+      if (studyType.automatic) {
+        const n = duration / 24;
+        if (n === 1) {
+          return ['The study will be performed on one of these days.'];
+        }
+        return [`The study will be performed across ${n} consecutive days.`];
+      }
+      return ['The study will be performed on one of these days.'];
     },
     messagesNotes() {
       const { hours } = this.internalValue;

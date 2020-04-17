@@ -91,23 +91,29 @@
           <div class="mt-1 display-1">
             {{studyRequest.daysOfWeek | daysOfWeek}}
           </div>
+          <v-messages
+            class="mt-1"
+            :value="messagesDaysOfWeek"></v-messages>
         </v-col>
         <v-col cols="6">
-          <div class="subtitle-1">Study Hours</div>
-          <div class="mt-1 display-1">
-            <template v-if="studyRequest.studyType.automatic">
-              <div>{{studyRequest.duration | durationHuman}}</div>
-              <v-messages
-                class="mt-1"
-                :value="[studyRequest.duration + ' hours']"></v-messages>
-            </template>
-            <template v-else>
-              <div>{{studyRequest.hours.description}}</div>
-              <v-messages
-                class="mt-1"
-                :value="[studyRequest.hours.hint]"></v-messages>
-            </template>
-          </div>
+          <template v-if="studyRequest.studyType.automatic">
+            <div class="subtitle-1">Study Duration</div>
+            <div class="mt-1 display-1">
+              {{studyRequest.duration | durationHuman}}
+            </div>
+            <v-messages
+              class="mt-1"
+              :value="[studyRequest.duration + ' hours']"></v-messages>
+          </template>
+          <template v-else>
+            <div class="subtitle-1">Study Hours</div>
+            <div class="mt-1 display-1">
+              {{studyRequest.hours.description}}
+            </div>
+            <v-messages
+              class="mt-1"
+              :value="[studyRequest.hours.hint]"></v-messages>
+          </template>
         </v-col>
         <v-col cols="6">
           <div class="subtitle-1">Additional Information</div>
@@ -124,6 +130,7 @@
 <script>
 import { mapState } from 'vuex';
 
+import { numConsecutiveDaysOfWeek } from '@/lib/validation/ValidationsStudyRequest';
 import FcStatusStudyRequest from '@/web/components/FcStatusStudyRequest.vue';
 
 export default {
@@ -136,6 +143,24 @@ export default {
     studyRequestUsers: Map,
   },
   computed: {
+    messagesDaysOfWeek() {
+      const { daysOfWeek, duration, studyType } = this.studyRequest;
+      if (studyType.automatic) {
+        const k = numConsecutiveDaysOfWeek(daysOfWeek);
+        const n = duration / 24;
+        if (k === n) {
+          return [];
+        }
+        if (n === 1) {
+          return ['The study will be performed on one of these days.'];
+        }
+        return [`The study will be performed across ${n} consecutive days.`];
+      }
+      if (daysOfWeek.length === 1) {
+        return [];
+      }
+      return ['The study will be performed on one of these days.'];
+    },
     ...mapState(['auth']),
   },
 };
