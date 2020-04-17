@@ -1,7 +1,7 @@
 <template>
   <div class="fc-status-study-request">
     <v-progress-linear
-      background-color="#e0e0e0"
+      background-color="border"
       class="status-progress"
       color="primary"
       :value="progress" />
@@ -81,7 +81,7 @@ export default {
 
   & > .status-circle {
     background-color: #fff;
-    border: 3px solid #e0e0e0;
+    border: 3px solid var(--v-border-base);
     border-radius: 8px;
     position: absolute;
     height: 16px;

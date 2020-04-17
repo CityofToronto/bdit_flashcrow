@@ -29,11 +29,7 @@
         <div>
           <div class="default--text font-weight-medium subtitle-2">
             <span
-              v-if="comment.userId === auth.user.id">
-              {{auth.user.uniqueName}}
-            </span>
-            <span
-              v-else-if="studyRequestUsers.has(comment.userId)">
+              v-if="studyRequestUsers.has(comment.userId)">
               {{studyRequestUsers.get(comment.userId).uniqueName}}
             </span>
           </div>

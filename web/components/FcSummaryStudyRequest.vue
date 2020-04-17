@@ -12,11 +12,7 @@
           <div class="subtitle-1">Requester</div>
           <div class="mt-1 display-1">
             <span
-              v-if="studyRequest.userId === auth.user.id">
-              {{auth.user.uniqueName}}
-            </span>
-            <span
-              v-else-if="studyRequestUsers.has(studyRequest.userId)">
+              v-if="studyRequestUsers.has(studyRequest.userId)">
               {{studyRequestUsers.get(studyRequest.userId).uniqueName}}
             </span>
           </div>

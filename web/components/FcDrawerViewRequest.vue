@@ -214,6 +214,9 @@ export default {
         studyRequestLocation,
         studyRequestUsers,
       } = await getStudyRequest(id);
+      const { user } = this.auth;
+      this.studyRequestUsers.set(user.id, user);
+
       this.studyRequest = studyRequest;
       this.studyRequestComments = studyRequestComments;
       this.studyRequestUsers = studyRequestUsers;
