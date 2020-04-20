@@ -62,6 +62,11 @@ export default {
         border-top-right-radius: 0;
         width: 140px;
       }
+
+      &:not(.v-input--is-focused) fieldset {
+        border-right: 0;
+        border-width: 1px;
+      }
     }
   }
 }
