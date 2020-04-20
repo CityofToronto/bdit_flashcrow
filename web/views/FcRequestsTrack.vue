@@ -17,6 +17,13 @@
             <v-chip outlined>Cancelled</v-chip>
             <v-chip outlined>Closed</v-chip>
           </v-chip-group>
+
+          <v-spacer></v-spacer>
+
+          <FcSearchBarRequests
+            v-model="search"
+            :columns="columns"
+            :search-keys="searchKeys" />
         </div>
       </div>
     </header>
@@ -168,6 +175,7 @@
 <script>
 import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
+import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapState } from 'vuex';
 
 import {
@@ -183,6 +191,7 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -238,39 +247,33 @@ export default {
     FcMixinAuthScope,
     FcMixinRouteAsync,
   ],
+  directives: {
+    Ripple,
+  },
   components: {
     FcButton,
     FcDataTable,
+    FcSearchBarRequests,
   },
   data() {
-    const columns = [{
-      value: 'ID',
-      text: 'ID',
-    }, {
-      value: 'LOCATION',
-      text: 'Location',
-    }, {
-      value: 'STUDY_TYPE',
-      text: 'Type',
-    }, {
-      value: 'REQUESTER',
-      text: 'Requester',
-    }, {
-      value: 'DATE',
-      text: 'Due Date',
-    }, {
-      value: 'ASSIGNED_TO',
-      text: 'Assign',
-    }, {
-      value: 'STATUS',
-      text: 'Status',
-    }, {
-      value: 'ACTIONS',
-      text: '',
-    }];
+    const columns = [
+      { value: 'ID', text: 'ID' },
+      { value: 'LOCATION', text: 'Location' },
+      { value: 'STUDY_TYPE', text: 'Type' },
+      { value: 'REQUESTER', text: 'Requester' },
+      { value: 'DATE', text: 'Due Date' },
+      { value: 'ASSIGNED_TO', text: 'Assigned To' },
+      { value: 'STATUS', text: 'Status' },
+      { value: 'ACTIONS', text: '' },
+    ];
     return {
+      activeShortcutChipTemp: 0, // TODO: get rid of this
       columns,
       loadingRefresh: false,
+      search: {
+        column: null,
+        query: null,
+      },
       searchKeys: SearchKeys.Requests,
       selectedItems: [],
       showFilters: false,
@@ -281,9 +284,15 @@ export default {
     };
   },
   computed: {
-    activeShortcutChip() {
-      // TODO: implement this
-      return 0;
+    activeShortcutChip: {
+      get() {
+        // TODO: implement this
+        return this.activeShortcutChipTemp;
+      },
+      set(activeShortcutChip) {
+        // TODO: implement this
+        this.activeShortcutChipTemp = activeShortcutChip;
+      },
     },
     colorIconFilter() {
       if (this.filterChips.length === 0) {

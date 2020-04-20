@@ -47,11 +47,6 @@ test('Constants.SearchKeys', () => {
   expect(SearchKeys.Requests.DATE('2019', REQUEST)).toBe(false);
   expect(SearchKeys.Requests.DATE('2020', REQUEST)).toBe(true);
 
-  expect(SearchKeys.Requests.ID('4', REQUEST)).toBe(false);
-  expect(SearchKeys.Requests.ID('17', REQUEST)).toBe(false);
-  expect(SearchKeys.Requests.ID('foo', REQUEST)).toBe(false);
-  expect(SearchKeys.Requests.ID('42', REQUEST)).toBe(true);
-
   expect(SearchKeys.Requests.LOCATION('', REQUEST)).toBe(true);
   REQUEST.location = location;
   expect(SearchKeys.Requests.LOCATION('foo ave', REQUEST)).toBe(true);
@@ -61,10 +56,6 @@ test('Constants.SearchKeys', () => {
   REQUEST.requestedBy = requestedBy;
   expect(SearchKeys.Requests.REQUESTER('BAZ', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.REQUESTER('quux', REQUEST)).toBe(true);
-
-  expect(SearchKeys.Requests.STATUS('ass', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.STATUS('assign', REQUEST)).toBe(true);
-  expect(SearchKeys.Requests.STATUS('req', REQUEST)).toBe(false);
 });
 
 test('Constants.SortKeys', () => {
