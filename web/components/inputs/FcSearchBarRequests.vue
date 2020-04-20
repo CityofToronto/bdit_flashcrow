@@ -55,9 +55,8 @@ export default {
   }
 
   & > .v-input__prepend-outer {
-    margin-right: 0;
+    margin: 0 !important;
     & > .v-input.fc-search-bar-requests-column {
-      margin-top: -8px !important;
       & > .v-input__control {
         border-bottom-right-radius: 0;
         border-top-right-radius: 0;

@@ -121,8 +121,8 @@
                 </span>
               </div>
             </template>
-            <template v-slot:item.DATE="{ item }">
-              <span>{{item.dueDate | date}}</span>
+            <template v-slot:item.CREATED_AT="{ item }">
+              <span>{{item.createdAt | date}}</span>
             </template>
             <template v-slot:item.ASSIGNED_TO="{ item }">
               <span v-if="item.assignedTo === null">
@@ -130,15 +130,22 @@
               </span>
               <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
             </template>
+            <template v-slot:item.DUE_DATE="{ item }">
+              <span>{{item.dueDate | date}}</span>
+            </template>
             <template v-slot:item.STATUS="{ item }">
               <div class="align-center d-flex">
-                <v-icon
-                  :color="item.status.color"
-                  left>mdi-circle-medium</v-icon>
-                <span>
-                  {{item.status.text}}
-                </span>
+                <v-icon :color="item.status.color">mdi-circle-medium</v-icon>
+                <span>{{item.status.text}}</span>
               </div>
+            </template>
+            <template v-slot:item.LAST_EDITED_AT="{ item }">
+              <span v-if="item.lastEditedAt === null">
+                {{item.createdAt | date}}
+              </span>
+              <span v-else>
+                {{item.lastEditedAt | date}}
+              </span>
             </template>
             <template v-slot:header.ACTIONS>
               <span class="sr-only">Actions</span>
@@ -261,9 +268,11 @@ export default {
       { value: 'LOCATION', text: 'Location' },
       { value: 'STUDY_TYPE', text: 'Type' },
       { value: 'REQUESTER', text: 'Requester' },
-      { value: 'DATE', text: 'Due Date' },
+      { value: 'CREATED_AT', text: 'Date Created' },
       { value: 'ASSIGNED_TO', text: 'Assigned To' },
+      { value: 'DUE_DATE', text: 'Date Required' },
       { value: 'STATUS', text: 'Status' },
+      { value: 'LAST_EDITED_AT', text: 'Last Updated' },
       { value: 'ACTIONS', text: '' },
     ];
     return {
