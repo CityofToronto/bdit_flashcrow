@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import {
   getAuth,
   postStudyRequest,
-  putStudyRequests,
+  putStudyRequest,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import {
@@ -131,7 +131,7 @@ export default new Vuex.Store({
 
       const { csrf } = state.auth;
       if (update) {
-        return putStudyRequests(csrf, [studyRequest]);
+        return putStudyRequest(csrf, studyRequest);
       }
       return postStudyRequest(csrf, studyRequest);
     },

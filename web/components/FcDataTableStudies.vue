@@ -4,7 +4,7 @@
     :columns="columns"
     disable-sort
     :loading="loading"
-    :items="countSummaryOrLoading">
+    :items="countSummary">
     <template v-slot:item.STUDY_REPORTS="{ item }">
       <span>{{item.count.type.studyType.label}}</span>
       <span
@@ -74,18 +74,6 @@ export default {
     return {
       columns,
     };
-  },
-  computed: {
-    countSummaryOrLoading() {
-      if (this.loading) {
-        /*
-         * The "loading..." text in `<v-data-table>` is only shown when there are no items, so
-         * we use this to forcibly show a loading state.
-         */
-        return [];
-      }
-      return this.countSummary;
-    },
   },
 };
 </script>

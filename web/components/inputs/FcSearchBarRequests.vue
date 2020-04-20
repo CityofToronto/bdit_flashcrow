@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { SearchKeys } from '@/lib/Constants';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -28,12 +29,11 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   props: {
     columns: Array,
-    searchKeys: Object,
   },
   computed: {
     itemsColumn() {
       const searchableColumns = this.columns.filter(
-        column => Object.prototype.hasOwnProperty.call(this.searchKeys, column.value),
+        column => Object.prototype.hasOwnProperty.call(SearchKeys.Requests, column.value),
       );
       return [
         { text: 'All Columns', value: null },
