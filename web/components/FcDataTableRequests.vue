@@ -5,7 +5,7 @@
     :columns="columns"
     fixed-header
     height="100%"
-    :items="requests"
+    :items="items"
     :loading="loading"
     must-sort
     show-select
@@ -27,7 +27,7 @@
     <template v-slot:header.data-table-select>
     </template>
     <template v-slot:item.ID="{ item }">
-      <span>{{item.id}}</span>
+      <span>{{item.studyRequest.id}}</span>
     </template>
     <template v-slot:item.LOCATION="{ item }">
       <div class="text-truncate">
@@ -40,7 +40,7 @@
     </template>
     <template v-slot:item.STUDY_TYPE="{ item }">
       <div class="text-truncate">
-        {{item.studyType.label}}
+        {{item.studyRequest.studyType.label}}
       </div>
     </template>
     <template v-slot:item.REQUESTER="{ item }">
@@ -53,29 +53,59 @@
       </div>
     </template>
     <template v-slot:item.CREATED_AT="{ item }">
-      <span>{{item.createdAt | date}}</span>
+      <span>{{item.studyRequest.createdAt | date}}</span>
     </template>
     <template v-slot:item.ASSIGNED_TO="{ item }">
-      <span v-if="item.assignedTo === null">
-        NONE
+      <v-menu
+        v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
+          && (
+            item.studyRequest.status.canTransitionTo(StudyRequestStatus.ASSIGNED)
+            || item.studyRequest.status === StudyRequestStatus.ASSIGNED
+          )">
+        <template v-slot:activator="{ on }">
+          <FcButton
+            type="secondary"
+            width="140"
+            v-on="on">
+            <span v-if="item.studyRequest.assignedTo === null">
+              None
+            </span>
+            <span v-else>{{item.studyRequest.assignedTo.text}}</span>
+            <v-spacer></v-spacer>
+            <v-icon right>mdi-menu-down</v-icon>
+          </FcButton>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="({ text, value }, i) in itemsAssignedTo"
+            :key="i"
+            @click="$emit('assign-to', { item, assignedTo: value })">
+            <v-list-item-title>
+              {{text}}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <span v-else-if="item.studyRequest.assignedTo === null">
+        None
       </span>
-      <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+      <span v-else>{{item.studyRequest.assignedTo.text}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
-      <span>{{item.dueDate | date}}</span>
+      <span>{{item.studyRequest.dueDate | date}}</span>
     </template>
     <template v-slot:item.STATUS="{ item }">
       <div class="align-center d-flex">
-        <v-icon :color="item.status.color">mdi-circle-medium</v-icon>
-        <span>{{item.status.text}}</span>
+        <v-icon :color="item.studyRequest.status.color">mdi-circle-medium</v-icon>
+        <span>{{item.studyRequest.status.text}}</span>
       </div>
     </template>
     <template v-slot:item.LAST_EDITED_AT="{ item }">
-      <span v-if="item.lastEditedAt === null">
-        {{item.createdAt | date}}
+      <span v-if="item.studyRequest.lastEditedAt === null">
+        {{item.studyRequest.createdAt | date}}
       </span>
       <span v-else>
-        {{item.lastEditedAt | date}}
+        {{item.studyRequest.lastEditedAt | date}}
       </span>
     </template>
     <template v-slot:header.ACTIONS>
@@ -84,7 +114,7 @@
     <template v-slot:item.ACTIONS="{ item }">
       <div class="text-right">
         <v-icon
-          v-if="item.urgent"
+          v-if="item.studyRequest.urgent"
           class="mr-2"
           color="warning"
           title="Urgent">mdi-clipboard-alert</v-icon>
@@ -92,14 +122,14 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <FcButton
-              :aria-label="'View Request #' + item.id"
+              :aria-label="'View Request #' + item.studyRequest.id"
               type="icon"
               @click="$emit('show-request', item)"
               v-on="on">
               <v-icon>mdi-file-eye</v-icon>
             </FcButton>
           </template>
-          <span>View Request #{{item.id}}</span>
+          <span>View Request #{{item.studyRequest.id}}</span>
         </v-tooltip>
       </div>
     </template>
@@ -107,29 +137,46 @@
 </template>
 
 <script>
-import { SortKeys } from '@/lib/Constants';
+import {
+  SortKeys,
+  StudyRequestAssignee,
+  StudyRequestStatus,
+} from '@/lib/Constants';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDataTableRequests',
-  mixins: [FcMixinVModelProxy(Array)],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinVModelProxy(Array),
+  ],
   components: {
     FcButton,
     FcDataTable,
   },
   props: {
     columns: Array,
+    items: Array,
     loading: {
       type: Boolean,
       default: false,
     },
-    requests: Array,
   },
   data() {
+    const itemsAssignedTo = [
+      { text: 'None', value: null },
+      ...StudyRequestAssignee.enumValues.map(
+        enumValue => ({ text: enumValue.text, value: enumValue }),
+      ),
+    ];
+
     return {
+      itemsAssignedTo,
       sortKeys: SortKeys.Requests,
+      StudyRequestStatus,
     };
   },
 };

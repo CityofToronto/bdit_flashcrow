@@ -33,7 +33,7 @@
           <v-simple-checkbox class="mr-6"></v-simple-checkbox>
 
           <FcButton
-            v-if="selectedRequests.length === 0"
+            v-if="selectedItems.length === 0"
             class="mr-2"
             :loading="loading"
             type="secondary"
@@ -45,14 +45,15 @@
           </FcButton>
           <FcButton
             v-else
+            class="mr-2"
             type="secondary"
-            @click="actionDownload(selectedRequests)">
+            @click="actionDownload(selectedItems)">
             <v-icon color="primary" left>mdi-cloud-download</v-icon>
             Download
           </FcButton>
 
           <FcButton
-            v-if="requests.length > 0 || filterChips.length > 0"
+            v-if="items.length > 0 || filterChips.length > 0"
             type="secondary"
             @click.stop="showFilters = true">
             <v-icon
@@ -66,10 +67,11 @@
 
         <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
           <FcDataTableRequests
-            v-model="selectedRequests"
+            v-model="selectedItems"
             :columns="columns"
+            :items="items"
             :loading="loading"
-            :requests="requests"
+            @assign-to="actionAssignTo"
             @show-request="actionShowRequest" />
         </v-card-text>
       </v-card>
@@ -93,45 +95,66 @@ import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
-function getStudyRequestRow(studyRequest) {
+function getItemRow(item) {
+  let { location, requestedBy } = item;
+  if (location !== null) {
+    location = location.description;
+  }
+  if (requestedBy !== null) {
+    requestedBy = requestedBy.uniqueName;
+  }
+
+  const { studyRequest } = item;
   const {
     assignedTo,
+    geom: {
+      coordinates: [lng, lat],
+    },
     hours,
     id,
     notes,
     status,
-    studyType: { label: studyType },
+    studyType,
     urgent,
     urgentReason,
   } = studyRequest;
 
-  const [lng, lat] = studyRequest.geom.coordinates;
-  const location = (studyRequest.location && studyRequest.location.description) || null;
-  const requester = (studyRequest.requestedBy && studyRequest.requestedBy.uniqueName) || null;
-  const dueDate = TimeFormatters.formatDefault(studyRequest.dueDate);
-  const estimatedDeliveryDate = TimeFormatters.formatDefault(studyRequest.estimatedDeliveryDate);
-
-  let { daysOfWeek, duration } = studyRequest;
+  let {
+    createdAt,
+    daysOfWeek,
+    dueDate,
+    duration,
+    estimatedDeliveryDate,
+    lastEditedAt,
+  } = studyRequest;
+  createdAt = TimeFormatters.formatDefault(createdAt);
   daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+  dueDate = TimeFormatters.formatDefault(studyRequest.dueDate);
   if (studyType.automatic) {
     duration = formatDuration(duration);
   } else {
     duration = null;
   }
+  estimatedDeliveryDate = TimeFormatters.formatDefault(studyRequest.estimatedDeliveryDate);
+  if (lastEditedAt !== null) {
+    lastEditedAt = TimeFormatters.formatDefault(lastEditedAt);
+  }
 
   return {
     assignedTo,
+    createdAt,
     daysOfWeek,
     dueDate,
     duration,
     estimatedDeliveryDate,
     hours,
     id,
+    lastEditedAt,
     lat,
     lng,
     location,
     notes,
-    requester,
+    requestedBy,
     status,
     studyType,
     urgent,
@@ -173,7 +196,7 @@ export default {
         column: null,
         query: null,
       },
-      selectedRequests: [],
+      selectedItems: [],
       showFilters: false,
       studyRequests: [],
       studyRequestLocations: new Map(),
@@ -201,15 +224,16 @@ export default {
       // TODO: implement this
       return [];
     },
-    requests() {
+    items() {
       // TODO: implement filtering
-      return this.requestsNormalized;
+      return this.itemsNormalized;
     },
-    requestsNormalized() {
+    itemsNormalized() {
       return this.studyRequests.map((studyRequest) => {
         const {
           centrelineId,
           centrelineType,
+          id,
           userId,
         } = studyRequest;
 
@@ -225,38 +249,39 @@ export default {
         }
 
         return {
-          ...studyRequest,
+          id,
           location,
           requestedBy,
+          studyRequest,
         };
       });
     },
     ...mapState(['auth']),
   },
   methods: {
-    actionAssignTo(studyRequest, assignedTo) {
-      /* eslint-disable no-param-reassign */
+    actionAssignTo({ item, assignedTo }) {
+      const { studyRequest } = item;
       studyRequest.assignedTo = assignedTo;
       studyRequest.status = StudyRequestStatus.ASSIGNED;
-      /* eslint-enable no-param-reassign */
-
       this.saveStudyRequest(studyRequest);
     },
-    actionDownload(studyRequests) {
-      const rows = studyRequests.map(getStudyRequestRow);
+    actionDownload(items) {
+      const rows = items.map(getItemRow);
       const columns = [
         'id',
         'location',
-        'requester',
+        'studyType',
+        'requestedBy',
+        'createdAt',
+        'assignedTo',
         'dueDate',
-        'estimatedDeliveryDate',
+        'status',
+        'lastEditedAt',
         'urgent',
         'urgentReason',
-        'assignedTo',
-        'status',
+        'estimatedDeliveryDate',
         'lng',
         'lat',
-        'studyType',
         'daysOfWeek',
         'duration',
         'hours',
@@ -271,7 +296,7 @@ export default {
       await this.loadAsyncForRoute();
       this.loading = false;
     },
-    actionShowRequest(studyRequest) {
+    actionShowRequest({ studyRequest }) {
       const route = {
         name: 'requestStudyView',
         params: { id: studyRequest.id },
