@@ -1,17 +1,38 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
     <header class="flex-grow-0 flex-shrink-0">
-      <v-tabs v-model="indexClosed">
-        <v-tab>Open</v-tab>
-        <v-tab>Closed</v-tab>
-      </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-5">
-          <span v-if="closed">My Closed Requests</span>
-          <span v-else>My Requests</span>
-        </h1>
-        <div class="align-center d-flex mt-6 mb-2">
+        <h1 class="display-3 mt-8">Track Requests</h1>
+
+        <div class="align-center d-flex mt-6">
+          <v-chip-group
+            v-model="activeShortcutChip"
+            active-class="fc-shortcut-chip-active"
+            class="fc-shortcut-chips"
+            color="primary">
+            <v-chip outlined>All</v-chip>
+            <v-chip outlined>New</v-chip>
+            <v-chip outlined>Recently Updated</v-chip>
+            <v-chip outlined>Cancelled</v-chip>
+            <v-chip outlined>Closed</v-chip>
+          </v-chip-group>
+
+          <v-spacer></v-spacer>
+
+          <FcSearchBarRequests
+            v-model="search"
+            :columns="columns"
+            :search-keys="searchKeys" />
+        </div>
+      </div>
+    </header>
+
+    <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
+      <v-card class="fc-requests-track-card">
+        <v-card-title class="align-center d-flex py-2">
+          <v-simple-checkbox class="mr-6"></v-simple-checkbox>
+
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
@@ -23,183 +44,137 @@
               left>mdi-refresh</v-icon>
             Refresh
           </FcButton>
-          <template v-else>
-            <FcButton
-              v-if="closed"
-              class="mr-2"
-              type="secondary"
-              @click="actionReopen(selectedItems)">
-              <v-icon color="primary" left>mdi-lock-open-outline</v-icon>
-              Reopen
-            </FcButton>
-            <template v-else>
-              <template
-                v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionApprove(selectedItems)">
-                  <v-icon color="primary" left>mdi-thumb-up</v-icon>
-                  Approve
-                </FcButton>
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionComplete(selectedItems)">
-                  <v-icon color="primary" left>mdi-clipboard-check</v-icon>
-                  Complete
-                </FcButton>
-              </template>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionDownload(selectedItems)">
-                <v-icon color="primary" left>mdi-cloud-download</v-icon>
-                Download
-              </FcButton>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionClose(selectedItems)">
-                <v-icon color="primary" left>mdi-lock</v-icon>
-                Close
-              </FcButton>
-            </template>
-          </template>
-        </div>
+          <FcButton
+            v-else
+            type="secondary"
+            @click="actionDownload(selectedItems)">
+            <v-icon color="primary" left>mdi-cloud-download</v-icon>
+            Download
+          </FcButton>
+
+          <FcButton
+            v-if="items.length > 0 || filterChips.length > 0"
+            type="secondary"
+            @click.stop="showFilters = true">
+            <v-icon
+              :color="colorIconFilter"
+              left>mdi-filter-variant</v-icon>
+            Filter
+          </FcButton>
+        </v-card-title>
+
         <v-divider></v-divider>
-      </div>
-    </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
-      <FcDataTable
-        v-model="selectedItems"
-        class="fc-data-table-requests"
-        :columns="columns"
-        :items="items"
-        :loading="loading || loadingRefresh"
-        must-sort
-        show-select
-        sort-by="ID"
-        :sort-desc="true"
-        :sort-keys="sortKeys">
-        <template v-slot:no-data>
-          <div class="mt-8 pt-7 secondary--text">
-            <span v-if="itemsStudyRequests.length === 0">
-              You have not requested a study,<br>
-              please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-            </span>
-            <span v-else-if="closed">
-              You have not closed any requests,<br>
-              please view open requests <a href="#" @click.prevent="indexClosed = 0">here</a>
-            </span>
-            <span v-else>
-              You have no remaining open requests,<br>
-              please view closed requests <a href="#" @click.prevent="indexClosed = 1">here</a>
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.ID="{ item }">
-          <span>{{item.id}}</span>
-        </template>
-        <template v-slot:item.LOCATION="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.location !== null"
-              :title="item.location.description">
-              {{item.location.description}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.STUDY_TYPE="{ item }">
-          <div class="text-truncate">
-            {{item.studyType.label}}
-          </div>
-        </template>
-        <template v-slot:item.REQUESTER="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.requestedBy !== null"
-              :title="item.requestedBy.uniqueName">
-              {{item.requestedBy.uniqueName}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.DATE="{ item }">
-          <span>{{item.dueDate | date}}</span>
-        </template>
-        <template v-slot:item.ASSIGNED_TO="{ item }">
-          <span v-if="item.assignedTo === null">
-            NONE
-          </span>
-          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
-        </template>
-        <template v-slot:item.STATUS="{ item }">
-          <div class="align-center d-flex">
-            <v-icon
-              :color="item.status.color"
-              left>mdi-circle-medium</v-icon>
-            <span>
-              {{item.status.text}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:header.ACTIONS>
-          <span class="sr-only">Actions</span>
-        </template>
-        <template v-slot:item.ACTIONS="{ item }">
-          <div class="text-right">
-            <v-icon
-              v-if="item.urgent"
-              class="mr-2"
-              color="warning"
-              title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN) && !closed">
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Approve Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                    type="icon"
-                    @click="actionApprove([item])"
-                    v-on="on">
-                    <v-icon>mdi-thumb-up</v-icon>
-                  </FcButton>
-                </template>
-                <span>Approve Request #{{item.id}}</span>
-              </v-tooltip>
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Ask for Changes to Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                    type="icon"
-                    @click="actionReject([item])"
-                    v-on="on">
-                    <v-icon>mdi-clipboard-arrow-left</v-icon>
-                  </FcButton>
-                </template>
-                <span>Ask for Changes to Request #{{item.id}}</span>
-              </v-tooltip>
+        <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
+          <FcDataTable
+            v-model="selectedItems"
+            class="fc-data-table-requests"
+            :columns="columns"
+            fixed-header
+            height="100%"
+            :items="items"
+            :loading="loading || loadingRefresh"
+            must-sort
+            show-select
+            sort-by="ID"
+            :sort-desc="true"
+            :sort-keys="sortKeys">
+            <template v-slot:no-data>
+              <div class="mt-8 pt-7 secondary--text">
+                <span v-if="itemsStudyRequests.length === 0">
+                  You have not requested a study,<br>
+                  please view the map <router-link :to="{name: 'viewData'}">here</router-link>
+                </span>
+                <span v-else>
+                  No requests match the active filters,<br>
+                  <a href="#" @click.prevent="actionClearAllFilters">
+                    clear filters
+                  </a> to see requests
+                </span>
+              </div>
             </template>
+            <template v-slot:header.data-table-select>
+            </template>
+            <template v-slot:item.ID="{ item }">
+              <span>{{item.id}}</span>
+            </template>
+            <template v-slot:item.LOCATION="{ item }">
+              <div class="text-truncate">
+                <span
+                  v-if="item.location !== null"
+                  :title="item.location.description">
+                  {{item.location.description}}
+                </span>
+              </div>
+            </template>
+            <template v-slot:item.STUDY_TYPE="{ item }">
+              <div class="text-truncate">
+                {{item.studyType.label}}
+              </div>
+            </template>
+            <template v-slot:item.REQUESTER="{ item }">
+              <div class="text-truncate">
+                <span
+                  v-if="item.requestedBy !== null"
+                  :title="item.requestedBy.uniqueName">
+                  {{item.requestedBy.uniqueName}}
+                </span>
+              </div>
+            </template>
+            <template v-slot:item.CREATED_AT="{ item }">
+              <span>{{item.createdAt | date}}</span>
+            </template>
+            <template v-slot:item.ASSIGNED_TO="{ item }">
+              <span v-if="item.assignedTo === null">
+                NONE
+              </span>
+              <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
+            </template>
+            <template v-slot:item.DUE_DATE="{ item }">
+              <span>{{item.dueDate | date}}</span>
+            </template>
+            <template v-slot:item.STATUS="{ item }">
+              <div class="align-center d-flex">
+                <v-icon :color="item.status.color">mdi-circle-medium</v-icon>
+                <span>{{item.status.text}}</span>
+              </div>
+            </template>
+            <template v-slot:item.LAST_EDITED_AT="{ item }">
+              <span v-if="item.lastEditedAt === null">
+                {{item.createdAt | date}}
+              </span>
+              <span v-else>
+                {{item.lastEditedAt | date}}
+              </span>
+            </template>
+            <template v-slot:header.ACTIONS>
+              <span class="sr-only">Actions</span>
+            </template>
+            <template v-slot:item.ACTIONS="{ item }">
+              <div class="text-right">
+                <v-icon
+                  v-if="item.urgent"
+                  class="mr-2"
+                  color="warning"
+                  title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <FcButton
-                  :aria-label="'View Request #' + item.id"
-                  type="icon"
-                  @click="actionShowRequest(item)"
-                  v-on="on">
-                  <v-icon>mdi-file-eye</v-icon>
-                </FcButton>
-              </template>
-              <span>View Request #{{item.id}}</span>
-            </v-tooltip>
-          </div>
-        </template>
-      </FcDataTable>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <FcButton
+                      :aria-label="'View Request #' + item.id"
+                      type="icon"
+                      @click="actionShowRequest(item)"
+                      v-on="on">
+                      <v-icon>mdi-file-eye</v-icon>
+                    </FcButton>
+                  </template>
+                  <span>View Request #{{item.id}}</span>
+                </v-tooltip>
+              </div>
+            </template>
+          </FcDataTable>
+        </v-card-text>
+      </v-card>
     </section>
   </section>
 </template>
@@ -207,13 +182,13 @@
 <script>
 import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
+import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapState } from 'vuex';
 
 import {
   centrelineKey,
   SearchKeys,
   SortKeys,
-  StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import {
@@ -223,6 +198,7 @@ import {
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -278,56 +254,68 @@ export default {
     FcMixinAuthScope,
     FcMixinRouteAsync,
   ],
+  directives: {
+    Ripple,
+  },
   components: {
     FcButton,
     FcDataTable,
+    FcSearchBarRequests,
   },
   data() {
-    const columns = [{
-      value: 'ID',
-      text: 'ID',
-    }, {
-      value: 'LOCATION',
-      text: 'Location',
-    }, {
-      value: 'STUDY_TYPE',
-      text: 'Type',
-    }, {
-      value: 'REQUESTER',
-      text: 'Requester',
-    }, {
-      value: 'DATE',
-      text: 'Due Date',
-    }, {
-      value: 'ASSIGNED_TO',
-      text: 'Assign',
-    }, {
-      value: 'STATUS',
-      text: 'Status',
-    }, {
-      value: 'ACTIONS',
-      text: '',
-    }];
+    const columns = [
+      { value: 'ID', text: 'ID' },
+      { value: 'LOCATION', text: 'Location' },
+      { value: 'STUDY_TYPE', text: 'Type' },
+      { value: 'REQUESTER', text: 'Requester' },
+      { value: 'CREATED_AT', text: 'Date Created' },
+      { value: 'ASSIGNED_TO', text: 'Assigned To' },
+      { value: 'DUE_DATE', text: 'Date Required' },
+      { value: 'STATUS', text: 'Status' },
+      { value: 'LAST_EDITED_AT', text: 'Last Updated' },
+      { value: 'ACTIONS', text: '' },
+    ];
     return {
+      activeShortcutChipTemp: 0, // TODO: get rid of this
       columns,
-      indexClosed: 0,
       loadingRefresh: false,
+      search: {
+        column: null,
+        query: null,
+      },
       searchKeys: SearchKeys.Requests,
       selectedItems: [],
+      showFilters: false,
       sortKeys: SortKeys.Requests,
       studyRequests: [],
       studyRequestLocations: new Map(),
-      StudyRequestStatus,
       studyRequestUsers: new Map(),
     };
   },
   computed: {
-    closed() {
-      return this.indexClosed === 1;
+    activeShortcutChip: {
+      get() {
+        // TODO: implement this
+        return this.activeShortcutChipTemp;
+      },
+      set(activeShortcutChip) {
+        // TODO: implement this
+        this.activeShortcutChipTemp = activeShortcutChip;
+      },
+    },
+    colorIconFilter() {
+      if (this.filterChips.length === 0) {
+        return 'unselected';
+      }
+      return 'primary';
+    },
+    filterChips() {
+      // TODO: implement this
+      return [];
     },
     items() {
-      return this.itemsStudyRequests
-        .filter(({ closed }) => closed === this.closed);
+      // TODO: implement filters
+      return this.itemsStudyRequests;
     },
     itemsStudyRequests() {
       return this.studyRequests.map((studyRequest) => {
@@ -357,28 +345,7 @@ export default {
     },
     ...mapState(['auth']),
   },
-  watch: {
-    closed() {
-      this.selectedItems = [];
-    },
-  },
   methods: {
-    actionApprove(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.ACCEPTED,
-      });
-    },
-    actionClose(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-      });
-    },
-    actionComplete(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-        status: StudyRequestStatus.COMPLETED,
-      });
-    },
     actionDownload(studyRequests) {
       const rows = studyRequests.map(getItemRow);
       const columns = [
@@ -407,16 +374,6 @@ export default {
       this.loadingRefresh = true;
       await this.loadAsyncForRoute();
       this.loadingRefresh = false;
-    },
-    actionReject(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.REJECTED,
-      });
-    },
-    actionReopen(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: false,
-      });
     },
     actionShowRequest(item) {
       const route = {
@@ -452,7 +409,28 @@ export default {
 
 <style lang="scss">
 .fc-requests-track {
+  background-color: var(--v-shading-base);
   max-height: 100vh;
   width: 100%;
+
+  & .fc-shortcut-chips .v-chip.v-chip {
+    &:not(:hover) {
+      background-color: #fff !important;
+    }
+    &.fc-shortcut-chip-active {
+      border: 1px solid var(--v-primary-base);
+    }
+  }
+
+  & .fc-requests-track-card {
+    height: calc(100% - 4px);
+  }
+
+  & .fc-data-table-requests-wrapper {
+    height: calc(100% - 53px);
+    & > .fc-data-table-requests {
+      height: calc(100% - 1px);
+    }
+  }
 }
 </style>
