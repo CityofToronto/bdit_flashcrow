@@ -90,7 +90,7 @@
           <FcDataTableRequests
             v-model="selectedItems"
             :columns="columns"
-            :has-filters="filterChips.length > 0"
+            :has-filters="hasFilters"
             :items="items"
             :loading="loading"
             :loading-items="loadingSaveStudyRequest"
@@ -111,6 +111,7 @@ import { mapActions, mapState } from 'vuex';
 import {
   AuthScope,
   centrelineKey,
+  SearchKeys,
   StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
@@ -338,6 +339,15 @@ function filtersMatchItem(filters, user, { studyRequest }) {
   return true;
 }
 
+function searchKeyForColumn(column) {
+  if (column !== null) {
+    return SearchKeys.Requests[column];
+  }
+  return (q, r) => Object.values(SearchKeys.Requests).some(
+    searchKey => searchKey(q, r),
+  );
+}
+
 export default {
   name: 'FcRequestsTrack',
   mixins: [
@@ -461,10 +471,21 @@ export default {
       }
       return filterChips;
     },
+    hasFilters() {
+      return this.filterChips.length > 0 || this.search.query !== null;
+    },
     items() {
-      return this.itemsNormalized.filter(
+      let items = this.itemsNormalized.filter(
         item => filtersMatchItem(this.filters, this.auth.user, item),
       );
+
+      const { column, query } = this.search;
+      if (query !== null) {
+        const searchKey = searchKeyForColumn(column);
+        items = items.filter(item => searchKey(query, item));
+      }
+
+      return items;
     },
     itemsNormalized() {
       return this.studyRequests.map((studyRequest) => {
