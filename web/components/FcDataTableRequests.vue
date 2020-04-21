@@ -27,19 +27,21 @@
     <template v-slot:header.data-table-select>
     </template>
     <template v-slot:item.ID="{ item }">
-      <span>{{item.studyRequest.id}}</span>
+      <span
+        class="text-truncate"
+        :title="item.studyRequest.id">
+        {{item.studyRequest.id}}
+      </span>
     </template>
     <template v-slot:item.LOCATION="{ item }">
-      <div class="text-truncate">
-        <span
-          v-if="item.location !== null"
-          :title="item.location.description">
+      <div class="text-wrap">
+        <span v-if="item.location !== null">
           {{item.location.description}}
         </span>
       </div>
     </template>
     <template v-slot:item.STUDY_TYPE="{ item }">
-      <div class="text-truncate">
+      <div class="text-wrap">
         {{item.studyRequest.studyType.label}}
       </div>
     </template>
@@ -47,8 +49,8 @@
       <div class="text-truncate">
         <span
           v-if="item.requestedBy !== null"
-          :title="item.requestedBy.uniqueName">
-          {{item.requestedBy.uniqueName}}
+          :title="item.requestedBy">
+          {{item.requestedBy}}
         </span>
       </div>
     </template>
@@ -65,8 +67,10 @@
         <template v-slot:activator="{ on }">
           <FcButton
             :loading="loadingItems.has(item.id)"
+            class="body-1 text-none"
+            small
             type="secondary"
-            width="140"
+            width="120"
             v-on="on">
             <span v-if="item.studyRequest.assignedTo === null">
               None
@@ -97,7 +101,7 @@
     </template>
     <template v-slot:item.STATUS="{ item }">
       <div class="align-center d-flex">
-        <v-icon :color="item.studyRequest.status.color">mdi-circle-medium</v-icon>
+        <v-icon :color="item.studyRequest.status.color" class="ml-n2">mdi-circle-medium</v-icon>
         <span>{{item.studyRequest.status.text}}</span>
       </div>
     </template>
@@ -184,3 +188,42 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-data-table-requests {
+  & td:not(:first-child):not(:last-child),
+  & th:not(:first-child):not(:last-child) {
+    padding: 0 8px;
+  }
+  & th.fc-data-table-header-ID {
+    min-width: 70px;
+    width: 70px;
+  }
+  & th.fc-data-table-header-LOCATION {
+    min-width: 100px;
+  }
+  & th.fc-data-table-header-STUDY_TYPE {
+    min-width: 110px;
+  }
+  & th.fc-data-table-header-REQUESTER {
+    min-width: 100px;
+  }
+  & th.fc-data-table-header-CREATED_AT {
+    min-width: 120px;
+  }
+  & th.fc-data-table-header-ASSIGNED_TO {
+    min-width: 140px;
+    width: 140px;
+  }
+  & th.fc-data-table-header-DUE_DATE {
+    min-width: 125px;
+  }
+  & th.fc-data-table-header-LAST_EDITED_AT {
+    min-width: 120px;
+  }
+  & th.fc-data-table-header-ACTIONS {
+    min-width: 100px;
+    width: 100px;
+  }
+}
+</style>

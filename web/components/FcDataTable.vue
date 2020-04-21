@@ -83,8 +83,10 @@ export default {
   computed: {
     headers() {
       return this.columns.map(({ value, ...options }) => {
+        const headerClass = `fc-data-table-header-${value}`;
         const sortable = Object.prototype.hasOwnProperty.call(this.sortKeys, value);
         return {
+          class: headerClass,
           sortable,
           value,
           ...options,

@@ -504,7 +504,9 @@ export default {
 
         let requestedBy = null;
         if (this.studyRequestUsers.has(userId)) {
-          requestedBy = this.studyRequestUsers.get(userId);
+          const { uniqueName } = this.studyRequestUsers.get(userId);
+          const i = uniqueName.indexOf('\\');
+          requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
         }
 
         return {
