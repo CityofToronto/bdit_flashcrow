@@ -66,6 +66,19 @@
               left>mdi-filter-variant</v-icon>
             Filter
           </FcButton>
+          <div
+            v-if="filterChips.length > 0"
+            class="ml-5">
+            <v-chip
+              v-for="(filterChip, i) in filterChips"
+              :key="i"
+              class="mr-2 primary--text"
+              color="light-blue lighten-5"
+              @click="removeFilter(filterChip)">
+              <v-icon left>mdi-check</v-icon>
+              {{filterChip.text}}
+            </v-chip>
+          </div>
         </v-card-title>
 
         <v-divider></v-divider>
@@ -355,17 +368,17 @@ export default {
         filterChips.push(filterChip);
       }
       assignees.forEach((assignee) => {
-        const { text } = assignee;
+        const text = assignee === null ? 'None' : assignee.text;
         const filterChip = { filter: 'assignees', text, value: assignee };
         filterChips.push(filterChip);
       });
       if (createdAt !== 0) {
-        const text = timeAgoFilterText(createdAt);
+        const text = timeAgoFilterText('Created', createdAt);
         const filterChip = { filter: 'createdAt', text, value: createdAt };
         filterChips.push(filterChip);
       }
       if (lastEditedAt !== 0) {
-        const text = timeAgoFilterText(lastEditedAt);
+        const text = timeAgoFilterText('Updated', lastEditedAt);
         const filterChip = { filter: 'lastEditedAt', text, value: lastEditedAt };
         filterChips.push(filterChip);
       }
@@ -473,6 +486,23 @@ export default {
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
+    },
+    removeFilter({ filter, value }) {
+      if (filter === 'closed') {
+        this.filters.closed = false;
+      } else if (filter === 'createdAt') {
+        this.filters.createdAt = 0;
+      } else if (filter === 'lastEditedAt') {
+        this.filters.lastEditedAt = 0;
+      } else if (filter === 'userOnly') {
+        this.filters.userOnly = false;
+      } else {
+        const values = this.filters[filter];
+        const i = values.indexOf(value);
+        if (i !== -1) {
+          values.splice(i, 1);
+        }
+      }
     },
     setFilters(filters) {
       this.filters = filters;
