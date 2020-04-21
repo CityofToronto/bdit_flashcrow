@@ -14,13 +14,13 @@
     :sort-keys="sortKeys">
     <template v-slot:no-data>
       <div class="mt-8 pt-7 secondary--text">
-        <span v-if="itemsStudyRequests.length === 0">
-          You have not requested a study,<br>
-          please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-        </span>
-        <span v-else>
+        <span v-if="hasFilters">
           No requests match the active filters,<br>
           clear one or more filters to see requests
+        </span>
+        <span v-else>
+          No studies have been requested,<br>
+          please <router-link :to="{name: 'viewData'}">view the map</router-link>
         </span>
       </div>
     </template>
@@ -160,6 +160,7 @@ export default {
   },
   props: {
     columns: Array,
+    hasFilters: Boolean,
     items: Array,
     loading: {
       type: Boolean,
