@@ -259,11 +259,17 @@ export default {
     ...mapState(['auth']),
   },
   methods: {
-    actionAssignTo({ item, assignedTo }) {
+    async actionAssignTo({ item, assignedTo }) {
       const { studyRequest } = item;
       studyRequest.assignedTo = assignedTo;
-      studyRequest.status = StudyRequestStatus.ASSIGNED;
-      this.saveStudyRequest(studyRequest);
+      if (assignedTo === null) {
+        studyRequest.status = StudyRequestStatus.REQUESTED;
+      } else {
+        studyRequest.status = StudyRequestStatus.ASSIGNED;
+      }
+      const studyRequestUpdated = await this.saveStudyRequest(studyRequest);
+      /* eslint-disable-next-line no-param-reassign */
+      item.studyRequest = studyRequestUpdated;
     },
     actionDownload(items) {
       const rows = items.map(getItemRow);

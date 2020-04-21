@@ -18,6 +18,7 @@ import StudyRequestController from '@/lib/controller/StudyRequestController';
 import UserController from '@/lib/controller/UserController';
 import db from '@/lib/db/db';
 import LogTag from '@/lib/log/LogTag';
+import User from '@/lib/model/User';
 import vueConfig from '@/vue.config';
 
 async function failAction(request, h, err) {
@@ -180,6 +181,15 @@ async function initServer() {
     },
   });
   server.auth.default('session');
+
+  // LIFECYCLE HOOKS
+  server.ext('onPostAuth', async (request, h) => {
+    if (request.auth.credentials !== null) {
+      /* eslint-disable-next-line no-param-reassign */
+      request.auth.credentials = await User.read.validateAsync(request.auth.credentials);
+    }
+    return h.continue;
+  });
 
   // ROUTES
   server.events.on('route', (route) => {

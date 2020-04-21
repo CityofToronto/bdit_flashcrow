@@ -119,7 +119,7 @@ export default new Vuex.Store({
     async saveStudyRequest({ state, commit }, studyRequest) {
       const { id, urgent } = studyRequest;
       const update = id !== undefined;
-      if (urgent) {
+      if (urgent && !update) {
         commit('setDialog', {
           dialog: 'AlertStudyRequestUrgent',
           dialogData: { update },
