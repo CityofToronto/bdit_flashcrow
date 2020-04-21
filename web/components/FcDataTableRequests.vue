@@ -64,6 +64,7 @@
           )">
         <template v-slot:activator="{ on }">
           <FcButton
+            :loading="loadingItems.has(item.id)"
             type="secondary"
             width="140"
             v-on="on">
@@ -164,6 +165,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    loadingItems: Set,
   },
   data() {
     const itemsAssignedTo = [

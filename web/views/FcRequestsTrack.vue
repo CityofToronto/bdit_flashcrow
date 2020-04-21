@@ -71,6 +71,7 @@
             :columns="columns"
             :items="items"
             :loading="loading"
+            :loading-items="loadingSaveStudyRequest"
             @assign-to="actionAssignTo"
             @show-request="actionShowRequest" />
         </v-card-text>
@@ -192,6 +193,7 @@ export default {
     return {
       activeShortcutChipTemp: 0, // TODO: get rid of this
       columns,
+      loadingSaveStudyRequest: new Set(),
       search: {
         column: null,
         query: null,
@@ -267,9 +269,12 @@ export default {
       } else {
         studyRequest.status = StudyRequestStatus.ASSIGNED;
       }
+
+      this.loadingSaveStudyRequest.add(item.id);
       const studyRequestUpdated = await this.saveStudyRequest(studyRequest);
       /* eslint-disable-next-line no-param-reassign */
       item.studyRequest = studyRequestUpdated;
+      this.loadingSaveStudyRequest.delete(item.id);
     },
     actionDownload(items) {
       const rows = items.map(getItemRow);
@@ -320,9 +325,7 @@ export default {
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
-    ...mapActions([
-      'saveStudyRequest',
-    ]),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>
