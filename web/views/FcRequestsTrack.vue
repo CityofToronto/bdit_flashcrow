@@ -111,6 +111,7 @@ import {
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import { getStudyRequests } from '@/lib/api/WebApi';
+import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -265,6 +266,74 @@ function timeAgoFilterText(prefix, value) {
   return `${prefix} \u2265 ${value} ${monthPlural} ago`;
 }
 
+function statusFilterText(items, status) {
+  const { text } = status;
+  let n = 0;
+  items.forEach(({ studyRequest }) => {
+    if (studyRequest.status === status) {
+      n += 1;
+    }
+  });
+  return `${text} (${n})`;
+}
+
+function filtersMatchItem(filters, user, { studyRequest }) {
+  const {
+    assignees,
+    closed,
+    createdAt,
+    lastEditedAt,
+    statuses,
+    studyTypes,
+    userOnly,
+  } = filters;
+  const now = DateTime.local();
+
+  if (assignees.length > 0 && !assignees.includes(studyRequest.assignedTo)) {
+    return false;
+  }
+  if (closed && !studyRequest.closed) {
+    return false;
+  }
+  if (createdAt < 0) {
+    const after = now.minus({ months: -createdAt });
+    if (studyRequest.createdAt.valueOf() <= after.valueOf()) {
+      return false;
+    }
+  }
+  if (createdAt > 0) {
+    const before = now.minus({ months: createdAt });
+    if (studyRequest.createdAt.valueOf() > before.valueOf()) {
+      return false;
+    }
+  }
+  if (lastEditedAt !== 0 && studyRequest.lastEditedAt === null) {
+    return false;
+  }
+  if (lastEditedAt < 0) {
+    const after = now.minus({ months: -lastEditedAt });
+    if (studyRequest.lastEditedAt.valueOf() <= after.valueOf()) {
+      return false;
+    }
+  }
+  if (lastEditedAt > 0) {
+    const before = now.minus({ months: lastEditedAt });
+    if (studyRequest.lastEditedAt.valueOf() > before.valueOf()) {
+      return false;
+    }
+  }
+  if (statuses.length > 0 && !statuses.includes(studyRequest.status)) {
+    return false;
+  }
+  if (studyTypes.length > 0 && !studyTypes.includes(studyRequest.studyType)) {
+    return false;
+  }
+  if (userOnly && studyRequest.userId !== user.id) {
+    return false;
+  }
+  return true;
+}
+
 export default {
   name: 'FcRequestsTrack',
   mixins: [
@@ -359,7 +428,7 @@ export default {
         filterChips.push(filterChip);
       });
       statuses.forEach((status) => {
-        const { text } = status;
+        const text = statusFilterText(this.itemsNormalized, status);
         const filterChip = { filter: 'statuses', text, value: status };
         filterChips.push(filterChip);
       });
@@ -389,8 +458,9 @@ export default {
       return filterChips;
     },
     items() {
-      // TODO: implement filtering
-      return this.itemsNormalized;
+      return this.itemsNormalized.filter(
+        item => filtersMatchItem(this.filters, this.auth.user, item),
+      );
     },
     itemsNormalized() {
       return this.studyRequests.map((studyRequest) => {

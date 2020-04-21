@@ -14,14 +14,8 @@
     :sort-keys="sortKeys">
     <template v-slot:no-data>
       <div class="mt-8 pt-7 secondary--text">
-        <span v-if="itemsStudyRequests.length === 0">
-          You have not requested a study,<br>
-          please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-        </span>
-        <span v-else>
-          No requests match the active filters,<br>
-          clear one or more filters to see requests
-        </span>
+        No requests match the active filters,<br>
+        clear one or more filters to see requests
       </div>
     </template>
     <template v-slot:header.data-table-select>
