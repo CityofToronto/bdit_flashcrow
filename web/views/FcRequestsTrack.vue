@@ -29,7 +29,10 @@
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
       <v-card class="fc-requests-track-card">
         <v-card-title class="align-center d-flex py-2">
-          <v-simple-checkbox class="mr-6"></v-simple-checkbox>
+          <v-simple-checkbox
+            v-model="selectAll"
+            class="mr-6"
+            :indeterminate="selectAll === null"></v-simple-checkbox>
 
           <FcButton
             v-if="selectedItems.length === 0"
@@ -87,6 +90,7 @@
           <FcDataTableRequests
             v-model="selectedItems"
             :columns="columns"
+            :has-filters="filterChips.length > 0"
             :items="items"
             :loading="loading"
             :loading-items="loadingSaveStudyRequest"
@@ -489,6 +493,25 @@ export default {
           studyRequest,
         };
       });
+    },
+    selectAll: {
+      get() {
+        const k = this.selectedItems.length;
+        if (k === 0) {
+          return false;
+        }
+        if (k === this.items.length) {
+          return true;
+        }
+        return null;
+      },
+      set(selectAll) {
+        if (selectAll) {
+          this.selectedItems = this.items;
+        } else {
+          this.selectedItems = [];
+        }
+      },
     },
     ...mapState(['auth']),
   },
