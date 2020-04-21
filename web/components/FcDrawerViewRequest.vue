@@ -33,6 +33,7 @@
               <FcButton
                 aria-label="More Actions"
                 class="ml-2"
+                :loading="loadingMoreActions"
                 type="icon"
                 v-on="{ ...onMenu, ...onTooltip }">
                 <v-icon>mdi-dots-vertical</v-icon>
@@ -42,14 +43,20 @@
           </v-tooltip>
         </template>
         <v-list>
-          <v-list-item
-            v-for="{ label, value } in itemsMoreActions"
-            :key="value"
-            @click="actionMoreActions(value)">
-            <v-list-item-title>
-              {{label}}
-            </v-list-item-title>
-          </v-list-item>
+          <template
+            v-for="(item, i) in itemsMoreActions">
+            <v-divider
+              v-if="item === null"
+              :key="'divider_' + i" />
+            <v-list-item
+              v-else
+              :key="item.value"
+              @click="actionMoreActions(item.value)">
+              <v-list-item-title>
+                {{item.label}}
+              </v-list-item-title>
+            </v-list-item>
+          </template>
         </v-list>
       </v-menu>
     </div>
@@ -76,7 +83,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
@@ -99,12 +106,18 @@ export default {
   },
   data() {
     return {
+      loadingMoreActions: false,
       studyRequest: null,
       studyRequestComments: [],
       studyRequestUsers: new Map(),
     };
   },
   computed: {
+    canAcceptChanges() {
+      return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
+        && this.studyRequest !== null
+        && this.studyRequest.status === StudyRequestStatus.CHANGES_NEEDED;
+    },
     canCancel() {
       return this.canEdit
         && this.studyRequest !== null
@@ -136,20 +149,34 @@ export default {
         && this.studyRequest.status.canTransitionTo(StudyRequestStatus.CHANGES_NEEDED);
     },
     itemsMoreActions() {
-      const items = [];
-      if (this.canCancel) {
-        items.push({ label: 'Cancel', value: 'cancel' });
-      }
-      if (this.canClose) {
-        items.push({ label: 'Close', value: 'close' });
-      }
-      if (this.canReopen) {
-        items.push({ label: 'Reopen', value: 'reopen' });
+      const topItems = [];
+      if (this.canAcceptChanges) {
+        topItems.push({ label: 'Accept Changes', value: 'acceptChanges' });
       }
       if (this.canRequestChanges) {
-        items.push({ label: 'Request Changes', value: 'requestChanges' });
+        topItems.push({ label: 'Request Changes', value: 'requestChanges' });
       }
-      return items;
+
+      const bottomItems = [];
+      if (this.canCancel) {
+        bottomItems.push({ label: 'Cancel', value: 'cancel' });
+      }
+      if (this.canClose) {
+        bottomItems.push({ label: 'Close', value: 'close' });
+      }
+      if (this.canReopen) {
+        bottomItems.push({ label: 'Reopen', value: 'reopen' });
+      }
+
+      const divider = [];
+      if (topItems.length > 0 && bottomItems.length > 0) {
+        divider.push(null);
+      }
+      return [
+        ...topItems,
+        ...divider,
+        ...bottomItems,
+      ];
     },
     labelNavigateBack() {
       const { backViewRequest: { name } } = this;
@@ -171,11 +198,26 @@ export default {
     ...mapState(['auth', 'backViewRequest', 'location']),
   },
   methods: {
-    actionCancel() {
-      // TODO: implement this
+    async actionAcceptChanges() {
+      this.studyRequest.status = StudyRequestStatus.REQUESTED;
+
+      this.loadingMoreActions = true;
+      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
+      this.loadingMoreActions = false;
     },
-    actionClose() {
-      // TODO: implement this
+    async actionCancel() {
+      this.studyRequest.status = StudyRequestStatus.CANCELLED;
+
+      this.loadingMoreActions = true;
+      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
+      this.loadingMoreActions = false;
+    },
+    async actionClose() {
+      this.studyRequest.closed = true;
+
+      this.loadingMoreActions = true;
+      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
+      this.loadingMoreActions = false;
     },
     actionEdit() {
       const { id } = this.studyRequest;
@@ -186,7 +228,9 @@ export default {
       this.$router.push(route);
     },
     actionMoreActions(value) {
-      if (value === 'cancel') {
+      if (value === 'acceptChanges') {
+        this.actionAcceptChanges();
+      } else if (value === 'cancel') {
         this.actionCancel();
       } else if (value === 'close') {
         this.actionClose();
@@ -200,11 +244,19 @@ export default {
       const { backViewRequest: route } = this;
       this.$router.push(route);
     },
-    actionReopen() {
-      // TODO: implement this
+    async actionReopen() {
+      this.studyRequest.closed = false;
+
+      this.loadingMoreActions = true;
+      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
+      this.loadingMoreActions = false;
     },
-    actionRequestChanges() {
-      // TODO: implement this
+    async actionRequestChanges() {
+      this.studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+
+      this.loadingMoreActions = true;
+      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
+      this.loadingMoreActions = false;
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
@@ -229,6 +281,7 @@ export default {
       this.studyRequestComments.splice(i, 1);
     },
     ...mapMutations(['setLocation']),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>

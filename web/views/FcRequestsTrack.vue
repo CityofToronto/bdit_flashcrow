@@ -22,8 +22,7 @@
 
           <FcSearchBarRequests
             v-model="search"
-            :columns="columns"
-            :search-keys="searchKeys" />
+            :columns="columns" />
         </div>
       </div>
     </header>
@@ -36,7 +35,7 @@
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
-            :loading="loadingRefresh"
+            :loading="loading"
             type="secondary"
             @click="actionRefresh()">
             <v-icon
@@ -46,6 +45,7 @@
           </FcButton>
           <FcButton
             v-else
+            class="mr-2"
             type="secondary"
             @click="actionDownload(selectedItems)">
             <v-icon color="primary" left>mdi-cloud-download</v-icon>
@@ -66,113 +66,14 @@
         <v-divider></v-divider>
 
         <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
-          <FcDataTable
+          <FcDataTableRequests
             v-model="selectedItems"
-            class="fc-data-table-requests"
             :columns="columns"
-            fixed-header
-            height="100%"
             :items="items"
-            :loading="loading || loadingRefresh"
-            must-sort
-            show-select
-            sort-by="ID"
-            :sort-desc="true"
-            :sort-keys="sortKeys">
-            <template v-slot:no-data>
-              <div class="mt-8 pt-7 secondary--text">
-                <span v-if="itemsStudyRequests.length === 0">
-                  You have not requested a study,<br>
-                  please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-                </span>
-                <span v-else>
-                  No requests match the active filters,<br>
-                  <a href="#" @click.prevent="actionClearAllFilters">
-                    clear filters
-                  </a> to see requests
-                </span>
-              </div>
-            </template>
-            <template v-slot:header.data-table-select>
-            </template>
-            <template v-slot:item.ID="{ item }">
-              <span>{{item.id}}</span>
-            </template>
-            <template v-slot:item.LOCATION="{ item }">
-              <div class="text-truncate">
-                <span
-                  v-if="item.location !== null"
-                  :title="item.location.description">
-                  {{item.location.description}}
-                </span>
-              </div>
-            </template>
-            <template v-slot:item.STUDY_TYPE="{ item }">
-              <div class="text-truncate">
-                {{item.studyType.label}}
-              </div>
-            </template>
-            <template v-slot:item.REQUESTER="{ item }">
-              <div class="text-truncate">
-                <span
-                  v-if="item.requestedBy !== null"
-                  :title="item.requestedBy.uniqueName">
-                  {{item.requestedBy.uniqueName}}
-                </span>
-              </div>
-            </template>
-            <template v-slot:item.CREATED_AT="{ item }">
-              <span>{{item.createdAt | date}}</span>
-            </template>
-            <template v-slot:item.ASSIGNED_TO="{ item }">
-              <span v-if="item.assignedTo === null">
-                NONE
-              </span>
-              <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
-            </template>
-            <template v-slot:item.DUE_DATE="{ item }">
-              <span>{{item.dueDate | date}}</span>
-            </template>
-            <template v-slot:item.STATUS="{ item }">
-              <div class="align-center d-flex">
-                <v-icon :color="item.status.color">mdi-circle-medium</v-icon>
-                <span>{{item.status.text}}</span>
-              </div>
-            </template>
-            <template v-slot:item.LAST_EDITED_AT="{ item }">
-              <span v-if="item.lastEditedAt === null">
-                {{item.createdAt | date}}
-              </span>
-              <span v-else>
-                {{item.lastEditedAt | date}}
-              </span>
-            </template>
-            <template v-slot:header.ACTIONS>
-              <span class="sr-only">Actions</span>
-            </template>
-            <template v-slot:item.ACTIONS="{ item }">
-              <div class="text-right">
-                <v-icon
-                  v-if="item.urgent"
-                  class="mr-2"
-                  color="warning"
-                  title="Urgent">mdi-clipboard-alert</v-icon>
-
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <FcButton
-                      :aria-label="'View Request #' + item.id"
-                      type="icon"
-                      @click="actionShowRequest(item)"
-                      v-on="on">
-                      <v-icon>mdi-file-eye</v-icon>
-                    </FcButton>
-                  </template>
-                  <span>View Request #{{item.id}}</span>
-                </v-tooltip>
-              </div>
-            </template>
-          </FcDataTable>
+            :loading="loading"
+            :loading-items="loadingSaveStudyRequest"
+            @assign-to="actionAssignTo"
+            @show-request="actionShowRequest" />
         </v-card-text>
       </v-card>
     </section>
@@ -185,62 +86,76 @@ import { saveAs } from 'file-saver';
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapState } from 'vuex';
 
-import {
-  centrelineKey,
-  SearchKeys,
-  SortKeys,
-} from '@/lib/Constants';
+import { centrelineKey, StudyRequestStatus } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
-import {
-  getStudyRequests,
-  putStudyRequests,
-} from '@/lib/api/WebApi';
+import { getStudyRequests } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function getItemRow(item) {
+  let { location, requestedBy } = item;
+  if (location !== null) {
+    location = location.description;
+  }
+  if (requestedBy !== null) {
+    requestedBy = requestedBy.uniqueName;
+  }
+
+  const { studyRequest } = item;
   const {
     assignedTo,
+    geom: {
+      coordinates: [lng, lat],
+    },
     hours,
     id,
     notes,
     status,
-    studyType: { label: studyType },
+    studyType,
     urgent,
     urgentReason,
-  } = item;
+  } = studyRequest;
 
-  const [lng, lat] = item.geom.coordinates;
-  const location = (item.location && item.location.description) || null;
-  const requester = (item.requestedBy && item.requestedBy.uniqueName) || null;
-  const dueDate = TimeFormatters.formatDefault(item.dueDate);
-  const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
-
-  let { daysOfWeek, duration } = item;
+  let {
+    createdAt,
+    daysOfWeek,
+    dueDate,
+    duration,
+    estimatedDeliveryDate,
+    lastEditedAt,
+  } = studyRequest;
+  createdAt = TimeFormatters.formatDefault(createdAt);
   daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+  dueDate = TimeFormatters.formatDefault(studyRequest.dueDate);
   if (studyType.automatic) {
     duration = formatDuration(duration);
   } else {
     duration = null;
   }
+  estimatedDeliveryDate = TimeFormatters.formatDefault(studyRequest.estimatedDeliveryDate);
+  if (lastEditedAt !== null) {
+    lastEditedAt = TimeFormatters.formatDefault(lastEditedAt);
+  }
 
   return {
     assignedTo,
+    createdAt,
     daysOfWeek,
     dueDate,
     duration,
     estimatedDeliveryDate,
     hours,
     id,
+    lastEditedAt,
     lat,
     lng,
     location,
     notes,
-    requester,
+    requestedBy,
     status,
     studyType,
     urgent,
@@ -259,7 +174,7 @@ export default {
   },
   components: {
     FcButton,
-    FcDataTable,
+    FcDataTableRequests,
     FcSearchBarRequests,
   },
   data() {
@@ -278,15 +193,13 @@ export default {
     return {
       activeShortcutChipTemp: 0, // TODO: get rid of this
       columns,
-      loadingRefresh: false,
+      loadingSaveStudyRequest: new Set(),
       search: {
         column: null,
         query: null,
       },
-      searchKeys: SearchKeys.Requests,
       selectedItems: [],
       showFilters: false,
-      sortKeys: SortKeys.Requests,
       studyRequests: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
@@ -314,14 +227,15 @@ export default {
       return [];
     },
     items() {
-      // TODO: implement filters
-      return this.itemsStudyRequests;
+      // TODO: implement filtering
+      return this.itemsNormalized;
     },
-    itemsStudyRequests() {
+    itemsNormalized() {
       return this.studyRequests.map((studyRequest) => {
         const {
           centrelineId,
           centrelineType,
+          id,
           userId,
         } = studyRequest;
 
@@ -337,30 +251,48 @@ export default {
         }
 
         return {
-          ...studyRequest,
+          id,
           location,
           requestedBy,
+          studyRequest,
         };
       });
     },
     ...mapState(['auth']),
   },
   methods: {
-    actionDownload(studyRequests) {
-      const rows = studyRequests.map(getItemRow);
+    async actionAssignTo({ item, assignedTo }) {
+      const { studyRequest } = item;
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = StudyRequestStatus.REQUESTED;
+      } else {
+        studyRequest.status = StudyRequestStatus.ASSIGNED;
+      }
+
+      this.loadingSaveStudyRequest.add(item.id);
+      const studyRequestUpdated = await this.saveStudyRequest(studyRequest);
+      /* eslint-disable-next-line no-param-reassign */
+      item.studyRequest = studyRequestUpdated;
+      this.loadingSaveStudyRequest.delete(item.id);
+    },
+    actionDownload(items) {
+      const rows = items.map(getItemRow);
       const columns = [
         'id',
         'location',
-        'requester',
+        'studyType',
+        'requestedBy',
+        'createdAt',
+        'assignedTo',
         'dueDate',
-        'estimatedDeliveryDate',
+        'status',
+        'lastEditedAt',
         'urgent',
         'urgentReason',
-        'assignedTo',
-        'status',
+        'estimatedDeliveryDate',
         'lng',
         'lat',
-        'studyType',
         'daysOfWeek',
         'duration',
         'hours',
@@ -371,14 +303,14 @@ export default {
       saveAs(csvData, 'requests.csv');
     },
     async actionRefresh() {
-      this.loadingRefresh = true;
+      this.loading = true;
       await this.loadAsyncForRoute();
-      this.loadingRefresh = false;
+      this.loading = false;
     },
-    actionShowRequest(item) {
+    actionShowRequest({ studyRequest }) {
       const route = {
         name: 'requestStudyView',
-        params: { id: item.id },
+        params: { id: studyRequest.id },
       };
       this.$router.push(route);
     },
@@ -393,16 +325,7 @@ export default {
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
-    async setStudyRequests(items, updates) {
-      const studyRequests = items.map((item) => {
-        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
-        return Object.assign(studyRequest, updates);
-      });
-      return putStudyRequests(this.auth.csrf, studyRequests);
-    },
-    ...mapActions([
-      'saveStudyRequest',
-    ]),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>

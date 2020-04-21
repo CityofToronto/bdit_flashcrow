@@ -2,6 +2,8 @@ import {
   CentrelineType,
   SearchKeys,
   SortKeys,
+  StudyRequestAssignee,
+  StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
@@ -26,20 +28,24 @@ test('Constants.SearchKeys', () => {
     email: 'Baz.Quux@toronto.ca',
     uniqueName: 'ORG\\BazQuux',
   };
+
   const REQUEST = {
-    createdAt,
     id: 42,
     location: null,
-    urgent: false,
-    assignedTo: null,
     requestedBy: null,
-    studyType: StudyType.TMC,
+    studyRequest: {
+      createdAt,
+      id: 42,
+      urgent: false,
+      assignedTo: null,
+      studyType: StudyType.TMC,
+    },
   };
 
   expect(SearchKeys.Requests.ASSIGNED_TO('', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.ASSIGNED_TO('n', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.ASSIGNED_TO('None', REQUEST)).toBe(true);
-  REQUEST.assignedTo = 'FIELD STAFF';
+  REQUEST.studyRequest.assignedTo = StudyRequestAssignee.FIELD_STAFF;
   expect(SearchKeys.Requests.ASSIGNED_TO('None', REQUEST)).toBe(false);
   expect(SearchKeys.Requests.ASSIGNED_TO('field', REQUEST)).toBe(true);
 
@@ -91,34 +97,48 @@ test('Constants.SortKeys', () => {
     month: 2,
     day: 14,
   });
+
   const REQUEST_STANDARD = {
-    createdAt,
-    dueDate: now,
     id: 42,
-    lastEditedAt: null,
     location,
-    urgent: false,
-    assignedTo: 'FIELD STAFF',
     requestedBy,
-    status: 'REVIEWED',
-    studyType: StudyType.TMC,
+    studyRequest: {
+      createdAt,
+      dueDate: now,
+      id: 42,
+      lastEditedAt: null,
+      urgent: false,
+      assignedTo: StudyRequestAssignee.FIELD_STAFF,
+      status: StudyRequestStatus.ASSIGNED,
+      studyType: StudyType.TMC,
+    },
   };
+
   const lastEditedAt = DateTime.fromObject({
     year: 2020,
     month: 4,
     day: 13,
   });
   const REQUEST_URGENT = {
-    ...REQUEST_STANDARD,
-    urgent: true,
-    assignedTo: null,
-    lastEditedAt,
+    id: 43,
+    location,
+    requestedBy,
+    studyRequest: {
+      createdAt,
+      dueDate: now,
+      id: 43,
+      lastEditedAt,
+      urgent: true,
+      assignedTo: null,
+      status: StudyRequestStatus.ASSIGNED,
+      studyType: StudyType.TMC,
+    },
   };
 
   expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_STANDARD))
-    .toEqual('FIELD STAFF');
+    .toEqual(REQUEST_STANDARD.studyRequest.assignedTo.ordinal);
   expect(SortKeys.Requests.ASSIGNED_TO(REQUEST_URGENT))
-    .toEqual('');
+    .toEqual(-1);
   expect(SortKeys.Requests.CREATED_AT(REQUEST_STANDARD))
     .toEqual(createdAt.valueOf());
   expect(SortKeys.Requests.DUE_DATE(REQUEST_STANDARD))
@@ -134,9 +154,9 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
-    .toEqual(REQUEST_STANDARD.status.ordinal);
+    .toEqual(REQUEST_STANDARD.studyRequest.status.ordinal);
   expect(SortKeys.Requests.STUDY_TYPE(REQUEST_STANDARD))
-    .toEqual(REQUEST_STANDARD.studyType.label);
+    .toEqual(REQUEST_STANDARD.studyRequest.studyType.label);
   expect(SortKeys.Requests.URGENT(REQUEST_STANDARD))
     .toEqual(0);
   expect(SortKeys.Requests.URGENT(REQUEST_URGENT))
