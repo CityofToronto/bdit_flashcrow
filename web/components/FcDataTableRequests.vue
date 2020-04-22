@@ -106,10 +106,7 @@
       </div>
     </template>
     <template v-slot:item.LAST_EDITED_AT="{ item }">
-      <span v-if="item.studyRequest.lastEditedAt === null">
-        {{item.studyRequest.createdAt | date}}
-      </span>
-      <span v-else>
+      <span v-if="item.studyRequest.lastEditedAt !== null">
         {{item.studyRequest.lastEditedAt | date}}
       </span>
     </template>

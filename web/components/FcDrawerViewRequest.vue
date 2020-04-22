@@ -16,14 +16,14 @@
         </span>
       </h1>
       <FcButton
-        v-if="studyRequest.status.dataViewable"
+        v-if="studyRequest !== null && studyRequest.status.dataViewable"
         :disabled="loading"
         type="secondary"
         @click="actionViewData">
         View Data
       </FcButton>
       <FcButton
-        v-else-if="canEdit && studyRequest.status.editable"
+        v-else-if="studyRequest !== null && canEdit && studyRequest.status.editable"
         :disabled="loading"
         type="secondary"
         @click="actionEdit">
