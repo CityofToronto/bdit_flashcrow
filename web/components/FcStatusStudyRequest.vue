@@ -39,6 +39,7 @@ export default {
   name: 'FcStatusStudyRequest',
   props: {
     studyRequest: Object,
+    studyRequestChanges: Array,
   },
   computed: {
     circles() {

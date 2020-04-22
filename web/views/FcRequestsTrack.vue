@@ -549,7 +549,9 @@ export default {
       }
 
       this.loadingSaveStudyRequest.add(item.id);
-      const studyRequestUpdated = await this.saveStudyRequest(studyRequest);
+      const {
+        studyRequest: studyRequestUpdated,
+      } = await this.saveStudyRequest(studyRequest);
       /* eslint-disable-next-line no-param-reassign */
       item.studyRequest = studyRequestUpdated;
       this.loadingSaveStudyRequest.delete(item.id);

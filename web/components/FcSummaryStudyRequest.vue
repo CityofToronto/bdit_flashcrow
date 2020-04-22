@@ -6,7 +6,8 @@
           <div class="subtitle-1">Status</div>
           <FcStatusStudyRequest
             class="mt-2"
-            :study-request="studyRequest" />
+            :study-request="studyRequest"
+            :study-request-changes="studyRequestChanges" />
         </v-col>
         <v-col cols="6">
           <div class="subtitle-1">Requester</div>
@@ -136,6 +137,7 @@ export default {
   },
   props: {
     studyRequest: Object,
+    studyRequestChanges: Array,
     studyRequestUsers: Map,
   },
   computed: {
