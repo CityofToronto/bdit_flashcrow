@@ -92,15 +92,15 @@ export default {
       };
       this.commentText = '';
       this.loadingAddComment = true;
-      const persistedComment = await postStudyRequestComment(csrf, studyRequest, comment);
-      this.$emit('add-comment', persistedComment);
+      const response = await postStudyRequestComment(csrf, studyRequest, comment);
+      this.$emit('add-comment', response);
       this.loadingAddComment = false;
     },
     async actionDeleteComment(i) {
       const { auth: { csrf }, studyRequest, studyRequestComments } = this;
       const comment = studyRequestComments[i];
-      this.$emit('delete-comment', i);
-      await deleteStudyRequestComment(csrf, studyRequest, comment);
+      const response = await deleteStudyRequestComment(csrf, studyRequest, comment);
+      this.$emit('delete-comment', { i, ...response });
     },
   },
 };

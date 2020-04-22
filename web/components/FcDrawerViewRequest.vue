@@ -267,10 +267,12 @@ export default {
       this.studyRequestUsers = studyRequestUsers;
       this.setLocation(studyRequestLocation);
     },
-    onAddComment(comment) {
-      this.studyRequestComments.unshift(comment);
+    onAddComment({ studyRequest, studyRequestComment }) {
+      this.studyRequest = studyRequest;
+      this.studyRequestComments.unshift(studyRequestComment);
     },
-    onDeleteComment(i) {
+    onDeleteComment({ studyRequest, i }) {
+      this.studyRequest = studyRequest;
       this.studyRequestComments.splice(i, 1);
     },
     async updateMoreActions() {
