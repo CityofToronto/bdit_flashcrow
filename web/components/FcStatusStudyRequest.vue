@@ -91,29 +91,51 @@ export default {
       }
       if (status === StudyRequestStatus.CHANGES_NEEDED) {
         const changesNeeded = this.statusChanges.get(StudyRequestStatus.CHANGES_NEEDED);
-        milestones.push(changesNeeded);
+        /*
+         * During status changes to study requests, we first update the status on the
+         * `studyRequest` object, then persist that update.  The REST API response contains
+         * the change object, which we can then add into our local changes list.
+         *
+         * As such, there's a short period of time where the status has been updated,
+         * but no change object of the corresponding type is available.  This means we
+         * must guard against this here, only adding the change object to `milestones` if
+         * it's available.
+         *
+         * This same pattern is repeated for other status codes below.
+         */
+        if (changesNeeded) {
+          milestones.push(changesNeeded);
+        }
         return milestones;
       }
       if (status === StudyRequestStatus.CANCELLED) {
         const cancelled = this.statusChanges.get(StudyRequestStatus.CANCELLED);
-        milestones.push(cancelled);
+        if (cancelled) {
+          milestones.push(cancelled);
+        }
         return milestones;
       }
 
       const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
-      milestones.push(assigned);
+      if (assigned) {
+        milestones.push(assigned);
+      }
 
       if (status === StudyRequestStatus.ASSIGNED) {
         return milestones;
       }
       if (status === StudyRequestStatus.REJECTED) {
         const rejected = this.statusChanges.get(StudyRequestStatus.REJECTED);
-        milestones.push(rejected);
+        if (rejected) {
+          milestones.push(rejected);
+        }
         return milestones;
       }
       // COMPLETED
       const completed = this.statusChanges.get(StudyRequestStatus.COMPLETED);
-      milestones.push(completed);
+      if (completed) {
+        milestones.push(completed);
+      }
       return milestones;
     },
     progress() {
@@ -127,8 +149,11 @@ export default {
         return 25;
       }
       if (status === StudyRequestStatus.ASSIGNED) {
-        const { createdAt: assignedAt } = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
-        return afterDateOf(assignedAt, this.now) ? 75 : 50;
+        const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
+        if (assigned) {
+          return afterDateOf(assigned.createdAt, this.now) ? 75 : 50;
+        }
+        return 50;
       }
       if (status === StudyRequestStatus.REJECTED) {
         return 75;

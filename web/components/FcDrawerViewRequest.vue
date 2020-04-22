@@ -16,7 +16,14 @@
         </span>
       </h1>
       <FcButton
-        v-if="canEdit"
+        v-if="studyRequest.status.dataViewable"
+        :disabled="loading"
+        type="secondary"
+        @click="actionViewData">
+        View Data
+      </FcButton>
+      <FcButton
+        v-else-if="canEdit && studyRequest.status.editable"
         :disabled="loading"
         type="secondary"
         @click="actionEdit">
@@ -143,7 +150,7 @@ export default {
     canReopen() {
       return this.canEdit
         && this.studyRequest !== null
-        && this.closed;
+        && this.studyRequest.closed;
     },
     canRequestChanges() {
       return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
@@ -248,6 +255,17 @@ export default {
     async actionRequestChanges() {
       this.studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
       await this.updateMoreActions();
+    },
+    actionViewData() {
+      if (this.location === null) {
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      const route = {
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      };
+      this.$router.push(route);
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
