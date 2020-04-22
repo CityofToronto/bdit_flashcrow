@@ -141,7 +141,7 @@ export default {
     canReopen() {
       return this.canEdit
         && this.studyRequest !== null
-        && this.studyRequest.status === StudyRequestStatus.CANCELLED;
+        && this.closed;
     },
     canRequestChanges() {
       return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
@@ -207,6 +207,7 @@ export default {
     },
     async actionCancel() {
       this.studyRequest.status = StudyRequestStatus.CANCELLED;
+      this.studyRequest.closed = true;
 
       this.loadingMoreActions = true;
       this.studyRequest = await this.saveStudyRequest(this.studyRequest);
@@ -245,6 +246,9 @@ export default {
       this.$router.push(route);
     },
     async actionReopen() {
+      if (this.studyRequest.status === StudyRequestStatus.CANCELLED) {
+        this.studyRequest.status = StudyRequestStatus.REQUESTED;
+      }
       this.studyRequest.closed = false;
 
       this.loadingMoreActions = true;
