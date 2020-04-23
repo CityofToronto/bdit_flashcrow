@@ -21,13 +21,6 @@ test('Constants.SearchKeys', () => {
     lng: 0,
     lat: 0,
   };
-  const requestedBy = {
-    id: 42,
-    createdAt: DateTime.local(),
-    sub: '0123456789',
-    email: 'Baz.Quux@toronto.ca',
-    uniqueName: 'ORG\\BazQuux',
-  };
 
   const REQUEST = {
     id: 42,
@@ -58,7 +51,7 @@ test('Constants.SearchKeys', () => {
   expect(SearchKeys.Requests.LOCATION('Bar St', REQUEST)).toBe(true);
 
   expect(SearchKeys.Requests.REQUESTER('', REQUEST)).toBe(true);
-  REQUEST.requestedBy = requestedBy;
+  REQUEST.requestedBy = 'ORG\\BazQuux';
   expect(SearchKeys.Requests.REQUESTER('BAZ', REQUEST)).toBe(true);
   expect(SearchKeys.Requests.REQUESTER('quux', REQUEST)).toBe(true);
 
@@ -152,7 +145,7 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Requests.LOCATION(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.location.description);
   expect(SortKeys.Requests.REQUESTER(REQUEST_STANDARD))
-    .toEqual(REQUEST_STANDARD.requestedBy.uniqueName);
+    .toEqual(REQUEST_STANDARD.requestedBy);
   expect(SortKeys.Requests.STATUS(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.studyRequest.status.ordinal);
   expect(SortKeys.Requests.STUDY_TYPE(REQUEST_STANDARD))

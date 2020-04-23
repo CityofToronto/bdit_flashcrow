@@ -504,7 +504,9 @@ export default {
 
         let requestedBy = null;
         if (this.studyRequestUsers.has(userId)) {
-          requestedBy = this.studyRequestUsers.get(userId);
+          const { uniqueName } = this.studyRequestUsers.get(userId);
+          const i = uniqueName.indexOf('\\');
+          requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
         }
 
         return {
@@ -547,7 +549,9 @@ export default {
       }
 
       this.loadingSaveStudyRequest.add(item.id);
-      const studyRequestUpdated = await this.saveStudyRequest(studyRequest);
+      const {
+        studyRequest: studyRequestUpdated,
+      } = await this.saveStudyRequest(studyRequest);
       /* eslint-disable-next-line no-param-reassign */
       item.studyRequest = studyRequestUpdated;
       this.loadingSaveStudyRequest.delete(item.id);

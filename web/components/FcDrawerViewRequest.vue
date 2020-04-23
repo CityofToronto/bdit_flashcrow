@@ -16,7 +16,14 @@
         </span>
       </h1>
       <FcButton
-        v-if="canEdit"
+        v-if="studyRequest !== null && studyRequest.status.dataViewable"
+        :disabled="loading"
+        type="secondary"
+        @click="actionViewData">
+        View Data
+      </FcButton>
+      <FcButton
+        v-else-if="studyRequest !== null && canEdit && studyRequest.status.editable"
         :disabled="loading"
         type="secondary"
         @click="actionEdit">
@@ -68,6 +75,7 @@
       <div v-else>
         <FcSummaryStudyRequest
           :study-request="studyRequest"
+          :study-request-changes="studyRequestChanges"
           :study-request-users="studyRequestUsers" />
         <v-divider></v-divider>
         <FcCommentsStudyRequest
@@ -108,6 +116,7 @@ export default {
     return {
       loadingMoreActions: false,
       studyRequest: null,
+      studyRequestChanges: [],
       studyRequestComments: [],
       studyRequestUsers: new Map(),
     };
@@ -141,7 +150,7 @@ export default {
     canReopen() {
       return this.canEdit
         && this.studyRequest !== null
-        && this.studyRequest.status === StudyRequestStatus.CANCELLED;
+        && this.studyRequest.closed;
     },
     canRequestChanges() {
       return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
@@ -200,24 +209,16 @@ export default {
   methods: {
     async actionAcceptChanges() {
       this.studyRequest.status = StudyRequestStatus.REQUESTED;
-
-      this.loadingMoreActions = true;
-      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
-      this.loadingMoreActions = false;
+      await this.updateMoreActions();
     },
     async actionCancel() {
       this.studyRequest.status = StudyRequestStatus.CANCELLED;
-
-      this.loadingMoreActions = true;
-      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
-      this.loadingMoreActions = false;
+      this.studyRequest.closed = true;
+      await this.updateMoreActions();
     },
     async actionClose() {
       this.studyRequest.closed = true;
-
-      this.loadingMoreActions = true;
-      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
-      this.loadingMoreActions = false;
+      await this.updateMoreActions();
     },
     actionEdit() {
       const { id } = this.studyRequest;
@@ -245,23 +246,32 @@ export default {
       this.$router.push(route);
     },
     async actionReopen() {
+      if (this.studyRequest.status === StudyRequestStatus.CANCELLED) {
+        this.studyRequest.status = StudyRequestStatus.REQUESTED;
+      }
       this.studyRequest.closed = false;
-
-      this.loadingMoreActions = true;
-      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
-      this.loadingMoreActions = false;
+      await this.updateMoreActions();
     },
     async actionRequestChanges() {
       this.studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
-
-      this.loadingMoreActions = true;
-      this.studyRequest = await this.saveStudyRequest(this.studyRequest);
-      this.loadingMoreActions = false;
+      await this.updateMoreActions();
+    },
+    actionViewData() {
+      if (this.location === null) {
+        return;
+      }
+      const { centrelineId, centrelineType } = this.location;
+      const route = {
+        name: 'viewDataAtLocation',
+        params: { centrelineId, centrelineType },
+      };
+      this.$router.push(route);
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const {
         studyRequest,
+        studyRequestChanges,
         studyRequestComments,
         studyRequestLocation,
         studyRequestUsers,
@@ -270,15 +280,30 @@ export default {
       this.studyRequestUsers.set(user.id, user);
 
       this.studyRequest = studyRequest;
+      this.studyRequestChanges = studyRequestChanges;
       this.studyRequestComments = studyRequestComments;
       this.studyRequestUsers = studyRequestUsers;
       this.setLocation(studyRequestLocation);
     },
-    onAddComment(comment) {
-      this.studyRequestComments.unshift(comment);
+    onAddComment({ studyRequest, studyRequestComment }) {
+      this.studyRequest = studyRequest;
+      this.studyRequestComments.unshift(studyRequestComment);
     },
-    onDeleteComment(i) {
+    onDeleteComment({ studyRequest, i }) {
+      this.studyRequest = studyRequest;
       this.studyRequestComments.splice(i, 1);
+    },
+    async updateMoreActions() {
+      this.loadingMoreActions = true;
+      const {
+        studyRequest,
+        studyRequestChange,
+      } = await this.saveStudyRequest(this.studyRequest);
+      this.studyRequest = studyRequest;
+      if (studyRequestChange !== null) {
+        this.studyRequestChanges.unshift(studyRequestChange);
+      }
+      this.loadingMoreActions = false;
     },
     ...mapMutations(['setLocation']),
     ...mapActions(['saveStudyRequest']),

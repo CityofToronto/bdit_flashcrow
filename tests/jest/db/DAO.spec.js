@@ -18,6 +18,7 @@ import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
+import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import {
@@ -27,6 +28,7 @@ import Category from '@/lib/model/Category';
 import Count from '@/lib/model/Count';
 import Joi from '@/lib/model/Joi';
 import StudyRequest from '@/lib/model/StudyRequest';
+import StudyRequestChange from '@/lib/model/StudyRequestChange';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -554,6 +556,76 @@ test('StudyRequestDAO', async () => {
   expect(all).toEqual([]);
 });
 
+test('StudyRequestChangeDAO', async () => {
+  const transientUser1 = generateUser();
+  const persistedUser1 = await UserDAO.create(transientUser1);
+  const now = DateTime.local();
+  const transientStudyRequest = {
+    serviceRequestId: '12345',
+    urgent: false,
+    urgentReason: null,
+    assignedTo: StudyRequestAssignee.FIELD_STAFF,
+    dueDate: now.plus({ months: 4 }),
+    estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
+    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
+    centrelineId: 42,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.333251, 43.709012],
+    },
+  };
+  const persistedStudyRequest = await StudyRequestDAO.create(
+    transientStudyRequest,
+    persistedUser1,
+  );
+
+  const transientUser2 = generateUser();
+  const persistedUser2 = await UserDAO.create(transientUser2);
+
+  // save change 1
+  persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+  const persistedChange1 = await StudyRequestChangeDAO.create(
+    persistedStudyRequest,
+    persistedUser1,
+  );
+  expect(persistedChange1.id).not.toBeNull();
+  await expect(
+    StudyRequestChange.read.validateAsync(persistedChange1),
+  ).resolves.toEqual(persistedChange1);
+
+  // fetch saved change
+  const fetchedChange1 = await StudyRequestChangeDAO.byId(persistedChange1.id);
+  expect(fetchedChange1).toEqual(persistedChange1);
+
+  // fetch by study request
+  let byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedChange1]);
+
+  // save change 2
+  persistedStudyRequest.status = StudyRequestStatus.ASSIGNED;
+  const persistedChange2 = await StudyRequestChangeDAO.create(
+    persistedStudyRequest,
+    persistedUser2,
+  );
+  expect(persistedChange2.id).not.toBeNull();
+
+  // fetch by study request: returns most recent first
+  byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedChange2, persistedChange1]);
+
+  // delete study request: should delete all changes
+  await StudyRequestDAO.delete(persistedStudyRequest);
+  byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([]);
+});
+
 test('StudyRequestCommentDAO', async () => {
   const user1 = generateUser();
   const userCreated1 = await UserDAO.create(user1);
@@ -581,22 +653,21 @@ test('StudyRequestCommentDAO', async () => {
   };
   const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, userCreated1);
 
-  const transientComment1 = {
-    userId: userCreated1.id,
-    comment: 'We don\'t normally do this study here.',
-  };
-
   const user2 = generateUser();
   const userCreated2 = await UserDAO.create(user2);
+
+  const transientComment1 = {
+    comment: 'We don\'t normally do this study here.',
+  };
   const transientComment2 = {
-    userId: userCreated2.id,
     comment: 'I believe we have already done this study before.',
   };
 
   // save comment 1
   let persistedComment1 = await StudyRequestCommentDAO.create(
-    persistedStudyRequest,
     transientComment1,
+    persistedStudyRequest,
+    userCreated1,
   );
   expect(persistedComment1.id).not.toBeNull();
   await expect(
@@ -619,8 +690,9 @@ test('StudyRequestCommentDAO', async () => {
 
   // save comment 2
   const persistedComment2 = await StudyRequestCommentDAO.create(
-    persistedStudyRequest,
     transientComment2,
+    persistedStudyRequest,
+    userCreated2,
   );
   expect(persistedComment2.id).not.toBeNull();
 

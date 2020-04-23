@@ -6,14 +6,14 @@
           <div class="subtitle-1">Status</div>
           <FcStatusStudyRequest
             class="mt-2"
-            :study-request="studyRequest" />
+            :study-request="studyRequest"
+            :study-request-changes="studyRequestChanges" />
         </v-col>
         <v-col cols="6">
           <div class="subtitle-1">Requester</div>
           <div class="mt-1 display-1">
-            <span
-              v-if="studyRequestUsers.has(studyRequest.userId)">
-              {{studyRequestUsers.get(studyRequest.userId).uniqueName}}
+            <span v-if="requestedBy !== null">
+              {{requestedBy}}
             </span>
           </div>
         </v-col>
@@ -136,6 +136,7 @@ export default {
   },
   props: {
     studyRequest: Object,
+    studyRequestChanges: Array,
     studyRequestUsers: Map,
   },
   computed: {
@@ -156,6 +157,18 @@ export default {
         return [];
       }
       return ['The study will be performed on one of these days.'];
+    },
+    requestedBy() {
+      const { studyRequest, studyRequestUsers } = this;
+      if (!studyRequestUsers.has(studyRequest.userId)) {
+        return null;
+      }
+      const { uniqueName } = studyRequestUsers.get(studyRequest.userId);
+      const i = uniqueName.indexOf('\\');
+      if (i === -1) {
+        return uniqueName;
+      }
+      return uniqueName.slice(i + 1);
     },
     ...mapState(['auth']),
   },
