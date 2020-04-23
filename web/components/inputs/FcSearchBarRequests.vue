@@ -60,7 +60,7 @@ export default {
       & > .v-input__control {
         border-bottom-right-radius: 0;
         border-top-right-radius: 0;
-        width: 140px;
+        width: 150px;
       }
 
       &:not(.v-input--is-focused) fieldset {

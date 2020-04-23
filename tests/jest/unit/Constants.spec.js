@@ -139,7 +139,7 @@ test('Constants.SortKeys', () => {
   expect(SortKeys.Requests.ID(REQUEST_STANDARD))
     .toEqual(REQUEST_STANDARD.id);
   expect(SortKeys.Requests.LAST_EDITED_AT(REQUEST_STANDARD))
-    .toEqual(createdAt.valueOf());
+    .toEqual(-Infinity);
   expect(SortKeys.Requests.LAST_EDITED_AT(REQUEST_URGENT))
     .toEqual(lastEditedAt.valueOf());
   expect(SortKeys.Requests.LOCATION(REQUEST_STANDARD))
