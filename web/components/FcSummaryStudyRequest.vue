@@ -52,26 +52,13 @@
             class="mt-1"
             :value="['Standard times to request counts are 2-3 months.']"></v-messages>
         </v-col>
-        <v-col
-          v-if="studyRequest.urgent"
-          cols="6">
+        <v-col cols="12">
           <div class="subtitle-1">Additional Information</div>
           <div class="mt-1 display-1">
             <span v-if="studyRequest.urgentReason">
               {{studyRequest.urgentReason}}
             </span>
             <span v-else>None</span>
-          </div>
-        </v-col>
-        <v-col cols="6">
-          <div class="subtitle-1">Informed Staff</div>
-          <div class="mt-1 display-1">
-            <span v-if="studyRequest.ccEmails.length === 0">None</span>
-            <div
-              v-for="(ccEmail, i) in studyRequest.ccEmails"
-              :key="i">
-              {{ccEmail}}
-            </div>
           </div>
         </v-col>
       </v-row>
@@ -111,7 +98,7 @@
               :value="[studyRequest.hours.hint]"></v-messages>
           </template>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="12">
           <div class="subtitle-1">Additional Information</div>
           <div class="mt-1 display-1">
             <span v-if="studyRequest.notes">{{studyRequest.notes}}</span>
