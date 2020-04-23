@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2020-04-23
+### Changed
+- Study requests now only contain a single study
+- Reorganized Request Study and View Request to reflect designs
+
+### Added
+- Management actions for requests in View Request and Track Requests
+- Fulfillment status bar in View Request: shows history of request status
+- Search / filter for requests in Track Requests
+
 ## [0.5.0] - 2020-04-09
 ### Fixed
 - Location search bar now preserves query across pages
