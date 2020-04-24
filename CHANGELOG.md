@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2020-04-24
+### Fixed
+- Non-supervisor users now have "User" filter selected automatically in Track Requests
+- Users can no longer deselect shortcut chips in Track Requests by clicking on them again
+
 ## [0.6.0] - 2020-04-23
 ### Changed
 - Study requests now only contain a single study
