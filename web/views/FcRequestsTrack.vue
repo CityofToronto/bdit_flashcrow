@@ -10,7 +10,8 @@
             v-model="activeShortcutChip"
             active-class="fc-shortcut-chip-active"
             class="fc-shortcut-chips"
-            color="primary">
+            color="primary"
+            :mandatory="activeShortcutChip !== null">
             <v-chip
               v-for="({ text }, i) in SHORTCUT_CHIPS"
               :key="i"
@@ -411,7 +412,7 @@ export default {
         return null;
       },
       set(activeShortcutChip) {
-        const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
+        const { userOnly } = this.filters;
         const { filters } = SHORTCUT_CHIPS[activeShortcutChip];
         this.filters = {
           ...filters,
@@ -537,6 +538,10 @@ export default {
       },
     },
     ...mapState(['auth']),
+  },
+  created() {
+    const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
+    this.filters.userOnly = userOnly;
   },
   methods: {
     async actionAssignTo({ item, assignedTo }) {
