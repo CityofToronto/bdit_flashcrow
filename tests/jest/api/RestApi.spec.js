@@ -6,6 +6,7 @@ import {
 } from '@/lib/Constants';
 import BackendClient from '@/lib/api/BackendClient';
 import UserDAO from '@/lib/db/UserDAO';
+import AuthState from '@/lib/model/AuthState';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
@@ -79,6 +80,9 @@ test('AuthController.getAuth', async () => {
     loggedIn: false,
     user: null,
   });
+  await expect(
+    AuthState.read.validateAsync(response.result),
+  ).resolves.toEqual(response.result);
 
   const transientUser = generateUser();
   const persistedUser = await UserDAO.create(transientUser);
@@ -89,6 +93,10 @@ test('AuthController.getAuth', async () => {
     loggedIn: true,
     user: persistedUser,
   });
+  await expect(
+    AuthState.read.validateAsync(response.result),
+  ).resolves.toEqual(response.result);
+
   client.setUser(null);
 });
 
