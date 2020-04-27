@@ -13,5 +13,6 @@ create extension postgis;
 create extension fuzzystrmatch;
 create extension postgis_tiger_geocoder;
 create extension postgis_topology;
+create extension pg_trgm;
 set search_path=public,tiger;
 CREATE FUNCTION exec(text) returns text language plpgsql volatile AS $f$ BEGIN EXECUTE $1; RETURN $1; END; $f$;
