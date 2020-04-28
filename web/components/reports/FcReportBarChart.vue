@@ -5,7 +5,6 @@
 </template>
 
 <script>
-/* eslint-disable no-underscore-dangle */
 import { select } from 'd3-selection';
 import Vue from 'vue';
 
