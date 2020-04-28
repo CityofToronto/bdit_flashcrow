@@ -15,9 +15,11 @@ import {
 import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import CollisionDAO from '@/lib/db/CollisionDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
 import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
+import PoiDAO from '@/lib/db/PoiDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
@@ -282,6 +284,27 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
   await expect(
     CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
   ).resolves.toEqual([]);
+});
+
+test('CollisionDAO.byCentrelineSummary', async () => {
+  const start = DateTime.fromObject({ year: 2017, month: 4, day: 28 });
+  const end = DateTime.fromObject({ year: 2020, month: 4, day: 28 });
+  const dateRange = { start, end };
+
+  // TODO: add these centreline features to sample_dev_data job, then test actual values
+  let result = await CollisionDAO.byCentrelineSummary(
+    1142194,
+    CentrelineType.SEGMENT,
+    dateRange,
+  );
+  expect(result).not.toBeNull();
+
+  result = await CollisionDAO.byCentrelineSummary(
+    13465434,
+    CentrelineType.INTERSECTION,
+    dateRange,
+  );
+  expect(result).not.toBeNull();
 });
 
 test('CountDAO.byCentreline()', async () => {
@@ -594,6 +617,16 @@ test('DynamicTileDAO.getTileFeatures', async () => {
   const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1:3', 17, 36617, 47827);
   expect(tileFeatures.length).toBeGreaterThan(0);
   tileFeatures.forEach(expectValidTileFeature);
+});
+
+test('PoiDAO.byCentrelineSummary', async () => {
+  let result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT);
+  expect(result).toHaveProperty('hospital');
+  expect(result).toHaveProperty('school');
+
+  result = await PoiDAO.byCentrelineSummary(13465434, CentrelineType.INTERSECTION);
+  expect(result).toHaveProperty('hospital');
+  expect(result).toHaveProperty('school');
 });
 
 test('StudyRequestDAO', async () => {
