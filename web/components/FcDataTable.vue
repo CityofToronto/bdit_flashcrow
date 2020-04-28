@@ -9,7 +9,7 @@
     :headers="headers"
     hide-default-footer
     item-key="id"
-    :items="items"
+    :items="itemsOrLoading"
     :loading="loading"
     :show-select="showSelect"
     v-bind="$attrs">
@@ -83,13 +83,25 @@ export default {
   computed: {
     headers() {
       return this.columns.map(({ value, ...options }) => {
+        const headerClass = `fc-data-table-header-${value}`;
         const sortable = Object.prototype.hasOwnProperty.call(this.sortKeys, value);
         return {
+          class: headerClass,
           sortable,
           value,
           ...options,
         };
       });
+    },
+    itemsOrLoading() {
+      if (this.loading) {
+        /*
+         * The "loading..." text in `<v-data-table>` is only shown when there are no items, so
+         * we use this to forcibly show a loading state.
+         */
+        return [];
+      }
+      return this.items;
     },
   },
   methods: {

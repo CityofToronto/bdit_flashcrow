@@ -1,21 +1,44 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
     <header class="flex-grow-0 flex-shrink-0">
-      <v-tabs v-model="indexClosed">
-        <v-tab>Open</v-tab>
-        <v-tab>Closed</v-tab>
-      </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-5">
-          <span v-if="closed">My Closed Requests</span>
-          <span v-else>My Requests</span>
-        </h1>
-        <div class="align-center d-flex mt-6 mb-2">
+        <h1 class="display-3 mt-8">Track Requests</h1>
+
+        <div class="align-center d-flex mt-6">
+          <v-chip-group
+            v-model="activeShortcutChip"
+            active-class="fc-shortcut-chip-active"
+            class="fc-shortcut-chips"
+            color="primary"
+            :mandatory="activeShortcutChip !== null">
+            <v-chip
+              v-for="({ text }, i) in SHORTCUT_CHIPS"
+              :key="i"
+              outlined>{{text}}</v-chip>
+          </v-chip-group>
+
+          <v-spacer></v-spacer>
+
+          <FcSearchBarRequests
+            v-model="search"
+            :columns="columns" />
+        </div>
+      </div>
+    </header>
+
+    <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
+      <v-card class="fc-requests-track-card">
+        <v-card-title class="align-center d-flex py-2">
+          <v-simple-checkbox
+            v-model="selectAll"
+            class="mr-6"
+            :indeterminate="selectAll === null"></v-simple-checkbox>
+
           <FcButton
             v-if="selectedItems.length === 0"
             class="mr-2"
-            :loading="loadingRefresh"
+            :loading="loading"
             type="secondary"
             @click="actionRefresh()">
             <v-icon
@@ -23,179 +46,59 @@
               left>mdi-refresh</v-icon>
             Refresh
           </FcButton>
-          <template v-else>
-            <FcButton
-              v-if="closed"
-              class="mr-2"
-              type="secondary"
-              @click="actionReopen(selectedItems)">
-              <v-icon color="primary" left>mdi-lock-open-outline</v-icon>
-              Reopen
-            </FcButton>
-            <template v-else>
-              <template
-                v-if="isSupervisor">
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionApprove(selectedItems)">
-                  <v-icon color="primary" left>mdi-thumb-up</v-icon>
-                  Approve
-                </FcButton>
-                <FcButton
-                  class="mr-2"
-                  type="secondary"
-                  @click="actionComplete(selectedItems)">
-                  <v-icon color="primary" left>mdi-clipboard-check</v-icon>
-                  Complete
-                </FcButton>
-              </template>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionDownload(selectedItems)">
-                <v-icon color="primary" left>mdi-cloud-download</v-icon>
-                Download
-              </FcButton>
-              <FcButton
-                class="mr-2"
-                type="secondary"
-                @click="actionClose(selectedItems)">
-                <v-icon color="primary" left>mdi-lock</v-icon>
-                Close
-              </FcButton>
-            </template>
-          </template>
-        </div>
+          <FcButton
+            v-else
+            class="mr-2"
+            type="secondary"
+            @click="actionDownload(selectedItems)">
+            <v-icon color="primary" left>mdi-cloud-download</v-icon>
+            Download
+          </FcButton>
+
+           <FcDialogRequestFilters
+              v-if="showFilters"
+              v-model="showFilters"
+              v-bind="filters"
+              @set-filters="setFilters">
+            </FcDialogRequestFilters>
+          <FcButton
+            v-if="items.length > 0 || filterChips.length > 0"
+            type="secondary"
+            @click.stop="showFilters = true">
+            <v-icon
+              :color="colorIconFilter"
+              left>mdi-filter-variant</v-icon>
+            Filter
+          </FcButton>
+          <div
+            v-if="filterChips.length > 0"
+            class="ml-5">
+            <v-chip
+              v-for="(filterChip, i) in filterChips"
+              :key="i"
+              class="mr-2 primary--text"
+              color="light-blue lighten-5"
+              @click="removeFilter(filterChip)">
+              <v-icon left>mdi-check</v-icon>
+              {{filterChip.text}}
+            </v-chip>
+          </div>
+        </v-card-title>
+
         <v-divider></v-divider>
-      </div>
-    </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
-      <FcDataTable
-        v-model="selectedItems"
-        class="fc-data-table-requests"
-        :class="{ supervisor: isSupervisor }"
-        :columns="columns"
-        :items="items"
-        :loading="loading || loadingRefresh"
-        must-sort
-        show-select
-        sort-by="ID"
-        :sort-desc="true"
-        :sort-keys="sortKeys">
-        <template v-slot:no-data>
-          <div class="mt-8 pt-7 secondary--text">
-            <span v-if="itemsStudyRequests.length === 0">
-              You have not requested a study,<br>
-              please view the map <router-link :to="{name: 'viewData'}">here</router-link>
-            </span>
-            <span v-else-if="closed">
-              You have not closed any requests,<br>
-              please view open requests <a href="#" @click.prevent="indexClosed = 0">here</a>
-            </span>
-            <span v-else>
-              You have no remaining open requests,<br>
-              please view closed requests <a href="#" @click.prevent="indexClosed = 1">here</a>
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.ID="{ item }">
-          <span>{{item.id}}</span>
-        </template>
-        <template v-slot:item.LOCATION="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.location !== null"
-              :title="item.location.description">
-              {{item.location.description}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.REQUESTER="{ item }">
-          <div class="text-truncate">
-            <span
-              v-if="item.requestedBy !== null"
-              :title="item.requestedBy.uniqueName">
-              {{item.requestedBy.uniqueName}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:item.DATE="{ item }">
-          <span>{{item.dueDate | date}}</span>
-        </template>
-        <template v-slot:item.ASSIGNED_TO="{ item }">
-          <span v-if="item.assignedTo === null">
-            NONE
-          </span>
-          <span v-else>{{item.assignedTo.replace('_', ' ')}}</span>
-        </template>
-        <template v-slot:item.STATUS="{ item }">
-          <div class="align-center d-flex">
-            <v-icon
-              :color="item.status.color"
-              left>mdi-circle-medium</v-icon>
-            <span>
-              {{item.status.text}}
-            </span>
-          </div>
-        </template>
-        <template v-slot:header.ACTIONS>
-          <span class="sr-only">Actions</span>
-        </template>
-        <template v-slot:item.ACTIONS="{ item }">
-          <div class="text-right">
-            <v-icon
-              v-if="item.urgent"
-              class="mr-2"
-              color="warning"
-              title="Urgent">mdi-clipboard-alert</v-icon>
 
-            <template v-if="isSupervisor && !closed">
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Approve Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.ACCEPTED ? 'primary' : 'unselected'"
-                    type="icon"
-                    @click="actionApprove([item])"
-                    v-on="on">
-                    <v-icon>mdi-thumb-up</v-icon>
-                  </FcButton>
-                </template>
-                <span>Approve Request #{{item.id}}</span>
-              </v-tooltip>
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Ask for Changes to Request #' + item.id"
-                    class="mr-2"
-                    :color="item.status === StudyRequestStatus.REJECTED ? 'error' : 'unselected'"
-                    type="icon"
-                    @click="actionReject([item])"
-                    v-on="on">
-                    <v-icon>mdi-clipboard-arrow-left</v-icon>
-                  </FcButton>
-                </template>
-                <span>Ask for Changes to Request #{{item.id}}</span>
-              </v-tooltip>
-            </template>
-
-            <v-tooltip top>
-              <template v-slot:activator="{ on }">
-                <FcButton
-                  :aria-label="'View Request #' + item.id"
-                  type="icon"
-                  @click="actionShowRequest(item)"
-                  v-on="on">
-                  <v-icon>mdi-file-eye</v-icon>
-                </FcButton>
-              </template>
-              <span>View Request #{{item.id}}</span>
-            </v-tooltip>
-          </div>
-        </template>
-      </FcDataTable>
+        <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
+          <FcDataTableRequests
+            v-model="selectedItems"
+            :columns="columns"
+            :has-filters="hasFilters"
+            :items="items"
+            :loading="loading"
+            :loading-items="loadingSaveStudyRequest"
+            @assign-to="actionAssignTo"
+            @show-request="actionShowRequest" />
+        </v-card-text>
+      </v-card>
     </section>
   </section>
 </template>
@@ -203,154 +106,394 @@
 <script>
 import { csvFormat } from 'd3-dsv';
 import { saveAs } from 'file-saver';
+import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapState } from 'vuex';
 
 import {
+  AuthScope,
   centrelineKey,
-  CentrelineType,
   SearchKeys,
-  SortKeys,
   StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
-import {
-  getUserStudyRequests,
-  putStudyRequests,
-} from '@/lib/api/WebApi';
+import { getStudyRequests } from '@/lib/api/WebApi';
+import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
+import FcDialogRequestFilters from '@/web/components/dialogs/FcDialogRequestFilters.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
-function getItemFields(item) {
-  const {
-    centrelineType,
-    id,
-    urgent,
-    urgentReason,
-    assignedTo,
-    status,
-  } = item;
-  let [lng, lat] = item.geom.coordinates;
-  const location = (item.location && item.location.description) || null;
-  const requester = (item.requestedBy && item.requestedBy.uniqueName) || null;
-  const dueDate = TimeFormatters.formatDefault(item.dueDate);
-  const estimatedDeliveryDate = TimeFormatters.formatDefault(item.estimatedDeliveryDate);
-  if (centrelineType !== CentrelineType.INTERSECTION) {
-    lng = null;
-    lat = null;
+function getItemRow(item) {
+  let { location, requestedBy } = item;
+  if (location !== null) {
+    location = location.description;
   }
-  return {
+  if (requestedBy !== null) {
+    requestedBy = requestedBy.uniqueName;
+  }
+
+  const { studyRequest } = item;
+  const {
+    assignedTo,
+    geom: {
+      coordinates: [lng, lat],
+    },
+    hours,
     id,
-    location,
-    requester,
-    dueDate,
-    estimatedDeliveryDate,
+    notes,
+    status,
+    studyType,
     urgent,
     urgentReason,
-    assignedTo,
-    status,
-    lng,
-    lat,
-  };
-}
+  } = studyRequest;
 
-function getStudyFields(study, i) {
-  const studyIndex = i + 1;
-  const {
-    id: studyId,
-    hours,
-    notes,
-  } = study;
-  const { studyType } = study;
-  let { daysOfWeek, duration } = study;
+  let {
+    createdAt,
+    daysOfWeek,
+    dueDate,
+    duration,
+    estimatedDeliveryDate,
+    lastEditedAt,
+  } = studyRequest;
+  createdAt = TimeFormatters.formatDefault(createdAt);
   daysOfWeek = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+  dueDate = TimeFormatters.formatDefault(studyRequest.dueDate);
   if (studyType.automatic) {
     duration = formatDuration(duration);
   } else {
     duration = null;
   }
+  estimatedDeliveryDate = TimeFormatters.formatDefault(studyRequest.estimatedDeliveryDate);
+  if (lastEditedAt !== null) {
+    lastEditedAt = TimeFormatters.formatDefault(lastEditedAt);
+  }
+
   return {
-    studyId,
-    studyIndex,
-    studyType: studyType.label,
+    assignedTo,
+    createdAt,
     daysOfWeek,
+    dueDate,
     duration,
+    estimatedDeliveryDate,
     hours,
+    id,
+    lastEditedAt,
+    lat,
+    lng,
+    location,
     notes,
+    requestedBy,
+    status,
+    studyType,
+    urgent,
+    urgentReason,
   };
 }
 
-function getItemRows(item) {
-  const itemFields = getItemFields(item);
-  return item.studies.map((study, i) => {
-    const studyFields = getStudyFields(study, i);
-    return {
-      ...itemFields,
-      ...studyFields,
-    };
+const SHORTCUT_CHIPS = [
+  {
+    filters: {
+      assignees: [],
+      closed: false,
+      createdAt: 0,
+      lastEditedAt: 0,
+      statuses: [],
+      studyTypes: [],
+    },
+    text: 'All',
+  }, {
+    filters: {
+      assignees: [],
+      closed: false,
+      createdAt: -1,
+      lastEditedAt: 0,
+      statuses: [],
+      studyTypes: [],
+    },
+    text: 'New',
+  }, {
+    filters: {
+      assignees: [],
+      closed: false,
+      createdAt: 0,
+      lastEditedAt: -1,
+      statuses: [],
+      studyTypes: [],
+    },
+    text: 'Recently Updated',
+  }, {
+    filters: {
+      assignees: [],
+      closed: false,
+      createdAt: 0,
+      lastEditedAt: 0,
+      statuses: [StudyRequestStatus.CANCELLED],
+      studyTypes: [],
+    },
+    text: 'Cancelled',
+  }, {
+    filters: {
+      assignees: [],
+      closed: true,
+      createdAt: 0,
+      lastEditedAt: 0,
+      statuses: [],
+      studyTypes: [],
+    },
+    text: 'Closed',
+  },
+];
+
+function filterArrayMatches(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  return arr1.every(x1 => arr2.includes(x1))
+    && arr2.every(x2 => arr1.includes(x2));
+}
+
+function filtersMatchShortcutChip(filters, { filters: chipFilters }) {
+  return filterArrayMatches(filters.assignees, chipFilters.assignees)
+    && filters.closed === chipFilters.closed
+    && filters.createdAt === chipFilters.createdAt
+    && filters.lastEditedAt === chipFilters.lastEditedAt
+    && filterArrayMatches(filters.statuses, chipFilters.statuses)
+    && filterArrayMatches(filters.studyTypes, chipFilters.studyTypes);
+}
+
+function timeAgoFilterText(prefix, value) {
+  const monthPlural = Math.abs(value) === 1 ? 'month' : 'months';
+  if (value < 0) {
+    return `${prefix} \u003c ${-value} ${monthPlural} ago`;
+  }
+  return `${prefix} \u2265 ${value} ${monthPlural} ago`;
+}
+
+function statusFilterText(items, status) {
+  const { text } = status;
+  let n = 0;
+  items.forEach(({ studyRequest }) => {
+    if (studyRequest.status === status) {
+      n += 1;
+    }
   });
+  return `${text} (${n})`;
+}
+
+function filtersMatchItem(filters, user, { studyRequest }) {
+  const {
+    assignees,
+    closed,
+    createdAt,
+    lastEditedAt,
+    statuses,
+    studyTypes,
+    userOnly,
+  } = filters;
+  const now = DateTime.local();
+
+  if (assignees.length > 0 && !assignees.includes(studyRequest.assignedTo)) {
+    return false;
+  }
+  if (closed && !studyRequest.closed) {
+    return false;
+  }
+  if (createdAt < 0) {
+    const after = now.minus({ months: -createdAt });
+    if (studyRequest.createdAt.valueOf() <= after.valueOf()) {
+      return false;
+    }
+  }
+  if (createdAt > 0) {
+    const before = now.minus({ months: createdAt });
+    if (studyRequest.createdAt.valueOf() > before.valueOf()) {
+      return false;
+    }
+  }
+  if (lastEditedAt !== 0 && studyRequest.lastEditedAt === null) {
+    return false;
+  }
+  if (lastEditedAt < 0) {
+    const after = now.minus({ months: -lastEditedAt });
+    if (studyRequest.lastEditedAt.valueOf() <= after.valueOf()) {
+      return false;
+    }
+  }
+  if (lastEditedAt > 0) {
+    const before = now.minus({ months: lastEditedAt });
+    if (studyRequest.lastEditedAt.valueOf() > before.valueOf()) {
+      return false;
+    }
+  }
+  if (statuses.length > 0 && !statuses.includes(studyRequest.status)) {
+    return false;
+  }
+  if (studyTypes.length > 0 && !studyTypes.includes(studyRequest.studyType)) {
+    return false;
+  }
+  if (userOnly && studyRequest.userId !== user.id) {
+    return false;
+  }
+  return true;
+}
+
+function searchKeyForColumn(column) {
+  if (column !== null) {
+    return SearchKeys.Requests[column];
+  }
+  return (q, r) => Object.values(SearchKeys.Requests).some(
+    searchKey => searchKey(q, r),
+  );
 }
 
 export default {
   name: 'FcRequestsTrack',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
+  directives: {
+    Ripple,
+  },
   components: {
     FcButton,
-    FcDataTable,
+    FcDataTableRequests,
+    FcDialogRequestFilters,
+    FcSearchBarRequests,
   },
   data() {
-    const columns = [{
-      value: 'ID',
-      text: 'ID',
-    }, {
-      value: 'LOCATION',
-      text: 'Location',
-    }, {
-      value: 'REQUESTER',
-      text: 'Requester',
-    }, {
-      value: 'DATE',
-      text: 'Due Date',
-    }, {
-      value: 'ASSIGNED_TO',
-      text: 'Assign',
-    }, {
-      value: 'STATUS',
-      text: 'Status',
-    }, {
-      value: 'ACTIONS',
-      text: '',
-    }];
+    const columns = [
+      { value: 'ID', text: 'ID' },
+      { value: 'LOCATION', text: 'Location' },
+      { value: 'STUDY_TYPE', text: 'Type' },
+      { value: 'REQUESTER', text: 'Requester' },
+      { value: 'CREATED_AT', text: 'Date Created' },
+      { value: 'ASSIGNED_TO', text: 'Assigned To' },
+      { value: 'DUE_DATE', text: 'Date Required' },
+      { value: 'STATUS', text: 'Status' },
+      { value: 'LAST_EDITED_AT', text: 'Last Updated' },
+      { value: 'ACTIONS', text: '' },
+    ];
     return {
       columns,
-      indexClosed: 0,
-      loadingRefresh: false,
-      searchKeys: SearchKeys.Requests,
+      filters: {
+        assignees: [],
+        closed: false,
+        createdAt: 0,
+        lastEditedAt: 0,
+        statuses: [],
+        studyTypes: [],
+        userOnly: false,
+      },
+      loadingSaveStudyRequest: new Set(),
+      search: {
+        column: null,
+        query: null,
+      },
       selectedItems: [],
-      sortKeys: SortKeys.Requests,
+      SHORTCUT_CHIPS,
+      showFilters: false,
       studyRequests: [],
       studyRequestLocations: new Map(),
-      StudyRequestStatus,
       studyRequestUsers: new Map(),
     };
   },
   computed: {
-    closed() {
-      return this.indexClosed === 1;
+    activeShortcutChip: {
+      get() {
+        for (let i = 0; i < SHORTCUT_CHIPS.length; i++) {
+          if (filtersMatchShortcutChip(this.filters, SHORTCUT_CHIPS[i])) {
+            return i;
+          }
+        }
+        return null;
+      },
+      set(activeShortcutChip) {
+        const { userOnly } = this.filters;
+        const { filters } = SHORTCUT_CHIPS[activeShortcutChip];
+        this.filters = {
+          ...filters,
+          userOnly,
+        };
+      },
     },
-    isSupervisor() {
-      return Object.prototype.hasOwnProperty.call(this.$route.query, 'isSupervisor');
+    colorIconFilter() {
+      if (this.filterChips.length === 0) {
+        return 'unselected';
+      }
+      return 'primary';
+    },
+    filterChips() {
+      const {
+        assignees,
+        closed,
+        createdAt,
+        lastEditedAt,
+        statuses,
+        studyTypes,
+        userOnly,
+      } = this.filters;
+      const filterChips = [];
+      studyTypes.forEach((studyType) => {
+        const { label: text } = studyType;
+        const filterChip = { filter: 'studyTypes', text, value: studyType };
+        filterChips.push(filterChip);
+      });
+      statuses.forEach((status) => {
+        const text = statusFilterText(this.itemsNormalized, status);
+        const filterChip = { filter: 'statuses', text, value: status };
+        filterChips.push(filterChip);
+      });
+      if (closed) {
+        const filterChip = { filter: 'closed', text: 'Closed', value: true };
+        filterChips.push(filterChip);
+      }
+      assignees.forEach((assignee) => {
+        const text = assignee === null ? 'None' : assignee.text;
+        const filterChip = { filter: 'assignees', text, value: assignee };
+        filterChips.push(filterChip);
+      });
+      if (createdAt !== 0) {
+        const text = timeAgoFilterText('Created', createdAt);
+        const filterChip = { filter: 'createdAt', text, value: createdAt };
+        filterChips.push(filterChip);
+      }
+      if (lastEditedAt !== 0) {
+        const text = timeAgoFilterText('Updated', lastEditedAt);
+        const filterChip = { filter: 'lastEditedAt', text, value: lastEditedAt };
+        filterChips.push(filterChip);
+      }
+      if (userOnly) {
+        const filterChip = { filter: 'userOnly', text: 'User', value: true };
+        filterChips.push(filterChip);
+      }
+      return filterChips;
+    },
+    hasFilters() {
+      return this.filterChips.length > 0 || this.search.query !== null;
     },
     items() {
-      return this.itemsStudyRequests
-        .filter(({ closed }) => closed === this.closed);
+      let items = this.itemsNormalized.filter(
+        item => filtersMatchItem(this.filters, this.auth.user, item),
+      );
+
+      const { column, query } = this.search;
+      if (query !== null) {
+        const searchKey = searchKeyForColumn(column);
+        items = items.filter(item => searchKey(query, item));
+      }
+
+      return items;
     },
-    itemsStudyRequests() {
+    itemsNormalized() {
       return this.studyRequests.map((studyRequest) => {
         const {
           centrelineId,
           centrelineType,
+          id,
           userId,
         } = studyRequest;
 
@@ -362,57 +505,79 @@ export default {
 
         let requestedBy = null;
         if (this.studyRequestUsers.has(userId)) {
-          requestedBy = this.studyRequestUsers.get(userId);
+          const { uniqueName } = this.studyRequestUsers.get(userId);
+          const i = uniqueName.indexOf('\\');
+          requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
         }
 
         return {
-          ...studyRequest,
+          id,
           location,
           requestedBy,
+          studyRequest,
         };
       });
     },
+    selectAll: {
+      get() {
+        const k = this.selectedItems.length;
+        if (k === 0) {
+          return false;
+        }
+        if (k === this.items.length) {
+          return true;
+        }
+        return null;
+      },
+      set(selectAll) {
+        if (selectAll) {
+          this.selectedItems = this.items;
+        } else {
+          this.selectedItems = [];
+        }
+      },
+    },
     ...mapState(['auth']),
   },
-  watch: {
-    closed() {
-      this.selectedItems = [];
-    },
+  created() {
+    const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
+    this.filters.userOnly = userOnly;
   },
   methods: {
-    actionApprove(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.ACCEPTED,
-      });
+    async actionAssignTo({ item, assignedTo }) {
+      const { studyRequest } = item;
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = StudyRequestStatus.REQUESTED;
+      } else {
+        studyRequest.status = StudyRequestStatus.ASSIGNED;
+      }
+
+      this.loadingSaveStudyRequest.add(item.id);
+      const {
+        studyRequest: studyRequestUpdated,
+      } = await this.saveStudyRequest(studyRequest);
+      /* eslint-disable-next-line no-param-reassign */
+      item.studyRequest = studyRequestUpdated;
+      this.loadingSaveStudyRequest.delete(item.id);
     },
-    actionClose(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-      });
-    },
-    actionComplete(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: true,
-        status: StudyRequestStatus.COMPLETED,
-      });
-    },
-    actionDownload(studyRequests) {
-      const rows = Array.prototype.concat.apply([], studyRequests.map(getItemRows));
+    actionDownload(items) {
+      const rows = items.map(getItemRow);
       const columns = [
         'id',
         'location',
-        'requester',
+        'studyType',
+        'requestedBy',
+        'createdAt',
+        'assignedTo',
         'dueDate',
-        'estimatedDeliveryDate',
+        'status',
+        'lastEditedAt',
         'urgent',
         'urgentReason',
-        'assignedTo',
-        'status',
+        'estimatedDeliveryDate',
         'lng',
         'lat',
-        'studyId',
-        'studyIndex',
-        'studyType',
         'daysOfWeek',
         'duration',
         'hours',
@@ -423,28 +588,15 @@ export default {
       saveAs(csvData, 'requests.csv');
     },
     async actionRefresh() {
-      this.loadingRefresh = true;
+      this.loading = true;
       await this.loadAsyncForRoute();
-      this.loadingRefresh = false;
+      this.loading = false;
     },
-    actionReject(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        status: StudyRequestStatus.REJECTED,
-      });
-    },
-    actionReopen(studyRequests) {
-      this.setStudyRequests(studyRequests, {
-        closed: false,
-      });
-    },
-    actionShowRequest(item) {
+    actionShowRequest({ studyRequest }) {
       const route = {
         name: 'requestStudyView',
-        params: { id: item.id },
+        params: { id: studyRequest.id },
       };
-      if (this.isSupervisor) {
-        route.query = { isSupervisor: true };
-      }
       this.$router.push(route);
     },
     async loadAsyncForRoute() {
@@ -452,30 +604,61 @@ export default {
         studyRequests,
         studyRequestLocations,
         studyRequestUsers,
-      } = await getUserStudyRequests(this.isSupervisor);
+      } = await getStudyRequests();
 
       this.studyRequests = studyRequests;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
-    async setStudyRequests(items, updates) {
-      const { isSupervisor } = this;
-      const studyRequests = items.map((item) => {
-        const studyRequest = this.studyRequests.find(({ id }) => id === item.id);
-        return Object.assign(studyRequest, updates);
-      });
-      return putStudyRequests(this.auth.csrf, isSupervisor, studyRequests);
+    removeFilter({ filter, value }) {
+      if (filter === 'closed') {
+        this.filters.closed = false;
+      } else if (filter === 'createdAt') {
+        this.filters.createdAt = 0;
+      } else if (filter === 'lastEditedAt') {
+        this.filters.lastEditedAt = 0;
+      } else if (filter === 'userOnly') {
+        this.filters.userOnly = false;
+      } else {
+        const values = this.filters[filter];
+        const i = values.indexOf(value);
+        if (i !== -1) {
+          values.splice(i, 1);
+        }
+      }
     },
-    ...mapActions([
-      'saveStudyRequest',
-    ]),
+    setFilters(filters) {
+      this.filters = filters;
+    },
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>
 
 <style lang="scss">
 .fc-requests-track {
+  background-color: var(--v-shading-base);
   max-height: 100vh;
   width: 100%;
+
+  & .fc-shortcut-chips .v-chip.v-chip {
+    &:not(:hover) {
+      background-color: #fff !important;
+    }
+    &.fc-shortcut-chip-active {
+      border: 1px solid var(--v-primary-base);
+    }
+  }
+
+  & .fc-requests-track-card {
+    height: calc(100% - 4px);
+  }
+
+  & .fc-data-table-requests-wrapper {
+    height: calc(100% - 53px);
+    & > .fc-data-table-requests {
+      height: calc(100% - 1px);
+    }
+  }
 }
 </style>

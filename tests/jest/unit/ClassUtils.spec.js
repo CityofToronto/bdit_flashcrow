@@ -38,9 +38,9 @@ GetterTest.init(getterTestValues);
 class NotAnEnum {}
 
 test('Enum non-tamperable', () => {
-  /* eslint-disable no-new */
   // cannot instantiate Enum after init()
   expect(() => {
+    /* eslint-disable-next-line no-new */
     new Color({});
   }).toThrow();
 

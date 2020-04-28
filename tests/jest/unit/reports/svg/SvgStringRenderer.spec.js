@@ -2,10 +2,11 @@ import SvgGenerator from '@/lib/reports/svg/SvgGenerator';
 import SvgStringRenderer from '@/lib/reports/svg/SvgStringRenderer';
 import 'd3-selection-multi';
 
-/* eslint-disable class-methods-use-this */
 class NoopSvgGenerator extends SvgGenerator {
+  /* eslint-disable-next-line class-methods-use-this */
   init() {}
 
+  /* eslint-disable-next-line class-methods-use-this */
   update() {}
 }
 

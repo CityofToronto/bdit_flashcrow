@@ -43,11 +43,21 @@ const vuetify = new Vuetify({
     },
     themes: {
       light: {
+        // main colors
         default: '#272727',
         primary: '#005695',
         secondary: '#696969',
+        // off-white accents
         shading: '#fafafa',
+        border: '#e0e0e0',
         unselected: '#acacac',
+        // request status
+        statusRequested: '#2ec3cc',
+        statusChangesNeeded: '#404040',
+        statusCancelled: '#e0e0e0',
+        statusAssigned: '#fed330',
+        statusRejected: '#c0392e',
+        statusCompleted: '#26de81',
       },
     },
   },

@@ -1,10 +1,10 @@
 <template>
   <v-app id="fc_app">
     <component
-      v-if="hasAlert"
-      v-model="hasAlert"
-      :is="'FcDialogAlert' + alert"
-      v-bind="alertData" />
+      v-if="hasDialog"
+      v-model="hasDialog"
+      :is="'FcDialog' + dialog"
+      v-bind="dialogData" />
     <v-snackbar
       v-if="hasToast"
       v-model="hasToast"
@@ -27,9 +27,6 @@
         dense>
         <FcDashboardNavItem
           :active-route-names="[
-            'requestStudyEdit',
-            'requestStudyNew',
-            'requestStudyView',
             'viewDataAtLocation',
             'viewReportsAtLocation',
           ]"
@@ -37,6 +34,11 @@
           label="View Map"
           :to="{ name: 'viewData' }" />
         <FcDashboardNavItem
+          :active-route-names="[
+            'requestStudyEdit',
+            'requestStudyNew',
+            'requestStudyView',
+          ]"
           icon="clipboard-list"
           label="Track Requests"
           :to="{ name: 'requestsTrack' }" />
@@ -63,6 +65,8 @@ import '@/web/css/main.scss';
 
 import FcDialogAlertStudyRequestUrgent from
   '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
+import FcDialogConfirmUnauthorized from
+  '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
@@ -74,15 +78,16 @@ export default {
     FcDashboardNavItem,
     FcDashboardNavUser,
     FcDialogAlertStudyRequestUrgent,
+    FcDialogConfirmUnauthorized,
   },
   computed: {
-    hasAlert: {
+    hasDialog: {
       get() {
-        return this.alert !== null;
+        return this.dialog !== null;
       },
-      set(hasAlert) {
-        if (!hasAlert) {
-          this.clearAlert();
+      set(hasDialog) {
+        if (!hasDialog) {
+          this.clearDialog();
         }
       },
     },
@@ -98,14 +103,14 @@ export default {
     },
     ...mapState([
       'auth',
-      'alert',
-      'alertData',
+      'dialog',
+      'dialogData',
       'location',
       'toast',
     ]),
   },
   methods: {
-    ...mapMutations(['clearAlert', 'clearToast']),
+    ...mapMutations(['clearDialog', 'clearToast']),
   },
 };
 </script>

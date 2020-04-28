@@ -25,7 +25,7 @@ Manual browser testing - feature list:
 
 Before deployment:
 - [ ] `CHANGELOG.md` is updated to include details of new release
-- [ ] version bumped to `[TODO: NEW_VERSION]` in `package.json` using `npm version [patch|minor|major]`
+- [ ] version bumped to `[TODO: NEW_VERSION]` in `package.json` using `npm version [TODO: patch|minor|major]`
 - [ ] above changes reviewed and merged to `master`
 
 Deployment:

@@ -147,17 +147,18 @@
             @show-reports="actionShowReports" />
           <div class="pa-5">
             <div
-              v-for="study in studiesPending"
-              :key="study.id"
+              v-for="studyRequest in studyRequestsPending"
+              :key="studyRequest.id"
               class="align-center d-flex">
               <v-icon
                 color="warning"
                 left>mdi-information</v-icon>
               <div>
-                {{study.studyType.label}} has been requested on {{study.createdAt | date}}.
+                {{studyRequest.studyType.label}}
+                has been requested on {{studyRequest.createdAt | date}}.
                 <router-link :to="{
                   name: 'requestStudyView',
-                  params: { id: study.studyRequestId },
+                  params: { id: studyRequest.id },
                 }">View details.</router-link>
               </div>
             </div>
@@ -176,12 +177,13 @@ import {
   mapState,
 } from 'vuex';
 
+import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCountsByCentrelineSummary,
   getLocationByFeature,
   getPoiByCentrelineSummary,
-  getStudiesByCentrelinePending,
+  getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
 import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
@@ -190,11 +192,15 @@ import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewData',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinAuthScope,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcButton,
     FcDataTableStudies,
@@ -214,7 +220,7 @@ export default {
         school: null,
       },
       showFilters: false,
-      studiesPending: [],
+      studyRequestsPending: [],
     };
   },
   computed: {
@@ -355,20 +361,20 @@ export default {
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
-      if (this.auth.loggedIn) {
-        tasks.push(getStudiesByCentrelinePending({ centrelineId, centrelineType }));
+      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
+        tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));
       }
       const [
         collisionSummary,
         countSummary,
         location,
         poiSummary,
-        studiesPending = [],
+        studyRequestsPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.countSummary = countSummary;
       this.poiSummary = poiSummary;
-      this.studiesPending = studiesPending;
+      this.studyRequestsPending = studyRequestsPending;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId

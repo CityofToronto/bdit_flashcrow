@@ -2,10 +2,12 @@
 import path from 'path';
 
 import {
+  AuthScope,
   CardinalDirection,
   centrelineKey,
   CentrelineType,
   StudyHours,
+  StudyRequestAssignee,
   StudyRequestReason,
   StudyRequestStatus,
   StudyType,
@@ -13,19 +15,24 @@ import {
 import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import CollisionDAO from '@/lib/db/CollisionDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
-import StudyDAO from '@/lib/db/StudyDAO';
+import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
+import PoiDAO from '@/lib/db/PoiDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
+import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import {
   InvalidCentrelineTypeError,
+  InvalidDynamicTileLayerError,
 } from '@/lib/error/MoveErrors';
 import Category from '@/lib/model/Category';
 import Count from '@/lib/model/Count';
 import Joi from '@/lib/model/Joi';
 import StudyRequest from '@/lib/model/StudyRequest';
+import StudyRequestChange from '@/lib/model/StudyRequestChange';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -126,8 +133,15 @@ test('CentrelineDAO.byIdAndType()', async () => {
   expect(result.centrelineId).toEqual(111569);
   expect(result.centrelineType).toEqual(CentrelineType.SEGMENT);
 
-  // invalid
-  expect(CentrelineDAO.byIdAndType(-1, -1)).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+  // invalid ID and type
+  await expect(
+    CentrelineDAO.byIdAndType(-1, -1),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // invalid ID, valid type
+  await expect(
+    CentrelineDAO.byIdAndType(-1, CentrelineType.SEGMENT),
+  ).resolves.toBeNull();
 });
 
 function expectIdsAndTypesResult(results, { centrelineId, centrelineType }) {
@@ -187,6 +201,110 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   ];
   results = await CentrelineDAO.byIdsAndTypes(query);
   expectIdsAndTypesResults(results, query);
+});
+
+function expectSuggestionsContain(result, centrelineId) {
+  const suggestedIds = result.map(({ centrelineId: suggestedId }) => suggestedId);
+  expect(suggestedIds).toContain(centrelineId);
+}
+
+test('CentrelineDAO.intersectionSuggestions', async () => {
+  // full query should match
+  let result = await CentrelineDAO.intersectionSuggestions('Danforth and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial query should match
+  result = await CentrelineDAO.intersectionSuggestions('Danforth and Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // either term can be prefixed
+  result = await CentrelineDAO.intersectionSuggestions('Dan and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full query with minor typo should match
+  result = await CentrelineDAO.intersectionSuggestions('Damforth and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial query with minor typo should match
+  result = await CentrelineDAO.intersectionSuggestions('Damforth and Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full queries: 'and' is optional
+  result = await CentrelineDAO.intersectionSuggestions('Danforth Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial queries: 'and' is optional
+  result = await CentrelineDAO.intersectionSuggestions('Danforth Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full queries: punctuation ignored
+  result = await CentrelineDAO.intersectionSuggestions('Danforth & Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial queries: punctuation ignored
+  result = await CentrelineDAO.intersectionSuggestions('Danforth / Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+});
+
+test('CentrelineDAO.featuresIncidentTo', async () => {
+  // 4-way intersection
+  let result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463436);
+  expect(result).toHaveLength(4);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // 3-way intersection
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13459232);
+  expect(result).toHaveLength(3);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // 5-way intersection
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463551);
+  expect(result).toHaveLength(5);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // segment
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 111569);
+  expect(result).toHaveLength(2);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.INTERSECTION);
+  });
+
+  // invalid ID and type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(-1, -1),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // invalid ID, valid type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
+  ).resolves.toEqual([]);
+});
+
+test('CollisionDAO.byCentrelineSummary', async () => {
+  const start = DateTime.fromObject({ year: 2017, month: 4, day: 28 });
+  const end = DateTime.fromObject({ year: 2020, month: 4, day: 28 });
+  const dateRange = { start, end };
+
+  // TODO: add these centreline features to sample_dev_data job, then test actual values
+  let result = await CollisionDAO.byCentrelineSummary(
+    1142194,
+    CentrelineType.SEGMENT,
+    dateRange,
+  );
+  expect(result).not.toBeNull();
+
+  result = await CollisionDAO.byCentrelineSummary(
+    13465434,
+    CentrelineType.INTERSECTION,
+    dateRange,
+  );
+  expect(result).not.toBeNull();
 });
 
 test('CountDAO.byCentreline()', async () => {
@@ -434,10 +552,81 @@ test('CountDataDAO', async () => {
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_5_26177);
 
-  // non-TMC
+  // non-TMC, speed-related
   count = await CountDAO.byIdAndCategory(1415698, 4);
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_4_1415698);
+
+  // TODO: add (1206023, 1) to sample_dev_data, then add non-speed-related test here
+});
+
+test('DynamicTileDAO.getTileInfo', () => {
+  const { EPSG_3857_MAX, EPSG_3857_MIN, EPSG_3857_SIZE } = DynamicTileDAO;
+  const res = EPSG_3857_SIZE / 4096;
+
+  expect(DynamicTileDAO.getTileInfo(0, 0, 0)).toEqual({
+    bmin: -256,
+    bmax: 4352,
+    xmin: EPSG_3857_MIN,
+    xmax: EPSG_3857_MAX,
+    ymin: EPSG_3857_MIN,
+    ymax: EPSG_3857_MAX,
+    res,
+    fx: 1 / res,
+    fy: -1 / res,
+    xoff: -EPSG_3857_MIN / res,
+    yoff: EPSG_3857_MAX / res,
+  });
+});
+
+function expectValidTileFeature(tileFeature) {
+  // all features must have numeric IDs
+  expect(tileFeature).toHaveProperty('id');
+  expect(typeof tileFeature.id).toBe('number');
+
+  // all features are expected to have `geom` field
+  expect(tileFeature).toHaveProperty('geom');
+
+  // `geom` field must be a GeoJSON point with integer coordinates
+  expect(tileFeature.geom.type).toEqual('Point');
+  expect(tileFeature.geom.coordinates).toHaveLength(2);
+  expect(Number.isInteger(tileFeature.geom.coordinates[0])).toBe(true);
+  expect(Number.isInteger(tileFeature.geom.coordinates[1])).toBe(true);
+}
+
+test('DynamicTileDAO.getTileFeatures', async () => {
+  // non-existent layer
+  await expect(
+    DynamicTileDAO.getTileFeatures('noSuchLayer'),
+  ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
+
+  // parameterized layer with invalid parameter
+  await expect(
+    DynamicTileDAO.getTileFeatures('collisionsLevel1'),
+  ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
+  await expect(
+    DynamicTileDAO.getTileFeatures('counts:blarghl'),
+  ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
+
+  // tile outside city boundaries
+  await expect(
+    DynamicTileDAO.getTileFeatures('hospitalsLevel1', 12, 345, 678),
+  ).resolves.toHaveLength(0);
+
+  // tile with features
+  const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1:3', 17, 36617, 47827);
+  expect(tileFeatures.length).toBeGreaterThan(0);
+  tileFeatures.forEach(expectValidTileFeature);
+});
+
+test('PoiDAO.byCentrelineSummary', async () => {
+  let result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT);
+  expect(result).toHaveProperty('hospital');
+  expect(result).toHaveProperty('school');
+
+  result = await PoiDAO.byCentrelineSummary(13465434, CentrelineType.INTERSECTION);
+  expect(result).toHaveProperty('hospital');
+  expect(result).toHaveProperty('school');
 });
 
 test('StudyRequestDAO', async () => {
@@ -445,9 +634,6 @@ test('StudyRequestDAO', async () => {
   const persistedUser = await UserDAO.create(transientUser);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userId: persistedUser.id,
-    status: StudyRequestStatus.REQUESTED,
-    closed: false,
     serviceRequestId: null,
     urgent: false,
     urgentReason: null,
@@ -456,19 +642,17 @@ test('StudyRequestDAO', async () => {
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
     reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
     centrelineId: 1729,
     centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
       coordinates: [-79.333251, 43.709012],
     },
-    studies: [{
-      studyType: StudyType.TMC,
-      daysOfWeek: [2, 3, 4],
-      duration: null,
-      hours: StudyHours.ROUTINE,
-      notes: 'completely normal routine turning movement count',
-    }],
   };
 
   // generate second user for multi-user updates
@@ -476,8 +660,11 @@ test('StudyRequestDAO', async () => {
   const persistedUser2 = await UserDAO.create(transientUser2);
 
   // save study request
-  let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, persistedUser);
   expect(persistedStudyRequest.id).not.toBeNull();
+  expect(persistedStudyRequest.userId).toBe(persistedUser.id);
+  expect(persistedStudyRequest.status).toBe(StudyRequestStatus.REQUESTED);
+  expect(persistedStudyRequest.closed).toBe(false);
   await expect(
     StudyRequest.read.validateAsync(persistedStudyRequest),
   ).resolves.toEqual(persistedStudyRequest);
@@ -485,6 +672,20 @@ test('StudyRequestDAO', async () => {
   // fetch saved study request
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+
+  // fetch by centreline
+  let fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
 
   // fetch by user
   let byUser = await StudyRequestDAO.byUser(persistedUser);
@@ -499,9 +700,9 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.serviceRequestId = '12345';
 
   // update existing study fields
-  persistedStudyRequest.studies[0].daysOfWeek = [3, 4];
-  persistedStudyRequest.studies[0].hours = StudyHours.SCHOOL;
-  persistedStudyRequest.studies[0].notes = 'oops, this is actually a school count';
+  persistedStudyRequest.daysOfWeek = [3, 4];
+  persistedStudyRequest.hours = StudyHours.SCHOOL;
+  persistedStudyRequest.notes = 'oops, this is actually a school count';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -522,26 +723,32 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
   expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
+  // fetch by centreline
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
+
   // reopen
   persistedStudyRequest.closed = false;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
-  // add new study to study request
-  persistedStudyRequest.studies.push({
-    studyType: StudyType.TMC,
-    daysOfWeek: [0, 6],
-    duration: null,
-    hours: StudyHours.OTHER,
-    notes: 'complete during shopping mall peak hours',
-  });
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
-  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-
-  // remove study from study request
-  persistedStudyRequest.studies.pop();
+  // change study details
+  persistedStudyRequest.studyType = StudyType.TMC;
+  persistedStudyRequest.daysOfWeek = [0, 6];
+  persistedStudyRequest.duration = null;
+  persistedStudyRequest.hours = StudyHours.OTHER;
+  persistedStudyRequest.notes = 'complete during shopping mall peak hours';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -550,8 +757,20 @@ test('StudyRequestDAO', async () => {
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(true);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toBeNull();
-  const studies = await StudyDAO.byStudyRequests([persistedStudyRequest]);
-  expect(studies).toHaveLength(0);
+
+  // fetch by centreline
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
 
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
@@ -565,54 +784,122 @@ test('StudyRequestDAO', async () => {
   expect(all).toEqual([]);
 });
 
-test('StudyRequestCommentDAO', async () => {
-  const user1 = generateUser();
-  const userCreated1 = await UserDAO.create(user1);
+test('StudyRequestChangeDAO', async () => {
+  await expect(StudyRequestChangeDAO.byId(-1)).resolves.toBeNull();
+
+  const transientUser1 = generateUser();
+  const persistedUser1 = await UserDAO.create(transientUser1);
   const now = DateTime.local();
   const transientStudyRequest = {
-    userId: userCreated1.id,
-    status: StudyRequestStatus.REQUESTED,
-    closed: false,
     serviceRequestId: '12345',
     urgent: false,
     urgentReason: null,
-    assignedTo: 'FIELD STAFF',
+    assignedTo: StudyRequestAssignee.FIELD_STAFF,
     dueDate: now.plus({ months: 4 }),
     estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
     reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
     ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
     centrelineId: 42,
     centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
       coordinates: [-79.333251, 43.709012],
     },
-    studies: [{
-      studyType: StudyType.TMC,
-      daysOfWeek: [2, 3, 4],
-      duration: null,
-      hours: StudyHours.ROUTINE,
-      notes: 'completely normal routine turning movement count',
-    }],
   };
-  const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest);
+  const persistedStudyRequest = await StudyRequestDAO.create(
+    transientStudyRequest,
+    persistedUser1,
+  );
 
-  const transientComment1 = {
-    userId: userCreated1.id,
-    comment: 'We don\'t normally do this study here.',
+  const transientUser2 = generateUser();
+  const persistedUser2 = await UserDAO.create(transientUser2);
+
+  // save change 1
+  persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+  const persistedChange1 = await StudyRequestChangeDAO.create(
+    persistedStudyRequest,
+    persistedUser1,
+  );
+  expect(persistedChange1.id).not.toBeNull();
+  await expect(
+    StudyRequestChange.read.validateAsync(persistedChange1),
+  ).resolves.toEqual(persistedChange1);
+
+  // fetch saved change
+  const fetchedChange1 = await StudyRequestChangeDAO.byId(persistedChange1.id);
+  expect(fetchedChange1).toEqual(persistedChange1);
+
+  // fetch by study request
+  let byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedChange1]);
+
+  // save change 2
+  persistedStudyRequest.status = StudyRequestStatus.ASSIGNED;
+  const persistedChange2 = await StudyRequestChangeDAO.create(
+    persistedStudyRequest,
+    persistedUser2,
+  );
+  expect(persistedChange2.id).not.toBeNull();
+
+  // fetch by study request: returns most recent first
+  byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([persistedChange2, persistedChange1]);
+
+  // delete study request: should delete all changes
+  await StudyRequestDAO.delete(persistedStudyRequest);
+  byStudyRequest = await StudyRequestChangeDAO.byStudyRequest(persistedStudyRequest);
+  expect(byStudyRequest).toEqual([]);
+});
+
+test('StudyRequestCommentDAO', async () => {
+  await expect(StudyRequestCommentDAO.byId(-1)).resolves.toBeNull();
+
+  const user1 = generateUser();
+  const userCreated1 = await UserDAO.create(user1);
+  const now = DateTime.local();
+  const transientStudyRequest = {
+    serviceRequestId: '12345',
+    urgent: false,
+    urgentReason: null,
+    assignedTo: StudyRequestAssignee.FIELD_STAFF,
+    dueDate: now.plus({ months: 4 }),
+    estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
+    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    ccEmails: [],
+    studyType: StudyType.TMC,
+    daysOfWeek: [2, 3, 4],
+    duration: null,
+    hours: StudyHours.ROUTINE,
+    notes: 'completely normal routine turning movement count',
+    centrelineId: 42,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.333251, 43.709012],
+    },
   };
+  const persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, userCreated1);
 
   const user2 = generateUser();
   const userCreated2 = await UserDAO.create(user2);
+
+  const transientComment1 = {
+    comment: 'We don\'t normally do this study here.',
+  };
   const transientComment2 = {
-    userId: userCreated2.id,
     comment: 'I believe we have already done this study before.',
   };
 
   // save comment 1
   let persistedComment1 = await StudyRequestCommentDAO.create(
-    persistedStudyRequest,
     transientComment1,
+    persistedStudyRequest,
+    userCreated1,
   );
   expect(persistedComment1.id).not.toBeNull();
   await expect(
@@ -635,8 +922,9 @@ test('StudyRequestCommentDAO', async () => {
 
   // save comment 2
   const persistedComment2 = await StudyRequestCommentDAO.create(
-    persistedStudyRequest,
     transientComment2,
+    persistedStudyRequest,
+    userCreated2,
   );
   expect(persistedComment2.id).not.toBeNull();
 
@@ -671,12 +959,17 @@ test('UserDAO', async () => {
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
   await expect(UserDAO.bySub(transientUser2.sub)).resolves.toBeNull();
   await expect(UserDAO.byEmail(transientUser1.email)).resolves.toEqual(persistedUser1);
+  await expect(UserDAO.all()).resolves.toContainEqual(persistedUser1);
 
   const name = generateName();
   const email = generateEmail(name);
   const uniqueName = generateUniqueName(name);
   Object.assign(persistedUser1, { email, uniqueName });
-  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(true);
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
+  Object.assign(persistedUser1, {
+    scope: [AuthScope.STUDY_REQUESTS, AuthScope.STUDY_REQUESTS_EDIT],
+  });
+  await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);
 
   let users = await UserDAO.byIds([]);
@@ -691,7 +984,9 @@ test('UserDAO', async () => {
   expect(users.size).toBe(2);
   expect(users.get(persistedUser1.id)).toEqual(persistedUser1);
   expect(users.get(persistedUser2.id)).toEqual(persistedUser2);
+  await expect(UserDAO.all()).resolves.toContainEqual(persistedUser2);
 
   await expect(UserDAO.delete(persistedUser1)).resolves.toEqual(true);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
+  await expect(UserDAO.all()).resolves.not.toContainEqual(persistedUser1);
 });

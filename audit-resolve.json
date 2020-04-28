@@ -2,18 +2,18 @@
   "decisions": {
     "1179|mapbox-gl>@mapbox/geojson-rewind>sharkdown>minimist": {
       "decision": "ignore",
-      "madeAt": 1585314943447,
-      "expiresAt": 1585919728108
+      "madeAt": 1587647026111,
+      "expiresAt": 1588251816617
     },
     "1179|mapbox-gl>minimist": {
       "decision": "ignore",
-      "madeAt": 1585314943447,
-      "expiresAt": 1585919728108
+      "madeAt": 1587647026111,
+      "expiresAt": 1588251816617
     },
     "1179|@mapbox/mapbox-gl-style-spec>minimist": {
       "decision": "ignore",
-      "madeAt": 1585314943447,
-      "expiresAt": 1585919728108
+      "madeAt": 1587647026111,
+      "expiresAt": 1588251816617
     },
     "1179|@vue/cli>@vue/cli-ui>portfinder>mkdirp>minimist": {
       "decision": "ignore",

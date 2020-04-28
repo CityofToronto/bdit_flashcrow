@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { apiFetch } from '@/lib/api/BackendClient';
+import {
+  getAuth,
+  postStudyRequest,
+  putStudyRequest,
+} from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
@@ -22,11 +26,12 @@ export default new Vuex.Store({
     auth: {
       csrf: '',
       loggedIn: false,
+      user: null,
     },
     now: DateTime.local(),
     // TOP-LEVEL UI
-    alert: null,
-    alertData: {},
+    dialog: null,
+    dialogData: {},
     drawerOpen: false,
     toast: null,
     // NAVIGATION
@@ -55,6 +60,13 @@ export default new Vuex.Store({
       }
       return uniqueName.slice(i + 1);
     },
+    userScope(state) {
+      if (!state.auth.loggedIn) {
+        return [];
+      }
+      const { scope } = state.auth.user;
+      return scope;
+    },
     // LOCATION
     locationFeatureType(state) {
       const { location } = state;
@@ -67,16 +79,16 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     // TOP-LEVEL UI
-    clearAlert(state) {
-      Vue.set(state, 'alert', null);
-      Vue.set(state, 'alertData', {});
+    clearDialog(state) {
+      Vue.set(state, 'dialog', null);
+      Vue.set(state, 'dialogData', {});
     },
     clearToast(state) {
       Vue.set(state, 'toast', null);
     },
-    setAlert(state, { alert, alertData = {} }) {
-      Vue.set(state, 'alert', alert);
-      Vue.set(state, 'alertData', alertData);
+    setDialog(state, { dialog, dialogData = {} }) {
+      Vue.set(state, 'dialog', dialog);
+      Vue.set(state, 'dialogData', dialogData);
     },
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
@@ -98,42 +110,30 @@ export default new Vuex.Store({
   },
   actions: {
     // AUTH / HELPERS STATE
-    async webInit({ commit }) {
-      const response = await apiFetch('/web/init');
-      commit('webInit', response);
-      return response;
-    },
     async checkAuth({ commit }) {
-      const auth = await apiFetch('/auth');
+      const auth = await getAuth('/auth');
       commit('setAuth', auth);
       return auth;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ state, commit }, { isSupervisor, studyRequest }) {
+    async saveStudyRequest({ state, commit }, studyRequest) {
       const { id, urgent } = studyRequest;
       const update = id !== undefined;
-      if (urgent) {
-        commit('setAlert', {
-          alert: 'StudyRequestUrgent',
-          alertData: { update },
+      if (urgent && !update) {
+        commit('setDialog', {
+          dialog: 'AlertStudyRequestUrgent',
+          dialogData: { update },
         });
       } else {
         const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
         commit('setToast', toast);
       }
 
-      const data = studyRequest;
-      if (update && isSupervisor) {
-        data.isSupervisor = true;
+      const { csrf } = state.auth;
+      if (update) {
+        return putStudyRequest(csrf, studyRequest);
       }
-      const method = update ? 'PUT' : 'POST';
-      const url = update ? `/requests/study/${id}` : '/requests/study';
-      const options = {
-        method,
-        csrf: state.auth.csrf,
-        data,
-      };
-      return apiFetch(url, options);
+      return postStudyRequest(csrf, studyRequest);
     },
   },
 });

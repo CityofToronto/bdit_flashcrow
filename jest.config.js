@@ -9,7 +9,6 @@ if (TEST_DIR === undefined) {
 module.exports = {
   collectCoverageFrom: [
     'lib/**/*.js',
-    '!lib/controller/**/*.js',
     '!**/node_modules/**',
   ],
   coverageDirectory: '<rootDir>/tests/coverage',
@@ -19,6 +18,12 @@ module.exports = {
       functions: 60,
       lines: 60,
       statements: 60,
+    },
+    'lib/db': {
+      branches: 75,
+      functions: 75,
+      lines: 75,
+      statements: 75,
     },
   },
   moduleFileExtensions: [
