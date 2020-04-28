@@ -129,8 +129,15 @@ test('CentrelineDAO.byIdAndType()', async () => {
   expect(result.centrelineId).toEqual(111569);
   expect(result.centrelineType).toEqual(CentrelineType.SEGMENT);
 
-  // invalid
-  expect(CentrelineDAO.byIdAndType(-1, -1)).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+  // invalid ID and type
+  await expect(
+    CentrelineDAO.byIdAndType(-1, -1),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // invalid ID, valid type
+  await expect(
+    CentrelineDAO.byIdAndType(-1, CentrelineType.SEGMENT),
+  ).resolves.toBeNull();
 });
 
 function expectIdsAndTypesResult(results, { centrelineId, centrelineType }) {
@@ -190,6 +197,89 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   ];
   results = await CentrelineDAO.byIdsAndTypes(query);
   expectIdsAndTypesResults(results, query);
+});
+
+function expectSuggestionsContain(result, centrelineId) {
+  const suggestedIds = result.map(({ centrelineId: suggestedId }) => suggestedId);
+  expect(suggestedIds).toContain(centrelineId);
+}
+
+test('CentrelineDAO.intersectionSuggestions', async () => {
+  // full query should match
+  let result = await CentrelineDAO.intersectionSuggestions('Danforth and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial query should match
+  result = await CentrelineDAO.intersectionSuggestions('Danforth and Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // either term can be prefixed
+  result = await CentrelineDAO.intersectionSuggestions('Dan and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full query with minor typo should match
+  result = await CentrelineDAO.intersectionSuggestions('Damforth and Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial query with minor typo should match
+  result = await CentrelineDAO.intersectionSuggestions('Damforth and Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full queries: 'and' is optional
+  result = await CentrelineDAO.intersectionSuggestions('Danforth Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial queries: 'and' is optional
+  result = await CentrelineDAO.intersectionSuggestions('Danforth Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // full queries: punctuation ignored
+  result = await CentrelineDAO.intersectionSuggestions('Danforth & Main', 3);
+  expectSuggestionsContain(result, 13460034);
+
+  // partial queries: punctuation ignored
+  result = await CentrelineDAO.intersectionSuggestions('Danforth / Mai', 3);
+  expectSuggestionsContain(result, 13460034);
+});
+
+test('CentrelineDAO.featuresIncidentTo', async () => {
+  // 4-way intersection
+  let result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463436);
+  expect(result).toHaveLength(4);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // 3-way intersection
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13459232);
+  expect(result).toHaveLength(3);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // 5-way intersection
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463551);
+  expect(result).toHaveLength(5);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.SEGMENT);
+  });
+
+  // segment
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 111569);
+  expect(result).toHaveLength(2);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.INTERSECTION);
+  });
+
+  // invalid ID and type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(-1, -1),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // invalid ID, valid type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
+  ).resolves.toEqual([]);
 });
 
 test('CountDAO.byCentreline()', async () => {
@@ -437,10 +527,12 @@ test('CountDataDAO', async () => {
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_5_26177);
 
-  // non-TMC
+  // non-TMC, speed-related
   count = await CountDAO.byIdAndCategory(1415698, 4);
   countData = await CountDataDAO.byCount(count);
   expect(countData).toEqual(countData_4_1415698);
+
+  // TODO: add (1206023, 1) to sample_dev_data, then add non-speed-related test here
 });
 
 test('StudyRequestDAO', async () => {
@@ -487,6 +579,20 @@ test('StudyRequestDAO', async () => {
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
+  // fetch by centreline
+  let fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+
   // fetch by user
   let byUser = await StudyRequestDAO.byUser(persistedUser);
   expect(byUser).toEqual([persistedStudyRequest]);
@@ -523,6 +629,20 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
   expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
+  // fetch by centreline
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
+
   // reopen
   persistedStudyRequest.closed = false;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
@@ -544,6 +664,20 @@ test('StudyRequestDAO', async () => {
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toBeNull();
 
+  // fetch by centreline
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
+
+  // fetch by centreline pending
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
+    1729,
+    CentrelineType.INTERSECTION,
+  );
+  expect(fetchedStudyRequests).toEqual([]);
+
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
 
@@ -557,6 +691,8 @@ test('StudyRequestDAO', async () => {
 });
 
 test('StudyRequestChangeDAO', async () => {
+  await expect(StudyRequestChangeDAO.byId(-1)).resolves.toBeNull();
+
   const transientUser1 = generateUser();
   const persistedUser1 = await UserDAO.create(transientUser1);
   const now = DateTime.local();
@@ -627,6 +763,8 @@ test('StudyRequestChangeDAO', async () => {
 });
 
 test('StudyRequestCommentDAO', async () => {
+  await expect(StudyRequestCommentDAO.byId(-1)).resolves.toBeNull();
+
   const user1 = generateUser();
   const userCreated1 = await UserDAO.create(user1);
   const now = DateTime.local();
