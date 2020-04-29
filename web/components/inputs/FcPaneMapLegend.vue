@@ -83,15 +83,9 @@ export default {
     width: 24px;
   }
   & .icon-layer-volume {
-    background:
-      linear-gradient(
-        273.37deg,
-        rgba(252, 92, 101, 0.8) 0.88%,
-        rgba(254, 211, 48, 0.8) 51.62%,
-        rgba(38, 222, 129, 0.8) 99.28%
-      );
-    border-radius: 20px;
-    height: 7px;
+    background-image: url('/icons/map/volume.png');
+    height: 9px;
+    margin-top: 2px;
     width: 24px;
   }
 }
