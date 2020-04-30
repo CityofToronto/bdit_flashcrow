@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS arteries_intersection_arterycode ON prj_volume
 
 REFRESH MATERIALIZED VIEW CONCURRENTLY prj_volume_tmp.arteries_intersection;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume_tmp.arteries_midblock AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS prj_volume_tmp.arteries_midblock_intersections AS (
   WITH artery_links AS (
     SELECT
       "ARTERYCODE" AS arterycode,
