@@ -3,9 +3,9 @@ CREATE SCHEMA IF NOT EXISTS counts_new;
 
 CREATE TABLE IF NOT EXISTS counts_new.nodes_intersection (
   link_id BIGINT NOT NULL,
-  geom GEOMETRY(POINT, 4326) NOT NULL,
-  match_on_case SMALLINT,
-  int_id BIGINT
+  match_on_case SMALLINT NOT NULL,
+  int_id BIGINT,
+  geom GEOMETRY(POINT, 4326) NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS nodes_intersection_link_id ON counts_new.nodes_intersection (link_id);
 
@@ -13,14 +13,14 @@ TRUNCATE TABLE counts_new.nodes_intersection;
 
 -- Case 1: link ID matches intersection ID
 INSERT INTO counts_new.nodes_intersection (
-  SELECT nc.link_id, ci.geom, 1 AS match_on_case, ci.int_id
+  SELECT nc.link_id, 1 AS match_on_case, ci.int_id, ci.geom
   FROM counts.nodes_corrected nc
   JOIN counts.centreline_intersection ci ON nc.link_id = ci.int_id
 );
 
 -- Case 2: corrected node geometry has close spatial match to intersection geometry
 INSERT INTO counts_new.nodes_intersection (
-  SELECT nc.link_id, ci.geom, 2 AS match_on_case, ci.int_id
+  SELECT nc.link_id, 2 AS match_on_case, ci.int_id, ci.geom
   FROM counts.nodes_corrected nc
   LEFT JOIN counts_new.nodes_intersection ni USING (link_id)
   JOIN LATERAL (
@@ -38,7 +38,7 @@ INSERT INTO counts_new.nodes_intersection (
 
 -- Case 3: fail to match; keep corrected node geometry, but leave intersection ID as NULL
 INSERT INTO counts_new.nodes_intersection (
-  SELECT nc.link_id, nc.geom, 3 AS match_on_case, NULL AS int_id
+  SELECT nc.link_id, 3 AS match_on_case, NULL AS int_id, nc.geom
   FROM counts.nodes_corrected nc
   LEFT JOIN counts_new.nodes_intersection ni USING (link_id)
   WHERE ni.link_id IS NULL
