@@ -15,7 +15,7 @@ TRUNCATE TABLE counts_new.arteries_intersection;
 INSERT INTO counts_new.arteries_intersection (
   SELECT aimc.arterycode, 1 AS match_on_case, aimc.int_id, ci.geom
   FROM counts.arteries_intersection_manual_corr aimc
-  JOIN gis.centreline_intersection ci USING (int_id)
+  JOIN counts.centreline_intersection ci USING (int_id)
 );
 
 -- Case 2: has match in `arteries_intersection_int_id` with `int_id`
