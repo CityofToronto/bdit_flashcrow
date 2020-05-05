@@ -78,3 +78,18 @@ def create_bash_task(dag, task_id):
     bash_command='/{task_id}.sh'.format(task_id=task_id),
     dag=dag
   )
+
+def create_bash_task_nested(dag, task_id):
+  """
+  Creates a new `BashOperator` task that runs a script with name `{task_id}.sh`
+  in the folder `tasks/{dag_id}` folder.  This `tasks` folder is expected to be
+  in the same parent directory within the git repository as `dags`.
+  """
+  return BashOperator(
+    task_id=task_id,
+    bash_command='/{dag_id}/{task_id}.sh'.format(
+      dag_id=dag.dag_id,
+      task_id=task_id
+    ),
+    dag=dag
+  )
