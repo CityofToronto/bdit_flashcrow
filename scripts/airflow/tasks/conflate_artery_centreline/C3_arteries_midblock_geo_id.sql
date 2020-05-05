@@ -26,4 +26,20 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_geo_id_single AS
 );
 CREATE UNIQUE INDEX IF NOT EXISTS arteries_midblock_geo_id_single_arterycode ON counts.arteries_midblock_geo_id_single (arterycode);
 
--- TODO: ranked multiple
+REFRESH MATERIALIZED VIEW CONCURRENTLY counts.arteries_midblock_geo_id_single;
+
+-- TODO: actual ranking
+CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_geo_id_multiple AS (
+  WITH geo_id_counts AS (
+    SELECT arterycode, count(*) AS n
+    FROM counts.arteries_midblock_geo_id
+    GROUP BY arterycode
+  )
+  SELECT amgi.arterycode, amgi.geo_id, 0 AS score
+  FROM counts.arteries_midblock_geo_id amgi
+  JOIN geo_id_counts gic USING (arterycode)
+  WHERE gic.n > 1
+);
+CREATE UNIQUE INDEX IF NOT EXISTS arteries_midblock_geo_id_multiple_arterycode_geo_id ON counts.arteries_midblock_geo_id_multiple (arterycode, geo_id);
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY counts.arteries_midblock_geo_id_multiple;
