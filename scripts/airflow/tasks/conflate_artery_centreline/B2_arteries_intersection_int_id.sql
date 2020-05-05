@@ -1,16 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS counts;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_intersection_link AS (
-  SELECT
-    "ARTERYCODE" AS arterycode,
-    "LINKID"::bigint AS link_id
-  FROM "TRAFFIC"."ARTERYDATA"
-  WHERE "LINKID" NOT LIKE '%@%'
-);
-CREATE UNIQUE INDEX IF NOT EXISTS arteries_intersection_link_arterycode ON counts.arteries_intersection_link (arterycode);
-
-REFRESH MATERIALIZED VIEW CONCURRENTLY counts.arteries_intersection_link;
-
 CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_intersection_int_id AS (
   SELECT ail.arterycode, ni.int_id, ni.geom
   FROM counts.arteries_intersection_link ail
