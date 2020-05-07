@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS counts;
 
-CREATE MATERIALIZED VIEW counts.arteries_midblock_solo AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_solo AS (
   WITH a AS (
     SELECT geo_id
     FROM (

@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS counts;
 
-CREATE MATERIALIZED VIEW counts.arteries_midblock_link_pairs AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_link_pairs AS (
   WITH a AS (
     SELECT
       aml1.arterycode AS arterycode1,
