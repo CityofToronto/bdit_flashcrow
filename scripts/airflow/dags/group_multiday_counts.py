@@ -17,4 +17,9 @@ START_DATE = datetime(2020, 3, 1)
 SCHEDULE_INTERVAL = '30 5 * * *'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-TRANSFORM_MULTIDAY_COUNTS = create_bash_task_nested(DAG, 'transform_multiday_counts')
+A1_COUNTS_MULTIDAY_RUNS = create_bash_task_nested(DAG, 'A1_counts_multiday_runs')
+A2_ARTERIES_COUNTS_GROUPS = create_bash_task_nested(DAG, 'A2_arteries_counts_groups')
+A3_STUDIES = create_bash_task_nested(DAG, 'A3_studies')
+
+A1_COUNTS_MULTIDAY_RUNS >> A2_ARTERIES_COUNTS_GROUPS
+A2_ARTERIES_COUNTS_GROUPS >> A3_STUDIES
