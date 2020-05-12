@@ -54,7 +54,6 @@ env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.tra
 env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_det -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_det/"TRAFFIC"."DET"/g' >> "${FLASHCROW_DEV_DATA}"
 env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_countinfo -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_countinfo/"TRAFFIC"."COUNTINFO"/g' >> "${FLASHCROW_DEV_DATA}"
 env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_cnt_det -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_cnt_det/"TRAFFIC"."CNT_DET"/g' >> "${FLASHCROW_DEV_DATA}"
-env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_cnt_spd -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_cnt_spd/"TRAFFIC"."CNT_SPD"/g' >> "${FLASHCROW_DEV_DATA}"
 
 # copy data for sampled tables / views
 echo 'COPY collisions.events FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
@@ -78,9 +77,6 @@ env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY 
 echo '\.' >> "${FLASHCROW_DEV_DATA}"
 echo 'COPY "TRAFFIC"."CNT_DET" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
 env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_det) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
-echo '\.' >> "${FLASHCROW_DEV_DATA}"
-echo 'COPY "TRAFFIC"."CNT_SPD" FROM stdin;' >> "${FLASHCROW_DEV_DATA}"
-env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.traffic_cnt_spd) TO stdout (FORMAT text, ENCODING 'UTF-8')" >> "${FLASHCROW_DEV_DATA}"
 echo '\.' >> "${FLASHCROW_DEV_DATA}"
 
 # copy view definitions where appropriate
