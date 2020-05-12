@@ -12,7 +12,7 @@
       <span>{{item.ksi}}</span>
     </template>
     <template v-slot:item.VALIDATED="{ item }">
-      <span>{{item.ksi}}</span>
+      <span>{{item.validated}}</span>
     </template>
     <template v-slot:header.VIEW_REPORT>
       <span class="sr-only">Reports</span>
