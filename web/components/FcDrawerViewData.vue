@@ -437,6 +437,7 @@ export default {
       'fetchCountsByCentreline',
     ]),
     ...mapMutations('viewData', [
+      'removeFilterCollision',
       'removeFilterStudy',
       'setFiltersCollision',
       'setFiltersStudy',

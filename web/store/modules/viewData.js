@@ -1,10 +1,15 @@
+import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   namespaced: true,
   state: {
     filtersCollision: {
-      // TODO: filters here
+      datesFrom: -1,
+      daysOfWeek: [],
+      emphasisAreas: [],
+      environmentConditions: [],
+      hoursOfDay: [0, 24],
     },
     filtersStudy: {
       datesFrom: -1,
@@ -14,8 +19,46 @@ export default {
     },
   },
   getters: {
-    filterChipsCollision(/* state */) {
-      return [];
+    filterChipsCollision(state) {
+      const {
+        datesFrom,
+        daysOfWeek,
+        emphasisAreas,
+        environmentConditions,
+        hoursOfDay,
+      } = state.filtersCollision;
+      const [start, end] = hoursOfDay;
+      const filterChipsCollision = [];
+      emphasisAreas.forEach((value) => {
+        const { text: label } = value;
+        const filterChip = { filter: 'emphasisAreas', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      if (datesFrom !== -1) {
+        const label = `Collisions \u2264 ${datesFrom} years`;
+        const value = datesFrom;
+        const filterChip = { filter: 'datesFrom', label, value };
+        filterChipsCollision.push(filterChip);
+      }
+      daysOfWeek.forEach((value) => {
+        const label = TimeFormatters.DAYS_OF_WEEK[value];
+        const filterChip = { filter: 'daysOfWeek', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      if (start !== 0 || end !== 24) {
+        const dtStart = DateTime.fromObject({ hour: start });
+        const dtEnd = DateTime.fromObject({ hour: end });
+        const label = TimeFormatters.formatRangeTimeOfDay({ start: dtStart, end: dtEnd });
+        const value = hoursOfDay;
+        const filterChip = { filter: 'hoursOfDay', label, value };
+        filterChipsCollision.push(filterChip);
+      }
+      environmentConditions.forEach((value) => {
+        const { text: label } = value;
+        const filterChip = { filter: 'environmentConditions', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      return filterChipsCollision;
     },
     filterChipsStudy(state) {
       const {
@@ -74,8 +117,18 @@ export default {
     },
   },
   mutations: {
-    removeFilterCollision(/* state, { filter, value } */) {
-      // TODO: implement this
+    removeFilterCollision(state, { filter, value }) {
+      if (filter === 'datesFrom') {
+        state.filtersCollision.datesFrom = -1;
+      } else if (filter === 'hoursOfDay') {
+        state.filtersCollision.hoursOfDay = [0, 24];
+      } else {
+        const values = state.filtersCollision[filter];
+        const i = values.indexOf(value);
+        if (i !== -1) {
+          values.splice(i, 1);
+        }
+      }
     },
     removeFilterStudy(state, { filter, value }) {
       if (filter === 'datesFrom') {
