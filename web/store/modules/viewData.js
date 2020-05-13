@@ -9,6 +9,9 @@ export default {
       hours: [],
       studyTypes: [],
     },
+    filtersCollision: {
+      // TODO: filters here
+    },
   },
   getters: {
     filterChips(state) {
@@ -41,6 +44,9 @@ export default {
         filterChips.push(filterChip);
       });
       return filterChips;
+    },
+    filterChipsCollision(/* state */) {
+      return [];
     },
     filterParams(state, getters, rootState) {
       const {
@@ -79,8 +85,14 @@ export default {
         }
       }
     },
+    removeFilterCollision(/* state, { filter, value } */) {
+      // TODO: implement this
+    },
     setFilters(state, filters) {
       state.filters = filters;
+    },
+    setFiltersCollision(state, filtersCollision) {
+      state.filtersCollision = filtersCollision;
     },
   },
 };

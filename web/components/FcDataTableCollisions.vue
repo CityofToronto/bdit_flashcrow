@@ -1,30 +1,18 @@
 <template>
   <FcDataTable
-    class="fc-data-table-studies"
+    class="fc-data-table-collisions"
     :columns="columns"
     disable-sort
     :loading="loading"
-    :items="countSummary">
-    <template v-slot:item.STUDY_REPORTS="{ item }">
-      <span>{{item.count.type.studyType.label}}</span>
-      <span
-        v-if="item.numPerCategory > 1"
-        class="secondary--text">
-        &#x2022; {{item.numPerCategory}}
-      </span>
+    :items="[collisionSummary]">
+    <template v-slot:item.AMOUNT="{ item }">
+      <span>{{item.total}}</span>
     </template>
-    <template v-slot:item.DATE="{ item }">
-      <span>
-        {{item.count.date | date}} ({{item.count.date | dayOfWeek}})
-      </span>
+    <template v-slot:item.KSI="{ item }">
+      <span>{{item.ksi}}</span>
     </template>
-    <template v-slot:item.HOURS="{ item }">
-      <span v-if="item.count.type.studyType.automatic">
-        {{item.count.duration | durationHuman}} ({{item.count.duration}} hrs)
-      </span>
-      <span v-else>
-        {{item.count.hours}}
-      </span>
+    <template v-slot:item.VALIDATED="{ item }">
+      <span>{{item.validated}}</span>
     </template>
     <template v-slot:header.VIEW_REPORT>
       <span class="sr-only">Reports</span>
@@ -44,13 +32,13 @@ import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
-  name: 'FcDataTableStudies',
+  name: 'FcDataTableCollisions',
   components: {
     FcButton,
     FcDataTable,
   },
   props: {
-    countSummary: Array,
+    collisionSummary: Object,
     loading: {
       type: Boolean,
       default: false,
@@ -58,14 +46,14 @@ export default {
   },
   data() {
     const columns = [{
-      value: 'STUDY_REPORTS',
-      text: 'Study Reports',
+      value: 'AMOUNT',
+      text: 'Amount',
     }, {
-      value: 'DATE',
-      text: 'Most Recent Date',
+      value: 'KSI',
+      text: 'KSI',
     }, {
-      value: 'HOURS',
-      text: 'Most Recent Hours',
+      value: 'VALIDATED',
+      text: 'Validated',
     }, {
       align: 'end',
       value: 'VIEW_REPORT',
@@ -79,7 +67,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-data-table-studies {
+.fc-data-table-collisions {
   & th:first-child,
   & td:first-child {
     padding-left: 20px;

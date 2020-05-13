@@ -94,11 +94,24 @@ const router = new Router({
           next();
         },
       }, {
+        path: '/view/location/:centrelineType/:centrelineId/reports/collision',
+        name: 'viewCollisionReportsAtLocation',
+        meta: {
+          auth: { mode: 'try' },
+          title: 'View Collision Reports',
+          vertical: true,
+        },
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewCollisionReports.vue'),
+        beforeEnter(to, from, next) {
+          store.commit('setDrawerOpen', false);
+          next();
+        },
+      }, {
         path: '/view/location/:centrelineType/:centrelineId/reports/:studyTypeName',
         name: 'viewReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
-          title: 'View Reports',
+          title: 'View Study Reports',
           vertical: true,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReports.vue'),
