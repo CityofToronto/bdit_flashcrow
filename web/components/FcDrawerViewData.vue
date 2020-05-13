@@ -121,17 +121,17 @@
               <div class="pl-3 subtitle-1">{{numCountsText}}</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
-                v-if="showFilters"
-                v-model="showFilters"
-                v-bind="filters"
-                @set-filters="setFilters">
+                v-if="showFiltersStudy"
+                v-model="showFiltersStudy"
+                v-bind="filtersStudy"
+                @set-filters="setFiltersStudy">
               </FcDialogStudyFilters>
               <FcButton
-                v-if="countSummary.length > 0 || filterChips.length > 0"
+                v-if="countSummary.length > 0 || filterChipsStudy.length > 0"
                 type="secondary"
-                @click.stop="showFilters = true">
+                @click.stop="showFiltersStudy = true">
                 <v-icon
-                  :color="colorIconFilter"
+                  :color="colorIconFilterStudy"
                   left>mdi-filter-variant</v-icon>
                 Filter
               </FcButton>
@@ -145,14 +145,14 @@
             </div>
 
             <div
-              v-if="filterChips.length > 0"
+              v-if="filterChipsStudy.length > 0"
               class="mt-5">
               <v-chip
-                v-for="(filterChip, i) in filterChips"
+                v-for="(filterChip, i) in filterChipsStudy"
                 :key="i"
                 class="mb-2 mr-2 primary--text"
                 color="light-blue lighten-5"
-                @click="removeFilter(filterChip)">
+                @click="removeFilterStudy(filterChip)">
                 <v-icon left>mdi-check</v-icon>
                 {{filterChip.label}}
               </v-chip>
@@ -247,20 +247,20 @@ export default {
       poiSummary: {
         school: null,
       },
-      showFilters: false,
       showFiltersCollision: false,
+      showFiltersStudy: false,
       studyRequestsPending: [],
     };
   },
   computed: {
-    colorIconFilter() {
-      if (this.filterChips.length === 0) {
+    colorIconFilterCollision() {
+      if (this.filterChipsCollision.length === 0) {
         return 'unselected';
       }
       return 'primary';
     },
-    colorIconFilterCollision() {
-      if (this.filterChipsCollision.length === 0) {
+    colorIconFilterStudy() {
+      if (this.filterChipsStudy.length === 0) {
         return 'unselected';
       }
       return 'primary';
@@ -290,12 +290,12 @@ export default {
       }
       return `${n} total`;
     },
-    ...mapState('viewData', ['filters', 'filtersCollision']),
+    ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
     ...mapState(['auth', 'legendOptions', 'location']),
     ...mapGetters('viewData', [
-      'filterChips',
       'filterChipsCollision',
-      'filterParams',
+      'filterChipsStudy',
+      'filterParamsStudy',
     ]),
     ...mapGetters(['locationFeatureType']),
   },
@@ -437,14 +437,11 @@ export default {
       'fetchCountsByCentreline',
     ]),
     ...mapMutations('viewData', [
-      'removeFilter',
-      'setFilters',
+      'removeFilterStudy',
       'setFiltersCollision',
+      'setFiltersStudy',
     ]),
-    ...mapMutations([
-      'setFilterCountTypes',
-      'setLocation',
-    ]),
+    ...mapMutations(['setLocation']),
   },
 };
 </script>

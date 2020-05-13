@@ -27,12 +27,12 @@
           <div
             class="ml-1 font-weight-regular headline secondary--text">
             <span>&#x2022; {{location.description}}</span>
-            <span v-if="filterChipsNoStudyTypes.length > 0"> &#x2022;</span>
+            <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
           </div>
           <div
-            v-if="filterChipsNoStudyTypes.length > 0">
+            v-if="filterChipsStudyNoStudyTypes.length > 0">
             <v-chip
-              v-for="(filterChip, i) in filterChipsNoStudyTypes"
+              v-for="(filterChip, i) in filterChipsStudyNoStudyTypes"
               :key="i"
               class="ml-2 my-1"
               filter
@@ -206,19 +206,19 @@ export default {
       }
       return reportTypes[indexActiveReportType];
     },
-    filterChipsNoStudyTypes() {
-      return this.filterChips
+    filterChipsStudyNoStudyTypes() {
+      return this.filterChipsStudy
         .filter(({ filter }) => filter !== 'studyTypes');
     },
-    filterParamsPaginated() {
-      const { filterParams } = this;
-      const filters = {
-        ...filterParams,
+    filterParamsStudyPaginated() {
+      const { filterParamsStudy } = this;
+      const params = {
+        ...filterParamsStudy,
         limit: 10,
         offset: 0,
       };
-      delete filters.studyType;
-      return filters;
+      delete params.studyType;
+      return params;
     },
     itemsCounts() {
       return this.counts.map((count, i) => {
@@ -271,7 +271,7 @@ export default {
       return StudyType.enumValueOf(studyTypeName);
     },
     ...mapState(['location']),
-    ...mapGetters('viewData', ['filterChips', 'filterParams']),
+    ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
     activeCount() {
@@ -348,7 +348,7 @@ export default {
         getCountsByCentreline(
           { centrelineId, centrelineType },
           studyType,
-          this.filterParamsPaginated,
+          this.filterParamsStudyPaginated,
         ),
         getLocationByFeature({ centrelineId, centrelineType }),
       ];

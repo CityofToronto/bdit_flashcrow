@@ -3,58 +3,58 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 export default {
   namespaced: true,
   state: {
-    filters: {
+    filtersCollision: {
+      // TODO: filters here
+    },
+    filtersStudy: {
       datesFrom: -1,
       daysOfWeek: [],
       hours: [],
       studyTypes: [],
     },
-    filtersCollision: {
-      // TODO: filters here
-    },
   },
   getters: {
-    filterChips(state) {
+    filterChipsCollision(/* state */) {
+      return [];
+    },
+    filterChipsStudy(state) {
       const {
         datesFrom,
         daysOfWeek,
         hours,
         studyTypes,
-      } = state.filters;
-      const filterChips = [];
+      } = state.filtersStudy;
+      const filterChipsStudy = [];
       studyTypes.forEach((studyType) => {
         const { label } = studyType;
         const filterChip = { filter: 'studyTypes', label, value: studyType };
-        filterChips.push(filterChip);
+        filterChipsStudy.push(filterChip);
       });
       daysOfWeek.forEach((value) => {
         const label = TimeFormatters.DAYS_OF_WEEK[value];
         const filterChip = { filter: 'daysOfWeek', label, value };
-        filterChips.push(filterChip);
+        filterChipsStudy.push(filterChip);
       });
       if (datesFrom !== -1) {
         const label = `Studies \u2264 ${datesFrom} years`;
         const value = datesFrom;
         const filterChip = { filter: 'datesFrom', label, value };
-        filterChips.push(filterChip);
+        filterChipsStudy.push(filterChip);
       }
       hours.forEach((studyHours) => {
         const label = studyHours.description;
         const filterChip = { filter: 'hours', label, value: studyHours };
-        filterChips.push(filterChip);
+        filterChipsStudy.push(filterChip);
       });
-      return filterChips;
+      return filterChipsStudy;
     },
-    filterChipsCollision(/* state */) {
-      return [];
-    },
-    filterParams(state, getters, rootState) {
+    filterParamsStudy(state, getters, rootState) {
       const {
         datesFrom,
         daysOfWeek,
         hours,
         studyTypes,
-      } = state.filters;
+      } = state.filtersStudy;
       const params = {};
       if (datesFrom !== -1) {
         const { now } = rootState;
@@ -74,25 +74,25 @@ export default {
     },
   },
   mutations: {
-    removeFilter(state, { filter, value }) {
+    removeFilterCollision(/* state, { filter, value } */) {
+      // TODO: implement this
+    },
+    removeFilterStudy(state, { filter, value }) {
       if (filter === 'datesFrom') {
-        state.filters.datesFrom = -1;
+        state.filtersStudy.datesFrom = -1;
       } else {
-        const values = state.filters[filter];
+        const values = state.filtersStudy[filter];
         const i = values.indexOf(value);
         if (i !== -1) {
           values.splice(i, 1);
         }
       }
     },
-    removeFilterCollision(/* state, { filter, value } */) {
-      // TODO: implement this
-    },
-    setFilters(state, filters) {
-      state.filters = filters;
-    },
     setFiltersCollision(state, filtersCollision) {
       state.filtersCollision = filtersCollision;
+    },
+    setFiltersStudy(state, filtersStudy) {
+      state.filtersStudy = filtersStudy;
     },
   },
 };
