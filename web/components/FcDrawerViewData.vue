@@ -384,7 +384,15 @@ export default {
       });
     },
     actionShowReportsCollision() {
-      // TODO: implement this
+      const { centrelineId, centrelineType } = this.$route.params;
+      const params = {
+        centrelineId,
+        centrelineType,
+      };
+      this.$router.push({
+        name: 'viewCollisionReportsAtLocation',
+        params,
+      });
     },
     async loadAsyncForRoute(to) {
       const { datesFrom } = this.legendOptions;
