@@ -72,7 +72,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Collisions</h2>
-              <div class="pl-3 subtitle-1">{{collisionSummary.total}} total</div>
+              <div class="pl-3 subtitle-1">{{collisionTotal}} total</div>
               <v-spacer></v-spacer>
               <FcDialogCollisionFilters
                 v-if="showFiltersCollision"
@@ -81,6 +81,7 @@
                 @set-filters="setFiltersCollision">
               </FcDialogCollisionFilters>
               <FcButton
+                v-if="collisionTotal > 0"
                 type="secondary"
                 @click.stop="showFiltersCollision = true">
                 <v-icon
@@ -118,20 +119,20 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-1">{{numCountsText}}</div>
+              <div class="pl-3 subtitle-1">{{countTotal}} total</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
-                v-if="showFilters"
-                v-model="showFilters"
-                v-bind="filters"
-                @set-filters="setFilters">
+                v-if="showFiltersStudy"
+                v-model="showFiltersStudy"
+                v-bind="filtersStudy"
+                @set-filters="setFiltersStudy">
               </FcDialogStudyFilters>
               <FcButton
-                v-if="countSummary.length > 0 || filterChips.length > 0"
+                v-if="countTotal > 0"
                 type="secondary"
-                @click.stop="showFilters = true">
+                @click.stop="showFiltersStudy = true">
                 <v-icon
-                  :color="colorIconFilter"
+                  :color="colorIconFilterStudy"
                   left>mdi-filter-variant</v-icon>
                 Filter
               </FcButton>
@@ -145,24 +146,30 @@
             </div>
 
             <div
-              v-if="filterChips.length > 0"
+              v-if="filterChipsStudy.length > 0"
               class="mt-5">
               <v-chip
-                v-for="(filterChip, i) in filterChips"
+                v-for="(filterChip, i) in filterChipsStudy"
                 :key="i"
                 class="mb-2 mr-2 primary--text"
                 color="light-blue lighten-5"
-                @click="removeFilter(filterChip)">
+                @click="removeFilterStudy(filterChip)">
                 <v-icon left>mdi-check</v-icon>
                 {{filterChip.label}}
               </v-chip>
             </div>
           </header>
           <div
-            v-if="countSummary.length === 0"
+            v-if="countTotal === 0"
             class="my-8 py-12 secondary--text text-center">
             There are no studies for this location,<br>
             please request a study if necessary
+          </div>
+          <div
+            v-else-if="countSummary.length === 0"
+            class="my-8 py-12 secondary--text text-center">
+            No studies match the active filters,<br>
+            clear one or more filters to see studies
           </div>
           <FcDataTableStudies
             v-else
@@ -204,12 +211,13 @@ import {
 import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
+  getCollisionsByCentrelineTotal,
   getCountsByCentrelineSummary,
+  getCountsByCentrelineTotal,
   getLocationByFeature,
   getPoiByCentrelineSummary,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
-import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
@@ -238,29 +246,32 @@ export default {
   data() {
     return {
       collisionSummary: {
-        total: 0,
+        amount: 0,
         ksi: 0,
+        validated: 0,
       },
+      collisionTotal: 0,
       countSummary: [],
+      countTotal: 0,
       loadingCollisions: false,
       loadingCounts: false,
       poiSummary: {
         school: null,
       },
-      showFilters: false,
       showFiltersCollision: false,
+      showFiltersStudy: false,
       studyRequestsPending: [],
     };
   },
   computed: {
-    colorIconFilter() {
-      if (this.filterChips.length === 0) {
+    colorIconFilterCollision() {
+      if (this.filterChipsCollision.length === 0) {
         return 'unselected';
       }
       return 'primary';
     },
-    colorIconFilterCollision() {
-      if (this.filterChipsCollision.length === 0) {
+    colorIconFilterStudy() {
+      if (this.filterChipsStudy.length === 0) {
         return 'unselected';
       }
       return 'primary';
@@ -281,58 +292,36 @@ export default {
       const { hospital, school } = this.poiSummary;
       return hospital !== null || school !== null;
     },
-    numCountsText() {
-      const n = ArrayStats.sum(
-        this.countSummary.map(({ numPerCategory }) => numPerCategory),
-      );
-      if (n === 0) {
-        return 'None';
-      }
-      return `${n} total`;
-    },
-    ...mapState('viewData', ['filters', 'filtersCollision']),
+    ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
     ...mapState(['auth', 'legendOptions', 'location']),
     ...mapGetters('viewData', [
-      'filterChips',
       'filterChipsCollision',
-      'filterParams',
+      'filterChipsStudy',
+      'filterParamsCollision',
+      'filterParamsStudy',
     ]),
     ...mapGetters(['locationFeatureType']),
   },
   watch: {
-    async filterParams() {
-      this.loadingCounts = true;
-      const {
-        centrelineId,
-        centrelineType,
-      } = this.location;
-      const countSummary = await getCountsByCentrelineSummary(
-        { centrelineId, centrelineType },
-        this.filterParams,
-      );
-      this.countSummary = countSummary;
-      this.loadingCounts = false;
-    },
-    'legendOptions.datesFrom': async function legendOptionsDatesFrom() {
+    async filterParamsCollision() {
       this.loadingCollisions = true;
-      const { datesFrom } = this.legendOptions;
-
-      const { centrelineId, centrelineType } = this.$route.params;
-      const now = DateTime.local();
-      const collisionsDateRange = {
-        start: now.minus({ years: datesFrom }),
-        end: now,
-      };
-      const collisionsFilters = {
-        ...collisionsDateRange,
-      };
-
+      const { centrelineId, centrelineType } = this.location;
       const collisionSummary = await getCollisionsByCentrelineSummary(
         { centrelineId, centrelineType },
-        collisionsFilters,
+        this.filterParamsCollision,
       );
       this.collisionSummary = collisionSummary;
       this.loadingCollisions = false;
+    },
+    async filterParamsStudy() {
+      this.loadingCounts = true;
+      const { centrelineId, centrelineType } = this.location;
+      const countSummary = await getCountsByCentrelineSummary(
+        { centrelineId, centrelineType },
+        this.filterParamsStudy,
+      );
+      this.countSummary = countSummary;
+      this.loadingCounts = false;
     },
     location(location, locationPrev) {
       if (location === null) {
@@ -395,34 +384,32 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      const { datesFrom } = this.legendOptions;
       const { centrelineId, centrelineType } = to.params;
-      const now = DateTime.local();
-      const collisionsDateRange = {
-        start: now.minus({ years: datesFrom }),
-        end: now,
-      };
-      const collisionsFilters = {
-        ...collisionsDateRange,
-      };
+      const feature = { centrelineId, centrelineType };
       const tasks = [
-        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
-        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParams),
-        getLocationByFeature({ centrelineId, centrelineType }),
-        getPoiByCentrelineSummary({ centrelineId, centrelineType }),
+        getCollisionsByCentrelineSummary(feature, this.filterParamsCollision),
+        getCollisionsByCentrelineTotal(feature),
+        getCountsByCentrelineSummary(feature, this.filterParamsStudy),
+        getCountsByCentrelineTotal(feature),
+        getLocationByFeature(feature),
+        getPoiByCentrelineSummary(feature),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));
       }
       const [
         collisionSummary,
+        collisionTotal,
         countSummary,
+        countTotal,
         location,
         poiSummary,
         studyRequestsPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
+      this.collisionTotal = collisionTotal;
       this.countSummary = countSummary;
+      this.countTotal = countTotal;
       this.poiSummary = poiSummary;
       this.studyRequestsPending = studyRequestsPending;
 
@@ -437,14 +424,12 @@ export default {
       'fetchCountsByCentreline',
     ]),
     ...mapMutations('viewData', [
-      'removeFilter',
-      'setFilters',
+      'removeFilterCollision',
+      'removeFilterStudy',
       'setFiltersCollision',
+      'setFiltersStudy',
     ]),
-    ...mapMutations([
-      'setFilterCountTypes',
-      'setLocation',
-    ]),
+    ...mapMutations(['setLocation']),
   },
 };
 </script>

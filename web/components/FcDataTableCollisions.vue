@@ -6,7 +6,7 @@
     :loading="loading"
     :items="[collisionSummary]">
     <template v-slot:item.AMOUNT="{ item }">
-      <span>{{item.total}}</span>
+      <span>{{item.amount}}</span>
     </template>
     <template v-slot:item.KSI="{ item }">
       <span>{{item.ksi}}</span>

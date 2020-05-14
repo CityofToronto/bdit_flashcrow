@@ -286,25 +286,80 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
   ).resolves.toEqual([]);
 });
 
-test('CollisionDAO.byCentrelineSummary', async () => {
-  const start = DateTime.fromObject({ year: 2017, month: 4, day: 28 });
-  const end = DateTime.fromObject({ year: 2020, month: 4, day: 28 });
+test('CollisionDAO.byCollisionId', async () => {
+  // invalid ID
+  let result = await CollisionDAO.byCollisionId(-1);
+  expect(result).toBeNull();
+
+  result = await CollisionDAO.byCollisionId(1040350);
+  expect(result).not.toBeNull();
+  expect(result.centrelineId).toBe(1142194);
+  expect(result.centrelineType).toBe(CentrelineType.SEGMENT);
+  expect(result.involved).toHaveLength(2);
+});
+
+test('CollisionDAO.byCentreline', async () => {
+  const start = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const end = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
   const dateRange = { start, end };
 
-  // TODO: add these centreline features to sample_dev_data job, then test actual values
-  let result = await CollisionDAO.byCentrelineSummary(
-    1142194,
-    CentrelineType.SEGMENT,
+  let result = await CollisionDAO.byCentreline({
+    centrelineId: 1142194,
+    centrelineType: CentrelineType.SEGMENT,
     dateRange,
-  );
-  expect(result).not.toBeNull();
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toHaveLength(31);
 
-  result = await CollisionDAO.byCentrelineSummary(
-    13465434,
-    CentrelineType.INTERSECTION,
+  result = await CollisionDAO.byCentreline({
+    centrelineId: 13465434,
+    centrelineType: CentrelineType.INTERSECTION,
     dateRange,
-  );
-  expect(result).not.toBeNull();
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toHaveLength(27);
+});
+
+test('CollisionDAO.byCentrelineSummary', async () => {
+  const start = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const end = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
+  const dateRange = { start, end };
+
+  let result = await CollisionDAO.byCentrelineSummary({
+    centrelineId: 1142194,
+    centrelineType: CentrelineType.SEGMENT,
+    dateRange,
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toEqual({ amount: 31, ksi: 0, validated: 26 });
+
+  result = await CollisionDAO.byCentrelineSummary({
+    centrelineId: 13465434,
+    centrelineType: CentrelineType.INTERSECTION,
+    dateRange,
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });
+});
+
+test('CollisionDAO.byCentrelineTotal', async () => {
+  let result = await CollisionDAO.byCentrelineTotal(CentrelineType.SEGMENT, 1142194);
+  expect(result).toBe(212);
+
+  result = await CollisionDAO.byCentrelineTotal(CentrelineType.INTERSECTION, 13465434);
+  expect(result).toBe(188);
 });
 
 test('CountDAO.byCentreline()', async () => {
