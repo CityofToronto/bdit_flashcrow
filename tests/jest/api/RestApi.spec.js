@@ -248,7 +248,7 @@ test('CountController.getCountsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/counts/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategory(response.result, [[3, 'TMC']]);
+  expectNumPerCategory(response.result, [[6, 'TMC']]);
 
   // intersection with some counts, filter by date
   dateRangeStart = DateTime.fromObject({ year: 2011, month: 1, day: 1 });
@@ -261,7 +261,7 @@ test('CountController.getCountsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/counts/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategory(response.result, [[2, 'TMC']]);
+  expectNumPerCategory(response.result, [[3, 'TMC']]);
 
   // intersection with some counts, filter by study hours
   data = {
@@ -281,7 +281,7 @@ test('CountController.getCountsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/counts/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategory(response.result, [[1, 'TMC']]);
+  expectNumPerCategory(response.result, [[2, 'TMC']]);
 
   // intersection with some counts, filter by type of study
   data = {
@@ -291,7 +291,7 @@ test('CountController.getCountsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/counts/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategory(response.result, [[3, 'TMC']]);
+  expectNumPerCategory(response.result, [[6, 'TMC']]);
 
   // intersection with some counts, filter by type of study (non-TMC)
   data = {
