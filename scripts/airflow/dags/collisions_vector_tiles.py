@@ -8,13 +8,13 @@ in the web frontend to render collisions heatmaps at lower zoom levels.
 # pylint: disable=pointless-statement
 from datetime import datetime
 
-from airflow_utils import create_dag, create_bash_task
+from airflow_utils import create_dag, create_bash_task_nested
 
 START_DATE = datetime(2019, 12, 8)
 SCHEDULE_INTERVAL = '0 3 * * 6'
 DAG = create_dag(__file__, __doc__, START_DATE, SCHEDULE_INTERVAL)
 
-BUILD_COLLISIONS_TILES = create_bash_task(DAG, 'build_collisions_tiles')
-EXTRACT_COLLISIONS_TILES = create_bash_task(DAG, 'extract_collisions_tiles')
+BUILD_COLLISIONS_TILES = create_bash_task_nested(DAG, 'build_collisions_tiles')
+EXTRACT_COLLISIONS_TILES = create_bash_task_nested(DAG, 'extract_collisions_tiles')
 
 BUILD_COLLISIONS_TILES >> EXTRACT_COLLISIONS_TILES
