@@ -160,10 +160,16 @@
             </div>
           </header>
           <div
-            v-if="countSummary.length === 0"
+            v-if="countTotal === 0"
             class="my-8 py-12 secondary--text text-center">
             There are no studies for this location,<br>
             please request a study if necessary
+          </div>
+          <div
+            v-else-if="countSummary.length === 0"
+            class="my-8 py-12 secondary--text text-center">
+            No studies match the active filters,<br>
+            clear one or more filters to see studies
           </div>
           <FcDataTableStudies
             v-else
@@ -291,6 +297,7 @@ export default {
     ...mapGetters('viewData', [
       'filterChipsCollision',
       'filterChipsStudy',
+      'filterParamsCollision',
       'filterParamsStudy',
     ]),
     ...mapGetters(['locationFeatureType']),
@@ -299,7 +306,7 @@ export default {
     async filterParamsCollision() {
       this.loadingCollisions = true;
       const { centrelineId, centrelineType } = this.location;
-      const collisionSummary = await getCountsByCentrelineSummary(
+      const collisionSummary = await getCollisionsByCentrelineSummary(
         { centrelineId, centrelineType },
         this.filterParamsCollision,
       );
@@ -377,20 +384,15 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      const { datesFrom } = this.legendOptions;
       const { centrelineId, centrelineType } = to.params;
-      const now = DateTime.local();
-      const collisionsFilters = {
-        dateRangeEnd: now,
-        dateRangeStart: now.minus({ years: datesFrom }),
-      };
+      const feature = { centrelineId, centrelineType };
       const tasks = [
-        getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
-        getCollisionsByCentrelineTotal({ centrelineId, centrelineType }),
-        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParamsStudy),
-        getCountsByCentrelineTotal({ centrelineId, centrelineType }),
-        getLocationByFeature({ centrelineId, centrelineType }),
-        getPoiByCentrelineSummary({ centrelineId, centrelineType }),
+        getCollisionsByCentrelineSummary(feature, this.filterParamsCollision),
+        getCollisionsByCentrelineTotal(feature),
+        getCountsByCentrelineSummary(feature, this.filterParamsStudy),
+        getCountsByCentrelineTotal(feature),
+        getLocationByFeature(feature),
+        getPoiByCentrelineSummary(feature),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));

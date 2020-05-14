@@ -91,6 +91,35 @@ export default {
       });
       return filterChipsStudy;
     },
+    filterParamsCollision(state, getters, rootState) {
+      const {
+        datesFrom,
+        daysOfWeek,
+        emphasisAreas,
+        hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
+        roadSurfaceConditions,
+      } = state.filtersCollision;
+      const params = {};
+      if (datesFrom !== -1) {
+        const { now } = rootState;
+        params.dateRangeStart = now.minus({ years: datesFrom });
+        params.dateRangeEnd = now;
+      }
+      if (daysOfWeek.length > 0) {
+        params.daysOfWeek = daysOfWeek;
+      }
+      if (emphasisAreas.length > 0) {
+        params.emphasisAreas = emphasisAreas;
+      }
+      if (hoursOfDayStart !== 0 || hoursOfDayEnd !== 24) {
+        params.hoursOfDayStart = hoursOfDayStart;
+        params.hoursOfDayEnd = hoursOfDayEnd;
+      }
+      if (roadSurfaceConditions.length > 0) {
+        params.roadSurfaceConditions = roadSurfaceConditions;
+      }
+      return params;
+    },
     filterParamsStudy(state, getters, rootState) {
       const {
         datesFrom,
@@ -101,17 +130,17 @@ export default {
       const params = {};
       if (datesFrom !== -1) {
         const { now } = rootState;
-        params.start = now.minus({ years: datesFrom });
-        params.end = now;
+        params.dateRangeStart = now.minus({ years: datesFrom });
+        params.dateRangeEnd = now;
       }
       if (daysOfWeek.length > 0) {
-        params.dayOfWeek = daysOfWeek;
+        params.daysOfWeek = daysOfWeek;
       }
       if (hours.length > 0) {
         params.hours = hours;
       }
       if (studyTypes.length > 0) {
-        params.studyType = studyTypes;
+        params.studyTypes = studyTypes;
       }
       return params;
     },
