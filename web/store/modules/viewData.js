@@ -8,8 +8,8 @@ export default {
       datesFrom: -1,
       daysOfWeek: [],
       emphasisAreas: [],
-      environmentConditions: [],
       hoursOfDay: [0, 24],
+      roadSurfaceConditions: [],
     },
     filtersStudy: {
       datesFrom: -1,
@@ -24,8 +24,8 @@ export default {
         datesFrom,
         daysOfWeek,
         emphasisAreas,
-        environmentConditions,
         hoursOfDay,
+        roadSurfaceConditions,
       } = state.filtersCollision;
       const [start, end] = hoursOfDay;
       const filterChipsCollision = [];
@@ -53,9 +53,9 @@ export default {
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
-      environmentConditions.forEach((value) => {
+      roadSurfaceConditions.forEach((value) => {
         const { text: label } = value;
-        const filterChip = { filter: 'environmentConditions', label, value };
+        const filterChip = { filter: 'roadSurfaceConditions', label, value };
         filterChipsCollision.push(filterChip);
       });
       return filterChipsCollision;

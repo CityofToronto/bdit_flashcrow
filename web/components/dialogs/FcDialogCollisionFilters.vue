@@ -61,13 +61,13 @@
 
         <h2 class="body-1 mt-4">Weather</h2>
         <v-checkbox
-          v-for="environmentCondition in CollisionEnvironmentCondition.enumValues"
-          :key="environmentCondition.name"
-          v-model="internalEnvironmentConditions"
+          v-for="roadSurfaceCondition in CollisionRoadSurfaceCondition.enumValues"
+          :key="roadSurfaceCondition.name"
+          v-model="internalRoadSurfaceConditions"
           class="mt-2"
           hide-details
-          :label="environmentCondition.text"
-          :value="environmentCondition"></v-checkbox>
+          :label="roadSurfaceCondition.text"
+          :value="roadSurfaceCondition"></v-checkbox>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -90,7 +90,7 @@
 <script>
 import {
   CollisionEmphasisArea,
-  CollisionEnvironmentCondition,
+  CollisionRoadSurfaceCondition,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -108,19 +108,19 @@ export default {
     datesFrom: Number,
     daysOfWeek: Array,
     emphasisAreas: Array,
-    environmentConditions: Array,
     hoursOfDay: Array,
+    roadSurfaceConditions: Array,
   },
   data() {
     return {
       CollisionEmphasisArea,
-      CollisionEnvironmentCondition,
+      CollisionRoadSurfaceCondition,
       DAYS_OF_WEEK: TimeFormatters.DAYS_OF_WEEK,
       internalDatesFrom: this.datesFrom,
       internalDaysOfWeek: this.daysOfWeek,
       internalEmphasisAreas: this.emphasisAreas,
-      internalEnvironmentConditions: this.environmentConditions,
       internalHoursOfDay: this.hoursOfDay,
+      internalRoadSurfaceConditions: this.roadSurfaceConditions,
     };
   },
   computed: {
@@ -129,8 +129,8 @@ export default {
         datesFrom: this.internalDatesFrom,
         daysOfWeek: this.internalDaysOfWeek,
         emphasisAreas: this.internalEmphasisAreas,
-        environmentConditions: this.internalEnvironmentConditions,
         hoursOfDay: this.internalHoursOfDay,
+        roadSurfaceConditions: this.internalRoadSurfaceConditions,
       };
     },
   },
@@ -139,8 +139,8 @@ export default {
       this.internalDatesFrom = -1;
       this.internalDaysOfWeek = [];
       this.internalEmphasisAreas = [];
-      this.internalEnvironmentConditions = [];
       this.internalHoursOfDay = [0, 24];
+      this.internalRoadSurfaceConditions = [];
     },
     actionSave() {
       this.$emit('set-filters', this.internalFilters);
