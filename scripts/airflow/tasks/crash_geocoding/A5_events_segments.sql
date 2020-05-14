@@ -1,5 +1,4 @@
 CREATE SCHEMA IF NOT EXISTS collisions;
-CREATE INDEX IF NOT EXISTS centreline_srid2952_geom_idx ON gis.centreline USING gist (ST_Transform(geom, 2952));
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_segments AS (
   SELECT e.collision_id, u.geo_id FROM

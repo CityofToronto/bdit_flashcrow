@@ -1,6 +1,6 @@
 COPY (
 WITH event_injury AS (
-  SELECT i.collision_id, MAX(CONCAT('0', i.injury)::int) AS injury
+  SELECT i.collision_id, max(i.injury) AS injury
   FROM collisions.events e
   JOIN collisions.involved i ON e.collision_id = i.collision_id
   WHERE e.accdate >= now() - interval :datesFromInterval
@@ -10,13 +10,7 @@ features AS (
   SELECT
     ei.collision_id AS "id",
     e.geom,
-    ei.injury,
-    CASE
-      WHEN ei.injury = 4 THEN 10
-      WHEN ei.injury = 3 THEN 3
-      WHEN ei.injury = 2 THEN 0.3
-      ELSE 0.03
-    END AS heatmap_weight
+    ei.injury
   FROM event_injury ei
   JOIN collisions.events e ON ei.collision_id = e.collision_id
   JOIN collisions.events_centreline ec ON ei.collision_id = ec.collision_id

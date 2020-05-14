@@ -13,5 +13,6 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_centreline AS (
 	LEFT JOIN collisions.events_segments es ON e.collision_id = es.collision_id
 );
 CREATE UNIQUE INDEX IF NOT EXISTS events_centreline_collision_id ON collisions.events_centreline (collision_id);
+CREATE INDEX IF NOT EXISTS events_centreline_centreline ON collisions.events_centreline (centreline_type, centreline_id);
 
 REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.events_centreline;
