@@ -67,6 +67,7 @@ insert into flashcrow_dev_data.traffic_countinfomics
   join prj_volume.artery_centreline as u
   on t."ARTERYCODE" = u.arterycode
   where (u.centreline_type, u.centreline_id) in (
+    (2, 13446886),
     (2, 30000549),
     (1, 14659630),
     (1, 1145768),
@@ -94,6 +95,7 @@ insert into flashcrow_dev_data.traffic_countinfo (
   join prj_volume.artery_centreline as u
   on t."ARTERYCODE" = u.arterycode
   where (u.centreline_type, u.centreline_id) in (
+    (2, 13446886),
     (2, 30000549),
     (1, 14659630),
     (1, 1145768),
