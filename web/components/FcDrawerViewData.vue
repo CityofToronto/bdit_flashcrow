@@ -72,7 +72,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Collisions</h2>
-              <div class="pl-3 subtitle-1">{{collisionSummary.total}} total</div>
+              <div class="pl-3 subtitle-1">{{collisionTotal}} total</div>
               <v-spacer></v-spacer>
               <FcDialogCollisionFilters
                 v-if="showFiltersCollision"
@@ -204,7 +204,9 @@ import {
 import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
+  getCollisionsByCentrelineTotal,
   getCountsByCentrelineSummary,
+  // TODO: total number of counts (without filters)
   getLocationByFeature,
   getPoiByCentrelineSummary,
   getStudyRequestsByCentrelinePending,
@@ -238,9 +240,11 @@ export default {
   data() {
     return {
       collisionSummary: {
-        total: 0,
+        amount: 0,
         ksi: 0,
+        validated: 0,
       },
+      collisionTotal: 0,
       countSummary: [],
       loadingCollisions: false,
       loadingCounts: false,
@@ -300,39 +304,25 @@ export default {
     ...mapGetters(['locationFeatureType']),
   },
   watch: {
-    async filterParams() {
-      this.loadingCounts = true;
-      const {
-        centrelineId,
-        centrelineType,
-      } = this.location;
-      const countSummary = await getCountsByCentrelineSummary(
-        { centrelineId, centrelineType },
-        this.filterParams,
-      );
-      this.countSummary = countSummary;
-      this.loadingCounts = false;
-    },
-    'legendOptions.datesFrom': async function legendOptionsDatesFrom() {
+    async filterParamsCollision() {
       this.loadingCollisions = true;
-      const { datesFrom } = this.legendOptions;
-
-      const { centrelineId, centrelineType } = this.$route.params;
-      const now = DateTime.local();
-      const collisionsDateRange = {
-        start: now.minus({ years: datesFrom }),
-        end: now,
-      };
-      const collisionsFilters = {
-        ...collisionsDateRange,
-      };
-
-      const collisionSummary = await getCollisionsByCentrelineSummary(
+      const { centrelineId, centrelineType } = this.location;
+      const collisionSummary = await getCountsByCentrelineSummary(
         { centrelineId, centrelineType },
-        collisionsFilters,
+        this.filterParamsCollision,
       );
       this.collisionSummary = collisionSummary;
       this.loadingCollisions = false;
+    },
+    async filterParamsStudy() {
+      this.loadingCounts = true;
+      const { centrelineId, centrelineType } = this.location;
+      const countSummary = await getCountsByCentrelineSummary(
+        { centrelineId, centrelineType },
+        this.filterParamsStudy,
+      );
+      this.countSummary = countSummary;
+      this.loadingCounts = false;
     },
     location(location, locationPrev) {
       if (location === null) {
@@ -398,16 +388,14 @@ export default {
       const { datesFrom } = this.legendOptions;
       const { centrelineId, centrelineType } = to.params;
       const now = DateTime.local();
-      const collisionsDateRange = {
-        start: now.minus({ years: datesFrom }),
-        end: now,
-      };
       const collisionsFilters = {
-        ...collisionsDateRange,
+        dateRangeEnd: now,
+        dateRangeStart: now.minus({ years: datesFrom }),
       };
       const tasks = [
         getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
-        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParams),
+        getCollisionsByCentrelineTotal({ centrelineId, centrelineType }),
+        getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParamsStudy),
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
@@ -416,12 +404,14 @@ export default {
       }
       const [
         collisionSummary,
+        collisionTotal,
         countSummary,
         location,
         poiSummary,
         studyRequestsPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
+      this.collisionTotal = collisionTotal;
       this.countSummary = countSummary;
       this.poiSummary = poiSummary;
       this.studyRequestsPending = studyRequestsPending;

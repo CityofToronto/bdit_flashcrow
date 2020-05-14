@@ -287,24 +287,32 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
 });
 
 test('CollisionDAO.byCentrelineSummary', async () => {
-  const start = DateTime.fromObject({ year: 2017, month: 4, day: 28 });
-  const end = DateTime.fromObject({ year: 2020, month: 4, day: 28 });
+  const start = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const end = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
   const dateRange = { start, end };
 
   // TODO: add these centreline features to sample_dev_data job, then test actual values
-  let result = await CollisionDAO.byCentrelineSummary(
-    1142194,
-    CentrelineType.SEGMENT,
+  let result = await CollisionDAO.byCentrelineSummary({
+    centrelineId: 1142194,
+    centrelineType: CentrelineType.SEGMENT,
     dateRange,
-  );
-  expect(result).not.toBeNull();
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toEqual({ amount: 31, ksi: 0, validated: 26 });
 
-  result = await CollisionDAO.byCentrelineSummary(
-    13465434,
-    CentrelineType.INTERSECTION,
+  result = await CollisionDAO.byCentrelineSummary({
+    centrelineId: 13465434,
+    centrelineType: CentrelineType.INTERSECTION,
     dateRange,
-  );
-  expect(result).not.toBeNull();
+    daysOfWeek: null,
+    emphasisAreas: null,
+    hoursOfDay: null,
+    roadSurfaceConditions: null,
+  });
+  expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });
 });
 
 test('CountDAO.byCentreline()', async () => {

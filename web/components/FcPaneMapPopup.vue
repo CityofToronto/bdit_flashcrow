@@ -37,7 +37,7 @@ import { mapMutations } from 'vuex';
 import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
-  getCollisionPopupDetails,
+  getCollisionByCollisionId,
   getCountsByCentrelineSummary,
   getLocationByFeature,
 } from '@/lib/api/WebApi';
@@ -54,7 +54,7 @@ const SELECTABLE_LAYERS = [
 
 async function getCollisionDetails(feature) {
   const { id } = feature;
-  return getCollisionPopupDetails(id);
+  return getCollisionByCollisionId(id);
 }
 
 function getCollisionDescription(feature, { event, involved }) {
