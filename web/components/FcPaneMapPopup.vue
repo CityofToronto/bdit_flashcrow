@@ -53,17 +53,17 @@ const SELECTABLE_LAYERS = [
 ];
 
 async function getCollisionDetails(feature) {
-  const { id } = feature;
-  return getCollisionByCollisionId(id);
+  const { id: collisionId } = feature;
+  return getCollisionByCollisionId(collisionId);
 }
 
-function getCollisionDescription(feature, { event, involved }) {
+function getCollisionDescription(feature, collision) {
   const description = [];
-  if (event === null) {
+  if (collision === null) {
     return description;
   }
 
-  involved.forEach(({ invtype, invage }) => {
+  collision.involved.forEach(({ invtype, invage }) => {
     const invageRange = `${invage} to ${invage + 4}`;
     if (invtype === 3) {
       description.push(`Pedestrian \u00b7 ${invageRange}`);
@@ -72,11 +72,11 @@ function getCollisionDescription(feature, { event, involved }) {
     }
   });
 
-  const { dateTime } = event;
-  const dateTimeStr = TimeFormatters.formatDateTime(dateTime);
-  description.push(dateTimeStr);
+  const { accdate } = collision;
+  const accdateStr = TimeFormatters.formatDateTime(accdate);
+  description.push(accdateStr);
 
-  let { street1, street2 } = event;
+  let { street1, street2 } = collision;
   if (street1 !== null) {
     street1 = formatCountLocationDescription(street1);
     if (street2 !== null) {

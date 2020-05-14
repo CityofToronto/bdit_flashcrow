@@ -81,6 +81,7 @@
                 @set-filters="setFiltersCollision">
               </FcDialogCollisionFilters>
               <FcButton
+                v-if="collisionTotal > 0"
                 type="secondary"
                 @click.stop="showFiltersCollision = true">
                 <v-icon
@@ -118,7 +119,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-1">{{numCountsText}}</div>
+              <div class="pl-3 subtitle-1">{{countTotal}} total</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
                 v-if="showFiltersStudy"
@@ -127,7 +128,7 @@
                 @set-filters="setFiltersStudy">
               </FcDialogStudyFilters>
               <FcButton
-                v-if="countSummary.length > 0 || filterChipsStudy.length > 0"
+                v-if="countTotal > 0"
                 type="secondary"
                 @click.stop="showFiltersStudy = true">
                 <v-icon
@@ -206,12 +207,11 @@ import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
   getCountsByCentrelineSummary,
-  // TODO: total number of counts (without filters)
+  getCountsByCentrelineTotal,
   getLocationByFeature,
   getPoiByCentrelineSummary,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
-import ArrayStats from '@/lib/math/ArrayStats';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
@@ -246,6 +246,7 @@ export default {
       },
       collisionTotal: 0,
       countSummary: [],
+      countTotal: 0,
       loadingCollisions: false,
       loadingCounts: false,
       poiSummary: {
@@ -284,15 +285,6 @@ export default {
     hasPoisNearby() {
       const { hospital, school } = this.poiSummary;
       return hospital !== null || school !== null;
-    },
-    numCountsText() {
-      const n = ArrayStats.sum(
-        this.countSummary.map(({ numPerCategory }) => numPerCategory),
-      );
-      if (n === 0) {
-        return 'None';
-      }
-      return `${n} total`;
     },
     ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
     ...mapState(['auth', 'legendOptions', 'location']),
@@ -396,6 +388,7 @@ export default {
         getCollisionsByCentrelineSummary({ centrelineId, centrelineType }, collisionsFilters),
         getCollisionsByCentrelineTotal({ centrelineId, centrelineType }),
         getCountsByCentrelineSummary({ centrelineId, centrelineType }, this.filterParamsStudy),
+        getCountsByCentrelineTotal({ centrelineId, centrelineType }),
         getLocationByFeature({ centrelineId, centrelineType }),
         getPoiByCentrelineSummary({ centrelineId, centrelineType }),
       ];
@@ -406,6 +399,7 @@ export default {
         collisionSummary,
         collisionTotal,
         countSummary,
+        countTotal,
         location,
         poiSummary,
         studyRequestsPending = [],
@@ -413,6 +407,7 @@ export default {
       this.collisionSummary = collisionSummary;
       this.collisionTotal = collisionTotal;
       this.countSummary = countSummary;
+      this.countTotal = countTotal;
       this.poiSummary = poiSummary;
       this.studyRequestsPending = studyRequestsPending;
 
