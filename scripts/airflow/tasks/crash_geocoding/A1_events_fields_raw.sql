@@ -33,7 +33,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_fields_raw AS (
       --max("SENT_DATE") AS sent_date,
       --max("STATUS") AS status,
       --max("CITY_AREA") AS city_area,
-      --max("COMMENTS") AS comments,
+      max("COMMENTS") AS comments,
       --max("MTP_DIVISION") AS mtp_division,
       --max("POLICE_AGENCY") AS police_agency,
       --max("SUBMIT_BADGE_NUMBER") AS submit_badge_number,

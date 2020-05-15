@@ -22,6 +22,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_fields_norm AS (
     CASE WHEN light IS NULL OR trim(light) = '' THEN NULL ELSE light::smallint END AS light,
     CASE WHEN rdsfcond IS NULL OR trim(rdsfcond) = '' THEN NULL ELSE rdsfcond::smallint END AS rdsfcond,
     changed,
+    CASE WHEN comments IS NULL OR trim(comments) = '' THEN NULL ELSE comments END AS comments,
     CASE WHEN private_property = 'Y' THEN TRUE ELSE FALSE END AS private_property,
     CASE WHEN road_class IS NULL OR trim(road_class) = '' THEN NULL ELSE road_class END AS road_class,
     mvaimg,
