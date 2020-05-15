@@ -4,14 +4,33 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events AS (
   WITH involved_vision_zero AS (
     SELECT
       collision_id,
-      count(*) FILTER (WHERE drivact IN (2, 3, 4, 7, 8, 9)) AS aggressive,
+      count(*) FILTER (
+        WHERE drivact IN (2, 3, 4, 7, 8, 9)
+        OR actual_speed > posted_speed
+      ) AS aggressive,
       count(*) FILTER (WHERE invage >= 4 AND invage <= 19) AS child,
-      count(*) FILTER (WHERE invtype = 4) AS cyclist,
+      count(*) FILTER (
+        WHERE invtype IN (4, 5, 8, 9)
+        OR vehtype IN (3, 36)
+      ) AS cyclist,
       count(*) FILTER (WHERE injury >= 3) AS ksi,
-      count(*) FILTER (WHERE vehtype IN (2, 3)) AS motorcyclist,
+      count(*) FILTER (
+        WHERE vehtype IN (2, 3)
+        OR invtype IN (6, 7)
+      ) AS motorcyclist,
       count(*) FILTER (WHERE invage >= 55) AS older_adult,
-      count(*) FILTER (WHERE invtype = 3) AS pedestrian,
-      count(*) FILTER (WHERE drivact IN (3, 4) OR actual_speed > posted_speed) AS speeding
+      count(*) FILTER (
+        WHERE invtype IN (3, 17, 19)
+      ) AS pedestrian,
+      count(*) FILTER (
+        WHERE (event1 BETWEEN 50 AND 66)
+        OR (event2 BETWEEN 50 AND 66)
+        OR (event3 BETWEEN 50 AND 66)
+      ) AS property_damage,
+      count(*) FILTER (
+        WHERE drivact IN (3, 4)
+        OR actual_speed > posted_speed
+      ) AS speeding
     FROM collisions.involved
     GROUP BY collision_id
   )
@@ -23,7 +42,14 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events AS (
     CASE WHEN ivz.motorcyclist > 0 THEN TRUE ELSE FALSE END AS motorcyclist,
     CASE WHEN ivz.older_adult > 0 THEN TRUE ELSE FALSE END AS older_adult,
     CASE WHEN ivz.pedestrian > 0 THEN TRUE ELSE FALSE END AS pedestrian,
-    CASE WHEN efn.acclass = 3 THEN TRUE ELSE FALSE END AS property_damage,
+    -- for property damage, filter to public property and check for property damage in comments
+    CASE
+      WHEN efn.private_property THEN FALSE
+      WHEN ivz.property_damage > 0 THEN TRUE
+      WHEN efn.comments LIKE '%Property Damage:%' THEN TRUE
+      ELSE FALSE
+    END AS property_damage,
+    -- for schoolchildren, filter (roughly) to school days
     CASE
       WHEN ivz.child = 0 THEN FALSE
       WHEN date_part('DOW', efn.accdate) IN (0, 6) THEN FALSE
