@@ -77,12 +77,19 @@
       </div>
 
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
-        <v-progress-circular
+        <div
           v-if="loadingReportLayout"
-          class="ma-3"
-          color="primary"
-          indeterminate
-          size="64" />
+          class="ma-3 text-center">
+          <v-progress-circular
+            v-if="loadingReportLayout"
+            class="ma-3"
+            color="primary"
+            indeterminate
+            size="80" />
+          <div class="font-weight-regular headline secondary--text">
+            This page is loading, please wait.
+          </div>
+        </div>
         <div
           v-else
           class="fc-report-wrapper pa-3">

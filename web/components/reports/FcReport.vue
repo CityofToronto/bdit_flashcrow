@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { ReportType } from '@/lib/Constants';
+import { ORG_NAME, ReportType } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      ORG_NAME: 'Traffic Safety Unit',
+      ORG_NAME,
     };
   },
 };
