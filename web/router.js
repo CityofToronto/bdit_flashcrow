@@ -108,13 +108,13 @@ const router = new Router({
         },
       }, {
         path: '/view/location/:centrelineType/:centrelineId/reports/:studyTypeName',
-        name: 'viewReportsAtLocation',
+        name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
           title: 'View Study Reports',
           vertical: true,
         },
-        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewReports.vue'),
+        component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewStudyReports.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', false);
           next();

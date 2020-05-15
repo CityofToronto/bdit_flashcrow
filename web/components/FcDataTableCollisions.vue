@@ -20,6 +20,7 @@
     <template v-slot:item.VIEW_REPORT="{ item }">
       <FcButton
         type="tertiary"
+        :disabled="item.amount === 0"
         @click="$emit('show-reports', item)">
         <span>View Reports</span>
       </FcButton>

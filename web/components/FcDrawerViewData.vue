@@ -175,7 +175,7 @@
             v-else
             :count-summary="countSummary"
             :loading="loadingCounts"
-            @show-reports="actionShowReports" />
+            @show-reports="actionShowReportsStudy" />
           <div class="pa-5">
             <div
               v-for="studyRequest in studyRequestsPending"
@@ -360,18 +360,6 @@ export default {
     actionRequestStudy() {
       this.$router.push({ name: 'requestStudyNew' });
     },
-    actionShowReports({ category: { studyType } }) {
-      const { centrelineId, centrelineType } = this.$route.params;
-      const params = {
-        centrelineId,
-        centrelineType,
-        studyTypeName: studyType.name,
-      };
-      this.$router.push({
-        name: 'viewReportsAtLocation',
-        params,
-      });
-    },
     actionShowReportsCollision() {
       const { centrelineId, centrelineType } = this.$route.params;
       const params = {
@@ -380,6 +368,18 @@ export default {
       };
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
+        params,
+      });
+    },
+    actionShowReportsStudy({ category: { studyType } }) {
+      const { centrelineId, centrelineType } = this.$route.params;
+      const params = {
+        centrelineId,
+        centrelineType,
+        studyTypeName: studyType.name,
+      };
+      this.$router.push({
+        name: 'viewStudyReportsAtLocation',
         params,
       });
     },

@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-drawer-view-reports d-flex flex-column">
+  <div class="fc-drawer-view-study-reports d-flex flex-column">
     <FcDialogConfirm
       v-model="showConfirmLeave"
       textCancel="Stay on this page"
@@ -159,7 +159,7 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 ];
 
 export default {
-  name: 'FcDrawerViewReports',
+  name: 'FcDrawerViewStudyReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
@@ -414,7 +414,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-drawer-view-reports {
+.fc-drawer-view-study-reports {
   max-height: 50vh;
 
   .fc-report-wrapper {
@@ -427,7 +427,7 @@ export default {
   }
 }
 
-.drawer-open .fc-drawer-view-reports {
+.drawer-open .fc-drawer-view-study-reports {
   max-height: 100vh;
 }
 </style>

@@ -113,7 +113,7 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 ];
 
 export default {
-  name: 'FcDrawerViewReports',
+  name: 'FcDrawerViewCollisionReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
@@ -298,7 +298,7 @@ export default {
   }
 }
 
-.drawer-open .fc-drawer-view-reports {
+.drawer-open .fc-drawer-view-collision-reports {
   max-height: 100vh;
 }
 </style>
