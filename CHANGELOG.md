@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] - 2020-05-15
+### Changed
+- Collision summary now has separate section within View Data
+- Total number next to Studies is now unfiltered, to match collisions
+
+### Added
+- Collision filtering: emphasis areas, date range, days of week, hours of day, weather
+- Collision summary now includes both filtered and unfiltered totals, as well as filtered number of validated collisions
+- Stub for collision reports (coming soon!)
+
 ## [0.6.2] - 2020-04-29
 ### Fixed
 - Counts no longer disappear and re-appear as users zoom on the map
