@@ -28,8 +28,8 @@ import { ORG_NAME, ReportType } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
-import FcReportCountMetadata
-  from '@/web/components/reports/FcReportCountMetadata.vue';
+import FcReportMetadata
+  from '@/web/components/reports/FcReportMetadata.vue';
 import FcReportTable
   from '@/web/components/reports/FcReportTable.vue';
 
@@ -37,7 +37,7 @@ export default {
   name: 'FcReport',
   components: {
     FcReportBarChart,
-    FcReportCountMetadata,
+    FcReportMetadata,
     FcReportTable,
   },
   props: {

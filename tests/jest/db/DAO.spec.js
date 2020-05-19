@@ -299,17 +299,16 @@ test('CollisionDAO.byCollisionId', async () => {
 });
 
 test('CollisionDAO.byCentreline', async () => {
-  const start = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
-  const end = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
-  const dateRange = { start, end };
+  const dateRangeStart = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const dateRangeEnd = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
 
   let result = await CollisionDAO.byCentreline({
     centrelineId: 1142194,
     centrelineType: CentrelineType.SEGMENT,
-    dateRange,
+    dateRangeEnd,
+    dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    hoursOfDay: null,
     roadSurfaceConditions: null,
   });
   expect(result).toHaveLength(31);
@@ -317,27 +316,26 @@ test('CollisionDAO.byCentreline', async () => {
   result = await CollisionDAO.byCentreline({
     centrelineId: 13465434,
     centrelineType: CentrelineType.INTERSECTION,
-    dateRange,
+    dateRangeEnd,
+    dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    hoursOfDay: null,
     roadSurfaceConditions: null,
   });
   expect(result).toHaveLength(27);
 });
 
 test('CollisionDAO.byCentrelineSummary', async () => {
-  const start = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
-  const end = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
-  const dateRange = { start, end };
+  const dateRangeStart = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const dateRangeEnd = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
 
   let result = await CollisionDAO.byCentrelineSummary({
     centrelineId: 1142194,
     centrelineType: CentrelineType.SEGMENT,
-    dateRange,
+    dateRangeEnd,
+    dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    hoursOfDay: null,
     roadSurfaceConditions: null,
   });
   expect(result).toEqual({ amount: 31, ksi: 0, validated: 26 });
@@ -345,10 +343,10 @@ test('CollisionDAO.byCentrelineSummary', async () => {
   result = await CollisionDAO.byCentrelineSummary({
     centrelineId: 13465434,
     centrelineType: CentrelineType.INTERSECTION,
-    dateRange,
+    dateRangeEnd,
+    dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    hoursOfDay: null,
     roadSurfaceConditions: null,
   });
   expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });

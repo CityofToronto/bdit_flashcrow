@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'FcReportCountMetadata',
+  name: 'FcReportMetadata',
   props: {
     entries: Array,
   },

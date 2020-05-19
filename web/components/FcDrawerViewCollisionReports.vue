@@ -104,7 +104,7 @@
 import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { ReportFormat, ReportType } from '@/lib/Constants';
+import { ReportBlock, ReportFormat, ReportType } from '@/lib/Constants';
 import { reporterFetch } from '@/lib/api/BackendClient';
 import {
   getLocationByFeature,
@@ -163,7 +163,7 @@ export default {
       return {};
     },
     ...mapState(['location']),
-    ...mapGetters('viewData', ['filterChipsCollision']),
+    ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
     activeReportType() {
@@ -244,13 +244,12 @@ export default {
       }
     },
     async updateReportLayout() {
-      const { activeReportType } = this;
+      const { activeReportType, filterParamsCollision } = this;
       if (activeReportType === null) {
         return;
       }
       this.loadingReportLayout = true;
 
-      /*
       const { name: type } = activeReportType;
       const { centrelineId, centrelineType } = this.$route.params;
       const id = `${centrelineType}/${centrelineId}`;
@@ -260,7 +259,7 @@ export default {
           type,
           id,
           format: ReportFormat.WEB,
-          ...reportParameters,
+          ...filterParamsCollision,
         },
       };
 
@@ -282,7 +281,6 @@ export default {
         date: reportDate,
         content: reportContent,
       };
-      */
 
       this.loadingReportLayout = false;
     },
