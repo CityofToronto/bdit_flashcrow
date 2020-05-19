@@ -53,12 +53,19 @@
       </div>
 
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
-        <v-progress-circular
+        <div
           v-if="loadingReportLayout"
-          class="ma-3"
-          color="primary"
-          indeterminate
-          size="64" />
+          class="ma-3 text-center">
+          <v-progress-circular
+            v-if="loadingReportLayout"
+            class="ma-3"
+            color="primary"
+            indeterminate
+            size="80" />
+          <div class="font-weight-regular headline secondary--text">
+            This page is loading, please wait.
+          </div>
+        </div>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -97,7 +104,7 @@
 import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { ReportFormat, ReportType } from '@/lib/Constants';
+import { ReportBlock, ReportFormat, ReportType } from '@/lib/Constants';
 import { reporterFetch } from '@/lib/api/BackendClient';
 import {
   getLocationByFeature,
@@ -113,7 +120,7 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 ];
 
 export default {
-  name: 'FcDrawerViewReports',
+  name: 'FcDrawerViewCollisionReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
@@ -156,7 +163,7 @@ export default {
       return {};
     },
     ...mapState(['location']),
-    ...mapGetters('viewData', ['filterChipsCollision']),
+    ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
     activeReportType() {
@@ -237,13 +244,12 @@ export default {
       }
     },
     async updateReportLayout() {
-      const { activeReportType } = this;
+      const { activeReportType, filterParamsCollision } = this;
       if (activeReportType === null) {
         return;
       }
       this.loadingReportLayout = true;
 
-      /*
       const { name: type } = activeReportType;
       const { centrelineId, centrelineType } = this.$route.params;
       const id = `${centrelineType}/${centrelineId}`;
@@ -253,7 +259,7 @@ export default {
           type,
           id,
           format: ReportFormat.WEB,
-          ...reportParameters,
+          ...filterParamsCollision,
         },
       };
 
@@ -275,7 +281,6 @@ export default {
         date: reportDate,
         content: reportContent,
       };
-      */
 
       this.loadingReportLayout = false;
     },
@@ -298,7 +303,7 @@ export default {
   }
 }
 
-.drawer-open .fc-drawer-view-reports {
+.drawer-open .fc-drawer-view-collision-reports {
   max-height: 100vh;
 }
 </style>

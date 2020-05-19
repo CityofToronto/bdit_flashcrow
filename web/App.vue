@@ -27,8 +27,9 @@
         dense>
         <FcDashboardNavItem
           :active-route-names="[
+            'viewCollisionReportsAtLocation',
             'viewDataAtLocation',
-            'viewReportsAtLocation',
+            'viewStudyReportsAtLocation',
           ]"
           icon="map"
           label="View Map"

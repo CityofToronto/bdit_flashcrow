@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-drawer-view-reports d-flex flex-column">
+  <div class="fc-drawer-view-study-reports d-flex flex-column">
     <FcDialogConfirm
       v-model="showConfirmLeave"
       textCancel="Stay on this page"
@@ -77,12 +77,19 @@
       </div>
 
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
-        <v-progress-circular
+        <div
           v-if="loadingReportLayout"
-          class="ma-3"
-          color="primary"
-          indeterminate
-          size="64" />
+          class="ma-3 text-center">
+          <v-progress-circular
+            v-if="loadingReportLayout"
+            class="ma-3"
+            color="primary"
+            indeterminate
+            size="80" />
+          <div class="font-weight-regular headline secondary--text">
+            This page is loading, please wait.
+          </div>
+        </div>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -159,7 +166,7 @@ const DOWNLOAD_FORMATS_SUPPORTED = [
 ];
 
 export default {
-  name: 'FcDrawerViewReports',
+  name: 'FcDrawerViewStudyReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
@@ -414,7 +421,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-drawer-view-reports {
+.fc-drawer-view-study-reports {
   max-height: 50vh;
 
   .fc-report-wrapper {
@@ -427,7 +434,7 @@ export default {
   }
 }
 
-.drawer-open .fc-drawer-view-reports {
+.drawer-open .fc-drawer-view-study-reports {
   max-height: 100vh;
 }
 </style>
