@@ -16,6 +16,7 @@ import ArteryDAO from '@/lib/db/ArteryDAO';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CollisionDAO from '@/lib/db/CollisionDAO';
+import CollisionFactorDAO from '@/lib/db/CollisionFactorDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import CountDataDAO from '@/lib/db/CountDataDAO';
 import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
@@ -358,6 +359,19 @@ test('CollisionDAO.byCentrelineTotal', async () => {
 
   result = await CollisionDAO.byCentrelineTotal(CentrelineType.INTERSECTION, 13465434);
   expect(result).toBe(188);
+});
+
+test('CollisionFactorDAO', async () => {
+  expect(CollisionFactorDAO.isInited()).toBe(false);
+
+  const collisionFactors = await CollisionFactorDAO.all();
+  expect(collisionFactors).toBeInstanceOf(Map);
+  expect(collisionFactors.get('acclass')).toBeInstanceOf(Map);
+  expect(collisionFactors.get('acclass').get(1)).toEqual({
+    code: 'FA',
+    description: 'Fatal',
+  });
+  expect(CollisionFactorDAO.isInited()).toBe(true);
 });
 
 test('CountDAO.byCentreline()', async () => {
