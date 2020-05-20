@@ -18,6 +18,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_fields_norm AS (
     CASE WHEN acclass IS NULL OR trim(acclass) = '' THEN NULL ELSE acclass::smallint END AS acclass,
     CASE WHEN accloc IS NULL OR trim(accloc) = '' THEN NULL ELSE accloc::smallint END AS accloc,
     CASE WHEN traffictl IS NULL OR trim(traffictl) = '' THEN NULL ELSE traffictl::smallint END AS traffictl,
+    CASE WHEN impactype IS NULL OR trim(impactype) = '' THEN NULL ELSE impactype::smallint END AS impactype,
     CASE WHEN visible IS NULL OR visible = '?' OR trim(visible) = '' THEN NULL ELSE visible::smallint END AS visible,
     CASE WHEN light IS NULL OR trim(light) = '' THEN NULL ELSE light::smallint END AS light,
     CASE WHEN rdsfcond IS NULL OR trim(rdsfcond) = '' THEN NULL ELSE rdsfcond::smallint END AS rdsfcond,

@@ -6,6 +6,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.involved_fields_raw AS (
     efr.collision_id,
     a."VEH_NO" AS veh_no,
     a."VEHTYPE" AS vehtype,
+    a."INITDIR" AS initdir,
     a."IMPLOC" AS imploc,
     a."EVENT1" AS event1,
     a."EVENT2" AS event2,

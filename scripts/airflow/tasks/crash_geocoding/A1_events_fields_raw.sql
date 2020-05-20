@@ -21,6 +21,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.events_fields_raw AS (
       min("ACCLASS") AS acclass,
       min("ACCLOC") AS accloc,
       max("TRAFFICTL") AS traffictl,
+      max("IMPACTYPE") AS impactype,
       max("VISIBLE") AS visible,
       max("LIGHT") AS light,
       max("RDSFCOND") AS rdsfcond,

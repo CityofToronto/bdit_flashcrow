@@ -1,11 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS collisions;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.involved AS (
+CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.involved_fields_norm AS (
   SELECT
     id,
     collision_id,
     CASE WHEN veh_no IS NULL OR trim(veh_no) = '' THEN NULL ELSE veh_no::smallint END AS veh_no,
     CASE WHEN vehtype IS NULL OR trim(vehtype) = '' THEN NULL ELSE vehtype::smallint END AS vehtype,
+    CASE WHEN initdir IS NULL OR trim(initdir) = '' THEN NULL ELSE initdir::smallint END AS initdir,
     CASE WHEN imploc IS NULL OR trim(imploc) = '' THEN NULL ELSE imploc::smallint END AS imploc,
     CASE WHEN event1 IS NULL OR trim(event1) = '' THEN NULL ELSE event1::smallint END AS event1,
     CASE WHEN event2 IS NULL OR trim(event2) = '' THEN NULL ELSE event2::smallint END AS event2,
@@ -46,7 +47,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS collisions.involved AS (
     posted_speed
   FROM collisions.involved_fields_raw
 );
-CREATE UNIQUE INDEX IF NOT EXISTS involved_id ON collisions.involved (id);
-CREATE INDEX IF NOT EXISTS involved_collision_id ON collisions.involved (collision_id);
+CREATE UNIQUE INDEX IF NOT EXISTS involved_fields_norm_id ON collisions.involved_fields_norm (id);
+CREATE INDEX IF NOT EXISTS involved_fields_norm_collision_id ON collisions.involved_fields_norm (collision_id);
 
-REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.involved;
+REFRESH MATERIALIZED VIEW CONCURRENTLY collisions.involved_fields_norm;
