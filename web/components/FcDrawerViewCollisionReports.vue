@@ -136,8 +136,8 @@ export default {
       nextRoute: null,
       reportLayout: null,
       reportTypes: [
-        ReportType.COLLISION_TABULATION,
         ReportType.COLLISION_DIRECTORY,
+        ReportType.COLLISION_TABULATION,
       ],
       showConfirmLeave: false,
     };
@@ -235,6 +235,7 @@ export default {
         getLocationByFeature({ centrelineId, centrelineType }),
       ];
       const [location] = await Promise.all(tasks);
+      this.updateReportLayout();
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
