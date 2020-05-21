@@ -143,15 +143,15 @@ import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
-  ReportBlock,
   ReportFormat,
   ReportType,
   StudyType,
 } from '@/lib/Constants';
-import { reporterFetch } from '@/lib/api/BackendClient';
 import {
   getCountsByCentreline,
   getLocationByFeature,
+  getReport,
+  getReportWeb,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
@@ -317,21 +317,10 @@ export default {
       }
       this.downloadLoading = true;
 
-      const type = activeReportType;
       const countInfoId = activeCount.id;
       const categoryId = activeCount.type.id;
       const id = `${categoryId}/${countInfoId}`;
-      const options = {
-        method: 'GET',
-        data: {
-          type,
-          id,
-          format,
-          ...reportParameters,
-        },
-      };
-
-      const reportData = await reporterFetch('/reports', options);
+      const reportData = await getReport(activeReportType, id, format, reportParameters);
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -380,38 +369,11 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const { name: type } = activeReportType;
       const countInfoId = activeCount.id;
       const categoryId = activeCount.type.id;
       const id = `${categoryId}/${countInfoId}`;
-      const options = {
-        method: 'GET',
-        data: {
-          type,
-          id,
-          format: ReportFormat.WEB,
-          ...reportParameters,
-        },
-      };
-
-      const {
-        type: reportTypeStr,
-        date: reportDate,
-        content,
-      } = await reporterFetch('/reports', options);
-      const reportType = ReportType.enumValueOf(reportTypeStr);
-      const reportContent = content.map(({ type: blockTypeStr, options: blockOptions }) => {
-        const blockType = ReportBlock.enumValueOf(blockTypeStr);
-        return {
-          type: blockType,
-          options: blockOptions,
-        };
-      });
-      this.reportLayout = {
-        type: reportType,
-        date: reportDate,
-        content: reportContent,
-      };
+      const reportLayout = await getReportWeb(activeReportType, id, reportParameters);
+      this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
     },
