@@ -14,17 +14,18 @@
     </header>
     <div>
       <template v-for="(contentRow, i) in content">
-        <div
+        <v-row
           v-if="Array.isArray(contentRow)"
-          :key="'content_' + i"
-          class="align-top d-flex">
-          <component
+          :key="'content_' + i">
+          <v-col
             v-for="({ type: blockType, options }, j) in contentRow"
-            :key="'content_' + i + '_' + j"
-            :is="'FcReport' + blockType.suffix"
-            v-bind="options"
-            class="pt-4" />
-        </div>
+            :key="'content_' + i + '_' + j">
+            <component
+              :is="'FcReport' + blockType.suffix"
+              v-bind="options"
+              class="pt-4" />
+          </v-col>
+        </v-row>
         <component
           v-else
           :key="'content_' + i"
