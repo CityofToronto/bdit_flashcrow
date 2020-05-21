@@ -104,10 +104,11 @@
 import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { ReportBlock, ReportFormat, ReportType } from '@/lib/Constants';
-import { reporterFetch } from '@/lib/api/BackendClient';
+import { ReportFormat, ReportType } from '@/lib/Constants';
 import {
   getLocationByFeature,
+  getReport,
+  getReportWeb,
 } from '@/lib/api/WebApi';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -193,26 +194,15 @@ export default {
   },
   methods: {
     async actionDownload(format) {
-      const { activeReportType, reportParameters } = this;
+      const { activeReportType, filterParamsCollision } = this;
       if (activeReportType === null) {
         return;
       }
       this.downloadLoading = true;
 
-      const type = activeReportType;
       const { centrelineId, centrelineType } = this.$route.params;
       const id = `${centrelineType}/${centrelineId}`;
-      const options = {
-        method: 'GET',
-        data: {
-          type,
-          id,
-          format,
-          ...reportParameters,
-        },
-      };
-
-      const reportData = await reporterFetch('/reports', options);
+      const reportData = await getReport(activeReportType, id, format, filterParamsCollision);
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -251,37 +241,10 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const { name: type } = activeReportType;
       const { centrelineId, centrelineType } = this.$route.params;
       const id = `${centrelineType}/${centrelineId}`;
-      const options = {
-        method: 'GET',
-        data: {
-          type,
-          id,
-          format: ReportFormat.WEB,
-          ...filterParamsCollision,
-        },
-      };
-
-      const {
-        type: reportTypeStr,
-        date: reportDate,
-        content,
-      } = await reporterFetch('/reports', options);
-      const reportType = ReportType.enumValueOf(reportTypeStr);
-      const reportContent = content.map(({ type: blockTypeStr, options: blockOptions }) => {
-        const blockType = ReportBlock.enumValueOf(blockTypeStr);
-        return {
-          type: blockType,
-          options: blockOptions,
-        };
-      });
-      this.reportLayout = {
-        type: reportType,
-        date: reportDate,
-        content: reportContent,
-      };
+      const reportLayout = await getReportWeb(activeReportType, id, filterParamsCollision);
+      this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
     },

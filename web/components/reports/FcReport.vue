@@ -13,12 +13,25 @@
       </div>
     </header>
     <div>
-      <component
-        v-for="({ type: blockType, options }, i) in content"
-        :key="'block_' + i"
-        :is="'FcReport' + blockType.suffix"
-        v-bind="options"
-        class="pt-4" />
+      <template v-for="(contentRow, i) in content">
+        <div
+          v-if="Array.isArray(contentRow)"
+          :key="'content_' + i"
+          class="align-top d-flex">
+          <component
+            v-for="({ type: blockType, options }, j) in contentRow"
+            :key="'content_' + i + '_' + j"
+            :is="'FcReport' + blockType.suffix"
+            v-bind="options"
+            class="pt-4" />
+        </div>
+        <component
+          v-else
+          :key="'content_' + i"
+          :is="'FcReport' + contentRow.type.suffix"
+          v-bind="contentRow.options"
+          class="pt-4" />
+      </template>
     </div>
   </section>
 </template>
