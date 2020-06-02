@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+cd "$(dirname "$0")"
+
 mkdir -p results
 for path_list in paths/*.txt; do
   PATH_LIST_BASE="$(basename "${path_list%%.txt}")"
