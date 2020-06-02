@@ -8,7 +8,7 @@ from datetime import datetime
 
 from airflow.operators.bash_operator import BashOperator
 
-from airflow_utils import create_dag
+from airflow_utils import create_bash_task_nested, create_dag
 
 START_DATE = datetime(2020, 2, 27)
 SCHEDULE_INTERVAL = '30 4 * * 6'
@@ -26,11 +26,13 @@ TASKS = {
   'centreline_intersection': '2c83f641-7808-49ba-b80f-7011851d4e27'
 }
 
+INDEX_OPENDATA = create_bash_task_nested(DAG, 'index_opendata')
+
 for task_id, dataset_id in TASKS.items():
   task_id_extract = '{0}_extract'.format(task_id)
   EXTRACT_OPENDATA_SHAPEFILE = BashOperator(
     task_id=task_id_extract,
-    bash_command='/extract_opendata_shapefile.sh',
+    bash_command='/copy_opendata_shapefiles/extract_opendata_shapefile.sh',
     params={
       'dataset_id': dataset_id,
       'name': task_id
@@ -41,7 +43,7 @@ for task_id, dataset_id in TASKS.items():
   task_id_load = '{0}_load'.format(task_id)
   LOAD_SHAPEFILE = BashOperator(
     task_id=task_id_load,
-    bash_command='/load_shapefile.sh',
+    bash_command='/copy_opendata_shapefiles/load_shapefile.sh',
     params={
       'name': task_id
     },
@@ -49,3 +51,4 @@ for task_id, dataset_id in TASKS.items():
   )
 
   EXTRACT_OPENDATA_SHAPEFILE >> LOAD_SHAPEFILE
+  LOAD_SHAPEFILE >> INDEX_OPENDATA

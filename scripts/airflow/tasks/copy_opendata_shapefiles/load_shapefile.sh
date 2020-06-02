@@ -1,15 +1,11 @@
 #!/bin/bash
 
 set -euo pipefail
-GIT_ROOT=/home/ec2-user/flashcrow
-TASKS_ROOT="${GIT_ROOT}/scripts/airflow/tasks"
 
-TASK_ID="{{ task.task_id }}"
 NAME="{{ params.name }}"
 
 SHAPEFILE_DIR="/data/shapefile/${NAME}"
 SHAPEFILE_PATH=$(ls "${SHAPEFILE_DIR}"/*.shp)
-GEOJSON_PATH="/data/geojson/${NAME}.geojson"
 SQL_PATH="/data/gis_layers/${NAME}.sql"
 
 mkdir -p /data/gis_layers
@@ -55,4 +51,5 @@ USING GIST (ST_Transform(geom, 2952));
 REFRESH MATERIALIZED VIEW CONCURRENTLY "gis"."${NAME}";
 EOF
 
+# shellcheck disable=SC2046
 env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 < "${SQL_PATH}"
