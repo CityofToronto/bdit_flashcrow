@@ -2,6 +2,10 @@ create schema if not exists flashcrow_dev_data;
 
 -- MATERIALIZED VIEW SCHEMAS
 
+drop table if exists flashcrow_dev_data.counts_arteries_groups;
+drop table if exists flashcrow_dev_data.counts_counts_multiday_runs;
+drop table if exists flashcrow_dev_data.counts_studies;
+
 drop table if exists flashcrow_dev_data.gis_centreline;
 drop table if exists flashcrow_dev_data.gis_centreline_intersection;
 drop table if exists flashcrow_dev_data.gis_hospital;
@@ -11,6 +15,10 @@ drop table if exists flashcrow_dev_data.prj_volume_artery_centreline;
 
 drop table if exists flashcrow_dev_data.traffic_arterydata;
 drop table if exists flashcrow_dev_data.traffic_category;
+
+create table flashcrow_dev_data.counts_arteries_groups (like counts.arteries_groups including indexes);
+create table flashcrow_dev_data.counts_counts_multiday_runs (like counts.counts_multiday_runs including indexes);
+create table flashcrow_dev_data.counts_studies (like counts.studies including indexes);
 
 create table flashcrow_dev_data.gis_centreline (like gis.centreline including indexes);
 create table flashcrow_dev_data.gis_centreline_intersection (like gis.centreline_intersection including indexes);
