@@ -41,8 +41,8 @@ export default new Vuex.Store({
     legendOptions: {
       datesFrom: 3,
       layers: {
-        counts: true,
         collisions: true,
+        studies: true,
         volume: true,
       },
     },

@@ -672,7 +672,7 @@ test('DynamicTileDAO.getTileFeatures', async () => {
     DynamicTileDAO.getTileFeatures('collisionsLevel1'),
   ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
   await expect(
-    DynamicTileDAO.getTileFeatures('counts:blarghl'),
+    DynamicTileDAO.getTileFeatures('studies:blarghl'),
   ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
 
   // tile outside city boundaries

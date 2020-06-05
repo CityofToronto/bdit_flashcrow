@@ -54,7 +54,7 @@ export default {
       { text: 'Last 10 years', value: 10 },
     ];
     const layers = [
-      { text: 'Studies', value: 'counts' },
+      { text: 'Studies', value: 'studies' },
       { text: 'Collisions', value: 'collisions' },
       { text: 'Volume', value: 'volume' },
     ];
@@ -68,7 +68,7 @@ export default {
 
 <style lang="scss">
 .fc-pane-map-legend {
-  & .icon-layer-counts {
+  & .icon-layer-studies {
     background: linear-gradient(180deg, #9f92f3 0%, #5f48ef 100%);
     border: 1px solid #fff;
     border-radius: 12px;
