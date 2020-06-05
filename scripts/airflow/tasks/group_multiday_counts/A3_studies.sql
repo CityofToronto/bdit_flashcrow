@@ -20,8 +20,15 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.studies AS (
     FROM counts.arteries_counts_groups acg
     LEFT JOIN study_hours sh USING ("CATEGORY_ID", count_group_id)
   )
-  SELECT gh.*, ag.centreline_type AS "centrelineType", ag.centreline_id AS "centrelineId"
+  SELECT
+    gh.*,
+    ag.centreline_type,
+    ag.centreline_id,
+    ag.geom
   FROM group_hours gh
   JOIN counts.arteries_groups ag ON gh.artery_group_id = ag.arterycode
 );
-CREATE UNIQUE INDEX IF NOT EXISTS studies_group ON counts.studies (artery_group_id, "CATEGORY_ID", count_group_id, start_date);
+CREATE UNIQUE INDEX IF NOT EXISTS studies_count_group ON counts.studies ("CATEGORY_ID", count_group_id);
+CREATE INDEX IF NOT EXISTS studies_centreline ON counts.studies (centreline_type, centreline_id);
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY counts.studies;

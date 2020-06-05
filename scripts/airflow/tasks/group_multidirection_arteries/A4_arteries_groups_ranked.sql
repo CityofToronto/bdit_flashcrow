@@ -23,7 +23,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_ranked_pairs AS 
     FROM arterycode_count_dates
     GROUP BY arterycode
   )
-  SELECT aps.a1, aps.a2, aps.score, gr.geo_id
+  SELECT aps.a1, aps.a2, aps.score, gr.geo_id, aps.geom
   FROM geoids_remaining gr
   JOIN LATERAL (
     WITH arterycodes AS (
@@ -31,7 +31,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_ranked_pairs AS 
       FROM arterycodes_remaining
       WHERE geo_id = gr.geo_id
     ), arterycode_pairs AS (
-      SELECT a1.arterycode AS a1, a2.arterycode AS a2
+      SELECT a1.arterycode AS a1, a2.arterycode AS a2, amd1.geom AS geom
       FROM arterycodes a1
       JOIN arterycodes a2 ON a1.arterycode < a2.arterycode
       JOIN counts.arteries_midblock_direction amd1 ON a1.arterycode = amd1.arterycode
@@ -40,6 +40,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_ranked_pairs AS 
     ), arterycode_pair_features_1 AS (
       SELECT
         ap.a1, ap.a2,
+        ap.geom,
         log(2, abs(ap.a1 - ap.a2)) AS f_arterycode_spread
       FROM arterycode_pairs ap
     ), arterycode_pair_features_2 AS (
@@ -76,7 +77,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_ranked_pairs AS 
       ) dot_product ON true
     )
     SELECT
-      apf1.a1, apf1.a2,
+      apf1.a1, apf1.a2, apf1.geom,
       -apf1.f_arterycode_spread
         + apf2.f_mirrored_links * 10
         + apf3.f_location_similarity * 4
