@@ -175,7 +175,10 @@ function getStudyDescription(feature, { location, studySummary }) {
   const description = [];
 
   studySummary.forEach(({ study, studyType }) => {
-    const { label } = studyType;
+    let label = 'Unknown';
+    if (studyType !== null) {
+      label = studyType.label;
+    }
     const { startDate } = study;
     const startDateStr = TimeFormatters.formatDefault(startDate);
     const studyStr = `${label} (${startDateStr})`;

@@ -18,7 +18,7 @@
             <span v-if="locationFeatureType !== null">
               {{locationFeatureType.description}} &#x2022;
             </span>
-            <span>{{countSummaryHeaderText}}</span>
+            <span>{{studySummaryHeaderText}}</span>
           </div>
           <div class="mt-4">
             <div class="label mb-1">Nearby</div>
@@ -119,7 +119,7 @@
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-1">{{countTotal}} total</div>
+              <div class="pl-3 subtitle-1">{{studyTotal}} total</div>
               <v-spacer></v-spacer>
               <FcDialogStudyFilters
                 v-if="showFiltersStudy"
@@ -128,7 +128,7 @@
                 @set-filters="setFiltersStudy">
               </FcDialogStudyFilters>
               <FcButton
-                v-if="countTotal > 0"
+                v-if="studyTotal > 0"
                 type="secondary"
                 @click.stop="showFiltersStudy = true">
                 <v-icon
@@ -160,21 +160,21 @@
             </div>
           </header>
           <div
-            v-if="countTotal === 0"
+            v-if="studyTotal === 0"
             class="my-8 py-12 secondary--text text-center">
             There are no studies for this location,<br>
             please request a study if necessary
           </div>
           <div
-            v-else-if="countSummary.length === 0"
+            v-else-if="studySummary.length === 0"
             class="my-8 py-12 secondary--text text-center">
             No studies match the active filters,<br>
             clear one or more filters to see studies
           </div>
           <FcDataTableStudies
             v-else
-            :count-summary="countSummary"
-            :loading="loadingCounts"
+            :loading="loadingStudies"
+            :study-summary="studySummary"
             @show-reports="actionShowReportsStudy" />
           <div class="pa-5">
             <div
@@ -202,7 +202,6 @@
 
 <script>
 import {
-  mapActions,
   mapGetters,
   mapMutations,
   mapState,
@@ -212,10 +211,10 @@ import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
-  getCountsByCentrelineSummary,
-  getCountsByCentrelineTotal,
   getLocationByFeature,
   getPoiByCentrelineSummary,
+  getStudiesByCentrelineSummary,
+  getStudiesByCentrelineTotal,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
 import DateTime from '@/lib/time/DateTime';
@@ -251,16 +250,16 @@ export default {
         validated: 0,
       },
       collisionTotal: 0,
-      countSummary: [],
-      countTotal: 0,
       loadingCollisions: false,
-      loadingCounts: false,
+      loadingStudies: false,
       poiSummary: {
         school: null,
       },
       showFiltersCollision: false,
       showFiltersStudy: false,
       studyRequestsPending: [],
+      studySummary: [],
+      studyTotal: 0,
     };
   },
   computed: {
@@ -276,14 +275,14 @@ export default {
       }
       return 'primary';
     },
-    countSummaryHeaderText() {
-      const n = this.countSummary.length;
+    studySummaryHeaderText() {
+      const n = this.studySummary.length;
       if (n === 0) {
         return 'No Studies';
       }
       const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
       const mostRecentDate = DateTime.max(
-        ...this.countSummary.map(({ count: { date } }) => date),
+        ...this.studySummary.map(({ study: { startDate } }) => startDate),
       );
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
       return `${nStr} (${mostRecentDateStr})`;
@@ -314,14 +313,14 @@ export default {
       this.loadingCollisions = false;
     },
     async filterParamsStudy() {
-      this.loadingCounts = true;
+      this.loadingStudies = true;
       const { centrelineId, centrelineType } = this.location;
-      const countSummary = await getCountsByCentrelineSummary(
+      const studySummary = await getStudiesByCentrelineSummary(
         { centrelineId, centrelineType },
         this.filterParamsStudy,
       );
-      this.countSummary = countSummary;
-      this.loadingCounts = false;
+      this.studySummary = studySummary;
+      this.loadingStudies = false;
     },
     location(location, locationPrev) {
       if (location === null) {
@@ -389,10 +388,10 @@ export default {
       const tasks = [
         getCollisionsByCentrelineSummary(feature, this.filterParamsCollision),
         getCollisionsByCentrelineTotal(feature),
-        getCountsByCentrelineSummary(feature, this.filterParamsStudy),
-        getCountsByCentrelineTotal(feature),
         getLocationByFeature(feature),
         getPoiByCentrelineSummary(feature),
+        getStudiesByCentrelineSummary(feature, this.filterParamsStudy),
+        getStudiesByCentrelineTotal(feature),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));
@@ -400,18 +399,18 @@ export default {
       const [
         collisionSummary,
         collisionTotal,
-        countSummary,
-        countTotal,
         location,
         poiSummary,
+        studySummary,
+        studyTotal,
         studyRequestsPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.collisionTotal = collisionTotal;
-      this.countSummary = countSummary;
-      this.countTotal = countTotal;
       this.poiSummary = poiSummary;
       this.studyRequestsPending = studyRequestsPending;
+      this.studySummary = studySummary;
+      this.studyTotal = studyTotal;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
@@ -420,9 +419,6 @@ export default {
         this.setLocation(location);
       }
     },
-    ...mapActions([
-      'fetchCountsByCentreline',
-    ]),
     ...mapMutations('viewData', [
       'removeFilterCollision',
       'removeFilterStudy',

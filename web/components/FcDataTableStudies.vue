@@ -4,26 +4,33 @@
     :columns="columns"
     disable-sort
     :loading="loading"
-    :items="countSummary">
+    :items="studySummary">
     <template v-slot:item.STUDY_REPORTS="{ item }">
-      <span>{{item.count.type.studyType.label}}</span>
+      <span v-if="item.studyType === null">
+        Unknown
+      </span>
+      <span v-else>
+        {{item.studyType.label}}
+      </span>
       <span
-        v-if="item.numPerCategory > 1"
+        v-if="item.n > 1"
         class="secondary--text">
-        &#x2022; {{item.numPerCategory}}
+        &#x2022; {{item.n}}
       </span>
     </template>
     <template v-slot:item.DATE="{ item }">
       <span>
-        {{item.count.date | date}} ({{item.count.date | dayOfWeek}})
+        {{item.study.startDate | date}} ({{item.study.startDate | dayOfWeek}})
       </span>
     </template>
     <template v-slot:item.HOURS="{ item }">
-      <span v-if="item.count.type.studyType.automatic">
-        {{item.count.duration | durationHuman}} ({{item.count.duration}} hrs)
+      <span v-if="item.study.duration !== null">
+        {{item.study.duration | durationHuman}} ({{item.study.duration}} hrs)
       </span>
-      <span v-else>
-        {{item.count.hours}}
+      <span
+        v-else-if="item.study.hours !== null"
+        :title="item.study.hours.hint">
+        {{item.study.hours.description}}
       </span>
     </template>
     <template v-slot:header.VIEW_REPORT>
@@ -31,6 +38,7 @@
     </template>
     <template v-slot:item.VIEW_REPORT="{ item }">
       <FcButton
+        v-if="item.studyType !== null"
         type="tertiary"
         @click="$emit('show-reports', item)">
         <span>View Reports</span>
@@ -50,11 +58,11 @@ export default {
     FcDataTable,
   },
   props: {
-    countSummary: Array,
     loading: {
       type: Boolean,
       default: false,
     },
+    studySummary: Array,
   },
   data() {
     const columns = [{
