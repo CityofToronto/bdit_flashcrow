@@ -38,8 +38,8 @@ import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
-  getCountsByCentrelineSummary,
   getLocationByFeature,
+  getStudiesByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
@@ -164,22 +164,22 @@ function getSchoolIcon() {
 async function getStudyDetails(feature) {
   const { centrelineId, centrelineType } = feature.properties;
   const tasks = [
-    getCountsByCentrelineSummary({ centrelineId, centrelineType }, {}),
     getLocationByFeature({ centrelineId, centrelineType }),
+    getStudiesByCentrelineSummary({ centrelineId, centrelineType }, {}),
   ];
-  const [countSummary, location] = await Promise.all(tasks);
-  return { countSummary, location };
+  const [location, studySummary] = await Promise.all(tasks);
+  return { location, studySummary };
 }
 
-function getStudyDescription(feature, { countSummary, location }) {
+function getStudyDescription(feature, { location, studySummary }) {
   const description = [];
 
-  countSummary.forEach(({ count }) => {
-    const { label } = count.type.studyType;
-    const { date } = count;
-    const dateStr = TimeFormatters.formatDefault(date);
-    const countStr = `${label} (${dateStr})`;
-    description.push(countStr);
+  studySummary.forEach(({ study, studyType }) => {
+    const { label } = studyType;
+    const { startDate } = study;
+    const startDateStr = TimeFormatters.formatDefault(startDate);
+    const studyStr = `${label} (${startDateStr})`;
+    description.push(studyStr);
   });
 
   const locationFeatureType = getLocationFeatureType(location);
