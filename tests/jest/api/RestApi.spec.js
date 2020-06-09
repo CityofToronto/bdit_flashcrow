@@ -452,6 +452,271 @@ test('LocationController.getLocationsByFeature', async () => {
   expect(response.result.size).toBe(2);
 });
 
+function expectNumPerStudyType(actual, expected) {
+  expect(actual).toHaveLength(expected.length);
+  expected.forEach(([n0, value0], i) => {
+    const { studyType: { name: value }, n } = actual[i];
+    expect(n).toBe(n0);
+    expect(value).toBe(value0);
+  });
+}
+
+test('StudyController.getStudiesByCentrelineSummary', async () => {
+  // invalid feature
+  let data = {
+    centrelineId: -1,
+    centrelineType: -1,
+  };
+  let response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // invalid date range (start > end)
+  let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
+  data = {
+    centrelineId: 30000549,
+    centrelineType: CentrelineType.INTERSECTION,
+    dateRangeEnd,
+    dateRangeStart,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // centreline feature with no counts
+  data = {
+    centrelineId: 30062737,
+    centrelineType: CentrelineType.SEGMENT,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
+
+  // centreline feature with some counts
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(
+    response.result,
+    [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']],
+  );
+
+  // valid feature with some counts, date range filters to empty
+  dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    dateRangeEnd,
+    dateRangeStart,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
+
+  // valid feature with some counts, filter by type
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    studyTypes: [StudyType.ATR_SPEED_VOLUME],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[2, 'ATR_SPEED_VOLUME']]);
+
+  // valid feature with some counts, filter by day of week
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    daysOfWeek: [2, 3, 4],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[3, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+
+  // intersection with some counts
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[6, 'TMC']]);
+
+  // intersection with some counts, filter by date
+  dateRangeStart = DateTime.fromObject({ year: 2011, month: 1, day: 1 });
+  dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    dateRangeEnd,
+    dateRangeStart,
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[3, 'TMC']]);
+
+  // intersection with some counts, filter by study hours
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    hours: [StudyHours.SCHOOL],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, []);
+
+  // intersection with some counts, filter by days of week
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    daysOfWeek: [0, 1, 5, 6],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[2, 'TMC']]);
+
+  // intersection with some counts, filter by type of study
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    studyTypes: [StudyType.TMC],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, [[6, 'TMC']]);
+
+  // intersection with some counts, filter by type of study (non-TMC)
+  data = {
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    studyTypes: [StudyType.ATR_SPEED_VOLUME],
+  };
+  response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerStudyType(response.result, []);
+});
+
+test('StudyController.getStudiesByCentreline', async () => {
+  // invalid feature
+  let data = {
+    centrelineId: -1,
+    centrelineType: -1,
+    limit: 10,
+    offset: 0,
+  };
+  let response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // invalid date range (start > end)
+  let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
+  data = {
+    centrelineId: 30000549,
+    centrelineType: CentrelineType.INTERSECTION,
+    dateRangeEnd,
+    dateRangeStart,
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // centreline feature with no counts
+  data = {
+    centrelineId: 30062737,
+    centrelineType: CentrelineType.SEGMENT,
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(0);
+
+  // valid feature with less than maxPerCategory counts
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(6);
+
+  // valid feature with less than maxPerCategory counts, filter by type
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    studyTypes: [StudyType.ATR_SPEED_VOLUME],
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(2);
+
+  // valid feature with less than maxPerCategory counts, date range filters to empty
+  dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  data = {
+    centrelineId: 14659630,
+    centrelineType: CentrelineType.SEGMENT,
+    dateRangeEnd,
+    dateRangeStart,
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(0);
+
+  // valid feature with more than maxPerCategory counts
+  data = {
+    centrelineId: 1145768,
+    centrelineType: CentrelineType.SEGMENT,
+    limit: 10,
+    offset: 0,
+  };
+  response = await client.fetch('/studies/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(10);
+});
+
+test('StudyController.getStudiesByCentreline [pagination]', async () => {
+  const dateRangeStart = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
+  const dateRangeEnd = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let data = {
+    centrelineId: 1145768,
+    centrelineType: CentrelineType.SEGMENT,
+    dateRangeEnd,
+    dateRangeStart,
+    studyTypes: [StudyType.RESCU],
+  };
+  let response = await client.fetch('/studies/byCentreline/summary', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+
+  const { numPerCategory } = response.result[0];
+  for (let offset = 0; offset < numPerCategory; offset += 100) {
+    data = {
+      centrelineId: 1145768,
+      centrelineType: CentrelineType.SEGMENT,
+      dateRangeEnd,
+      dateRangeStart,
+      studyTypes: [StudyType.RESCU],
+      limit: 100,
+      offset,
+    };
+    /* eslint-disable-next-line no-await-in-loop */
+    response = await client.fetch('/studies/byCentreline', { data });
+    expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+    const expectedLength = Math.min(100, numPerCategory - offset);
+    expect(response.result).toHaveLength(expectedLength);
+  }
+});
+
 test('StudyRequestController', async () => {
   // `GET /auth` to force generation of CSRF token
   client.setUser(null);
