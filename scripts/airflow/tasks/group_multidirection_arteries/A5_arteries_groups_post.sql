@@ -18,8 +18,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_groups AS
 CREATE UNIQUE INDEX IF NOT EXISTS arteries_groups_arterycode ON counts.arteries_groups (arterycode);
 CREATE INDEX IF NOT EXISTS arteries_groups_group_id ON counts.arteries_groups (group_id);
 CREATE INDEX IF NOT EXISTS arteries_groups_centreline ON counts.arteries_groups (centreline_type, centreline_id);
-CREATE INDEX IF NOT EXISTS arteries_groups_geom ON counts_new.arteries_groups USING GIST (geom);
-CREATE INDEX IF NOT EXISTS arteries_groups_srid3857_geom ON counts_new.arteries_groups USING GIST (ST_Transform(geom, 3857));
-CREATE INDEX IF NOT EXISTS arteries_groups_srid2952_geom ON counts_new.arteries_groups USING GIST (ST_Transform(geom, 2952));
+CREATE INDEX IF NOT EXISTS arteries_groups_geom ON counts.arteries_groups USING GIST (geom);
+CREATE INDEX IF NOT EXISTS arteries_groups_srid3857_geom ON counts.arteries_groups USING GIST (ST_Transform(geom, 3857));
+CREATE INDEX IF NOT EXISTS arteries_groups_srid2952_geom ON counts.arteries_groups USING GIST (ST_Transform(geom, 2952));
 
 REFRESH MATERIALIZED VIEW CONCURRENTLY counts.arteries_groups;

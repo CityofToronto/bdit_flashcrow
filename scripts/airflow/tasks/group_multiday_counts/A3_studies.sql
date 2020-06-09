@@ -30,5 +30,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.studies AS (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS studies_count_group ON counts.studies ("CATEGORY_ID", count_group_id);
 CREATE INDEX IF NOT EXISTS studies_centreline ON counts.studies (centreline_type, centreline_id);
+CREATE INDEX IF NOT EXISTS studies_geom ON counts.studies USING GIST (geom);
+CREATE INDEX IF NOT EXISTS studies_srid3857_geom ON counts.studies USING GIST (ST_Transform(geom, 3857));
+CREATE INDEX IF NOT EXISTS studies_srid2952_geom ON counts.studies USING GIST (ST_Transform(geom, 2952));
 
 REFRESH MATERIALIZED VIEW CONCURRENTLY counts.studies;
