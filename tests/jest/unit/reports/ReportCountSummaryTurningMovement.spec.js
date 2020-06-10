@@ -55,7 +55,9 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
    * (e.g. a "total" value is the sum of the values it includes), or c) the update is in one
    * of the base values, suggesting that it was in fact incorrect in the legacy report.
    */
-  const transformedData = reportInstance.transformData(count, countData_5_36781);
+  const counts = [{ id: 1 }];
+  const studyData = new Map([[1, countData_5_36781]]);
+  const transformedData = reportInstance.transformData(count, { counts, studyData });
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781);
 });
 
@@ -68,7 +70,9 @@ test('ReportCountSummaryTurningMovement#generateCsv [Gerrard and Sumach: 5/36781
     type: { studyType: StudyType.TMC },
   };
 
-  const transformedData = reportInstance.transformData(count, countData_5_36781);
+  const counts = [{ id: 1 }];
+  const studyData = new Map([[1, countData_5_36781]]);
+  const transformedData = reportInstance.transformData(count, { counts, studyData });
   expect(() => {
     reportInstance.generateCsv(count, transformedData);
   }).not.toThrow();

@@ -26,7 +26,10 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumac
     type: { studyType: StudyType.TMC },
   };
 
-  const transformedData = reportInstance.transformData(count, countData_5_36781);
+  // TODO: actually export proper count JSON
+  const counts = [{ id: 1 }];
+  const studyData = new Map([[1, countData_5_36781]]);
+  const transformedData = reportInstance.transformData(count, { counts, studyData });
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781);
 });
 
@@ -39,7 +42,9 @@ test('ReportCountSummaryTurningMovementDetailed#generateCsv [Gerrard and Sumach:
     type: { studyType: StudyType.TMC },
   };
 
-  const transformedData = reportInstance.transformData(count, countData_5_36781);
+  const counts = [{ id: 1 }];
+  const studyData = new Map([[1, countData_5_36781]]);
+  const transformedData = reportInstance.transformData(count, { counts, studyData });
   expect(() => {
     reportInstance.generateCsv(count, transformedData);
   }).not.toThrow();
