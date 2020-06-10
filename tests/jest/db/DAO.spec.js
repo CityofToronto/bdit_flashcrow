@@ -63,10 +63,10 @@ test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection(null)).toBe(null);
   expect(ArteryDAO.getApproachDirection('invalid-direction')).toBe(null);
 
-  expect(ArteryDAO.getApproachDirection('N')).toBe(CardinalDirection.SOUTH);
-  expect(ArteryDAO.getApproachDirection('E')).toBe(CardinalDirection.WEST);
-  expect(ArteryDAO.getApproachDirection('S')).toBe(CardinalDirection.NORTH);
-  expect(ArteryDAO.getApproachDirection('W')).toBe(CardinalDirection.EAST);
+  expect(ArteryDAO.getApproachDirection('N')).toBe(CardinalDirection.NORTH);
+  expect(ArteryDAO.getApproachDirection('E')).toBe(CardinalDirection.EAST);
+  expect(ArteryDAO.getApproachDirection('S')).toBe(CardinalDirection.SOUTH);
+  expect(ArteryDAO.getApproachDirection('W')).toBe(CardinalDirection.WEST);
 });
 
 test('ArteryDAO.byArteryCode', async () => {

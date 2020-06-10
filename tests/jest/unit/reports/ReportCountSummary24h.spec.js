@@ -1,17 +1,19 @@
 /* eslint-disable camelcase */
-import path from 'path';
+// import path from 'path';
 
-import { CardinalDirection, StudyType } from '@/lib/Constants';
+// import { CardinalDirection, StudyType } from '@/lib/Constants';
 import ReportCountSummary24h from '@/lib/reports/ReportCountSummary24h';
-import { loadJsonSync } from '@/lib/test/TestDataLoader';
+// import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import DateTime from '@/lib/time/DateTime';
 
+/*
 const countData_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/countData_4_2156283.json'),
 );
 const transformedData_COUNT_SUMMARY_24H_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_24H_4_2156283.json'),
 );
+*/
 
 test('ReportCountSummary24h.peak', () => {
   const volumeByBucket = [3, 5, 10, 15, 6, 2, 1, 5, 14, 0];
@@ -75,6 +77,7 @@ test('ReportCountSummary24h.timeRange', () => {
   });
 });
 
+/*
 test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
 
@@ -118,3 +121,4 @@ test('ReportCountSummary24h#generateCsv [Morningside S of Lawrence: 4/2156283]',
     reportInstance.generateCsv(parsedId, transformedData);
   }).not.toThrow();
 });
+*/
