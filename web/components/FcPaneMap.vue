@@ -84,7 +84,7 @@ function getFeatureKey(feature) {
     return null;
   }
   const { layer: { id: layerId }, id } = feature;
-  if (layerId === 'counts' || layerId === 'intersections' || layerId === 'midblocks') {
+  if (layerId === 'intersections' || layerId === 'midblocks' || layerId === 'studies') {
     const { centrelineType, centrelineId } = feature.properties;
     return `c:${centrelineType}:${centrelineId}`;
   }
@@ -385,7 +385,7 @@ export default {
       }
       if (centrelineType === CentrelineType.INTERSECTION) {
         let feature = this.getFeatureForLayerAndProperty(
-          'counts',
+          'studies',
           'centrelineId',
           centrelineId,
         );
@@ -428,7 +428,7 @@ export default {
       const { selectableOnly } = featureOptions;
 
       const layers = [
-        'counts',
+        'studies',
         'intersections',
         'midblocks',
       ];

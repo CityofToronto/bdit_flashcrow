@@ -38,8 +38,8 @@ import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
-  getCountsByCentrelineSummary,
   getLocationByFeature,
+  getStudiesByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
@@ -47,7 +47,7 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 const SELECTABLE_LAYERS = [
-  'counts',
+  'studies',
   'intersections',
   'midblocks',
 ];
@@ -102,37 +102,6 @@ function getCollisionIcon(feature, { involved }) {
     }
   }
   return null;
-}
-
-async function getCountDetails(feature) {
-  const { centrelineId, centrelineType } = feature.properties;
-  // TODO: incorporate date range
-  const tasks = [
-    getCountsByCentrelineSummary({ centrelineId, centrelineType }, {}),
-    getLocationByFeature({ centrelineId, centrelineType }),
-  ];
-  const [countSummary, location] = await Promise.all(tasks);
-  return { countSummary, location };
-}
-
-function getCountDescription(feature, { countSummary, location }) {
-  const description = [];
-
-  countSummary.forEach(({ count }) => {
-    const { label } = count.type.studyType;
-    const { date } = count;
-    const dateStr = TimeFormatters.formatDefault(date);
-    const countStr = `${label} (${dateStr})`;
-    description.push(countStr);
-  });
-
-  const locationFeatureType = getLocationFeatureType(location);
-  if (locationFeatureType !== null) {
-    const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
-    description.push(locationStr);
-  }
-
-  return description;
 }
 
 async function getCentrelineDetails(feature, centrelineType) {
@@ -192,12 +161,42 @@ function getSchoolIcon() {
   return 'mdi-school';
 }
 
+async function getStudyDetails(feature) {
+  const { centrelineId, centrelineType } = feature.properties;
+  const tasks = [
+    getLocationByFeature({ centrelineId, centrelineType }),
+    getStudiesByCentrelineSummary({ centrelineId, centrelineType }, {}),
+  ];
+  const [location, studySummary] = await Promise.all(tasks);
+  return { location, studySummary };
+}
+
+function getStudyDescription(feature, { location, studySummary }) {
+  const description = [];
+
+  studySummary.forEach(({ category: { studyType }, mostRecent }) => {
+    let label = 'Unknown';
+    if (studyType !== null) {
+      label = studyType.label;
+    }
+    const { startDate } = mostRecent;
+    const startDateStr = TimeFormatters.formatDefault(startDate);
+    const studyStr = `${label} (${startDateStr})`;
+    description.push(studyStr);
+  });
+
+  const locationFeatureType = getLocationFeatureType(location);
+  if (locationFeatureType !== null) {
+    const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
+    description.push(locationStr);
+  }
+
+  return description;
+}
+
 async function getFeatureDetailsImpl(layerId, feature) {
   if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
     return getCollisionDetails(feature);
-  }
-  if (layerId === 'counts') {
-    return getCountDetails(feature);
   }
   if (layerId === 'hospitalsLevel2' || layerId === 'hospitalsLevel1') {
     return getHospitalDetails(feature);
@@ -211,6 +210,9 @@ async function getFeatureDetailsImpl(layerId, feature) {
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolDetails(feature);
   }
+  if (layerId === 'studies') {
+    return getStudyDetails(feature);
+  }
   return null;
 }
 
@@ -223,9 +225,6 @@ function getFeatureDescription({ layerId, feature, details }) {
   if (layerId === 'collisionsLevel2' || layerId === 'collisionsLevel1') {
     return getCollisionDescription(feature, details);
   }
-  if (layerId === 'counts') {
-    return getCountDescription(feature, details);
-  }
   if (layerId === 'hospitalsLevel2' || layerId === 'hospitalsLevel1') {
     return getHospitalDescription(feature, details);
   }
@@ -234,6 +233,9 @@ function getFeatureDescription({ layerId, feature, details }) {
   }
   if (layerId === 'schoolsLevel2' || layerId === 'schoolsLevel1') {
     return getSchoolDescription(feature, details);
+  }
+  if (layerId === 'studies') {
+    return getStudyDescription(feature, details);
   }
   return [];
 }
@@ -309,13 +311,6 @@ export default {
         }
         return 'Collision';
       }
-      if (this.layerId === 'counts') {
-        const { numArteryCodes } = this.feature.properties;
-        if (numArteryCodes === 1) {
-          return '1 Station';
-        }
-        return `${numArteryCodes} Stations`;
-      }
       if (this.layerId === 'hospitalsLevel2' || this.layerId === 'hospitalsLevel1') {
         return 'Hospital';
       }
@@ -334,6 +329,13 @@ export default {
           return 'College';
         }
         return 'School';
+      }
+      if (this.layerId === 'studies') {
+        const { numArteryCodes } = this.feature.properties;
+        if (numArteryCodes === 1) {
+          return '1 Study Location';
+        }
+        return `${numArteryCodes} Study Locations`;
       }
       return null;
     },

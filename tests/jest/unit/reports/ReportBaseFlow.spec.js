@@ -1,9 +1,9 @@
 import { StudyType } from '@/lib/Constants';
-import CountDAO from '@/lib/db/CountDAO';
+import StudyDAO from '@/lib/db/StudyDAO';
 import { InvalidReportIdError } from '@/lib/error/MoveErrors';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 
-jest.mock('@/lib/db/CountDAO');
+jest.mock('@/lib/db/StudyDAO');
 
 test('ReportBaseFlow#parseId', async () => {
   const reportInstance = new ReportSpeedPercentile();
@@ -21,21 +21,21 @@ test('ReportBaseFlow#parseId', async () => {
   rawId = '6/bar';
   await expect(reportInstance.parseId(rawId)).rejects.toThrow(InvalidReportIdError);
 
-  CountDAO.byIdAndCategory.mockResolvedValue(null);
+  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(null);
   rawId = '5/17';
   await expect(reportInstance.parseId(rawId)).rejects.toThrow(InvalidReportIdError);
 
-  let count = {
+  let study = {
     type: { studyType: StudyType.TMC },
   };
-  CountDAO.byIdAndCategory.mockResolvedValue(count);
+  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
   rawId = '5/17';
   await expect(reportInstance.parseId(rawId)).rejects.toThrow(InvalidReportIdError);
 
-  count = {
+  study = {
     type: { studyType: StudyType.ATR_SPEED_VOLUME },
   };
-  CountDAO.byIdAndCategory.mockResolvedValue(count);
+  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
   rawId = '4/17';
-  await expect(reportInstance.parseId(rawId)).resolves.toEqual(count);
+  await expect(reportInstance.parseId(rawId)).resolves.toEqual(study);
 });
