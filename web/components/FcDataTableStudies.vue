@@ -6,11 +6,11 @@
     :loading="loading"
     :items="studySummary">
     <template v-slot:item.STUDY_REPORTS="{ item }">
-      <span v-if="item.studyType === null">
+      <span v-if="item.category.studyType === null">
         Unknown
       </span>
       <span v-else>
-        {{item.studyType.label}}
+        {{item.category.studyType.label}}
       </span>
       <span
         v-if="item.n > 1"
@@ -20,17 +20,17 @@
     </template>
     <template v-slot:item.DATE="{ item }">
       <span>
-        {{item.study.startDate | date}} ({{item.study.startDate | dayOfWeek}})
+        {{item.mostRecent.startDate | date}} ({{item.mostRecent.startDate | dayOfWeek}})
       </span>
     </template>
     <template v-slot:item.HOURS="{ item }">
-      <span v-if="item.study.duration !== null">
-        {{item.study.duration | durationHuman}} ({{item.study.duration}} hrs)
+      <span v-if="item.mostRecent.duration !== null">
+        {{item.mostRecent.duration | durationHuman}} ({{item.mostRecent.duration}} hrs)
       </span>
       <span
-        v-else-if="item.study.hours !== null"
-        :title="item.study.hours.hint">
-        {{item.study.hours.description}}
+        v-else-if="item.mostRecent.hours !== null"
+        :title="item.mostRecent.hours.hint">
+        {{item.mostRecent.hours.description}}
       </span>
     </template>
     <template v-slot:header.VIEW_REPORT>
@@ -38,7 +38,7 @@
     </template>
     <template v-slot:item.VIEW_REPORT="{ item }">
       <FcButton
-        v-if="item.studyType !== null"
+        v-if="item.category.studyType !== null"
         type="tertiary"
         @click="$emit('show-reports', item)">
         <span>View Reports</span>

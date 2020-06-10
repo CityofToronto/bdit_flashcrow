@@ -118,6 +118,8 @@ afterAll(async () => {
   await DAOTestUtils.shutdown();
 }, DAOTestUtils.TIMEOUT);
 
+jest.setTimeout(DAOTestUtils.TIMEOUT);
+
 test('AuthController.getAuth', async () => {
   let response = await client.fetch('/auth');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
@@ -452,10 +454,10 @@ test('LocationController.getLocationsByFeature', async () => {
   expect(response.result.size).toBe(2);
 });
 
-function expectNumPerStudyType(actual, expected) {
+function expectNumPerCategoryStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([n0, value0], i) => {
-    const { studyType: { name: value }, n } = actual[i];
+    const { category: { studyType: { name: value } }, n } = actual[i];
     expect(n).toBe(n0);
     expect(value).toBe(value0);
   });
@@ -498,7 +500,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(
+  expectNumPerCategoryStudy(
     response.result,
     [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']],
   );
@@ -524,7 +526,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[2, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, filter by day of week
   data = {
@@ -534,7 +536,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[3, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[3, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
 
   // intersection with some counts
   data = {
@@ -543,7 +545,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[6, 'TMC']]);
+  expectNumPerCategoryStudy(response.result, [[6, 'TMC']]);
 
   // intersection with some counts, filter by date
   dateRangeStart = DateTime.fromObject({ year: 2011, month: 1, day: 1 });
@@ -556,7 +558,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[3, 'TMC']]);
+  expectNumPerCategoryStudy(response.result, [[3, 'TMC']]);
 
   // intersection with some counts, filter by study hours
   data = {
@@ -566,7 +568,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, []);
+  expectNumPerCategoryStudy(response.result, []);
 
   // intersection with some counts, filter by days of week
   data = {
@@ -576,7 +578,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[2, 'TMC']]);
+  expectNumPerCategoryStudy(response.result, [[2, 'TMC']]);
 
   // intersection with some counts, filter by type of study
   data = {
@@ -586,7 +588,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, [[6, 'TMC']]);
+  expectNumPerCategoryStudy(response.result, [[6, 'TMC']]);
 
   // intersection with some counts, filter by type of study (non-TMC)
   data = {
@@ -596,7 +598,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyType(response.result, []);
+  expectNumPerCategoryStudy(response.result, []);
 });
 
 test('StudyController.getStudiesByCentreline', async () => {

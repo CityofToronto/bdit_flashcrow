@@ -49,15 +49,15 @@
                 class="flex-grow-0 mt-0"
                 type="secondary">
                 <v-icon color="primary" left>mdi-history</v-icon>
-                {{labelActiveCount}}
+                {{labelActiveStudy}}
                 <v-icon>mdi-menu-down</v-icon>
               </FcButton>
             </template>
             <v-list>
               <v-list-item
-                v-for="{ text, value } in itemsCounts"
+                v-for="{ text, value } in itemsStudies"
                 :key="value"
-                @click="indexActiveCount = value">
+                @click="indexActiveStudy = value">
                 <v-list-item-title>
                   {{text}}
                 </v-list-item-title>
@@ -148,10 +148,10 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import {
-  getCountsByCentreline,
   getLocationByFeature,
   getReport,
   getReportWeb,
+  getStudiesByCentreline,
 } from '@/lib/api/WebApi';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
@@ -185,9 +185,8 @@ export default {
       reportUserParameters[name] = defaultParameters;
     });
     return {
-      counts: [],
-      indexActiveCount: 0,
       indexActiveReportType: 0,
+      indexActiveStudy: 0,
       leaveConfirmed: false,
       loadingDownload: false,
       loadingReportLayout: false,
@@ -196,15 +195,16 @@ export default {
       reportUserParameters,
       showConfirmLeave: false,
       showReportParameters: false,
+      studies: [],
     };
   },
   computed: {
-    activeCount() {
-      const { indexActiveCount, counts } = this;
-      if (indexActiveCount >= counts.length) {
+    activeStudy() {
+      const { indexActiveStudy, studies } = this;
+      if (indexActiveStudy >= studies.length) {
         return null;
       }
-      return counts[indexActiveCount];
+      return studies[indexActiveStudy];
     },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;
@@ -217,20 +217,17 @@ export default {
       return this.filterChipsStudy
         .filter(({ filter }) => filter !== 'studyTypes');
     },
-    filterParamsStudyPaginated() {
-      const { filterParamsStudy } = this;
-      const params = {
+    filterParamsStudyReports() {
+      const { filterParamsStudy, studyType } = this;
+      return {
         ...filterParamsStudy,
-        limit: 10,
-        offset: 0,
+        studyTypes: [studyType],
       };
-      delete params.studyType;
-      return params;
     },
-    itemsCounts() {
-      return this.counts.map((count, i) => {
-        const date = TimeFormatters.formatDefault(count.date);
-        const dayOfWeek = TimeFormatters.formatDayOfWeek(count.date);
+    itemsStudies() {
+      return this.studies.map((study, i) => {
+        const date = TimeFormatters.formatDefault(study.date);
+        const dayOfWeek = TimeFormatters.formatDayOfWeek(study.date);
         const text = `${date} (${dayOfWeek})`;
         return { text, value: i };
       });
@@ -243,13 +240,13 @@ export default {
         .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
         .map(({ name }) => ({ label: name, value: name }));
     },
-    labelActiveCount() {
-      const { activeCount } = this;
-      if (activeCount === null) {
+    labelActiveStudy() {
+      const { activeStudy } = this;
+      if (activeStudy === null) {
         return null;
       }
-      const date = TimeFormatters.formatDefault(activeCount.date);
-      const dayOfWeek = TimeFormatters.formatDayOfWeek(activeCount.date);
+      const date = TimeFormatters.formatDefault(activeStudy.startDate);
+      const dayOfWeek = TimeFormatters.formatDayOfWeek(activeStudy.startDate);
       return `${date} (${dayOfWeek})`;
     },
     reportParameters: {
@@ -281,10 +278,10 @@ export default {
     ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
-    activeCount() {
+    activeReportType() {
       this.updateReportLayout();
     },
-    activeReportType() {
+    activeStudy() {
       this.updateReportLayout();
     },
   },
@@ -311,15 +308,14 @@ export default {
   },
   methods: {
     async actionDownload(format) {
-      const { activeCount, activeReportType, reportParameters } = this;
-      if (activeCount === null || activeReportType === null) {
+      const { activeReportType, activeStudy, reportParameters } = this;
+      if (activeReportType === null || activeStudy === null) {
         return;
       }
       this.downloadLoading = true;
 
-      const countInfoId = activeCount.id;
-      const categoryId = activeCount.type.id;
-      const id = `${categoryId}/${countInfoId}`;
+      const { countGroupId, type } = activeStudy;
+      const id = `${type.id}/${countGroupId}`;
       const reportData = await getReport(activeReportType, id, format, reportParameters);
       const filename = `report.${format}`;
       saveAs(reportData, filename);
@@ -341,15 +337,16 @@ export default {
       const { centrelineId, centrelineType, studyTypeName } = to.params;
       const studyType = StudyType.enumValueOf(studyTypeName);
       const tasks = [
-        getCountsByCentreline(
+        getLocationByFeature({ centrelineId, centrelineType }),
+        getStudiesByCentreline(
           { centrelineId, centrelineType },
           studyType,
-          this.filterParamsStudyPaginated,
+          this.filterParamsStudyReports,
+          { limit: 10, offset: 0 },
         ),
-        getLocationByFeature({ centrelineId, centrelineType }),
       ];
-      const [counts, location] = await Promise.all(tasks);
-      this.counts = counts;
+      const [location, studies] = await Promise.all(tasks);
+      this.studies = studies;
 
       if (this.location === null
           || location.centrelineId !== this.location.centrelineId
@@ -363,15 +360,14 @@ export default {
       this.updateReportLayout();
     },
     async updateReportLayout() {
-      const { activeCount, activeReportType, reportParameters } = this;
-      if (activeCount === null || activeReportType === null) {
+      const { activeReportType, activeStudy, reportParameters } = this;
+      if (activeReportType === null || activeStudy === null) {
         return;
       }
       this.loadingReportLayout = true;
 
-      const countInfoId = activeCount.id;
-      const categoryId = activeCount.type.id;
-      const id = `${categoryId}/${countInfoId}`;
+      const { countGroupId, type } = activeStudy;
+      const id = `${type.id}/${countGroupId}`;
       const reportLayout = await getReportWeb(activeReportType, id, reportParameters);
       this.reportLayout = reportLayout;
 

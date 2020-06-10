@@ -174,12 +174,12 @@ async function getStudyDetails(feature) {
 function getStudyDescription(feature, { location, studySummary }) {
   const description = [];
 
-  studySummary.forEach(({ study, studyType }) => {
+  studySummary.forEach(({ category: { studyType }, mostRecent }) => {
     let label = 'Unknown';
     if (studyType !== null) {
       label = studyType.label;
     }
-    const { startDate } = study;
+    const { startDate } = mostRecent;
     const startDateStr = TimeFormatters.formatDefault(startDate);
     const studyStr = `${label} (${startDateStr})`;
     description.push(studyStr);

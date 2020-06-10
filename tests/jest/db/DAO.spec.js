@@ -802,10 +802,10 @@ test('StudyDAO.byCentreline()', async () => {
   }
 });
 
-function expectNumPerStudyType(actual, expected) {
+function expectNumPerCategoryStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([n0, value0], i) => {
-    const { studyType: { name: value }, n } = actual[i];
+    const { category: { studyType: { name: value } }, n } = actual[i];
     expect(n).toBe(n0);
     expect(value).toBe(value0);
   });
@@ -821,7 +821,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: [StudyType.TMC],
   };
   let studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, []);
+  expectNumPerCategoryStudy(studySummary, []);
 
   // invalid date range (start > end)
   studyQuery = {
@@ -846,7 +846,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, []);
+  expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with some counts
   studyQuery = {
@@ -859,12 +859,12 @@ test('StudyDAO.byCentrelineSummary()', async () => {
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
   const studySummarySchema = Joi.array().items(
     Joi.object().keys({
-      studyType: Joi.enum().ofType(StudyType).allow(null),
-      study: Study.read,
+      category: Category.read,
+      mostRecent: Study.read,
       n: Joi.number().integer().positive().required(),
     }),
   );
-  expectNumPerStudyType(studySummary, [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(studySummary, [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
   await expect(
     studySummarySchema.validateAsync(studySummary),
   ).resolves.toEqual(studySummary);
@@ -880,7 +880,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, []);
+  expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with lots of counts
   studyQuery = {
@@ -891,7 +891,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, [[3633, 'RESCU']]);
+  expectNumPerCategoryStudy(studySummary, [[3633, 'RESCU']]);
 
   // centreline feature with lots of counts, date range filters to empty
   studyQuery = {
@@ -904,7 +904,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, []);
+  expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with lots of counts, date range filters down
   studyQuery = {
@@ -917,7 +917,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, [[187, 'RESCU']]);
+  expectNumPerCategoryStudy(studySummary, [[187, 'RESCU']]);
 
   // centreline feature with more than one kind of count
   studyQuery = {
@@ -928,7 +928,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
-  expectNumPerStudyType(studySummary, [[1, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(studySummary, [[1, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
 });
 
 test('StudyDAO.byCentrelineTotal()', async () => {

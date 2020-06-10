@@ -282,7 +282,7 @@ export default {
       }
       const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
       const mostRecentDate = DateTime.max(
-        ...this.studySummary.map(({ study: { startDate } }) => startDate),
+        ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
       );
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
       return `${nStr} (${mostRecentDateStr})`;
