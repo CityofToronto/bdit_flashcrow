@@ -10,9 +10,9 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_solo AS (
     ) t
     WHERE n = 1
   )
-  SELECT arterycode, geo_id
+  SELECT am.arterycode, am.geo_id, am.geom
   FROM a
-  JOIN counts.arteries_midblock USING (geo_id)
+  JOIN counts.arteries_midblock am USING (geo_id)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS arteries_midblock_solo_arterycode1 ON counts.arteries_midblock_solo (arterycode);
 

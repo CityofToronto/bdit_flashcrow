@@ -4,7 +4,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_direction AS (
   SELECT
     am.arterycode,
     am.geo_id,
-    ad."APPRDIR"::CHAR(1) AS direction
+    ad."APPRDIR"::CHAR(1) AS direction,
+    am.geom
   FROM counts.arteries_midblock am
   JOIN "TRAFFIC"."ARTERYDATA" ad ON am.arterycode = ad."ARTERYCODE"
   WHERE geo_id IS NOT NULL
