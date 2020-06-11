@@ -225,9 +225,9 @@ export default {
       };
     },
     itemsStudies() {
-      return this.studies.map((study, i) => {
-        const date = TimeFormatters.formatDefault(study.date);
-        const dayOfWeek = TimeFormatters.formatDayOfWeek(study.date);
+      return this.studies.map(({ startDate }, i) => {
+        const date = TimeFormatters.formatDefault(startDate);
+        const dayOfWeek = TimeFormatters.formatDayOfWeek(startDate);
         const text = `${date} (${dayOfWeek})`;
         return { text, value: i };
       });
