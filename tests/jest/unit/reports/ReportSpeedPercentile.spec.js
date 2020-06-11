@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { SPEED_CLASSES } from '@/lib/Constants';
+import { CardinalDirection, SPEED_CLASSES } from '@/lib/Constants';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -57,7 +57,24 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
    * Replicating TraxPro's histogram calculation *exactly* is difficult, so we
    * tolerate some deviation from legacy report values.
    */
-  const transformedData = reportInstance.transformData(null, countData_4_2156283);
+  const countDate = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  const counts = [{
+    arteryCode: 42,
+    date: countDate,
+    id: 17,
+  }];
+  const arteries = new Map([[42, {
+    approachDir: CardinalDirection.NORTH,
+  }]]);
+  const studyData = new Map([[17, countData_4_2156283]]);
+
+  let transformedData = reportInstance.transformData(null, { arteries, counts, studyData });
+  expect(transformedData).toHaveLength(1);
+  const { date, direction, stats } = transformedData[0];
+  expect(date.equals(countDate)).toBe(true);
+  expect(direction).toBe(CardinalDirection.NORTH);
+  transformedData = stats;
+
   const {
     countDataByHour,
     hoursPeakAm,
@@ -117,7 +134,17 @@ test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: 4/2156283]',
     type: { name: 'SPEED' },
   };
 
-  const transformedData = reportInstance.transformData(count, countData_4_2156283);
+  const countDate = DateTime.fromObject({ year: 2019, month: 3, day: 7 });
+  const counts = [{
+    arteryCode: 42,
+    date: countDate,
+    id: 17,
+  }];
+  const arteries = new Map([[42, {
+    approachDir: CardinalDirection.NORTH,
+  }]]);
+  const studyData = new Map([[17, countData_4_2156283]]);
+  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
   expect(() => {
     reportInstance.generateCsv(count, transformedData);
   }).not.toThrow();
