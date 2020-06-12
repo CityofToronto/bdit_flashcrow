@@ -17,6 +17,9 @@ mkdir -p /data/dev_data
   #
 
   # shellcheck disable=SC2046
+  env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.counts_arteries_centreline -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.counts_arteries_centreline/counts.arteries_centreline/g"
+
+  # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.gis_centreline -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.gis_centreline/gis.centreline/g"
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.gis_centreline_intersection -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.gis_centreline_intersection/gis.centreline_intersection/g"
@@ -36,6 +39,11 @@ mkdir -p /data/dev_data
   #
   # copy data for unsampled views
   #
+
+  echo 'COPY counts.arteries_centreline FROM stdin;'
+  # shellcheck disable=SC2046
+  env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM counts.arteries_centreline) TO stdout (FORMAT text, ENCODING 'UTF-8')"
+  echo '\.'
 
   echo 'COPY gis.centreline FROM stdin;'
   # shellcheck disable=SC2046
@@ -82,8 +90,6 @@ mkdir -p /data/dev_data
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.counts_arteries_groups -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.counts_arteries_groups/counts.arteries_groups/g"
   # shellcheck disable=SC2046
-  env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.counts_arteries_midblock_direction -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.counts_arteries_midblock_direction/counts.arteries_midblock_direction/g"
-  # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.counts_counts_multiday_runs -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.counts_counts_multiday_runs/counts.counts_multiday_runs/g"
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.counts_studies -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.counts_studies/counts.studies/g"
@@ -117,10 +123,6 @@ mkdir -p /data/dev_data
   echo 'COPY counts.arteries_groups FROM stdin;'
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.counts_arteries_groups) TO stdout (FORMAT text, ENCODING 'UTF-8')"
-  echo '\.'
-  echo 'COPY counts.arteries_midblock_direction FROM stdin;'
-  # shellcheck disable=SC2046
-  env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM flashcrow_dev_data.counts_arteries_midblock_direction) TO stdout (FORMAT text, ENCODING 'UTF-8')"
   echo '\.'
   echo 'COPY counts.counts_multiday_runs FROM stdin;'
   # shellcheck disable=SC2046

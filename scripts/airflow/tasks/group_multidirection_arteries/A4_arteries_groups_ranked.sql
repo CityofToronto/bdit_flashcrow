@@ -31,12 +31,12 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS counts.arteries_midblock_ranked_pairs AS 
       FROM arterycodes_remaining
       WHERE geo_id = gr.geo_id
     ), arterycode_pairs AS (
-      SELECT a1.arterycode AS a1, a2.arterycode AS a2, amd1.geom AS geom
+      SELECT a1.arterycode AS a1, a2.arterycode AS a2, ac1.geom AS geom
       FROM arterycodes a1
       JOIN arterycodes a2 ON a1.arterycode < a2.arterycode
-      JOIN counts.arteries_midblock_direction amd1 ON a1.arterycode = amd1.arterycode
-      JOIN counts.arteries_midblock_direction amd2 ON a2.arterycode = amd2.arterycode
-      WHERE amd1.direction != amd2.direction
+      JOIN counts.arteries_centreline ac1 ON a1.arterycode = ac1.arterycode
+      JOIN counts.arteries_centreline ac2 ON a2.arterycode = ac2.arterycode
+      WHERE ac1.direction != ac2.direction
     ), arterycode_pair_features_1 AS (
       SELECT
         ap.a1, ap.a2,

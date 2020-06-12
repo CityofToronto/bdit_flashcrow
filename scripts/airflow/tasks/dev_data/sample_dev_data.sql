@@ -2,6 +2,8 @@ create schema if not exists flashcrow_dev_data;
 
 -- MATERIALIZED VIEW SCHEMAS
 
+drop table if exists flashcrow_dev_data.counts_arteries_centreline;
+
 drop table if exists flashcrow_dev_data.gis_centreline;
 drop table if exists flashcrow_dev_data.gis_centreline_intersection;
 drop table if exists flashcrow_dev_data.gis_hospital;
@@ -11,6 +13,8 @@ drop table if exists flashcrow_dev_data.prj_volume_artery_centreline;
 
 drop table if exists flashcrow_dev_data.traffic_arterydata;
 drop table if exists flashcrow_dev_data.traffic_category;
+
+create table flashcrow_dev_data.counts_arteries_centreline (like counts.arteries_centreline including indexes);
 
 create table flashcrow_dev_data.gis_centreline (like gis.centreline including indexes);
 create table flashcrow_dev_data.gis_centreline_intersection (like gis.centreline_intersection including indexes);
@@ -29,7 +33,6 @@ drop table if exists flashcrow_dev_data.collisions_events_centreline;
 drop table if exists flashcrow_dev_data.collisions_involved;
 
 drop table if exists flashcrow_dev_data.counts_arteries_groups;
-drop table if exists flashcrow_dev_data.counts_arteries_midblock_direction;
 drop table if exists flashcrow_dev_data.counts_counts_multiday_runs;
 drop table if exists flashcrow_dev_data.counts_studies;
 
@@ -106,11 +109,6 @@ insert into flashcrow_dev_data.counts_arteries_groups
   )
   select ag.* from counts.arteries_groups ag
   inner join artery_group_ids agi using (group_id);
-
-create table flashcrow_dev_data.counts_arteries_midblock_direction (like counts.arteries_midblock_direction including indexes);
-insert into flashcrow_dev_data.counts_arteries_midblock_direction
-  select amd.* from counts.arteries_midblock_direction amd
-  inner join flashcrow_dev_data.counts_arteries_groups cag using (arterycode);
 
 create table flashcrow_dev_data.counts_counts_multiday_runs (like counts.counts_multiday_runs including indexes);
 insert into flashcrow_dev_data.counts_counts_multiday_runs
