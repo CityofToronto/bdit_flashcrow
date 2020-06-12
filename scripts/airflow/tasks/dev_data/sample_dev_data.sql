@@ -65,8 +65,17 @@ insert into flashcrow_dev_data.collisions_involved
 
 create table flashcrow_dev_data.counts_studies (like counts.studies including indexes);
 insert into flashcrow_dev_data.counts_studies
-  select * from counts.studies tablesample bernoulli (2)
-  where start_date >= '2009-01-01';
+  select * from counts.studies tablesample bernoulli (0.5)
+  where start_date >= '2009-01-01'
+  and "CATEGORY_ID" = 2;
+insert into flashcrow_dev_data.counts_studies
+  select * from counts.studies tablesample bernoulli (1)
+  where start_date >= '2009-01-01'
+  and "CATEGORY_ID" = 6;
+insert into flashcrow_dev_data.counts_studies
+  select * from counts.studies tablesample bernoulli (5)
+  where start_date >= '2009-01-01'
+  and "CATEGORY_ID" not in (2, 6);
 insert into flashcrow_dev_data.counts_studies
   select * from counts.studies
   where (centreline_type, centreline_id) in (
