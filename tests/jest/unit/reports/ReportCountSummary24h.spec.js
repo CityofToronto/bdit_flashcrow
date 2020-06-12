@@ -78,43 +78,49 @@ test('ReportCountSummary24h.timeRange', () => {
 test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const parsedId = {
-    artery: {
-      approachDir: CardinalDirection.NORTH,
-      arteryCode: 2946,
-      stationCode: 2946,
-      street1: 'MORNINGSIDE AVE',
-    },
-    count: {
-      date: DateTime.fromSQL('2019-03-07 00:00:00'),
-      locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-      type: { studyType: StudyType.ATR_SPEED_VOLUME },
-    },
+  const artery = {
+    approachDir: CardinalDirection.NORTH,
+    arteryCode: 2946,
+    stationCode: 2946,
+    street1: 'MORNINGSIDE AVE',
   };
+  const count = {
+    arteryCode: 2946,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    id: 17,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+  };
+  const counts = [count];
+  const arteries = new Map([[2946, artery]]);
+  const studyData = new Map([[17, countData_4_2156283]]);
 
-  const transformedData = reportInstance.transformData(parsedId, countData_4_2156283);
+  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_4_2156283);
 });
 
 test('ReportCountSummary24h#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const parsedId = {
-    artery: {
-      approachDir: CardinalDirection.NORTH,
-      arteryCode: 2946,
-      stationCode: 2946,
-      street1: 'MORNINGSIDE AVE',
-    },
-    count: {
-      date: DateTime.fromSQL('2019-03-07 00:00:00'),
-      locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-      type: { studyType: StudyType.ATR_SPEED_VOLUME },
-    },
+  const artery = {
+    approachDir: CardinalDirection.NORTH,
+    arteryCode: 2946,
+    stationCode: 2946,
+    street1: 'MORNINGSIDE AVE',
   };
+  const count = {
+    arteryCode: 2946,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    id: 17,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+  };
+  const counts = [count];
+  const arteries = new Map([[2946, artery]]);
+  const studyData = new Map([[17, countData_4_2156283]]);
 
-  const transformedData = reportInstance.transformData(parsedId, countData_4_2156283);
+  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
   expect(() => {
-    reportInstance.generateCsv(parsedId, transformedData);
+    reportInstance.generateCsv(count, transformedData);
   }).not.toThrow();
 });
