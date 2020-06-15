@@ -2,6 +2,7 @@
 import path from 'path';
 
 import {
+  CardinalDirection,
   CentrelineType,
   ReportFormat,
   ReportType,
@@ -14,11 +15,15 @@ import StudyDataDAO from '@/lib/db/StudyDataDAO';
 import ReportFactory from '@/lib/reports/ReportFactory';
 import MovePdfGenerator from '@/lib/reports/format/MovePdfGenerator';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import DateTime from '@/lib/time/DateTime';
 
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/StudyDAO');
 jest.mock('@/lib/db/StudyDataDAO');
 
+const countData_4_2156283 = loadJsonSync(
+  path.resolve(__dirname, '../data/countData_4_2156283.json'),
+);
 const countData_5_36781 = loadJsonSync(
   path.resolve(__dirname, '../data/countData_5_36781.json'),
 );
@@ -27,6 +32,33 @@ const countData_5_38661 = loadJsonSync(
 );
 
 beforeAll(MovePdfGenerator.init);
+
+function setup_4_2156283_single() {
+  const study = {
+    arteryGroupId: 2946,
+    countGroupId: 2156281,
+    endDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    startDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    type: { id: 4, studyType: StudyType.ATR_SPEED_VOLUME },
+  };
+  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
+
+  const counts = [{
+    arteryCode: 2946,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    id: 2156283,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+  }];
+  const arteries = new Map([[2946, {
+    approachDir: CardinalDirection.NORTH,
+    arteryCode: 2946,
+    stationCode: 2946,
+    street1: 'MORNINGSIDE AVE',
+  }]]);
+  const studyData = new Map([[2156283, countData_4_2156283]]);
+  StudyDataDAO.byStudy.mockResolvedValue({ arteries, counts, studyData });
+}
 
 function setup_5_36781() {
   const study = {
@@ -145,6 +177,30 @@ function getNumPages(doc) {
   return range.start + range.count;
 }
 
+test('COUNT_SUMMARY_24H', async () => {
+  setup_4_2156283_single();
+
+  const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H);
+  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  expect(getNumPages(doc)).toBe(1);
+});
+
+test('COUNT_SUMMARY_24H_DETAILED', async () => {
+  setup_4_2156283_single();
+
+  const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_DETAILED);
+  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  expect(getNumPages(doc)).toBe(1);
+});
+
+test('COUNT_SUMMARY_24H_GRAPHICAL', async () => {
+  setup_4_2156283_single();
+
+  const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_GRAPHICAL);
+  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  expect(getNumPages(doc)).toBe(1);
+});
+
 test('COUNT_SUMMARY_TURNING_MOVEMENT', async () => {
   setup_5_36781();
 
@@ -168,6 +224,14 @@ test('INTERSECTION_SUMMARY', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.INTERSECTION_SUMMARY);
   const doc = await reportInstance.generate('5/38661', ReportFormat.PDF, {});
+  expect(getNumPages(doc)).toBe(1);
+});
+
+test('SPEED_PERCENTILE', async () => {
+  setup_4_2156283_single();
+
+  const reportInstance = ReportFactory.getInstance(ReportType.SPEED_PERCENTILE);
+  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
