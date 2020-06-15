@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { StudyType } from '@/lib/Constants';
+import { StudyHours, StudyType } from '@/lib/Constants';
 import ReportCountSummaryTurningMovementDetailed
   from '@/lib/reports/ReportCountSummaryTurningMovementDetailed';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -22,14 +22,21 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumac
 
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    hours: StudyHours.SCHOOL,
+    id: 1,
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
     type: { studyType: StudyType.TMC },
   };
 
   // TODO: actually export proper count JSON
-  const counts = [{ id: 1 }];
+  const counts = [count];
   const studyData = new Map([[1, countData_5_36781]]);
-  const transformedData = reportInstance.transformData(count, { counts, studyData });
+  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { hours, px, raw } = transformedData;
+  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(px).toBe(1390);
+  transformedData = raw;
+
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781);
 });
 

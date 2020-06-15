@@ -106,7 +106,7 @@
               v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
               type="secondary"
               @click.stop="showReportParameters = true">
-              <v-icon color="primary" left>mdi-settings</v-icon>
+              <v-icon color="primary" left>mdi-cog</v-icon>
               Set Parameters
             </FcButton>
             <v-menu>
@@ -393,6 +393,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-study-reports {
-  max-height: 100vh;
+  max-height: calc(100vh - 60px);
 }
 </style>

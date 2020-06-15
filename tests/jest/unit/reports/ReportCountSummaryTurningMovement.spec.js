@@ -2,7 +2,7 @@
 import path from 'path';
 
 import ArrayUtils from '@/lib/ArrayUtils';
-import { StudyType } from '@/lib/Constants';
+import { StudyHours, StudyType } from '@/lib/Constants';
 import Random from '@/lib/Random';
 import ArrayStats from '@/lib/math/ArrayStats';
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
@@ -41,6 +41,8 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
 
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    hours: StudyHours.SCHOOL,
+    id: 1,
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
     type: { studyType: StudyType.TMC },
   };
@@ -55,9 +57,14 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
    * (e.g. a "total" value is the sum of the values it includes), or c) the update is in one
    * of the base values, suggesting that it was in fact incorrect in the legacy report.
    */
-  const counts = [{ id: 1 }];
+  const counts = [count];
   const studyData = new Map([[1, countData_5_36781]]);
-  const transformedData = reportInstance.transformData(count, { counts, studyData });
+  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { hours, px, stats } = transformedData;
+  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(px).toBe(1390);
+  transformedData = stats;
+
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781);
 });
 
@@ -66,11 +73,13 @@ test('ReportCountSummaryTurningMovement#generateCsv [Gerrard and Sumach: 5/36781
 
   const count = {
     date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    hours: StudyHours.SCHOOL,
+    id: 1,
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
     type: { studyType: StudyType.TMC },
   };
 
-  const counts = [{ id: 1 }];
+  const counts = [count];
   const studyData = new Map([[1, countData_5_36781]]);
   const transformedData = reportInstance.transformData(count, { counts, studyData });
   expect(() => {

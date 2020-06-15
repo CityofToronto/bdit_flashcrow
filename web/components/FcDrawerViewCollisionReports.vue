@@ -268,6 +268,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-collision-reports {
-  max-height: 100vh;
+  max-height: calc(100vh - 60px);
 }
 </style>
