@@ -342,13 +342,13 @@
     },
     "1500|documentation>yargs>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1589553373620,
-      "expiresAt": 1590158090668
+      "madeAt": 1592255706297,
+      "expiresAt": 1592860496277
     },
     "1500|npm-audit-resolver>audit-resolve-core>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1589553373620,
-      "expiresAt": 1590158090668
+      "madeAt": 1592255706297,
+      "expiresAt": 1592860496277
     }
   },
   "rules": {},
