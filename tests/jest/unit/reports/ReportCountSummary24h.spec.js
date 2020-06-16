@@ -12,6 +12,9 @@ const countData_4_2156283 = loadJsonSync(
 const transformedData_COUNT_SUMMARY_24H_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_24H_4_2156283.json'),
 );
+const transformedData_COUNT_SUMMARY_24H_4_2156283_empty = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_24H_4_2156283_empty.json'),
+);
 
 test('ReportCountSummary24h.peak', () => {
   const volumeByBucket = [3, 5, 10, 15, 6, 2, 1, 5, 14, 0];
@@ -36,11 +39,11 @@ test('ReportCountSummary24h.peak', () => {
 });
 
 test('ReportCountSummary24h.timeRange', () => {
-  const countData = [{
-    t: DateTime.fromObject({ year: 2000, month: 1, day: 1 }),
-  }];
+  const count = {
+    date: DateTime.fromObject({ year: 2000, month: 1, day: 1 }),
+  };
 
-  expect(ReportCountSummary24h.timeRange(countData, 0, 4)).toEqual({
+  expect(ReportCountSummary24h.timeRange(count, 0, 4)).toEqual({
     start: DateTime.fromObject({
       year: 2000,
       month: 1,
@@ -57,7 +60,7 @@ test('ReportCountSummary24h.timeRange', () => {
     }),
   });
 
-  expect(ReportCountSummary24h.timeRange(countData, 13, 22)).toEqual({
+  expect(ReportCountSummary24h.timeRange(count, 13, 22)).toEqual({
     start: DateTime.fromObject({
       year: 2000,
       month: 1,
@@ -73,6 +76,30 @@ test('ReportCountSummary24h.timeRange', () => {
       minute: 30,
     }),
   });
+});
+
+test('ReportCountSummary24h#transformData [empty dataset]', () => {
+  const reportInstance = new ReportCountSummary24h();
+
+  const artery = {
+    approachDir: CardinalDirection.NORTH,
+    arteryCode: 2946,
+    stationCode: 2946,
+    street1: 'MORNINGSIDE AVE',
+  };
+  const count = {
+    arteryCode: 2946,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    id: 17,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+  };
+  const counts = [count];
+  const arteries = new Map([[2946, artery]]);
+  const studyData = new Map([[17, []]]);
+
+  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
+  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_4_2156283_empty);
 });
 
 test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]', () => {
