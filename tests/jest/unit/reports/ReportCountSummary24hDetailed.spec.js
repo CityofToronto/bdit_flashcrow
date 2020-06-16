@@ -13,15 +13,54 @@ const transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283.json'),
 );
 
+test('ReportCountSummary24hDetailed#transformData [empty dataset]', () => {
+  const reportInstance = new ReportCountSummary24hDetailed();
+
+  const countDate = DateTime.fromObject({ year: 2019, month: 3, day: 7 });
+  const study = {
+    endDate: countDate,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    startDate: countDate,
+    type: { name: 'SPEED' },
+  };
+  const counts = [{
+    arteryCode: 42,
+    date: countDate,
+    id: 17,
+  }];
+  const arteries = new Map([[42, {
+    approachDir: CardinalDirection.NORTH,
+  }]]);
+  const studyData = new Map([[17, []]]);
+
+  /*
+   * Note that this is a speed / volume ATR count, so we're actually getting more than
+   * one data point per hour.  This allows us to test that the 24-hour detailed report
+   * works in this case.
+   */
+  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  expect(transformedData).toHaveLength(1);
+  const { date, direction, volumeByBucket } = transformedData[0];
+  expect(date.equals(countDate)).toBe(true);
+  expect(direction).toBe(CardinalDirection.NORTH);
+  transformedData = volumeByBucket;
+
+  const expectedData = transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283.map(
+    ({ t }) => ({ t, count: 0 }),
+  );
+  expect(transformedData).toEqual(expectedData);
+});
+
 test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24hDetailed();
 
-  const count = {
-    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+  const countDate = DateTime.fromObject({ year: 2019, month: 3, day: 7 });
+  const study = {
+    endDate: countDate,
     locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    startDate: countDate,
     type: { name: 'SPEED' },
   };
-  const countDate = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   const counts = [{
     arteryCode: 42,
     date: countDate,
@@ -37,7 +76,7 @@ test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/
    * one data point per hour.  This allows us to test that the 24-hour detailed report
    * works in this case.
    */
-  let transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
+  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, volumeByBucket } = transformedData[0];
   expect(date.equals(countDate)).toBe(true);
@@ -50,12 +89,13 @@ test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/
 test('ReportCountSummary24hDetailed#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportCountSummary24hDetailed();
 
-  const count = {
-    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+  const countDate = DateTime.fromObject({ year: 2019, month: 3, day: 7 });
+  const study = {
+    endDate: countDate,
     locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    startDate: countDate,
     type: { name: 'SPEED' },
   };
-  const countDate = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   const counts = [{
     arteryCode: 42,
     date: countDate,
@@ -66,8 +106,8 @@ test('ReportCountSummary24hDetailed#generateCsv [Morningside S of Lawrence: 4/21
   }]]);
   const studyData = new Map([[17, countData_4_2156283]]);
 
-  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
+  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(() => {
-    reportInstance.generateCsv(count, transformedData);
+    reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
 });

@@ -1,0 +1,73 @@
+[
+  {
+    "title": "MORNINGSIDE AVE",
+    "directionGroups": [
+      {
+        "title": "Northbound",
+        "counts": [
+          {
+            "location":"MORNINGSIDE AVE N/B S OF LAWRENCE AVE",
+            "category": "Speed / Volume ATR",
+            "stationCode": 2946,
+            "arteryCode": 2946,
+            "date": "2019-03-07 00:00:00.000",
+            "dayOfWeek": "Thu",
+            "amPeak": {
+              "indices": [0, 1, 2, 3],
+              "sum": 0,
+              "timeRange": {
+                "start": "2019-03-07 00:00:00.000",
+                "end": "2019-03-07 01:00:00.000"
+              }
+            },
+            "pmPeak": {
+              "indices": [48, 49, 50, 51],
+              "sum": 0,
+              "timeRange": {
+                "start": "2019-03-07 12:00:00.000",
+                "end": "2019-03-07 13:00:00.000"
+              }
+            },
+            "offPeak": {
+              "indices": [4, 5, 6, 7],
+              "sum": 0,
+              "timeRange": {
+                "start": "2019-03-07 01:00:00.000",
+                "end": "2019-03-07 02:00:00.000"
+              }
+            },
+            "total": 0
+          }
+        ],
+        "totals": {
+          "sum": {
+            "amPeak": 0,
+            "pmPeak": 0,
+            "offPeak": 0,
+            "total": 0
+          },
+          "avg": {
+            "amPeak": 0,
+            "pmPeak": 0,
+            "offPeak": 0,
+            "total": 0
+          }
+        }
+      }
+    ],
+    "totals": {
+      "sum": {
+        "amPeak": 0,
+        "pmPeak": 0,
+        "offPeak": 0,
+        "total": 0
+      },
+      "avg": {
+        "amPeak": 0,
+        "pmPeak": 0,
+        "offPeak": 0,
+        "total": 0
+      }
+    }
+  }
+]
