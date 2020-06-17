@@ -1,6 +1,3 @@
-/* eslint-disable camelcase */
-import path from 'path';
-
 import {
   AuthScope,
   CardinalDirection,
@@ -17,8 +14,6 @@ import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CollisionDAO from '@/lib/db/CollisionDAO';
 import CollisionFactorDAO from '@/lib/db/CollisionFactorDAO';
-import CountDAO from '@/lib/db/CountDAO';
-import CountDataDAO from '@/lib/db/CountDataDAO';
 import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
 import PoiDAO from '@/lib/db/PoiDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
@@ -32,14 +27,12 @@ import {
   InvalidStudyQueryError,
 } from '@/lib/error/MoveErrors';
 import Category from '@/lib/model/Category';
-import Count from '@/lib/model/Count';
 import Joi from '@/lib/model/Joi';
 import Study from '@/lib/model/Study';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestChange from '@/lib/model/StudyRequestChange';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import DAOTestUtils from '@/lib/test/DAOTestUtils';
-import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateEmail,
   generateName,
@@ -50,13 +43,6 @@ import DateTime from '@/lib/time/DateTime';
 
 beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
 afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
-
-const countData_4_1415698 = loadJsonSync(
-  path.resolve(__dirname, './data/countData_4_1415698.json'),
-);
-const countData_5_26177 = loadJsonSync(
-  path.resolve(__dirname, './data/countData_5_26177.json'),
-);
 
 test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('')).toBe(null);
@@ -375,259 +361,6 @@ test('CollisionFactorDAO', async () => {
     description: 'Fatal',
   });
   expect(CollisionFactorDAO.isInited()).toBe(true);
-});
-
-test('CountDAO.byCentreline()', async () => {
-  // invalid feature
-  let counts = await CountDAO.byCentreline(
-    -1, -1, StudyType.TMC,
-    null,
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(0);
-
-  // invalid date range (start > end)
-  let start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
-  let end = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
-  counts = await CountDAO.byCentreline(
-    30000549, CentrelineType.INTERSECTION, StudyType.TMC,
-    { start, end },
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(0);
-
-  // valid feature with less than maxPerCategory counts
-  counts = await CountDAO.byCentreline(
-    14659630, CentrelineType.SEGMENT, StudyType.ATR_SPEED_VOLUME,
-    null,
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(6);
-  await expect(
-    Joi.array().items(Count.read).validateAsync(counts),
-  ).resolves.toEqual(counts);
-
-  // valid feature with less than maxPerCategory counts, date range
-  // filters to empty
-  start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
-  end = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
-  counts = await CountDAO.byCentreline(
-    14659630, CentrelineType.SEGMENT, StudyType.ATR_SPEED_VOLUME,
-    { start, end },
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(0);
-
-  // valid feature with more than maxPerCategory counts
-  counts = await CountDAO.byCentreline(
-    1145768, CentrelineType.SEGMENT, StudyType.RESCU,
-    null,
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(10);
-
-  // valid feature with more than maxPerCategory counts, date range
-  // filters to less
-  start = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
-  end = DateTime.fromObject({ year: 2016, month: 1, day: 1 });
-  counts = await CountDAO.byCentreline(
-    1145768, CentrelineType.SEGMENT, StudyType.RESCU,
-    { start, end },
-    null,
-    null,
-    10, 0,
-  );
-  expect(counts).toHaveLength(10);
-
-  // pagination works
-  const results = await CountDAO.byCentrelineSummary(
-    1145768, CentrelineType.SEGMENT,
-    { start, end },
-    null,
-    null,
-    [StudyType.RESCU],
-  );
-  const { numPerCategory } = results[0];
-  for (let i = 0; i < numPerCategory; i += 100) {
-    /* eslint-disable-next-line no-await-in-loop */
-    counts = await CountDAO.byCentreline(
-      1145768, CentrelineType.SEGMENT, StudyType.RESCU,
-      { start, end },
-      null,
-      null,
-      100, i,
-    );
-    const expectedLength = Math.min(100, numPerCategory - i);
-    expect(counts).toHaveLength(expectedLength);
-  }
-});
-
-function expectNumPerCategory(actual, expected) {
-  expect(actual).toHaveLength(expected.length);
-  expected.forEach(([n0, value0], i) => {
-    const { category: { studyType: { name: value } }, numPerCategory } = actual[i];
-    expect(numPerCategory).toBe(n0);
-    expect(value).toBe(value0);
-  });
-}
-
-test('CountDAO.byCentrelineSummary()', async () => {
-  // invalid feature
-  let results = await CountDAO.byCentrelineSummary(
-    -1, -1,
-    null,
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, []);
-
-  // invalid date range (start > end)
-  let start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
-  let end = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
-  results = await CountDAO.byCentrelineSummary(
-    30000549, CentrelineType.INTERSECTION,
-    { start, end },
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, []);
-
-  // centreline feature with no counts
-  results = await CountDAO.byCentrelineSummary(
-    30062737, CentrelineType.SEGMENT,
-    null,
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, []);
-
-  // centreline feature with some counts
-  results = await CountDAO.byCentrelineSummary(
-    14659630, CentrelineType.SEGMENT,
-    null,
-    null,
-    null,
-    null,
-  );
-  const resultsSchema = Joi.array().items(
-    Joi.object().keys({
-      category: Category.read,
-      count: Count.read,
-      numPerCategory: Joi.number().integer().positive().required(),
-    }),
-  );
-  expectNumPerCategory(results, [[10, 'ATR_VOLUME'], [6, 'ATR_SPEED_VOLUME']]);
-  await expect(
-    resultsSchema.validateAsync(results),
-  ).resolves.toEqual(results);
-
-  // valid feature with some counts, date range filters to empty
-  start = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
-  end = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
-  results = await CountDAO.byCentrelineSummary(
-    14659630, CentrelineType.SEGMENT,
-    { start, end },
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, []);
-
-  // centreline feature with lots of counts
-  results = await CountDAO.byCentrelineSummary(
-    1145768, CentrelineType.SEGMENT,
-    null,
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, [[3633, 'RESCU']]);
-
-  // centreline feature with lots of counts, date range filters to empty
-  start = DateTime.fromObject({ year: 1980, month: 1, day: 1 });
-  end = DateTime.fromObject({ year: 1980, month: 1, day: 2 });
-  results = await CountDAO.byCentrelineSummary(
-    1145768, CentrelineType.SEGMENT,
-    { start, end },
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, []);
-
-  // centreline feature with lots of counts, date range filters down
-  start = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
-  end = DateTime.fromObject({ year: 2016, month: 1, day: 1 });
-  results = await CountDAO.byCentrelineSummary(
-    1145768, CentrelineType.SEGMENT,
-    { start, end },
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, [[187, 'RESCU']]);
-
-  // centreline feature with more than one kind of count
-  results = await CountDAO.byCentrelineSummary(
-    9278884, CentrelineType.SEGMENT,
-    null,
-    null,
-    null,
-    null,
-  );
-  expectNumPerCategory(results, [[6, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
-});
-
-test('CountDAO.byIdAndCategory()', async () => {
-  // invalid ID
-  let count = await CountDAO.byIdAndCategory(-1, 1);
-  expect(count).toBeNull();
-
-  // invalid count type
-  count = await CountDAO.byIdAndCategory(1206019, -1);
-  expect(count).toBeNull();
-
-  // TMC
-  count = await CountDAO.byIdAndCategory(26177, 5);
-  expect(count).not.toBeNull();
-  expect(count.id).toBe(26177);
-  expect(count.type.id).toBe(5);
-
-  // non-TMC
-  count = await CountDAO.byIdAndCategory(1415698, 4);
-  expect(count).not.toBeNull();
-  expect(count.id).toBe(1415698);
-  expect(count.type.id).toBe(4);
-});
-
-test('CountDataDAO', async () => {
-  let count;
-  let countData;
-
-  // TMC
-  count = await CountDAO.byIdAndCategory(26177, 5);
-  countData = await CountDataDAO.byCount(count);
-  expect(countData).toEqual(countData_5_26177);
-
-  // non-TMC, speed-related
-  count = await CountDAO.byIdAndCategory(1415698, 4);
-  countData = await CountDataDAO.byCount(count);
-  expect(countData).toEqual(countData_4_1415698);
-
-  // TODO: add (1206023, 1) to sample_dev_data, then add non-speed-related test here
 });
 
 test('DynamicTileDAO.getTileInfo', () => {
