@@ -1,3 +1,6 @@
+/* eslint-disable camelcase */
+import path from 'path';
+
 import {
   AuthScope,
   CardinalDirection,
@@ -14,9 +17,11 @@ import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CollisionDAO from '@/lib/db/CollisionDAO';
 import CollisionFactorDAO from '@/lib/db/CollisionFactorDAO';
+import CountDAO from '@/lib/db/CountDAO';
 import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
 import PoiDAO from '@/lib/db/PoiDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
+import StudyDataDAO from '@/lib/db/StudyDataDAO';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
@@ -32,7 +37,7 @@ import Study from '@/lib/model/Study';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestChange from '@/lib/model/StudyRequestChange';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
-import DAOTestUtils from '@/lib/test/DAOTestUtils';
+import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateEmail,
   generateName,
@@ -41,8 +46,14 @@ import {
 } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 
-beforeAll(DAOTestUtils.startupWithDevData, DAOTestUtils.TIMEOUT);
-afterAll(DAOTestUtils.shutdown, DAOTestUtils.TIMEOUT);
+jest.setTimeout(60000);
+
+const countData_4_1415698 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_4_1415698.json'),
+);
+const countData_5_26177 = loadJsonSync(
+  path.resolve(__dirname, './data/countData_5_26177.json'),
+);
 
 test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('')).toBe(null);
@@ -91,6 +102,68 @@ test('ArteryDAO.byArteryCode', async () => {
     street2: 'BELLAMY RD',
     street3: null,
   });
+});
+
+test('ArteryDAO.byStudy', async () => {
+  // intersection
+  let result = await ArteryDAO.byStudy({
+    arteryGroupId: 23945,
+  });
+  expect(result).toEqual([{
+    approachDir: null,
+    arteryCode: 23945,
+    centrelineId: 13446886,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.41247566, 43.774098393],
+    },
+    locationDesc: 'CHURCH AVE AT DORIS AVE (PX 1977)',
+    stationCode: '0013446886',
+    street1: 'CHURCH AVE',
+    street2: 'DORIS AVE',
+    street3: 'PX 1977',
+  }]);
+
+  // segment
+  result = await ArteryDAO.byStudy({
+    arteryGroupId: 32532,
+  });
+  expect(result).toEqual([{
+    approachDir: CardinalDirection.EAST,
+    arteryCode: 32532,
+    centrelineId: 9278884,
+    centrelineType: CentrelineType.SEGMENT,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.5370597996856, 43.6611516850526],
+    },
+    locationDesc: 'RATHBURN RD E/B W OF PHEASANT LANE',
+    stationCode: '32532',
+    street1: 'RATHBURN ROAD',
+    street2: 'PHEASANT LANE',
+    street3: null,
+  }, {
+    approachDir: CardinalDirection.WEST,
+    arteryCode: 32533,
+    centrelineId: 9278884,
+    centrelineType: CentrelineType.SEGMENT,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.5370597996856, 43.6611516850526],
+    },
+    locationDesc: 'RATHBURN RD W/B E OF THE WYND',
+    stationCode: '32533',
+    street1: 'RATHBURN ROAD',
+    street2: 'THE WYND',
+    street3: null,
+  }]);
+
+  // segment: other artery
+  result = await ArteryDAO.byStudy({
+    arteryGroupId: 32533,
+  });
+  expect(result).toEqual([]);
 });
 
 test('CategoryDAO', async () => {
@@ -363,6 +436,53 @@ test('CollisionFactorDAO', async () => {
   expect(CollisionFactorDAO.isInited()).toBe(true);
 });
 
+test('CountDAO.byStudy', async () => {
+  // TMC: single-day, single-arterycode
+  let result = await CountDAO.byStudy({
+    arteryGroupId: 23945,
+    endDate: DateTime.fromObject({ year: 2013, month: 5, day: 13 }),
+    startDate: DateTime.fromObject({ year: 2013, month: 5, day: 13 }),
+    type: { id: 5, studyType: StudyType.TMC },
+  });
+  expect(result).toHaveLength(1);
+
+  // RESCU: not aggregated across days
+  result = await CountDAO.byStudy({
+    arteryGroupId: 3184,
+    endDate: DateTime.fromObject({ year: 2009, month: 11, day: 20 }),
+    startDate: DateTime.fromObject({ year: 2009, month: 11, day: 20 }),
+    type: { id: 2, studyType: StudyType.RESCU },
+  });
+  expect(result).toHaveLength(1);
+
+  // volume ATR: single-day, single-direction
+  result = await CountDAO.byStudy({
+    arteryGroupId: 3099,
+    endDate: DateTime.fromObject({ year: 1995, month: 9, day: 25 }),
+    startDate: DateTime.fromObject({ year: 1995, month: 9, day: 25 }),
+    type: { id: 1, studyType: StudyType.ATR_VOLUME },
+  });
+  expect(result).toHaveLength(1);
+
+  // volume ATR: multi-day, single-direction
+  result = await CountDAO.byStudy({
+    arteryGroupId: 3099,
+    endDate: DateTime.fromObject({ year: 2017, month: 6, day: 15 }),
+    startDate: DateTime.fromObject({ year: 2017, month: 6, day: 13 }),
+    type: { id: 4, studyType: StudyType.ATR_SPEED_VOLUME },
+  });
+  expect(result).toHaveLength(3);
+
+  // volume ATR: multi-day, multi-direction
+  result = await CountDAO.byStudy({
+    arteryGroupId: 32532,
+    endDate: DateTime.fromObject({ year: 2009, month: 9, day: 17 }),
+    startDate: DateTime.fromObject({ year: 2009, month: 9, day: 15 }),
+    type: { id: 1, studyType: StudyType.ATR_VOLUME },
+  });
+  expect(result).toHaveLength(6);
+});
+
 test('DynamicTileDAO.getTileInfo', () => {
   const { EPSG_3857_MAX, EPSG_3857_MIN, EPSG_3857_SIZE } = DynamicTileDAO;
   const res = EPSG_3857_SIZE / 4096;
@@ -431,8 +551,6 @@ test('PoiDAO.byCentrelineSummary', async () => {
   expect(result).toHaveProperty('hospital');
   expect(result).toHaveProperty('school');
 });
-
-// START STUDY
 
 test('StudyDAO.byCentreline()', async () => {
   // invalid feature
@@ -686,7 +804,23 @@ test('StudyDAO.byCentrelineTotal()', async () => {
   expect(total).toBe(3);
 });
 
-// END STUDY
+test('StudyDataDAO', async () => {
+  // TMC
+  let study = await StudyDAO.byCategoryAndCountGroup(5, 26177);
+  let result = await StudyDataDAO.byStudy(study);
+  let countData = countData_5_26177.map(({ t, data }) => ({ t, data }));
+  expect(result.studyData).toEqual(new Map([
+    [26177, countData],
+  ]));
+
+  // non-TMC, speed-related
+  study = await StudyDAO.byCategoryAndCountGroup(4, 1415698);
+  result = await StudyDataDAO.byStudy(study);
+  countData = countData_4_1415698.map(({ t, data }) => ({ t, data }));
+  expect(result.studyData).toEqual(new Map([
+    [1415698, countData],
+  ]));
+});
 
 test('StudyRequestDAO', async () => {
   const transientUser = generateUser();
@@ -752,7 +886,7 @@ test('StudyRequestDAO', async () => {
 
   // fetch all
   let all = await StudyRequestDAO.all();
-  expect(all).toEqual([persistedStudyRequest]);
+  expect(all).toContainEqual(persistedStudyRequest);
 
   // update study request fields
   persistedStudyRequest.reasons = ['TSC'];
@@ -840,7 +974,7 @@ test('StudyRequestDAO', async () => {
 
   // fetch all
   all = await StudyRequestDAO.all();
-  expect(all).toEqual([]);
+  expect(all).not.toContainEqual(persistedStudyRequest);
 });
 
 test('StudyRequestChangeDAO', async () => {

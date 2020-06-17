@@ -10,7 +10,6 @@ import {
 import BackendClient from '@/lib/api/BackendClient';
 import UserDAO from '@/lib/db/UserDAO';
 import AuthState from '@/lib/model/AuthState';
-import DAOTestUtils from '@/lib/test/DAOTestUtils';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 import { initialize } from '@/web/MoveServer';
@@ -109,16 +108,14 @@ let server;
 let client;
 
 beforeAll(async () => {
-  await DAOTestUtils.startupWithDevData();
   server = await initialize();
   client = new InjectBackendClient(server);
-}, DAOTestUtils.TIMEOUT);
+}, 60000);
 afterAll(async () => {
   await server.stop();
-  await DAOTestUtils.shutdown();
-}, DAOTestUtils.TIMEOUT);
+}, 60000);
 
-jest.setTimeout(DAOTestUtils.TIMEOUT);
+jest.setTimeout(60000);
 
 test('AuthController.getAuth', async () => {
   let response = await client.fetch('/auth');
@@ -575,42 +572,42 @@ test('StudyRequestController', async () => {
   response = await client.fetch('/requests/study/byCentreline/pending', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   let fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // other ETT1s can fetch by centreline pending
   client.setUser(ett1);
   response = await client.fetch('/requests/study/byCentreline/pending', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // supervisors can fetch by centreline pending
   client.setUser(supervisor);
   response = await client.fetch('/requests/study/byCentreline/pending', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // requester can fetch all
   client.setUser(requester);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // other ETT1s can fetch all
   client.setUser(ett1);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // supervisors can fetch all
   client.setUser(supervisor);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // update study request fields
   persistedStudyRequest.reasons = [StudyRequestReason.TSC];

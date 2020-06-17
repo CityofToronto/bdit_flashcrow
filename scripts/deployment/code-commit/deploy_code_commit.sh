@@ -13,7 +13,9 @@ git fetch
 git pull
 
 # run CI tests
+npm run test:db-startup
 npx npm-run-all ci:*
+npm run test:db-shutdown
 
 # attempt to build frontend
 npm run frontend:build
