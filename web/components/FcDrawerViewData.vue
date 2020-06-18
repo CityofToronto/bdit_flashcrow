@@ -324,6 +324,7 @@ export default {
     },
     location(location, locationPrev) {
       if (location === null) {
+        this.loading = true;
         this.$router.push({
           name: 'viewData',
         });

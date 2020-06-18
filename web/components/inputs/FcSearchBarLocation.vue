@@ -1,5 +1,23 @@
 <template>
   <div class="fc-search-bar-location-wrapper">
+    <FcDialogConfirm
+      v-model="showConfirmClear"
+      textCancel="Cancel"
+      textOk="Clear"
+      title="Clear Location"
+      @action-ok="actionClear">
+      <span class="body-1">
+        <span v-if="$route.name === 'requestStudyEdit'">
+
+        </span>
+        <span v-else-if="$route.name === 'requestStudyNew'">
+
+        </span>
+        <span v-else-if="$route.name === 'requestStudyView'">
+
+        </span>
+      </span>
+    </FcDialogConfirm>
     <v-tooltip
       v-if="collapseSearchBar"
       right
@@ -19,7 +37,6 @@
     <v-autocomplete
       v-else
       v-model="internalLocation"
-      append-icon="mdi-magnify"
       class="fc-search-bar-location elevation-2"
       dense
       hide-details
@@ -32,6 +49,24 @@
       return-object
       :search-input.sync="query"
       solo>
+      <template v-slot:append>
+        <v-tooltip
+          v-if="location !== null"
+          right>
+          <template v-slot:activator="{ on }">
+            <FcButton
+              aria-label="Clear Location"
+              type="icon"
+              @click="onClickClear"
+              v-on="on">
+              <v-icon>mdi-close-circle</v-icon>
+            </FcButton>
+          </template>
+          <span>Clear Location</span>
+        </v-tooltip>
+        <v-divider vertical />
+        <v-icon right>mdi-magnify</v-icon>
+      </template>
       <template v-slot:item="{ attrs, item, on, parent }">
         <v-list-item
           v-bind="attrs"
@@ -52,12 +87,14 @@ import { mapMutations, mapState } from 'vuex';
 
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcSearchBarLocation',
   components: {
     FcButton,
+    FcDialogConfirm,
   },
   data() {
     return {
@@ -65,6 +102,7 @@ export default {
       key: null,
       loading: false,
       query: null,
+      showConfirmClear: false,
     };
   },
   computed: {
@@ -78,7 +116,11 @@ export default {
         return this.location;
       },
       set(internalLocation) {
-        this.setLocation(internalLocation);
+        if (internalLocation !== undefined) {
+          this.setLocation(internalLocation);
+          return;
+        }
+        console.log('clear');
       },
     },
     ...mapState(['location']),
@@ -154,6 +196,18 @@ export default {
     }, 250),
   },
   methods: {
+    actionClear() {
+      this.query = null;
+      this.setLocation(null);
+    },
+    onClickClear() {
+      const { name } = this.$route;
+      if (name === 'viewData' || name === 'viewDataAtLocation') {
+        this.actionClear();
+      } else {
+        this.showConfirmClear = true;
+      }
+    },
     ...mapMutations(['setLocation']),
   },
 };
