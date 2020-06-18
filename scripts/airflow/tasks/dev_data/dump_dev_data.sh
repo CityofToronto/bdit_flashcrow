@@ -29,9 +29,6 @@ mkdir -p /data/dev_data
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.gis_school -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.gis_school/gis.school/g"
 
   # shellcheck disable=SC2046
-  env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.prj_volume_artery_centreline -x --no-owner --clean --if-exists --schema-only | sed "s/flashcrow_dev_data.prj_volume_artery_centreline/prj_volume.artery_centreline/g"
-
-  # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_category -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_category/"TRAFFIC"."CATEGORY"/g'
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_arterydata -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_arterydata/"TRAFFIC"."ARTERYDATA"/g'
@@ -60,11 +57,6 @@ mkdir -p /data/dev_data
   echo 'COPY gis.school FROM stdin;'
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM gis.school) TO stdout (FORMAT text, ENCODING 'UTF-8')"
-  echo '\.'
-
-  echo 'COPY prj_volume.artery_centreline FROM stdin;'
-  # shellcheck disable=SC2046
-  env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM prj_volume.artery_centreline) TO stdout (FORMAT text, ENCODING 'UTF-8')"
   echo '\.'
 
   echo 'COPY "TRAFFIC"."CATEGORY" FROM stdin;'
