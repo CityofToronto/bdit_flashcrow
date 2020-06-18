@@ -2,7 +2,7 @@
 #
 # startup.sh [--withDevData]
 #
-# This is called by `DAOTestUtils.startup()` to initialize a PostgreSQL database that
+# This is called by `npm run test:db-startup` to initialize a PostgreSQL database that
 # is specifically designed for testing.  This database resides on an in-memory filesystem
 # that is unmounted at end of test.
 
@@ -28,37 +28,11 @@ RAMDISK_PGPASS="${RAMDISK_MOUNT_POINT}/.pgpass"
 # This directory stores database data.
 RAMDISK_DATA_DIR="${RAMDISK_MOUNT_POINT}/pg_data_dir"
 
-# Should we load the development data file?
-#
-# TODO: we pretty much always want to do this; remove for simplicity, or
-# find a compelling reason to maintain it.
-WITH_DEV_DATA=false
-
-function parse_args {
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      --withDevData )
-      WITH_DEV_DATA=true
-      ;;
-      * )
-      echo "Invalid argument $1!"
-      exit 1
-      ;;
-    esac
-    shift
-  done
-}
-
-parse_args "$@"
-
-if $WITH_DEV_DATA; then
-  # ensure that required data file is present
-  if [ ! -f "${FLASHCROW_DEV_DATA}" ]; then
-    # TODO: in this case, we should scp it from ETL directly!
-    # However, that requires the SSH key to be provided.
-    echo "cannot find ${FLASHCROW_DEV_DATA}; did you copy it from ETL?"
-    exit 1
-  fi
+if [ ! -f "${FLASHCROW_DEV_DATA}" ]; then
+  # TODO: in this case, we should scp it from ETL directly!
+  # However, that requires the SSH key to be provided.
+  echo "cannot find ${FLASHCROW_DEV_DATA}; did you copy it from ETL?"
+  exit 1
 fi
 
 # cleanup existing ramdisk (if any), in case `shutdown.sh` wasn't run (e.g.
@@ -71,7 +45,7 @@ fi
 # create ramdisk using diskutil
 echo "Creating ramdisk..."
 sudo mkdir ${RAMDISK_MOUNT_POINT}
-RAMDISK_DEVICE=$(sudo mount -t ramfs -o size=512m ramfs ${RAMDISK_MOUNT_POINT})
+RAMDISK_DEVICE=$(sudo mount -t tmpfs -o size=1g tmpfs ${RAMDISK_MOUNT_POINT})
 echo "$RAMDISK_DEVICE" | sudo tee ${RAMDISK_DEVICE_FILE}
 
 # give 'vagrant' user/group ownership of the RAM-disk folder.
@@ -123,9 +97,7 @@ psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/deployme
 psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/db/db-update-install.sql"
 "${GIT_ROOT}/scripts/db/db-update.sh" --psqlArgs "-h localhost -p 5433 -U flashcrow flashcrow"
 
-if $WITH_DEV_DATA; then
-  # load dev dataset as produced by our `dev_data` Airflow job
-  psql -h localhost -p 5433 -U flashcrow flashcrow < "${FLASHCROW_DEV_DATA}"
-fi
+# load dev dataset as produced by our `dev_data` Airflow job
+psql -h localhost -p 5433 -U flashcrow flashcrow < "${FLASHCROW_DEV_DATA}"
 
 echo "Done."

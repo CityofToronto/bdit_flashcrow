@@ -8,3 +8,9 @@ global.window = {
     origin: 'https://localhost:8081',
   },
 };
+
+/*
+ * This is overkill for unit tests, but helpful to ensure that database-backed
+ * tests don't timeout.
+ */
+jest.setTimeout(60000);

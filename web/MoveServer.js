@@ -10,7 +10,6 @@ import Joi from '@/lib/model/Joi';
 import config from '@/lib/config/MoveConfig';
 import AuthController from '@/lib/controller/AuthController';
 import CollisionController from '@/lib/controller/CollisionController';
-import CountController from '@/lib/controller/CountController';
 import DynamicTileController from '@/lib/controller/DynamicTileController';
 import LocationController from '@/lib/controller/LocationController';
 import PoiController from '@/lib/controller/PoiController';
@@ -199,7 +198,6 @@ async function configureServer() {
   server.log(LogTag.INIT, 'registering routes...');
   server.route(AuthController);
   server.route(CollisionController);
-  server.route(CountController);
   server.route(DynamicTileController);
   server.route(LocationController);
   server.route(PoiController);

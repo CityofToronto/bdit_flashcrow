@@ -2,7 +2,7 @@
 #
 # shutdown.sh
 #
-# This is called by `DAOTestUtils.shutdown()` to tear down the database and in-memory
+# This is called by `npm run test:db-shutdown` to tear down the database and in-memory
 # filesystem created by `startup.sh`.
 
 set -euo pipefail
