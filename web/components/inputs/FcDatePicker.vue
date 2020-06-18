@@ -16,6 +16,7 @@
           v-bind="$attrs"
           @blur="resetValueFormatted"
           @input="updateValueFormatted"
+          @click:append="showMenu = !showMenu"
           v-on="on"></v-text-field>
       </template>
       <v-date-picker

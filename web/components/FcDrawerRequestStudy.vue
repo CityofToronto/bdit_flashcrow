@@ -62,6 +62,7 @@
         <FcDetailsStudyRequest
           v-model="studyRequest"
           class="pr-5"
+          :is-create="isCreate"
           :v="$v.studyRequest" />
 
         <section
@@ -99,6 +100,7 @@ import {
   REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
+import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
@@ -164,15 +166,16 @@ export default {
         return null;
       }
       const { dueDate, urgent } = studyRequest;
+      if (dueDate === null) {
+        return null;
+      }
       if (urgent) {
         return dueDate;
       }
-      const oneWeekBeforeDueDate = dueDate.minus({ weeks: 1 });
-      const twoMonthsOut = now.plus({ months: 2 });
-      if (oneWeekBeforeDueDate.valueOf() < twoMonthsOut.valueOf()) {
-        return twoMonthsOut;
-      }
-      return oneWeekBeforeDueDate;
+      return DateTime.max(
+        dueDate.minus({ weeks: 1 }),
+        now.plus({ months: 2 }),
+      );
     },
     isCreate() {
       return this.$route.name === 'requestStudyNew';
