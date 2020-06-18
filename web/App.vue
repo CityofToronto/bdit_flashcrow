@@ -22,28 +22,7 @@
       <template v-slot:prepend>
         <FcDashboardNavBrand />
       </template>
-      <v-list
-        class="d-flex fill-height flex-column justify-center"
-        dense>
-        <FcDashboardNavItem
-          :active-route-names="[
-            'viewCollisionReportsAtLocation',
-            'viewDataAtLocation',
-            'viewStudyReportsAtLocation',
-          ]"
-          icon="map"
-          label="View Map"
-          :to="{ name: 'viewData' }" />
-        <FcDashboardNavItem
-          :active-route-names="[
-            'requestStudyEdit',
-            'requestStudyNew',
-            'requestStudyView',
-          ]"
-          icon="clipboard-list"
-          label="Track Requests"
-          :to="{ name: 'requestsTrack' }" />
-      </v-list>
+      <FcDashboardNav />
       <template v-slot:append>
         <FcDashboardNavUser />
       </template>
@@ -69,14 +48,14 @@ import FcDialogAlertStudyRequestUrgent from
 import FcDialogConfirmUnauthorized from
   '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
-import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
+import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
 
 export default {
   name: 'App',
   components: {
     FcDashboardNavBrand,
-    FcDashboardNavItem,
+    FcDashboardNav,
     FcDashboardNavUser,
     FcDialogAlertStudyRequestUrgent,
     FcDialogConfirmUnauthorized,

@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'FcDashboardNavItem',
   props: {
@@ -42,9 +44,18 @@ export default {
   computed: {
     isActive() {
       const { name } = this.$route;
-      const { name: toName } = this.to;
-      return name === toName || this.activeRouteNames.includes(name);
+      const { backViewRequest, to } = this;
+      const { name: backViewRequestName } = backViewRequest;
+      const { name: toName } = to;
+      if (name === toName) {
+        return true;
+      }
+      if (this.activeRouteNames.includes(name)) {
+        return true;
+      }
+      return name === 'requestStudyView' && backViewRequestName === toName;
     },
+    ...mapState(['backViewRequest']),
   },
 };
 </script>
