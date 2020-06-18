@@ -95,11 +95,7 @@ export default {
         return this.location;
       },
       set(internalLocation) {
-        if (internalLocation !== undefined) {
-          this.setLocation(internalLocation);
-          return;
-        }
-        console.log('clear');
+        this.setLocation(internalLocation);
       },
     },
     ...mapState(['location']),
