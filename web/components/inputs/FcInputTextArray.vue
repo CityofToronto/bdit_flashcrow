@@ -2,11 +2,11 @@
   <v-combobox
     v-model="internalValue"
     append-icon="mdi-plus"
-    chips
     deletable-chips
     dense
     multiple
     outlined
+    small-chips
     v-bind="$attrs"></v-combobox>
 </template>
 

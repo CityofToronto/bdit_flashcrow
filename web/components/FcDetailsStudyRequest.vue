@@ -119,8 +119,9 @@
               class="mt-3"
               :error-messages="errorMessagesDueDate"
               label="Due Date"
-              :messages="[REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text]"
-              :min="minDueDate">
+              :max="maxDueDate"
+              :min="minDueDate"
+              :success="!v.dueDate.$invalid">
             </FcDatePicker>
           </v-col>
         </v-row>
@@ -135,7 +136,8 @@
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
             label="Staff Email"
-            :messages="[OPTIONAL.text]" />
+            :messages="messagesCcEmails"
+            :success="internalValue.urgent && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
     </div>
@@ -150,6 +152,7 @@
         no-resize
         outlined
         rows="4"
+        :success="internalValue.urgent && !v.urgentReason.$invalid"
         @blur="v.urgentReason.$touch()"></v-textarea>
     </div>
   </section>
@@ -190,10 +193,15 @@ export default {
     FcRadioGroup,
   },
   props: {
+    isCreate: Boolean,
     v: Object,
   },
   data() {
     return {
+      // CACHED DUE DATES
+      dueDate: null,
+      dueDateUrgent: null,
+      // MESSAGES
       OPTIONAL,
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
@@ -202,6 +210,9 @@ export default {
   computed: {
     errorMessagesCcEmails() {
       const errors = [];
+      if (!this.v.ccEmails.requiredIfUrgent) {
+        errors.push('Please provide an additional point of contact for this urgent request.');
+      }
       this.internalValue.ccEmails.forEach((_, i) => {
         if (!this.v.ccEmails.$each[i].$dirty) {
           return;
@@ -233,9 +244,6 @@ export default {
     },
     errorMessagesDueDate() {
       const errors = [];
-      if (!this.v.dueDate.$dirty) {
-        return errors;
-      }
       if (!this.v.dueDate.required) {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text);
       }
@@ -270,9 +278,6 @@ export default {
     },
     errorMessagesUrgentReason() {
       const errors = [];
-      if (!this.v.urgentReason.$dirty) {
-        return errors;
-      }
       if (!this.v.urgentReason.requiredIfUrgent) {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
       }
@@ -301,6 +306,20 @@ export default {
       });
       return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
     },
+    maxDueDate() {
+      const { now, internalValue: { urgent } } = this;
+      if (urgent) {
+        return now.plus({ months: 2 });
+      }
+      return null;
+    },
+    messagesCcEmails() {
+      const { urgent } = this.internalValue;
+      if (urgent) {
+        return [];
+      }
+      return [OPTIONAL.text];
+    },
     messagesDaysOfWeek() {
       const { duration, studyType } = this.internalValue;
       if (studyType.automatic) {
@@ -322,27 +341,71 @@ export default {
     messagesUrgentReason() {
       const { urgent } = this.internalValue;
       if (urgent) {
-        return [REQUEST_STUDY_PROVIDE_URGENT_REASON.text];
+        return [];
       }
       return [OPTIONAL.text];
     },
     minDueDate() {
       const { now, internalValue: { urgent } } = this;
       if (urgent) {
-        return now;
+        return now.plus({ weeks: 1 });
       }
       return now.plus({ months: 2 });
     },
     ...mapState(['now']),
   },
   watch: {
-    'internalValue.studyType.automatic': function studyTypeAutomatic() {
+    'internalValue.studyType.automatic': function watchStudyTypeAutomatic() {
       if (this.internalValue.studyType.automatic) {
         this.internalValue.duration = 24;
         this.internalValue.hours = null;
       } else {
         this.internalValue.duration = null;
         this.internalValue.hours = StudyHours.ROUTINE;
+      }
+    },
+    'internalValue.urgent': function watchUrgent(urgent, urgentPrev) {
+      const {
+        internalValue: { createdAt, dueDate },
+        now,
+      } = this;
+
+      // cache existing due date
+      if (urgentPrev) {
+        this.dueDateUrgent = dueDate;
+      } else {
+        this.dueDate = dueDate;
+      }
+
+      // update due date
+      if (urgent) {
+        this.internalValue.dueDate = this.dueDateUrgent;
+      } else if (this.dueDate === null) {
+        /*
+         * This happens when an urgent request is loaded, and the user then decides
+         * to make it non-urgent.
+         *
+         * While the current setup *should* guarantee that all newly created requests
+         * start as non-urgent, we decide not to depend on that here.
+         */
+        if (this.isCreate) {
+          /*
+           * In this case, there is no `createdAt` timestamp yet, so we just set this
+           * to 3 months in the future.
+           */
+          this.internalValue.dueDate = now.plus({ months: 3 });
+        } else {
+          /*
+           * In this case, there is a `createdAt` timestamp, so we use 3 months after
+           * that.
+           *
+           * Note that this can be before the current timestamp!  This is deliberate,
+           * to help focus efforts on a 3-month turnaround time.
+           */
+          this.internalValue.dueDate = createdAt.plus({ months: 3 });
+        }
+      } else {
+        this.internalValue.dueDate = this.dueDate;
       }
     },
   },
