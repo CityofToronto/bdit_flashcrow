@@ -2,6 +2,7 @@ import { format } from 'd3-format';
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
 import Vuetify from 'vuetify/lib/framework';
+import en from 'vuetify/es5/locale/en';
 
 import App from '@/web/App.vue';
 import router from '@/web/router';
@@ -37,6 +38,10 @@ Vue.config.productionTip = false;
  * This offers us flexibility in developing a standard look-and-feel across the application.
  */
 const vuetify = new Vuetify({
+  lang: {
+    locales: { en },
+    current: 'en',
+  },
   theme: {
     options: {
       customProperties: true,
