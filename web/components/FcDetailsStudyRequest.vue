@@ -120,8 +120,8 @@
               :error-messages="errorMessagesDueDate"
               label="Due Date"
               :max="maxDueDate"
-              :messages="[REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text]"
-              :min="minDueDate">
+              :min="minDueDate"
+              :success="!v.dueDate.$invalid">
             </FcDatePicker>
           </v-col>
         </v-row>
@@ -136,7 +136,8 @@
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
             label="Staff Email"
-            :messages="[OPTIONAL.text]" />
+            :messages="messagesCcEmails"
+            :success="internalValue.urgent && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
     </div>
@@ -151,6 +152,7 @@
         no-resize
         outlined
         rows="4"
+        :success="internalValue.urgent && !v.urgentReason.$invalid"
         @blur="v.urgentReason.$touch()"></v-textarea>
     </div>
   </section>
@@ -208,6 +210,9 @@ export default {
   computed: {
     errorMessagesCcEmails() {
       const errors = [];
+      if (!this.v.ccEmails.requiredIfUrgent) {
+        errors.push('Please provide an additional point of contact for this urgent request.');
+      }
       this.internalValue.ccEmails.forEach((_, i) => {
         if (!this.v.ccEmails.$each[i].$dirty) {
           return;
@@ -308,6 +313,13 @@ export default {
       }
       return null;
     },
+    messagesCcEmails() {
+      const { urgent } = this.internalValue;
+      if (urgent) {
+        return [];
+      }
+      return [OPTIONAL.text];
+    },
     messagesDaysOfWeek() {
       const { duration, studyType } = this.internalValue;
       if (studyType.automatic) {
@@ -329,7 +341,7 @@ export default {
     messagesUrgentReason() {
       const { urgent } = this.internalValue;
       if (urgent) {
-        return [REQUEST_STUDY_PROVIDE_URGENT_REASON.text];
+        return [];
       }
       return [OPTIONAL.text];
     },
