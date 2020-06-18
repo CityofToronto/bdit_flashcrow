@@ -27,13 +27,13 @@
         <FcDashboardNavUser />
       </template>
     </v-navigation-drawer>
-    <v-content>
+    <v-main>
       <v-container
         class="fill-height pa-0"
         fluid>
         <router-view></router-view>
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

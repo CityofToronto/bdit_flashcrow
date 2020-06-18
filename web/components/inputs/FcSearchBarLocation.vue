@@ -19,7 +19,6 @@
     <v-autocomplete
       v-else
       v-model="internalLocation"
-      append-icon="mdi-magnify"
       class="fc-search-bar-location elevation-2"
       dense
       hide-details
@@ -32,6 +31,24 @@
       return-object
       :search-input.sync="query"
       solo>
+      <template v-slot:append>
+        <v-tooltip
+          v-if="location !== null"
+          right>
+          <template v-slot:activator="{ on }">
+            <FcButton
+              aria-label="Clear Location"
+              type="icon"
+              @click="actionClear"
+              v-on="on">
+              <v-icon>mdi-close-circle</v-icon>
+            </FcButton>
+          </template>
+          <span>Clear Location</span>
+        </v-tooltip>
+        <v-divider vertical />
+        <v-icon right>mdi-magnify</v-icon>
+      </template>
       <template v-slot:item="{ attrs, item, on, parent }">
         <v-list-item
           v-bind="attrs"
@@ -154,6 +171,14 @@ export default {
     }, 250),
   },
   methods: {
+    actionClear() {
+      /*
+       * 1b -> 1a -> 2a.  The debounce delay of 250ms on the `query` watcher is more than
+       * enough so that, by the time it fires, we're already in 2a.
+       */
+      this.query = null;
+      this.setLocation(null);
+    },
     ...mapMutations(['setLocation']),
   },
 };

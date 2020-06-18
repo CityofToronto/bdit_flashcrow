@@ -324,6 +324,13 @@ export default {
     },
     location(location, locationPrev) {
       if (location === null) {
+        /*
+         * Normally `this.loading = true` is paired with `this.loading = false` after some
+         * asynchronous operation.  In this case, however, we're using it to hide the View Data
+         * drawer contents to prevent errors after clearing `FcSearchBarLocation`.  This is OK,
+         * as the next line jumps to View Map which destroys this drawer component anyways.
+         */
+        this.loading = true;
         this.$router.push({
           name: 'viewData',
         });

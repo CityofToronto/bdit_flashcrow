@@ -22,8 +22,8 @@
       <v-card-actions v-if="!loading && featureSelectable">
         <FcButton
           type="tertiary"
-          @click="actionViewData">
-          View Data
+          @click="actionSelected">
+          {{textActionSelected}}
         </FcButton>
       </v-card-actions>
     </v-card>
@@ -300,6 +300,13 @@ export default {
     layerId() {
       return this.feature.layer.id;
     },
+    textActionSelected() {
+      const { name } = this.$route;
+      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
+        return 'Set Study Location';
+      }
+      return 'View Data';
+    },
     title() {
       if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
         const { injury } = this.feature.properties;
@@ -364,6 +371,20 @@ export default {
     this.popup.remove();
   },
   methods: {
+    actionSelected() {
+      const { name } = this.$route;
+      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
+        this.actionSetStudyLocation();
+      } else {
+        this.actionViewData();
+      }
+    },
+    async actionSetStudyLocation() {
+      const { centrelineId, centrelineType } = this.feature.properties;
+      const feature = { centrelineId, centrelineType };
+      const location = await getLocationByFeature(feature);
+      this.setLocation(location);
+    },
     actionViewData() {
       if (this.$route.name === 'viewDataAtLocation') {
         this.setDrawerOpen(true);
