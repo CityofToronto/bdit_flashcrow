@@ -9,10 +9,18 @@
       </FcButton>
       <h1 class="flex-grow-1 headline text-center">
         <span>
-          {{title}}:
+          Request #{{$route.params.id}}:
         </span>
-        <span class="font-weight-regular">
-          {{subtitle}}
+        <v-progress-circular
+          v-if="loading"
+          color="primary"
+          indeterminate
+          :size="20"
+          :width="2" />
+        <span
+          v-else
+          class="font-weight-regular">
+          {{studyRequestLocation.description}}
         </span>
       </h1>
       <FcButton
@@ -118,6 +126,7 @@ export default {
       studyRequest: null,
       studyRequestChanges: [],
       studyRequestComments: [],
+      studyRequestLocation: null,
       studyRequestUsers: new Map(),
     };
   },
@@ -193,16 +202,6 @@ export default {
         return 'View Data';
       }
       return 'Requests';
-    },
-    subtitle() {
-      if (this.location === null) {
-        return '';
-      }
-      return this.location.description;
-    },
-    title() {
-      const { id } = this.$route.params;
-      return `Request #${id}`;
     },
     ...mapState(['auth', 'backViewRequest', 'location']),
   },
@@ -282,6 +281,7 @@ export default {
       this.studyRequest = studyRequest;
       this.studyRequestChanges = studyRequestChanges;
       this.studyRequestComments = studyRequestComments;
+      this.studyRequestLocation = studyRequestLocation;
       this.studyRequestUsers = studyRequestUsers;
       this.setLocation(studyRequestLocation);
     },
