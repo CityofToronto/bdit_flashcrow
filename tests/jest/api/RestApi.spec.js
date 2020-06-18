@@ -115,8 +115,6 @@ afterAll(async () => {
   await server.stop();
 }, 60000);
 
-jest.setTimeout(60000);
-
 test('AuthController.getAuth', async () => {
   let response = await client.fetch('/auth');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
