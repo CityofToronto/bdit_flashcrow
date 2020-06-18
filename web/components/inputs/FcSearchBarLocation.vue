@@ -1,23 +1,5 @@
 <template>
   <div class="fc-search-bar-location-wrapper">
-    <FcDialogConfirm
-      v-model="showConfirmClear"
-      textCancel="Cancel"
-      textOk="Clear"
-      title="Clear Location"
-      @action-ok="actionClear">
-      <span class="body-1">
-        <span v-if="$route.name === 'requestStudyEdit'">
-
-        </span>
-        <span v-else-if="$route.name === 'requestStudyNew'">
-
-        </span>
-        <span v-else-if="$route.name === 'requestStudyView'">
-
-        </span>
-      </span>
-    </FcDialogConfirm>
     <v-tooltip
       v-if="collapseSearchBar"
       right
@@ -57,7 +39,7 @@
             <FcButton
               aria-label="Clear Location"
               type="icon"
-              @click="onClickClear"
+              @click="actionClear"
               v-on="on">
               <v-icon>mdi-close-circle</v-icon>
             </FcButton>
@@ -87,14 +69,12 @@ import { mapMutations, mapState } from 'vuex';
 
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcSearchBarLocation',
   components: {
     FcButton,
-    FcDialogConfirm,
   },
   data() {
     return {
@@ -102,7 +82,6 @@ export default {
       key: null,
       loading: false,
       query: null,
-      showConfirmClear: false,
     };
   },
   computed: {
@@ -197,16 +176,12 @@ export default {
   },
   methods: {
     actionClear() {
+      /*
+       * 1b -> 1a -> 2a.  The debounce delay of 250ms on the `query` watcher is more than
+       * enough so that, by the time it fires, we're already in 2a.
+       */
       this.query = null;
       this.setLocation(null);
-    },
-    onClickClear() {
-      const { name } = this.$route;
-      if (name === 'viewData' || name === 'viewDataAtLocation') {
-        this.actionClear();
-      } else {
-        this.showConfirmClear = true;
-      }
     },
     ...mapMutations(['setLocation']),
   },
