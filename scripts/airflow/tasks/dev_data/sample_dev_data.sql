@@ -8,6 +8,7 @@ drop table if exists flashcrow_dev_data.gis_centreline;
 drop table if exists flashcrow_dev_data.gis_centreline_intersection;
 drop table if exists flashcrow_dev_data.gis_hospital;
 drop table if exists flashcrow_dev_data.gis_school;
+drop table if exists flashcrow_dev_data.gis_traffic_signal;
 
 drop table if exists flashcrow_dev_data.traffic_arterydata;
 drop table if exists flashcrow_dev_data.traffic_category;
@@ -18,6 +19,7 @@ create table flashcrow_dev_data.gis_centreline (like gis.centreline including in
 create table flashcrow_dev_data.gis_centreline_intersection (like gis.centreline_intersection including indexes);
 create table flashcrow_dev_data.gis_hospital (like gis.hospital including indexes);
 create table flashcrow_dev_data.gis_school (like gis.school including indexes);
+create table flashcrow_dev_data.gis_traffic_signal (like gis.traffic_signal including indexes);
 
 create table flashcrow_dev_data.traffic_arterydata (like "TRAFFIC"."ARTERYDATA" including indexes);
 create table flashcrow_dev_data.traffic_category (like "TRAFFIC"."CATEGORY" including indexes);
