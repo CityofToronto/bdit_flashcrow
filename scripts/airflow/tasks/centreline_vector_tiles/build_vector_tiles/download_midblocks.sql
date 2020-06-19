@@ -10,6 +10,7 @@ WITH features AS (
     va.aadt
   FROM gis.centreline gc
   LEFT JOIN volume.aadt va ON gc.geo_id = va.centreline_id
+  WHERE gc.fcode <= 201800
 ),
 geojson_features AS (
   SELECT jsonb_build_object(

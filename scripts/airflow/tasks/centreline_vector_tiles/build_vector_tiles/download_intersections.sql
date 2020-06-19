@@ -8,7 +8,7 @@ WITH features AS (
     intersec5 AS "name",
     elevatio9 AS "featureCode"
   FROM gis.centreline_intersection
-  WHERE elevatio9 != 0
+  WHERE elevatio9 != 0 AND elevatio9 <= 501700
 ),
 geojson_features AS (
   SELECT jsonb_build_object(
