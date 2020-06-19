@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.0] - 2020-05-21
+## [0.8.1] - 2020-06-19
+### Fixed
+- Empty datasets no longer crash 24-hour detailed and summary reports
+- Fixed cross-tabulations in collision reports to include null values and truncate properly
+- Improve side-nav behaviour, especially when navigating to View Request
+- Make location search bar clearable
+- Improve validation states on urgent fields in Request Study
+
+## [0.8.0] - 2020-06-16
 ### Changed
 - FLOW reports now use multi-day, multi-direction studies instead of single-day, single-direction counts
 - FLOW reports now show useful report-specific summary statistics at top, as opposed to generic metadata
