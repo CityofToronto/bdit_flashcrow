@@ -7,9 +7,9 @@ WITH features AS (
     1 AS "centrelineType",
     gc.lf_name AS "name",
     gc.fcode AS "featureCode",
-    pva.aadt
+    va.aadt
   FROM gis.centreline gc
-  LEFT JOIN prj_volume.aadt pva ON gc.geo_id = pva.centreline_id
+  LEFT JOIN volume.aadt va ON gc.geo_id = va.centreline_id
 ),
 geojson_features AS (
   SELECT jsonb_build_object(
