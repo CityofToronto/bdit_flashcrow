@@ -85,49 +85,6 @@ test('CentrelineDAO.byIdsAndTypes()', async () => {
   expectIdsAndTypesResults(results, query);
 });
 
-function expectSuggestionsContain(result, centrelineId) {
-  const suggestedIds = result.map(({ centrelineId: suggestedId }) => suggestedId);
-  expect(suggestedIds).toContain(centrelineId);
-}
-
-test('CentrelineDAO.intersectionSuggestions', async () => {
-  // full query should match
-  let result = await CentrelineDAO.intersectionSuggestions('Danforth and Main', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // partial query should match
-  result = await CentrelineDAO.intersectionSuggestions('Danforth and Mai', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // either term can be prefixed
-  result = await CentrelineDAO.intersectionSuggestions('Dan and Main', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // full query with minor typo should match
-  result = await CentrelineDAO.intersectionSuggestions('Damforth and Main', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // partial query with minor typo should match
-  result = await CentrelineDAO.intersectionSuggestions('Damforth and Mai', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // full queries: 'and' is optional
-  result = await CentrelineDAO.intersectionSuggestions('Danforth Main', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // partial queries: 'and' is optional
-  result = await CentrelineDAO.intersectionSuggestions('Danforth Mai', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // full queries: punctuation ignored
-  result = await CentrelineDAO.intersectionSuggestions('Danforth & Main', 3);
-  expectSuggestionsContain(result, 13460034);
-
-  // partial queries: punctuation ignored
-  result = await CentrelineDAO.intersectionSuggestions('Danforth / Mai', 3);
-  expectSuggestionsContain(result, 13460034);
-});
-
 test('CentrelineDAO.featuresIncidentTo', async () => {
   // 4-way intersection
   let result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463436);

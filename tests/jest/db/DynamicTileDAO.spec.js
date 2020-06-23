@@ -55,7 +55,7 @@ test('DynamicTileDAO.getTileFeatures', async () => {
   ).resolves.toHaveLength(0);
 
   // tile with features
-  const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1:3', 17, 36617, 47827);
+  const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1:3', 16, 18308, 23913);
   expect(tileFeatures.length).toBeGreaterThan(0);
   tileFeatures.forEach(expectValidTileFeature);
 });
