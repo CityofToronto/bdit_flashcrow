@@ -120,3 +120,53 @@ test('BitStream [single byte partial write / read]', () => {
   bitStream.seek(0);
   expect(bitStream.read(5)).toBe(0x16);
 });
+
+test('BitStream [multi-byte write / read]', () => {
+  const bytes = new Uint8Array(2);
+  const bitStream = new BitStream(bytes);
+
+  bitStream.write(16, 0xbeef);
+  bitStream.seek(0);
+  expect(bitStream.read(16)).toBe(0xbeef);
+});
+
+test('BitStream [multi-byte write, byte-aligned read]', () => {
+  const bytes = new Uint8Array(2);
+  const bitStream = new BitStream(bytes);
+
+  bitStream.write(16, 0xbeef);
+  bitStream.seek(0);
+  expect(bitStream.read(8)).toBe(0xef);
+  expect(bitStream.read(8)).toBe(0xbe);
+});
+
+test('BitStream [multi-byte partial write / read]', () => {
+  const bytes = new Uint8Array(2);
+  const bitStream = new BitStream(bytes);
+
+  bitStream.write(4, 0xf);
+  bitStream.write(6, 0x2e);
+  bitStream.write(1, 0x1);
+  bitStream.write(5, 0x17);
+
+  bitStream.seek(0);
+  expect(bitStream.read(8)).toBe(0xef);
+  expect(bitStream.read(8)).toBe(0xbe);
+
+  bitStream.seek(0);
+  expect(bitStream.read(12)).toBe(0xeef);
+
+  bitStream.seek(4);
+  expect(bitStream.read(12)).toBe(0xbee);
+
+  bitStream.seek(0);
+  expect(bitStream.read(4)).toBe(0xf);
+  expect(bitStream.read(6)).toBe(0x2e);
+  expect(bitStream.read(1)).toBe(0x1);
+  expect(bitStream.read(5)).toBe(0x17);
+
+  bitStream.seek(0);
+  expect(bitStream.read(3)).toBe(0x7);
+  expect(bitStream.read(11)).toBe(0x7dd);
+  expect(bitStream.read(2)).toBe(0x2);
+});
