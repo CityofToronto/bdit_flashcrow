@@ -52,6 +52,7 @@
     "d3-selection-multi": "^1.0.1",
     "esm": "^3.2.25",
     "file-saver": "^2.0.2",
+    "js-base64": "^2.6.2",
     "jsdom": "^16.2.2",
     "luxon": "^1.24.1",
     "mapbox-gl": "^1.11.0",
