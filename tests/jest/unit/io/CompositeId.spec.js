@@ -1,4 +1,5 @@
 import { CentrelineType } from '@/lib/Constants';
+import Random from '@/lib/Random';
 import { InvalidCompositeIdError } from '@/lib/error/MoveErrors';
 import CompositeId from '@/lib/io/CompositeId';
 
@@ -57,4 +58,21 @@ test('CompositeId [encode / decode]', () => {
   ];
   compositeId = CompositeId.encode(features);
   expect(CompositeId.decode(compositeId)).toEqual(features);
+});
+
+test('CompositeId [fuzz test encode / decode]', () => {
+  for (let i = 0; i < 100; i++) {
+    const n = Random.range(1, 20);
+    const features = [];
+    for (let j = 0; j < n; j++) {
+      const centrelineId = Random.range(0, 0x20000000);
+      const centrelineType = Random.choice([
+        CentrelineType.SEGMENT,
+        CentrelineType.INTERSECTION,
+      ]);
+      features.push({ centrelineId, centrelineType });
+    }
+    const compositeId = CompositeId.encode(features);
+    expect(CompositeId.decode(compositeId)).toEqual(features);
+  }
 });

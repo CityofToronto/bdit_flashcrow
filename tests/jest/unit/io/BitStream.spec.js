@@ -1,3 +1,4 @@
+import Random from '@/lib/Random';
 import {
   BitStreamOverflowError,
   BitStreamSerializationError,
@@ -174,6 +175,25 @@ test('BitStream [multi-byte partial write / read]', () => {
   expect(bitStream.read(2)).toBe(0x2);
 });
 
+test('BitStream [fuzz test write / read]', () => {
+  for (let i = 0; i < 100; i++) {
+    const numBytes = Random.range(1, 20);
+    const bytes = new Uint8Array(numBytes);
+    const bitStream = new BitStream(bytes);
+    while (bitStream.bitIndex < bitStream.bitCapacity) {
+      const bitIndexPrev = bitStream.bitIndex;
+      let n = Random.range(1, 20);
+      if (bitStream.bitIndex + n > bitStream.bitCapacity) {
+        n = bitStream.bitCapacity - bitStream.bitIndex;
+      }
+      const value = Random.range(0, Math.pow(2, n));
+      bitStream.write(n, value);
+      bitStream.seek(bitIndexPrev);
+      expect(bitStream.read(n)).toBe(value);
+    }
+  }
+});
+
 test('BitStream.base64Index', () => {
   expect(() => {
     BitStream.base64Index('+');
@@ -237,4 +257,23 @@ test('BitStream [multi-byte serialization]', () => {
   const str = bitStream.toString();
   const bitStreamCopy = BitStream.fromString(str);
   expectBitStreamEquals(bitStream, bitStreamCopy);
+});
+
+test('BitStream [fuzz test serialization]', () => {
+  for (let i = 0; i < 100; i++) {
+    const numBytes = Random.range(1, 20);
+    const bytes = new Uint8Array(numBytes);
+    const bitStream = new BitStream(bytes);
+    while (bitStream.bitIndex < bitStream.bitCapacity) {
+      let n = Random.range(1, 20);
+      if (bitStream.bitIndex + n > bitStream.bitCapacity) {
+        n = bitStream.bitCapacity - bitStream.bitIndex;
+      }
+      const value = Random.range(0, Math.pow(2, n));
+      bitStream.write(n, value);
+    }
+    const str = bitStream.toString();
+    const bitStreamCopy = BitStream.fromString(str);
+    expectBitStreamEquals(bitStream, bitStreamCopy);
+  }
 });
