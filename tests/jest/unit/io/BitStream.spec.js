@@ -1,4 +1,7 @@
-import { BitStreamOverflowError } from '@/lib/error/MoveErrors';
+import {
+  BitStreamOverflowError,
+  BitStreamSerializationError,
+} from '@/lib/error/MoveErrors';
 import BitStream from '@/lib/io/BitStream';
 
 test('BitStream [zero capacity]', () => {
@@ -169,4 +172,69 @@ test('BitStream [multi-byte partial write / read]', () => {
   expect(bitStream.read(3)).toBe(0x7);
   expect(bitStream.read(11)).toBe(0x7dd);
   expect(bitStream.read(2)).toBe(0x2);
+});
+
+test('BitStream.base64Index', () => {
+  expect(() => {
+    BitStream.base64Index('+');
+  }).toThrow(BitStreamSerializationError);
+
+  for (let i = 0; i < 64; i++) {
+    const ord = BitStream.CHARS_BASE_64.charCodeAt(i);
+    expect(BitStream.base64Index(ord)).toBe(i);
+  }
+});
+
+test('BitStream [invalid serialization]', () => {
+  expect(() => {
+    BitStream.fromString('');
+  }).toThrow(BitStreamSerializationError);
+
+  expect(() => {
+    BitStream.fromString('blargl:');
+  }).toThrow(BitStreamSerializationError);
+
+  expect(() => {
+    BitStream.fromString('3f:+%&@*@%');
+  }).toThrow(BitStreamSerializationError);
+});
+
+function expectBitStreamEquals(bs1, bs2) {
+  expect(bs1.bitLength).toBe(bs2.bitLength);
+  expect(bs1.bytes).toEqual(bs2.bytes);
+}
+
+test('BitStream [empty serialization]', () => {
+  const bytes = new Uint8Array(0);
+  const bitStream = new BitStream(bytes);
+  const str = bitStream.toString();
+  const bitStreamCopy = BitStream.fromString(str);
+  expectBitStreamEquals(bitStream, bitStreamCopy);
+});
+
+test('BitStream [single bit serialization]', () => {
+  const bytes = new Uint8Array(1);
+  const bitStream = new BitStream(bytes);
+  bitStream.write(1, 0x1);
+  const str = bitStream.toString();
+  const bitStreamCopy = BitStream.fromString(str);
+  expectBitStreamEquals(bitStream, bitStreamCopy);
+});
+
+test('BitStream [single byte serialization]', () => {
+  const bytes = new Uint8Array(1);
+  const bitStream = new BitStream(bytes);
+  bitStream.write(8, 0x96);
+  const str = bitStream.toString();
+  const bitStreamCopy = BitStream.fromString(str);
+  expectBitStreamEquals(bitStream, bitStreamCopy);
+});
+
+test('BitStream [multi-byte serialization]', () => {
+  const bytes = new Uint8Array(2);
+  const bitStream = new BitStream(bytes);
+  bitStream.write(16, 0xbeef);
+  const str = bitStream.toString();
+  const bitStreamCopy = BitStream.fromString(str);
+  expectBitStreamEquals(bitStream, bitStreamCopy);
 });

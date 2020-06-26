@@ -7,6 +7,7 @@ global.window = {
   location: {
     origin: 'https://localhost:8081',
   },
+  Uint8Array,
 };
 
 /*
