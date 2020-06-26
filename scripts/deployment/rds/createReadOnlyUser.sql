@@ -45,6 +45,11 @@ GRANT SELECT ON public.geography_columns TO :username;
 GRANT SELECT ON public.geometry_columns TO :username;
 GRANT SELECT ON public.spatial_ref_sys TO :username;
 
+GRANT USAGE ON SCHEMA routing TO :username;
+GRANT SELECT ON ALL TABLES IN SCHEMA routing TO :username;
+ALTER DEFAULT PRIVILEGES IN SCHEMA routing
+	GRANT SELECT ON TABLES TO :username;
+
 GRANT USAGE ON SCHEMA volume TO :username;
 GRANT SELECT ON ALL TABLES IN SCHEMA volume TO :username;
 ALTER DEFAULT PRIVILEGES IN SCHEMA volume
