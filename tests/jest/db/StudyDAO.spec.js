@@ -14,7 +14,7 @@ afterAll(() => {
 test('StudyDAO.byCentreline()', async () => {
   // invalid feature
   let features = [
-    { centrelineId: -1, centrelineType: -1 },
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
   ];
   let studyQuery = {
     daysOfWeek: null,
@@ -131,11 +131,9 @@ function expectNumPerCategoryStudy(actual, expected) {
 test('StudyDAO.byCentrelineSummary()', async () => {
   // invalid feature
   let features = [
-    { centrelineId: -1, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
   ];
   let studyQuery = {
-    centrelineId: -1,
-    centrelineType: -1,
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.TMC],
@@ -262,7 +260,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
 test('StudyDAO.byCentrelineTotal()', async () => {
   // invalid feature
   let features = [
-    { centrelineId: -1, centrelineType: -1 },
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
   ];
   let total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(0);

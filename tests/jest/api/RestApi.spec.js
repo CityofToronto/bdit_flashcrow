@@ -8,6 +8,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import UserDAO from '@/lib/db/UserDAO';
+import CompositeId from '@/lib/io/CompositeId';
 import AuthState from '@/lib/model/AuthState';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
 import { generateUser } from '@/lib/test/random/UserGenerator';
@@ -108,39 +109,45 @@ function expectNumPerCategoryStudy(actual, expected) {
 
 test('StudyController.getStudiesByCentrelineSummary', async () => {
   // invalid feature
-  let data = {
-    centrelineId: -1,
-    centrelineType: -1,
-  };
+  let features = [
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  let s1 = CompositeId.encode(features);
+  let data = { s1 };
   let response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
   // invalid date range (start > end)
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
+  features = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 30000549,
-    centrelineType: CentrelineType.INTERSECTION,
     dateRangeEnd,
     dateRangeStart,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
   // centreline feature with no counts
-  data = {
-    centrelineId: 30062737,
-    centrelineType: CentrelineType.SEGMENT,
-  };
+  features = [
+    { centrelineId: 30062737, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
+  data = { s1 };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result).toEqual([]);
 
   // centreline feature with some counts
-  data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
-  };
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
+  data = { s1 };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(
@@ -151,20 +158,26 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   // valid feature with some counts, date range filters to empty
   dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd,
     dateRangeStart,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result).toEqual([]);
 
   // valid feature with some counts, filter by type
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
+    s1,
     studyTypes: [StudyType.ATR_SPEED_VOLUME],
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
@@ -172,20 +185,24 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   expectNumPerCategoryStudy(response.result, [[2, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, filter by day of week
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: [2, 3, 4],
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(response.result, [[3, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
 
   // intersection with some counts
-  data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
-  };
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
+  data = { s1 };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(response.result, [[6, 'TMC']]);
@@ -193,40 +210,52 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   // intersection with some counts, filter by date
   dateRangeStart = DateTime.fromObject({ year: 2011, month: 1, day: 1 });
   dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
     dateRangeEnd,
     dateRangeStart,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(response.result, [[3, 'TMC']]);
 
   // intersection with some counts, filter by study hours
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
     hours: [StudyHours.SCHOOL],
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(response.result, []);
 
   // intersection with some counts, filter by days of week
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
     daysOfWeek: [0, 1, 5, 6],
+    s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(response.result, [[2, 'TMC']]);
 
   // intersection with some counts, filter by type of study
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
+    s1,
     studyTypes: [StudyType.TMC],
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
@@ -234,9 +263,12 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   expectNumPerCategoryStudy(response.result, [[6, 'TMC']]);
 
   // intersection with some counts, filter by type of study (non-TMC)
+  features = [
+    { centrelineId: 13446886, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 13446886,
-    centrelineType: CentrelineType.INTERSECTION,
+    s1,
     studyTypes: [StudyType.ATR_SPEED_VOLUME],
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
@@ -246,11 +278,14 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
 
 test('StudyController.getStudiesByCentreline', async () => {
   // invalid feature
+  let features = [
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  let s1 = CompositeId.encode(features);
   let data = {
-    centrelineId: -1,
-    centrelineType: -1,
     limit: 10,
     offset: 0,
+    s1,
   };
   let response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
@@ -258,46 +293,58 @@ test('StudyController.getStudiesByCentreline', async () => {
   // invalid date range (start > end)
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
+  features = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 30000549,
-    centrelineType: CentrelineType.INTERSECTION,
     dateRangeEnd,
     dateRangeStart,
     limit: 10,
     offset: 0,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
   // centreline feature with no counts
+  features = [
+    { centrelineId: 30062737, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 30062737,
-    centrelineType: CentrelineType.SEGMENT,
     limit: 10,
     offset: 0,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.length).toBe(0);
 
   // valid feature with less than maxPerCategory counts
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     limit: 10,
     offset: 0,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.length).toBe(6);
 
   // valid feature with less than maxPerCategory counts, filter by type
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
-    studyTypes: [StudyType.ATR_SPEED_VOLUME],
     limit: 10,
     offset: 0,
+    s1,
+    studyTypes: [StudyType.ATR_SPEED_VOLUME],
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
@@ -306,24 +353,30 @@ test('StudyController.getStudiesByCentreline', async () => {
   // valid feature with less than maxPerCategory counts, date range filters to empty
   dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd,
     dateRangeStart,
     limit: 10,
     offset: 0,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.length).toBe(0);
 
   // valid feature with more than maxPerCategory counts
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
   data = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     limit: 10,
     offset: 0,
+    s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
@@ -333,11 +386,14 @@ test('StudyController.getStudiesByCentreline', async () => {
 test('StudyController.getStudiesByCentreline [pagination]', async () => {
   const dateRangeStart = DateTime.fromObject({ year: 2015, month: 1, day: 1 });
   const dateRangeEnd = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
+  let features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
+  let s1 = CompositeId.encode(features);
   let data = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd,
     dateRangeStart,
+    s1,
     studyTypes: [StudyType.RESCU],
   };
   let response = await client.fetch('/studies/byCentreline/summary', { data });
@@ -345,11 +401,14 @@ test('StudyController.getStudiesByCentreline [pagination]', async () => {
 
   const { numPerCategory } = response.result[0];
   for (let offset = 0; offset < numPerCategory; offset += 100) {
+    features = [
+      { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+    ];
+    s1 = CompositeId.encode(features);
     data = {
-      centrelineId: 1145768,
-      centrelineType: CentrelineType.SEGMENT,
       dateRangeEnd,
       dateRangeStart,
+      s1,
       studyTypes: [StudyType.RESCU],
       limit: 100,
       offset,
@@ -418,6 +477,10 @@ test('StudyRequestController', async () => {
       coordinates: [-79.333251, 43.709012],
     },
   };
+  const features = [
+    { centrelineId: 13459445, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  const s1 = CompositeId.encode(features);
 
   // creating requests requires `STUDY_REQUESTS_EDIT` permission
   client.setUser(staff);
@@ -472,10 +535,7 @@ test('StudyRequestController', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // requester can fetch by centreline pending
-  const data = {
-    centrelineId: 13459445,
-    centrelineType: CentrelineType.INTERSECTION,
-  };
+  const data = { s1 };
   client.setUser(requester);
   response = await client.fetch('/requests/study/byCentreline/pending', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
