@@ -1,5 +1,10 @@
-import { CentrelineType } from '@/lib/Constants';
+import { CentrelineType, LocationSearchType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import LocationSearchDAO from '@/lib/db/LocationSearchDAO';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 function expectSuggestionsContain(result, centrelineType, centrelineId) {
   const match = result.find(({
@@ -19,41 +24,60 @@ test('LocationSearchDAO.arterySuggestions', async () => {
 
 
 test('LocationSearchDAO.getSuggestions', async () => {
-  let result = await LocationSearchDAO.getSuggestions('Danforth and Main', 3);
+  let result = await LocationSearchDAO.getSuggestions(null, 'Danforth and Main', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 
-  result = await LocationSearchDAO.getSuggestions('Damforth and Mai', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'Damforth and Mai', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 
-  result = await LocationSearchDAO.getSuggestions('invalidTerm:', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'invalidTerm:', 3);
   expect(result).toEqual([]);
 
-  result = await LocationSearchDAO.getSuggestions('px:invalid', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'px:invalid', 3);
   expect(result).toEqual([]);
 
-  result = await LocationSearchDAO.getSuggestions('artery:123456789', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'artery:123456789', 3);
   expect(result).toEqual([]);
 
-  result = await LocationSearchDAO.getSuggestions('artery:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'artery:1234', 3);
   expectSuggestionsContain(result, CentrelineType.SEGMENT, 908372);
 
-  result = await LocationSearchDAO.getSuggestions('a:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'a:1234', 3);
   expectSuggestionsContain(result, CentrelineType.SEGMENT, 908372);
 
-  result = await LocationSearchDAO.getSuggestions('px:123456789', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'px:123456789', 3);
   expect(result).toEqual([]);
 
-  result = await LocationSearchDAO.getSuggestions('px:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'px:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
-  result = await LocationSearchDAO.getSuggestions('signal:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'signal:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
-  result = await LocationSearchDAO.getSuggestions('p:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'p:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
-  result = await LocationSearchDAO.getSuggestions('sig:1234', 3);
+  result = await LocationSearchDAO.getSuggestions(null, 'sig:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
+
+  result = await LocationSearchDAO.getSuggestions([LocationSearchType.ARTERY], 'artery:1234', 3);
+  expectSuggestionsContain(result, CentrelineType.SEGMENT, 908372);
+
+  result = await LocationSearchDAO.getSuggestions([LocationSearchType.SIGNAL], 'artery:1234', 3);
+  expect(result).toEqual([]);
+
+  result = await LocationSearchDAO.getSuggestions([LocationSearchType.ARTERY], 'signal:1234', 3);
+  expect(result).toEqual([]);
+
+  result = await LocationSearchDAO.getSuggestions([LocationSearchType.SIGNAL], 'signal:1234', 3);
+  expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
+
+  result = await LocationSearchDAO.getSuggestions(
+    [LocationSearchType.INTERSECTION],
+    'Danforth and Main',
+    3,
+  );
+  expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 });
 
 test('LocationSearchDAO.intersectionSuggestions', async () => {
