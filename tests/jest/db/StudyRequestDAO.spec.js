@@ -5,11 +5,16 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequest from '@/lib/model/StudyRequest';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('StudyRequestDAO', async () => {
   const transientUser = generateUser();
@@ -36,6 +41,7 @@ test('StudyRequestDAO', async () => {
       coordinates: [-79.333251, 43.709012],
     },
   };
+  const features = [{ centrelineId: 1729, centrelineType: CentrelineType.INTERSECTION }];
 
   // generate second user for multi-user updates
   const transientUser2 = generateUser();
@@ -56,22 +62,16 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // fetch by centreline
-  let fetchedStudyRequests = await StudyRequestDAO.byCentreline(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  let fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by user
   let byUser = await StudyRequestDAO.byUser(persistedUser);
-  expect(byUser).toEqual([persistedStudyRequest]);
+  expect(byUser).toContainEqual(persistedStudyRequest);
 
   // fetch all
   let all = await StudyRequestDAO.all();
@@ -106,18 +106,12 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // fetch by centreline
-  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([persistedStudyRequest]);
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([]);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // reopen
   persistedStudyRequest.closed = false;
@@ -141,18 +135,12 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toBeNull();
 
   // fetch by centreline
-  fetchedStudyRequests = await StudyRequestDAO.byCentreline(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([]);
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(
-    1729,
-    CentrelineType.INTERSECTION,
-  );
-  expect(fetchedStudyRequests).toEqual([]);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);

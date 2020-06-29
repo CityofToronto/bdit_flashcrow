@@ -27,6 +27,14 @@ test('CompositeId [invalid IDs]', () => {
   expect(() => {
     CompositeId.decode('invalidType:blargl');
   }).toThrow(InvalidCompositeIdError);
+
+  expect(() => {
+    CompositeId.decode('s1:1e:AAAA');
+  }).toThrow(InvalidCompositeIdError);
+
+  expect(() => {
+    CompositeId.decode('s1:1e:AAAAA');
+  }).toThrow(InvalidCompositeIdError);
 });
 
 test('CompositeId [empty feature set]', () => {
@@ -65,7 +73,7 @@ test('CompositeId [fuzz test encode / decode]', () => {
     const n = Random.range(1, 20);
     const features = [];
     for (let j = 0; j < n; j++) {
-      const centrelineId = Random.range(0, 0x20000000);
+      const centrelineId = Random.range(1, 0x20000000);
       const centrelineType = Random.choice([
         CentrelineType.SEGMENT,
         CentrelineType.INTERSECTION,

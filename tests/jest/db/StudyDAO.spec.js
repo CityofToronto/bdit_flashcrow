@@ -1,4 +1,5 @@
 import { CentrelineType, StudyType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import StudyDAO from '@/lib/db/StudyDAO';
 import { InvalidStudyQueryError } from '@/lib/error/MoveErrors';
 import Category from '@/lib/model/Category';
@@ -6,22 +7,28 @@ import Joi from '@/lib/model/Joi';
 import Study from '@/lib/model/Study';
 import DateTime from '@/lib/time/DateTime';
 
+afterAll(() => {
+  db.$pool.end();
+});
+
 test('StudyDAO.byCentreline()', async () => {
   // invalid feature
+  let features = [
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
+  ];
   let studyQuery = {
-    centrelineId: -1,
-    centrelineType: -1,
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.TMC],
   };
-  let studies = await StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 });
+  let studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
   expect(studies).toHaveLength(0);
 
   // invalid date range (start > end)
+  features = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
   studyQuery = {
-    centrelineId: 30000549,
-    centrelineType: CentrelineType.INTERSECTION,
     dateRangeEnd: DateTime.fromObject({ year: 2017, month: 12, day: 31 }),
     dateRangeStart: DateTime.fromObject({ year: 2018, month: 1, day: 1 }),
     daysOfWeek: null,
@@ -29,18 +36,19 @@ test('StudyDAO.byCentreline()', async () => {
     studyTypes: [StudyType.TMC],
   };
   await expect(
-    StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 }),
+    StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 }),
   ).rejects.toBeInstanceOf(InvalidStudyQueryError);
 
   // valid feature with less than 10 counts
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.ATR_SPEED_VOLUME],
   };
-  studies = await StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 });
+  studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
   expect(studies).toHaveLength(2);
   await expect(
     Joi.array().items(Study.read).validateAsync(studies),
@@ -51,57 +59,61 @@ test('StudyDAO.byCentreline()', async () => {
   expect(studies[1].hours).toBeNull();
 
   // valid feature with less than 10 counts, date range filters to empty
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 2019, month: 1, day: 1 }),
     dateRangeStart: DateTime.fromObject({ year: 2018, month: 1, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.ATR_SPEED_VOLUME],
   };
-  studies = await StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 });
+  studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
   expect(studies).toHaveLength(0);
 
   // valid feature with more than 10 counts
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.RESCU],
   };
-  studies = await StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 });
+  studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
   expect(studies).toHaveLength(10);
 
   // valid feature with more than 10 counts, date range filters to less
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 2015, month: 4, day: 15 }),
     dateRangeStart: DateTime.fromObject({ year: 2015, month: 4, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.RESCU],
   };
-  studies = await StudyDAO.byCentreline(studyQuery, { limit: 10, offset: 0 });
+  studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
   expect(studies).toHaveLength(8);
 
   // pagination works
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 2017, month: 1, day: 1 }),
     dateRangeStart: DateTime.fromObject({ year: 2015, month: 1, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.RESCU],
   };
-  const studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   const { n } = studySummary[0];
   for (let offset = 0; offset < n; offset += 100) {
     /* eslint-disable-next-line no-await-in-loop */
-    studies = await StudyDAO.byCentreline(studyQuery, { limit: 100, offset });
+    studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 100, offset });
     const expectedLength = Math.min(100, n - offset);
     expect(studies).toHaveLength(expectedLength);
   }
@@ -118,20 +130,22 @@ function expectNumPerCategoryStudy(actual, expected) {
 
 test('StudyDAO.byCentrelineSummary()', async () => {
   // invalid feature
+  let features = [
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
+  ];
   let studyQuery = {
-    centrelineId: -1,
-    centrelineType: -1,
     daysOfWeek: null,
     hours: null,
     studyTypes: [StudyType.TMC],
   };
-  let studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  let studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, []);
 
   // invalid date range (start > end)
+  features = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+  ];
   studyQuery = {
-    centrelineId: 30000549,
-    centrelineType: CentrelineType.INTERSECTION,
     dateRangeEnd: DateTime.fromObject({ year: 2017, month: 12, day: 31 }),
     dateRangeStart: DateTime.fromObject({ year: 2018, month: 1, day: 1 }),
     daysOfWeek: null,
@@ -139,29 +153,31 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: [StudyType.TMC],
   };
   await expect(
-    StudyDAO.byCentrelineSummary(studyQuery),
+    StudyDAO.byCentrelineSummary(features, studyQuery),
   ).rejects.toBeInstanceOf(InvalidStudyQueryError);
 
   // centreline feature with no counts
+  features = [
+    { centrelineId: 30062737, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 30062737,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with some counts
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   const studySummarySchema = Joi.array().items(
     Joi.object().keys({
       category: Category.read,
@@ -175,85 +191,105 @@ test('StudyDAO.byCentrelineSummary()', async () => {
   ).resolves.toEqual(studySummary);
 
   // valid feature with some counts, date range filters to empty
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 14659630,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 2019, month: 1, day: 1 }),
     dateRangeStart: DateTime.fromObject({ year: 2018, month: 1, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with lots of counts
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, [[3633, 'RESCU']]);
 
   // centreline feature with lots of counts, date range filters to empty
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 1980, month: 1, day: 2 }),
     dateRangeStart: DateTime.fromObject({ year: 1980, month: 1, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, []);
 
   // centreline feature with lots of counts, date range filters down
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 1145768,
-    centrelineType: CentrelineType.SEGMENT,
     dateRangeEnd: DateTime.fromObject({ year: 2016, month: 1, day: 1 }),
     dateRangeStart: DateTime.fromObject({ year: 2015, month: 1, day: 1 }),
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, [[187, 'RESCU']]);
 
   // centreline feature with more than one kind of count
+  features = [
+    { centrelineId: 9278884, centrelineType: CentrelineType.SEGMENT },
+  ];
   studyQuery = {
-    centrelineId: 9278884,
-    centrelineType: CentrelineType.SEGMENT,
     daysOfWeek: null,
     hours: null,
     studyTypes: null,
   };
-  studySummary = await StudyDAO.byCentrelineSummary(studyQuery);
+  studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   expectNumPerCategoryStudy(studySummary, [[1, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
 });
 
 test('StudyDAO.byCentrelineTotal()', async () => {
   // invalid feature
-  let total = await StudyDAO.byCentrelineTotal(-1, -1);
+  let features = [
+    { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  let total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(0);
 
   // centreline feature with no counts
-  total = await StudyDAO.byCentrelineTotal(CentrelineType.SEGMENT, 30062737);
+  features = [
+    { centrelineId: 30062737, centrelineType: CentrelineType.SEGMENT },
+  ];
+  total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(0);
 
   // centreline feature with some counts
-  total = await StudyDAO.byCentrelineTotal(CentrelineType.SEGMENT, 14659630);
+  features = [
+    { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
+  ];
+  total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(6);
 
   // centreline feature with lots of counts
-  total = await StudyDAO.byCentrelineTotal(CentrelineType.SEGMENT, 1145768);
+  features = [
+    { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
+  ];
+  total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(3633);
 
   // centreline feature with more than one kind of count
-  total = await StudyDAO.byCentrelineTotal(CentrelineType.SEGMENT, 9278884);
+  features = [
+    { centrelineId: 9278884, centrelineType: CentrelineType.SEGMENT },
+  ];
+  total = await StudyDAO.byCentrelineTotal(features);
   expect(total).toBe(3);
 });

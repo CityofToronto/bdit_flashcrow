@@ -217,6 +217,10 @@ test('BitStream [invalid serialization]', () => {
   expect(() => {
     BitStream.fromString('3f:+%&@*@%');
   }).toThrow(BitStreamSerializationError);
+
+  expect(() => {
+    BitStream.fromString('1e:AAAA');
+  }).toThrow(BitStreamSerializationError);
 });
 
 function expectBitStreamEquals(bs1, bs2) {

@@ -1,4 +1,5 @@
 import { Enum } from '@/lib/ClassUtils';
+import { CentrelineType } from '@/lib/Constants';
 import Joi from '@/lib/model/Joi';
 import DateTime from '@/lib/time/DateTime';
 
@@ -21,6 +22,34 @@ const cssColorValues = {
 CssColor.init(cssColorValues);
 
 class NotAnEnum {}
+
+test('Joi.compositeId', () => {
+  let compositeId = 's1:0:';
+  let result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).toBeUndefined();
+  expect(result.value).toEqual([]);
+
+  compositeId = 's1:1e:AAAAA';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).not.toBeUndefined();
+
+  compositeId = 's1:1e:CAAAA';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).toBeUndefined();
+  expect(result.value).toEqual([
+    { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION },
+  ]);
+
+  compositeId = 's2:0:';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).not.toBeUndefined();
+  compositeId = 's1:0';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).not.toBeUndefined();
+  compositeId = 's1';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).not.toBeUndefined();
+});
 
 test('Joi.dateTime', () => {
   let dt = DateTime.local();
