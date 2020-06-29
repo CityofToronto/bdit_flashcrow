@@ -594,7 +594,7 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .fc-search-bar-location-wrapper {
+  & > .fc-search-bar-location {
     left: 20px;
     top: 20px;
     position: absolute;
