@@ -67,6 +67,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
+import { LocationSearchType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -98,7 +99,7 @@ export default {
         this.setLocation(internalLocation);
       },
     },
-    ...mapState(['location']),
+    ...mapState(['location', 'locationMulti']),
   },
   /*
    * To understand the following watchers, imagine a state machine:
@@ -162,7 +163,7 @@ export default {
          * the location watcher to move us into 1b.
          */
         this.loading = true;
-        this.items = await getLocationSuggestions(this.query);
+        await this.actionSearch();
         this.loading = false;
       }
       /*
@@ -178,6 +179,17 @@ export default {
        */
       this.query = null;
       this.setLocation(null);
+    },
+    async actionSearch() {
+      const { locationMulti, query } = this;
+      const filters = {};
+      if (locationMulti) {
+        filters.types = [
+          LocationSearchType.INTERSECTION,
+          LocationSearchType.SIGNAL,
+        ];
+      }
+      this.items = await getLocationSuggestions(query, filters);
     },
     ...mapMutations(['setLocation']),
   },

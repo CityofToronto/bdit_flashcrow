@@ -38,6 +38,7 @@ export default new Vuex.Store({
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
     location: null,
+    locationMulti: false,
     legendOptions: {
       datesFrom: 3,
       layers: {
@@ -103,6 +104,9 @@ export default new Vuex.Store({
     // LOCATION
     setLocation(state, location) {
       Vue.set(state, 'location', location);
+    },
+    setLocationMulti(state, locationMulti) {
+      Vue.set(state, 'locationMulti', locationMulti);
     },
     setLegendOptions(state, legendOptions) {
       Vue.set(state, 'legendOptions', legendOptions);

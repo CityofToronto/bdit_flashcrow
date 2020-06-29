@@ -25,10 +25,28 @@
           {{ aerial ? 'Map' : 'Aerial' }}
         </FcButton>
       </div>
-      <div
-        v-if="location !== null"
-        class="pane-map-navigate">
+      <div class="pane-map-navigate">
         <v-tooltip
+          left
+          :z-index="100">
+          <template v-slot:activator="{ on }">
+            <FcButton
+              :aria-label="tooltipLocationMulti"
+              class="pa-0"
+              :class="{
+                primary: locationMulti,
+                'white--text': locationMulti,
+              }"
+              type="fab-text"
+              @click="setLocationMulti(!locationMulti)"
+              v-on="on">
+              <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
+            </FcButton>
+          </template>
+          <span>{{tooltipLocationMulti}}</span>
+        </v-tooltip>
+        <v-tooltip
+          v-if="location !== null"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -187,7 +205,18 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
-    ...mapState(['drawerOpen', 'legendOptions', 'location']),
+    tooltipLocationMulti() {
+      if (this.locationMulti) {
+        return 'Stop selecting multiple locations';
+      }
+      return 'Select multiple locations';
+    },
+    ...mapState([
+      'drawerOpen',
+      'legendOptions',
+      'location',
+      'locationMulti',
+    ]),
   },
   created() {
     this.map = null;
@@ -543,7 +572,12 @@ export default {
           .addTo(this.map);
       }
     },
-    ...mapMutations(['setDrawerOpen', 'setLegendOptions', 'setLocation']),
+    ...mapMutations([
+      'setDrawerOpen',
+      'setLegendOptions',
+      'setLocation',
+      'setLocationMulti',
+    ]),
   },
 };
 </script>
@@ -584,7 +618,9 @@ export default {
     right: 20px;
     z-index: var(--z-index-controls);
     & > .fc-button {
+      display: block;
       height: 32px;
+      margin-top: 8px;
       min-width: 30px;
       width: 30px;
     }
