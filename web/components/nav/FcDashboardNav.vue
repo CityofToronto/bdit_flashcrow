@@ -35,17 +35,16 @@ export default {
   },
   computed: {
     toViewMap() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return { name: 'viewData' };
       }
-      const features = [this.location];
-      const s1 = CompositeId.encode(features);
+      const s1 = CompositeId.encode(this.locations);
       return {
         name: 'viewDataAtLocation',
         params: { s1 },
       };
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
   },
 };
 </script>

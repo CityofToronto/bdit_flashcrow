@@ -26,7 +26,7 @@
           <h1 class="headline ml-4">{{studyType.label}}</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{location.description}}</span>
+            <span>&#x2022; {{locationsDescription}}</span>
             <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -148,7 +148,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import {
-  getLocationByFeature,
+  getLocationsByFeature,
   getReport,
   getReportWeb,
   getStudiesByCentreline,
@@ -275,7 +275,8 @@ export default {
       const { studyTypeName } = this.$route.params;
       return StudyType.enumValueOf(studyTypeName);
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
+    ...mapGetters(['locationsDescription', 's1']),
     ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
@@ -335,26 +336,22 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      const { s1, studyTypeName } = to.params;
-      const features = CompositeId.decode(s1);
+      const { s1: s1Next, studyTypeName } = to.params;
+      const features = CompositeId.decode(s1Next);
       const studyType = StudyType.enumValueOf(studyTypeName);
-      const tasks = [
-        getLocationByFeature(features[0]),
-        getStudiesByCentreline(
-          features,
-          studyType,
-          this.filterParamsStudyReports,
-          { limit: 10, offset: 0 },
-        ),
-      ];
-      const [location, studies] = await Promise.all(tasks);
+      const studies = await getStudiesByCentreline(
+        features,
+        studyType,
+        this.filterParamsStudyReports,
+        { limit: 10, offset: 0 },
+      );
       this.studies = studies;
 
-      if (this.location === null
-          || location.centrelineId !== this.location.centrelineId
-          || location.centrelineType !== this.location.centrelineType
-          || location.description !== this.location.description) {
-        this.setLocation(location);
+      const { s1 } = this;
+      if (s1 !== s1Next) {
+        const locationMap = await getLocationsByFeature(features);
+        const locations = Array.from(locationMap.values());
+        this.setLocations(locations);
       }
     },
     setReportParameters(reportParameters) {
@@ -375,7 +372,7 @@ export default {
 
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
   },
 };
 </script>

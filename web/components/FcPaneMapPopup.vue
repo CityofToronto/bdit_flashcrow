@@ -384,7 +384,7 @@ export default {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
       const location = await getLocationByFeature(feature);
-      this.setLocation(location);
+      this.setLocations([location]);
     },
     actionViewData() {
       if (this.$route.name === 'viewDataAtLocation') {
@@ -394,6 +394,7 @@ export default {
       // open the view data window
       const features = [this.feature.properties];
       const s1 = CompositeId.encode(features);
+      console.log(s1);
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { s1 },
@@ -415,7 +416,7 @@ export default {
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
     },
-    ...mapMutations(['setDrawerOpen', 'setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLocations']),
   },
 };
 </script>

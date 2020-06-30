@@ -6,11 +6,15 @@ import {
   postStudyRequest,
   putStudyRequest,
 } from '@/lib/api/WebApi';
-import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
+import {
+  getLocationFeatureType,
+  getLocationsDescription,
+} from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
 } from '@/lib/i18n/Strings';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import viewData from '@/web/store/modules/viewData';
 
@@ -37,7 +41,7 @@ export default new Vuex.Store({
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
-    location: null,
+    locations: [],
     locationMulti: false,
     legendOptions: {
       datesFrom: 3,
@@ -70,8 +74,17 @@ export default new Vuex.Store({
     },
     // LOCATION
     locationFeatureType(state) {
-      const { location } = state;
-      return getLocationFeatureType(location);
+      const { locations } = state;
+      if (locations.length === 0) {
+        return null;
+      }
+      return getLocationFeatureType(locations[0]);
+    },
+    locationsDescription(state) {
+      return getLocationsDescription(state.locations);
+    },
+    s1(state) {
+      return CompositeId.encode(state.locations);
     },
   },
   mutations: {
@@ -102,8 +115,8 @@ export default new Vuex.Store({
       Vue.set(state, 'backViewRequest', backViewRequest);
     },
     // LOCATION
-    setLocation(state, location) {
-      Vue.set(state, 'location', location);
+    setLocations(state, locations) {
+      Vue.set(state, 'locations', locations);
     },
     setLocationMulti(state, locationMulti) {
       Vue.set(state, 'locationMulti', locationMulti);

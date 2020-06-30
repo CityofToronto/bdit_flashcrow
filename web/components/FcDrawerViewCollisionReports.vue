@@ -26,7 +26,7 @@
           <h1 class="headline ml-4">Collisions</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{location.description}}</span>
+            <span>&#x2022; {{locationsDescription}}</span>
             <span v-if="filterChipsCollision.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -106,7 +106,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { ReportFormat, ReportType } from '@/lib/Constants';
 import {
-  getLocationByFeature,
+  getLocationsByFeature,
   getReport,
   getReportWeb,
 } from '@/lib/api/WebApi';
@@ -164,7 +164,8 @@ export default {
       // TODO: we'll probably have to figure this one out...
       return {};
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
+    ...mapGetters(['locationsDescription', 's1']),
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
@@ -201,9 +202,8 @@ export default {
       }
       this.downloadLoading = true;
 
-      const { centrelineId, centrelineType } = this.$route.params;
-      const id = `${centrelineType}/${centrelineId}`;
-      const reportData = await getReport(activeReportType, id, format, filterParamsCollision);
+      const { s1 } = this.$route.params;
+      const reportData = await getReport(activeReportType, s1, format, filterParamsCollision);
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -221,19 +221,14 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      const { s1 } = to.params;
-      const features = CompositeId.decode(s1);
-      const tasks = [
-        getLocationByFeature(features[0]),
-      ];
-      const [location] = await Promise.all(tasks);
+      const { s1: s1Next } = to.params;
+      const { s1 } = this;
       this.updateReportLayout();
-
-      if (this.location === null
-          || location.centrelineId !== this.location.centrelineId
-          || location.centrelineType !== this.location.centrelineType
-          || location.description !== this.location.description) {
-        this.setLocation(location);
+      if (s1 !== s1Next) {
+        const features = CompositeId.decode(s1Next);
+        const locationMap = await getLocationsByFeature(features);
+        const locations = Array.from(locationMap.values());
+        this.setLocations(locations);
       }
     },
     async updateReportLayout() {
@@ -249,7 +244,7 @@ export default {
 
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
   },
 };
 </script>

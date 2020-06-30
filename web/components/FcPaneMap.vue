@@ -185,6 +185,13 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
+    location() {
+      const { locations } = this;
+      if (locations.length === 0) {
+        return null;
+      }
+      return locations[0];
+    },
     mapOptions() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
@@ -217,15 +224,15 @@ export default {
     },
     tooltipLocationMulti() {
       if (this.locationMulti) {
-        return 'Stop selecting multiple locations';
+        return 'Select single location';
       }
       return 'Select multiple locations';
     },
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'location',
       'locationMulti',
+      'locations',
     ]),
   },
   created() {
@@ -585,7 +592,6 @@ export default {
     ...mapMutations([
       'setDrawerOpen',
       'setLegendOptions',
-      'setLocation',
       'setLocationMulti',
     ]),
   },

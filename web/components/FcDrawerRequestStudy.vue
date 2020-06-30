@@ -187,10 +187,15 @@ export default {
       }
       return 'View Data';
     },
+    location() {
+      if (this.locations.length === 0) {
+        return null;
+      }
+      return this.locations[0];
+    },
     routeFinish() {
       if (this.isCreate) {
-        const features = [this.location];
-        const s1 = CompositeId.encode(features);
+        const s1 = CompositeId.encode(this.locations);
         return {
           name: 'viewDataAtLocation',
           params: { s1 },
@@ -218,7 +223,7 @@ export default {
       const { id } = this.$route.params;
       return `Edit Request #${id}`;
     },
-    ...mapState(['location', 'now']),
+    ...mapState(['locations', 'now']),
   },
   watch: {
     estimatedDeliveryDate() {
@@ -280,7 +285,7 @@ export default {
         studyRequestLocation = result.studyRequestLocation;
       }
       this.studyRequest = studyRequest;
-      this.setLocation(studyRequestLocation);
+      this.setLocations([studyRequestLocation]);
       this.updateStudyRequestLocation();
     },
     updateStudyRequestLocation() {
@@ -308,7 +313,7 @@ export default {
       this.$v.studyRequest.centrelineType.$touch();
       this.$v.studyRequest.geom.$touch();
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
     ...mapActions(['saveStudyRequest']),
   },
 };

@@ -204,7 +204,7 @@ export default {
       }
       return 'Requests';
     },
-    ...mapState(['auth', 'backViewRequest', 'location']),
+    ...mapState(['auth', 'backViewRequest', 'locations']),
   },
   methods: {
     async actionAcceptChanges() {
@@ -257,11 +257,10 @@ export default {
       await this.updateMoreActions();
     },
     actionViewData() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return;
       }
-      const features = [this.location];
-      const s1 = CompositeId.encode(features);
+      const s1 = CompositeId.encode(this.locations);
       const route = {
         name: 'viewDataAtLocation',
         params: { s1 },
@@ -285,7 +284,7 @@ export default {
       this.studyRequestComments = studyRequestComments;
       this.studyRequestLocation = studyRequestLocation;
       this.studyRequestUsers = studyRequestUsers;
-      this.setLocation(studyRequestLocation);
+      this.setLocations([studyRequestLocation]);
     },
     onAddComment({ studyRequest, studyRequestComment }) {
       this.studyRequest = studyRequest;
@@ -307,7 +306,7 @@ export default {
       }
       this.loadingMoreActions = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
     ...mapActions(['saveStudyRequest']),
   },
 };

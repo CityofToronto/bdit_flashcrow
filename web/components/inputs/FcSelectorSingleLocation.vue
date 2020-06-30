@@ -43,16 +43,23 @@ export default {
     },
     internalLocation: {
       get() {
-        return this.location;
+        if (this.locations.length === 0) {
+          return null;
+        }
+        return this.locations[0];
       },
       set(internalLocation) {
-        this.setLocation(internalLocation);
+        if (internalLocation === null) {
+          this.setLocations([]);
+        } else {
+          this.setLocations([internalLocation]);
+        }
       },
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
   },
   methods: {
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
   },
 };
 </script>
