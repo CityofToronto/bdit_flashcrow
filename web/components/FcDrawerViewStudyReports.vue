@@ -153,6 +153,7 @@ import {
   getReportWeb,
   getStudiesByCentreline,
 } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
@@ -293,11 +294,11 @@ export default {
       next();
       return;
     }
-    const { centrelineId, centrelineType } = from.params;
+    const { s1 } = from.params;
     const { name } = to;
     if (name === 'viewDataAtLocation') {
-      const { centrelineId: nextCentrelineId, centrelineType: nextCentrelineType } = to.params;
-      if (centrelineType === nextCentrelineType && centrelineId === nextCentrelineId) {
+      const { s1: s1Next } = to.params;
+      if (s1 === s1Next) {
         next();
         return;
       }
@@ -327,19 +328,20 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      const { centrelineId, centrelineType } = this.$route.params;
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType, studyTypeName } = to.params;
+      const { s1, studyTypeName } = to.params;
+      const features = CompositeId.decode(s1);
       const studyType = StudyType.enumValueOf(studyTypeName);
       const tasks = [
-        getLocationByFeature({ centrelineId, centrelineType }),
+        getLocationByFeature(features[0]),
         getStudiesByCentreline(
-          { centrelineId, centrelineType },
+          features,
           studyType,
           this.filterParamsStudyReports,
           { limit: 10, offset: 0 },

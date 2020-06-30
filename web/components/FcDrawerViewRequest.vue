@@ -103,6 +103,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -259,10 +260,11 @@ export default {
       if (this.location === null) {
         return;
       }
-      const { centrelineId, centrelineType } = this.location;
+      const features = [this.location];
+      const s1 = CompositeId.encode(features);
       const route = {
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       };
       this.$router.push(route);
     },

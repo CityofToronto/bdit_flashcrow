@@ -110,6 +110,7 @@ import {
   getReport,
   getReportWeb,
 } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
@@ -179,11 +180,11 @@ export default {
       next();
       return;
     }
-    const { centrelineId, centrelineType } = from.params;
+    const { s1 } = from.params;
     const { name } = to;
     if (name === 'viewDataAtLocation') {
-      const { centrelineId: nextCentrelineId, centrelineType: nextCentrelineType } = to.params;
-      if (centrelineType === nextCentrelineType && centrelineId === nextCentrelineId) {
+      const { s1: s1Next } = to.params;
+      if (s1 === s1Next) {
         next();
         return;
       }
@@ -213,16 +214,17 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      const { centrelineId, centrelineType } = this.$route.params;
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType } = to.params;
+      const { s1 } = to.params;
+      const features = CompositeId.decode(s1);
       const tasks = [
-        getLocationByFeature({ centrelineId, centrelineType }),
+        getLocationByFeature(features[0]),
       ];
       const [location] = await Promise.all(tasks);
       this.updateReportLayout();
@@ -241,9 +243,8 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const { centrelineId, centrelineType } = this.$route.params;
-      const id = `${centrelineType}/${centrelineId}`;
-      const reportLayout = await getReportWeb(activeReportType, id, filterParamsCollision);
+      const { s1 } = this.$route.params;
+      const reportLayout = await getReportWeb(activeReportType, s1, filterParamsCollision);
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;

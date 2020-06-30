@@ -100,6 +100,7 @@ import {
   REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
@@ -188,10 +189,11 @@ export default {
     },
     routeFinish() {
       if (this.isCreate) {
-        const { centrelineId, centrelineType } = this.location;
+        const features = [this.location];
+        const s1 = CompositeId.encode(features);
         return {
           name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
+          params: { s1 },
         };
       }
       if (this.studyRequest === null) {

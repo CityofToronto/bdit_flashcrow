@@ -43,6 +43,7 @@ import {
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
+import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -165,7 +166,7 @@ async function getStudyDetails(feature) {
   const { centrelineId, centrelineType } = feature.properties;
   const tasks = [
     getLocationByFeature({ centrelineId, centrelineType }),
-    getStudiesByCentrelineSummary({ centrelineId, centrelineType }, {}),
+    getStudiesByCentrelineSummary([{ centrelineId, centrelineType }], {}),
   ];
   const [location, studySummary] = await Promise.all(tasks);
   return { location, studySummary };
@@ -391,10 +392,11 @@ export default {
       }
 
       // open the view data window
-      const { centrelineId, centrelineType } = this.feature.properties;
+      const features = [this.feature.properties];
+      const s1 = CompositeId.encode(features);
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       });
     },
     createPopup() {

@@ -217,6 +217,7 @@ import {
   getStudiesByCentrelineTotal,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
@@ -367,41 +368,33 @@ export default {
       this.$router.push({ name: 'requestStudyNew' });
     },
     actionShowReportsCollision() {
-      const { centrelineId, centrelineType } = this.$route.params;
-      const params = {
-        centrelineId,
-        centrelineType,
-      };
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
-        params,
+        params: { s1 },
       });
     },
     actionShowReportsStudy({ category: { studyType } }) {
-      const { centrelineId, centrelineType } = this.$route.params;
-      const params = {
-        centrelineId,
-        centrelineType,
-        studyTypeName: studyType.name,
-      };
+      const { s1 } = this.$route.params;
+      const params = { s1, studyTypeName: studyType.name };
       this.$router.push({
         name: 'viewStudyReportsAtLocation',
         params,
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType } = to.params;
-      const feature = { centrelineId, centrelineType };
+      const { s1 } = to.params;
+      const features = CompositeId.decode(s1);
       const tasks = [
-        getCollisionsByCentrelineSummary(feature, this.filterParamsCollision),
-        getCollisionsByCentrelineTotal(feature),
-        getLocationByFeature(feature),
-        getPoiByCentrelineSummary(feature),
-        getStudiesByCentrelineSummary(feature, this.filterParamsStudy),
-        getStudiesByCentrelineTotal(feature),
+        getCollisionsByCentrelineSummary(features, this.filterParamsCollision),
+        getCollisionsByCentrelineTotal(features),
+        getLocationByFeature(features[0]),
+        getPoiByCentrelineSummary(features[0]),
+        getStudiesByCentrelineSummary(features, this.filterParamsStudy),
+        getStudiesByCentrelineTotal(features),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));
+        tasks.push(getStudyRequestsByCentrelinePending(features));
       }
       const [
         collisionSummary,

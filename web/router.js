@@ -81,7 +81,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:centrelineType/:centrelineId',
+        path: '/view/location/:s1',
         name: 'viewDataAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -94,7 +94,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:centrelineType/:centrelineId/reports/collision',
+        path: '/view/location/:s1/reports/collision',
         name: 'viewCollisionReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -107,7 +107,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:centrelineType/:centrelineId/reports/:studyTypeName',
+        path: '/view/location/:s1/reports/:studyTypeName',
         name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },

@@ -23,10 +23,11 @@
           <template v-slot:activator="{ on }">
             <FcButton
               aria-label="Clear Location"
+              class="mr-1"
               type="icon"
               @click="actionClear"
               v-on="on">
-              <v-icon left>mdi-close-circle</v-icon>
+              <v-icon>mdi-close-circle</v-icon>
             </FcButton>
           </template>
           <span>Clear Location</span>
