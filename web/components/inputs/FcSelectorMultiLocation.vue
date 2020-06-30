@@ -47,12 +47,14 @@
           label="Include intersections and midblocks between locations" />
         <v-spacer></v-spacer>
         <FcButton
-          type="tertiary">
+          type="tertiary"
+          @click="setLocationMulti(false)">
           Cancel
         </FcButton>
         <FcButton
           :disabled="locations.length === 0"
-          type="secondary">
+          type="secondary"
+          @click="comingSoon">
           Done
         </FcButton>
       </div>
@@ -61,6 +63,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -100,6 +104,11 @@ export default {
     actionRemoveLocation(i) {
       this.locations.splice(i, 1);
     },
+    comingSoon() {
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon');
+    },
+    ...mapMutations(['setLocationMulti']),
   },
 };
 </script>
