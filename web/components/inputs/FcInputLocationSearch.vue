@@ -3,33 +3,37 @@
     v-model="internalValue"
     class="fc-input-location-search"
     dense
+    :flat="locationMulti"
     hide-details
     hide-no-data
     :items="items"
     item-text="description"
-    label="Search"
+    label="Choose location or click on the map"
     :loading="loading"
     no-filter
     return-object
     :search-input.sync="query"
     solo>
     <template v-slot:append>
-      <v-tooltip
-        v-if="internalValue !== null"
-        right>
-        <template v-slot:activator="{ on }">
-          <FcButton
-            aria-label="Clear Location"
-            type="icon"
-            @click="actionClear"
-            v-on="on">
-            <v-icon left>mdi-close-circle</v-icon>
-          </FcButton>
-        </template>
-        <span>Clear Location</span>
-      </v-tooltip>
-      <v-divider vertical />
-      <v-icon right>mdi-magnify</v-icon>
+      <span v-if="locationMulti">&nbsp;</span>
+      <template v-else>
+        <v-tooltip
+          v-if="internalValue !== null || query !== null"
+          right>
+          <template v-slot:activator="{ on }">
+            <FcButton
+              aria-label="Clear Location"
+              type="icon"
+              @click="actionClear"
+              v-on="on">
+              <v-icon left>mdi-close-circle</v-icon>
+            </FcButton>
+          </template>
+          <span>Clear Location</span>
+        </v-tooltip>
+        <v-divider vertical />
+        <v-icon right>mdi-magnify</v-icon>
+      </template>
     </template>
     <template v-slot:item="{ attrs, item, on, parent }">
       <v-list-item
@@ -46,16 +50,23 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import { LocationSearchType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcInputLocationSearch',
   mixins: [FcMixinVModelProxy(Object)],
+  components: {
+    FcButton,
+  },
+  props: {
+    locationIndex: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
       items: [],
@@ -64,7 +75,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(['locationMulti']),
+    locationMulti() {
+      return this.locationIndex !== null;
+    },
+    locationToAddMulti() {
+      return this.locationIndex === -1;
+    },
   },
   /*
    * To understand the following watchers, imagine a state machine:
@@ -83,11 +99,22 @@ export default {
     internalValue: {
       handler() {
         if (this.internalValue !== null) {
-          /*
-           * 1c -> 1b: the user just selected a location, either via the autocomplete
-           * dropdown or via map interaction.  We need to update the search bar to match.
-           */
-          this.query = this.internalValue.description;
+          if (this.locationToAddMulti) {
+            /*
+             * In this case, the user has just selected a location to be added to the
+             * multi-location selection.  We need to pass that new location up, then
+             * clear the search bar state - the parent component can't clear it for us,
+             * and we're reusing the same search bar for the next new location.
+             */
+            this.$emit('location-add', this.internalValue);
+            this.actionClear();
+          } else {
+            /*
+             * 1c -> 1b: the user just selected a location, either via the autocomplete
+             * dropdown or via map interaction.  We need to update the search bar to match.
+             */
+            this.query = this.internalValue.description;
+          }
         }
       },
       immediate: true,
@@ -128,7 +155,7 @@ export default {
          * the location watcher to move us into 1b.
          */
         this.loading = true;
-        await this.actionSearch();
+        this.items = await getLocationSuggestions(this.query, {});
         this.loading = false;
       }
       /*
@@ -138,23 +165,13 @@ export default {
   },
   methods: {
     actionClear() {
+      this.items = [];
       /*
        * 1b -> 1a -> 2a.  The debounce delay of 250ms on the `query` watcher is more than
        * enough so that, by the time it fires, we're already in 2a.
        */
       this.query = null;
       this.internalValue = null;
-    },
-    async actionSearch() {
-      const { locationMulti, query } = this;
-      const filters = {};
-      if (locationMulti) {
-        filters.types = [
-          LocationSearchType.INTERSECTION,
-          LocationSearchType.SIGNAL,
-        ];
-      }
-      this.items = await getLocationSuggestions(query, filters);
     },
   },
 };

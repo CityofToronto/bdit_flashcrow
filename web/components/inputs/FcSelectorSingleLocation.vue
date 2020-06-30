@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-search-bar-location">
+  <div class="fc-selector-single-location">
     <v-tooltip
       v-if="collapseSearchBar"
       right
@@ -30,7 +30,7 @@ import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
 export default {
-  name: 'FcSearchBarLocation',
+  name: 'FcSelectorSingleLocation',
   components: {
     FcButton,
     FcInputLocationSearch,
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-search-bar-location {
+.fc-selector-single-location {
   & > .fc-input-location-search {
     width: 392px;
   }

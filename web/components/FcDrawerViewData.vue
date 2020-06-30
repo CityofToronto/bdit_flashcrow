@@ -1,7 +1,7 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
     <div class="flex-grow-0 flex-shrink-0 pa-5">
-      <FcSearchBarLocation />
+      <FcSelectorSingleLocation />
     </div>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
@@ -224,7 +224,7 @@ import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollisionFilters.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
+import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -240,7 +240,7 @@ export default {
     FcDataTableStudies,
     FcDialogCollisionFilters,
     FcDialogStudyFilters,
-    FcSearchBarLocation,
+    FcSelectorSingleLocation,
   },
   data() {
     return {
@@ -327,7 +327,7 @@ export default {
         /*
          * Normally `this.loading = true` is paired with `this.loading = false` after some
          * asynchronous operation.  In this case, however, we're using it to hide the View Data
-         * drawer contents to prevent errors after clearing `FcSearchBarLocation`.  This is OK,
+         * drawer contents to prevent errors after clearing `FcSelectorSingleLocation`.  This is OK,
          * as the next line jumps to View Map which destroys this drawer component anyways.
          */
         this.loading = true;

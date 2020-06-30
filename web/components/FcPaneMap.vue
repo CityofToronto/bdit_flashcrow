@@ -8,8 +8,16 @@
           :active="loading"
           indeterminate />
       </div>
-      <FcSearchBarLocation
-        v-if="!drawerOpen" />
+      <div
+        class="pane-map-location-search"
+        v-if="!drawerOpen">
+        <FcSelectorMultiLocation
+          v-if="locationMulti"
+          class="elevation-2" />
+        <FcSelectorSingleLocation
+          v-else
+          class="mt-5 ml-5" />
+      </div>
       <FcPaneMapLegend
         v-model="internalLegendOptions" />
       <div class="pane-map-mode">
@@ -90,7 +98,8 @@ import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
-import FcSearchBarLocation from '@/web/components/inputs/FcSearchBarLocation.vue';
+import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
+import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
@@ -128,7 +137,8 @@ export default {
     FcButton,
     FcPaneMapLegend,
     FcPaneMapPopup,
-    FcSearchBarLocation,
+    FcSelectorMultiLocation,
+    FcSelectorSingleLocation,
   },
   provide() {
     const self = this;
@@ -594,10 +604,10 @@ export default {
     width: 100%;
     z-index: var(--z-index-controls);
   }
-  & > .fc-search-bar-location {
-    left: 20px;
-    top: 20px;
+  & > .pane-map-location-search {
+    left: 0;
     position: absolute;
+    top: 0;
     z-index: var(--z-index-controls);
   }
   & > .fc-pane-map-legend {
