@@ -29,6 +29,23 @@ test('CompositeId [invalid IDs]', () => {
   }).toThrow(InvalidCompositeIdError);
 });
 
+test('CompositeId [length limit]', () => {
+  const parts = ['s1:A'];
+  for (let i = 0; i < CompositeId.MAX_FEATURES; i++) {
+    parts.push('CAAAA');
+  }
+  let compositeId = parts.join('');
+  expect(() => {
+    CompositeId.decode(compositeId);
+  }).not.toThrow(InvalidCompositeIdError);
+
+  parts.push('CAAAA');
+  compositeId = parts.join('');
+  expect(() => {
+    CompositeId.decode(compositeId);
+  }).toThrow(InvalidCompositeIdError);
+});
+
 test('CompositeId [empty feature set]', () => {
   const compositeId = CompositeId.encode([]);
   expect(CompositeId.decode(compositeId)).toEqual([]);
