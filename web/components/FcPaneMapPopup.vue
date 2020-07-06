@@ -38,11 +38,12 @@ import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
-  getLocationByFeature,
+  getLocationByCentreline,
   getStudiesByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
+import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -106,7 +107,7 @@ function getCollisionIcon(feature, { involved }) {
 
 async function getCentrelineDetails(feature, centrelineType) {
   const { centrelineId } = feature.properties;
-  const location = await getLocationByFeature({ centrelineId, centrelineType });
+  const location = await getLocationByCentreline({ centrelineId, centrelineType });
   return { location };
 }
 
@@ -164,8 +165,8 @@ function getSchoolIcon() {
 async function getStudyDetails(feature) {
   const { centrelineId, centrelineType } = feature.properties;
   const tasks = [
-    getLocationByFeature({ centrelineId, centrelineType }),
-    getStudiesByCentrelineSummary({ centrelineId, centrelineType }, {}),
+    getLocationByCentreline({ centrelineId, centrelineType }),
+    getStudiesByCentrelineSummary([{ centrelineId, centrelineType }], {}),
   ];
   const [location, studySummary] = await Promise.all(tasks);
   return { location, studySummary };
@@ -382,8 +383,8 @@ export default {
     async actionSetStudyLocation() {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
-      const location = await getLocationByFeature(feature);
-      this.setLocation(location);
+      const location = await getLocationByCentreline(feature);
+      this.setLocations([location]);
     },
     actionViewData() {
       if (this.$route.name === 'viewDataAtLocation') {
@@ -392,9 +393,11 @@ export default {
 
       // open the view data window
       const { centrelineId, centrelineType } = this.feature.properties;
+      const feature = { centrelineId, centrelineType };
+      const s1 = CompositeId.encode([feature]);
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       });
     },
     createPopup() {
@@ -413,7 +416,7 @@ export default {
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
     },
-    ...mapMutations(['setDrawerOpen', 'setLocation']),
+    ...mapMutations(['setDrawerOpen', 'setLocations']),
   },
 };
 </script>

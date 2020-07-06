@@ -91,6 +91,7 @@
 <script>
 import {
   mapActions,
+  mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
@@ -100,6 +101,7 @@ import {
   REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
@@ -188,10 +190,10 @@ export default {
     },
     routeFinish() {
       if (this.isCreate) {
-        const { centrelineId, centrelineType } = this.location;
+        const s1 = CompositeId.encode(this.locations);
         return {
           name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
+          params: { s1 },
         };
       }
       if (this.studyRequest === null) {
@@ -216,7 +218,8 @@ export default {
       const { id } = this.$route.params;
       return `Edit Request #${id}`;
     },
-    ...mapState(['location', 'now']),
+    ...mapState(['locations', 'now']),
+    ...mapGetters(['location']),
   },
   watch: {
     estimatedDeliveryDate() {
@@ -278,7 +281,7 @@ export default {
         studyRequestLocation = result.studyRequestLocation;
       }
       this.studyRequest = studyRequest;
-      this.setLocation(studyRequestLocation);
+      this.setLocations([studyRequestLocation]);
       this.updateStudyRequestLocation();
     },
     updateStudyRequestLocation() {
@@ -306,7 +309,7 @@ export default {
       this.$v.studyRequest.centrelineType.$touch();
       this.$v.studyRequest.geom.$touch();
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
     ...mapActions(['saveStudyRequest']),
   },
 };

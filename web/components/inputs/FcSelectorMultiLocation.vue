@@ -65,6 +65,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
+import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -83,18 +84,7 @@ export default {
   },
   computed: {
     description() {
-      const n = this.locations.length;
-      if (n === 0) {
-        return null;
-      }
-      const [{ description }] = this.locations;
-      if (n === 1) {
-        return description;
-      }
-      if (n === 2) {
-        return `${description} + 1 location`;
-      }
-      return `${description} + ${n - 1} locations`;
+      return getLocationsDescription(this.locations);
     },
   },
   methods: {

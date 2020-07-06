@@ -103,6 +103,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -203,7 +204,7 @@ export default {
       }
       return 'Requests';
     },
-    ...mapState(['auth', 'backViewRequest', 'location']),
+    ...mapState(['auth', 'backViewRequest', 'locations']),
   },
   methods: {
     async actionAcceptChanges() {
@@ -256,13 +257,13 @@ export default {
       await this.updateMoreActions();
     },
     actionViewData() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return;
       }
-      const { centrelineId, centrelineType } = this.location;
+      const s1 = CompositeId.encode(this.locations);
       const route = {
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       };
       this.$router.push(route);
     },
@@ -283,7 +284,7 @@ export default {
       this.studyRequestComments = studyRequestComments;
       this.studyRequestLocation = studyRequestLocation;
       this.studyRequestUsers = studyRequestUsers;
-      this.setLocation(studyRequestLocation);
+      this.setLocations([studyRequestLocation]);
     },
     onAddComment({ studyRequest, studyRequestComment }) {
       this.studyRequest = studyRequest;
@@ -305,7 +306,7 @@ export default {
       }
       this.loadingMoreActions = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
     ...mapActions(['saveStudyRequest']),
   },
 };

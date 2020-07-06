@@ -26,7 +26,7 @@
           <h1 class="headline ml-4">Collisions</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{location.description}}</span>
+            <span>&#x2022; {{locationsDescription}}</span>
             <span v-if="filterChipsCollision.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -106,10 +106,11 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { ReportFormat, ReportType } from '@/lib/Constants';
 import {
-  getLocationByFeature,
+  getLocationsByCentreline,
   getReport,
   getReportWeb,
 } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
@@ -163,7 +164,8 @@ export default {
       // TODO: we'll probably have to figure this one out...
       return {};
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
+    ...mapGetters(['locationsDescription', 's1']),
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
@@ -179,11 +181,11 @@ export default {
       next();
       return;
     }
-    const { centrelineId, centrelineType } = from.params;
+    const { s1 } = from.params;
     const { name } = to;
     if (name === 'viewDataAtLocation') {
-      const { centrelineId: nextCentrelineId, centrelineType: nextCentrelineType } = to.params;
-      if (centrelineType === nextCentrelineType && centrelineId === nextCentrelineId) {
+      const { s1: s1Next } = to.params;
+      if (s1 === s1Next) {
         next();
         return;
       }
@@ -200,9 +202,8 @@ export default {
       }
       this.downloadLoading = true;
 
-      const { centrelineId, centrelineType } = this.$route.params;
-      const id = `${centrelineType}/${centrelineId}`;
-      const reportData = await getReport(activeReportType, id, format, filterParamsCollision);
+      const { s1 } = this.$route.params;
+      const reportData = await getReport(activeReportType, s1, format, filterParamsCollision);
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -213,25 +214,20 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      const { centrelineId, centrelineType } = this.$route.params;
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType } = to.params;
-      const tasks = [
-        getLocationByFeature({ centrelineId, centrelineType }),
-      ];
-      const [location] = await Promise.all(tasks);
+      const { s1: s1Next } = to.params;
+      const { s1 } = this;
       this.updateReportLayout();
-
-      if (this.location === null
-          || location.centrelineId !== this.location.centrelineId
-          || location.centrelineType !== this.location.centrelineType
-          || location.description !== this.location.description) {
-        this.setLocation(location);
+      if (s1 !== s1Next) {
+        const features = CompositeId.decode(s1Next);
+        const locations = await getLocationsByCentreline(features);
+        this.setLocations(locations);
       }
     },
     async updateReportLayout() {
@@ -241,14 +237,13 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const { centrelineId, centrelineType } = this.$route.params;
-      const id = `${centrelineType}/${centrelineId}`;
-      const reportLayout = await getReportWeb(activeReportType, id, filterParamsCollision);
+      const { s1 } = this.$route.params;
+      const reportLayout = await getReportWeb(activeReportType, s1, filterParamsCollision);
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
   },
 };
 </script>

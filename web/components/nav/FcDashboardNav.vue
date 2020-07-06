@@ -25,6 +25,7 @@
 <script>
 import { mapState } from 'vuex';
 
+import CompositeId from '@/lib/io/CompositeId';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 
 export default {
@@ -34,16 +35,16 @@ export default {
   },
   computed: {
     toViewMap() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return { name: 'viewData' };
       }
-      const { centrelineId, centrelineType } = this.location;
+      const s1 = CompositeId.encode(this.locations);
       return {
         name: 'viewDataAtLocation',
-        params: { centrelineId, centrelineType },
+        params: { s1 },
       };
     },
-    ...mapState(['location']),
+    ...mapState(['locations']),
   },
 };
 </script>

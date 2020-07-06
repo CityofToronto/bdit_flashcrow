@@ -90,7 +90,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -217,16 +217,16 @@ export default {
     },
     tooltipLocationMulti() {
       if (this.locationMulti) {
-        return 'Stop selecting multiple locations';
+        return 'Select single location';
       }
       return 'Select multiple locations';
     },
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'location',
       'locationMulti',
     ]),
+    ...mapGetters(['location']),
   },
   created() {
     this.map = null;
@@ -585,7 +585,6 @@ export default {
     ...mapMutations([
       'setDrawerOpen',
       'setLegendOptions',
-      'setLocation',
       'setLocationMulti',
     ]),
   },

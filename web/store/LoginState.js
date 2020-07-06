@@ -9,8 +9,8 @@ function restoreLoginState(next) {
   }
   window.sessionStorage.removeItem(STORAGE_KEY_LOGIN_STATE);
   try {
-    const { location, name, params } = JSON.parse(loginState);
-    store.commit('setLocation', location);
+    const { locations, name, params } = JSON.parse(loginState);
+    store.commit('setLocations', locations);
     next({ name, params });
     return true;
   } catch (err) {
@@ -22,9 +22,9 @@ function restoreLoginState(next) {
 }
 
 function saveLoginState(to) {
-  const { location } = store.state;
+  const { locations } = store.state;
   const { name, params = {} } = to;
-  const loginState = JSON.stringify({ location, name, params });
+  const loginState = JSON.stringify({ locations, name, params });
   window.sessionStorage.setItem(STORAGE_KEY_LOGIN_STATE, loginState);
 }
 

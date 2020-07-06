@@ -11,8 +11,8 @@
         <header class="px-5 pt-1 pb-5">
           <h1
             class="display-3 text-truncate"
-            :title="location.description">
-            {{location.description}}
+            :title="locationsDescription">
+            {{locationsDescription}}
           </h1>
           <div class="label mt-5">
             <span v-if="locationFeatureType !== null">
@@ -211,12 +211,13 @@ import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
-  getLocationByFeature,
+  getLocationsByCentreline,
   getPoiByCentrelineSummary,
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineTotal,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
@@ -292,21 +293,20 @@ export default {
       return hospital !== null || school !== null;
     },
     ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
-    ...mapState(['auth', 'legendOptions', 'location']),
+    ...mapState(['auth', 'legendOptions', 'locations']),
     ...mapGetters('viewData', [
       'filterChipsCollision',
       'filterChipsStudy',
       'filterParamsCollision',
       'filterParamsStudy',
     ]),
-    ...mapGetters(['locationFeatureType']),
+    ...mapGetters(['locationFeatureType', 'locationsDescription', 's1']),
   },
   watch: {
     async filterParamsCollision() {
       this.loadingCollisions = true;
-      const { centrelineId, centrelineType } = this.location;
       const collisionSummary = await getCollisionsByCentrelineSummary(
-        { centrelineId, centrelineType },
+        this.locations,
         this.filterParamsCollision,
       );
       this.collisionSummary = collisionSummary;
@@ -314,16 +314,15 @@ export default {
     },
     async filterParamsStudy() {
       this.loadingStudies = true;
-      const { centrelineId, centrelineType } = this.location;
       const studySummary = await getStudiesByCentrelineSummary(
-        { centrelineId, centrelineType },
+        this.locations,
         this.filterParamsStudy,
       );
       this.studySummary = studySummary;
       this.loadingStudies = false;
     },
-    location(location, locationPrev) {
-      if (location === null) {
+    locations(locations, locationsPrev) {
+      if (locations.length === 0) {
         /*
          * Normally `this.loading = true` is paired with `this.loading = false` after some
          * asynchronous operation.  In this case, however, we're using it to hide the View Data
@@ -336,27 +335,21 @@ export default {
         });
         return;
       }
-      const { centrelineId, centrelineType } = location;
-      if (locationPrev === null
-        || locationPrev.centrelineId !== centrelineId
-        || locationPrev.centrelineType !== centrelineType) {
+      const s1 = CompositeId.encode(locations);
+      const s1Prev = CompositeId.encode(locationsPrev);
+      if (s1 !== s1Prev) {
         /*
          * Guard against duplicate navigation, which can happen when first loading the page.
          */
-        let {
-          centrelineId: centrelineIdRoute,
-          centrelineType: centrelineTypeRoute,
-        } = this.$route.params;
-        centrelineIdRoute = parseInt(centrelineIdRoute, 10);
-        centrelineTypeRoute = parseInt(centrelineTypeRoute, 10);
-        if (centrelineIdRoute !== centrelineId || centrelineTypeRoute !== centrelineType) {
+        const { s1: s1Route } = this.$route.params;
+        if (s1 !== s1Route) {
           /*
            * Update the URL to match the new location.  This allows the user to navigate between
            * recently selected locations with the back / forward browser buttons.
            */
           this.$router.push({
             name: 'viewDataAtLocation',
-            params: { centrelineId, centrelineType },
+            params: { s1 },
           });
         }
       }
@@ -367,46 +360,35 @@ export default {
       this.$router.push({ name: 'requestStudyNew' });
     },
     actionShowReportsCollision() {
-      const { centrelineId, centrelineType } = this.$route.params;
-      const params = {
-        centrelineId,
-        centrelineType,
-      };
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
-        params,
+        params: { s1 },
       });
     },
     actionShowReportsStudy({ category: { studyType } }) {
-      const { centrelineId, centrelineType } = this.$route.params;
-      const params = {
-        centrelineId,
-        centrelineType,
-        studyTypeName: studyType.name,
-      };
+      const { s1 } = this.$route.params;
       this.$router.push({
         name: 'viewStudyReportsAtLocation',
-        params,
+        params: { s1, studyTypeName: studyType.name },
       });
     },
     async loadAsyncForRoute(to) {
-      const { centrelineId, centrelineType } = to.params;
-      const feature = { centrelineId, centrelineType };
+      const { s1: s1Next } = to.params;
+      const features = CompositeId.decode(s1Next);
       const tasks = [
-        getCollisionsByCentrelineSummary(feature, this.filterParamsCollision),
-        getCollisionsByCentrelineTotal(feature),
-        getLocationByFeature(feature),
-        getPoiByCentrelineSummary(feature),
-        getStudiesByCentrelineSummary(feature, this.filterParamsStudy),
-        getStudiesByCentrelineTotal(feature),
+        getCollisionsByCentrelineSummary(features, this.filterParamsCollision),
+        getCollisionsByCentrelineTotal(features),
+        getPoiByCentrelineSummary(features[0]),
+        getStudiesByCentrelineSummary(features, this.filterParamsStudy),
+        getStudiesByCentrelineTotal(features),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        tasks.push(getStudyRequestsByCentrelinePending({ centrelineId, centrelineType }));
+        tasks.push(getStudyRequestsByCentrelinePending(features));
       }
       const [
         collisionSummary,
         collisionTotal,
-        location,
         poiSummary,
         studySummary,
         studyTotal,
@@ -419,11 +401,10 @@ export default {
       this.studySummary = studySummary;
       this.studyTotal = studyTotal;
 
-      if (this.location === null
-          || location.centrelineId !== this.location.centrelineId
-          || location.centrelineType !== this.location.centrelineType
-          || location.description !== this.location.description) {
-        this.setLocation(location);
+      const { s1 } = this;
+      if (s1 !== s1Next) {
+        const locations = await getLocationsByCentreline(features);
+        this.setLocations(locations);
       }
     },
     ...mapMutations('viewData', [
@@ -432,7 +413,7 @@ export default {
       'setFiltersCollision',
       'setFiltersStudy',
     ]),
-    ...mapMutations(['setLocation']),
+    ...mapMutations(['setLocations']),
   },
 };
 </script>
