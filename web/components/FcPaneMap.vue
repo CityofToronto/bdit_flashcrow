@@ -90,7 +90,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -185,13 +185,6 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
-    location() {
-      const { locations } = this;
-      if (locations.length === 0) {
-        return null;
-      }
-      return locations[0];
-    },
     mapOptions() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
@@ -232,8 +225,8 @@ export default {
       'drawerOpen',
       'legendOptions',
       'locationMulti',
-      'locations',
     ]),
+    ...mapGetters(['location']),
   },
   created() {
     this.map = null;

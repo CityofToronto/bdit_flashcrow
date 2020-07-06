@@ -73,6 +73,13 @@ export default new Vuex.Store({
       return scope;
     },
     // LOCATION
+    location(state) {
+      const { locations } = state;
+      if (locations.length === 0) {
+        return null;
+      }
+      return locations[0];
+    },
     locationFeatureType(state) {
       const { locations } = state;
       if (locations.length === 0) {

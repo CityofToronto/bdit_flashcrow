@@ -226,8 +226,7 @@ export default {
       this.updateReportLayout();
       if (s1 !== s1Next) {
         const features = CompositeId.decode(s1Next);
-        const locationMap = await getLocationsByCentreline(features);
-        const locations = Array.from(locationMap.values());
+        const locations = await getLocationsByCentreline(features);
         this.setLocations(locations);
       }
     },

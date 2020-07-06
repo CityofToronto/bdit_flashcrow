@@ -91,6 +91,7 @@
 <script>
 import {
   mapActions,
+  mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
@@ -187,12 +188,6 @@ export default {
       }
       return 'View Data';
     },
-    location() {
-      if (this.locations.length === 0) {
-        return null;
-      }
-      return this.locations[0];
-    },
     routeFinish() {
       if (this.isCreate) {
         const s1 = CompositeId.encode(this.locations);
@@ -224,6 +219,7 @@ export default {
       return `Edit Request #${id}`;
     },
     ...mapState(['locations', 'now']),
+    ...mapGetters(['location']),
   },
   watch: {
     estimatedDeliveryDate() {

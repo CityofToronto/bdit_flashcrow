@@ -349,8 +349,7 @@ export default {
 
       const { s1 } = this;
       if (s1 !== s1Next) {
-        const locationMap = await getLocationsByCentreline(features);
-        const locations = Array.from(locationMap.values());
+        const locations = await getLocationsByCentreline(features);
         this.setLocations(locations);
       }
     },
