@@ -1,17 +1,22 @@
 <template>
   <div class="fc-selector-multi-location d-flex flex-column pa-5 shading">
     <div class="align-start d-flex flex-grow-1 flex-shrink-1">
-      <div class="fc-input-location-search-wrapper elevation-2">
-        <FcInputLocationSearch
-          v-for="(_, i) in locations"
-          :key="'search_' + i"
-          v-model="locations[i]"
-          :location-index="i" />
-        <FcInputLocationSearch
-          v-if="locations.length < 5"
-          v-model="locationToAdd"
-          :location-index="-1"
-          @location-add="actionAddLocation" />
+      <div>
+        <div class="fc-input-location-search-wrapper elevation-2">
+          <FcInputLocationSearch
+            v-for="(_, i) in locations"
+            :key="locationKeys[i]"
+            v-model="locations[i]"
+            :location-index="i" />
+          <FcInputLocationSearch
+            v-if="locations.length < 5"
+            v-model="locationToAdd"
+            :location-index="-1"
+            @location-add="actionAddLocation" />
+        </div>
+        <v-messages
+          class="mt-2"
+          :value="messagesMaxLocations"></v-messages>
       </div>
       <div class="ml-2">
         <div
@@ -65,6 +70,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
+import { centrelineKey } from '@/lib/Constants';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
@@ -85,6 +91,24 @@ export default {
   computed: {
     description() {
       return getLocationsDescription(this.locations);
+    },
+    locationKeys() {
+      const keyCounter = new Map();
+      return this.locations.map(({ centrelineId, centrelineType }) => {
+        const key = centrelineKey(centrelineType, centrelineId);
+        let counter = 0;
+        if (keyCounter.has(key)) {
+          counter = keyCounter.get(key) + 1;
+        }
+        keyCounter.set(key, counter);
+        return `${key}_${counter}`;
+      });
+    },
+    messagesMaxLocations() {
+      if (this.locations.length < 5) {
+        return [];
+      }
+      return ['Maximum of 5 selected locations.'];
     },
   },
   methods: {
