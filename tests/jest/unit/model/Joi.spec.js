@@ -24,26 +24,26 @@ CssColor.init(cssColorValues);
 class NotAnEnum {}
 
 test('Joi.compositeId', () => {
-  let compositeId = 's1:0:';
+  let compositeId = 's1:A';
   let result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).toBeUndefined();
   expect(result.value).toEqual([]);
 
-  compositeId = 's1:1e:AAAAA';
+  compositeId = 's1:AAAAAA';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).not.toBeUndefined();
 
-  compositeId = 's1:1e:CAAAA';
+  compositeId = 's1:ACAAAA';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).toBeUndefined();
   expect(result.value).toEqual([
     { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION },
   ]);
 
-  compositeId = 's2:0:';
+  compositeId = 's2:A';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).not.toBeUndefined();
-  compositeId = 's1:0';
+  compositeId = 's1:';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).not.toBeUndefined();
   compositeId = 's1';
