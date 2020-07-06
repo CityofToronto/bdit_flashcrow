@@ -92,7 +92,7 @@ function setup_5_38661() {
   }];
   const studyData = new Map([[38661, countData_5_38661]]);
   StudyDataDAO.byStudy.mockResolvedValue({ counts, studyData });
-  CentrelineDAO.byIdAndType.mockResolvedValue({
+  CentrelineDAO.byFeature.mockResolvedValue({
     geom: {
       type: 'Point',
       coordinates: [-79.343625497, 43.70747321],

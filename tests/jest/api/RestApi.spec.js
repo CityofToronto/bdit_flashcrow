@@ -71,7 +71,7 @@ test('LocationController.getLocationSuggestions', async () => {
   expectSuggestionsContain(response.result, 13460034);
 });
 
-test('LocationController.getLocationsByFeature', async () => {
+test('LocationController.getLocationsByCentreline', async () => {
   // empty list of features
   let data = {
     centrelineId: [],

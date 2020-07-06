@@ -38,7 +38,7 @@ import { CentrelineType } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
-  getLocationByFeature,
+  getLocationByCentreline,
   getStudiesByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
@@ -107,7 +107,7 @@ function getCollisionIcon(feature, { involved }) {
 
 async function getCentrelineDetails(feature, centrelineType) {
   const { centrelineId } = feature.properties;
-  const location = await getLocationByFeature({ centrelineId, centrelineType });
+  const location = await getLocationByCentreline({ centrelineId, centrelineType });
   return { location };
 }
 
@@ -165,7 +165,7 @@ function getSchoolIcon() {
 async function getStudyDetails(feature) {
   const { centrelineId, centrelineType } = feature.properties;
   const tasks = [
-    getLocationByFeature({ centrelineId, centrelineType }),
+    getLocationByCentreline({ centrelineId, centrelineType }),
     getStudiesByCentrelineSummary([{ centrelineId, centrelineType }], {}),
   ];
   const [location, studySummary] = await Promise.all(tasks);
@@ -383,7 +383,7 @@ export default {
     async actionSetStudyLocation() {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
-      const location = await getLocationByFeature(feature);
+      const location = await getLocationByCentreline(feature);
       this.setLocations([location]);
     },
     actionViewData() {
@@ -392,9 +392,9 @@ export default {
       }
 
       // open the view data window
-      const features = [this.feature.properties];
-      const s1 = CompositeId.encode(features);
-      console.log(s1);
+      const { centrelineId, centrelineType } = this.feature.properties;
+      const feature = { centrelineId, centrelineType };
+      const s1 = CompositeId.encode([feature]);
       this.$router.push({
         name: 'viewDataAtLocation',
         params: { s1 },

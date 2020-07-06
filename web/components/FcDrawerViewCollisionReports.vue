@@ -106,7 +106,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { ReportFormat, ReportType } from '@/lib/Constants';
 import {
-  getLocationsByFeature,
+  getLocationsByCentreline,
   getReport,
   getReportWeb,
 } from '@/lib/api/WebApi';
@@ -226,7 +226,7 @@ export default {
       this.updateReportLayout();
       if (s1 !== s1Next) {
         const features = CompositeId.decode(s1Next);
-        const locationMap = await getLocationsByFeature(features);
+        const locationMap = await getLocationsByCentreline(features);
         const locations = Array.from(locationMap.values());
         this.setLocations(locations);
       }

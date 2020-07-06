@@ -211,7 +211,7 @@ import { AuthScope } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
-  getLocationsByFeature,
+  getLocationsByCentreline,
   getPoiByCentrelineSummary,
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineTotal,
@@ -403,7 +403,7 @@ export default {
 
       const { s1 } = this;
       if (s1 !== s1Next) {
-        const locationMap = await getLocationsByFeature(features);
+        const locationMap = await getLocationsByCentreline(features);
         const locations = Array.from(locationMap.values());
         this.setLocations(locations);
       }
