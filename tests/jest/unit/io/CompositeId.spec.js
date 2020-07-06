@@ -3,6 +3,15 @@ import Random from '@/lib/Random';
 import { InvalidCompositeIdError } from '@/lib/error/MoveErrors';
 import CompositeId from '@/lib/io/CompositeId';
 
+function generateCompositeIdFeature() {
+  const centrelineId = Random.range(1, 0x20000000);
+  const centrelineType = Random.choice([
+    CentrelineType.SEGMENT,
+    CentrelineType.INTERSECTION,
+  ]);
+  return { centrelineId, centrelineType };
+}
+
 test('CompositeId [invalid IDs]', () => {
   expect(() => {
     CompositeId.decode('');
@@ -29,7 +38,7 @@ test('CompositeId [invalid IDs]', () => {
   }).toThrow(InvalidCompositeIdError);
 });
 
-test('CompositeId [length limit]', () => {
+test('CompositeId [length limit decode]', () => {
   const parts = ['s1:A'];
   for (let i = 0; i < CompositeId.MAX_FEATURES; i++) {
     parts.push('CAAAA');
@@ -43,6 +52,24 @@ test('CompositeId [length limit]', () => {
   compositeId = parts.join('');
   expect(() => {
     CompositeId.decode(compositeId);
+  }).toThrow(InvalidCompositeIdError);
+});
+
+test('CompositeId [length limit encode]', () => {
+  const features = [];
+  let feature;
+  for (let i = 0; i < CompositeId.MAX_FEATURES; i++) {
+    feature = generateCompositeIdFeature();
+    features.push(feature);
+  }
+  expect(() => {
+    CompositeId.encode(features);
+  }).not.toThrow(InvalidCompositeIdError);
+
+  feature = generateCompositeIdFeature();
+  features.push(feature);
+  expect(() => {
+    CompositeId.encode(features);
   }).toThrow(InvalidCompositeIdError);
 });
 
@@ -82,12 +109,8 @@ test('CompositeId [fuzz test encode / decode]', () => {
     const n = Random.range(1, 20);
     const features = [];
     for (let j = 0; j < n; j++) {
-      const centrelineId = Random.range(1, 0x20000000);
-      const centrelineType = Random.choice([
-        CentrelineType.SEGMENT,
-        CentrelineType.INTERSECTION,
-      ]);
-      features.push({ centrelineId, centrelineType });
+      const feature = generateCompositeIdFeature();
+      features.push(feature);
     }
     const compositeId = CompositeId.encode(features);
     expect(CompositeId.decode(compositeId)).toEqual(features);
