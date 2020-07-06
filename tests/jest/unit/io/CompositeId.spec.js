@@ -17,11 +17,7 @@ test('CompositeId [invalid IDs]', () => {
   }).toThrow(InvalidCompositeIdError);
 
   expect(() => {
-    CompositeId.decode('s1:blargl');
-  }).toThrow(InvalidCompositeIdError);
-
-  expect(() => {
-    CompositeId.decode('s1:blargl:');
+    CompositeId.decode('s1:QAAA');
   }).toThrow(InvalidCompositeIdError);
 
   expect(() => {
@@ -29,11 +25,7 @@ test('CompositeId [invalid IDs]', () => {
   }).toThrow(InvalidCompositeIdError);
 
   expect(() => {
-    CompositeId.decode('s1:1e:AAAA');
-  }).toThrow(InvalidCompositeIdError);
-
-  expect(() => {
-    CompositeId.decode('s1:1e:AAAAA');
+    CompositeId.decode('s1:AAAAAA');
   }).toThrow(InvalidCompositeIdError);
 });
 

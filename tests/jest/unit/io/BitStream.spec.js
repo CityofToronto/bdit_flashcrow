@@ -211,15 +211,11 @@ test('BitStream [invalid serialization]', () => {
   }).toThrow(BitStreamSerializationError);
 
   expect(() => {
-    BitStream.fromString('blargl:');
+    BitStream.fromString('A+%&@*@%');
   }).toThrow(BitStreamSerializationError);
 
   expect(() => {
-    BitStream.fromString('3f:+%&@*@%');
-  }).toThrow(BitStreamSerializationError);
-
-  expect(() => {
-    BitStream.fromString('1e:AAAA');
+    BitStream.fromString('QAAA');
   }).toThrow(BitStreamSerializationError);
 });
 
