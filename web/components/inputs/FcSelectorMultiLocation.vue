@@ -84,7 +84,6 @@
             View Data
           </FcButton>
           <FcButton
-            :disabled="locationsEdit.length === 0"
             type="secondary"
             @click="setLocationMode(LocationMode.MULTI_EDIT)">
             <v-icon left>mdi-circle-edit-outline</v-icon>
