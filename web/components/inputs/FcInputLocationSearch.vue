@@ -16,8 +16,9 @@
           label="Choose location or click on the map"
           :loading="loading"
           solo
+          v-bind="$attrs"
           @blur="hasFocus = false"
-          @focus="hasFocus = true"
+          @focus="actionFocus"
           @input="actionInput"
           v-on="onMenu">
           <template v-slot:append>
@@ -169,8 +170,16 @@ export default {
       this.query = null;
       this.state = LocationSearchState.VALUE_EMPTY;
     },
+    actionFocus() {
+      this.hasFocus = true;
+      this.$emit('focus');
+    },
     actionInput() {
-      this.state = LocationSearchState.QUERY_TYPING;
+      if (this.query === '') {
+        this.actionClear();
+      } else {
+        this.state = LocationSearchState.QUERY_TYPING;
+      }
     },
     actionSelect(location) {
       this.internalValue = location;

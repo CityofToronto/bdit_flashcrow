@@ -1,17 +1,18 @@
 <template>
   <div class="fc-selector-multi-location d-flex flex-column pa-5 shading">
-    <div class="align-start d-flex flex-grow-1 flex-shrink-1">
+    <div
+      v-if="locationMode === LocationMode.MULTI_EDIT"
+      class="align-start d-flex flex-grow-1 flex-shrink-1">
       <div>
         <div class="fc-input-location-search-wrapper elevation-2">
           <FcInputLocationSearch
             v-for="(_, i) in locationsEdit"
-            :key="locationKeys[i]"
+            :key="locationsEditKeys[i]"
             v-model="locationsEdit[i]"
             :location-index="i"
-            :readonly="locationMode !== LocationMode.MULTI_EDIT"
             @focus="setLocationEditIndex(i)" />
           <FcInputLocationSearch
-            v-if="locationMode === LocationMode.MULTI_EDIT && locations.length < 5"
+            v-if="locations.length < 5"
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationEditIndex(-1)"
@@ -21,9 +22,7 @@
           class="mt-2"
           :value="messagesMaxLocations"></v-messages>
       </div>
-      <div
-        v-if="locationMode === LocationMode.MULTI_EDIT"
-        class="ml-2">
+      <div class="ml-2">
         <div
           v-for="(_, i) in locations"
           :key="'remove_' + i"
@@ -34,6 +33,18 @@
             <v-icon>mdi-close</v-icon>
           </FcButton>
         </div>
+      </div>
+    </div>
+    <div
+      v-else
+      class="flex-grow-1 flex-shrink-1">
+      <div class="fc-input-location-search-wrapper elevation-2">
+        <FcInputLocationSearch
+          v-for="(_, i) in locations"
+          :key="i"
+          v-model="locations[i]"
+          :location-index="i"
+          readonly />
       </div>
     </div>
     <div class="flex-grow-0 flex-shrink-0">
@@ -50,21 +61,15 @@
         </span>
       </h1>
       <div class="d-flex align-center">
-        <v-checkbox
-          v-if="locationMode === LocationMode.MULTI_EDIT"
-          v-model="corridor"
-          class="fc-multi-location-corridor mt-0"
-          hide-details
-          label="Include intersections and midblocks between locations" />
-        <span
-          v-else-if="corridor"
-          class="secondary--text">
-          Includes intersections and midblocks between locations
-        </span>
-
-        <v-spacer></v-spacer>
-
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
+          <v-checkbox
+            v-model="corridor"
+            class="fc-multi-location-corridor mt-0"
+            hide-details
+            label="Include intersections and midblocks between locations" />
+
+          <v-spacer></v-spacer>
+
           <FcButton
             type="tertiary"
             @click="cancelLocationsEdit">
@@ -78,6 +83,15 @@
           </FcButton>
         </template>
         <template v-else>
+
+          <span
+            v-if="corridor"
+            class="secondary--text">
+            Includes intersections and midblocks between locations
+          </span>
+
+          <v-spacer></v-spacer>
+
           <FcButton
             type="tertiary"
             @click="actionViewData">
@@ -122,9 +136,9 @@ export default {
     description() {
       return getLocationsDescription(this.locations);
     },
-    locationKeys() {
+    locationsEditKeys() {
       const keyCounter = new Map();
-      return this.locations.map(({ centrelineId, centrelineType }) => {
+      return this.locationsEdit.map(({ centrelineId, centrelineType }) => {
         const key = centrelineKey(centrelineType, centrelineId);
         let counter = 0;
         if (keyCounter.has(key)) {
