@@ -12,7 +12,7 @@
         class="pane-map-location-search"
         v-if="!drawerOpen">
         <FcSelectorMultiLocation
-          v-if="locationMulti"
+          v-if="locationMode.multi"
           class="elevation-2" />
         <FcSelectorSingleLocation
           v-else
@@ -39,19 +39,19 @@
           :z-index="100">
           <template v-slot:activator="{ on }">
             <FcButton
-              :aria-label="tooltipLocationMulti"
+              :aria-label="tooltipLocationMode"
               class="pa-0"
               :class="{
-                primary: locationMulti,
-                'white--text': locationMulti,
+                primary: locationMode.multi,
+                'white--text': locationMode.multi,
               }"
               type="fab-text"
-              @click="setLocationMulti(!locationMulti)"
+              @click="actionToggleLocationMode"
               v-on="on">
               <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
             </FcButton>
           </template>
-          <span>{{tooltipLocationMulti}}</span>
+          <span>{{tooltipLocationMode}}</span>
         </v-tooltip>
         <v-tooltip
           v-if="location !== null"
@@ -92,7 +92,7 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, MapZoom } from '@/lib/Constants';
+import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
@@ -215,16 +215,16 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
-    tooltipLocationMulti() {
-      if (this.locationMulti) {
-        return 'Select single location';
+    tooltipLocationMode() {
+      if (this.locationMode.multi) {
+        return 'Switch to single-location mode';
       }
-      return 'Select multiple locations';
+      return 'Add location';
     },
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'locationMulti',
+      'locationMode',
     ]),
     ...mapGetters(['location']),
   },
@@ -337,6 +337,13 @@ export default {
     },
   },
   methods: {
+    actionToggleLocationMode() {
+      if (this.locationMode === LocationMode.SINGLE) {
+        this.setLocationMode(LocationMode.MULTI_EDIT);
+      } else {
+        this.setLocationMode(LocationMode.SINGLE);
+      }
+    },
     clearHoveredFeature() {
       if (this.hoveredFeature !== null) {
         this.map.setFeatureState(this.hoveredFeature, { hover: false });
@@ -585,7 +592,7 @@ export default {
     ...mapMutations([
       'setDrawerOpen',
       'setLegendOptions',
-      'setLocationMulti',
+      'setLocationMode',
     ]),
   },
 };

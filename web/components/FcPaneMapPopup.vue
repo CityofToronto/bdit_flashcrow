@@ -32,9 +32,9 @@
 
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
-import { CentrelineType } from '@/lib/Constants';
+import { CentrelineType, LocationMode } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
@@ -306,6 +306,12 @@ export default {
       if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
         return 'Set Study Location';
       }
+      if (this.locationMode === LocationMode.MULTI_EDIT) {
+        if (this.locationEditIndex === -1) {
+          return 'Add Location';
+        }
+        return `Set Location #${this.locationEditIndex + 1}`;
+      }
       return 'View Data';
     },
     title() {
@@ -347,6 +353,7 @@ export default {
       }
       return null;
     },
+    ...mapState(['locationEditIndex', 'locationMode']),
   },
   watch: {
     coordinates() {
@@ -376,9 +383,17 @@ export default {
       const { name } = this.$route;
       if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
         this.actionSetStudyLocation();
+      } else if (this.locationMode === LocationMode.MULTI_EDIT) {
+        this.actionSetLocationEdit();
       } else {
         this.actionViewData();
       }
+    },
+    async actionSetLocationEdit() {
+      const { centrelineId, centrelineType } = this.feature.properties;
+      const feature = { centrelineId, centrelineType };
+      const location = await getLocationByCentreline(feature);
+      this.setLocationEdit(location);
     },
     async actionSetStudyLocation() {
       const { centrelineId, centrelineType } = this.feature.properties;
@@ -416,7 +431,11 @@ export default {
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
     },
-    ...mapMutations(['setDrawerOpen', 'setLocations']),
+    ...mapMutations([
+      'setDrawerOpen',
+      'setLocationEdit',
+      'setLocations',
+    ]),
   },
 };
 </script>
