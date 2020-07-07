@@ -4,28 +4,33 @@
       <div>
         <div class="fc-input-location-search-wrapper elevation-2">
           <FcInputLocationSearch
-            v-for="(_, i) in locations"
+            v-for="(_, i) in locationsEdit"
             :key="locationKeys[i]"
-            v-model="locations[i]"
-            :location-index="i" />
+            v-model="locationsEdit[i]"
+            :location-index="i"
+            :readonly="locationMode !== LocationMode.MULTI_EDIT"
+            @focus="setLocationEditIndex(i)" />
           <FcInputLocationSearch
-            v-if="locations.length < 5"
+            v-if="locationMode === LocationMode.MULTI_EDIT && locations.length < 5"
             v-model="locationToAdd"
             :location-index="-1"
-            @location-add="actionAddLocation" />
+            @focus="setLocationEditIndex(-1)"
+            @location-add="addLocationEdit" />
         </div>
         <v-messages
           class="mt-2"
           :value="messagesMaxLocations"></v-messages>
       </div>
-      <div class="ml-2">
+      <div
+        v-if="locationMode === LocationMode.MULTI_EDIT"
+        class="ml-2">
         <div
           v-for="(_, i) in locations"
           :key="'remove_' + i"
           class="fc-input-location-search-remove">
           <FcButton
             type="icon"
-            @click="actionRemoveLocation(i)">
+            @click="removeLocationEdit(i)">
             <v-icon>mdi-close</v-icon>
           </FcButton>
         </div>
@@ -46,32 +51,57 @@
       </h1>
       <div class="d-flex align-center">
         <v-checkbox
+          v-if="locationMode === LocationMode.MULTI_EDIT"
           v-model="corridor"
           class="fc-multi-location-corridor mt-0"
           hide-details
           label="Include intersections and midblocks between locations" />
+        <span
+          v-else-if="corridor"
+          class="secondary--text">
+          Includes intersections and midblocks between locations
+        </span>
+
         <v-spacer></v-spacer>
-        <FcButton
-          type="tertiary"
-          @click="setLocationMulti(false)">
-          Cancel
-        </FcButton>
-        <FcButton
-          :disabled="locations.length === 0"
-          type="secondary"
-          @click="comingSoon">
-          Done
-        </FcButton>
+
+        <template v-if="locationMode === LocationMode.MULTI_EDIT">
+          <FcButton
+            type="tertiary"
+            @click="cancelLocationsEdit">
+            Cancel
+          </FcButton>
+          <FcButton
+            :disabled="locationsEdit.length === 0"
+            type="secondary"
+            @click="saveLocationsEdit">
+            Done
+          </FcButton>
+        </template>
+        <template v-else>
+          <FcButton
+            type="tertiary"
+            @click="actionViewData">
+            View Data
+          </FcButton>
+          <FcButton
+            :disabled="locationsEdit.length === 0"
+            type="secondary"
+            @click="setLocationMode(LocationMode.MULTI_EDIT)">
+            <v-icon left>mdi-circle-edit-outline</v-icon>
+            Edit Locations
+          </FcButton>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
-import { centrelineKey } from '@/lib/Constants';
+import { centrelineKey, LocationMode } from '@/lib/Constants';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
+import CompositeId from '@/lib/io/CompositeId';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -84,8 +114,9 @@ export default {
   data() {
     return {
       corridor: false,
+      locationIndexActive: -1,
+      LocationMode,
       locationToAdd: null,
-      locations: [],
     };
   },
   computed: {
@@ -108,21 +139,30 @@ export default {
       if (this.locations.length < 5) {
         return [];
       }
+      if (this.locationMode !== LocationMode.MULTI_EDIT) {
+        return [];
+      }
       return ['Maximum of 5 selected locations.'];
     },
+    ...mapState(['locations', 'locationsEdit', 'locationMode']),
   },
   methods: {
-    actionAddLocation(location) {
-      this.locations.push(location);
+    actionViewData() {
+      const s1 = CompositeId.encode(this.locations);
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params: { s1 },
+      });
     },
-    actionRemoveLocation(i) {
-      this.locations.splice(i, 1);
-    },
-    comingSoon() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon');
-    },
-    ...mapMutations(['setLocationMulti']),
+    ...mapMutations([
+      'addLocationEdit',
+      'cancelLocationsEdit',
+      'removeLocationEdit',
+      'saveLocationsEdit',
+      'setLocationEdit',
+      'setLocationEditIndex',
+      'setLocationMode',
+    ]),
   },
 };
 </script>

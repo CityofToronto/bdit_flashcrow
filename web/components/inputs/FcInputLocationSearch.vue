@@ -3,7 +3,7 @@
     v-model="internalValue"
     class="fc-input-location-search"
     dense
-    :flat="locationMulti"
+    :flat="hasLocationIndex"
     hide-details
     hide-no-data
     :items="items"
@@ -13,9 +13,10 @@
     no-filter
     return-object
     :search-input.sync="query"
-    solo>
+    solo
+    v-on="$listeners">
     <template v-slot:append>
-      <span v-if="locationMulti">&nbsp;</span>
+      <span v-if="hasLocationIndex">&nbsp;</span>
       <template v-else>
         <v-tooltip
           v-if="internalValue !== null || query !== null"
@@ -76,10 +77,10 @@ export default {
     };
   },
   computed: {
-    locationMulti() {
+    hasLocationIndex() {
       return this.locationIndex !== null;
     },
-    locationToAddMulti() {
+    hasLocationToAddIndex() {
       return this.locationIndex === -1;
     },
   },
@@ -100,7 +101,7 @@ export default {
     internalValue: {
       handler() {
         if (this.internalValue !== null) {
-          if (this.locationToAddMulti) {
+          if (this.hasLocationToAddIndex) {
             /*
              * In this case, the user has just selected a location to be added to the
              * multi-location selection.  We need to pass that new location up, then

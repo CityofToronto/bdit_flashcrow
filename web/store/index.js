@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import { LocationMode } from '@/lib/Constants';
 import {
   getAuth,
   postStudyRequest,
@@ -42,7 +43,9 @@ export default new Vuex.Store({
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
     locations: [],
-    locationMulti: false,
+    locationsEdit: [],
+    locationEditIndex: -1,
+    locationMode: LocationMode.SINGLE,
     legendOptions: {
       datesFrom: 3,
       layers: {
@@ -122,11 +125,48 @@ export default new Vuex.Store({
       Vue.set(state, 'backViewRequest', backViewRequest);
     },
     // LOCATION
+    addLocationEdit(state, location) {
+      state.locationsEdit.push(location);
+    },
+    cancelLocationsEdit(state) {
+      if (state.locations.length > 1) {
+        Vue.set(state, 'locationMode', LocationMode.MULTI);
+      } else {
+        Vue.set(state, 'locationMode', LocationMode.SINGLE);
+      }
+    },
+    removeLocationEdit(state, i) {
+      state.locationsEdit.splice(i, 1);
+    },
+    saveLocationsEdit(state) {
+      Vue.set(state, 'locations', state.locationsEdit);
+      Vue.set(state, 'locationsEdit', []);
+      if (state.locations.length > 1) {
+        Vue.set(state, 'locationMode', LocationMode.MULTI);
+      } else {
+        Vue.set(state, 'locationMode', LocationMode.SINGLE);
+      }
+    },
+    setLocationEdit(state, location) {
+      if (state.locationEditIndex === -1) {
+        state.locationsEdit.push(location);
+      } else {
+        Vue.set(state.locationsEdit, state.locationEditIndex, location);
+      }
+    },
+    setLocationEditIndex(state, locationEditIndex) {
+      Vue.set(state, 'locationEditIndex', locationEditIndex);
+    },
+    setLocationMode(state, locationMode) {
+      Vue.set(state, 'locationMode', locationMode);
+      if (locationMode === LocationMode.SINGLE && state.locations.length > 1) {
+        Vue.set(state, 'locations', state.locations.slice(0, 1));
+      } else if (locationMode === LocationMode.MULTI_EDIT) {
+        Vue.set(state, 'locationsEdit', state.locations);
+      }
+    },
     setLocations(state, locations) {
       Vue.set(state, 'locations', locations);
-    },
-    setLocationMulti(state, locationMulti) {
-      Vue.set(state, 'locationMulti', locationMulti);
     },
     setLegendOptions(state, legendOptions) {
       Vue.set(state, 'legendOptions', legendOptions);
