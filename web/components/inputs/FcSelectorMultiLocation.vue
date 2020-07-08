@@ -10,7 +10,8 @@
             :key="locationsEditKeys[i]"
             v-model="locationsEdit[i]"
             :location-index="i"
-            @focus="setLocationEditIndex(i)" />
+            @focus="setLocationEditIndex(i)"
+            @location-remove="removeLocationEdit" />
           <FcInputLocationSearch
             v-if="locations.length < 5"
             v-model="locationToAdd"
