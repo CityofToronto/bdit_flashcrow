@@ -168,6 +168,35 @@ export default {
     };
   },
   computed: {
+    activeGeoJson() {
+      const features = [];
+      if (this.centrelineHovered) {
+        const { geometry, properties } = this.hoveredFeature;
+        features.push({ type: 'Feature', geometry, properties });
+      }
+      if (this.centrelineSelected && this.featureKeySelected !== this.featureKeyHovered) {
+        const { geometry, properties } = this.selectedFeature;
+        features.push({ type: 'Feature', geometry, properties });
+      }
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
+    centrelineHovered() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.hoveredFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
+    centrelineSelected() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.selectedFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
     },
@@ -186,11 +215,9 @@ export default {
       },
     },
     locationsGeoJson() {
-      const features = this.locations.map(({ geom: geometry, ...properties }) => ({
-        type: 'Feature',
-        geometry,
-        properties,
-      }));
+      const features = this.locations.map(
+        ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
+      );
       return {
         type: 'FeatureCollection',
         features,
@@ -286,7 +313,6 @@ export default {
       this.map.on('dataloading', () => {
         this.loading = true;
       });
-      this.map.on('data', this.onMapData.bind(this));
       this.map.on('idle', () => {
         this.loading = false;
       });
@@ -308,6 +334,10 @@ export default {
     }
   },
   watch: {
+    activeGeoJson() {
+      GeoStyle.setData('active', this.activeGeoJson);
+      this.map.getSource('active').setData(this.activeGeoJson);
+    },
     drawerOpen() {
       Vue.nextTick(() => {
         this.map.resize();
@@ -320,16 +350,7 @@ export default {
       this.map.setStyle(this.mapStyle);
     },
     location(location, oldLocation) {
-      if (this.location === null) {
-        this.clearSelectedFeature();
-        return;
-      }
-      const feature = this.getFeatureForLocation(this.location);
-      if (this.selectedFeature !== null && feature !== null) {
-        this.setSelectedFeature(feature);
-      } else {
-        this.easeToLocation(location, oldLocation);
-      }
+      this.easeToLocation(location, oldLocation);
     },
     locationsGeoJson() {
       this.updateLocationsLayers();
@@ -349,30 +370,16 @@ export default {
       }
     },
     clearHoveredFeature() {
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        this.hoveredFeature = null;
-      }
+      this.hoveredFeature = null;
     },
     setHoveredFeature(feature) {
-      this.clearHoveredFeature();
-      if (feature !== null) {
-        this.map.setFeatureState(feature, { hover: true });
-        this.hoveredFeature = feature;
-      }
+      this.hoveredFeature = feature;
     },
     clearSelectedFeature() {
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-        this.selectedFeature = null;
-      }
+      this.selectedFeature = null;
     },
     setSelectedFeature(feature) {
-      this.clearSelectedFeature();
-      if (feature !== null) {
-        this.map.setFeatureState(feature, { selected: true });
-        this.selectedFeature = feature;
-      }
+      this.selectedFeature = feature;
     },
     easeToLocation(location, oldLocation) {
       if (location !== null) {
@@ -512,56 +519,6 @@ export default {
         selectableOnly: true,
       });
       this.setSelectedFeature(feature);
-    },
-    /**
-     * Mapbox GL fires the `data` event whenever a map tile is loaded.  This allows us to trigger
-     * the selected location popup as soon as the associated map feature has been loaded, instead
-     * of waiting for the `idle` event (i.e. everything is finished loading).
-     */
-    onMapData(e) {
-      // TODO: handle multi-location
-      if (this.location === null || this.map.isMoving() || !e.tile) {
-        /*
-         * Wait until the map stops moving (e.g. as part of an `easeToLocation` call), and
-         * ignore any non-tile data events (`data` is also fired for other reasons, such as
-         * loading new styles).
-         */
-        return;
-      }
-      const { centrelineType } = this.location;
-      if ((centrelineType === CentrelineType.SEGMENT && e.sourceId !== 'midblocks')
-        || (centrelineType === CentrelineType.INTERSECTION && e.sourceId === 'intersections')) {
-        /*
-         * If this tile event doesn't match the appropriate layer for the selected location,
-         * ignore it.
-         */
-        return;
-      }
-      const { lat, lng } = this.location;
-      const {
-        latRange: [latMin, latMax],
-        lngRange: [lngMin, lngMax],
-      } = e.target.transform;
-      if (lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) {
-        /*
-         * If this tile event is for a tile that doesn't contain the selected location, ignore it.
-         */
-        return;
-      }
-      /*
-       * At this point, this is a tile event for the tile containing the selected location.  This
-       * means that we can reliably fetch the location using `getFeatureForLocation`, which itself
-       * relies on `queryRenderedFeatures`.
-       *
-       * Ignoring other tile events here allows us to limit the number of times we make these
-       * (relatively) expensive `queryRenderedFeatures` calls, which helps with performance.
-       */
-      const feature = this.getFeatureForLocation(this.location);
-      if (feature === null) {
-        this.clearSelectedFeature();
-      } else {
-        this.setSelectedFeature(feature);
-      }
     },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);

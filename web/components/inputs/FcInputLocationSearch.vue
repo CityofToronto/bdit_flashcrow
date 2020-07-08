@@ -183,7 +183,8 @@ export default {
       const { relatedTarget: $relatedTarget } = e;
       if ($relatedTarget !== null) {
         const $list = $relatedTarget.closest('.fc-list-location-suggestions');
-        if ($list === this.$refs.listLocationSuggestions.$el) {
+        if (this.$refs.listLocationSuggestions !== undefined
+          && $list === this.$refs.listLocationSuggestions.$el) {
           return;
         }
       }
