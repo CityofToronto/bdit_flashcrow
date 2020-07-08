@@ -54,7 +54,7 @@
           <span>{{tooltipLocationMode}}</span>
         </v-tooltip>
         <v-tooltip
-          v-if="location !== null"
+          v-if="locations.length > 0"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -90,9 +90,9 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
+import { LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
@@ -266,7 +266,6 @@ export default {
       'locations',
       'locationsEdit',
     ]),
-    ...mapGetters(['location']),
   },
   created() {
     this.map = null;
@@ -308,7 +307,7 @@ export default {
         'bottom-right',
       );
 
-      this.easeToLocation(this.location, null);
+      this.easeToLocations(this.locations, []);
 
       this.map.on('dataloading', () => {
         this.loading = true;
@@ -349,8 +348,8 @@ export default {
     mapStyle() {
       this.map.setStyle(this.mapStyle);
     },
-    location(location, oldLocation) {
-      this.easeToLocation(location, oldLocation);
+    locations(locations, locationsPrev) {
+      this.easeToLocations(locations, locationsPrev);
     },
     locationsGeoJson() {
       this.updateLocationsLayers();
@@ -381,18 +380,24 @@ export default {
     setSelectedFeature(feature) {
       this.selectedFeature = feature;
     },
-    easeToLocation(location, oldLocation) {
-      if (location !== null) {
-        // zoom to location
-        const { lat, lng } = location;
-        const center = new mapboxgl.LngLat(lng, lat);
-        const zoom = Math.max(this.map.getZoom(), MapZoom.LEVEL_1.minzoom);
-        this.map.easeTo({
-          center,
-          duration: 1000,
-          zoom,
+    easeToLocations(locations, locationsPrev) {
+      if (locations.length > 0) {
+        // build bounding box on locations
+        const bounds = new mapboxgl.LngLatBounds();
+        locations.forEach(({ geom }) => {
+          const { coordinates, type } = geom;
+          if (type === 'Point') {
+            bounds.extend(coordinates);
+          } else if (type === 'LineString') {
+            coordinates.forEach((coordinatesPoint) => {
+              bounds.extend(coordinatesPoint);
+            });
+          }
         });
-      } else if (oldLocation === null) {
+        const cameraOptions = this.map.cameraForBounds(bounds, { padding: 40 });
+        cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
+        this.map.easeTo(cameraOptions);
+      } else if (locationsPrev.length === 0) {
         /*
          * If the user is first loading the map, we want to show all of Toronto.
          * Otherwise, the user has just cleared the location, and we want to keep
@@ -407,10 +412,10 @@ export default {
       }
     },
     recenterLocation() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return;
       }
-      this.easeToLocation(this.location, null);
+      this.easeToLocations(this.locations, null);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -421,41 +426,6 @@ export default {
         return null;
       }
       return features[0];
-    },
-    /**
-     * Fetches the vector tile feature for the given location, as stored in the Vuex store.
-     *
-     * @param {Object?} location - location to get feature for, or `null`
-     * @returns {Object?} the matched feature, or `null` if no such feature
-     */
-    getFeatureForLocation(location) {
-      if (location === null) {
-        return null;
-      }
-      const { centrelineId, centrelineType } = location;
-      if (centrelineType === CentrelineType.SEGMENT) {
-        return this.getFeatureForLayerAndProperty(
-          'midblocks',
-          'centrelineId',
-          centrelineId,
-        );
-      }
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        let feature = this.getFeatureForLayerAndProperty(
-          'studies',
-          'centrelineId',
-          centrelineId,
-        );
-        if (feature === null) {
-          feature = this.getFeatureForLayerAndProperty(
-            'intersections',
-            'centrelineId',
-            centrelineId,
-          );
-        }
-        return feature;
-      }
-      return null;
     },
     /**
      * Fetches the vector tile feature for the given mouse location, usually from a mouse
