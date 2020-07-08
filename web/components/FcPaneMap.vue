@@ -185,6 +185,17 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
+    locationsGeoJson() {
+      const features = this.locations.map(({ geom: geometry, ...properties }) => ({
+        type: 'Feature',
+        geometry,
+        properties,
+      }));
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
     mapOptions() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
@@ -225,6 +236,8 @@ export default {
       'drawerOpen',
       'legendOptions',
       'locationMode',
+      'locations',
+      'locationsEdit',
     ]),
     ...mapGetters(['location']),
   },
@@ -233,17 +246,6 @@ export default {
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-
-    // marker
-    const $marker = document.createElement('div');
-    $marker.className = 'fc-pane-map-marker';
-
-    const markerOptions = {
-      anchor: 'bottom',
-      element: $marker,
-    };
-    this.locationMarker = new mapboxgl.Marker(markerOptions)
-      .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
       this.loading = false;
@@ -279,7 +281,6 @@ export default {
         'bottom-right',
       );
 
-      this.updateLocationMarker();
       this.easeToLocation(this.location, null);
 
       this.map.on('dataloading', () => {
@@ -290,6 +291,7 @@ export default {
         this.loading = false;
       });
       this.map.on('load', () => {
+        this.updateLocationsLayers();
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
@@ -318,7 +320,6 @@ export default {
       this.map.setStyle(this.mapStyle);
     },
     location(location, oldLocation) {
-      this.updateLocationMarker();
       if (this.location === null) {
         this.clearSelectedFeature();
         return;
@@ -329,6 +330,9 @@ export default {
       } else {
         this.easeToLocation(location, oldLocation);
       }
+    },
+    locationsGeoJson() {
+      this.updateLocationsLayers();
     },
     $route() {
       Vue.nextTick(() => {
@@ -515,6 +519,7 @@ export default {
      * of waiting for the `idle` event (i.e. everything is finished loading).
      */
     onMapData(e) {
+      // TODO: handle multi-location
       if (this.location === null || this.map.isMoving() || !e.tile) {
         /*
          * Wait until the map stops moving (e.g. as part of an `easeToLocation` call), and
@@ -579,15 +584,9 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
-    updateLocationMarker() {
-      if (this.location === null) {
-        this.locationMarker.remove();
-      } else {
-        const { lng, lat } = this.location;
-        this.locationMarker
-          .setLngLat([lng, lat])
-          .addTo(this.map);
-      }
+    updateLocationsLayers() {
+      GeoStyle.setData('locations', this.locationsGeoJson);
+      this.map.getSource('locations').setData(this.locationsGeoJson);
     },
     ...mapMutations([
       'setDrawerOpen',
@@ -640,12 +639,6 @@ export default {
       min-width: 30px;
       width: 30px;
     }
-  }
-  .fc-pane-map-marker {
-    background-image: url('/icons/map/pin.png');
-    background-size: cover;
-    height: 40px;
-    width: 29px;
   }
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {

@@ -167,6 +167,11 @@ export default new Vuex.Store({
     },
     setLocations(state, locations) {
       Vue.set(state, 'locations', locations);
+      if (state.locations.length > 1) {
+        Vue.set(state, 'locationMode', LocationMode.MULTI);
+      } else {
+        Vue.set(state, 'locationMode', LocationMode.SINGLE);
+      }
     },
     setLegendOptions(state, legendOptions) {
       Vue.set(state, 'legendOptions', legendOptions);
