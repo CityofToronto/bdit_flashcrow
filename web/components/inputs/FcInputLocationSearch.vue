@@ -3,6 +3,8 @@
     <v-menu
       v-model="showLocationSuggestions"
       ref="menuLocationSuggestions"
+      :attach="$el"
+      :close-on-click="false"
       :close-on-content-click="false"
       :offset-y="true"
       :open-on-click="false">
@@ -17,7 +19,7 @@
           :loading="loading"
           solo
           v-bind="$attrs"
-          @blur="hasFocus = false"
+          @blur="actionBlur"
           @focus="actionFocus"
           @input="actionInput"
           v-on="onMenu">
@@ -45,7 +47,9 @@
           </template>
         </v-text-field>
       </template>
-      <v-list>
+      <v-list
+        ref="listLocationSuggestions"
+        class="fc-list-location-suggestions">
         <v-list-item
           v-for="(location, i) in locationSuggestions"
           :key="i"
@@ -109,17 +113,10 @@ export default {
     hasLocationToAddIndex() {
       return this.locationIndex === -1;
     },
-    showLocationSuggestions: {
-      get() {
-        return this.hasFocus
-          && this.locationSuggestions.length > 0
-          && this.state === LocationSearchState.SUGGESTIONS_RECEIVED;
-      },
-      set(showLocationSuggestions) {
-        if (!showLocationSuggestions) {
-          this.hasFocus = false;
-        }
-      },
+    showLocationSuggestions() {
+      return this.hasFocus
+        && this.locationSuggestions.length > 0
+        && this.state === LocationSearchState.SUGGESTIONS_RECEIVED;
     },
   },
   watch: {
@@ -169,6 +166,35 @@ export default {
       this.locationSuggestions = [];
       this.query = null;
       this.state = LocationSearchState.VALUE_EMPTY;
+      if (this.hasLocationIndex && !this.hasLocationToAddIndex) {
+        this.$emit('location-remove', this.locationIndex);
+      }
+    },
+    actionBlur(e) {
+      /*
+       * Clicking a location suggestion in the dropdown triggers a blur event.  However, if
+       * we set `this.hasFocus = false` immediately, the dropdown disappears before the `@click`
+       * handler is processed.
+       *
+       * By detecting this case here, we allow the state transition to
+       * `LocationSearchState.VALUE_SELECTED` within `actionSelect` to hide the dropdown instead,
+       * after the `@click` handler is processed.
+       */
+      const { relatedTarget: $relatedTarget } = e;
+      if ($relatedTarget !== null) {
+        const $list = $relatedTarget.closest('.fc-list-location-suggestions');
+        /*
+         * From the [lifecycle diagram](https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram),
+         * child components are created after the parent.  Until the `<v-list>` component is
+         * created, `this.$refs.listLocationSuggestions` is undefined, and since `blur` can
+         * trigger pretty early on in the lifecycle we check for that here.
+         */
+        if (this.$refs.listLocationSuggestions !== undefined
+          && $list === this.$refs.listLocationSuggestions.$el) {
+          return;
+        }
+      }
+      this.hasFocus = false;
     },
     actionFocus() {
       this.hasFocus = true;

@@ -54,7 +54,7 @@
           <span>{{tooltipLocationMode}}</span>
         </v-tooltip>
         <v-tooltip
-          v-if="location !== null"
+          v-if="locations.length > 0"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -90,7 +90,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -158,7 +158,7 @@ export default {
     return {
       aerial: false,
       coordinates: null,
-      // used to add slight debounce delay (250ms) to hovered popup
+      // used to add slight debounce delay (200ms) to hovered popup
       featureKeyHoveredPopup: null,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
@@ -168,6 +168,42 @@ export default {
     };
   },
   computed: {
+    centrelineActiveFeatures() {
+      const features = [];
+      if (this.centrelineHovered) {
+        const { properties: { centrelineId, centrelineType } } = this.hoveredFeature;
+        features.push({ centrelineId, centrelineType });
+      }
+      if (this.centrelineSelected) {
+        const { properties: { centrelineId, centrelineType } } = this.selectedFeature;
+        features.push({ centrelineId, centrelineType });
+      }
+      return features;
+    },
+    centrelineActiveIntersections() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.INTERSECTION,
+      ).map(({ centrelineId }) => centrelineId);
+    },
+    centrelineActiveMidblocks() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.SEGMENT,
+      ).map(({ centrelineId }) => centrelineId);
+    },
+    centrelineHovered() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.hoveredFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
+    centrelineSelected() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.selectedFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
     },
@@ -184,6 +220,18 @@ export default {
       set(legendOptions) {
         this.setLegendOptions(legendOptions);
       },
+    },
+    locationsGeoJson() {
+      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
+        ? this.locationsEdit
+        : this.locations;
+      const features = featureLocations.map(
+        ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
+      );
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
     },
     mapOptions() {
       const { aerial, legendOptions } = this;
@@ -225,25 +273,15 @@ export default {
       'drawerOpen',
       'legendOptions',
       'locationMode',
+      'locations',
+      'locationsEdit',
     ]),
-    ...mapGetters(['location']),
   },
   created() {
     this.map = null;
   },
   mounted() {
     const bounds = BOUNDS_TORONTO;
-
-    // marker
-    const $marker = document.createElement('div');
-    $marker.className = 'fc-pane-map-marker';
-
-    const markerOptions = {
-      anchor: 'bottom',
-      element: $marker,
-    };
-    this.locationMarker = new mapboxgl.Marker(markerOptions)
-      .setLngLat(BOUNDS_TORONTO.getCenter());
 
     Vue.nextTick(() => {
       this.loading = false;
@@ -279,17 +317,16 @@ export default {
         'bottom-right',
       );
 
-      this.updateLocationMarker();
-      this.easeToLocation(this.location, null);
+      this.easeToLocations(this.locations, []);
 
       this.map.on('dataloading', () => {
         this.loading = true;
       });
-      this.map.on('data', this.onMapData.bind(this));
       this.map.on('idle', () => {
         this.loading = false;
       });
       this.map.on('load', () => {
+        this.updateLocationsLayers();
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
@@ -306,6 +343,18 @@ export default {
     }
   },
   watch: {
+    centrelineActiveIntersections() {
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+    },
+    centrelineActiveMidblocks() {
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
+    },
     drawerOpen() {
       Vue.nextTick(() => {
         this.map.resize();
@@ -313,22 +362,24 @@ export default {
     },
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
-    }, 250),
+    }, 200),
     mapStyle() {
       this.map.setStyle(this.mapStyle);
+      this.updateLocationsLayers();
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
     },
-    location(location, oldLocation) {
-      this.updateLocationMarker();
-      if (this.location === null) {
-        this.clearSelectedFeature();
-        return;
-      }
-      const feature = this.getFeatureForLocation(this.location);
-      if (this.selectedFeature !== null && feature !== null) {
-        this.setSelectedFeature(feature);
-      } else {
-        this.easeToLocation(location, oldLocation);
-      }
+    locations(locations, locationsPrev) {
+      this.easeToLocations(locations, locationsPrev);
+    },
+    locationsGeoJson() {
+      this.updateLocationsLayers();
     },
     $route() {
       Vue.nextTick(() => {
@@ -345,43 +396,40 @@ export default {
       }
     },
     clearHoveredFeature() {
-      if (this.hoveredFeature !== null) {
-        this.map.setFeatureState(this.hoveredFeature, { hover: false });
-        this.hoveredFeature = null;
-      }
+      this.hoveredFeature = null;
     },
     setHoveredFeature(feature) {
-      this.clearHoveredFeature();
-      if (feature !== null) {
-        this.map.setFeatureState(feature, { hover: true });
-        this.hoveredFeature = feature;
-      }
+      this.hoveredFeature = feature;
     },
     clearSelectedFeature() {
-      if (this.selectedFeature !== null) {
-        this.map.setFeatureState(this.selectedFeature, { selected: false });
-        this.selectedFeature = null;
-      }
+      this.selectedFeature = null;
     },
     setSelectedFeature(feature) {
-      this.clearSelectedFeature();
-      if (feature !== null) {
-        this.map.setFeatureState(feature, { selected: true });
-        this.selectedFeature = feature;
-      }
+      this.selectedFeature = feature;
     },
-    easeToLocation(location, oldLocation) {
-      if (location !== null) {
-        // zoom to location
-        const { lat, lng } = location;
-        const center = new mapboxgl.LngLat(lng, lat);
-        const zoom = Math.max(this.map.getZoom(), MapZoom.LEVEL_1.minzoom);
-        this.map.easeTo({
-          center,
-          duration: 1000,
-          zoom,
+    easeToLocations(locations, locationsPrev) {
+      if (locations.length > 0) {
+        // build bounding box on locations
+        const bounds = new mapboxgl.LngLatBounds();
+        locations.forEach(({ geom }) => {
+          const { coordinates, type } = geom;
+          if (type === 'Point') {
+            bounds.extend(coordinates);
+          } else if (type === 'LineString') {
+            coordinates.forEach((coordinatesPoint) => {
+              bounds.extend(coordinatesPoint);
+            });
+          }
         });
-      } else if (oldLocation === null) {
+
+        // zoom to bounding box
+        const cameraOptions = this.map.cameraForBounds(bounds, {
+          maxZoom: MapZoom.LEVEL_1.minzoom,
+          padding: 64,
+        });
+        cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
+        this.map.easeTo(cameraOptions);
+      } else if (locationsPrev.length === 0) {
         /*
          * If the user is first loading the map, we want to show all of Toronto.
          * Otherwise, the user has just cleared the location, and we want to keep
@@ -396,10 +444,10 @@ export default {
       }
     },
     recenterLocation() {
-      if (this.location === null) {
+      if (this.locations.length === 0) {
         return;
       }
-      this.easeToLocation(this.location, null);
+      this.easeToLocations(this.locations, null);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -412,51 +460,11 @@ export default {
       return features[0];
     },
     /**
-     * Fetches the vector tile feature for the given location, as stored in the Vuex store.
-     *
-     * @param {Object?} location - location to get feature for, or `null`
-     * @returns {Object?} the matched feature, or `null` if no such feature
-     */
-    getFeatureForLocation(location) {
-      if (location === null) {
-        return null;
-      }
-      const { centrelineId, centrelineType } = location;
-      if (centrelineType === CentrelineType.SEGMENT) {
-        return this.getFeatureForLayerAndProperty(
-          'midblocks',
-          'centrelineId',
-          centrelineId,
-        );
-      }
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        let feature = this.getFeatureForLayerAndProperty(
-          'studies',
-          'centrelineId',
-          centrelineId,
-        );
-        if (feature === null) {
-          feature = this.getFeatureForLayerAndProperty(
-            'intersections',
-            'centrelineId',
-            centrelineId,
-          );
-        }
-        return feature;
-      }
-      return null;
-    },
-    /**
      * Fetches the vector tile feature for the given mouse location, usually from a mouse
      * event on the map.
      *
      * For usability, this matching is somewhat fuzzy: it will find the highest-priority
-     * feature within a 20x20 bounding box centered on `point`.  Layers in descending
-     * priority order:
-     *
-     * - intersections
-     * - counts
-     * - centreline
+     * feature within a 20x20 bounding box centered on `point`.
      *
      * TODO: within layers, rank by closest to `point`
      *
@@ -509,62 +517,13 @@ export default {
       });
       this.setSelectedFeature(feature);
     },
-    /**
-     * Mapbox GL fires the `data` event whenever a map tile is loaded.  This allows us to trigger
-     * the selected location popup as soon as the associated map feature has been loaded, instead
-     * of waiting for the `idle` event (i.e. everything is finished loading).
-     */
-    onMapData(e) {
-      if (this.location === null || this.map.isMoving() || !e.tile) {
-        /*
-         * Wait until the map stops moving (e.g. as part of an `easeToLocation` call), and
-         * ignore any non-tile data events (`data` is also fired for other reasons, such as
-         * loading new styles).
-         */
-        return;
-      }
-      const { centrelineType } = this.location;
-      if ((centrelineType === CentrelineType.SEGMENT && e.sourceId !== 'midblocks')
-        || (centrelineType === CentrelineType.INTERSECTION && e.sourceId === 'intersections')) {
-        /*
-         * If this tile event doesn't match the appropriate layer for the selected location,
-         * ignore it.
-         */
-        return;
-      }
-      const { lat, lng } = this.location;
-      const {
-        latRange: [latMin, latMax],
-        lngRange: [lngMin, lngMax],
-      } = e.target.transform;
-      if (lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) {
-        /*
-         * If this tile event is for a tile that doesn't contain the selected location, ignore it.
-         */
-        return;
-      }
-      /*
-       * At this point, this is a tile event for the tile containing the selected location.  This
-       * means that we can reliably fetch the location using `getFeatureForLocation`, which itself
-       * relies on `queryRenderedFeatures`.
-       *
-       * Ignoring other tile events here allows us to limit the number of times we make these
-       * (relatively) expensive `queryRenderedFeatures` calls, which helps with performance.
-       */
-      const feature = this.getFeatureForLocation(this.location);
-      if (feature === null) {
-        this.clearSelectedFeature();
-      } else {
-        this.setSelectedFeature(feature);
-      }
-    },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
       this.setHoveredFeature(feature);
     },
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
-    }, 250),
+    }, 1000),
     openGoogleMaps() {
       if (this.coordinates === null) {
         return;
@@ -579,15 +538,9 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
-    updateLocationMarker() {
-      if (this.location === null) {
-        this.locationMarker.remove();
-      } else {
-        const { lng, lat } = this.location;
-        this.locationMarker
-          .setLngLat([lng, lat])
-          .addTo(this.map);
-      }
+    updateLocationsLayers() {
+      GeoStyle.setData('locations', this.locationsGeoJson);
+      this.map.getSource('locations').setData(this.locationsGeoJson);
     },
     ...mapMutations([
       'setDrawerOpen',
@@ -640,12 +593,6 @@ export default {
       min-width: 30px;
       width: 30px;
     }
-  }
-  .fc-pane-map-marker {
-    background-image: url('/icons/map/pin.png');
-    background-size: cover;
-    height: 40px;
-    width: 29px;
   }
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {
