@@ -365,6 +365,15 @@ export default {
     }, 200),
     mapStyle() {
       this.map.setStyle(this.mapStyle);
+      this.updateLocationsLayers();
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
     },
     locations(locations, locationsPrev) {
       this.easeToLocations(locations, locationsPrev);
