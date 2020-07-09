@@ -83,7 +83,7 @@ export default {
     width: 24px;
   }
   & .icon-layer-volume {
-    background-image: url('/icons/map/volume.png');
+    background-image: url('/icons/map2/volume.png');
     height: 9px;
     margin-top: 2px;
     width: 24px;
