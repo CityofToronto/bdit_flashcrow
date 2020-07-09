@@ -183,6 +183,12 @@ export default {
       const { relatedTarget: $relatedTarget } = e;
       if ($relatedTarget !== null) {
         const $list = $relatedTarget.closest('.fc-list-location-suggestions');
+        /*
+         * From the [lifecycle diagram](https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram),
+         * child components are created after the parent.  Until the `<v-list>` component is
+         * created, `this.$refs.listLocationSuggestions` is undefined, and since `blur` can
+         * trigger pretty early on in the lifecycle we check for that here.
+         */
         if (this.$refs.listLocationSuggestions !== undefined
           && $list === this.$refs.listLocationSuggestions.$el) {
           return;

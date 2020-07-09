@@ -13,7 +13,7 @@
             @focus="setLocationEditIndex(i)"
             @location-remove="actionRemove" />
           <FcInputLocationSearch
-            v-if="locations.length < MAX_LOCATIONS"
+            v-if="locationsEdit.length < MAX_LOCATIONS"
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationEditIndex(-1)"
@@ -151,10 +151,8 @@ export default {
       });
     },
     messagesMaxLocations() {
-      if (this.locations.length < MAX_LOCATIONS) {
-        return [];
-      }
-      if (this.locationMode !== LocationMode.MULTI_EDIT) {
+      if (this.locationMode !== LocationMode.MULTI_EDIT
+        || this.locationsEdit.length < MAX_LOCATIONS) {
         return [];
       }
       return [`Maximum of ${MAX_LOCATIONS} selected locations.`];

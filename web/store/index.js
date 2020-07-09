@@ -139,7 +139,7 @@ export default new Vuex.Store({
       state.locationsEdit.splice(i, 1);
     },
     saveLocationsEdit(state) {
-      Vue.set(state, 'locations', state.locationsEdit);
+      Vue.set(state, 'locations', [...state.locationsEdit]);
       Vue.set(state, 'locationsEdit', []);
       if (state.locations.length > 1) {
         Vue.set(state, 'locationMode', LocationMode.MULTI);
@@ -162,7 +162,7 @@ export default new Vuex.Store({
       if (locationMode === LocationMode.SINGLE && state.locations.length > 1) {
         Vue.set(state, 'locations', state.locations.slice(0, 1));
       } else if (locationMode === LocationMode.MULTI_EDIT) {
-        Vue.set(state, 'locationsEdit', state.locations);
+        Vue.set(state, 'locationsEdit', [...state.locations]);
       }
     },
     setLocations(state, locations) {

@@ -222,7 +222,10 @@ export default {
       },
     },
     locationsGeoJson() {
-      const features = this.locations.map(
+      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
+        ? this.locationsEdit
+        : this.locations;
+      const features = featureLocations.map(
         ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
       );
       return {
