@@ -22,6 +22,7 @@
       <v-card-actions v-if="!loading && featureSelectable">
         <FcButton
           type="tertiary"
+          :disabled="disabledActionSelected"
           @click="actionSelected">
           {{textActionSelected}}
         </FcButton>
@@ -34,7 +35,7 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import { mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, LocationMode } from '@/lib/Constants';
+import { CentrelineType, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
@@ -285,9 +286,32 @@ export default {
       }
       return getFeatureDescription(this.featureDetails);
     },
+    disabledActionSelected() {
+      const { name } = this.$route;
+      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
+        return false;
+      }
+      if (this.locationMode === LocationMode.MULTI_EDIT) {
+        if (this.featureLocationsEditIndex !== -1) {
+          return false;
+        }
+        return this.locationEditIndex === -1 && this.locationsEdit.length >= MAX_LOCATIONS;
+      }
+      return false;
+    },
     featureKey() {
       const { layerId, feature: { id } } = this;
       return `${layerId}:${id}`;
+    },
+    featureLocationsEditIndex() {
+      if (!this.featureSelectable) {
+        return false;
+      }
+      const { centrelineId, centrelineType } = this.feature.properties;
+      return this.locationsEdit.findIndex(
+        location => location.centrelineType === centrelineType
+          && location.centrelineId === centrelineId,
+      );
     },
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.layerId);
@@ -307,6 +331,9 @@ export default {
         return 'Set Study Location';
       }
       if (this.locationMode === LocationMode.MULTI_EDIT) {
+        if (this.featureLocationsEditIndex !== -1) {
+          return 'Remove Location';
+        }
         if (this.locationEditIndex === -1) {
           return 'Add Location';
         }
@@ -353,7 +380,7 @@ export default {
       }
       return null;
     },
-    ...mapState(['locationEditIndex', 'locationMode']),
+    ...mapState(['locationEditIndex', 'locationMode', 'locationsEdit']),
   },
   watch: {
     coordinates() {
@@ -379,12 +406,19 @@ export default {
     this.popup.remove();
   },
   methods: {
+    actionRemoveLocationEdit() {
+      this.removeLocationEdit(this.featureLocationsEditIndex);
+    },
     actionSelected() {
       const { name } = this.$route;
       if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
         this.actionSetStudyLocation();
       } else if (this.locationMode === LocationMode.MULTI_EDIT) {
-        this.actionSetLocationEdit();
+        if (this.featureLocationsEditIndex !== -1) {
+          this.actionRemoveLocationEdit();
+        } else {
+          this.actionSetLocationEdit();
+        }
       } else {
         this.actionViewData();
       }
@@ -432,6 +466,7 @@ export default {
       this.loading = false;
     },
     ...mapMutations([
+      'removeLocationEdit',
       'setDrawerOpen',
       'setLocationEdit',
       'setLocations',

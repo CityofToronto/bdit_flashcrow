@@ -11,9 +11,9 @@
             v-model="locationsEdit[i]"
             :location-index="i"
             @focus="setLocationEditIndex(i)"
-            @location-remove="removeLocationEdit" />
+            @location-remove="actionRemove" />
           <FcInputLocationSearch
-            v-if="locations.length < 5"
+            v-if="locations.length < MAX_LOCATIONS"
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationEditIndex(-1)"
@@ -113,7 +113,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import { centrelineKey, LocationMode } from '@/lib/Constants';
+import { centrelineKey, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -131,6 +131,7 @@ export default {
       locationIndexActive: -1,
       LocationMode,
       locationToAdd: null,
+      MAX_LOCATIONS,
     };
   },
   computed: {
@@ -150,17 +151,21 @@ export default {
       });
     },
     messagesMaxLocations() {
-      if (this.locations.length < 5) {
+      if (this.locations.length < MAX_LOCATIONS) {
         return [];
       }
       if (this.locationMode !== LocationMode.MULTI_EDIT) {
         return [];
       }
-      return ['Maximum of 5 selected locations.'];
+      return [`Maximum of ${MAX_LOCATIONS} selected locations.`];
     },
     ...mapState(['locations', 'locationsEdit', 'locationMode']),
   },
   methods: {
+    actionRemove(i) {
+      this.setLocationEditIndex(-1);
+      this.removeLocationEdit(i);
+    },
     actionViewData() {
       const s1 = CompositeId.encode(this.locations);
       this.$router.push({

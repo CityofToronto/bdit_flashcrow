@@ -158,7 +158,7 @@ export default {
     return {
       aerial: false,
       coordinates: null,
-      // used to add slight debounce delay (250ms) to hovered popup
+      // used to add slight debounce delay (200ms) to hovered popup
       featureKeyHoveredPopup: null,
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
@@ -359,7 +359,7 @@ export default {
     },
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
-    }, 250),
+    }, 200),
     mapStyle() {
       this.map.setStyle(this.mapStyle);
     },
@@ -409,7 +409,12 @@ export default {
             });
           }
         });
-        const cameraOptions = this.map.cameraForBounds(bounds, { padding: 40 });
+
+        // zoom to bounding box
+        const cameraOptions = this.map.cameraForBounds(bounds, {
+          maxZoom: MapZoom.LEVEL_1.minzoom,
+          padding: 64,
+        });
         cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
         this.map.easeTo(cameraOptions);
       } else if (locationsPrev.length === 0) {
@@ -506,7 +511,7 @@ export default {
     },
     onMapMove: debounce(function onMapMove() {
       this.updateCoordinates();
-    }, 250),
+    }, 1000),
     openGoogleMaps() {
       if (this.coordinates === null) {
         return;
