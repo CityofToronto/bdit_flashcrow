@@ -92,7 +92,7 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapMutations, mapState } from 'vuex';
 
-import { LocationMode, MapZoom } from '@/lib/Constants';
+import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
@@ -168,20 +168,27 @@ export default {
     };
   },
   computed: {
-    activeGeoJson() {
+    centrelineActiveFeatures() {
       const features = [];
       if (this.centrelineHovered) {
-        const { geometry, properties } = this.hoveredFeature;
-        features.push({ type: 'Feature', geometry, properties });
+        const { properties: { centrelineId, centrelineType } } = this.hoveredFeature;
+        features.push({ centrelineId, centrelineType });
       }
-      if (this.centrelineSelected && this.featureKeySelected !== this.featureKeyHovered) {
-        const { geometry, properties } = this.selectedFeature;
-        features.push({ type: 'Feature', geometry, properties });
+      if (this.centrelineSelected) {
+        const { properties: { centrelineId, centrelineType } } = this.selectedFeature;
+        features.push({ centrelineId, centrelineType });
       }
-      return {
-        type: 'FeatureCollection',
-        features,
-      };
+      return features;
+    },
+    centrelineActiveIntersections() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.INTERSECTION,
+      ).map(({ centrelineId }) => centrelineId);
+    },
+    centrelineActiveMidblocks() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.SEGMENT,
+      ).map(({ centrelineId }) => centrelineId);
     },
     centrelineHovered() {
       if (this.hoveredFeature === null) {
@@ -333,9 +340,17 @@ export default {
     }
   },
   watch: {
-    activeGeoJson() {
-      GeoStyle.setData('active', this.activeGeoJson);
-      this.map.getSource('active').setData(this.activeGeoJson);
+    centrelineActiveIntersections() {
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+    },
+    centrelineActiveMidblocks() {
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
     },
     drawerOpen() {
       Vue.nextTick(() => {
@@ -432,12 +447,7 @@ export default {
      * event on the map.
      *
      * For usability, this matching is somewhat fuzzy: it will find the highest-priority
-     * feature within a 20x20 bounding box centered on `point`.  Layers in descending
-     * priority order:
-     *
-     * - intersections
-     * - counts
-     * - centreline
+     * feature within a 20x20 bounding box centered on `point`.
      *
      * TODO: within layers, rank by closest to `point`
      *
