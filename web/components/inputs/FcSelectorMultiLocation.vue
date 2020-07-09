@@ -10,6 +10,7 @@
             :key="locationsEditKeys[i]"
             v-model="locationsEdit[i]"
             :location-index="i"
+            :selected="i === locationEditIndex"
             @focus="setLocationEditIndex(i)"
             @location-remove="actionRemove" />
           <FcInputLocationSearch
@@ -157,7 +158,12 @@ export default {
       }
       return [`Maximum of ${MAX_LOCATIONS} selected locations.`];
     },
-    ...mapState(['locations', 'locationsEdit', 'locationMode']),
+    ...mapState([
+      'locationEditIndex',
+      'locationMode',
+      'locations',
+      'locationsEdit',
+    ]),
   },
   methods: {
     actionRemove(i) {
