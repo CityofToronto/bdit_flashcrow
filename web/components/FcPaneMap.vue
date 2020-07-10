@@ -248,7 +248,7 @@ export default {
         const { multi } = this.locationMode;
         properties.multi = multi;
         if (multi) {
-          properties.locationIndex = i + 1;
+          properties.locationIndex = i;
           properties.selected = i === this.locationEditIndex;
         }
         return { type: 'Feature', geometry, properties };
@@ -393,6 +393,7 @@ export default {
     mapStyle() {
       this.map.setStyle(this.mapStyle);
       this.updateLocationsSource();
+      this.updateLocationsMarkersSource();
       this.map.setFilter(
         'active-intersections',
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
