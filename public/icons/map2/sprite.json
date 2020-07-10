@@ -7,66 +7,66 @@
     "y": 0
   },
   "location-multi": {
-    "height": 38,
+    "height": 40,
     "pixelRatio": 1,
-    "width": 29,
-    "x": 0,
-    "y": 40
+    "width": 30,
+    "x": 40,
+    "y": 0
   },
   "location-multi-corridor": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 121,
-    "y": 40
+    "x": 144,
+    "y": 0
   },
   "location-multi-corridor-selected": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 137,
+    "x": 60,
     "y": 40
   },
   "location-multi-selected": {
-    "height": 38,
+    "height": 40,
     "pixelRatio": 1,
-    "width": 29,
-    "x": 29,
+    "width": 30,
+    "x": 0,
     "y": 40
   },
   "location-multi-small": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 80,
-    "y": 0
+    "x": 76,
+    "y": 40
   },
   "location-multi-small-selected": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 96,
-    "y": 0
+    "x": 92,
+    "y": 40
   },
   "location-single": {
-    "height": 38,
+    "height": 40,
     "pixelRatio": 1,
-    "width": 29,
-    "x": 58,
+    "width": 30,
+    "x": 30,
     "y": 40
   },
   "school": {
     "height": 40,
     "pixelRatio": 1,
     "width": 40,
-    "x": 40,
+    "x": 70,
     "y": 0
   },
   "study": {
     "height": 34,
     "pixelRatio": 1,
     "width": 34,
-    "x": 87,
-    "y": 40
+    "x": 110,
+    "y": 0
   }
 }
