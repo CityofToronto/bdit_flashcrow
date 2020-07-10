@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
+import db from '@/lib/db/db';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyDataDAO from '@/lib/db/StudyDataDAO';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -11,6 +12,10 @@ const countData_4_1415698 = loadJsonSync(
 const countData_5_26177 = loadJsonSync(
   path.resolve(__dirname, './data/countData_5_26177.json'),
 );
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('StudyDataDAO', async () => {
   // TMC

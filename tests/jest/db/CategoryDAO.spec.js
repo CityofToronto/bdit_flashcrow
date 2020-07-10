@@ -1,6 +1,11 @@
 import { StudyType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import CategoryDAO from '@/lib/db/CategoryDAO';
 import Category from '@/lib/model/Category';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('CategoryDAO', async () => {
   expect(CategoryDAO.isInited()).toBe(false);

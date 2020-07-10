@@ -1,4 +1,9 @@
+import db from '@/lib/db/db';
 import CollisionFactorDAO from '@/lib/db/CollisionFactorDAO';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('CollisionFactorDAO', async () => {
   expect(CollisionFactorDAO.isInited()).toBe(false);

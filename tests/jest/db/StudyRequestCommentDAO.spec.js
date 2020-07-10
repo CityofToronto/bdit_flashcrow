@@ -5,12 +5,17 @@ import {
   StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestCommentDAO from '@/lib/db/StudyRequestCommentDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequestComment from '@/lib/model/StudyRequestComment';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('StudyRequestCommentDAO', async () => {
   await expect(StudyRequestCommentDAO.byId(-1)).resolves.toBeNull();

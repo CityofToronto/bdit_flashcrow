@@ -1,5 +1,10 @@
 import { CardinalDirection, CentrelineType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import ArteryDAO from '@/lib/db/ArteryDAO';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('')).toBe(null);
