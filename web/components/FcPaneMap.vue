@@ -252,6 +252,7 @@ export default {
         properties.multi = multi;
         if (multi) {
           properties.locationIndex = i + 1;
+          properties.selected = i === this.locationEditIndex;
         }
         return { type: 'Feature', geometry, properties };
       });
@@ -299,6 +300,7 @@ export default {
     ...mapState([
       'drawerOpen',
       'legendOptions',
+      'locationEditIndex',
       'locationMode',
       'locations',
       'locationsEdit',
