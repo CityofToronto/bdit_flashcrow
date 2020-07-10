@@ -141,6 +141,7 @@ export default new Vuex.Store({
     saveLocationsEdit(state) {
       Vue.set(state, 'locations', [...state.locationsEdit]);
       Vue.set(state, 'locationsEdit', []);
+      Vue.set(state, 'locationEditIndex', -1);
       if (state.locations.length > 1) {
         Vue.set(state, 'locationMode', LocationMode.MULTI);
       } else {
@@ -152,6 +153,7 @@ export default new Vuex.Store({
         state.locationsEdit.push(location);
       } else {
         Vue.set(state.locationsEdit, state.locationEditIndex, location);
+        Vue.set(state, 'locationEditIndex', -1);
       }
     },
     setLocationEditIndex(state, locationEditIndex) {

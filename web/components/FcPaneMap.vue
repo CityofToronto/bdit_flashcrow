@@ -54,7 +54,7 @@
           <span>{{tooltipLocationMode}}</span>
         </v-tooltip>
         <v-tooltip
-          v-if="locations.length > 0"
+          v-if="locationsForMode.length > 0"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -221,13 +221,38 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
+    locationsForMode() {
+      return this.locationMode === LocationMode.MULTI_EDIT ? this.locationsEdit : this.locations;
+    },
     locationsGeoJson() {
-      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
-        ? this.locationsEdit
-        : this.locations;
-      const features = featureLocations.map(
+      const features = this.locationsForMode.map(
         ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
       );
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
+    locationsMarkersGeoJson() {
+      const features = this.locationsForMode.map((location, i) => {
+        const {
+          geom,
+          lat,
+          lng,
+          ...properties
+        } = location;
+        const geometry = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        const { multi } = this.locationMode;
+        properties.multi = multi;
+        if (multi) {
+          properties.locationIndex = i;
+          properties.selected = i === this.locationEditIndex;
+        }
+        return { type: 'Feature', geometry, properties };
+      });
       return {
         type: 'FeatureCollection',
         features,
@@ -272,6 +297,7 @@ export default {
     ...mapState([
       'drawerOpen',
       'legendOptions',
+      'locationEditIndex',
       'locationMode',
       'locations',
       'locationsEdit',
@@ -326,7 +352,8 @@ export default {
         this.loading = false;
       });
       this.map.on('load', () => {
-        this.updateLocationsLayers();
+        this.updateLocationsSource();
+        this.updateLocationsMarkersSource();
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
@@ -365,7 +392,8 @@ export default {
     }, 200),
     mapStyle() {
       this.map.setStyle(this.mapStyle);
-      this.updateLocationsLayers();
+      this.updateLocationsSource();
+      this.updateLocationsMarkersSource();
       this.map.setFilter(
         'active-intersections',
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
@@ -375,11 +403,14 @@ export default {
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
     },
-    locations(locations, locationsPrev) {
-      this.easeToLocations(locations, locationsPrev);
+    locationsForMode(locationsForMode, locationsForModePrev) {
+      this.easeToLocations(locationsForMode, locationsForModePrev);
     },
     locationsGeoJson() {
-      this.updateLocationsLayers();
+      this.updateLocationsSource();
+    },
+    locationsMarkersGeoJson() {
+      this.updateLocationsMarkersSource();
     },
     $route() {
       Vue.nextTick(() => {
@@ -444,10 +475,10 @@ export default {
       }
     },
     recenterLocation() {
-      if (this.locations.length === 0) {
+      if (this.locationsForMode.length === 0) {
         return;
       }
-      this.easeToLocations(this.locations, null);
+      this.easeToLocations(this.locationsForMode, null);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -538,9 +569,13 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
-    updateLocationsLayers() {
+    updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
       this.map.getSource('locations').setData(this.locationsGeoJson);
+    },
+    updateLocationsMarkersSource() {
+      GeoStyle.setData('locations-markers', this.locationsMarkersGeoJson);
+      this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
     },
     ...mapMutations([
       'setDrawerOpen',

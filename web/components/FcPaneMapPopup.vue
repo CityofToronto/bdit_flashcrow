@@ -332,7 +332,7 @@ export default {
       }
       if (this.locationMode === LocationMode.MULTI_EDIT) {
         if (this.featureLocationsEditIndex !== -1) {
-          return 'Remove Location';
+          return `Remove Location #${this.featureLocationsEditIndex + 1}`;
         }
         if (this.locationEditIndex === -1) {
           return 'Add Location';
