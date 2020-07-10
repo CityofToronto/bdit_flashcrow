@@ -31,9 +31,9 @@ export default {
     },
     src() {
       if (this.selected) {
-        return '/icons/map2/location-multi-small-selected.svg';
+        return '/icons/map/location-multi-small-selected.svg';
       }
-      return '/icons/map2/location-multi-small.svg';
+      return '/icons/map/location-multi-small.svg';
     },
   },
 };
