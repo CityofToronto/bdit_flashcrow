@@ -153,6 +153,7 @@ export default new Vuex.Store({
         state.locationsEdit.push(location);
       } else {
         Vue.set(state.locationsEdit, state.locationEditIndex, location);
+        Vue.set(state, 'locationEditIndex', -1);
       }
     },
     setLocationEditIndex(state, locationEditIndex) {

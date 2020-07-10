@@ -54,7 +54,7 @@
           <span>{{tooltipLocationMode}}</span>
         </v-tooltip>
         <v-tooltip
-          v-if="locations.length > 0"
+          v-if="locationsForMode.length > 0"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -221,11 +221,11 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
+    locationsForMode() {
+      return this.locationMode === LocationMode.MULTI_EDIT ? this.locationsEdit : this.locations;
+    },
     locationsGeoJson() {
-      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
-        ? this.locationsEdit
-        : this.locations;
-      const features = featureLocations.map(
+      const features = this.locationsForMode.map(
         ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
       );
       return {
@@ -234,10 +234,7 @@ export default {
       };
     },
     locationsMarkersGeoJson() {
-      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
-        ? this.locationsEdit
-        : this.locations;
-      const features = featureLocations.map((location, i) => {
+      const features = this.locationsForMode.map((location, i) => {
         const {
           geom,
           lat,
@@ -405,8 +402,8 @@ export default {
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
     },
-    locations(locations, locationsPrev) {
-      this.easeToLocations(locations, locationsPrev);
+    locationsForMode(locationsForMode, locationsForModePrev) {
+      this.easeToLocations(locationsForMode, locationsForModePrev);
     },
     locationsGeoJson() {
       this.updateLocationsSource();
@@ -477,10 +474,10 @@ export default {
       }
     },
     recenterLocation() {
-      if (this.locations.length === 0) {
+      if (this.locationsForMode.length === 0) {
         return;
       }
-      this.easeToLocations(this.locations, null);
+      this.easeToLocations(this.locationsForMode, null);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
