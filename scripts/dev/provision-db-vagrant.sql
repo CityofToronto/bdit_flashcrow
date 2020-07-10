@@ -8,4 +8,5 @@ create extension fuzzystrmatch;
 create extension postgis_tiger_geocoder;
 create extension postgis_topology;
 create extension pg_trgm;
+create extension pgrouting;
 set search_path=public,tiger;
