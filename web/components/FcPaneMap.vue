@@ -233,6 +233,33 @@ export default {
         features,
       };
     },
+    locationsMarkersGeoJson() {
+      const featureLocations = this.locationMode === LocationMode.MULTI_EDIT
+        ? this.locationsEdit
+        : this.locations;
+      const features = featureLocations.map((location, i) => {
+        const {
+          geom,
+          lat,
+          lng,
+          ...properties
+        } = location;
+        const geometry = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        const { multi } = this.locationMode;
+        properties.multi = multi;
+        if (multi) {
+          properties.locationIndex = i + 1;
+        }
+        return { type: 'Feature', geometry, properties };
+      });
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
     mapOptions() {
       const { aerial, legendOptions } = this;
       const { dark } = this.$vuetify.theme;
@@ -326,7 +353,8 @@ export default {
         this.loading = false;
       });
       this.map.on('load', () => {
-        this.updateLocationsLayers();
+        this.updateLocationsSource();
+        this.updateLocationsMarkersSource();
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
@@ -365,7 +393,7 @@ export default {
     }, 200),
     mapStyle() {
       this.map.setStyle(this.mapStyle);
-      this.updateLocationsLayers();
+      this.updateLocationsSource();
       this.map.setFilter(
         'active-intersections',
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
@@ -379,7 +407,10 @@ export default {
       this.easeToLocations(locations, locationsPrev);
     },
     locationsGeoJson() {
-      this.updateLocationsLayers();
+      this.updateLocationsSource();
+    },
+    locationsMarkersGeoJson() {
+      this.updateLocationsMarkersSource();
     },
     $route() {
       Vue.nextTick(() => {
@@ -538,9 +569,13 @@ export default {
       const zoom = this.map.getZoom();
       this.coordinates = { lat, lng, zoom };
     },
-    updateLocationsLayers() {
+    updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
       this.map.getSource('locations').setData(this.locationsGeoJson);
+    },
+    updateLocationsMarkersSource() {
+      GeoStyle.setData('locations-markers', this.locationsMarkersGeoJson);
+      this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
     },
     ...mapMutations([
       'setDrawerOpen',
