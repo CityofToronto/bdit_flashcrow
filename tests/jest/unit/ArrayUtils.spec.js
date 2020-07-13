@@ -218,3 +218,29 @@ test('ArrayUtils.groupBy()', () => {
     [2, 5, 8],
   ]);
 });
+
+test('ArrayUtils.consecutiveUniqBy', () => {
+  let xs = [];
+  let xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([]);
+
+  xs = [3];
+  xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([3]);
+
+  xs = [3, 3];
+  xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([3]);
+
+  xs = [3, 3, 1, 1, 1, 2];
+  xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([3, 1, 2]);
+
+  xs = [3, 3, 1, 1, 1, 2, 2];
+  xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([3, 1, 2]);
+
+  xs = [3, 3, 1, 1, 3, 1, 2, 2];
+  xsConsecutiveUniq = ArrayUtils.consecutiveUniqBy(xs, x => x);
+  expect(xsConsecutiveUniq).toEqual([3, 1, 3, 1, 2]);
+});

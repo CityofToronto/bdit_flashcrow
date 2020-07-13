@@ -6,12 +6,17 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequestChange from '@/lib/model/StudyRequestChange';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('StudyRequestChangeDAO', async () => {
   await expect(StudyRequestChangeDAO.byId(-1)).resolves.toBeNull();

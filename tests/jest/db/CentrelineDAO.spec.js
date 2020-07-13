@@ -1,6 +1,11 @@
 import { CentrelineType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('CentrelineDAO.byFeature', async () => {
   // intersection

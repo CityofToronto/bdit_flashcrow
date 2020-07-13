@@ -1,4 +1,5 @@
 import { AuthScope } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import UserDAO from '@/lib/db/UserDAO';
 import {
   generateEmail,
@@ -6,6 +7,10 @@ import {
   generateUniqueName,
   generateUser,
 } from '@/lib/test/random/UserGenerator';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('UserDAO', async () => {
   const transientUser1 = generateUser();

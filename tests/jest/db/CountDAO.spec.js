@@ -1,6 +1,11 @@
 import { StudyType } from '@/lib/Constants';
+import db from '@/lib/db/db';
 import CountDAO from '@/lib/db/CountDAO';
 import DateTime from '@/lib/time/DateTime';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('CountDAO.byStudy', async () => {
   // TMC: single-day, single-arterycode
