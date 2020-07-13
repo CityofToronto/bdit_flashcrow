@@ -200,3 +200,124 @@ test('RoutingDAO.routeFeatures', async () => {
     ],
   });
 });
+
+test('RoutingDAO.routeCorridor', async () => {
+  // length 0
+  let features = [];
+  let corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([]);
+
+  // length 1
+  features = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual(features);
+
+  // length 2, duplicate point
+  features = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([features[0]]);
+
+  // length 2, point to nearby midblock
+  features = [
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([
+    features[0],
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    features[1],
+  ]);
+
+  // length > 2, Don Mills from Overlea / Gateway to Eglinton in several steps
+  features = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13454752, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([
+    features[0],
+    { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    features[1],
+    features[2],
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    features[3],
+    { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
+    features[4],
+  ]);
+
+  // length > 2, same corridor with duplicates
+  features = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13454752, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([
+    features[0],
+    { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    features[1],
+    features[3],
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    features[4],
+    { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
+    features[6],
+  ]);
+
+  // length > 2, Don Mills from Overlea / Gateway to Eglinton with backtracking
+  features = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13454752, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  corridor = await RoutingDAO.routeCorridor(features);
+  expect(corridor).toEqual([
+    features[0],
+    { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    features[1],
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    features[2],
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    features[3],
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    features[4],
+    { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
+    features[5],
+  ]);
+});
