@@ -58,9 +58,7 @@ test('RoutingDAO.routeIntersections', async () => {
   ]);
 
   // reverse route
-  intersectionFrom = 13456067;
-  intersectionTo = 13456414;
-  result = await RoutingDAO.routeIntersections(intersectionFrom, intersectionTo);
+  result = await RoutingDAO.routeIntersections(intersectionTo, intersectionFrom);
   expect(result.cost).toEqual(cost);
   expect(result.route).toEqual([
     { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
@@ -78,4 +76,127 @@ test('RoutingDAO.routeIntersections', async () => {
     { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
     { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
   ]);
+});
+
+test('RoutingDAO.routeFeatures', async () => {
+  // route from non-existent intersection
+  let featureFrom = { centrelineId: -1, centrelineType: CentrelineType.INTERSECTION };
+  let featureTo = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  let result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toBeNull();
+
+  // route from non-existent midblock
+  featureFrom = { centrelineId: -1, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toBeNull();
+
+  // route to non-existent intersection
+  featureFrom = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: -1, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toBeNull();
+
+  // route to non-existent midblock
+  featureFrom = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: -1, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toBeNull();
+
+  // route from intersection to itself
+  featureFrom = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({ next: featureTo, route: [] });
+
+  // route from midblock to itself
+  featureFrom = { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({ next: featureTo, route: [] });
+
+  // route from intersection to incident midblock
+  featureFrom = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    route: [featureTo],
+  });
+
+  // route from midblock to incident intersection
+  featureFrom = { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({ next: featureTo, route: [featureTo] });
+
+  // route from midblock to midblock with common intersection
+  featureFrom = { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    route: [
+      { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+      featureTo,
+    ],
+  });
+
+  // route from intersection to nearby intersection
+  featureFrom = { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: featureTo,
+    route: [
+      { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
+      { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+      { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+      featureTo,
+    ],
+  });
+
+  // route from intersection to nearby midblock
+  featureFrom = { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION };
+  featureTo = { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    route: [
+      { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+      { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+      { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+      { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+      { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+      { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+      featureTo,
+    ],
+  });
+
+  // route from midblock to nearby intersection
+  featureFrom = { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 13454752, centrelineType: CentrelineType.INTERSECTION };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: featureTo,
+    route: [
+      { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+      { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
+      featureTo,
+    ],
+  });
+
+  // route from midblock to nearby midblock
+  featureFrom = { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT };
+  featureTo = { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT };
+  result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
+  expect(result).toEqual({
+    next: { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    route: [
+      { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+      { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+      { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+      featureTo,
+    ],
+  });
 });
