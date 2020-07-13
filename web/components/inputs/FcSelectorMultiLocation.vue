@@ -6,15 +6,15 @@
       <div>
         <div class="fc-input-location-search-wrapper elevation-2">
           <FcInputLocationSearch
-            v-for="(_, i) in locationsEdit"
+            v-for="(_, i) in locationsEditSelection.locations"
             :key="locationsEditKeys[i]"
-            v-model="locationsEdit[i]"
+            v-model="locationsEditSelection.locations[i]"
             :location-index="i"
-            :selected="i === locationEditIndex"
+            :selected="i === locationsEditIndex"
             @focus="setLocationEditIndex(i)"
             @location-remove="actionRemove" />
           <FcInputLocationSearch
-            v-if="locationsEdit.length < MAX_LOCATIONS"
+            v-if="locationsEditSelection.locations.length < MAX_LOCATIONS"
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationEditIndex(-1)"
@@ -26,7 +26,7 @@
       </div>
       <div class="ml-2">
         <div
-          v-for="(_, i) in locations"
+          v-for="(_, i) in locationsEditSelection.locations"
           :key="'remove_' + i"
           class="fc-input-location-search-remove">
           <FcButton
@@ -44,7 +44,7 @@
         <FcInputLocationSearch
           v-for="(_, i) in locations"
           :key="i"
-          v-model="locations[i]"
+          v-model="locationsSelection.locations[i]"
           :location-index="i"
           readonly />
       </div>
@@ -54,7 +54,7 @@
         class="display-3 mb-4"
         :title="description">
         <span
-          v-if="locations.length === 0"
+          v-if="locationsSelection.locations.length === 0"
           class="secondary--text">
           No locations selected
         </span>
@@ -65,7 +65,7 @@
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <v-checkbox
-            v-model="corridor"
+            v-model="locationsEditSelection.corridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
             label="Include intersections and midblocks between locations" />
@@ -78,16 +78,16 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="locationsEdit.length === 0"
+            :disabled="loading || locationsEditSelection.locations.length === 0"
+            :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
             Done
           </FcButton>
         </template>
         <template v-else>
-
           <span
-            v-if="corridor"
+            v-if="locationsSelection.corridor"
             class="secondary--text">
             Includes intersections and midblocks between locations
           </span>
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { centrelineKey, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
@@ -128,8 +128,7 @@ export default {
   },
   data() {
     return {
-      corridor: false,
-      locationIndexActive: -1,
+      loading: false,
       LocationMode,
       locationToAdd: null,
       MAX_LOCATIONS,
@@ -137,11 +136,11 @@ export default {
   },
   computed: {
     description() {
-      return getLocationsDescription(this.locations);
+      return getLocationsDescription(this.locationsEditSelection.features);
     },
     locationsEditKeys() {
       const keyCounter = new Map();
-      return this.locationsEdit.map(({ centrelineId, centrelineType }) => {
+      return this.locationsEditSelection.locations.map(({ centrelineId, centrelineType }) => {
         const key = centrelineKey(centrelineType, centrelineId);
         let counter = 0;
         if (keyCounter.has(key)) {
@@ -153,17 +152,24 @@ export default {
     },
     messagesMaxLocations() {
       if (this.locationMode !== LocationMode.MULTI_EDIT
-        || this.locationsEdit.length < MAX_LOCATIONS) {
+        || this.locationsEditSelection.locations.length < MAX_LOCATIONS) {
         return [];
       }
       return [`Maximum of ${MAX_LOCATIONS} selected locations.`];
     },
     ...mapState([
-      'locationEditIndex',
       'locationMode',
       'locations',
       'locationsEdit',
+      'locationsEditSelection',
     ]),
+  },
+  watch: {
+    async locationsEditSelection() {
+      this.loading = true;
+      await this.syncLocationsEdit();
+      this.loading = false;
+    },
   },
   methods: {
     actionRemove(i) {
@@ -177,6 +183,7 @@ export default {
         params: { s1 },
       });
     },
+    ...mapActions(['syncLocationsEdit']),
     ...mapMutations([
       'addLocationEdit',
       'cancelLocationsEdit',

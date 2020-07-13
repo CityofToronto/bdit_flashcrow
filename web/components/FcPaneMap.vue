@@ -249,7 +249,7 @@ export default {
         properties.multi = multi;
         if (multi) {
           properties.locationIndex = i;
-          properties.selected = i === this.locationEditIndex;
+          properties.selected = i === this.locationsEditIndex;
         }
         return { type: 'Feature', geometry, properties };
       });
@@ -297,7 +297,7 @@ export default {
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'locationEditIndex',
+      'locationsEditIndex',
       'locationMode',
       'locations',
       'locationsEdit',

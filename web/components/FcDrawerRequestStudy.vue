@@ -251,13 +251,13 @@ export default {
           name: 'requestStudyView',
           params: { id },
         });
-      } else if (this.location === null) {
+      } else if (this.locations.length === 0) {
         this.$router.push({ name: 'viewData' });
       } else {
-        const { centrelineId, centrelineType } = this.location;
+        const s1 = CompositeId.encode(this.locations);
         this.$router.push({
           name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
+          params: { s1 },
         });
       }
     },

@@ -4,6 +4,8 @@ import Vuex from 'vuex';
 import { LocationMode } from '@/lib/Constants';
 import {
   getAuth,
+  getLocationsByCentreline,
+  getLocationsByCorridor,
   postStudyRequest,
   putStudyRequest,
 } from '@/lib/api/WebApi';
@@ -43,8 +45,16 @@ export default new Vuex.Store({
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
     locations: [],
+    locationsSelection: {
+      corridor: false,
+      locations: [],
+    },
     locationsEdit: [],
-    locationEditIndex: -1,
+    locationsEditIndex: -1,
+    locationsEditSelection: {
+      corridor: false,
+      locations: [],
+    },
     locationMode: LocationMode.SINGLE,
     legendOptions: {
       datesFrom: 3,
@@ -77,24 +87,24 @@ export default new Vuex.Store({
     },
     // LOCATION
     location(state) {
-      const { locations } = state;
+      const { locations } = state.locationsSelection;
       if (locations.length === 0) {
         return null;
       }
       return locations[0];
     },
     locationFeatureType(state) {
-      const { locations } = state;
+      const { locations } = state.locationsSelection;
       if (locations.length === 0) {
         return null;
       }
       return getLocationFeatureType(locations[0]);
     },
     locationsDescription(state) {
-      return getLocationsDescription(state.locations);
+      return getLocationsDescription(state.locationsSelection.locations);
     },
     s1(state) {
-      return CompositeId.encode(state.locations);
+      return CompositeId.encode(state.locationsSelection.locations);
     },
   },
   mutations: {
@@ -126,7 +136,7 @@ export default new Vuex.Store({
     },
     // LOCATION
     addLocationEdit(state, location) {
-      state.locationsEdit.push(location);
+      state.locationsEditSelection.locations.push(location);
     },
     cancelLocationsEdit(state) {
       if (state.locations.length > 1) {
@@ -136,12 +146,15 @@ export default new Vuex.Store({
       }
     },
     removeLocationEdit(state, i) {
-      state.locationsEdit.splice(i, 1);
+      state.locationsEditSelection.locations.splice(i, 1);
     },
     saveLocationsEdit(state) {
+      const { corridor, locations } = state.locationsEditSelection;
       Vue.set(state, 'locations', [...state.locationsEdit]);
+      Vue.set(state, 'locationsSelection', { corridor, locations: [...locations] });
       Vue.set(state, 'locationsEdit', []);
-      Vue.set(state, 'locationEditIndex', -1);
+      Vue.set(state, 'locationsEditIndex', -1);
+      Vue.set(state, 'locationsEditSelection', { corridor: false, locations: [] });
       if (state.locations.length > 1) {
         Vue.set(state, 'locationMode', LocationMode.MULTI);
       } else {
@@ -149,22 +162,28 @@ export default new Vuex.Store({
       }
     },
     setLocationEdit(state, location) {
-      if (state.locationEditIndex === -1) {
-        state.locationsEdit.push(location);
+      if (state.locationsEditIndex === -1) {
+        state.locationsEditSelection.locations.push(location);
       } else {
-        Vue.set(state.locationsEdit, state.locationEditIndex, location);
-        Vue.set(state, 'locationEditIndex', -1);
+        Vue.set(state.locationsEditSelection.locations, state.locationsEditIndex, location);
+        Vue.set(state, 'locationsEditIndex', -1);
       }
     },
-    setLocationEditIndex(state, locationEditIndex) {
-      Vue.set(state, 'locationEditIndex', locationEditIndex);
+    setLocationEditCorridor(state, corridor) {
+      Vue.set(state.locationsEditSelection, 'corridor', corridor);
+    },
+    setLocationEditIndex(state, locationsEditIndex) {
+      Vue.set(state, 'locationsEditIndex', locationsEditIndex);
     },
     setLocationMode(state, locationMode) {
       Vue.set(state, 'locationMode', locationMode);
       if (locationMode === LocationMode.SINGLE && state.locations.length > 1) {
         Vue.set(state, 'locations', state.locations.slice(0, 1));
       } else if (locationMode === LocationMode.MULTI_EDIT) {
+        const { corridor, locations } = state.locationsSelection;
         Vue.set(state, 'locationsEdit', [...state.locations]);
+        Vue.set(state, 'locationsEditIndex', -1);
+        Vue.set(state, 'locationsEditSelection', { corridor, locations: [...locations] });
       }
     },
     setLocations(state, locations) {
@@ -174,6 +193,13 @@ export default new Vuex.Store({
       } else {
         Vue.set(state, 'locationMode', LocationMode.SINGLE);
       }
+    },
+    setLocationsSelection(state, locationsSelection) {
+      const { corridor, locations } = locationsSelection;
+      Vue.set(state, 'locationsSelection', { corridor, locations: [...locations] });
+    },
+    setLocationsEdit(state, locationsEdit) {
+      Vue.set(state, 'locationsEdit', [...locationsEdit]);
     },
     setLegendOptions(state, legendOptions) {
       Vue.set(state, 'legendOptions', legendOptions);
@@ -205,6 +231,23 @@ export default new Vuex.Store({
         return putStudyRequest(csrf, studyRequest);
       }
       return postStudyRequest(csrf, studyRequest);
+    },
+    // LOCATION
+    async initLocations({ commit }, { corridor, features }) {
+      let locations = await getLocationsByCentreline(features);
+      commit('setLocationsSelection', { corridor, locations });
+      if (corridor) {
+        locations = await getLocationsByCorridor(locations);
+      }
+      commit('setLocations', locations);
+    },
+    async syncLocationsEdit({ state, commit }) {
+      const { locationsEditSelection: { corridor, locations } } = state;
+      let locationsEdit = locations;
+      if (corridor) {
+        locationsEdit = await getLocationsByCorridor(locations);
+      }
+      commit('setLocationsEdit', locationsEdit);
     },
   },
 });

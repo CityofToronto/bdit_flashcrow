@@ -295,7 +295,7 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return false;
         }
-        return this.locationEditIndex === -1 && this.locationsEdit.length >= MAX_LOCATIONS;
+        return this.locationsEditIndex === -1 && this.locationsEdit.length >= MAX_LOCATIONS;
       }
       return false;
     },
@@ -334,10 +334,10 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return `Remove Location #${this.featureLocationsEditIndex + 1}`;
         }
-        if (this.locationEditIndex === -1) {
+        if (this.locationsEditIndex === -1) {
           return 'Add Location';
         }
-        return `Set Location #${this.locationEditIndex + 1}`;
+        return `Set Location #${this.locationsEditIndex + 1}`;
       }
       return 'View Data';
     },
@@ -380,7 +380,7 @@ export default {
       }
       return null;
     },
-    ...mapState(['locationEditIndex', 'locationMode', 'locationsEdit']),
+    ...mapState(['locationsEditIndex', 'locationMode', 'locationsEdit']),
   },
   watch: {
     coordinates() {
