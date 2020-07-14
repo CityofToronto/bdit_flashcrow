@@ -300,7 +300,8 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return false;
         }
-        return this.locationsEditIndex === -1 && this.locationsEdit.length >= MAX_LOCATIONS;
+        return this.locationsEditIndex === -1
+          && this.locationsEditSelection.locations.length >= MAX_LOCATIONS;
       }
       return false;
     },
@@ -313,7 +314,7 @@ export default {
         return false;
       }
       const { centrelineId, centrelineType } = this.feature.properties;
-      return this.locationsEdit.findIndex(
+      return this.locationsEditSelection.locations.findIndex(
         location => location.centrelineType === centrelineType
           && location.centrelineId === centrelineId,
       );
@@ -385,7 +386,11 @@ export default {
       }
       return null;
     },
-    ...mapState(['locationsEditIndex', 'locationMode', 'locationsEdit']),
+    ...mapState([
+      'locationsEditIndex',
+      'locationsEditSelection',
+      'locationMode',
+    ]),
   },
   watch: {
     coordinates() {

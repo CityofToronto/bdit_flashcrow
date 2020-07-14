@@ -183,6 +183,7 @@ export default {
     ...mapState([
       'locationMode',
       'locations',
+      'locationsSelection',
       'locationsEdit',
       'locationsEditIndex',
       'locationsEditSelection',
