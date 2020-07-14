@@ -234,29 +234,86 @@ export default {
       };
     },
     locationsMarkersGeoJson() {
-      const features = this.locationsForMode.map((location, i) => {
+      const waypoints = this.locationsSelectionForMode.locations;
+
+      let waypointIndex = 0;
+      let waypoint = waypoints[waypointIndex];
+      const features = [];
+      this.locationsForMode.forEach((location) => {
         const {
           geom,
           lat,
           lng,
-          ...properties
+          ...propertiesRest
         } = location;
+
         const geometry = {
           type: 'Point',
           coordinates: [lng, lat],
         };
-        const { multi } = this.locationMode;
-        properties.multi = multi;
-        if (multi) {
-          properties.locationIndex = i;
-          properties.selected = i === this.locationsEditIndex;
+
+        /*
+         * It is possible for the current location to match multiple consecutive waypoints.
+         * We could forbid selecting the same location multiple times, but that would introduce
+         * a lot of validation complexity in both frontend and backend.  It would also make it
+         * impossible to select a corridor that loops back on itself.
+         */
+        const waypointIndices = [];
+        while (waypointIndex < waypoints.length
+          && propertiesRest.centrelineType === waypoint.centrelineType
+          && propertiesRest.centrelineId === waypoint.centrelineId) {
+          waypointIndices.push(waypointIndex);
+          waypointIndex += 1;
+          waypoint = waypoints[waypointIndex];
         }
-        return { type: 'Feature', geometry, properties };
+
+        /*
+         * `locationIndex === null` here indicates that the location is not a waypoint, and
+         * can be drawn using a corridor marker.
+         */
+        let locationIndex = -1;
+        let selected = false;
+        const k = waypointIndices.length;
+        if (k === 0) {
+          if (propertiesRest.centrelineType === CentrelineType.SEGMENT) {
+            // We only show corridor markers at intersections.
+            return;
+          }
+        } else if (waypointIndices.includes(this.locationsEditIndex)) {
+          /*
+           * In this case, we might have several consecutive waypoints at the same location,
+           * which might cause the currently selected waypoint to be hidden - so we prioritize
+           * it.
+           */
+          locationIndex = this.locationsEditIndex;
+          selected = true;
+        } else {
+          /*
+           * Here there is no selected waypoint, so we just show the last matching waypoint.
+           */
+          locationIndex = waypointIndices[k - 1];
+        }
+
+        const { multi } = this.locationMode;
+        const properties = {
+          locationIndex,
+          multi,
+          selected,
+          ...propertiesRest,
+        };
+        const feature = { type: 'Feature', geometry, properties };
+        features.push(feature);
       });
+
       return {
         type: 'FeatureCollection',
         features,
       };
+    },
+    locationsSelectionForMode() {
+      return this.locationMode === LocationMode.MULTI_EDIT
+        ? this.locationsEditSelection
+        : this.locationsSelection;
     },
     mapOptions() {
       const { aerial, legendOptions } = this;
@@ -460,7 +517,6 @@ export default {
           maxZoom: MapZoom.LEVEL_1.minzoom,
           padding: 64,
         });
-        cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
         this.map.easeTo(cameraOptions);
       } else if (locationsPrev.length === 0) {
         /*

@@ -197,7 +197,6 @@ export default {
     locationsEditSelection: {
       deep: true,
       async handler() {
-        console.log('syncing...');
         this.loading = true;
         await this.syncLocationsEdit();
         this.loading = false;
