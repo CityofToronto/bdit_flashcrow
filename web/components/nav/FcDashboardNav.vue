@@ -23,9 +23,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
-import CompositeId from '@/lib/io/CompositeId';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 
 export default {
@@ -35,16 +34,16 @@ export default {
   },
   computed: {
     toViewMap() {
-      if (this.locations.length === 0) {
+      if (this.locationsEmpty) {
         return { name: 'viewData' };
       }
-      const s1 = CompositeId.encode(this.locations);
+      const params = this.locationsRouteParams;
       return {
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params,
       };
     },
-    ...mapState(['locations']),
+    ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
   },
 };
 </script>

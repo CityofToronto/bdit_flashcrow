@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { LocationMode } from '@/lib/Constants';
+import { LocationMode, LocationSelectionType } from '@/lib/Constants';
 import {
   getAuth,
   getLocationsByCentreline,
@@ -46,14 +46,14 @@ export default new Vuex.Store({
     // LOCATION
     locations: [],
     locationsSelection: {
-      corridor: false,
       locations: [],
+      selectionType: LocationSelectionType.POINTS,
     },
     locationsEdit: [],
     locationsEditIndex: -1,
     locationsEditSelection: {
-      corridor: false,
       locations: [],
+      selectionType: LocationSelectionType.POINTS,
     },
     locationMode: LocationMode.SINGLE,
     legendOptions: {
@@ -86,22 +86,35 @@ export default new Vuex.Store({
       return scope;
     },
     // LOCATION
-    location(state) {
-      const { locations } = state.locationsSelection;
-      if (locations.length === 0) {
+    location(state, getters) {
+      if (getters.locationsEmpty) {
         return null;
       }
+      const { locations } = state.locationsSelection;
       return locations[0];
     },
-    locationFeatureType(state) {
-      const { locations } = state.locationsSelection;
-      if (locations.length === 0) {
+    locationFeatureType(state, getters) {
+      if (getters.locationsEmpty) {
         return null;
       }
+      const { locations } = state.locationsSelection;
       return getLocationFeatureType(locations[0]);
     },
     locationsDescription(state) {
-      return getLocationsDescription(state.locationsSelection.locations);
+      const { locations } = state.locationsSelection;
+      return getLocationsDescription(locations);
+    },
+    locationsEditDescription(state) {
+      const { locations } = state.locationsEditSelection;
+      return getLocationsDescription(locations);
+    },
+    locationsEmpty(state) {
+      return state.locationsSelection.locations.length === 0;
+    },
+    locationsRouteParams(state) {
+      const { locations, selectionType } = state.locationsSelection;
+      const s1 = CompositeId.encode(locations);
+      return { s1, selectionTypeName: selectionType.name };
     },
     s1(state) {
       return CompositeId.encode(state.locationsSelection.locations);
@@ -149,12 +162,18 @@ export default new Vuex.Store({
       state.locationsEditSelection.locations.splice(i, 1);
     },
     saveLocationsEdit(state) {
-      const { corridor, locations } = state.locationsEditSelection;
+      const { locations, selectionType } = state.locationsEditSelection;
       Vue.set(state, 'locations', [...state.locationsEdit]);
-      Vue.set(state, 'locationsSelection', { corridor, locations: [...locations] });
+      Vue.set(state, 'locationsSelection', {
+        locations: [...locations],
+        selectionType,
+      });
       Vue.set(state, 'locationsEdit', []);
       Vue.set(state, 'locationsEditIndex', -1);
-      Vue.set(state, 'locationsEditSelection', { corridor: false, locations: [] });
+      Vue.set(state, 'locationsEditSelection', {
+        locations: [],
+        selectionType: LocationSelectionType.POINTS,
+      });
       if (state.locations.length > 1) {
         Vue.set(state, 'locationMode', LocationMode.MULTI);
       } else {
@@ -169,8 +188,8 @@ export default new Vuex.Store({
         Vue.set(state, 'locationsEditIndex', -1);
       }
     },
-    setLocationEditCorridor(state, corridor) {
-      Vue.set(state.locationsEditSelection, 'corridor', corridor);
+    setLocationEditSelectionType(state, selectionType) {
+      Vue.set(state.locationsEditSelection, 'selectionType', selectionType);
     },
     setLocationEditIndex(state, locationsEditIndex) {
       Vue.set(state, 'locationsEditIndex', locationsEditIndex);
@@ -178,16 +197,24 @@ export default new Vuex.Store({
     setLocationMode(state, locationMode) {
       Vue.set(state, 'locationMode', locationMode);
       if (locationMode === LocationMode.SINGLE && state.locations.length > 1) {
-        Vue.set(state, 'locations', state.locations.slice(0, 1));
+        const [location] = state.locations;
+        Vue.set(state, 'locations', [location]);
+        Vue.set(state, 'locationsSelection', {
+          locations: [location],
+          selectionType: LocationSelectionType.POINTS,
+        });
       } else if (locationMode === LocationMode.MULTI_EDIT) {
-        const { corridor, locations } = state.locationsSelection;
+        const { locations, selectionType } = state.locationsSelection;
         Vue.set(state, 'locationsEdit', [...state.locations]);
         Vue.set(state, 'locationsEditIndex', -1);
-        Vue.set(state, 'locationsEditSelection', { corridor, locations: [...locations] });
+        Vue.set(state, 'locationsEditSelection', {
+          locations: [...locations],
+          selectionType,
+        });
       }
     },
     setLocations(state, locations) {
-      Vue.set(state, 'locations', locations);
+      Vue.set(state, 'locations', [...locations]);
       if (state.locations.length > 1) {
         Vue.set(state, 'locationMode', LocationMode.MULTI);
       } else {
@@ -195,8 +222,11 @@ export default new Vuex.Store({
       }
     },
     setLocationsSelection(state, locationsSelection) {
-      const { corridor, locations } = locationsSelection;
-      Vue.set(state, 'locationsSelection', { corridor, locations: [...locations] });
+      const { locations, selectionType } = locationsSelection;
+      Vue.set(state, 'locationsSelection', {
+        locations: [...locations],
+        selectionType,
+      });
     },
     setLocationsEdit(state, locationsEdit) {
       Vue.set(state, 'locationsEdit', [...locationsEdit]);
@@ -233,18 +263,29 @@ export default new Vuex.Store({
       return postStudyRequest(csrf, studyRequest);
     },
     // LOCATION
-    async initLocations({ commit }, { corridor, features }) {
-      let locations = await getLocationsByCentreline(features);
-      commit('setLocationsSelection', { corridor, locations });
-      if (corridor) {
-        locations = await getLocationsByCorridor(locations);
+    async initLocations({ commit, state }, { features, selectionType: selectionTypeNext }) {
+      const { locations, selectionType } = state.locationsSelection;
+      const s1 = CompositeId.encode(locations);
+      const s1Next = CompositeId.encode(features);
+      if (s1 === s1Next && selectionType === selectionTypeNext) {
+        return;
       }
-      commit('setLocations', locations);
+
+      let locationsNext = await getLocationsByCentreline(features);
+      const locationsSelection = {
+        locations: locationsNext,
+        selectionType: selectionTypeNext,
+      };
+      commit('setLocationsSelection', locationsSelection);
+      if (selectionType === LocationSelectionType.CORRIDOR) {
+        locationsNext = await getLocationsByCorridor(locationsNext);
+      }
+      commit('setLocations', locationsNext);
     },
-    async syncLocationsEdit({ state, commit }) {
-      const { locationsEditSelection: { corridor, locations } } = state;
+    async syncLocationsEdit({ commit, state }) {
+      const { locationsEditSelection: { locations, selectionType } } = state;
       let locationsEdit = locations;
-      if (corridor) {
+      if (selectionType === LocationSelectionType.CORRIDOR) {
         locationsEdit = await getLocationsByCorridor(locations);
       }
       commit('setLocationsEdit', locationsEdit);

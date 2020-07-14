@@ -54,7 +54,7 @@
         class="display-3 mb-4"
         :title="description">
         <span
-          v-if="locationsSelection.locations.length === 0"
+          v-if="locationsEmpty"
           class="secondary--text">
           No locations selected
         </span>
@@ -78,7 +78,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || locationsEditSelection.locations.length === 0"
+            :disabled="loading || locationsEmpty"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
@@ -112,11 +112,14 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import { centrelineKey, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
-import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
-import CompositeId from '@/lib/io/CompositeId';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -136,7 +139,10 @@ export default {
   },
   computed: {
     description() {
-      return getLocationsDescription(this.locationsEditSelection.features);
+      if (this.locationMode === LocationMode.MULTI_EDIT) {
+        return this.locationsEditDescription;
+      }
+      return this.locationsDescription;
     },
     locationsEditKeys() {
       const keyCounter = new Map();
@@ -161,7 +167,13 @@ export default {
       'locationMode',
       'locations',
       'locationsEdit',
+      'locationsEditIndex',
       'locationsEditSelection',
+    ]),
+    ...mapGetters([
+      'locationsDescription',
+      'locationsEditDescription',
+      'locationsEmpty',
     ]),
   },
   watch: {
@@ -177,10 +189,10 @@ export default {
       this.removeLocationEdit(i);
     },
     actionViewData() {
-      const s1 = CompositeId.encode(this.locations);
+      const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params,
       });
     },
     ...mapActions(['syncLocationsEdit']),

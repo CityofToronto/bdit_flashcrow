@@ -35,7 +35,12 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import { mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
+import {
+  CentrelineType,
+  LocationMode,
+  LocationSelectionType,
+  MAX_LOCATIONS,
+} from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
@@ -446,7 +451,7 @@ export default {
       const s1 = CompositeId.encode([feature]);
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params: { s1, selectionType: LocationSelectionType.POINTS },
       });
     },
     createPopup() {
