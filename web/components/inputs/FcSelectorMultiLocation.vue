@@ -65,7 +65,7 @@
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <v-checkbox
-            v-model="locationsEditSelection.corridor"
+            v-model="internalCorridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
             label="Include intersections and midblocks between locations" />
@@ -119,7 +119,12 @@ import {
   mapState,
 } from 'vuex';
 
-import { centrelineKey, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
+import {
+  centrelineKey,
+  LocationMode,
+  LocationSelectionType,
+  MAX_LOCATIONS,
+} from '@/lib/Constants';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -143,6 +148,18 @@ export default {
         return this.locationsEditDescription;
       }
       return this.locationsDescription;
+    },
+    internalCorridor: {
+      get() {
+        return this.locationsEditSelection.selectionType === LocationSelectionType.CORRIDOR;
+      },
+      set(corridor) {
+        if (corridor) {
+          this.setLocationEditSelectionType(LocationSelectionType.CORRIDOR);
+        } else {
+          this.setLocationEditSelectionType(LocationSelectionType.POINTS);
+        }
+      },
     },
     locationsEditKeys() {
       const keyCounter = new Map();
@@ -177,10 +194,14 @@ export default {
     ]),
   },
   watch: {
-    async locationsEditSelection() {
-      this.loading = true;
-      await this.syncLocationsEdit();
-      this.loading = false;
+    locationsEditSelection: {
+      deep: true,
+      async handler() {
+        console.log('syncing...');
+        this.loading = true;
+        await this.syncLocationsEdit();
+        this.loading = false;
+      },
     },
   },
   methods: {
@@ -203,6 +224,7 @@ export default {
       'saveLocationsEdit',
       'setLocationEdit',
       'setLocationEditIndex',
+      'setLocationEditSelectionType',
       'setLocationMode',
     ]),
   },

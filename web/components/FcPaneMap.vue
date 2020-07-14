@@ -301,6 +301,8 @@ export default {
       'locationMode',
       'locations',
       'locationsEdit',
+      'locationsEditSelection',
+      'locationsSelection',
     ]),
   },
   created() {

@@ -116,9 +116,6 @@ export default new Vuex.Store({
       const s1 = CompositeId.encode(locations);
       return { s1, selectionTypeName: selectionType.name };
     },
-    s1(state) {
-      return CompositeId.encode(state.locationsSelection.locations);
-    },
   },
   mutations: {
     // AUTH / HELPERS STATE
@@ -283,7 +280,7 @@ export default new Vuex.Store({
       commit('setLocations', locationsNext);
     },
     async syncLocationsEdit({ commit, state }) {
-      const { locationsEditSelection: { locations, selectionType } } = state;
+      const { locations, selectionType } = state.locationsEditSelection;
       let locationsEdit = locations;
       if (selectionType === LocationSelectionType.CORRIDOR) {
         locationsEdit = await getLocationsByCorridor(locations);
