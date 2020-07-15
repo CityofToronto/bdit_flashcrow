@@ -23,13 +23,13 @@ test('CentrelineUtils.getLocationFeatureType', () => {
 
   location = {
     centrelineType: CentrelineType.INTERSECTION,
-    featureCode: RoadIntersectionType.PEDESTRIAN.featureCode,
+    featureCode: RoadIntersectionType.LANEWAY.featureCode,
   };
-  expect(getLocationFeatureType(location)).toBe(RoadIntersectionType.PEDESTRIAN);
+  expect(getLocationFeatureType(location)).toBe(RoadIntersectionType.LANEWAY);
 
   location = {
     centrelineType: -1,
-    featureCode: RoadIntersectionType.PEDESTRIAN.featureCode,
+    featureCode: RoadIntersectionType.LANEWAY.featureCode,
   };
   expect(() => {
     getLocationFeatureType(location);
