@@ -90,7 +90,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -221,9 +221,6 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
-    locationsForMode() {
-      return this.locationMode === LocationMode.MULTI_EDIT ? this.locationsEdit : this.locations;
-    },
     locationsGeoJson() {
       const features = this.locationsForMode.map(
         ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
@@ -234,25 +231,81 @@ export default {
       };
     },
     locationsMarkersGeoJson() {
-      const features = this.locationsForMode.map((location, i) => {
+      const waypoints = this.locationsSelectionForMode.locations;
+      const n = waypoints.length;
+
+      let waypointIndex = 0;
+      let waypoint = waypoints[waypointIndex];
+      const features = [];
+      this.locationsForMode.forEach((location) => {
         const {
           geom,
           lat,
           lng,
-          ...properties
+          ...propertiesRest
         } = location;
+
         const geometry = {
           type: 'Point',
           coordinates: [lng, lat],
         };
-        const { multi } = this.locationMode;
-        properties.multi = multi;
-        if (multi) {
-          properties.locationIndex = i;
-          properties.selected = i === this.locationEditIndex;
+
+        /*
+         * It is possible for the current location to match multiple consecutive waypoints.
+         * We could forbid selecting the same location multiple times, but that would introduce
+         * a lot of validation complexity in both frontend and backend.  It would also make it
+         * impossible to select a corridor that loops back on itself.
+         *
+         * `waypointIndices` represents the subsequence of `waypoints`, starting at the current
+         * `waypointIndex`, that matches the current location.
+         */
+        const waypointIndices = [];
+        while (waypointIndex < n
+          && propertiesRest.centrelineType === waypoint.centrelineType
+          && propertiesRest.centrelineId === waypoint.centrelineId) {
+          waypointIndices.push(waypointIndex);
+          waypointIndex += 1;
+          waypoint = waypoints[waypointIndex];
         }
-        return { type: 'Feature', geometry, properties };
+        const k = waypointIndices.length;
+
+        /*
+         * `locationIndex === null` here indicates that the location is not a waypoint, and
+         * can be drawn using a corridor marker.
+         */
+        let locationIndex = -1;
+        let selected = false;
+        if (k === 0) {
+          if (propertiesRest.centrelineType === CentrelineType.SEGMENT) {
+            // We only show corridor markers at intersections.
+            return;
+          }
+        } else if (waypointIndices.includes(this.locationsEditIndex)) {
+          /*
+           * In this case, we might have several consecutive waypoints at the same location,
+           * which might cause the currently selected waypoint to be hidden - so we prioritize
+           * it.
+           */
+          locationIndex = this.locationsEditIndex;
+          selected = true;
+        } else {
+          /*
+           * Here there is no selected waypoint, so we just show the last matching waypoint.
+           */
+          locationIndex = waypointIndices[k - 1];
+        }
+
+        const { multi } = this.locationMode;
+        const properties = {
+          locationIndex,
+          multi,
+          selected,
+          ...propertiesRest,
+        };
+        const feature = { type: 'Feature', geometry, properties };
+        features.push(feature);
       });
+
       return {
         type: 'FeatureCollection',
         features,
@@ -297,10 +350,12 @@ export default {
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'locationEditIndex',
+      'locationsEditIndex',
       'locationMode',
-      'locations',
-      'locationsEdit',
+    ]),
+    ...mapGetters([
+      'locationsForMode',
+      'locationsSelectionForMode',
     ]),
   },
   created() {
@@ -343,7 +398,7 @@ export default {
         'bottom-right',
       );
 
-      this.easeToLocations(this.locations, []);
+      this.easeToLocations(this.locationsForMode, []);
 
       this.map.on('dataloading', () => {
         this.loading = true;
@@ -458,7 +513,6 @@ export default {
           maxZoom: MapZoom.LEVEL_1.minzoom,
           padding: 64,
         });
-        cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
         this.map.easeTo(cameraOptions);
       } else if (locationsPrev.length === 0) {
         /*

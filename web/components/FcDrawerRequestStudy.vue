@@ -101,7 +101,6 @@ import {
   REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
-import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
@@ -190,10 +189,10 @@ export default {
     },
     routeFinish() {
       if (this.isCreate) {
-        const s1 = CompositeId.encode(this.locations);
+        const params = this.locationsRouteParams;
         return {
           name: 'viewDataAtLocation',
-          params: { s1 },
+          params,
         };
       }
       if (this.studyRequest === null) {
@@ -219,7 +218,7 @@ export default {
       return `Edit Request #${id}`;
     },
     ...mapState(['locations', 'now']),
-    ...mapGetters(['location']),
+    ...mapGetters(['location', 'locationsEmpty', 'locationsRouteParams']),
   },
   watch: {
     estimatedDeliveryDate() {
@@ -251,13 +250,13 @@ export default {
           name: 'requestStudyView',
           params: { id },
         });
-      } else if (this.location === null) {
+      } else if (this.locationsEmpty) {
         this.$router.push({ name: 'viewData' });
       } else {
-        const { centrelineId, centrelineType } = this.location;
+        const params = this.locationsRouteParams;
         this.$router.push({
           name: 'viewDataAtLocation',
-          params: { centrelineId, centrelineType },
+          params,
         });
       }
     },

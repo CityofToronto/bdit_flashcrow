@@ -143,12 +143,12 @@ import { saveAs } from 'file-saver';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
+  LocationSelectionType,
   ReportFormat,
   ReportType,
   StudyType,
 } from '@/lib/Constants';
 import {
-  getLocationsByCentreline,
   getReport,
   getReportWeb,
   getStudiesByCentreline,
@@ -276,7 +276,7 @@ export default {
       return StudyType.enumValueOf(studyTypeName);
     },
     ...mapState(['locations']),
-    ...mapGetters(['locationsDescription', 's1']),
+    ...mapGetters(['locationsDescription', 'locationsRouteParams']),
     ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
@@ -295,11 +295,10 @@ export default {
       next();
       return;
     }
-    const { s1 } = from.params;
-    const { name } = to;
-    if (name === 'viewDataAtLocation') {
-      const { s1: s1Next } = to.params;
-      if (s1 === s1Next) {
+    if (to.name === 'viewDataAtLocation') {
+      const { s1, selectionTypeName } = from.params;
+      const { s1: s1Next, selectionTypeName: selectionTypeNameNext } = to.params;
+      if (s1 === s1Next && selectionTypeName === selectionTypeNameNext) {
         next();
         return;
       }
@@ -329,29 +328,26 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      const { s1 } = this.$route.params;
+      const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params,
       });
     },
     async loadAsyncForRoute(to) {
-      const { s1: s1Next, studyTypeName } = to.params;
-      const features = CompositeId.decode(s1Next);
+      const { s1, selectionTypeName, studyTypeName } = to.params;
+      const features = CompositeId.decode(s1);
+      const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+      await this.initLocations({ features, selectionType });
+
       const studyType = StudyType.enumValueOf(studyTypeName);
       const studies = await getStudiesByCentreline(
-        features,
+        this.locations,
         studyType,
         this.filterParamsStudyReports,
         { limit: 10, offset: 0 },
       );
       this.studies = studies;
-
-      const { s1 } = this;
-      if (s1 !== s1Next) {
-        const locations = await getLocationsByCentreline(features);
-        this.setLocations(locations);
-      }
     },
     setReportParameters(reportParameters) {
       this.reportParameters = reportParameters;

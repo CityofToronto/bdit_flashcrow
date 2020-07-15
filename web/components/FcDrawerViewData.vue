@@ -207,11 +207,10 @@ import {
   mapState,
 } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, LocationSelectionType } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
-  getLocationsByCentreline,
   getPoiByCentrelineSummary,
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineTotal,
@@ -300,7 +299,12 @@ export default {
       'filterParamsCollision',
       'filterParamsStudy',
     ]),
-    ...mapGetters(['locationFeatureType', 'locationsDescription', 's1']),
+    ...mapGetters([
+      'locationFeatureType',
+      'locationsDescription',
+      'locationsEmpty',
+      'locationsRouteParams',
+    ]),
   },
   watch: {
     async filterParamsCollision() {
@@ -321,8 +325,8 @@ export default {
       this.studySummary = studySummary;
       this.loadingStudies = false;
     },
-    locations(locations, locationsPrev) {
-      if (locations.length === 0) {
+    locationsSelection() {
+      if (this.locationsEmpty) {
         /*
          * Normally `this.loading = true` is paired with `this.loading = false` after some
          * asynchronous operation.  In this case, however, we're using it to hide the View Data
@@ -335,23 +339,21 @@ export default {
         });
         return;
       }
-      const s1 = CompositeId.encode(locations);
-      const s1Prev = CompositeId.encode(locationsPrev);
-      if (s1 !== s1Prev) {
+
+      const params = this.locationsRouteParams;
+      const { s1, selectionTypeName } = this.$route.params;
+      /*
+       * Guard against duplicate navigation, which can happen when first loading the page.
+       */
+      if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
         /*
-         * Guard against duplicate navigation, which can happen when first loading the page.
-         */
-        const { s1: s1Route } = this.$route.params;
-        if (s1 !== s1Route) {
-          /*
-           * Update the URL to match the new location.  This allows the user to navigate between
-           * recently selected locations with the back / forward browser buttons.
-           */
-          this.$router.push({
-            name: 'viewDataAtLocation',
-            params: { s1 },
-          });
-        }
+          * Update the URL to match the new location.  This allows the user to navigate between
+          * recently selected locations with the back / forward browser buttons.
+          */
+        this.$router.push({
+          name: 'viewDataAtLocation',
+          params,
+        });
       }
     },
   },
@@ -360,31 +362,37 @@ export default {
       this.$router.push({ name: 'requestStudyNew' });
     },
     actionShowReportsCollision() {
-      const { s1 } = this.$route.params;
+      const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
-        params: { s1 },
+        params,
       });
     },
     actionShowReportsStudy({ category: { studyType } }) {
-      const { s1 } = this.$route.params;
+      const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewStudyReportsAtLocation',
-        params: { s1, studyTypeName: studyType.name },
+        params: {
+          ...params,
+          studyTypeName: studyType.name,
+        },
       });
     },
     async loadAsyncForRoute(to) {
-      const { s1: s1Next } = to.params;
-      const features = CompositeId.decode(s1Next);
+      const { s1, selectionTypeName } = to.params;
+      const features = CompositeId.decode(s1);
+      const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+      await this.initLocations({ features, selectionType });
+
       const tasks = [
-        getCollisionsByCentrelineSummary(features, this.filterParamsCollision),
-        getCollisionsByCentrelineTotal(features),
-        getPoiByCentrelineSummary(features[0]),
-        getStudiesByCentrelineSummary(features, this.filterParamsStudy),
-        getStudiesByCentrelineTotal(features),
+        getCollisionsByCentrelineSummary(this.locations, this.filterParamsCollision),
+        getCollisionsByCentrelineTotal(this.locations),
+        getPoiByCentrelineSummary(this.locations[0]),
+        getStudiesByCentrelineSummary(this.locations, this.filterParamsStudy),
+        getStudiesByCentrelineTotal(this.locations),
       ];
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        tasks.push(getStudyRequestsByCentrelinePending(features));
+        tasks.push(getStudyRequestsByCentrelinePending(this.locations));
       }
       const [
         collisionSummary,
@@ -400,12 +408,6 @@ export default {
       this.studyRequestsPending = studyRequestsPending;
       this.studySummary = studySummary;
       this.studyTotal = studyTotal;
-
-      const { s1 } = this;
-      if (s1 !== s1Next) {
-        const locations = await getLocationsByCentreline(features);
-        this.setLocations(locations);
-      }
     },
     ...mapMutations('viewData', [
       'removeFilterCollision',
@@ -413,7 +415,6 @@ export default {
       'setFiltersCollision',
       'setFiltersStudy',
     ]),
-    ...mapMutations(['setLocations']),
   },
 };
 </script>
