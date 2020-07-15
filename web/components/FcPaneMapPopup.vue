@@ -33,13 +33,12 @@
 
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
   CentrelineType,
   LocationMode,
   LocationSelectionType,
-  MAX_LOCATIONS,
 } from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
@@ -300,8 +299,7 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return false;
         }
-        return this.locationsEditIndex === -1
-          && this.locationsEditSelection.locations.length >= MAX_LOCATIONS;
+        return this.locationsEditIndex === -1 && this.locationsEditFull;
       }
       return false;
     },
@@ -391,6 +389,7 @@ export default {
       'locationsEditSelection',
       'locationMode',
     ]),
+    ...mapGetters(['locationsEditFull']),
   },
   watch: {
     coordinates() {

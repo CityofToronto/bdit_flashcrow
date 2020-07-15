@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { LocationMode, LocationSelectionType } from '@/lib/Constants';
+import {
+  LocationMode,
+  LocationSelectionType,
+  MAX_LOCATIONS,
+} from '@/lib/Constants';
 import {
   getAuth,
   getLocationsByCentreline,
@@ -108,13 +112,28 @@ export default new Vuex.Store({
       const { locations } = state.locationsEditSelection;
       return getLocationsDescription(locations);
     },
+    locationsEditFull(state) {
+      return state.locationsEditSelection.locations.length >= MAX_LOCATIONS;
+    },
     locationsEmpty(state) {
       return state.locationsSelection.locations.length === 0;
+    },
+    locationsForMode(state) {
+      if (state.locationMode === LocationMode.MULTI_EDIT) {
+        return state.locationsEdit;
+      }
+      return state.locations;
     },
     locationsRouteParams(state) {
       const { locations, selectionType } = state.locationsSelection;
       const s1 = CompositeId.encode(locations);
       return { s1, selectionTypeName: selectionType.name };
+    },
+    locationsSelectionForMode(state) {
+      if (state.locationMode === LocationMode.MULTI_EDIT) {
+        return state.locationsEditSelection;
+      }
+      return state.locationsSelection;
     },
   },
   mutations: {

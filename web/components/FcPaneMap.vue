@@ -90,7 +90,7 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -221,9 +221,6 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
-    locationsForMode() {
-      return this.locationMode === LocationMode.MULTI_EDIT ? this.locationsEdit : this.locations;
-    },
     locationsGeoJson() {
       const features = this.locationsForMode.map(
         ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
@@ -235,6 +232,7 @@ export default {
     },
     locationsMarkersGeoJson() {
       const waypoints = this.locationsSelectionForMode.locations;
+      const n = waypoints.length;
 
       let waypointIndex = 0;
       let waypoint = waypoints[waypointIndex];
@@ -257,15 +255,19 @@ export default {
          * We could forbid selecting the same location multiple times, but that would introduce
          * a lot of validation complexity in both frontend and backend.  It would also make it
          * impossible to select a corridor that loops back on itself.
+         *
+         * `waypointIndices` represents the subsequence of `waypoints`, starting at the current
+         * `waypointIndex`, that matches the current location.
          */
         const waypointIndices = [];
-        while (waypointIndex < waypoints.length
+        while (waypointIndex < n
           && propertiesRest.centrelineType === waypoint.centrelineType
           && propertiesRest.centrelineId === waypoint.centrelineId) {
           waypointIndices.push(waypointIndex);
           waypointIndex += 1;
           waypoint = waypoints[waypointIndex];
         }
+        const k = waypointIndices.length;
 
         /*
          * `locationIndex === null` here indicates that the location is not a waypoint, and
@@ -273,7 +275,6 @@ export default {
          */
         let locationIndex = -1;
         let selected = false;
-        const k = waypointIndices.length;
         if (k === 0) {
           if (propertiesRest.centrelineType === CentrelineType.SEGMENT) {
             // We only show corridor markers at intersections.
@@ -309,11 +310,6 @@ export default {
         type: 'FeatureCollection',
         features,
       };
-    },
-    locationsSelectionForMode() {
-      return this.locationMode === LocationMode.MULTI_EDIT
-        ? this.locationsEditSelection
-        : this.locationsSelection;
     },
     mapOptions() {
       const { aerial, legendOptions } = this;
@@ -356,10 +352,10 @@ export default {
       'legendOptions',
       'locationsEditIndex',
       'locationMode',
-      'locations',
-      'locationsEdit',
-      'locationsEditSelection',
-      'locationsSelection',
+    ]),
+    ...mapGetters([
+      'locationsForMode',
+      'locationsSelectionForMode',
     ]),
   },
   created() {
@@ -402,7 +398,7 @@ export default {
         'bottom-right',
       );
 
-      this.easeToLocations(this.locations, []);
+      this.easeToLocations(this.locationsForMode, []);
 
       this.map.on('dataloading', () => {
         this.loading = true;
