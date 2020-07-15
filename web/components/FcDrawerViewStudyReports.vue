@@ -140,7 +140,12 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import {
   LocationSelectionType,
@@ -368,6 +373,7 @@ export default {
       this.loadingReportLayout = false;
     },
     ...mapMutations(['setLocations']),
+    ...mapActions(['initLocations']),
   },
 };
 </script>

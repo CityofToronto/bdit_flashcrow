@@ -122,7 +122,7 @@ export default {
   & > .pane-drawer-toggle {
     cursor: pointer;
     position: absolute;
-    z-index: var(--z-index-controls);
+    z-index: calc(var(--z-index-controls) + 1);
   }
 
   &.vertical {

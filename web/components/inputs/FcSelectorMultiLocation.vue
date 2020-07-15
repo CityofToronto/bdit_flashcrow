@@ -54,7 +54,7 @@
         class="display-3 mb-4"
         :title="description">
         <span
-          v-if="locationsEmpty"
+          v-if="locationsForModeEmpty"
           class="secondary--text">
           No locations selected
         </span>
@@ -78,7 +78,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || locationsEmpty"
+            :disabled="loading || locationsEditEmpty"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
@@ -219,8 +219,10 @@ export default {
     ...mapGetters([
       'locationsDescription',
       'locationsEditDescription',
+      'locationsEditEmpty',
       'locationsEditFull',
-      'locationsEmpty',
+      'locationsForModeEmpty',
+      'locationsRouteParams',
     ]),
   },
   watch: {

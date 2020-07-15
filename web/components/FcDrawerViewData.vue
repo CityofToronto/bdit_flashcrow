@@ -202,6 +202,7 @@
 
 <script>
 import {
+  mapActions,
   mapGetters,
   mapMutations,
   mapState,
@@ -325,36 +326,39 @@ export default {
       this.studySummary = studySummary;
       this.loadingStudies = false;
     },
-    locationsSelection() {
-      if (this.locationsEmpty) {
-        /*
-         * Normally `this.loading = true` is paired with `this.loading = false` after some
-         * asynchronous operation.  In this case, however, we're using it to hide the View Data
-         * drawer contents to prevent errors after clearing `FcSelectorSingleLocation`.  This is OK,
-         * as the next line jumps to View Map which destroys this drawer component anyways.
-         */
-        this.loading = true;
-        this.$router.push({
-          name: 'viewData',
-        });
-        return;
-      }
+    locationsSelection: {
+      deep: true,
+      handler() {
+        if (this.locationsEmpty) {
+          /*
+           * Normally `this.loading = true` is paired with `this.loading = false` after some
+           * asynchronous operation.  In this case, however, we're using it to hide the View Data
+           * drawer contents to prevent errors after clearing `FcSelectorSingleLocation`.  This is
+           * OK, as the next line jumps to View Map which destroys this drawer component anyways.
+           */
+          this.loading = true;
+          this.$router.push({
+            name: 'viewData',
+          });
+          return;
+        }
 
-      const params = this.locationsRouteParams;
-      const { s1, selectionTypeName } = this.$route.params;
-      /*
-       * Guard against duplicate navigation, which can happen when first loading the page.
-       */
-      if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
+        const params = this.locationsRouteParams;
+        const { s1, selectionTypeName } = this.$route.params;
         /*
-          * Update the URL to match the new location.  This allows the user to navigate between
-          * recently selected locations with the back / forward browser buttons.
-          */
-        this.$router.push({
-          name: 'viewDataAtLocation',
-          params,
-        });
-      }
+         * Guard against duplicate navigation, which can happen when first loading the page.
+         */
+        if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
+          /*
+           * Update the URL to match the new location.  This allows the user to navigate between
+           * recently selected locations with the back / forward browser buttons.
+           */
+          this.$router.push({
+            name: 'viewDataAtLocation',
+            params,
+          });
+        }
+      },
     },
   },
   methods: {
@@ -415,6 +419,7 @@ export default {
       'setFiltersCollision',
       'setFiltersStudy',
     ]),
+    ...mapActions(['initLocations']),
   },
 };
 </script>

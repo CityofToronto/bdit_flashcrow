@@ -112,6 +112,9 @@ export default new Vuex.Store({
       const { locations } = state.locationsEditSelection;
       return getLocationsDescription(locations);
     },
+    locationsEditEmpty(state) {
+      return state.locationsEditSelection.locations.length === 0;
+    },
     locationsEditFull(state) {
       return state.locationsEditSelection.locations.length >= MAX_LOCATIONS;
     },
@@ -123,6 +126,9 @@ export default new Vuex.Store({
         return state.locationsEdit;
       }
       return state.locations;
+    },
+    locationsForModeEmpty(state, getters) {
+      return getters.locationsForMode.length === 0;
     },
     locationsRouteParams(state) {
       const { locations, selectionType } = state.locationsSelection;
@@ -293,7 +299,7 @@ export default new Vuex.Store({
         selectionType: selectionTypeNext,
       };
       commit('setLocationsSelection', locationsSelection);
-      if (selectionType === LocationSelectionType.CORRIDOR) {
+      if (selectionTypeNext === LocationSelectionType.CORRIDOR) {
         locationsNext = await getLocationsByCorridor(locationsNext);
       }
       commit('setLocations', locationsNext);
