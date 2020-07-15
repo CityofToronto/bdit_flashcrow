@@ -14,6 +14,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS routing.centreline_edges AS (
   FROM gis.centreline c
   JOIN routing.centreline_vertices vf ON c.fnode = vf.id
   JOIN routing.centreline_vertices vt ON c.tnode = vt.id
+  WHERE c.fcode <= 201800
 );
 CREATE UNIQUE INDEX IF NOT EXISTS centreline_edges_id ON routing.centreline_edges (id);
 CREATE INDEX IF NOT EXISTS centreline_edges_source ON routing.centreline_edges (source);
