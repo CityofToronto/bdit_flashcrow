@@ -11,13 +11,13 @@
             v-model="locationsEditSelection.locations[i]"
             :location-index="i"
             :selected="i === locationsEditIndex"
-            @focus="setLocationEditIndex(i)"
+            @focus="setLocationsEditIndex(i)"
             @location-remove="actionRemove" />
           <FcInputLocationSearch
             v-if="!locationsEditFull"
             v-model="locationToAdd"
             :location-index="-1"
-            @focus="setLocationEditIndex(-1)"
+            @focus="setLocationsEditIndex(-1)"
             @location-add="addLocationEdit" />
         </div>
         <v-messages
@@ -40,14 +40,10 @@
     <div
       v-else
       class="flex-grow-1 flex-shrink-1">
-      <div class="fc-input-location-search-wrapper elevation-2">
-        <FcInputLocationSearch
-          v-for="(_, i) in locationsSelection.locations"
-          :key="i"
-          v-model="locationsSelection.locations[i]"
-          :location-index="i"
-          readonly />
-      </div>
+      <FcDisplayLocationMulti
+        :locations="locations"
+        :locations-index="locationsIndex"
+        :locations-selection="locationsSelection" />
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <h1
@@ -129,11 +125,13 @@ import {
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
+import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
 
 export default {
   name: 'FcSelectorMultiLocation',
   components: {
     FcButton,
+    FcDisplayLocationMulti,
     FcInputLocationSearch,
   },
   data() {
@@ -237,7 +235,7 @@ export default {
   },
   methods: {
     actionRemove(i) {
-      this.setLocationEditIndex(-1);
+      this.setLocationsEditIndex(-1);
       this.removeLocationEdit(i);
     },
     actionViewData() {
@@ -254,7 +252,7 @@ export default {
       'removeLocationEdit',
       'saveLocationsEdit',
       'setLocationEdit',
-      'setLocationEditIndex',
+      'setLocationsEditIndex',
       'setLocationEditSelectionType',
       'setLocationMode',
     ]),
