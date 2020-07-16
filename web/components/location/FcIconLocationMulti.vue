@@ -3,6 +3,7 @@
     class="fc-icon-location-multi">
     <img :src="src" :alt="alt" />
     <div
+      v-if="locationIndex !== -1"
       class="subtitle-2"
       :class="{
         'primary--text': selected,
@@ -17,7 +18,7 @@ export default {
   props: {
     locationIndex: {
       type: Number,
-      default: null,
+      default: -1,
     },
     selected: {
       type: Boolean,
@@ -26,10 +27,19 @@ export default {
   },
   computed: {
     alt() {
+      if (this.locationIndex === -1) {
+        return 'Included intersection between locations';
+      }
       const i = this.locationIndex + 1;
       return `Location #${i}`;
     },
     src() {
+      if (this.locationIndex === -1) {
+        if (this.selected) {
+          return '/icons/map/location-multi-corridor-selected.svg';
+        }
+        return '/icons/map/location-multi-corridor.svg';
+      }
       if (this.selected) {
         return '/icons/map/location-multi-small-selected.svg';
       }

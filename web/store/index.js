@@ -49,6 +49,7 @@ export default new Vuex.Store({
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
     locations: [],
+    locationsIndex: -1,
     locationsSelection: {
       locations: [],
       selectionType: LocationSelectionType.POINTS,
@@ -213,7 +214,7 @@ export default new Vuex.Store({
     setLocationEditSelectionType(state, selectionType) {
       Vue.set(state.locationsEditSelection, 'selectionType', selectionType);
     },
-    setLocationEditIndex(state, locationsEditIndex) {
+    setLocationsEditIndex(state, locationsEditIndex) {
       Vue.set(state, 'locationsEditIndex', locationsEditIndex);
     },
     setLocationMode(state, locationMode) {
@@ -242,6 +243,9 @@ export default new Vuex.Store({
       } else {
         Vue.set(state, 'locationMode', LocationMode.SINGLE);
       }
+    },
+    setLocationsIndex(state, locationsIndex) {
+      Vue.set(state, 'locationsIndex', locationsIndex);
     },
     setLocationsSelection(state, locationsSelection) {
       const { locations, selectionType } = locationsSelection;
