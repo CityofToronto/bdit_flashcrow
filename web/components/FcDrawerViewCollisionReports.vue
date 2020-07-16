@@ -102,7 +102,7 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import { LocationSelectionType, ReportFormat, ReportType } from '@/lib/Constants';
 import { getReport, getReportWeb } from '@/lib/api/WebApi';
@@ -191,14 +191,18 @@ export default {
   },
   methods: {
     async actionDownload(format) {
-      const { activeReportType, filterParamsCollision } = this;
-      if (activeReportType === null) {
+      if (this.activeReportType === null) {
         return;
       }
       this.downloadLoading = true;
 
       const id = CompositeId.encode(this.locations);
-      const reportData = await getReport(activeReportType, id, format, filterParamsCollision);
+      const reportData = await getReport(
+        this.activeReportType,
+        id,
+        format,
+        this.filterParamsCollision,
+      );
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -216,26 +220,29 @@ export default {
       });
     },
     async loadAsyncForRoute(to) {
-      this.updateReportLayout();
-
       const { s1, selectionTypeName } = to.params;
       const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
+      this.updateReportLayout();
     },
     async updateReportLayout() {
-      const { activeReportType, filterParamsCollision } = this;
-      if (activeReportType === null) {
+      if (this.activeReportType === null) {
         return;
       }
       this.loadingReportLayout = true;
 
       const id = CompositeId.encode(this.locations);
-      const reportLayout = await getReportWeb(activeReportType, id, filterParamsCollision);
+      const reportLayout = await getReportWeb(
+        this.activeReportType,
+        id,
+        this.filterParamsCollision,
+      );
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
     },
+    ...mapActions(['initLocations']),
   },
 };
 </script>

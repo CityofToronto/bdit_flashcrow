@@ -42,7 +42,7 @@
       class="flex-grow-1 flex-shrink-1">
       <div class="fc-input-location-search-wrapper elevation-2">
         <FcInputLocationSearch
-          v-for="(_, i) in locations"
+          v-for="(_, i) in locationsSelection.locations"
           :key="i"
           v-model="locationsSelection.locations[i]"
           :location-index="i"
@@ -54,7 +54,7 @@
         class="display-3 mb-4"
         :title="description">
         <span
-          v-if="locationsEmpty"
+          v-if="locationsForModeEmpty"
           class="secondary--text">
           No locations selected
         </span>
@@ -78,7 +78,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || locationsEmpty"
+            :disabled="loading || locationsEditEmpty"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
@@ -87,9 +87,9 @@
         </template>
         <template v-else>
           <span
-            v-if="locationsSelection.corridor"
+            v-if="textLocationsSelectionIncludes !== null"
             class="secondary--text">
-            Includes intersections and midblocks between locations
+            {{textLocationsSelectionIncludes}}
           </span>
 
           <v-spacer></v-spacer>
@@ -121,10 +121,12 @@ import {
 
 import {
   centrelineKey,
+  CentrelineType,
   LocationMode,
   LocationSelectionType,
   MAX_LOCATIONS,
 } from '@/lib/Constants';
+import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -178,6 +180,34 @@ export default {
       }
       return [`Maximum of ${MAX_LOCATIONS} selected locations.`];
     },
+    textLocationsSelectionIncludes() {
+      if (this.locationsSelection.selectionType !== LocationSelectionType.CORRIDOR) {
+        return null;
+      }
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locations,
+        this.locationsSelection.locations,
+      );
+      let includesIntersections = 0;
+      let includesMidblocks = 0;
+      this.locations.forEach(({ centrelineType }, i) => {
+        const waypointIndices = locationsWaypointIndices[i];
+        if (waypointIndices.length === 0) {
+          if (centrelineType === CentrelineType.INTERSECTION) {
+            includesIntersections += 1;
+          } else {
+            includesMidblocks += 1;
+          }
+        }
+      });
+      const includesIntersectionsStr = includesIntersections === 1
+        ? '1 intersection'
+        : `${includesIntersections} intersections`;
+      const includesMidblocksStr = includesMidblocks === 1
+        ? '1 midblock'
+        : `${includesMidblocks} midblocks`;
+      return `Includes ${includesIntersectionsStr} and ${includesMidblocksStr} between locations`;
+    },
     ...mapState([
       'locationMode',
       'locations',
@@ -189,8 +219,10 @@ export default {
     ...mapGetters([
       'locationsDescription',
       'locationsEditDescription',
+      'locationsEditEmpty',
       'locationsEditFull',
-      'locationsEmpty',
+      'locationsForModeEmpty',
+      'locationsRouteParams',
     ]),
   },
   watch: {

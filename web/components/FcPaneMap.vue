@@ -94,6 +94,7 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
+import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -231,13 +232,13 @@ export default {
       };
     },
     locationsMarkersGeoJson() {
-      const waypoints = this.locationsSelectionForMode.locations;
-      const n = waypoints.length;
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locationsForMode,
+        this.locationsSelectionForMode.locations,
+      );
 
-      let waypointIndex = 0;
-      let waypoint = waypoints[waypointIndex];
       const features = [];
-      this.locationsForMode.forEach((location) => {
+      this.locationsForMode.forEach((location, i) => {
         const {
           geom,
           lat,
@@ -250,27 +251,10 @@ export default {
           coordinates: [lng, lat],
         };
 
-        /*
-         * It is possible for the current location to match multiple consecutive waypoints.
-         * We could forbid selecting the same location multiple times, but that would introduce
-         * a lot of validation complexity in both frontend and backend.  It would also make it
-         * impossible to select a corridor that loops back on itself.
-         *
-         * `waypointIndices` represents the subsequence of `waypoints`, starting at the current
-         * `waypointIndex`, that matches the current location.
-         */
-        const waypointIndices = [];
-        while (waypointIndex < n
-          && propertiesRest.centrelineType === waypoint.centrelineType
-          && propertiesRest.centrelineId === waypoint.centrelineId) {
-          waypointIndices.push(waypointIndex);
-          waypointIndex += 1;
-          waypoint = waypoints[waypointIndex];
-        }
+        const waypointIndices = locationsWaypointIndices[i];
         const k = waypointIndices.length;
-
         /*
-         * `locationIndex === null` here indicates that the location is not a waypoint, and
+         * `locationIndex === -1` here indicates that the location is not a waypoint, and
          * can be drawn using a corridor marker.
          */
         let locationIndex = -1;
