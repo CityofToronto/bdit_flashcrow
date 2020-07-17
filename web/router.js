@@ -200,7 +200,6 @@ function routeMetaKey(to, key, defaultValue) {
   return routeWithKey.meta[key];
 }
 
-
 /**
  * As part of "security by design", our default assumption is that a route requires
  * authentication, and that no specific scopes are required.  A route must manually

@@ -259,7 +259,6 @@ function getFeatureIcon({ layerId, feature, details }) {
   return null;
 }
 
-
 export default {
   name: 'PaneMapPopup',
   components: {

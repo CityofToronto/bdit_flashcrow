@@ -133,7 +133,7 @@ export default {
   },
   watch: {
     internalValue() {
-      if (this.internalValue !== null && this.state === LocationSearchState.VALUE_EMPTY) {
+      if (this.internalValue !== null) {
         this.query = this.internalValue.description;
         this.state = LocationSearchState.VALUE_SELECTED;
       }
