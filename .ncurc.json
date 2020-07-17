@@ -2,6 +2,7 @@
   "error-level": 2,
   "reject": [
     "eslint",
-    "openid-client"
+    "openid-client",
+    "sass-loader"
   ]
 }
