@@ -18,6 +18,7 @@ These scripts must pass:
 
 Manual browser testing:
 - [ ] Chrome
+- [ ] Edge
 - [ ] Firefox
 
 Manual browser testing - feature list:

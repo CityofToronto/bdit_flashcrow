@@ -13,33 +13,35 @@
         readonly
         solo>
         <template v-slot:append>
-          <FcIconLocationMulti
-            :location-index="i"
-            :selected="locationsIndex === waypointLocationsIndices[i]" />
-          <template v-if="intersectionsByWaypoint[i].length > 0">
-            <span class="pl-1">&#x2022;</span>
-            <template v-if="intersectionsByWaypoint[i].length <= 3">
-              <FcIconLocationMulti
-                v-for="j in intersectionsByWaypoint[i]"
-                :key="'icon_' + i + '_' + j"
-                class="ml-1"
-                :location-index="-1"
-                :selected="locationsIndex === j" />
-            </template>
-            <template v-else>
-              <FcIconLocationMulti
-                class="ml-1"
-                :location-index="-1"
-                :selected="intersectionsByWaypoint[i].includes(locationsIndex)" />
-              <span class="pl-1 secondary--text subtitle-2">
-                <span v-if="intersectionsByWaypoint[i].includes(locationsIndex)">
-                  {{intersectionsByWaypoint[i].indexOf(locationsIndex)}} /
-                  {{intersectionsByWaypoint[i].length}}
+          <div class="align-center d-flex">
+            <FcIconLocationMulti
+              :location-index="i"
+              :selected="locationsIndex === waypointLocationsIndices[i]" />
+            <template v-if="intersectionsByWaypoint[i].length > 0">
+              <span class="pl-1">&#x2022;</span>
+              <template v-if="intersectionsByWaypoint[i].length <= 3">
+                <FcIconLocationMulti
+                  v-for="j in intersectionsByWaypoint[i]"
+                  :key="'icon_' + i + '_' + j"
+                  class="ml-1"
+                  :location-index="-1"
+                  :selected="locationsIndex === j" />
+              </template>
+              <template v-else>
+                <FcIconLocationMulti
+                  class="ml-1"
+                  :location-index="-1"
+                  :selected="intersectionsByWaypoint[i].includes(locationsIndex)" />
+                <span class="pl-1 secondary--text subtitle-2">
+                  <span v-if="intersectionsByWaypoint[i].includes(locationsIndex)">
+                    {{intersectionsByWaypoint[i].indexOf(locationsIndex) + 1}} /
+                    {{intersectionsByWaypoint[i].length}}
+                  </span>
+                  <span v-else>&times; {{intersectionsByWaypoint[i].length}}</span>
                 </span>
-                <span v-else>&times; {{intersectionsByWaypoint[i].length}}</span>
-              </span>
+              </template>
             </template>
-          </template>
+          </div>
         </template>
       </v-text-field>
     </div>
@@ -73,8 +75,8 @@ export default {
           }
         } else {
           waypointIndices.forEach(() => {
-            intersectionsByWaypoint.push(intersections);
             intersections = [];
+            intersectionsByWaypoint.push(intersections);
           });
         }
       });

@@ -293,7 +293,12 @@ export default {
       return hospital !== null || school !== null;
     },
     ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
-    ...mapState(['auth', 'legendOptions', 'locations']),
+    ...mapState([
+      'auth',
+      'legendOptions',
+      'locations',
+      'locationsSelection',
+    ]),
     ...mapGetters('viewData', [
       'filterChipsCollision',
       'filterChipsStudy',

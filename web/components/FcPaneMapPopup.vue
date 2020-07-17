@@ -259,7 +259,6 @@ function getFeatureIcon({ layerId, feature, details }) {
   return null;
 }
 
-
 export default {
   name: 'PaneMapPopup',
   components: {
@@ -455,7 +454,7 @@ export default {
       const s1 = CompositeId.encode([feature]);
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1, selectionType: LocationSelectionType.POINTS },
+        params: { s1, selectionTypeName: LocationSelectionType.POINTS.name },
       });
     },
     createPopup() {
