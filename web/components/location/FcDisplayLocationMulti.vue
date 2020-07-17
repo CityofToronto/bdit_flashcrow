@@ -75,8 +75,8 @@ export default {
           }
         } else {
           waypointIndices.forEach(() => {
-            intersectionsByWaypoint.push(intersections);
             intersections = [];
+            intersectionsByWaypoint.push(intersections);
           });
         }
       });

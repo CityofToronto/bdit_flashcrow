@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2020-07-17
+### Changed
+- Several REST API endpoints now support multi-location queries
+
+### Added
+- "In development" message bar at top
+- Support for Edge
+- Search by traffic signal control (TSC / PX) number in location search, e.g. "signal:1234" or "px:1234"
+- Search by arterycode number in location search, e.g. "artery:5678"
+- Map and location selection interactions for multi-location
+- Corridor routing between selected locations
+
 ## [0.8.1] - 2020-06-19
 ### Fixed
 - Empty datasets no longer crash 24-hour detailed and summary reports
