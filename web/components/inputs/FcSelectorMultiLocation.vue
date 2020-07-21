@@ -44,6 +44,9 @@
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
+      <v-messages
+        class="mt-2"
+        :value="[]"></v-messages>
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <h1
@@ -90,15 +93,12 @@
 
           <v-spacer></v-spacer>
 
+          <slot name="action" />
           <FcButton
-            type="tertiary"
-            @click="actionViewData">
-            View Data
-          </FcButton>
-          <FcButton
+            class="ml-2"
             type="secondary"
             @click="setLocationMode(LocationMode.MULTI_EDIT)">
-            <v-icon left>mdi-circle-edit-outline</v-icon>
+            <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
             Edit Locations
           </FcButton>
         </template>
@@ -221,7 +221,6 @@ export default {
       'locationsEditEmpty',
       'locationsEditFull',
       'locationsForModeEmpty',
-      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -238,13 +237,6 @@ export default {
     actionRemove(i) {
       this.setLocationsEditIndex(-1);
       this.removeLocationEdit(i);
-    },
-    actionViewData() {
-      const params = this.locationsRouteParams;
-      this.$router.push({
-        name: 'viewDataAtLocation',
-        params,
-      });
     },
     ...mapActions(['syncLocationsEdit']),
     ...mapMutations([

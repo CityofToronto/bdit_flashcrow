@@ -1,7 +1,16 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
     <header class="flex-grow-0 flex-shrink-0 shading">
-      <FcSelectorMultiLocation v-if="locationMode.multi" />
+      <FcSelectorMultiLocation v-if="locationMode.multi">
+        <template v-slot:action>
+          <FcButton
+            type="secondary"
+            @click="detailMode = !detailMode">
+            <span v-if="detailMode">Aggregate View</span>
+            <span v-else>Detail View</span>
+          </FcButton>
+        </template>
+      </FcSelectorMultiLocation>
       <div v-else class="pa-5">
         <FcSelectorSingleLocation />
         <h1
@@ -34,7 +43,7 @@
       <template v-else>
         <v-divider></v-divider>
 
-        <section class="shading">
+        <section>
           <header class="pa-5">
             <div class="align-center d-flex">
               <h2 class="headline">Collisions</h2>
@@ -73,7 +82,6 @@
           </header>
 
           <FcDataTableCollisions
-            class="shading"
             :collision-summary="collisionSummary"
             :loading="loadingCollisions"
             @show-reports="actionShowReportsCollision" />
@@ -225,6 +233,7 @@ export default {
         validated: 0,
       },
       collisionTotal: 0,
+      detailMode: false,
       loadingCollisions: false,
       loadingStudies: false,
       poiSummary: {
@@ -305,6 +314,9 @@ export default {
       );
       this.studySummary = studySummary;
       this.loadingStudies = false;
+    },
+    locationMode() {
+      this.detailView = false;
     },
     locationsSelection: {
       deep: true,

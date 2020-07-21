@@ -13,7 +13,15 @@
         v-if="!drawerOpen">
         <FcSelectorMultiLocation
           v-if="locationMode.multi"
-          class="elevation-2" />
+          class="elevation-2">
+          <template v-slot:action>
+            <FcButton
+              type="tertiary"
+              @click="actionViewData">
+              View Data
+            </FcButton>
+          </template>
+        </FcSelectorMultiLocation>
         <FcSelectorSingleLocation
           v-else
           class="mt-5 ml-5" />
@@ -339,6 +347,7 @@ export default {
     ]),
     ...mapGetters([
       'locationsForMode',
+      'locationsRouteParams',
       'locationsSelectionForMode',
     ]),
   },
@@ -464,6 +473,17 @@ export default {
       } else {
         this.setLocationMode(LocationMode.SINGLE);
       }
+    },
+    actionViewData() {
+      const { name } = this.$route;
+      if (name === 'viewDataAtLocation') {
+        this.setDrawerOpen(true);
+      }
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params,
+      });
     },
     clearHoveredFeature() {
       this.hoveredFeature = null;
@@ -642,6 +662,7 @@ export default {
     top: 0;
     z-index: var(--z-index-controls);
     & > .fc-selector-multi-location {
+      background-color: var(--v-shading-base);
       border-radius: 8px;
       height: 387px;
       width: 664px;
