@@ -5,8 +5,8 @@
         <template v-slot:action>
           <FcButton
             type="secondary"
-            @click="detailMode = !detailMode">
-            <span v-if="detailMode">Aggregate View</span>
+            @click="detailView = !detailView">
+            <span v-if="detailView">Aggregate View</span>
             <span v-else>Detail View</span>
           </FcButton>
         </template>
@@ -233,7 +233,7 @@ export default {
         validated: 0,
       },
       collisionTotal: 0,
-      detailMode: false,
+      detailView: false,
       loadingCollisions: false,
       loadingStudies: false,
       poiSummary: {
