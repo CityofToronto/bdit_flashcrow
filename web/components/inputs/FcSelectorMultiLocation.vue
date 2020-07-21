@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-selector-multi-location d-flex flex-column pa-5 shading">
+  <div class="fc-selector-multi-location d-flex flex-column pa-5">
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
@@ -263,10 +263,6 @@ export default {
 
 <style lang="scss">
 .fc-selector-multi-location {
-  border-radius: 8px;
-  height: 387px;
-  width: 664px;
-
   & .fc-input-location-search-wrapper {
     width: 472px;
     & > .fc-input-location-search {

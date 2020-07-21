@@ -1,71 +1,37 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <div class="flex-grow-0 flex-shrink-0 pa-5">
-      <FcSelectorSingleLocation />
-    </div>
+    <header class="flex-grow-0 flex-shrink-0 shading">
+      <FcSelectorMultiLocation v-if="locationMode.multi" />
+      <div v-else class="pa-5">
+        <FcSelectorSingleLocation />
+        <h1
+          class="display-3 mt-6 text-truncate"
+          :title="locationsDescription">
+          {{locationsDescription}}
+        </h1>
+        <div class="label mt-5">
+          <span v-if="locationFeatureType !== null">
+            {{locationFeatureType.description}} &#x2022;
+          </span>
+          <span>{{studySummaryHeaderText}}</span>
+        </div>
+        <div class="d-flex mt-4">
+          <FcSummaryPoi :poi-summary="poiSummary" />
+          <v-spacer></v-spacer>
+          <FcButton
+            type="secondary"
+            @click="actionAddLocation">
+            <v-icon color="primary" left>mdi-map-marker-plus</v-icon>
+            Add Location
+          </FcButton>
+        </div>
+      </div>
+    </header>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
         indeterminate />
       <template v-else>
-        <header class="px-5 pt-1 pb-5">
-          <h1
-            class="display-3 text-truncate"
-            :title="locationsDescription">
-            {{locationsDescription}}
-          </h1>
-          <div class="label mt-5">
-            <span v-if="locationFeatureType !== null">
-              {{locationFeatureType.description}} &#x2022;
-            </span>
-            <span>{{studySummaryHeaderText}}</span>
-          </div>
-          <div class="mt-4">
-            <div class="label mb-1">Nearby</div>
-            <div>
-              <div
-                v-if="!hasPoisNearby"
-                class="display-2">
-                None
-              </div>
-              <v-tooltip
-                v-if="poiSummary.hospital !== null"
-                bottom>
-                <template v-slot:activator="{ on }">
-                  <v-chip
-                    v-on="on"
-                    class="mr-2"
-                    color="pink lighten-4"
-                    text-color="pink darken-4">
-                    <v-avatar left>
-                      <v-icon>mdi-hospital-box</v-icon>
-                    </v-avatar>
-                    Hospital Zone
-                  </v-chip>
-                </template>
-                <span>{{Math.round(poiSummary.hospital.geom_dist)}} m</span>
-              </v-tooltip>
-              <v-tooltip
-                v-if="poiSummary.school !== null"
-                bottom>
-                <template v-slot:activator="{ on }">
-                  <v-chip
-                    v-on="on"
-                    class="mr-2"
-                    color="teal lighten-4"
-                    text-color="teal darken-4">
-                    <v-avatar left>
-                      <v-icon>mdi-school</v-icon>
-                    </v-avatar>
-                    School Zone
-                  </v-chip>
-                </template>
-                <span>{{Math.round(poiSummary.school.geom_dist)}} m</span>
-              </v-tooltip>
-            </div>
-          </div>
-        </header>
-
         <v-divider></v-divider>
 
         <section class="shading">
@@ -208,7 +174,11 @@ import {
   mapState,
 } from 'vuex';
 
-import { AuthScope, LocationSelectionType } from '@/lib/Constants';
+import {
+  AuthScope,
+  LocationMode,
+  LocationSelectionType,
+} from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineTotal,
@@ -226,6 +196,8 @@ import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollision
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
+import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
+import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -241,7 +213,9 @@ export default {
     FcDataTableStudies,
     FcDialogCollisionFilters,
     FcDialogStudyFilters,
+    FcSelectorMultiLocation,
     FcSelectorSingleLocation,
+    FcSummaryPoi,
   },
   data() {
     return {
@@ -296,6 +270,7 @@ export default {
     ...mapState([
       'auth',
       'legendOptions',
+      'locationMode',
       'locations',
       'locationsSelection',
     ]),
@@ -367,6 +342,9 @@ export default {
     },
   },
   methods: {
+    actionAddLocation() {
+      this.setLocationMode(LocationMode.MULTI_EDIT);
+    },
     actionRequestStudy() {
       this.$router.push({ name: 'requestStudyNew' });
     },
@@ -418,6 +396,7 @@ export default {
       this.studySummary = studySummary;
       this.studyTotal = studyTotal;
     },
+    ...mapMutations(['setLocationMode']),
     ...mapMutations('viewData', [
       'removeFilterCollision',
       'removeFilterStudy',

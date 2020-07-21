@@ -641,6 +641,11 @@ export default {
     position: absolute;
     top: 0;
     z-index: var(--z-index-controls);
+    & > .fc-selector-multi-location {
+      border-radius: 8px;
+      height: 387px;
+      width: 664px;
+    }
   }
   & > .fc-pane-map-legend {
     top: 20px;
