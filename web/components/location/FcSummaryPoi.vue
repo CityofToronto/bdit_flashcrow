@@ -38,10 +38,32 @@
 </template>
 
 <script>
+import { getPoiByCentrelineSummary } from '@/lib/api/WebApi';
+
 export default {
   name: 'FcSummaryPoi',
   props: {
-    poiSummary: Object,
+    location: Object,
+  },
+  data() {
+    return {
+      loading: false,
+      poiSummary: {
+        hospital: null,
+        school: null,
+      },
+    };
+  },
+  watch: {
+    location() {
+
+    },
+  },
+  async created() {
+    this.loading = true;
+    const poiSummary = await getPoiByCentrelineSummary(this.location);
+    this.poiSummary = poiSummary;
+    this.loading = false;
   },
 };
 </script>
