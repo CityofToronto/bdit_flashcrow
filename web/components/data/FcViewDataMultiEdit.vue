@@ -153,8 +153,5 @@ export default {
     background-color: rgba(117, 117, 117, 0.1);
     padding: 2px;
   }
-  & .fc-multi-edit-icon-wrapper {
-    width: 60px;
-  }
 }
 </style>

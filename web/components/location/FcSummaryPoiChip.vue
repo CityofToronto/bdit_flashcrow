@@ -12,7 +12,7 @@
         {{text}}
       </v-chip>
     </template>
-    <span>{{Math.round(poi.geom_dist)}} m</span>
+    <span>{{poiDistance}} m</span>
   </v-tooltip>
 </template>
 
@@ -24,6 +24,11 @@ export default {
     icon: String,
     poi: Object,
     text: String,
+  },
+  computed: {
+    poiDistance() {
+      return Math.round(this.poi.geom_dist);
+    },
   },
 };
 </script>

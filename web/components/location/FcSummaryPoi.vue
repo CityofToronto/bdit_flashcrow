@@ -54,6 +54,10 @@ export default {
   },
   methods: {
     async syncLocation() {
+      if (this.location === null) {
+        return;
+      }
+
       this.loading = true;
       const poiSummary = await getPoiByCentrelineSummary(this.location);
       this.poiSummary = poiSummary;

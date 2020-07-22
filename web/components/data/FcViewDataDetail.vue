@@ -253,10 +253,12 @@ export default {
       });
     },
     async syncLocation() {
+      if (this.location === null) {
+        return;
+      }
+
       this.loading = true;
-
       const locations = [this.location];
-
       const tasks = [
         getCollisionsByCentrelineSummary(locations, this.filterParamsCollision),
         getCollisionsByCentrelineTotal(locations),
@@ -278,7 +280,6 @@ export default {
       this.studyRequestsPending = studyRequestsPending;
       this.studySummary = studySummary;
       this.studyTotal = studyTotal;
-
       this.loading = false;
     },
   },

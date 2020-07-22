@@ -63,8 +63,13 @@ export default {
   },
   methods: {
     async syncLocation() {
+      if (this.location === null) {
+        return;
+      }
+
       this.loading = true;
-      const studySummary = await getStudiesByCentrelineSummary([this.location], {});
+      const locations = [this.location];
+      const studySummary = await getStudiesByCentrelineSummary(locations, {});
       this.studySummary = studySummary;
       this.loading = false;
     },

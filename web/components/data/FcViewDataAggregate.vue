@@ -15,15 +15,25 @@ export default {
       loading: false,
     };
   },
-  async created() {
-    this.loading = true;
+  watch: {
+    locations() {
+      this.syncLocations();
+    },
+  },
+  created() {
+    this.syncLocations();
+  },
+  methods: {
+    async syncLocations() {
+      this.loading = true;
 
-    // TODO: actually implement this
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
+      // TODO: actually implement this
+      await new Promise((resolve) => {
+        setTimeout(resolve, 400);
+      });
 
-    this.loading = false;
+      this.loading = false;
+    },
   },
 };
 </script>
