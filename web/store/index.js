@@ -13,10 +13,7 @@ import {
   postStudyRequest,
   putStudyRequest,
 } from '@/lib/api/WebApi';
-import {
-  getLocationFeatureType,
-  getLocationsDescription,
-} from '@/lib/geo/CentrelineUtils';
+import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
@@ -98,12 +95,12 @@ export default new Vuex.Store({
       const { locations } = state.locationsSelection;
       return locations[0];
     },
-    locationFeatureType(state, getters) {
-      if (getters.locationsEmpty) {
+    locationActive(state) {
+      const n = state.locations.length;
+      if (state.locationsIndex < 0 || state.locationsIndex >= n) {
         return null;
       }
-      const { locations } = state.locationsSelection;
-      return getLocationFeatureType(locations[0]);
+      return state.locations[state.locationsIndex];
     },
     locationsDescription(state) {
       const { locations } = state.locationsSelection;

@@ -1,7 +1,11 @@
 <template>
   <div
     class="fc-icon-location-multi">
-    <img :src="src" :alt="alt" />
+    <img
+      :alt="alt"
+      height="20"
+      :src="src"
+      :width="width" />
     <div
       v-if="locationIndex !== -1"
       class="subtitle-2"
@@ -20,6 +24,10 @@ export default {
       type: Number,
       default: -1,
     },
+    midblock: {
+      type: Boolean,
+      default: false,
+    },
     selected: {
       type: Boolean,
       default: false,
@@ -28,22 +36,24 @@ export default {
   computed: {
     alt() {
       if (this.locationIndex === -1) {
+        if (this.midblock) {
+          return 'Included midblock between locations';
+        }
         return 'Included intersection between locations';
       }
       const i = this.locationIndex + 1;
       return `Location #${i}`;
     },
     src() {
+      const suffixSelected = this.selected ? '-selected' : '';
       if (this.locationIndex === -1) {
-        if (this.selected) {
-          return '/icons/map/location-multi-corridor-selected.svg';
-        }
-        return '/icons/map/location-multi-corridor.svg';
+        const suffixMidblock = this.midblock ? '-midblock' : '';
+        return `/icons/map/location-multi-corridor${suffixMidblock}${suffixSelected}.svg`;
       }
-      if (this.selected) {
-        return '/icons/map/location-multi-small-selected.svg';
-      }
-      return '/icons/map/location-multi-small.svg';
+      return `/icons/map/location-multi-small${suffixSelected}.svg`;
+    },
+    width() {
+      return this.midblock ? 20 : 16;
     },
   },
 };

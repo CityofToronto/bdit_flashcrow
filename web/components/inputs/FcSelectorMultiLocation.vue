@@ -49,19 +49,52 @@
         :value="[]"></v-messages>
     </div>
     <div class="flex-grow-0 flex-shrink-0">
-      <h1
-        class="display-3 mb-4"
-        :title="description">
-        <span
-          v-if="locationsForModeEmpty"
-          class="secondary--text">
-          No locations selected
-        </span>
-        <span v-else>
-          {{description}}
-        </span>
-      </h1>
       <div class="d-flex align-center">
+        <template v-if="locationMode === LocationMode.MULTI_EDIT">
+          <h1 class="display-3 mb-4">{{locationsEditDescription}}</h1>
+        </template>
+        <template v-else-if="detailView">
+          <FcHeaderSingleLocation
+            class="mt-6"
+            :location="locationActive" />
+          <v-spacer></v-spacer>
+          <v-tooltip
+            left
+            :z-index="100">
+            <template v-slot:activator="{ on }">
+              <FcButton
+                aria-label="Previous location"
+                :disabled="locationsIndex <= 0"
+                type="secondary"
+                @click="actionLocationPrev"
+                v-on="on">
+                <v-icon>mdi-arrow-left</v-icon>
+              </FcButton>
+            </template>
+            <span>Previous location</span>
+          </v-tooltip>
+          <v-tooltip
+            right
+            :z-index="100">
+            <template v-slot:activator="{ on }">
+              <FcButton
+                aria-label="Next location"
+                class="ml-2"
+                :disabled="locationsIndex < 0 || locationsIndex >= locations.length - 1"
+                type="secondary"
+                @click="actionLocationNext"
+                v-on="on">
+                <v-icon>mdi-arrow-right</v-icon>
+              </FcButton>
+            </template>
+            <span>Next location</span>
+          </v-tooltip>
+        </template>
+        <template v-else>
+          <h1 class="display-3 mb-4">{{locationsDescription}}</h1>
+        </template>
+      </div>
+      <div class="d-flex align-center mt-4">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <v-checkbox
             v-model="internalCorridor"
@@ -82,6 +115,20 @@
             type="secondary"
             @click="saveLocationsEdit">
             Done
+          </FcButton>
+        </template>
+        <template v-else-if="detailView">
+          <FcSummaryPoi :location="locationActive" />
+
+          <v-spacer></v-spacer>
+
+          <slot name="action" />
+          <FcButton
+            class="ml-2"
+            type="secondary"
+            @click="setLocationMode(LocationMode.MULTI_EDIT)">
+            <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
+            Edit Locations
           </FcButton>
         </template>
         <template v-else>
@@ -123,16 +170,28 @@ import {
   MAX_LOCATIONS,
 } from '@/lib/Constants';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
+import DateTime from '@/lib/time/DateTime';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
+import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
+import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 
 export default {
   name: 'FcSelectorMultiLocation',
   components: {
     FcButton,
     FcDisplayLocationMulti,
+    FcHeaderSingleLocation,
     FcInputLocationSearch,
+    FcSummaryPoi,
+  },
+  props: {
+    detailView: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -142,12 +201,6 @@ export default {
     };
   },
   computed: {
-    description() {
-      if (this.locationMode === LocationMode.MULTI_EDIT) {
-        return this.locationsEditDescription;
-      }
-      return this.locationsDescription;
-    },
     internalCorridor: {
       get() {
         return this.locationsEditSelection.selectionType === LocationSelectionType.CORRIDOR;
@@ -177,6 +230,18 @@ export default {
         return [];
       }
       return [`Maximum of ${MAX_LOCATIONS} selected locations.`];
+    },
+    studySummaryHeaderText() {
+      const n = this.studySummary.length;
+      if (n === 0) {
+        return 'No Studies';
+      }
+      const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
+      const mostRecentDate = DateTime.max(
+        ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
+      );
+      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
+      return `${nStr} (${mostRecentDateStr})`;
     },
     textLocationsSelectionIncludes() {
       if (this.locationsSelection.selectionType !== LocationSelectionType.CORRIDOR) {
@@ -216,6 +281,7 @@ export default {
       'locationsEditSelection',
     ]),
     ...mapGetters([
+      'locationActive',
       'locationsDescription',
       'locationsEditDescription',
       'locationsEditEmpty',
@@ -234,6 +300,16 @@ export default {
     },
   },
   methods: {
+    actionLocationNext() {
+      if (this.locationsIndex <= this.locations.length - 1) {
+        this.setLocationsIndex(this.locationsIndex + 1);
+      }
+    },
+    actionLocationPrev() {
+      if (this.locationsIndex > 0) {
+        this.setLocationsIndex(this.locationsIndex - 1);
+      }
+    },
     actionRemove(i) {
       this.setLocationsEditIndex(-1);
       this.removeLocationEdit(i);
@@ -247,6 +323,7 @@ export default {
       'setLocationEdit',
       'setLocationsEditIndex',
       'setLocationEditSelectionType',
+      'setLocationsIndex',
       'setLocationMode',
     ]),
   },
