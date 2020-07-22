@@ -122,6 +122,10 @@ export default {
   },
   methods: {
     async syncLocations() {
+      if (this.locations.length === 0) {
+        return;
+      }
+
       this.loading = true;
 
       const tasks = [
