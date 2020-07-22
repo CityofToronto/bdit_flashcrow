@@ -1,42 +1,52 @@
 <template>
-  <FcDataTable
-    class="fc-data-table-collisions"
-    :columns="columns"
-    disable-sort
-    :loading="loading"
-    :items="[collisionSummary]">
-    <template v-slot:item.AMOUNT="{ item }">
-      <span>{{item.amount}}</span>
-    </template>
-    <template v-slot:item.KSI="{ item }">
-      <span>{{item.ksi}}</span>
-    </template>
-    <template v-slot:item.VALIDATED="{ item }">
-      <span>{{item.validated}}</span>
-    </template>
-    <template v-slot:header.VIEW_REPORT>
-      <span class="sr-only">Reports</span>
-    </template>
-    <template v-slot:item.VIEW_REPORT="{ item }">
+  <div class="align-end d-flex mb-5 mx-5">
+    <v-progress-linear
+      v-if="loading"
+      indeterminate />
+    <template v-else>
+      <div class="flex-grow-1 flex-shrink-1">
+        <div class="font-weight-regular title">
+          Amount
+        </div>
+        <div class="display-2 mt-2">
+          {{collisionSummary.amount}}
+        </div>
+      </div>
+      <div class="flex-grow-1 flex-shrink-1">
+        <div class="font-weight-regular title">
+          KSI
+        </div>
+        <div class="display-2 mt-2">
+          {{collisionSummary.ksi}}
+        </div>
+      </div>
+      <div class="flex-grow-0 flex-shrink-0 mr-12 pr-2">
+        <div class="font-weight-regular title">
+          Validated
+        </div>
+        <div class="display-2 mt-2">
+          {{collisionSummary.validated}}
+        </div>
+      </div>
       <FcButton
+        class="flex-grow-0 flex-shrink-0"
         type="tertiary"
-        :disabled="item.amount === 0"
+        :disabled="collisionSummary.amount === 0"
         @click="$emit('show-reports', item)">
         <span>View Reports</span>
       </FcButton>
     </template>
-  </FcDataTable>
+  </div>
 </template>
 
 <script>
-import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDataTableCollisions',
   components: {
     FcButton,
-    FcDataTable,
+    // FcDataTable,
   },
   props: {
     collisionSummary: Object,
