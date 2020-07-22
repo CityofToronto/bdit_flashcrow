@@ -231,9 +231,30 @@ export default {
       },
     },
     locationsGeoJson() {
-      const features = this.locationsForMode.map(
-        ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locationsForMode,
+        this.locationsSelectionForMode.locations,
       );
+
+      const features = this.locationsForMode.map((location, i) => {
+        const { geom: geometry, ...propertiesRest } = location;
+
+        const waypointIndices = locationsWaypointIndices[i];
+        let selected = false;
+
+        if (this.locationMode === LocationMode.MULTI_EDIT
+          && waypointIndices.includes(this.locationsEditIndex)) {
+          selected = true;
+        } else if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
+          selected = true;
+        }
+
+        const properties = {
+          selected,
+          ...propertiesRest,
+        };
+        return { type: 'Feature', geometry, properties };
+      });
       return {
         type: 'FeatureCollection',
         features,
@@ -272,7 +293,8 @@ export default {
             // We only show corridor markers at intersections.
             return;
           }
-        } else if (waypointIndices.includes(this.locationsEditIndex)) {
+        } else if (this.locationMode === LocationMode.MULTI_EDIT
+          && waypointIndices.includes(this.locationsEditIndex)) {
           /*
            * In this case, we might have several consecutive waypoints at the same location,
            * which might cause the currently selected waypoint to be hidden - so we prioritize
@@ -285,6 +307,10 @@ export default {
            * Here there is no selected waypoint, so we just show the last matching waypoint.
            */
           locationIndex = waypointIndices[k - 1];
+        }
+
+        if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
+          selected = true;
         }
 
         const { multi } = this.locationMode;
@@ -343,6 +369,7 @@ export default {
       'drawerOpen',
       'legendOptions',
       'locationsEditIndex',
+      'locationsIndex',
       'locationMode',
     ]),
     ...mapGetters([

@@ -1,6 +1,6 @@
 <template>
   <FcDataTable
-    class="fc-data-table-studies"
+    class="fc-data-table-studies mx-1"
     :columns="columns"
     disable-sort
     :loading="loading"
