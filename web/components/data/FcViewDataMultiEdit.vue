@@ -1,12 +1,12 @@
 <template>
-  <div class="fc-view-data-aggregate">
-    <h1 class="display-4 pa-5">TODO: implement aggregate view</h1>
+  <div class="fc-view-data-multi-edit">
+    <h1 class="display-4 pa-5">TODO: implement multi-edit view</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'FcViewDataAggregate',
+  name: 'FcViewDataMultiEdit',
   props: {
     locations: Array,
   },

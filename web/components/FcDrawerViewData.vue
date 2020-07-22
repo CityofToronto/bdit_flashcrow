@@ -1,11 +1,13 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
     <header class="flex-grow-0 flex-shrink-0 shading">
-      <FcSelectorMultiLocation v-if="locationMode.multi">
+      <FcSelectorMultiLocation
+        v-if="locationMode.multi"
+        :detail-view="detailView">
         <template v-slot:action>
           <FcButton
             type="secondary"
-            @click="detailView = !detailView">
+            @click="actionToggleDetailView">
             <span v-if="detailView">Aggregate View</span>
             <span v-else>Detail View</span>
           </FcButton>
@@ -13,36 +15,11 @@
       </FcSelectorMultiLocation>
       <div v-else class="pa-5">
         <FcSelectorSingleLocation />
-        <h1
-          class="display-3 mt-6 text-truncate"
-          :title="locationsDescription">
-          {{locationsDescription}}
-        </h1>
-        <div class="label mt-5">
-          <span v-if="locationFeatureType !== null">
-            {{locationFeatureType.description}}
-          </span>
-          <v-progress-circular
-            v-if="loading"
-            color="primary"
-            indeterminate
-            :size="20"
-            :width="2" />
-          <span v-else>
-            &#x2022; {{studySummaryHeaderText}}
-          </span>
-        </div>
+        <FcHeaderSingleLocation
+          class="mt-6"
+          :location="location" />
         <div class="d-flex mt-4">
-          <v-progress-circular
-            v-if="loading"
-            class="ma-3"
-            color="primary"
-            indeterminate
-            :size="20"
-            :width="2" />
-          <FcSummaryPoi
-            v-else
-            :location="location" />
+          <FcSummaryPoi :location="location" />
           <v-spacer></v-spacer>
           <FcButton
             type="secondary"
@@ -59,9 +36,15 @@
         v-if="loading"
         indeterminate />
       <template v-else>
+        <FcViewDataMultiEdit
+          v-if="locationMode === LocationMode.MULTI_EDIT"
+          :locations="locations" />
         <FcViewDataDetail
-          v-if="detailView"
+          v-else-if="locationMode === LocationMode.SINGLE"
           :location="location" />
+        <FcViewDataDetail
+          v-else-if="detailView"
+          :location="locationActive" />
         <FcViewDataAggregate
           v-else
           :locations="locations" />
@@ -82,15 +65,14 @@ import {
   LocationMode,
   LocationSelectionType,
 } from '@/lib/Constants';
-import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
-import DateTime from '@/lib/time/DateTime';
-import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
 import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
+import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
+import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
 import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -101,47 +83,33 @@ export default {
   ],
   components: {
     FcButton,
+    FcHeaderSingleLocation,
     FcSelectorMultiLocation,
     FcSelectorSingleLocation,
     FcSummaryPoi,
     FcViewDataAggregate,
     FcViewDataDetail,
+    FcViewDataMultiEdit,
   },
   data() {
     return {
       detailView: false,
-      studySummary: [],
+      LocationMode,
     };
   },
   computed: {
-    location() {
-      if (this.locations.length === 0) {
-        return null;
-      }
-      return this.locations[0];
-    },
-    studySummaryHeaderText() {
-      const n = this.studySummary.length;
-      if (n === 0) {
-        return 'No Studies';
-      }
-      const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
-      const mostRecentDate = DateTime.max(
-        ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
-      );
-      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
-      return `${nStr} (${mostRecentDateStr})`;
-    },
     ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
     ...mapState([
       'auth',
       'legendOptions',
       'locationMode',
       'locations',
+      'locationsIndex',
       'locationsSelection',
     ]),
     ...mapGetters([
-      'locationFeatureType',
+      'location',
+      'locationActive',
       'locationsDescription',
       'locationsEmpty',
       'locationsRouteParams',
@@ -190,21 +158,24 @@ export default {
     actionAddLocation() {
       this.setLocationMode(LocationMode.MULTI_EDIT);
     },
+    actionToggleDetailView() {
+      if (this.detailView) {
+        this.setLocationsIndex(-1);
+        this.detailView = false;
+      } else {
+        this.setLocationsIndex(0);
+        this.detailView = true;
+      }
+    },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
       const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
-
-      const studySummary = await getStudiesByCentrelineSummary(this.locations, {});
-      this.studySummary = studySummary;
     },
-    ...mapMutations(['setLocationMode']),
-    ...mapMutations('viewData', [
-      'removeFilterCollision',
-      'removeFilterStudy',
-      'setFiltersCollision',
-      'setFiltersStudy',
+    ...mapMutations([
+      'setLocationMode',
+      'setLocationsIndex',
     ]),
     ...mapActions(['initLocations']),
   },

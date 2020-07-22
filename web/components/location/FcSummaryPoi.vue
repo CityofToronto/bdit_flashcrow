@@ -1,47 +1,37 @@
 <template>
   <div class="fc-summary-poi">
-    <v-tooltip
-      v-if="poiSummary.hospital !== null"
-      bottom>
-      <template v-slot:activator="{ on }">
-        <v-chip
-          v-on="on"
-          class="mr-2"
-          color="pink lighten-4"
-          text-color="pink darken-4">
-          <v-avatar left>
-            <v-icon>mdi-hospital-box</v-icon>
-          </v-avatar>
-          Hospital Zone
-        </v-chip>
-      </template>
-      <span>{{Math.round(poiSummary.hospital.geom_dist)}} m</span>
-    </v-tooltip>
-    <v-tooltip
-      v-if="poiSummary.school !== null"
-      bottom>
-      <template v-slot:activator="{ on }">
-        <v-chip
-          v-on="on"
-          class="mr-2"
-          color="teal lighten-4"
-          text-color="teal darken-4">
-          <v-avatar left>
-            <v-icon>mdi-school</v-icon>
-          </v-avatar>
-          School Zone
-        </v-chip>
-      </template>
-      <span>{{Math.round(poiSummary.school.geom_dist)}} m</span>
-    </v-tooltip>
+    <v-progress-circular
+      v-if="loading || location === null"
+      color="primary"
+      indeterminate
+      :size="20"
+      :width="2" />
+    <template v-else>
+      <FcSummaryPoiChip
+        v-if="poiSummary.hospital !== null"
+        color="pink"
+        icon="mdi-hospital-box"
+        :poi="poiSummary.hospital"
+        text="Hospital" />
+      <FcSummaryPoiChip
+        v-if="poiSummary.school !== null"
+        color="teal"
+        icon="mdi-school"
+        :poi="poiSummary.school"
+        text="School Zone" />
+    </template>
   </div>
 </template>
 
 <script>
 import { getPoiByCentrelineSummary } from '@/lib/api/WebApi';
+import FcSummaryPoiChip from '@/web/components/location/FcSummaryPoiChip.vue';
 
 export default {
   name: 'FcSummaryPoi',
+  components: {
+    FcSummaryPoiChip,
+  },
   props: {
     location: Object,
   },
@@ -56,14 +46,19 @@ export default {
   },
   watch: {
     location() {
-
+      this.syncLocation();
     },
   },
-  async created() {
-    this.loading = true;
-    const poiSummary = await getPoiByCentrelineSummary(this.location);
-    this.poiSummary = poiSummary;
-    this.loading = false;
+  created() {
+    this.syncLocation();
+  },
+  methods: {
+    async syncLocation() {
+      this.loading = true;
+      const poiSummary = await getPoiByCentrelineSummary(this.location);
+      this.poiSummary = poiSummary;
+      this.loading = false;
+    },
   },
 };
 </script>
