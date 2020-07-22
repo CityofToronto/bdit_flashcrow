@@ -38,7 +38,8 @@
       <template v-else>
         <FcViewDataMultiEdit
           v-if="locationMode === LocationMode.MULTI_EDIT"
-          :locations="locations" />
+          :locations="locationsEdit"
+          :locations-selection="locationsEditSelection" />
         <FcViewDataDetail
           v-else-if="locationMode === LocationMode.SINGLE"
           :location="location" />
@@ -98,19 +99,16 @@ export default {
     };
   },
   computed: {
-    ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
     ...mapState([
-      'auth',
-      'legendOptions',
       'locationMode',
       'locations',
-      'locationsIndex',
+      'locationsEdit',
+      'locationsEditSelection',
       'locationsSelection',
     ]),
     ...mapGetters([
       'location',
       'locationActive',
-      'locationsDescription',
       'locationsEmpty',
       'locationsRouteParams',
     ]),
