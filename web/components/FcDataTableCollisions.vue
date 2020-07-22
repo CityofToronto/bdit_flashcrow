@@ -46,7 +46,6 @@ export default {
   name: 'FcDataTableCollisions',
   components: {
     FcButton,
-    // FcDataTable,
   },
   props: {
     collisionSummary: Object,
