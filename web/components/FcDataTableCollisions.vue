@@ -1,5 +1,5 @@
 <template>
-  <div class="align-end d-flex mb-5 mx-5">
+  <div class="fc-data-table-collisions align-end d-flex mb-5 mx-5">
     <v-progress-linear
       v-if="loading"
       indeterminate />
@@ -30,7 +30,7 @@
           </span>
         </div>
       </div>
-      <div class="flex-grow-0 flex-shrink-0 mr-12 pr-2">
+      <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
         <div class="font-weight-regular title">
           Validated
         </div>
@@ -77,3 +77,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-data-table-collisions {
+  .fc-collisions-validated {
+    width: 120px;
+  }
+}
+</style>

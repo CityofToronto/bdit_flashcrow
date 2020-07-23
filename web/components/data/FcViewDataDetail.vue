@@ -19,43 +19,15 @@
       <section>
         <FcHeaderStudies :study-total="studyTotal" />
 
-        <div
-          v-if="studyTotal === 0"
-          class="my-8 py-12 secondary--text text-center">
-          There are no studies for this location,<br>
-          please request a study if necessary
-        </div>
-        <div
-          v-else-if="studySummary.length === 0"
-          class="my-8 py-12 secondary--text text-center">
-          No studies match the active filters,<br>
-          clear one or more filters to see studies
-        </div>
         <FcDataTableStudies
-          v-else
           :loading="loadingStudies"
           :study-summary="studySummary"
+          :study-summary-unfiltered="studySummaryUnfiltered"
           @show-reports="actionShowReportsStudy" />
-
-        <div class="pa-5">
-          <div
-            v-for="studyRequest in studyRequestsPending"
-            :key="studyRequest.id"
-            class="align-center d-flex">
-            <v-icon
-              color="warning"
-              left>mdi-information</v-icon>
-            <div>
-              {{studyRequest.studyType.label}}
-              has been requested on {{studyRequest.createdAt | date}}.
-              <router-link :to="{
-                name: 'requestStudyView',
-                params: { id: studyRequest.id },
-              }">View details.</router-link>
-            </div>
-          </div>
-        </div>
       </section>
+
+      <FcSectionStudyRequestsPending
+        :study-requests-pending="studyRequestsPending" />
     </template>
   </div>
 </template>
@@ -75,6 +47,8 @@ import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
 import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
+import FcSectionStudyRequestsPending
+  from '@/web/components/data/FcSectionStudyRequestsPending.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
@@ -87,6 +61,7 @@ export default {
     FcDataTableStudies,
     FcHeaderCollisions,
     FcHeaderStudies,
+    FcSectionStudyRequestsPending,
   },
   props: {
     location: Object,
