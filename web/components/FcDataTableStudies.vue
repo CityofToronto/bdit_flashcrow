@@ -76,50 +76,6 @@ import { mapGetters } from 'vuex';
 
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
-/*
-<FcDataTable
-    class="fc-data-table-studies mx-1"
-    :columns="columns"
-    disable-sort
-    :loading="loading"
-    :items="studySummary">
-    <template v-slot:item.STUDY_REPORTS="{ item }">
-      <span v-if="item.category.studyType === null">
-        Unknown
-      </span>
-      <span v-else>
-        {{item.category.studyType.label}}
-      </span>
-      <span
-        v-if="item.n > 1"
-        class="secondary--text">
-        &#x2022; {{item.n}}
-      </span>
-    </template>
-    <template v-slot:item.DATE="{ item }">
-      <span>
-        {{item.mostRecent.startDate | date}} ({{item.mostRecent.startDate | dayOfWeek}})
-      </span>
-    </template>
-    <template v-slot:item.HOURS="{ item }">
-      <span v-if="item.mostRecent.duration !== null">
-        {{item.mostRecent.duration | durationHuman}} ({{item.mostRecent.duration}} hrs)
-      </span>
-      <span
-        v-else-if="item.mostRecent.hours !== null"
-        :title="item.mostRecent.hours.hint">
-        {{item.mostRecent.hours.description}}
-      </span>
-    </template>
-    <template v-slot:header.VIEW_REPORT>
-      <span class="sr-only">Reports</span>
-    </template>
-    <template v-slot:item.VIEW_REPORT="{ item }">
-
-    </template>
-  </FcDataTable>
-  */
-
 export default {
   name: 'FcDataTableStudies',
   components: {
