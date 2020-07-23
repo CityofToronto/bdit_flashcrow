@@ -9,6 +9,7 @@
 
         <FcDataTableCollisions
           :collision-summary="collisionSummary"
+          :collision-summary-unfiltered="collisionSummaryUnfiltered"
           :loading="loadingCollisions"
           @show-reports="actionShowReportsCollision" />
       </section>
@@ -97,6 +98,11 @@ export default {
         ksi: 0,
         validated: 0,
       },
+      collisionSummaryUnfiltered: {
+        amount: 0,
+        ksi: 0,
+        validated: 0,
+      },
       collisionTotal: 0,
       loading: false,
       loadingCollisions: false,
@@ -104,6 +110,7 @@ export default {
       showFiltersStudy: false,
       studyRequestsPending: [],
       studySummary: [],
+      studySummaryUnfiltered: [],
       studyTotal: 0,
     };
   },
@@ -175,8 +182,10 @@ export default {
       this.loading = true;
       const locations = [this.location];
       const tasks = [
+        getCollisionsByCentrelineSummary(locations, {}),
         getCollisionsByCentrelineSummary(locations, this.filterParamsCollision),
         getCollisionsByCentrelineTotal(locations),
+        getStudiesByCentrelineSummary(locations, {}),
         getStudiesByCentrelineSummary(locations, this.filterParamsStudy),
         getStudiesByCentrelineTotal(locations),
       ];
@@ -184,15 +193,19 @@ export default {
         tasks.push(getStudyRequestsByCentrelinePending(locations));
       }
       const [
+        collisionSummaryUnfiltered,
         collisionSummary,
         collisionTotal,
+        studySummaryUnfiltered,
         studySummary,
         studyTotal,
         studyRequestsPending = [],
       ] = await Promise.all(tasks);
+      this.collisionSummaryUnfiltered = collisionSummaryUnfiltered;
       this.collisionSummary = collisionSummary;
       this.collisionTotal = collisionTotal;
       this.studyRequestsPending = studyRequestsPending;
+      this.studySummaryUnfiltered = studySummaryUnfiltered;
       this.studySummary = studySummary;
       this.studyTotal = studyTotal;
       this.loading = false;

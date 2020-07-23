@@ -144,6 +144,12 @@ export default {
       }
       return params;
     },
+    hasFiltersCollision(state, getters) {
+      return getters.filterChipsCollision.length > 0;
+    },
+    hasFiltersStudy(state, getters) {
+      return getters.filterChipsStudy.length > 0;
+    },
   },
   mutations: {
     removeFilterCollision(state, { filter, value }) {

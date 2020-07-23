@@ -10,6 +10,11 @@
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.amount}}
+          <span
+            v-if="hasFiltersCollision"
+            class="font-weight-regular title">
+            / {{collisionSummaryUnfiltered.amount}}
+          </span>
         </div>
       </div>
       <div class="flex-grow-1 flex-shrink-1">
@@ -18,6 +23,11 @@
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.ksi}}
+          <span
+            v-if="hasFiltersCollision"
+            class="font-weight-regular title">
+            / {{collisionSummaryUnfiltered.ksi}}
+          </span>
         </div>
       </div>
       <div class="flex-grow-0 flex-shrink-0 mr-12 pr-2">
@@ -26,6 +36,11 @@
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.validated}}
+          <span
+            v-if="hasFiltersCollision"
+            class="font-weight-regular title">
+            / {{collisionSummaryUnfiltered.validated}}
+          </span>
         </div>
       </div>
       <FcButton
@@ -40,6 +55,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -49,42 +66,14 @@ export default {
   },
   props: {
     collisionSummary: Object,
+    collisionSummaryUnfiltered: Object,
     loading: {
       type: Boolean,
       default: false,
     },
   },
-  data() {
-    const columns = [{
-      value: 'AMOUNT',
-      text: 'Amount',
-    }, {
-      value: 'KSI',
-      text: 'KSI',
-    }, {
-      value: 'VALIDATED',
-      text: 'Validated',
-    }, {
-      align: 'end',
-      value: 'VIEW_REPORT',
-      text: ' ',
-    }];
-    return {
-      columns,
-    };
+  computed: {
+    ...mapGetters('viewData', ['hasFiltersCollision']),
   },
 };
 </script>
-
-<style lang="scss">
-.fc-data-table-collisions {
-  & th:first-child,
-  & td:first-child {
-    padding-left: 20px;
-  }
-  & th:last-child,
-  & td:last-child {
-    padding-right: 20px;
-  }
-}
-</style>
