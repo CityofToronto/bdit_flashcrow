@@ -9,16 +9,19 @@
         accordion
         flat
         focusable>
-        <v-expansion-panel class="fc-collisions-summary-per-location">
+        <v-expansion-panel
+          v-for="field in fields"
+          :key="field.name"
+          class="fc-collisions-summary-per-location">
           <v-expansion-panel-header class="pr-8">
-            <span class="body-1">Amount</span>
+            <span class="body-1">{{field.description}}</span>
             <v-spacer></v-spacer>
             <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-              {{collisionSummary.amount}}
+              {{collisionSummary[field.name]}}
               <span
                 v-if="hasFiltersCollision"
-                class="font-weight-regular title">
-                / {{collisionSummaryUnfiltered.amount}}
+                class="body-1">
+                / {{collisionSummaryUnfiltered[field.name]}}
               </span>
             </div>
           </v-expansion-panel-header>
@@ -39,91 +42,11 @@
               </span>
               <v-spacer></v-spacer>
               <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                {{collisionSummaryPerLocation[i].amount}}
+                {{collisionSummaryPerLocation[i][field.name]}}
                 <span
                   v-if="hasFiltersCollision"
-                  class="font-weight-regular title">
-                  / {{collisionSummaryPerLocationUnfiltered[i].amount}}
-                </span>
-              </div>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel class="fc-collisions-summary-per-location">
-          <v-expansion-panel-header class="pr-8">
-            <span class="body-1">KSI</span>
-            <v-spacer></v-spacer>
-            <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-              {{collisionSummary.ksi}}
-              <span
-                v-if="hasFiltersCollision"
-                class="font-weight-regular title">
-                / {{collisionSummaryUnfiltered.ksi}}
-              </span>
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1">
-            <div
-              v-for="(location, i) in locations"
-              :key="i"
-              class="d-flex pa-3 pr-8">
-              <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-              <span
-                class="title"
-                :class="{
-                  'pl-4': locationsIconProps[i].midblock,
-                  'pl-5': !locationsIconProps[i].midblock,
-                  'font-weight-regular': locationsIconProps[i].locationIndex === -1,
-                }">
-                {{location.description}}
-              </span>
-              <v-spacer></v-spacer>
-              <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                {{collisionSummaryPerLocation[i].ksi}}
-                <span
-                  v-if="hasFiltersCollision"
-                  class="font-weight-regular title">
-                  / {{collisionSummaryPerLocationUnfiltered[i].ksi}}
-                </span>
-              </div>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel class="fc-collisions-summary-per-location">
-          <v-expansion-panel-header class="pr-8">
-            <span class="body-1">Validated</span>
-            <v-spacer></v-spacer>
-            <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-              {{collisionSummary.validated}}
-              <span
-                v-if="hasFiltersCollision"
-                class="font-weight-regular title">
-                / {{collisionSummaryUnfiltered.validated}}
-              </span>
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1">
-            <div
-              v-for="(location, i) in locations"
-              :key="i"
-              class="d-flex pa-3 pr-8">
-              <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-              <span
-                class="title"
-                :class="{
-                  'pl-4': locationsIconProps[i].midblock,
-                  'pl-5': !locationsIconProps[i].midblock,
-                  'font-weight-regular': locationsIconProps[i].locationIndex === -1,
-                }">
-                {{location.description}}
-              </span>
-              <v-spacer></v-spacer>
-              <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                {{collisionSummaryPerLocation[i].validated}}
-                <span
-                  v-if="hasFiltersCollision"
-                  class="font-weight-regular title">
-                  / {{collisionSummaryPerLocationUnfiltered[i].validated}}
+                  class="body-1">
+                  / {{collisionSummaryPerLocationUnfiltered[i][field.name]}}
                 </span>
               </div>
             </div>
@@ -147,8 +70,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import { CentrelineType } from '@/lib/Constants';
-import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
+import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
@@ -168,26 +90,20 @@ export default {
     locationsSelection: Object,
   },
   data() {
+    const fields = [
+      { description: 'Amount', name: 'amount' },
+      { description: 'KSI', name: 'ksi' },
+      { description: 'Validated', name: 'validated' },
+    ];
+
     return {
+      fields,
       indexOpen: null,
     };
   },
   computed: {
     locationsIconProps() {
-      const locationsWaypointIndices = getLocationsWaypointIndices(
-        this.locations,
-        this.locationsSelection.locations,
-      );
-      return this.locations.map(({ centrelineType }, i) => {
-        const midblock = centrelineType === CentrelineType.SEGMENT;
-        const waypointIndices = locationsWaypointIndices[i];
-        const n = waypointIndices.length;
-        if (n === 0) {
-          return { locationIndex: -1, midblock };
-        }
-        const locationIndex = waypointIndices[n - 1];
-        return { locationIndex, midblock };
-      });
+      return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
     ...mapGetters('viewData', ['hasFiltersCollision']),
   },

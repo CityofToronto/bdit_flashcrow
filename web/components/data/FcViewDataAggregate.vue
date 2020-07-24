@@ -29,6 +29,8 @@
           :study-summary-per-location="studySummaryPerLocation"
           :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
           :loading="loadingStudies"
+          :locations="locations"
+          :locations-selection="locationsSelection"
           @show-reports="actionShowReportsStudy" />
       </section>
     </template>
@@ -130,10 +132,15 @@ export default {
       }
 
       this.loadingStudies = true;
-      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
-        this.locations,
-        this.filterParamsStudy,
-      );
+      const tasks = [
+        getStudiesByCentrelineSummary(this.locations, this.filterParamsStudy),
+        getStudiesByCentrelineSummaryPerLocation(this.locations, this.filterParamsStudy),
+      ];
+      const [
+        studySummary,
+        studySummaryPerLocation,
+      ] = await Promise.all(tasks);
+      this.studySummary = studySummary;
       this.studySummaryPerLocation = studySummaryPerLocation;
       this.loadingStudies = false;
     },

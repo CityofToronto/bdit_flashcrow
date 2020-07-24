@@ -5,40 +5,40 @@
       indeterminate />
     <template v-else>
       <div class="flex-grow-1 flex-shrink-1">
-        <div class="font-weight-regular title">
+        <div class="body-1">
           Amount
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.amount}}
           <span
             v-if="hasFiltersCollision"
-            class="font-weight-regular title">
+            class="body-1">
             / {{collisionSummaryUnfiltered.amount}}
           </span>
         </div>
       </div>
       <div class="flex-grow-1 flex-shrink-1">
-        <div class="font-weight-regular title">
+        <div class="body-1">
           KSI
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.ksi}}
           <span
             v-if="hasFiltersCollision"
-            class="font-weight-regular title">
+            class="body-1">
             / {{collisionSummaryUnfiltered.ksi}}
           </span>
         </div>
       </div>
       <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
-        <div class="font-weight-regular title">
+        <div class="body-1">
           Validated
         </div>
         <div class="display-2 mt-2">
           {{collisionSummary.validated}}
           <span
             v-if="hasFiltersCollision"
-            class="font-weight-regular title">
+            class="body-1">
             / {{collisionSummaryUnfiltered.validated}}
           </span>
         </div>

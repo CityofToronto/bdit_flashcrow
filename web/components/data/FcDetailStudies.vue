@@ -21,7 +21,7 @@
         :key="item.category.id"
         class="ml-5">
         <div class="align-center d-flex mb-4 pr-5">
-          <div class="flex-grow-1 flex-shrink-1 font-weight-regular title">
+          <div class="body-1 flex-grow-1 flex-shrink-1">
             <div v-if="item.category.studyType === null">
               Unknown
             </div>
@@ -52,7 +52,7 @@
               {{item.n}}
               <span
                 v-if="hasFiltersStudy"
-                class="font-weight-regular title">
+                class="body-1">
                 / {{item.nUnfiltered}}
               </span>
             </div>

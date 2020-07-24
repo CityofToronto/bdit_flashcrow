@@ -9,7 +9,7 @@
           class="my-6"
           no-gutters>
           <v-col cols="4">
-            <div class="font-weight-regular title">
+            <div class="body-1">
               Total Collisions
             </div>
             <div class="display-2 mt-2">
@@ -17,7 +17,7 @@
             </div>
           </v-col>
           <v-col cols="4">
-            <div class="font-weight-regular title">
+            <div class="body-1">
               Total Studies
             </div>
             <div class="display-2 mt-2">
@@ -55,13 +55,12 @@
 </template>
 
 <script>
-import { CentrelineType } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineTotal,
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineTotal,
 } from '@/lib/api/WebApi';
-import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
+import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
@@ -85,20 +84,7 @@ export default {
   },
   computed: {
     locationsIconProps() {
-      const locationsWaypointIndices = getLocationsWaypointIndices(
-        this.locations,
-        this.locationsSelection.locations,
-      );
-      return this.locations.map(({ centrelineType }, i) => {
-        const midblock = centrelineType === CentrelineType.SEGMENT;
-        const waypointIndices = locationsWaypointIndices[i];
-        const n = waypointIndices.length;
-        if (n === 0) {
-          return { locationIndex: -1, midblock };
-        }
-        const locationIndex = waypointIndices[n - 1];
-        return { locationIndex, midblock };
-      });
+      return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
     textMostRecentStudy() {
       const n = this.studySummary.length;
