@@ -7,7 +7,7 @@
       <section>
         <FcHeaderCollisions :collision-total="collisionTotal" />
 
-        <FcDataTableCollisions
+        <FcDetailCollisions
           :collision-summary="collisionSummary"
           :collision-summary-unfiltered="collisionSummaryUnfiltered"
           :loading="loadingCollisions"
@@ -19,7 +19,7 @@
       <section>
         <FcHeaderStudies :study-total="studyTotal" />
 
-        <FcDataTableStudies
+        <FcDetailStudies
           :loading="loadingStudies"
           :study-summary="studySummary"
           :study-summary-unfiltered="studySummaryUnfiltered"
@@ -43,8 +43,8 @@ import {
   getStudiesByCentrelineTotal,
   getStudyRequestsByCentrelinePending,
 } from '@/lib/api/WebApi';
-import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
-import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
+import FcDetailCollisions from '@/web/components/data/FcDetailCollisions.vue';
+import FcDetailStudies from '@/web/components/data/FcDetailStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcSectionStudyRequestsPending
@@ -57,8 +57,8 @@ export default {
     FcMixinAuthScope,
   ],
   components: {
-    FcDataTableCollisions,
-    FcDataTableStudies,
+    FcDetailCollisions,
+    FcDetailStudies,
     FcHeaderCollisions,
     FcHeaderStudies,
     FcSectionStudyRequestsPending,

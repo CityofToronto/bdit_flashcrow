@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-data-table-studies">
+  <div class="fc-detail-studies">
     <v-progress-linear
       v-if="loading"
       indeterminate />
@@ -77,7 +77,7 @@ import { mapGetters } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
-  name: 'FcDataTableStudies',
+  name: 'FcDetailStudies',
   components: {
     FcButton,
   },
@@ -110,7 +110,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-data-table-studies {
+.fc-detail-studies {
   .fc-studies-n {
     width: 120px;
   }

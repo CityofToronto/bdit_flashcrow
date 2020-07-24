@@ -6,12 +6,24 @@
     <template v-else>
       <section>
         <FcHeaderCollisions :collision-total="collisionTotal" />
-        <div><h3>TODO: collision data</h3></div>
+
+        <FcAggregateCollisions
+          :collision-summary-per-location="collisionSummaryPerLocation"
+          :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
+          :loading="loadingCollisions"
+          @show-reports="actionShowReportsCollision" />
       </section>
+
+      <v-divider></v-divider>
 
       <section>
         <FcHeaderStudies :study-total="studyTotal" />
-        <div><h3>TODO: study data</h3></div>
+
+        <FcAggregateStudies
+          :collision-summary-per-location="collisionSummaryPerLocation"
+          :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
+          :loading="loadingCollisions"
+          @show-reports="actionShowReportsCollision" />
       </section>
     </template>
   </div>
@@ -26,12 +38,16 @@ import {
   getStudiesByCentrelineSummaryPerLocation,
   getStudiesByCentrelineTotal,
 } from '@/lib/api/WebApi';
+import FcAggregateCollisions from '@/web/components/data/FcAggregateCollisions.vue';
+import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 
 export default {
   name: 'FcViewDataAggregate',
   components: {
+    FcAggregateCollisions,
+    FcAggregateStudies,
     FcHeaderCollisions,
     FcHeaderStudies,
   },
@@ -63,8 +79,6 @@ export default {
   },
   computed: {
     ...mapGetters('viewData', [
-      'filterChipsCollision',
-      'filterChipsStudy',
       'filterParamsCollision',
       'filterParamsStudy',
     ]),

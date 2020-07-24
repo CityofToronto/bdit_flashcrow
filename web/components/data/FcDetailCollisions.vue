@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-data-table-collisions align-end d-flex mb-5 mx-5">
+  <div class="fc-detail-collisions align-end d-flex mb-5 mx-5">
     <v-progress-linear
       v-if="loading"
       indeterminate />
@@ -60,17 +60,14 @@ import { mapGetters } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
-  name: 'FcDataTableCollisions',
+  name: 'FcDetailCollisions',
   components: {
     FcButton,
   },
   props: {
     collisionSummary: Object,
     collisionSummaryUnfiltered: Object,
-    loading: {
-      type: Boolean,
-      default: false,
-    },
+    loading: Boolean,
   },
   computed: {
     ...mapGetters('viewData', ['hasFiltersCollision']),
@@ -79,7 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-data-table-collisions {
+.fc-detail-collisions {
   .fc-collisions-validated {
     width: 120px;
   }
