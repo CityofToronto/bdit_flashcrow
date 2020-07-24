@@ -9,12 +9,6 @@
       There are no studies for this location,<br>
       please request a study if necessary
     </div>
-    <div
-      v-else-if="studySummary.length === 0"
-      class="my-8 py-12 secondary--text text-center">
-      No studies match the active filters,<br>
-      clear one or more filters to see studies
-    </div>
     <template v-else>
       <div
         v-for="item in items"
@@ -29,10 +23,7 @@
               {{item.category.studyType.label}}
             </div>
             <div class="mt-2 secondary--text">
-              <span v-if="item.mostRecent === null">
-                No studies
-              </span>
-              <span v-else>
+              <span v-if="item.mostRecent !== null">
                 Most Recent
                 {{item.mostRecent.startDate | date}} ({{item.mostRecent.startDate | dayOfWeek}})
                 &#x2022;
@@ -59,7 +50,7 @@
           </div>
           <FcButton
             class="flex-grow-0 flex-shrink-0"
-            v-if="item.category.studyType !== null"
+            :disabled="item.category.studyType === null || item.n === 0"
             type="tertiary"
             @click="$emit('show-reports', item)">
             <span>View Reports</span>
@@ -111,7 +102,7 @@ export default {
 
 <style lang="scss">
 .fc-detail-studies {
-  .fc-studies-n {
+  & .fc-studies-n {
     width: 120px;
   }
 }

@@ -24,7 +24,8 @@
         <v-expansion-panel
           v-for="(item, i) in items"
           :key="i"
-          class="fc-studies-summary-per-location">
+          class="fc-studies-summary-per-location"
+          :disabled="item.n === 0">
           <v-expansion-panel-header class="pr-8">
             <div class="body-1">
               <div v-if="item.category.studyType === null">
@@ -48,7 +49,10 @@
             <div
               v-for="(location, j) in locations"
               :key="i + '_' + j"
-              class="d-flex pa-3 pr-8">
+              class="d-flex pa-3 pr-8"
+              :class="{
+                'data-empty': itemsPerLocation[i][j].mostRecent === null,
+              }">
               <FcIconLocationMulti v-bind="locationsIconProps[j]" />
               <div
                 class="body-1 flex-grow-1 flex-shrink-1"
@@ -63,11 +67,10 @@
                   }">
                   {{location.description}}
                 </div>
-                <div class="mt-2 secondary--text">
-                  <span v-if="itemsPerLocation[i][j].mostRecent === null">
-                    No studies
-                  </span>
-                  <span v-else>
+                <div
+                  v-if="itemsPerLocation[i][j].mostRecent !== null"
+                  class="mt-2 secondary--text">
+                  <span>
                     Most Recent
                     {{itemsPerLocation[i][j].mostRecent.startDate | date}}
                     ({{itemsPerLocation[i][j].mostRecent.startDate | dayOfWeek}})
@@ -86,12 +89,22 @@
               </div>
               <v-spacer></v-spacer>
               <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                {{itemsPerLocation[i][j].n}}
-                <span
-                  v-if="hasFiltersStudy"
-                  class="body-1">
-                  / {{itemsPerLocation[i][j].nUnfiltered}}
-                </span>
+                <div class="text-right">
+                  {{itemsPerLocation[i][j].n}}
+                  <span
+                    v-if="hasFiltersStudy"
+                    class="body-1">
+                    / {{itemsPerLocation[i][j].nUnfiltered}}
+                  </span>
+                </div>
+                <div v-if="itemsPerLocation[i][j].nUnfiltered > 0">
+                  <FcButton
+                    class="mr-n4 mt-2"
+                    type="tertiary"
+                    @click="$emit('show-reports', j)">
+                    <span>View Reports</span>
+                  </FcButton>
+                </div>
               </div>
             </div>
           </v-expansion-panel-content>
@@ -105,11 +118,13 @@
 import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
 export default {
   name: 'FcAggregateStudies',
   components: {
+    FcButton,
     FcIconLocationMulti,
   },
   props: {
@@ -146,12 +161,12 @@ export default {
         const itemPerLocation = this.studySummaryPerLocation.find(
           itemPerLocationFiltered => itemPerLocationFiltered.category.id === category.id,
         );
-        return perLocation.map(({ n }, i) => {
+        return perLocation.map(({ n }, j) => {
           if (itemPerLocation === undefined) {
             return { mostRecent: null, n: 0, nUnfiltered: n };
           }
           return {
-            ...itemPerLocation.perLocation[i],
+            ...itemPerLocation.perLocation[j],
             nUnfiltered: n,
           };
         });
@@ -167,8 +182,11 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-studies {
-  .fc-studies-summary-per-location:not(:last-child) {
+  & .fc-studies-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
+  }
+  & .data-empty {
+    opacity: 0.37;
   }
 }
 </style>

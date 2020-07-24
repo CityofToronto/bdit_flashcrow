@@ -12,7 +12,8 @@
         <v-expansion-panel
           v-for="field in fields"
           :key="field.name"
-          class="fc-collisions-summary-per-location">
+          class="fc-collisions-summary-per-location"
+          :disabled="collisionSummary[field.name] === 0">
           <v-expansion-panel-header class="pr-8">
             <span class="body-1">{{field.description}}</span>
             <v-spacer></v-spacer>
@@ -29,7 +30,10 @@
             <div
               v-for="(location, i) in locations"
               :key="i"
-              class="d-flex pa-3 pr-8">
+              class="d-flex pa-3 pr-8"
+              :class="{
+                'data-empty': collisionSummaryPerLocation[i][field.name] === 0,
+              }">
               <FcIconLocationMulti v-bind="locationsIconProps[i]" />
               <span
                 class="title"
@@ -57,8 +61,8 @@
         <v-spacer></v-spacer>
         <FcButton
           class="flex-grow-0 flex-shrink-0"
-          type="tertiary"
           :disabled="collisionSummary.amount === 0"
+          type="tertiary"
           @click="$emit('show-reports')">
           <span>View Total Reports</span>
         </FcButton>
@@ -112,8 +116,11 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-collisions {
-  .fc-collisions-summary-per-location:not(:last-child) {
+  & .fc-collisions-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
+  }
+  & .data-empty {
+    opacity: 0.37;
   }
 }
 </style>

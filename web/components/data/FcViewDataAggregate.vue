@@ -160,7 +160,8 @@ export default {
       });
     },
     actionShowReportsStudy() {
-      // TODO: implement this
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
     },
     async syncLocations() {
       if (this.locations.length === 0) {
