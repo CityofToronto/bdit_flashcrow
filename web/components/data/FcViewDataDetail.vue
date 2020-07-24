@@ -17,7 +17,17 @@
       <v-divider></v-divider>
 
       <section>
-        <FcHeaderStudies :study-total="studyTotal" />
+        <FcHeaderStudies :study-total="studyTotal">
+          <template v-slot:action>
+            <FcButton
+              class="ml-3"
+              type="secondary"
+              @click="actionRequestStudy">
+              <v-icon color="primary" left>mdi-plus-box</v-icon>
+              Request Study
+            </FcButton>
+          </template>
+        </FcHeaderStudies>
 
         <FcDetailStudies
           :loading="loadingStudies"
@@ -49,6 +59,7 @@ import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcSectionStudyRequestsPending
   from '@/web/components/data/FcSectionStudyRequestsPending.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
@@ -57,6 +68,7 @@ export default {
     FcMixinAuthScope,
   ],
   components: {
+    FcButton,
     FcDetailCollisions,
     FcDetailStudies,
     FcHeaderCollisions,
@@ -133,6 +145,9 @@ export default {
     this.syncLocation();
   },
   methods: {
+    actionRequestStudy() {
+      this.$router.push({ name: 'requestStudyNew' });
+    },
     actionShowReportsCollision() {
       // TODO: go to reports for specific location!
       const params = this.locationsRouteParams;

@@ -19,13 +19,7 @@
           left>mdi-filter-variant</v-icon>
         Filter
       </FcButton>
-      <FcButton
-        class="ml-3"
-        type="primary"
-        @click="actionRequestStudy">
-        <v-icon left>mdi-plus-box</v-icon>
-        Request Study
-      </FcButton>
+      <slot name="action" />
     </div>
 
     <div
@@ -75,9 +69,6 @@ export default {
     ...mapGetters('viewData', ['filterChipsStudy']),
   },
   methods: {
-    actionRequestStudy() {
-      this.$router.push({ name: 'requestStudyNew' });
-    },
     ...mapMutations('viewData', [
       'removeFilterStudy',
       'setFiltersStudy',

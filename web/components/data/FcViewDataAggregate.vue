@@ -21,7 +21,17 @@
       <v-divider></v-divider>
 
       <section>
-        <FcHeaderStudies :study-total="studyTotal" />
+        <FcHeaderStudies :study-total="studyTotal">
+          <template v-slot:action>
+            <FcButton
+              class="ml-3"
+              type="secondary"
+              @click="actionRequestStudy">
+              <v-icon color="primary" left>mdi-plus-box</v-icon>
+              Batch Request Study
+            </FcButton>
+          </template>
+        </FcHeaderStudies>
 
         <FcAggregateStudies
           :study-summary="studySummary"
@@ -52,12 +62,14 @@ import FcAggregateCollisions from '@/web/components/data/FcAggregateCollisions.v
 import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcViewDataAggregate',
   components: {
     FcAggregateCollisions,
     FcAggregateStudies,
+    FcButton,
     FcHeaderCollisions,
     FcHeaderStudies,
   },
@@ -152,6 +164,10 @@ export default {
     this.syncLocations();
   },
   methods: {
+    actionRequestStudy() {
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
+    },
     actionShowReportsCollision() {
       const params = this.locationsRouteParams;
       this.$router.push({
