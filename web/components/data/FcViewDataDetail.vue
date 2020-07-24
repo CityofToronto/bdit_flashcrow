@@ -146,26 +146,16 @@ export default {
   },
   methods: {
     actionRequestStudy() {
-      this.$router.push({ name: 'requestStudyNew' });
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
     },
     actionShowReportsCollision() {
-      // TODO: go to reports for specific location!
-      const params = this.locationsRouteParams;
-      this.$router.push({
-        name: 'viewCollisionReportsAtLocation',
-        params,
-      });
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
     },
-    actionShowReportsStudy({ category: { studyType } }) {
-      // TODO: go to reports for specific location!
-      const params = this.locationsRouteParams;
-      this.$router.push({
-        name: 'viewStudyReportsAtLocation',
-        params: {
-          ...params,
-          studyTypeName: studyType.name,
-        },
-      });
+    actionShowReportsStudy(/* { category: { studyType } } */) {
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
     },
     async syncLocation() {
       if (this.location === null) {
