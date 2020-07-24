@@ -48,7 +48,8 @@
           :location="locationActive" />
         <FcViewDataAggregate
           v-else
-          :locations="locations" />
+          :locations="locations"
+          :locations-selection="locationsSelection" />
       </template>
     </section>
   </div>

@@ -14,6 +14,7 @@
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
           :locations="locations"
+          :locations-selection="locationsSelection"
           @show-reports="actionShowReportsCollision" />
       </section>
 
@@ -60,6 +61,7 @@ export default {
   },
   props: {
     locations: Array,
+    locationsSelection: Object,
   },
   data() {
     const collisionSummaryPerLocationUnfiltered = this.locations.map(() => ({
