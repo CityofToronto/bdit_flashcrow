@@ -8,9 +8,12 @@
         <FcHeaderCollisions :collision-total="collisionTotal" />
 
         <FcAggregateCollisions
+          :collision-summary="collisionSummary"
+          :collision-summary-unfiltered="collisionSummaryUnfiltered"
           :collision-summary-per-location="collisionSummaryPerLocation"
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
+          :locations="locations"
           @show-reports="actionShowReportsCollision" />
       </section>
 
@@ -20,10 +23,12 @@
         <FcHeaderStudies :study-total="studyTotal" />
 
         <FcAggregateStudies
-          :collision-summary-per-location="collisionSummaryPerLocation"
-          :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
-          :loading="loadingCollisions"
-          @show-reports="actionShowReportsCollision" />
+          :study-summary="studySummary"
+          :study-summary-unfiltered="studySummaryUnfiltered"
+          :study-summary-per-location="studySummaryPerLocation"
+          :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
+          :loading="loadingStudies"
+          @show-reports="actionShowReportsStudy" />
       </section>
     </template>
   </div>
@@ -33,8 +38,10 @@
 import { mapGetters } from 'vuex';
 
 import {
+  getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
   getCollisionsByCentrelineTotal,
+  getStudiesByCentrelineSummary,
   getStudiesByCentrelineSummaryPerLocation,
   getStudiesByCentrelineTotal,
 } from '@/lib/api/WebApi';
@@ -66,12 +73,24 @@ export default {
       validated: 0,
     }));
     return {
+      collisionSummary: {
+        amount: 0,
+        ksi: 0,
+        validated: 0,
+      },
+      collisionSummaryUnfiltered: {
+        amount: 0,
+        ksi: 0,
+        validated: 0,
+      },
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
       loading: false,
       loadingCollisions: false,
       loadingStudies: false,
+      studySummary: [],
+      studySummaryUnfiltered: [],
       studySummaryPerLocation: [],
       studySummaryPerLocationUnfiltered: [],
       studyTotal: 0,
@@ -81,6 +100,7 @@ export default {
     ...mapGetters('viewData', [
       'filterParamsCollision',
       'filterParamsStudy',
+      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -90,10 +110,15 @@ export default {
       }
 
       this.loadingCollisions = true;
-      const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
-        this.locations,
-        this.filterParamsCollision,
-      );
+      const tasks = [
+        getCollisionsByCentrelineSummary(this.locations, this.filterParamsCollision),
+        getCollisionsByCentrelineSummaryPerLocation(this.locations, this.filterParamsCollision),
+      ];
+      const [
+        collisionSummary,
+        collisionSummaryPerLocation,
+      ] = await Promise.all(tasks);
+      this.collisionSummary = collisionSummary;
       this.collisionSummaryPerLocation = collisionSummaryPerLocation;
       this.loadingCollisions = false;
     },
@@ -118,6 +143,16 @@ export default {
     this.syncLocations();
   },
   methods: {
+    actionShowReportsCollision() {
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'viewCollisionReportsAtLocation',
+        params,
+      });
+    },
+    actionShowReportsStudy() {
+      // TODO: implement this
+    },
     async syncLocations() {
       if (this.locations.length === 0) {
         return;
@@ -126,26 +161,38 @@ export default {
       this.loading = true;
 
       const tasks = [
-        getCollisionsByCentrelineSummaryPerLocation(this.locations, {}),
+        getCollisionsByCentrelineSummary(this.locations, this.filterParamsCollision),
+        getCollisionsByCentrelineSummary(this.locations, {}),
         getCollisionsByCentrelineSummaryPerLocation(this.locations, this.filterParamsCollision),
+        getCollisionsByCentrelineSummaryPerLocation(this.locations, {}),
         getCollisionsByCentrelineTotal(this.locations),
-        getStudiesByCentrelineSummaryPerLocation(this.locations, {}),
+        getStudiesByCentrelineSummary(this.locations, this.filterParamsStudy),
+        getStudiesByCentrelineSummary(this.locations, {}),
         getStudiesByCentrelineSummaryPerLocation(this.locations, this.filterParamsStudy),
+        getStudiesByCentrelineSummaryPerLocation(this.locations, {}),
         getStudiesByCentrelineTotal(this.locations),
       ];
       const [
-        collisionSummaryPerLocationUnfiltered,
+        collisionSummary,
+        collisionSummaryUnfiltered,
         collisionSummaryPerLocation,
+        collisionSummaryPerLocationUnfiltered,
         collisionTotal,
-        studySummaryPerLocationUnfiltered,
+        studySummary,
+        studySummaryUnfiltered,
         studySummaryPerLocation,
+        studySummaryPerLocationUnfiltered,
         studyTotal,
       ] = await Promise.all(tasks);
-      this.collisionSummaryPerLocationUnfiltered = collisionSummaryPerLocationUnfiltered;
+      this.collisionSummary = collisionSummary;
+      this.collisionSummaryUnfiltered = collisionSummaryUnfiltered;
       this.collisionSummaryPerLocation = collisionSummaryPerLocation;
+      this.collisionSummaryPerLocationUnfiltered = collisionSummaryPerLocationUnfiltered;
       this.collisionTotal = collisionTotal;
-      this.studySummaryPerLocationUnfiltered = studySummaryPerLocationUnfiltered;
+      this.studySummary = studySummary;
+      this.studySummaryUnfiltered = studySummaryUnfiltered;
       this.studySummaryPerLocation = studySummaryPerLocation;
+      this.studySummaryPerLocationUnfiltered = studySummaryPerLocationUnfiltered;
       this.studyTotal = studyTotal;
 
       this.loading = false;

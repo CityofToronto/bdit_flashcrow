@@ -93,6 +93,7 @@ export default {
     ...mapGetters('viewData', [
       'filterParamsCollision',
       'filterParamsStudy',
+      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -133,6 +134,7 @@ export default {
   },
   methods: {
     actionShowReportsCollision() {
+      // TODO: go to reports for specific location!
       const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
@@ -140,6 +142,7 @@ export default {
       });
     },
     actionShowReportsStudy({ category: { studyType } }) {
+      // TODO: go to reports for specific location!
       const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewStudyReportsAtLocation',
