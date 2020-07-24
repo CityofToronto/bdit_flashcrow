@@ -57,7 +57,7 @@ test('CollisionDAO.byCentrelineSummary', async () => {
   let features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
   ];
-  let collisionQuery = {
+  const collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
     daysOfWeek: null,
@@ -70,15 +70,61 @@ test('CollisionDAO.byCentrelineSummary', async () => {
   features = [
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
   ];
-  collisionQuery = {
+  result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
+  expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });
+
+  features = [
+    { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
+  expect(result).toEqual({ amount: 58, ksi: 1, validated: 42 });
+});
+
+test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
+  const dateRangeStart = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
+  const dateRangeEnd = DateTime.fromObject({ year: 2020, month: 1, day: 1 });
+
+  let features = [
+    { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
+  ];
+  const collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
     roadSurfaceConditions: null,
   };
-  result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
-  expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });
+  let result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
+  expect(result).toEqual([{ amount: 31, ksi: 0, validated: 26 }]);
+
+  features = [
+    { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
+  expect(result).toEqual([{ amount: 27, ksi: 1, validated: 16 }]);
+
+  features = [
+    { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
+  expect(result).toEqual([
+    { amount: 31, ksi: 0, validated: 26 },
+    { amount: 27, ksi: 1, validated: 16 },
+  ]);
+
+  features = [
+    { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
+  ];
+  result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
+  expect(result).toEqual([
+    { amount: 31, ksi: 0, validated: 26 },
+    { amount: 27, ksi: 1, validated: 16 },
+    { amount: 31, ksi: 0, validated: 26 },
+  ]);
 });
 
 test('CollisionDAO.byCentrelineTotal', async () => {

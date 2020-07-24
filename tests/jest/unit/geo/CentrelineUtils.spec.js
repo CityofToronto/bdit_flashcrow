@@ -1,4 +1,3 @@
-
 import {
   CentrelineType,
   RoadIntersectionType,
@@ -8,6 +7,7 @@ import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
   getLocationFeatureType,
   getLocationsDescription,
+  getLocationsIconProps,
   getLocationsWaypointIndices,
 } from '@/lib/geo/CentrelineUtils';
 
@@ -61,6 +61,48 @@ test('CentrelineUtils.getLocationsDescription', () => {
     { description: 'Warden and Cataraqui Cres' },
   ];
   expect(getLocationsDescription(locations)).toEqual('Warden and St Clair + 2 locations');
+});
+
+test('CentrelineUtils.getLocationsIconProps', () => {
+  const waypoints = [
+    { centrelineId: 13456414, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13454752, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  const locations = [
+    waypoints[0],
+    { centrelineId: 3304786, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    waypoints[1],
+    waypoints[3],
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    waypoints[4],
+    { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
+    waypoints[6],
+  ];
+  expect(getLocationsIconProps(locations, waypoints)).toEqual([
+    { locationIndex: 0, midblock: false },
+    { locationIndex: -1, midblock: true },
+    { locationIndex: -1, midblock: false },
+    { locationIndex: -1, midblock: true },
+    { locationIndex: 2, midblock: false },
+    { locationIndex: 3, midblock: true },
+    { locationIndex: -1, midblock: false },
+    { locationIndex: -1, midblock: true },
+    { locationIndex: -1, midblock: false },
+    { locationIndex: 5, midblock: true },
+    { locationIndex: -1, midblock: false },
+    { locationIndex: -1, midblock: true },
+    { locationIndex: 6, midblock: false },
+  ]);
 });
 
 test('CentrelineUtils.getLocationsWaypointIndices', () => {
