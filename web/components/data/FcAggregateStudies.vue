@@ -30,14 +30,12 @@
               </div>
             </div>
             <v-spacer></v-spacer>
-            <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-              {{item.n}}
-              <span
-                v-if="hasFiltersStudy"
-                class="body-1">
-                / {{item.nUnfiltered}}
-              </span>
-            </div>
+            <FcTextSummaryFraction
+              :a="item.n"
+              :b="item.nUnfiltered"
+              class="flex-grow-0 flex-shrink-0 mr-5"
+              :show-b="hasFiltersStudy"
+              small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
             <div
@@ -61,37 +59,20 @@
                   }">
                   {{location.description}}
                 </div>
-                <div
+                <FcTextMostRecent
                   v-if="itemsPerLocation[i][j].mostRecent !== null"
-                  class="mt-2 secondary--text">
-                  <span>
-                    Most Recent
-                    {{itemsPerLocation[i][j].mostRecent.startDate | date}}
-                    ({{itemsPerLocation[i][j].mostRecent.startDate | dayOfWeek}})
-                    &#x2022;
-                    <span v-if="itemsPerLocation[i][j].mostRecent.duration !== null">
-                      {{itemsPerLocation[i][j].mostRecent.duration | durationHuman}}
-                      ({{item.mostRecent.duration}} hrs)
-                    </span>
-                    <span
-                      v-else-if="itemsPerLocation[i][j].mostRecent.hours !== null"
-                      :title="itemsPerLocation[i][j].mostRecent.hours.hint">
-                      {{itemsPerLocation[i][j].mostRecent.hours.description}}
-                    </span>
-                  </span>
-                </div>
+                  class="mt-2"
+                  :study="itemsPerLocation[i][j].mostRecent" />
               </div>
               <v-spacer></v-spacer>
               <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                <div class="text-right">
-                  {{itemsPerLocation[i][j].n}}
-                  <span
-                    v-if="hasFiltersStudy"
-                    class="body-1">
-                    / {{itemsPerLocation[i][j].nUnfiltered}}
-                  </span>
-                </div>
-                <div v-if="itemsPerLocation[i][j].nUnfiltered > 0">
+                <FcTextSummaryFraction
+                  :a="itemsPerLocation[i][j].n"
+                  :b="itemsPerLocation[i][j].nUnfiltered"
+                  class="text-right"
+                  :show-b="hasFiltersStudy"
+                  small />
+                <div v-if="itemsPerLocation[i][j].n > 0">
                   <FcButton
                     class="mr-n4 mt-2"
                     type="tertiary"
@@ -112,6 +93,8 @@
 import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
+import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
@@ -120,6 +103,8 @@ export default {
   components: {
     FcButton,
     FcIconLocationMulti,
+    FcTextMostRecent,
+    FcTextSummaryFraction,
   },
   props: {
     studySummary: Array,

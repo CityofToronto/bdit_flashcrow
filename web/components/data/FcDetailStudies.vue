@@ -22,31 +22,16 @@
             <div v-else>
               {{item.category.studyType.label}}
             </div>
-            <div class="mt-2 secondary--text">
-              <span v-if="item.mostRecent !== null">
-                Most Recent
-                {{item.mostRecent.startDate | date}} ({{item.mostRecent.startDate | dayOfWeek}})
-                &#x2022;
-                <span v-if="item.mostRecent.duration !== null">
-                  {{item.mostRecent.duration | durationHuman}} ({{item.mostRecent.duration}} hrs)
-                </span>
-                <span
-                  v-else-if="item.mostRecent.hours !== null"
-                  :title="item.mostRecent.hours.hint">
-                  {{item.mostRecent.hours.description}}
-                </span>
-              </span>
-            </div>
+            <FcTextMostRecent
+              v-if="item.mostRecent !== null"
+              class="mt-2"
+              :study="item.mostRecent" />
           </div>
           <div class="fc-studies-n flex-grow-0 flex-shrink-0 mr-8">
-            <div class="display-2">
-              {{item.n}}
-              <span
-                v-if="hasFiltersStudy"
-                class="body-1">
-                / {{item.nUnfiltered}}
-              </span>
-            </div>
+            <FcTextSummaryFraction
+              :a="item.n"
+              :b="item.nUnfiltered"
+              :show-b="hasFiltersStudy" />
           </div>
           <FcButton
             class="flex-grow-0 flex-shrink-0"
@@ -65,12 +50,16 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDetailStudies',
   components: {
     FcButton,
+    FcTextMostRecent,
+    FcTextSummaryFraction,
   },
   props: {
     loading: {

@@ -8,40 +8,31 @@
         <div class="body-1">
           Amount
         </div>
-        <div class="display-2 mt-2">
-          {{collisionSummary.amount}}
-          <span
-            v-if="hasFiltersCollision"
-            class="body-1">
-            / {{collisionSummaryUnfiltered.amount}}
-          </span>
-        </div>
+        <FcTextSummaryFraction
+          :a="collisionSummary.amount"
+          :b="collisionSummaryUnfiltered.amount"
+          class="mt-2"
+          :show-b="hasFiltersCollision" />
       </div>
       <div class="flex-grow-1 flex-shrink-1">
         <div class="body-1">
           KSI
         </div>
-        <div class="display-2 mt-2">
-          {{collisionSummary.ksi}}
-          <span
-            v-if="hasFiltersCollision"
-            class="body-1">
-            / {{collisionSummaryUnfiltered.ksi}}
-          </span>
-        </div>
+        <FcTextSummaryFraction
+          :a="collisionSummary.ksi"
+          :b="collisionSummaryUnfiltered.ksi"
+          class="mt-2"
+          :show-b="hasFiltersCollision" />
       </div>
       <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
         <div class="body-1">
           Validated
         </div>
-        <div class="display-2 mt-2">
-          {{collisionSummary.validated}}
-          <span
-            v-if="hasFiltersCollision"
-            class="body-1">
-            / {{collisionSummaryUnfiltered.validated}}
-          </span>
-        </div>
+        <FcTextSummaryFraction
+          :a="collisionSummary.validated"
+          :b="collisionSummaryUnfiltered.validated"
+          class="mt-2"
+          :show-b="hasFiltersCollision" />
       </div>
       <FcButton
         class="flex-grow-0 flex-shrink-0"
@@ -57,12 +48,14 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDetailCollisions',
   components: {
     FcButton,
+    FcTextSummaryFraction,
   },
   props: {
     collisionSummary: Object,

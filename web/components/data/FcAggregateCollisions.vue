@@ -17,14 +17,12 @@
           <v-expansion-panel-header class="pr-8">
             <span class="body-1">{{field.description}}</span>
             <v-spacer></v-spacer>
-            <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-              {{collisionSummary[field.name]}}
-              <span
-                v-if="hasFiltersCollision"
-                class="body-1">
-                / {{collisionSummaryUnfiltered[field.name]}}
-              </span>
-            </div>
+            <FcTextSummaryFraction
+              :a="collisionSummary[field.name]"
+              :b="collisionSummaryUnfiltered[field.name]"
+              class="flex-grow-0 flex-shrink-0 mr-5"
+              :show-b="hasFiltersCollision"
+              small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
             <div
@@ -45,14 +43,12 @@
                 {{location.description}}
               </span>
               <v-spacer></v-spacer>
-              <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                {{collisionSummaryPerLocation[i][field.name]}}
-                <span
-                  v-if="hasFiltersCollision"
-                  class="body-1">
-                  / {{collisionSummaryPerLocationUnfiltered[i][field.name]}}
-                </span>
-              </div>
+              <FcTextSummaryFraction
+                :a="collisionSummaryPerLocation[i][field.name]"
+                :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
+                class="flex-grow-0 flex-shrink-0 mr-5"
+                :show-b="hasFiltersCollision"
+                small />
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -75,6 +71,7 @@
 import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
+import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
@@ -83,6 +80,7 @@ export default {
   components: {
     FcButton,
     FcIconLocationMulti,
+    FcTextSummaryFraction,
   },
   props: {
     collisionSummary: Object,
