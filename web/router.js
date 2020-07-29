@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import { AuthScope } from '@/lib/Constants';
 import { hasAuthScope } from '@/lib/auth/ScopeMatcher';
+import analyticsClient from '@/web/analyticsClient';
 import store from '@/web/store';
 import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
@@ -271,8 +272,20 @@ function afterEachSetTitle(to) {
   document.title = title;
 }
 
+function afterEachAnalyticsRouteEvent() {
+  const event = analyticsClient.routeEvent();
+  analyticsClient.send([event]);
+}
+
 router.afterEach((to) => {
   afterEachSetTitle(to);
+
+  /*
+   * To accurately log the page title, this must be called after `afterEachSetTitle()`.
+   * Otherwise, the analytics event will contain the old page title from before the
+   * `vue-router` transition.
+   */
+  afterEachAnalyticsRouteEvent();
 });
 
 function onErrorShowToast(err) {

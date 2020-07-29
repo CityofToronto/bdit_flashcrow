@@ -4,11 +4,12 @@ import Vuelidate from 'vuelidate';
 import Vuetify from 'vuetify/lib/framework';
 import en from 'vuetify/es5/locale/en';
 
-import App from '@/web/App.vue';
-import router from '@/web/router';
-import store from '@/web/store';
 import { formatDuration } from '@/lib/StringFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import App from '@/web/App.vue';
+import analyticsClient from '@/web/analyticsClient';
+import router from '@/web/router';
+import store from '@/web/store';
 
 Vue.use(Vuelidate);
 Vue.use(Vuetify);
@@ -68,9 +69,14 @@ const vuetify = new Vuetify({
   },
 });
 
-new Vue({
+Object.defineProperty(Vue.prototype, '$analytics', {
+  get() { return analyticsClient; },
+});
+
+const appContext = new Vue({
   render: h => h(App),
   router,
   store,
   vuetify,
 }).$mount('#app');
+analyticsClient.setAppContext(appContext);
