@@ -10,7 +10,8 @@
         color="primary"
         :disabled="disabled"
         link
-        :to="to">
+        :to="to"
+        @click="actionClick">
         <v-list-item-icon>
           <v-icon>mdi-{{icon}}</v-icon>
         </v-list-item-icon>
@@ -24,6 +25,8 @@
 </template>
 
 <script>
+import analyticsClient from '@/web/analytics/analyticsClient';
+
 import { mapState } from 'vuex';
 
 export default {
@@ -56,6 +59,12 @@ export default {
       return name === 'requestStudyView' && backViewRequestName === toName;
     },
     ...mapState(['backViewRequest']),
+  },
+  methods: {
+    actionClick() {
+      const event = analyticsClient.buttonEvent(this.label, this.$el);
+      analyticsClient.send([event]);
+    },
   },
 };
 </script>

@@ -51,12 +51,15 @@ export default {
     },
   },
   methods: {
-    /*
-     * Note that this will be called *in addition to* any `@click` handlers declared from the
-     * parent component.
-     */
     actionClick() {
-      const event = analyticsClient.buttonEvent(this);
+      let ihtml = '';
+      if (Object.prototype.hasOwnProperty.call(this.$attrs, 'aria-label')) {
+        ihtml = this.$attrs['aria-label'];
+      } else {
+        ihtml = this.$el.innerText.trim();
+      }
+
+      const event = analyticsClient.buttonEvent(ihtml, this.$el);
       analyticsClient.send([event]);
     },
   },

@@ -59,22 +59,6 @@ class AnalyticsClient {
   }
 
   /**
-   * Returns a textual representation of the given button.  Note that this would *not* be a
-   * good candidate for Vue computed properties, as the component root element reference
-   * `this.$el` is not reactive.
-   *
-   * @param {Vue} $vm - `<FcButton>` instance
-   * @returns {string} text of the button, either `aria-label` for icon buttons or
-   * `innerText` for buttons with text
-   */
-  static getButtonText($vm) {
-    if (Object.prototype.hasOwnProperty.call($vm.$attrs, 'aria-label')) {
-      return $vm.$attrs['aria-label'];
-    }
-    return $vm.$el.innerText.trim();
-  }
-
-  /**
    * Finds the closest containing `<div>` or `<table>` to `$el`, then returns its ID or class
    * as an identifier for that container.
    *
@@ -148,9 +132,8 @@ class AnalyticsClient {
     return this.event(AnalyticsEventType.APP_ROUTE, {});
   }
 
-  buttonEvent($vm) {
-    const ihtml = AnalyticsClient.getButtonText($vm) || '';
-    const nv = AnalyticsClient.getContainerIdentifier($vm.$el) || 'app';
+  buttonEvent(ihtml, $el) {
+    const nv = AnalyticsClient.getContainerIdentifier($el) || 'app';
 
     const eventOptions = {
       'wt.ihtml': ihtml,
