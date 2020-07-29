@@ -5,12 +5,15 @@
       ...typeAttrs,
       ...$attrs,
     }"
+    @click="actionClick"
     v-on="$listeners">
     <slot></slot>
   </v-btn>
 </template>
 
 <script>
+import analyticsClient from '@/web/analytics/analyticsClient';
+
 const BUTTON_ATTRS = {
   primary: {
     color: 'primary',
@@ -45,6 +48,16 @@ export default {
   computed: {
     typeAttrs() {
       return BUTTON_ATTRS[this.type];
+    },
+  },
+  methods: {
+    /*
+     * Note that this will be called *in addition to* any `@click` handlers declared from the
+     * parent component.
+     */
+    actionClick() {
+      const event = analyticsClient.buttonEvent(this);
+      analyticsClient.send([event]);
     },
   },
 };

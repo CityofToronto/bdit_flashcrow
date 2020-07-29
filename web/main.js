@@ -7,7 +7,7 @@ import en from 'vuetify/es5/locale/en';
 import { formatDuration } from '@/lib/StringFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import App from '@/web/App.vue';
-import analyticsClient from '@/web/analyticsClient';
+import analyticsClient from '@/web/analytics/analyticsClient';
 import router from '@/web/router';
 import store from '@/web/store';
 

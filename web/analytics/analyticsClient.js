@@ -1,22 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Enum } from '@/lib/ClassUtils';
-
-class AnalyticsEventType extends Enum {}
-AnalyticsEventType.init({
-  API_GET: {
-    code: '26',
-  },
-  CLICK: {
-    code: '1',
-  },
-  DOWNLOAD: {
-    code: '20',
-  },
-  PAGE_VIEW: {
-    code: '0',
-  },
-});
+import { AnalyticsEventType } from '@/web/analytics/AnalyticsTypes';
 
 const STORAGE_KEY_VISITOR_ID = 'ca.toronto.move.visitorId';
 
@@ -55,7 +39,7 @@ class AnalyticsClient {
     this.appContext = appContext;
   }
 
-  // GLOBAL / BROWSER STATE HELPERS
+  // HELPER METHODS
 
   /**
    * Returns current page domain for analytics purposes.  In some cases (e.g. spinning up a new
@@ -72,6 +56,43 @@ class AnalyticsClient {
       return 'move.intra.dev-toronto.ca';
     }
     return domain;
+  }
+
+  /**
+   * Returns a textual representation of the given button.  Note that this would *not* be a
+   * good candidate for Vue computed properties, as the component root element reference
+   * `this.$el` is not reactive.
+   *
+   * @param {Vue} $vm - `<FcButton>` instance
+   * @returns {string} text of the button, either `aria-label` for icon buttons or
+   * `innerText` for buttons with text
+   */
+  static getButtonText($vm) {
+    if (Object.prototype.hasOwnProperty.call($vm.$attrs, 'aria-label')) {
+      return $vm.$attrs['aria-label'];
+    }
+    return $vm.$el.innerText.trim();
+  }
+
+  /**
+   * Finds the closest containing `<div>` or `<table>` to `$el`, then returns its ID or class
+   * as an identifier for that container.
+   *
+   * This is used in button click tracking to help identify where in the interface the user is
+   * clicking.
+   *
+   * @param {Element} $el
+   * @returns {string?} identifier as described above, or `null` if either no such container
+   * element exists or that container element lacks both `id` and `class` attributes
+   */
+  static getContainerIdentifier($el) {
+    const $container = $el.closest('div, table');
+    if ($container === null) {
+      return null;
+    }
+    return $container.id
+      || $container.className
+      || null;
   }
 
   /**
@@ -98,62 +119,45 @@ class AnalyticsClient {
     return language;
   }
 
-  // ROUTER STATE HELPERS
-
-  static getContentSubgroups(params) {
-    const contentSubgroups = [];
-    if (Object.prototype.hasOwnProperty.call(params, 'selectionTypeName')) {
-      contentSubgroups.push(params.selectionTypeName);
-    }
-    if (Object.prototype.hasOwnProperty.call(params, 'studyTypeName')) {
-      contentSubgroups.push(params.studyTypeName);
-    }
-    return contentSubgroups;
-  }
-
   // EVENTS
 
-  event(eventType, options) {
+  event(eventType, eventOptions) {
     if (this.appContext === null) {
       throw new Error('must call setAppContext() before event()');
     }
 
-    const { name, params, path } = this.appContext.$route;
+    const { name, path } = this.appContext.$route;
     const now = new Date();
 
     const event = {
       dcsuri: path,
-      'wt.bh': now.getHours(),
+      'wt.bh': now.getHours().toString(),
       'wt.cg_n': name,
       'wt.dl': eventType.code,
       'wt.es': `${this.analyticsDomain}${path}`,
-      'wt.ets': Math.floor(now.valueOf() / 1000),
+      'wt.ets': Math.floor(now.valueOf() / 1000).toString(),
       'wt.sr': AnalyticsClient.getScreenResolution(),
       'wt.ti': AnalyticsClient.getTitle(),
-      'wt.tz': Math.floor(-now.getTimezoneOffset() / 60),
-      ...options,
+      'wt.tz': Math.floor(-now.getTimezoneOffset() / 60).toString(),
+      ...eventOptions,
     };
-
-    let contentSubgroups = AnalyticsClient.getContentSubgroups(params);
-    if (contentSubgroups.length > 0) {
-      if (Object.prototype.hasOwnProperty.call(event, 'wt.cg_s')) {
-        const parts = event['wt.cg_s'].split(';');
-        contentSubgroups = [...parts, ...contentSubgroups];
-      }
-      event['wt.cg_s'] = contentSubgroups.join(';');
-    }
     return event;
   }
 
-  locationSearchEvent(query, results) {
-    return this.event(AnalyticsEventType.API_GET, {
-      'wt.oss': query,
-      'wt.oss_r': results.length.toString(),
-    });
+  appRouteEvent() {
+    return this.event(AnalyticsEventType.APP_ROUTE, {});
   }
 
-  routeEvent() {
-    return this.event(AnalyticsEventType.PAGE_VIEW, {});
+  buttonEvent($vm) {
+    const ihtml = AnalyticsClient.getButtonText($vm) || '';
+    const nv = AnalyticsClient.getContainerIdentifier($vm.$el) || 'app';
+
+    const eventOptions = {
+      'wt.ihtml': ihtml,
+      'wt.nv': nv,
+      'wt.z_url': 'NaN',
+    };
+    return this.event(AnalyticsEventType.BUTTON_CLICK, eventOptions);
   }
 
   async send(events) {
@@ -166,7 +170,6 @@ class AnalyticsClient {
         dcssip: this.analyticsDomain,
         'wt.co_f': visitorId,
         'wt.dcsid': this.dcsId,
-        'wt.ria_a': 'MOVE',
         'wt.ul': this.userLanguage,
         'wt.vtid': visitorId,
       },
@@ -177,7 +180,11 @@ class AnalyticsClient {
       credentials: 'include',
       method: 'POST',
     };
-    await fetch(url, options);
+    try {
+      await fetch(url, options);
+    } catch (err) {
+      // TODO: log this error once we have frontend logging functionality
+    }
   }
 }
 

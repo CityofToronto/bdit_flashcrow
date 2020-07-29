@@ -3,7 +3,7 @@ import Router from 'vue-router';
 
 import { AuthScope } from '@/lib/Constants';
 import { hasAuthScope } from '@/lib/auth/ScopeMatcher';
-import analyticsClient from '@/web/analyticsClient';
+import analyticsClient from '@/web/analytics/analyticsClient';
 import store from '@/web/store';
 import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
@@ -272,8 +272,8 @@ function afterEachSetTitle(to) {
   document.title = title;
 }
 
-function afterEachAnalyticsRouteEvent() {
-  const event = analyticsClient.routeEvent();
+function afterEachAppRouteEvent() {
+  const event = analyticsClient.appRouteEvent();
   analyticsClient.send([event]);
 }
 
@@ -284,8 +284,14 @@ router.afterEach((to) => {
    * To accurately log the page title, this must be called after `afterEachSetTitle()`.
    * Otherwise, the analytics event will contain the old page title from before the
    * `vue-router` transition.
+   *
+   * Since the event is recorded in `afterEach`, an error here (e.g. if the analytics
+   * service is unreachable) cannot abort the route transition.  That's a good thing!
+   * In the event of an analytics outage, or of a bug in `analyticsClient`, ideally
+   * only analytics tracking should be affected - the rest of MOVE should continue to
+   * function as normal.
    */
-  afterEachAnalyticsRouteEvent();
+  afterEachAppRouteEvent();
 });
 
 function onErrorShowToast(err) {
