@@ -69,6 +69,12 @@ const vuetify = new Vuetify({
   },
 });
 
+/*
+ * Inject the singleton analytics client into all Vue components as `this.$analytics`.
+ * See https://vuejs.org/v2/guide/plugins.html#Writing-a-Plugin for why this works.
+ *
+ * Note that, at this point, `analyticsClient.appContext === null`.
+ */
 Object.defineProperty(Vue.prototype, '$analytics', {
   get() { return analyticsClient; },
 });
@@ -79,4 +85,17 @@ const appContext = new Vue({
   store,
   vuetify,
 }).$mount('#app');
+
+/*
+ * Once the application context has been created above, set that context in our
+ * singleton analytics client.
+ *
+ * Note that, due to the tick-based nature of Vue rendering, this will be called
+ * before any components actually render, and definitely before `router.afterEach()`
+ * is reached.  This allows us to ensure that `analyticsClient.appContext !== null`
+ * before any analytics events are sent.
+ *
+ * This two-stage init / set approach is necessary to avoid a circular dependency
+ * between the application context and the analytics client.
+ */
 analyticsClient.setAppContext(appContext);
