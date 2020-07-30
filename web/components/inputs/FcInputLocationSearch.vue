@@ -144,13 +144,17 @@ export default {
       }
       this.loading = true;
       this.state = LocationSearchState.QUERY_SENT;
-      const locationSuggestions = await getLocationSuggestions(this.query, {});
+      const { query } = this;
+      const locationSuggestions = await getLocationSuggestions(query, {});
       if (this.state !== LocationSearchState.QUERY_SENT) {
         return;
       }
       this.locationSuggestions = locationSuggestions;
       this.loading = false;
       this.state = LocationSearchState.SUGGESTIONS_RECEIVED;
+
+      const event = this.$analytics.locationSearchEvent(query, locationSuggestions.length);
+      await this.$analytics.send([event]);
     }, 200),
     showLocationSuggestions() {
       if (this.showLocationSuggestions) {

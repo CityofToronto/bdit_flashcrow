@@ -87,12 +87,18 @@ export default {
   },
   methods: {
     actionSignIn() {
-      Vue.nextTick(() => {
+      Vue.nextTick(async () => {
+        const event = this.$analytics.signInEvent();
+        await this.$analytics.send([event]);
+
         saveLoginState(this.$route);
         this.$refs.formSignIn.submit();
       });
     },
-    actionSignOut() {
+    async actionSignOut() {
+      const event = this.$analytics.signOutEvent();
+      await this.$analytics.send([event]);
+
       this.$refs.formSignOut.submit();
     },
   },
