@@ -243,6 +243,10 @@ router.beforeEach(async (to, from, next) => {
       }
     } else {
       next(false);
+
+      const event = analyticsClient.signInEvent();
+      await analyticsClient.send([event]);
+
       saveLoginState(to);
       document.forms.formSignIn.submit();
     }

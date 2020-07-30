@@ -24,14 +24,12 @@
 </template>
 
 <script>
-import analyticsClient from '@/web/analytics/analyticsClient';
-
 export default {
   name: 'FcDashboardNavBrand',
   methods: {
     actionClick() {
-      const event = analyticsClient.buttonEvent('MOVE', this.$el);
-      analyticsClient.send([event]);
+      const event = this.$analytics.buttonEvent('MOVE', this.$el);
+      this.$analytics.send([event]);
     },
   },
 };

@@ -25,8 +25,6 @@
 </template>
 
 <script>
-import analyticsClient from '@/web/analytics/analyticsClient';
-
 import { mapState } from 'vuex';
 
 export default {
@@ -62,8 +60,8 @@ export default {
   },
   methods: {
     actionClick() {
-      const event = analyticsClient.buttonEvent(this.label, this.$el);
-      analyticsClient.send([event]);
+      const event = this.$analytics.buttonEvent(this.label, this.$el);
+      this.$analytics.send([event]);
     },
   },
 };

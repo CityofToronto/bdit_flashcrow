@@ -79,6 +79,17 @@ class AnalyticsClient {
       || null;
   }
 
+  static getContentSubgroups(params) {
+    const contentSubgroups = [];
+    if (Object.prototype.hasOwnProperty.call(params, 'selectionTypeName')) {
+      contentSubgroups.push(params.selectionTypeName);
+    }
+    if (Object.prototype.hasOwnProperty.call(params, 'studyTypeName')) {
+      contentSubgroups.push(params.studyTypeName);
+    }
+    return contentSubgroups;
+  }
+
   /**
    * @returns {string} screen resolution, in `${width}x${height}` format
    */
@@ -110,13 +121,14 @@ class AnalyticsClient {
       throw new Error('must call setAppContext() before event()');
     }
 
-    const { name, path } = this.appContext.$route;
+    const { name, params, path } = this.appContext.$route;
     const now = new Date();
 
     const event = {
       dcsuri: path,
       'wt.bh': now.getHours().toString(),
       'wt.cg_n': name,
+      'wt.cg_s': AnalyticsClient.getContentSubgroups(params),
       'wt.dl': eventType.code,
       'wt.es': `${this.analyticsDomain}${path}`,
       'wt.ets': Math.floor(now.valueOf() / 1000).toString(),
@@ -141,6 +153,43 @@ class AnalyticsClient {
       'wt.z_url': 'NaN',
     };
     return this.event(AnalyticsEventType.BUTTON_CLICK, eventOptions);
+  }
+
+  locationSearchEvent(query, numResults) {
+    const eventOptions = {
+      dcsuri: '/api/locations/suggest',
+      query,
+      'wt.es': `${this.analyticsDomain}/api/locations/suggest`,
+      'wt.ihtml': 'Search',
+      'wt.nv': 'fc-input-location-search',
+      'wt.oss': query,
+      'wt.oss_r': numResults,
+      'wt.search-term': query,
+      'wt.z_url': 'NaN',
+    };
+    return this.event(AnalyticsEventType.LOCATION_SEARCH, eventOptions);
+  }
+
+  signInEvent() {
+    const eventOptions = {
+      dcsuri: '/api/auth/adfs-init',
+      'wt.es': `${this.analyticsDomain}/api/auth/adfs-init`,
+      'wt.ihtml': 'Sign In',
+      'wt.nv': 'auth',
+      'wt.z_url': 'NaN',
+    };
+    return this.event(AnalyticsEventType.SIGN_IN, eventOptions);
+  }
+
+  signOutEvent() {
+    const eventOptions = {
+      dcsuri: '/api/auth/logout',
+      'wt.es': `${this.analyticsDomain}/api/auth/logout`,
+      'wt.ihtml': 'Sign Out',
+      'wt.nv': 'auth',
+      'wt.z_url': 'NaN',
+    };
+    return this.event(AnalyticsEventType.SIGN_OUT, eventOptions);
   }
 
   async send(events) {

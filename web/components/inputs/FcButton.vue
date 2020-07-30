@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import analyticsClient from '@/web/analytics/analyticsClient';
-
 const BUTTON_ATTRS = {
   primary: {
     color: 'primary',
@@ -59,8 +57,8 @@ export default {
         ihtml = this.$el.innerText.trim();
       }
 
-      const event = analyticsClient.buttonEvent(ihtml, this.$el);
-      analyticsClient.send([event]);
+      const event = this.$analytics.buttonEvent(ihtml, this.$el);
+      this.$analytics.send([event]);
     },
   },
 };

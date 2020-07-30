@@ -8,6 +8,15 @@ AnalyticsEventType.init({
   BUTTON_CLICK: {
     code: '29',
   },
+  LOCATION_SEARCH: {
+    code: '26',
+  },
+  SIGN_IN: {
+    code: '27',
+  },
+  SIGN_OUT: {
+    code: '27',
+  },
 });
 
 const AnalyticsTypes = {
