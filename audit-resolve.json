@@ -349,6 +349,11 @@
       "decision": "ignore",
       "madeAt": 1592255706297,
       "expiresAt": 1592860496277
+    },
+    "1213|@vue/cli>@vue/cli-ui>vue-cli-plugin-apollo>nodemon>update-notifier>configstore>dot-prop": {
+      "decision": "ignore",
+      "madeAt": 1596120120370,
+      "expiresAt": 1596724906164
     }
   },
   "rules": {},
