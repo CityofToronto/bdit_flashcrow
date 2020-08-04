@@ -7,19 +7,21 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import config from '@/lib/config/MoveConfig';
 import UserDAO from '@/lib/db/UserDAO';
 import CompositeId from '@/lib/io/CompositeId';
 import AuthState from '@/lib/model/AuthState';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
-import { initialize } from '@/web/MoveServer';
+import WebServer from '@/web/WebServer';
 
 let server;
 let client;
 
 beforeAll(async () => {
-  server = await initialize();
+  const webServer = new WebServer({ port: config.port });
+  server = await webServer.initialize();
   client = new InjectBackendClient(server);
 }, 60000);
 afterAll(async () => {

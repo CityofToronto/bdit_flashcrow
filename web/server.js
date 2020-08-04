@@ -1,3 +1,5 @@
-import { start } from '@/web/MoveServer';
+import config from '@/lib/config/MoveConfig';
+import WebServer from '@/web/WebServer';
 
-start();
+const webServer = new WebServer({ port: config.port });
+webServer.start();
