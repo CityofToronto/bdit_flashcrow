@@ -53,6 +53,7 @@ This repository consists of:
 
 - [`lib`](lib/README.md): libraries used throughout MOVE;
 - [`reporter`](reporter/README.md): MOVE Reporter, which provides a RESTful API to fetch data-driven reports in various formats;
+- [`scheduler`](scheduler/README.md): MOVE Scheduler, which provides a RESTful API to create and monitor background jobs such as bulk report generation;
 - [`web`](web/README.md): the MOVE web application;
   - `web/main.js`: entry point to the MOVE web frontend, written as an SPA (Single-Page Application) using [Vue.js](https://vuejs.org/);
   - `web/web.js`: the MOVE web backend, which provides a REST API layer to access data from PostgreSQL and City of Toronto geospatial REST services;
