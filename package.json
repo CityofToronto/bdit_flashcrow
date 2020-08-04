@@ -17,10 +17,10 @@
     "frontend:build": "vue-cli-service build",
     "pre-commit:lint-staged": "lint-staged",
     "pre-commit:test-unit-staged": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"unit/**\" jest --changedSince=master --runInBand",
-    "reporter": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
-    "reporter:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9282 reporter/reporter.js",
-    "reporter:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js",
-    "reporter:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js",
+    "reporter": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js --port 8082",
+    "reporter:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect=0.0.0.0:9282 reporter/reporter.js --port 8082",
+    "reporter:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r ./globalWindowShim -r esm -r module-alias/register --inspect-brk=0.0.0.0:9282 reporter/reporter.js --port 8082",
+    "reporter:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass node -r ./globalWindowShim -r esm -r module-alias/register reporter/reporter.js --port 8082",
     "test:db-shutdown": "./scripts/test/db/shutdown.sh",
     "test:db-startup": "./scripts/test/db/startup.sh --withDevData",
     "test:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"api/**\" jest --runInBand",
@@ -68,7 +68,8 @@
     "vue-router": "^3.3.4",
     "vuelidate": "^0.7.5",
     "vuetify": "^2.3.6",
-    "vuex": "^3.5.1"
+    "vuex": "^3.5.1",
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",

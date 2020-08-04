@@ -1,7 +1,15 @@
+import yargs from 'yargs';
+
 import ReporterServer from '@/reporter/ReporterServer';
 
-// TODO: put this in MoveConfig
-const PORT_REPORTER = 8082;
+const args = yargs
+  .option('p', {
+    alias: 'port',
+    demandOption: true,
+    describe: 'port to run MOVE Reporter on',
+    type: 'number',
+  })
+  .argv;
 
-const reporterServer = new ReporterServer({ port: PORT_REPORTER });
+const reporterServer = new ReporterServer(args);
 reporterServer.start();
