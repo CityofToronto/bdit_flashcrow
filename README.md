@@ -70,8 +70,8 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### MOVE Web Backend
 
-- `backend`: runs the REST API server at `web/web.js` on port 8081;
-- `backend:inspect`: runs `web/web.js`, but also opens debugging on port 9281;
+- `backend`: runs the REST API server at `web/web.js` on port 8100;
+- `backend:inspect`: runs `web/web.js`, but also opens debugging on port 9100;
 - `backend:inspect-brk`: like `backend:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
 - `backend:test-api`: runs `web/web.js` in headless testing mode on port 8080, for use during REST API tests;
 
@@ -84,11 +84,11 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### Documentation
 
-- `docs:js`: generates JSDoc-based documentation and serves it on port 9080, with hot-reloading for changes;
+- `docs:js`: generates JSDoc-based documentation and serves it on port 9000, with hot-reloading for changes;
 
 ### MOVE Web Frontend
 
-- `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes, and with `webpack-bundle-analyzer` running on port 9081;
+- `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes, and with `webpack-bundle-analyzer` running on port 9080;
 - `frontend:build`: builds a production-ready version of our frontend static resources;
 
 ### `git` pre-commit Hook
@@ -98,10 +98,17 @@ The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run
 
 ### MOVE Reporter
 
-- `reporter`: runs the REST API server at `reporter/reporter.js` on port 8082;
-- `reporter:inspect`: runs `reporter/reporter.js`, but also opens debugging on port 9282;
+- `reporter`: runs the REST API server at `reporter/reporter.js` on port 8200;
+- `reporter:inspect`: runs `reporter/reporter.js`, but also opens debugging on port 9200;
 - `reporter:inspect-brk`: like `reporter:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
-- `reporter:test-api`: runs `reporter/reporter.js` in testing mode on port 8082, for use during REST API tests;
+- `reporter:test-api`: runs `reporter/reporter.js` in testing mode on port 8200, for use during REST API tests;
+
+### MOVE Scheduler
+
+- `scheduler`: runs the REST API server at `scheduler/scheduler.js` on port 8300;
+- `scheduler:inspect`: runs `scheduler/scheduler.js`, but also opens debugging on port 9300;
+- `scheduler:inspect-brk`: like `scheduler:inspect`, but waits for a debugger to attach before running (in case you need to debug something that happens during startup);
+- `scheduler:test-api`: runs `scheduler/scheduler.js` in testing mode on port 8300, for use during REST API tests;
 
 ### Testing
 
