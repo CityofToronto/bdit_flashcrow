@@ -69,14 +69,14 @@
     "uuid": "^8.3.0",
     "vt-pbf": "^3.1.1",
     "vue": "^2.6.11",
-    "vue-router": "^3.3.4",
+    "vue-router": "^3.4.0",
     "vuelidate": "^0.7.5",
     "vuetify": "^2.3.7",
     "vuex": "^3.5.1",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.0",
+    "@babel/core": "^7.11.1",
     "@mapbox/mapbox-gl-style-spec": "^13.16.0",
     "@vue/cli": "^4.4.6",
     "@vue/cli-plugin-babel": "^4.4.6",
