@@ -7,8 +7,8 @@ class ReporterServer extends MoveServer {
     super('reporter', args);
 
     this
-      .addController(ReportController)
-      .addInitModule(MovePdfGenerator);
+      .addInitModule(MovePdfGenerator)
+      .addController(ReportController);
   }
 }
 
