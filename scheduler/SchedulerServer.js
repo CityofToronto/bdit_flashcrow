@@ -1,4 +1,5 @@
 import JobController from '@/lib/controller/JobController';
+import JobManager from '@/lib/jobs/JobManager';
 import MoveServer from '@/lib/server/MoveServer';
 
 class SchedulerServer extends MoveServer {
@@ -6,7 +7,9 @@ class SchedulerServer extends MoveServer {
     super('scheduler', args);
 
     this
-      .addController(JobController);
+      .addInitModule(JobManager)
+      .addController(JobController)
+      .addCleanupModule(JobManager);
   }
 }
 

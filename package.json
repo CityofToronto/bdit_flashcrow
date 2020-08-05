@@ -63,6 +63,7 @@
     "mustache": "^4.0.1",
     "openid-client": "^3.11.0",
     "pdfmake": "^0.1.68",
+    "pg-boss": "^5.0.4",
     "pg-promise": "^10.5.8",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
