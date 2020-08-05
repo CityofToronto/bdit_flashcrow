@@ -20,15 +20,21 @@ const vueConfig = {
     https: { key, cert },
     proxy: {
       '/api': {
-        target: 'https://localhost:8081/',
+        target: 'https://localhost:8100/',
         pathRewrite: {
           '^/api': '',
         },
       },
       '/reporter': {
-        target: 'https://localhost:8082/',
+        target: 'https://localhost:8200/',
         pathRewrite: {
           '^/reporter': '',
+        },
+      },
+      '/scheduler': {
+        target: 'https://localhost:8300/',
+        pathRewrite: {
+          '^/scheduler': '',
         },
       },
     },
@@ -55,7 +61,7 @@ const vueConfig = {
       new BundleAnalyzerPlugin({
         analyzerMode: ENV === DEV ? 'server' : 'disabled',
         analyzerHost: '0.0.0.0',
-        analyzerPort: 9081,
+        analyzerPort: 9080,
       }),
     ],
     resolve: {

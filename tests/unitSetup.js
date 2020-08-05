@@ -5,7 +5,7 @@ global.Blob = Blob;
 global.URL.createObjectURL = jest.fn();
 global.window = {
   location: {
-    origin: 'https://localhost:8081',
+    origin: 'https://localhost:8100',
   },
 };
 

@@ -40,28 +40,29 @@ Vagrant.configure("2") do |config|
     v.customize ["storagectl", :id, "--name", "SATA", "--hostiocache", "on"]
   end
 
-  # 808x: SERVICES
+  # 80xx: SERVICES
 
   # npm run frontend
   config.vm.network "forwarded_port", guest: 8080, host: 8080
   # npm run backend
-  config.vm.network "forwarded_port", guest: 8081, host: 8081
+  config.vm.network "forwarded_port", guest: 8100, host: 8100
   # npm run reporter
-  config.vm.network "forwarded_port", guest: 8082, host: 8082
+  config.vm.network "forwarded_port", guest: 8200, host: 8200
+  # npm run scheduler
+  config.vm.network "forwarded_port", guest: 8300, host: 8300
 
-  # 908x: DOCUMENTATION
+  # 90xx: DEBUGGING / PROFILING / DOCUMENTATION
 
   # npm run docs:js
-  config.vm.network "forwarded_port", guest: 9080, host: 9080
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
   # npm run frontend [webpack-bundle-analyzer]
-  config.vm.network "forwarded_port", guest: 9081, host: 9081
-
-  # 928x: NODE DEBUGGER PORTS
-
+  config.vm.network "forwarded_port", guest: 9080, host: 9080
   # npm run backend:inspect
-  config.vm.network "forwarded_port", guest: 9281, host: 9281
-  # npm run reporter
-  config.vm.network "forwarded_port", guest: 9282, host: 9282
+  config.vm.network "forwarded_port", guest: 9100, host: 9100
+  # npm run reporter:inspect
+  config.vm.network "forwarded_port", guest: 9200, host: 9200
+  # npm run reporter:inspect
+  config.vm.network "forwarded_port", guest: 9300, host: 9300
 
   # Disable automatic box checking.  While the comments in Vagrant's default
   # config discourage this, in a non-production setting it seems wiser to
