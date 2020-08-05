@@ -9,11 +9,13 @@ GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 \c flashcrow
 create schema "TRAFFIC";
 create schema "TRAFFIC_NEW";
+create extension pgcrypto;
 create extension postgis;
 create extension fuzzystrmatch;
 create extension postgis_tiger_geocoder;
 create extension postgis_topology;
 create extension pg_trgm;
+create extension pgrouting;
 set search_path=public,tiger;
 
 -- give flashcrow_dba relevant admin permissions
