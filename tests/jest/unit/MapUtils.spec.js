@@ -1,4 +1,32 @@
-import { setdefault } from '@/lib/MapUtils';
+import { mapBy, setdefault } from '@/lib/MapUtils';
+
+test('MapUtils.mapBy', () => {
+  let xs = [];
+  expect(mapBy(xs, x => Math.floor(x))).toEqual(new Map([]));
+
+  xs = [1];
+  expect(mapBy(xs, x => Math.floor(x))).toEqual(new Map([
+    [1, 1],
+  ]));
+
+  xs = [1, 1];
+  expect(mapBy(xs, x => Math.floor(x))).toEqual(new Map([
+    [1, 1],
+  ]));
+
+  xs = [1, 2];
+  expect(mapBy(xs, x => Math.floor(x))).toEqual(new Map([
+    [1, 1],
+    [2, 2],
+  ]));
+
+  xs = [1, Math.E, 3, 2, Math.PI];
+  expect(mapBy(xs, x => Math.floor(x))).toEqual(new Map([
+    [1, 1],
+    [2, 2],
+    [3, Math.PI],
+  ]));
+});
 
 test('MapUtils.setdefault', () => {
   const map = new Map();
