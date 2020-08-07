@@ -1,5 +1,13 @@
 BEGIN;
 
+CREATE TABLE "sessions" (
+  "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "expiresAt" TIMESTAMP NOT NULL,
+  "userId" BIGINT NOT NULL
+);
+CREATE UNIQUE INDEX "sessions_id" ON "sessions" ("id");
+
 CREATE TABLE "job_users" (
   "jobId" UUID NOT NULL,
   "userId" BIGINT NOT NULL
