@@ -16,7 +16,7 @@ test('JobMetadataDAO', async () => {
   const jobId1 = uuidv4();
   const transientJob1 = {
     id: jobId1,
-    name: JobType.GENERATE_REPORTS,
+    name: JobType.GENERATE_REPORTS.jobName,
     data: {
       reports: [
         { type: ReportType.SPEED_PERCENTILE, id: '4/12345', format: ReportFormat.PDF },
@@ -62,7 +62,7 @@ test('JobMetadataDAO', async () => {
   const jobId2 = uuidv4();
   const transientJob2 = {
     id: jobId2,
-    name: JobType.GENERATE_REPORTS,
+    name: JobType.GENERATE_REPORTS.jobName,
     data: {
       reports: [
         { type: ReportType.COUNT_SUMMARY_24H, id: '1/4321', format: ReportFormat.CSV },

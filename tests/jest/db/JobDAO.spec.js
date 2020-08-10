@@ -24,7 +24,7 @@ test('JobDAO', async () => {
   const id = uuidv4();
   const transientJob = {
     id,
-    name: JobType.GENERATE_REPORTS,
+    name: JobType.GENERATE_REPORTS.jobName,
     data: {
       reports: [
         { type: ReportType.SPEED_PERCENTILE, id: '4/12345', format: ReportFormat.PDF },
