@@ -16,9 +16,9 @@ CREATE TABLE "job_metadata" (
   "dismissed" BOOLEAN NOT NULL DEFAULT FALSE,
   "progressCurrent" BIGINT NOT NULL DEFAULT 0,
   "progressTotal" BIGINT NOT NULL,
-  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "startedAt" TIMESTAMP,
-  "completedAt" TIMESTAMP,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "startedAt" TIMESTAMP WITH TIME ZONE,
+  "completedAt" TIMESTAMP WITH TIME ZONE,
   "result" JSONB
 );
 CREATE UNIQUE INDEX "job_metadata_jobId" ON "job_metadata" ("jobId");
