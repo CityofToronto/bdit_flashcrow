@@ -2,14 +2,14 @@ import PgBoss from 'pg-boss';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ReportFormat, ReportType } from '@/lib/Constants';
-import config from '@/lib/config/MoveConfig';
 import db from '@/lib/db/db';
 import JobDAO from '@/lib/db/JobDAO';
 import JobType from '@/lib/jobs/JobType';
+import PgBossDatabaseWrapper from '@/lib/jobs/PgBossDatabaseWrapper';
 import DateTimeZone from '@/lib/time/DateTimeZone';
 
 const PG_BOSS = new PgBoss({
-  connectionString: config.db,
+  db: PgBossDatabaseWrapper,
   noScheduling: true,
   noSupervisor: true,
 });
