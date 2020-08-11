@@ -10,13 +10,16 @@ import DateTimeZone from '@/lib/time/DateTimeZone';
 
 const PG_BOSS = new PgBoss({
   connectionString: config.db,
+  noScheduling: true,
+  noSupervisor: true,
 });
 
 beforeAll(async () => {
   await PG_BOSS.start();
 });
 
-afterAll(() => {
+afterAll(async () => {
+  await PG_BOSS.stop();
   db.$pool.end();
 });
 
