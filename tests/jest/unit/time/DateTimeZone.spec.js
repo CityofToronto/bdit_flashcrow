@@ -5,33 +5,33 @@ const TIME_MIN = 0;
 const TIME_MAX = 1500000000000;
 
 test('DateTimeZone.utc', () => {
-  const dt = DateTimeZone.utc();
-  expect(dt.dt.zone).toEqual({ fixed: 0 });
+  const dtz = DateTimeZone.utc();
+  expect(dtz.dt.zone).toEqual({ fixed: 0 });
 });
 
 test('DateTimeZone [SQL parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
-    const dt = DateTimeZone.fromMillis(t);
-    const dt2 = DateTimeZone.fromSQL(dt.toSQL());
-    expect(dt.equals(dt2)).toBe(true);
+    const dtz = DateTimeZone.fromMillis(t);
+    const dtz2 = DateTimeZone.fromSQL(dtz.toSQL());
+    expect(dtz.equals(dtz2)).toBe(true);
   }
 });
 
-test('DateTime [JSON parsing]', () => {
+test('DateTimeZone [JSON parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
-    const dt = DateTimeZone.fromMillis(t);
-    const dt2 = DateTimeZone.fromJSON(dt.toJSON());
-    expect(dt.equals(dt2)).toBe(true);
+    const dtz = DateTimeZone.fromMillis(t);
+    const dtz2 = DateTimeZone.fromJSON(dtz.toJSON());
+    expect(dtz.equals(dtz2)).toBe(true);
   }
 });
 
-test('DateTime [string parsing]', () => {
+test('DateTimeZone [string parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
-    const dt = DateTimeZone.fromMillis(t);
-    const dt2 = DateTimeZone.fromString(dt.toString());
-    expect(dt.equals(dt2)).toBe(true);
+    const dtz = DateTimeZone.fromMillis(t);
+    const dtz2 = DateTimeZone.fromString(dtz.toString());
+    expect(dtz.equals(dtz2)).toBe(true);
   }
 });

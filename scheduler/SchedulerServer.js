@@ -6,6 +6,7 @@ class SchedulerServer extends MoveServer {
   constructor(args) {
     super('scheduler', args);
 
+    // TODO: re-enable CSRF before release
     this
       .addInitModule(JobManager)
       .addController(JobController)
