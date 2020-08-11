@@ -1,5 +1,6 @@
 import { AuthScope } from '@/lib/Constants';
 import db from '@/lib/db/db';
+import SessionDAO from '@/lib/db/SessionDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import {
   generateEmail,
@@ -55,4 +56,17 @@ test('UserDAO', async () => {
   await expect(UserDAO.delete(persistedUser1)).resolves.toEqual(true);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toBeNull();
   await expect(UserDAO.all()).resolves.not.toContainEqual(persistedUser1);
+});
+
+test('UserDAO.bySessionId', async () => {
+  const transientUser = generateUser();
+  const persistedUser = await UserDAO.create(transientUser);
+  let session = await SessionDAO.create(persistedUser, { days: 1 });
+  await expect(UserDAO.bySessionId(session.id)).resolves.toEqual(persistedUser);
+
+  await SessionDAO.delete(session);
+  await expect(UserDAO.bySessionId(session.id)).resolves.toBeNull();
+
+  session = await SessionDAO.create(persistedUser, 0);
+  await expect(UserDAO.bySessionId(session.id)).resolves.toBeNull();
 });
