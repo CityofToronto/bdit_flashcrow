@@ -1,7 +1,10 @@
 /* eslint-disable no-await-in-loop */
-import stream from 'stream';
-
 import Random from '@/lib/Random';
+import {
+  bufferToDuplexStream,
+  readableStreamToBuffer,
+  writableStreamFinish,
+} from '@/lib/io/StreamUtils';
 import StorageStrategyFilesystem from '@/lib/io/storage/StorageStrategyFilesystem';
 
 jest.mock('fs');
@@ -20,25 +23,25 @@ test('StorageStrategyFilesystem [buffer API]', async () => {
 
   let key = 'bar';
   await expect(storage.has(namespace, key)).resolves.toEqual(false);
-  await expect(storage.get(namespace, key)).resolves.toEqual(null);
+  await expect(storage.get(namespace, key)).rejects.toBeInstanceOf(Error);
 
   let value = Buffer.from('baz');
-  await expect(storage.put(namespace, key, value)).resolves.toEqual(true);
+  await expect(storage.put(namespace, key, value)).resolves.toBeUndefined();
   await expect(storage.has(namespace, key)).resolves.toEqual(true);
   await expect(storage.get(namespace, key)).resolves.toEqual(value);
 
   key = 'zing';
-  await expect(storage.put(namespace, key, value)).resolves.toEqual(true);
+  await expect(storage.put(namespace, key, value)).resolves.toBeUndefined();
 
   key = 'bar';
   value = Buffer.from('frob');
-  await expect(storage.put(namespace, key, value)).resolves.toEqual(true);
+  await expect(storage.put(namespace, key, value)).resolves.toBeUndefined();
   await expect(storage.has(namespace, key)).resolves.toEqual(true);
   await expect(storage.get(namespace, key)).resolves.toEqual(value);
 
   await expect(storage.delete(namespace, key)).resolves.toEqual(true);
   await expect(storage.has(namespace, key)).resolves.toEqual(false);
-  await expect(storage.get(namespace, key)).resolves.toEqual(null);
+  await expect(storage.get(namespace, key)).rejects.toBeInstanceOf(Error);
 
   await expect(storage.delete(namespace, key)).resolves.toEqual(false);
 });
@@ -51,7 +54,7 @@ test('StorageStrategyFilesystem [buffer API, fuzz test]', async () => {
     const key = Random.range(10, 40).toString();
     const value = randomBuffer();
 
-    await expect(storage.put(namespace, key, value)).resolves.toEqual(true);
+    await expect(storage.put(namespace, key, value)).resolves.toBeUndefined();
     await expect(storage.has(namespace, key)).resolves.toEqual(true);
     await expect(storage.get(namespace, key)).resolves.toEqual(value);
   }
@@ -64,35 +67,6 @@ test('StorageStrategyFilesystem [buffer API, fuzz test]', async () => {
     await expect(storage.has(namespace, key)).resolves.toEqual(false);
   }
 });
-
-async function readableStreamToBuffer(readableStream) {
-  return new Promise((resolve, reject) => {
-    const bufs = [];
-    readableStream
-      .on('error', reject)
-      .on('data', buf => bufs.push(buf))
-      .on('end', () => resolve(Buffer.concat(bufs)));
-  });
-}
-
-function bufferToDuplexStream(buffer) {
-  const duplexStream = new stream.PassThrough();
-  duplexStream.write(buffer, (err) => {
-    if (err) {
-      throw err;
-    }
-    duplexStream.end();
-  });
-  return duplexStream;
-}
-
-async function writableStreamFinish(writableStream) {
-  return new Promise((resolve, reject) => {
-    writableStream
-      .on('error', reject)
-      .on('finish', () => resolve());
-  });
-}
 
 test('StorageStrategyFilesystem [stream API]', async () => {
   const storage = new StorageStrategyFilesystem('/data/move-storage/stream');
@@ -139,10 +113,11 @@ test('StorageStrategyFilesystem [stream API, fuzz test]', async () => {
     const namespace = Random.choice(['a', 'b', 'c']);
     const key = Random.range(10, 40).toString();
     const value = randomBuffer();
-    const valueStream = bufferToDuplexStream(value);
+    let valueStream = bufferToDuplexStream(value);
     const writableStream = await storage.putStream(namespace, key, valueStream);
     await writableStreamFinish(writableStream);
     await expect(storage.has(namespace, key)).resolves.toEqual(true);
-    await expect(storage.get(namespace, key)).resolves.toEqual(value);
+    valueStream = storage.getStream(namespace, key);
+    await expect(readableStreamToBuffer(valueStream)).resolves.toEqual(value);
   }
 });
