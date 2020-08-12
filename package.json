@@ -42,6 +42,7 @@
     "@hapi/joi": "^17.1.1",
     "@hapi/scooter": "^6.0.0",
     "@sendgrid/mail": "^7.2.2",
+    "archiver": "^5.0.0",
     "aws-sdk": "^2.726.0",
     "blankie": "^5.0.0",
     "core-js": "^3.6.5",
