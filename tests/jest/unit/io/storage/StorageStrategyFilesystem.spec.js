@@ -1,16 +1,8 @@
 /* eslint-disable no-await-in-loop */
-import mockFs from 'mock-fs';
-
 import Random from '@/lib/Random';
 import StorageStrategyFilesystem from '@/lib/io/storage/StorageStrategyFilesystem';
 
-beforeEach(() => {
-  mockFs({});
-});
-
-afterAll(() => {
-  mockFs.restore();
-});
+jest.mock('fs');
 
 test('StorageStrategyFilesystem', async () => {
   const storage = new StorageStrategyFilesystem('/data/move-storage');
