@@ -8,6 +8,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import config from '@/lib/config/MoveConfig';
+import db from '@/lib/db/db';
 import UserDAO from '@/lib/db/UserDAO';
 import CompositeId from '@/lib/io/CompositeId';
 import AuthState from '@/lib/model/AuthState';
@@ -26,6 +27,7 @@ beforeAll(async () => {
 }, 60000);
 afterAll(async () => {
   await server.stop();
+  db.$pool.end();
 }, 60000);
 
 test('AuthController.getAuth', async () => {
