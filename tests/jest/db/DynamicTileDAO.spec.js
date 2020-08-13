@@ -1,5 +1,10 @@
+import db from '@/lib/db/db';
 import DynamicTileDAO from '@/lib/db/DynamicTileDAO';
 import { InvalidDynamicTileLayerError } from '@/lib/error/MoveErrors';
+
+afterAll(() => {
+  db.$pool.end();
+});
 
 test('DynamicTileDAO.getTileInfo', () => {
   const { EPSG_3857_MAX, EPSG_3857_MIN, EPSG_3857_SIZE } = DynamicTileDAO;
