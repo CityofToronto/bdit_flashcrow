@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.5] - 2020-08-13
+
+### Added
+- File storage layer with filesystem support (S3 support to come later!)
+- Backend implementation of report generation job
+
+### Changed
+- `BackendClient` is now isomorphic, and can be used to make HTTP calls between MOVE backend services
+
 ## [0.9.4] - 2020-08-04
 
 ### Added
