@@ -6,16 +6,9 @@ import {
   writableStreamFinish,
 } from '@/lib/io/StreamUtils';
 import StorageStrategyFilesystem from '@/lib/io/storage/StorageStrategyFilesystem';
+import { generateBuffer } from '@/lib/test/random/BufferGenerator';
 
 jest.mock('fs');
-
-function randomBuffer() {
-  const arr = new Uint8Array(8);
-  for (let i = 0; i < 8; i++) {
-    arr[i] = Random.range(0, 256);
-  }
-  return Buffer.from(arr);
-}
 
 test('StorageStrategyFilesystem [buffer API]', async () => {
   const storage = new StorageStrategyFilesystem('/data/move-storage/buffer');
@@ -52,7 +45,7 @@ test('StorageStrategyFilesystem [buffer API, fuzz test]', async () => {
   for (let i = 0; i < 30; i++) {
     const namespace = Random.choice(['a', 'b', 'c']);
     const key = Random.range(10, 40).toString();
-    const value = randomBuffer();
+    const value = generateBuffer(8);
 
     await expect(storage.put(namespace, key, value)).resolves.toBeUndefined();
     await expect(storage.has(namespace, key)).resolves.toEqual(true);
@@ -112,7 +105,7 @@ test('StorageStrategyFilesystem [stream API, fuzz test]', async () => {
   for (let i = 0; i < 30; i++) {
     const namespace = Random.choice(['a', 'b', 'c']);
     const key = Random.range(10, 40).toString();
-    const value = randomBuffer();
+    const value = generateBuffer(8);
     let valueStream = bufferToDuplexStream(value);
     const writableStream = await storage.putStream(namespace, key, valueStream);
     await writableStreamFinish(writableStream);

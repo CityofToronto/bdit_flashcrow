@@ -1,5 +1,5 @@
 import MoveCsvGenerator from '@/lib/reports/format/MoveCsvGenerator';
-import { streamToString } from '@/lib/test/StreamUtils';
+import { readableStreamToString } from '@/lib/io/StreamUtils';
 import DateTime from '@/lib/time/DateTime';
 
 test('MoveCsvGenerator#generate', async () => {
@@ -13,42 +13,42 @@ test('MoveCsvGenerator#generate', async () => {
   rows = [];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('\n');
 
   columns = ['a'];
   rows = [];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('a\n');
 
   columns = ['a', 'b'];
   rows = [];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('a,b\n');
 
   columns = ['a'];
   rows = [[1]];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('a\n1\n');
 
   columns = ['a', 'b'];
   rows = [[1, 2]];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('a,b\n1,2\n');
 
   columns = ['a', 'b'];
   rows = [[1, 2], [3, 4]];
   generator = new MoveCsvGenerator(columns, rows);
   readableStream = await generator.generate();
-  str = await streamToString(readableStream);
+  str = await readableStreamToString(readableStream);
   expect(str).toEqual('a,b\n1,2\n3,4\n');
 });
 
@@ -67,7 +67,7 @@ test('MoveCsvGenerator#generate [DateTime]', async () => {
   ];
   const generator = new MoveCsvGenerator(columns, rows);
   const readableStream = await generator.generate();
-  const str = await streamToString(readableStream);
+  const str = await readableStreamToString(readableStream);
   expect(str).toEqual(`Time,Count,Flag,Notes,JSON
 2000-01-01 07:45,42,1,foo,"{""x"":2}"
 2000-01-01 08:00,1729,,bar baz,"{""y"":""pi""}"
