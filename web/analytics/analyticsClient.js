@@ -351,7 +351,7 @@ class AnalyticsClient {
       method: 'POST',
     };
     try {
-      await fetch(url, options);
+      await window.fetch(url, options);
     } catch (err) {
       // TODO: log this error once we have frontend logging functionality
     }
