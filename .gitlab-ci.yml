@@ -33,4 +33,5 @@ deploy:
   stage: deploy
   script:
   - echo deploy
-  only: master
+  only:
+  - master
