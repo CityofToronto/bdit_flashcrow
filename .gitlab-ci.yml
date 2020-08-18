@@ -1,17 +1,19 @@
 stages:
-  - install-app
+  - build
   - test
   - deploy
 
-install-app:
-  stage: install-app
-  script:
+cache:
+  paths:
+    - node_modules/
+
+before_script:
   - nvm install
   - nvm use
   - npm install
 
-test-build:
-  stage: test
+build:
+  stage: build
   script:
   - npm run docs:build
   - npm run frontend:build
