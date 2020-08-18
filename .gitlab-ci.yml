@@ -1,25 +1,36 @@
 stages:
-  - install-system
   - install-app
   - test
   - deploy
 
-install-system:
-  stage: install-system
-  script:
-  - echo install-system
-
 install-app:
   stage: install-app
   script:
-  - echo install-app
+  - nvm install
+  - nvm use
+  - npm install
 
-test:
+test-build:
   stage: test
   script:
-  - echo test
+  - npm run docs:build
+  - npm run frontend:build
+
+# test-coverage:
+#   stage: test
+#   script:
+#   - npm run test:db-startup
+#   - npm run ci:jest-coverage
+#   - npm run test:db-shutdown
+
+test-compliance:
+  stage: test
+  script:
+  - npm run ci:npm-audit
+  - npm run ci:npm-outdated
 
 deploy:
   stage: deploy
   script:
   - echo deploy
+  only: master
