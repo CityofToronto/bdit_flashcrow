@@ -9,10 +9,14 @@ cache:
 before_script:
   - nvm install
   - nvm use
-  - npm install
+  - npm install -g pnpm
+  - pnpm install
 
 test-coverage:
   stage: test
+  before_script:
+  - cp ~/private.js lib/config/private.js
+  - cp ~/extra-ca-certs.cer ssl/extra-ca-certs.cer
   script:
   - npm run test:db-startup
   - npm run ci:jest-coverage
