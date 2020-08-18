@@ -1,0 +1,25 @@
+stages:
+  - install-system
+  - install-app
+  - test
+  - deploy
+
+install-system:
+  stage: install-system
+  script:
+  - echo install-system
+
+install-app:
+  stage: install-app
+  script:
+  - echo install-app
+
+test:
+  stage: test
+  script:
+  - echo test
+
+deploy:
+  stage: deploy
+  script:
+  - echo deploy
