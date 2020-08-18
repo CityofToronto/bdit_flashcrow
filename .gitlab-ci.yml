@@ -12,7 +12,8 @@ cache:
 before_script:
   - nvm install
   - nvm use
-  - npm install
+  - npm install -g pnpm
+  - pnpm install
 
 test-coverage:
   stage: test
@@ -26,7 +27,7 @@ test-coverage:
 
 test-build:
   stage: test
-    script:
+  script:
     - npm run docs:build
     - npm run frontend:build
   only:
@@ -45,4 +46,4 @@ deploy:
   script:
     - echo deploy
   only:
-    - master
+   - master
