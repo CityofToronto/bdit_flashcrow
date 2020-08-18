@@ -4,96 +4,54 @@ New to MOVE development?  You're in the right place!  This guide walks you throu
 
 In this guide, you will:
 
-- install system prerequisites;
+- set up system prerequisites;
 - clone the MOVE repository;
-- on your host machine, add config files;
-- start up the MOVE development VM;
-- copy config files from your host machine to the VM;
-- within the VM, run the application.
+- set up the MOVE development VM;
+- within the VM:
+  - clone the MOVE repository;
+  - install private config files;
+  - install application dependencies;
+  - run the application to verify installation.
 
 Most of MOVE development takes place in a Vagrant VM.  This helps ensure that all developers have the same environment, and that this environment is as similar as possible to those in staging and production.
 
-The remainder of this guide will assume you're developing on a Windows machine, which is the default OS installed for City of Toronto users.  That said, many of these steps are OS-agnostic.
+## City of Toronto Developers: Read This!
 
-## System Prerequisites
+Developers at the City of Toronto have a couple of additional steps.  See [City of Toronto Installation Specifics](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb), and refer to that guide throughout this process for further details.
 
-### PowerShell 5+
+## Set up System Prerequisites
 
-You should have PowerShell 5 or later installed.  You can follow [Microsoft docs](https://docs.microsoft.com/en-us/skypeforbusiness/set-up-your-computer-for-windows-powershell/download-and-install-windows-powershell-5-1) for details on setting that up.
+### Command-Line Tools: `git` and `vagrant`
 
-### Scoop
+Install [`git`](https://git-scm.com/) and [`vagrant`](https://www.vagrantup.com/downloads) for use on the command line.
 
-We recommend installing packages through [Scoop](https://scoop.sh/).  Open a PowerShell window and:
+### VirtualBox
 
-```powershell
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-scoop config proxy currentuser:proxy.toronto.ca:8080
-```
+Install [VirtualBox](https://www.virtualbox.org/) as described on the VirtualBox site.
 
-### Git
-
-Now we'll install Git using Scoop, and set up the proxy:
-```powershell
-scoop install git
-git config --global http.proxy http://proxy.toronto.ca:8080
-```
-
-### Clone the MOVE Repository
+## Clone the MOVE repository
 
 Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that once you clone the repo:
 
 ```powershell
 git clone https://github.com/CityofToronto/bdit_flashcrow.git
 ```
-That's when a window will pop up and ask you what credential manager you want to use. Select `manager`, and tell it to remember that setting. Then enter your GitHub credentials.
 
-### Install the rest of the Scoop requirements
+## Set up the MOVE development VM
 
-Now that we've got Scoop installed, and we've got MOVE cloned, we can read the Scoop requirements and install them:
+### Private Configuration
 
-```powershell
-cd bdit_flashcrow
-.\scripts\dev\scoop-requirements.ps1
-```
-
-If you run into a `Out-File : Could not find a part of the path 'C:\Users\akonoff\AppData\Roaming\pip\pip.ini'` error, simply create the pip folder:
-```powershell
-New-Item -Path $env:APPDATA -Name "pip" -ItemType "directory"
-```
-Now you should be ready to rock!
-
-### VirtualBox and Vagrant
-
-Install [VirtualBox](https://www.virtualbox.org/) if your machine does not already have it - you'll need version 5.2 if yours is a 32-bit machine.
-
-We already installed Vagrant above using `scoop-dependencies.ps1`, but we'll need a plugin to allow us to use it with a proxy, and, hilariously, we'll first have to configure Vagrant to use our proxy to download the proxy plugin:
-
-```powershell
-cd scripts\dev
-$env:http_proxy="http://proxy.toronto.ca:8080"
-vagrant plugin install vagrant-proxyconf
-```
-
-## Set up MOVE config files on Host Machine
-
-Our application config files are left out of source control to avoid exposing secrets (e.g. session cookie keys, database credentials, etc.).
-
-Copy-paste `lib/config/private.js` from [Accounts](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3).
-
-Next, generate a random database password and create a file at `scripts\dev\provision.conf.yml` as follows:
+Generate a random database password and create a file at `scripts\dev\provision.conf.yml` as follows:
 
 ```yaml
 gh_user: "{your Github username}"
 gh_password: "{your Github password}"
 pg_password: "{database password}"
-proxy_user: "{your City of Toronto username}"
-proxy_pass: "{your City of Toronto password}"
 ```
 
-These files should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit these files into the repo!
+This file should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit this files into the repo!
 
-## Start up the VM
+### Vagrant Cloud
 
 MOVE provides a private base box image at `cot-move/cot-move-dev` on Vagrant Cloud, based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download).  This image will be downloaded by `vagrant`.
 
@@ -106,20 +64,43 @@ vagrant login
 
 See [Accounts](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3) for Vagrant Cloud credentials.
 
+### Start up the VM
+
 This will allow you to install the private base box image, which you can then start up using:
 
 ```powershell
+cd scripts\dev
 vagrant up
 ```
 
-That's it!  This should install and run a working development environment.  The first time you run this, it will take about 20-30 minutes.
+That's it!  This should install and run the development VM.  The first time you run this, it will take about 20-30 minutes.
 
-## Copy configs to VM
+## Within the VM...
 
-You will need to `scp` the private config file from your host machine to the VM:
+To access the VM, you can use `vagrant ssh`:
 
 ```powershell
-scp lib\config\private.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config/private.js
+cd scripts\dev
+vagrant ssh
+```
+
+### Clone the MOVE repository (again)
+
+From within the development VM:
+
+```bash
+cd git
+git clone https://github.com/CityofToronto/bdit_flashcrow.git
+```
+
+### Install private config files
+
+See [Accounts :: Web Application Credentials](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3#c8ce1f4bab564efb8b23b37c64e679a6) for private config files.  Install these files within the VM as directed there.
+
+If you download these files to your host development machine, you can `scp` them over to the VM, e.g.:
+
+```powershell
+scp private.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config/private.js
 ```
 
 Again: these files should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit these files into the repo!
@@ -128,19 +109,17 @@ Again: these files should be `.gitignore`'d.  Double-check that you've named the
 
 It is highly recommended that you use [Visual Studio Code](https://code.visualstudio.com/).  The MOVE repo comes with a Visual Studio Code workspace configuration; to work in other editors, you will have to roll your own configuration.
 
-In particular, make sure that you have Visual Studio Code version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
+If you already have Visual Studio Code installed, make sure that you have updated to version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
 
-The rest of this section will assume that you're installing Visual Studio Code.
+The rest of this guide will assume that you're using Visual Studio Code with remote development over SSH.
 
 ### Install Visual Studio Code
 
-If you already have Visual Studio Code, use your Elevated Access User to update to the latest version.
+If you already have Visual Studio Code, update it to the latest version.  Otherwise, you can download the installer from the [Visual Studio Code website](https://code.visualstudio.com/) and run it.
 
-Otherwise, you can download the installer from the [Visual Studio Code website](https://code.visualstudio.com/).  Download and install it as your Elevated Access User, and make sure you're installing it system-wide (for all users).
+Open Visual Studio Code and install the [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) extension pack using the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery).
 
-Once that's installed, log back in as your normal user.  Open Visual Studio Code and install the [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) extension pack using the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery).
-
-The list of extensions we use is documented in `bdit_flashcrow.code-workspace` - in the future, we'll figure out how to configure Visual Studio Code to automatically install and update those extensions.  For now, work with an existing developer to install these, or install them from the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery) if you're already familiar with that process.
+The list of extensions we use is documented in `bdit_flashcrow.code-workspace`; Visual Studio Code should automatically recommend these extensions and prompt you to install them.
 
 ### SSH Configuration
 
@@ -166,19 +145,37 @@ At this point, you'll be in a Visual Studio Code window with SSH access to the V
 
 Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit_flashcrow.code-workspace`.  You should only have to do this the first time you open the MOVE workspace; by default, Visual Studio Code re-opens your most recently open workspace on startup.
 
-## Run!
+## Within the VM...
 
-To run Flashcrow, you need to start three services:
+To finish this off, we'll now install application dependencies and run MOVE from our Visual Studio Code workspace.
+
+### Install application dependencies
+
+To install application dependencies:
+
+```bash
+nvm install
+nvm use
+npm install
+```
+
+### Run!
+
+To run Flashcrow, at a minimum you must start the frontend and `web` backend:
 
 - `npm run frontend` to serve static files;
-- `npm run backend` for the web application REST API;
-- `npm run reporter` for MOVE Reporter.
+- `npm run backend` for the web application REST API.
 
-With the MOVE workspace open in Visual Studio Code, you can run each from a separate terminal.
+With the MOVE workspace open in Visual Studio Code, you can run each from a separate terminal.  Once both are running, open [https://localhost:8080](https://localhost:8080) in your browser.
 
-Once all three are running, open [https://localhost:8080](https://localhost:8080) in your browser.
+To access reporting features, you will also need to run `reporter` and `scheduler`:
 
-## Celebrate!
+- `npm run reporter` to serve reports within the web interface;
+- `npm run scheduler` to handle bulk report generation and other background tasks.
+
+These can be run in additional separate terminals.
+
+### Celebrate!
 
 Congratulations!  Head back to the [MOVE Developer Handbook](https://www.notion.so/bditto/MOVE-Developer-Handbook-182de05ad8a94888b52ccc68093a497a#8da00ef06ab744bbafa1ca2a5b29ff6f) to continue your onboarding.
 
