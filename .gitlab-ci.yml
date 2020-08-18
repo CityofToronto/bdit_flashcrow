@@ -3,44 +3,46 @@ stages:
   - deploy
 
 cache:
+  key:
+    files:
+      - package.json
   paths:
     - node_modules/
 
 before_script:
   - nvm install
   - nvm use
-  - npm install -g pnpm
-  - pnpm install
+  - npm install
 
 test-coverage:
   stage: test
   before_script:
-  - cp ~/private.js lib/config/private.js
-  - cp ~/extra-ca-certs.cer ssl/extra-ca-certs.cer
+    - cp ~/private.js lib/config/private.js
+    - cp ~/extra-ca-certs.cer ssl/extra-ca-certs.cer
   script:
-  - npm run test:db-startup
-  - npm run ci:jest-coverage
-  - npm run test:db-shutdown
+    - npm run test:db-startup
+    - npm run ci:jest-coverage
+    - npm run test:db-shutdown
 
 test-build:
   stage: test
-  script:
-  - npm run docs:build
-  - npm run frontend:build
+    script:
+    - npm run docs:build
+    - npm run frontend:build
   only:
-  - /^.*-version-.*$/
+    - /^.*-version-.*$/
 
 test-compliance:
   stage: test
   script:
-  - npm run ci:npm-audit
-  - npm run ci:npm-outdated
+    - npm run ci:npm-audit
+    - npm run ci:npm-outdated
   only:
-  - /^.*-version-.*$/
+    - /^.*-version-.*$/
 
 deploy:
   stage: deploy
   script:
-  - echo deploy
+    - echo deploy
   only:
-  - master
+    - master
