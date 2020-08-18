@@ -4,12 +4,12 @@ stages:
 
 cache:
   paths:
-    - .npm/
+    - node_modules/
 
 before_script:
   - nvm install
   - nvm use
-  - npm ci --cache .npm --prefer-offline
+  - npm install
 
 test-coverage:
   stage: test
