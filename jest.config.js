@@ -39,7 +39,7 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  setupFiles: [
+  setupFilesAfterEnv: [
     '<rootDir>/tests/unitSetup.js',
   ],
   snapshotSerializers: [
