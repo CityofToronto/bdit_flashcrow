@@ -8,7 +8,7 @@ source /home/ec2-user/.bash_profile
 set -u
 
 # copy private config to repo
-cp /home/ec2-user/flashcrow.config.js /home/ec2-user/flashcrow/lib/config/private.js
+cp -r /data/config-private/* /home/ec2-user/flashcrow
 
 # copy nginx / forever configs from repo
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/nginx.conf /etc/nginx/
@@ -18,17 +18,15 @@ cp /home/ec2-user/flashcrow/scripts/deployment/web/forever.json /home/ec2-user/f
 # make log directory
 mkdir -p /home/ec2-user/log/flashcrow
 
-# install node and Python dependencies
+# install node dependencies
 cd /home/ec2-user/flashcrow
-#?? fix issues with running "npm run frontend:build" (using codebuild node_modules): Error: Cannot find module '../package.json'
-rm -rf node_modules
-nvm use lts/*
-npm install
+nvm use
+pnpm install
 pip install -r requirements.txt
 
 # build static files into dist
-npm run frontend:build
-npm run docs:build
+pnpm run frontend:build
+pnpm run docs:build
 
 # copy to web root
 sudo rm -rf /usr/share/nginx/html/flashcrow

@@ -12,7 +12,7 @@ sudo amazon-linux-extras enable nginx1.12
 
 # section: install_base
 sudo yum update -y
-sudo yum install -y nginx gcc gcc-c++ git patch openssl-devel zlib-devel readline-devel sqlite-devel bzip2-devel libffi-devel xz-devel jq mailx postgresql postgresql-devel postgresql-contrib
+sudo yum install -y nginx postgresql postgresql-contrib
 
 # section: pre_install_flashcrow
 ## /install_node.sh
@@ -35,31 +35,4 @@ echo "installing node@lts/*..."
 nvm install lts/*
 echo "lts/*" > /home/ec2-user/.nvmrc
 nvm use lts/*
-npm install -g forever npm@latest
-
-## /install_python.sh
-echo "installing pyenv..."
-if [ ! -d /home/ec2-user/.pyenv ]; then
-  git clone https://github.com/pyenv/pyenv.git /home/ec2-user/.pyenv
-  cat <<'EOF' >> /home/ec2-user/.bashrc
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-  fi
-EOF
-fi
-
-# ensure that pyenv shims are available in current shell session
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-
-# install correct version of Python
-echo "installing Python 3.7.2..."
-pyenv install -s 3.7.2
-pyenv rehash
-pyenv global 3.7.2
-pip install --upgrade pip
+npm install -g forever pnpm

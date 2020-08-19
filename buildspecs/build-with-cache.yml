@@ -2,25 +2,9 @@ version: 0.2
 runas: ec2-user
 
 phases:
-  install:
-    commands:
-      - echo Installing package.json..
-      - npm install
-  pre_build:
-    commands:
-      - echo Installing source NPM placeholder dependencies...
   build:
     commands:
-      - echo Build started on `date`
-      - echo Compiling the Node.js code
-      # commenting out temporarily
-      #- npm run ci:test-unit
-  post_build:
-    commands:
-      - echo Build completed on `date`
-cache:
-  paths:
-    - 'node_modules/**/*'
+      - echo "build-with-cache"
 artifacts:
   files:
     - '**/*'

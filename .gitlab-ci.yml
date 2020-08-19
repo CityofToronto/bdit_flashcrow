@@ -14,8 +14,7 @@ before_script:
   - nvm use
   - npm install -g pnpm
   - pnpm install
-  - cp ~/private.js lib/config/private.js
-  - cp ~/extra-ca-certs.cer ssl/extra-ca-certs.cer
+  - cp -r /data/config-private/* .
 
 # run coverage tests on every feature branch
 test-coverage:
@@ -42,8 +41,9 @@ test-ci-rest:
 deploy-dev:
   stage: deploy
   script:
-    - echo deploy-dev
+    - git push https://git-codecommit.ca-central-1.amazonaws.com/v1/repos/bdit_flashcrow HEAD:master
   only:
+    - gh577-dual-push-config
     - master
 
 # deploy QA branch automatically

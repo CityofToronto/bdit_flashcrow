@@ -1,14 +1,10 @@
 version: 0.2
+runas: ec2-user
 
 phases:
-  install:
-    commands:
-      - mkdir node_modules
-      - cp -a ~/node_modules_cache/. node_modules
-      - npm install
   build:
     commands:
-      - npm test
+      - echo "build-with-image-cache"
 artifacts:
   files:
     - '**/*'
