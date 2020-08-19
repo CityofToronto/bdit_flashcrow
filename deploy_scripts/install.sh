@@ -35,4 +35,4 @@ echo "installing node@lts/*..."
 nvm install lts/*
 echo "lts/*" > /home/ec2-user/.nvmrc
 nvm use lts/*
-npm install -g forever pnpm
+npm install -g forever

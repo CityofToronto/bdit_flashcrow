@@ -20,15 +20,13 @@ mkdir -p /home/ec2-user/log/flashcrow
 
 # install node dependencies
 cd /home/ec2-user/flashcrow
-#?? fix issues with running "npm run frontend:build" (using codebuild node_modules): Error: Cannot find module '../package.json'
-rm -rf node_modules
 nvm use
-pnpm install
+npm ci
 pip install -r requirements.txt
 
 # build static files into dist
-pnpm run frontend:build
-pnpm run docs:build
+npm run frontend:build
+npm run docs:build
 
 # copy to web root
 sudo rm -rf /usr/share/nginx/html/flashcrow
