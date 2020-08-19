@@ -17,32 +17,56 @@ before_script:
   - cp ~/private.js lib/config/private.js
   - cp ~/extra-ca-certs.cer ssl/extra-ca-certs.cer
 
+# run coverage tests on every feature branch
 test-coverage:
   stage: test
   script:
     - npm run test:db-startup
     - npm run ci:jest-coverage
     - npm run test:db-shutdown
-
-test-build:
-  stage: test
-  script:
-    - npm run docs:build
-    - npm run frontend:build
   only:
-    - /^.*-version-.*$/
+    - /^gh.*-.*$/
 
-test-compliance:
+# run rest of CI tests on every release branch
+test-ci-rest:
   stage: test
   script:
     - npm run ci:npm-audit
     - npm run ci:npm-outdated
+    - npm run docs:build
+    - npm run frontend:build
   only:
-    - /^.*-version-.*$/
+    - /^gh.*-version-.*$/
 
-deploy:
+# deploy master to dev automatically
+deploy-dev:
   stage: deploy
   script:
-    - echo deploy
+    - echo deploy-dev
   only:
-   - master
+    - master
+
+# deploy QA branch automatically
+deploy-qa:
+  stage: deploy
+  script:
+    - echo deploy-qa
+  only:
+    - deploy-qa
+
+# deploy staging automatically
+deploy-staging:
+  stage: deploy
+  script:
+    - echo deploy-staging
+  only:
+    - deploy-staging
+
+# deploy prod manually after approval
+deploy-prod:
+  stage: deploy
+  script:
+    - echo deploy-prod
+  only:
+    - deploy-prod
+  when: manual

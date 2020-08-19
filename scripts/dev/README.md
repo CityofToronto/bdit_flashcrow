@@ -119,7 +119,7 @@ If you already have Visual Studio Code, update it to the latest version.  Otherw
 
 Open Visual Studio Code and install the [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) extension pack using the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery).
 
-The list of extensions we use is documented in `bdit_flashcrow.code-workspace`; Visual Studio Code should automatically recommend these extensions and prompt you to install them.
+The list of extensions we use is documented in `bdit-flashcrow.code-workspace`; Visual Studio Code should automatically recommend these extensions and prompt you to install them.
 
 ### SSH Configuration
 
@@ -143,7 +143,7 @@ You can now follow step 2 on the [Remote Development using SSH](https://code.vis
 
 At this point, you'll be in a Visual Studio Code window with SSH access to the Vagrant VM, but you won't actually be in the MOVE workspace.
 
-Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit_flashcrow.code-workspace`.  You should only have to do this the first time you open the MOVE workspace; by default, Visual Studio Code re-opens your most recently open workspace on startup.
+Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit-flashcrow.code-workspace`.  You should only have to do this the first time you open the MOVE workspace; by default, Visual Studio Code re-opens your most recently open workspace on startup.
 
 ## Within the VM...
 
@@ -161,7 +161,7 @@ npm install
 
 ### Run!
 
-To run Flashcrow, at a minimum you must start the frontend and `web` backend:
+To run MOVE, at a minimum you must start the frontend and `web` backend:
 
 - `npm run frontend` to serve static files;
 - `npm run backend` for the web application REST API.

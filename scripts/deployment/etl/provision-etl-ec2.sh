@@ -2,7 +2,7 @@
 #
 # provision-web-ec2.sh
 #
-# Provision the current machine as part of the Flashcrow Web Stack.  This is
+# Provision the current machine as part of the MOVE Web Stack.  This is
 # intended to be run on EC2.
 
 set -e

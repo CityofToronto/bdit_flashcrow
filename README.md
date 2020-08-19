@@ -1,6 +1,6 @@
 # bdit_flashcrow
 
-Flashcrow is a data platform for viewing, requesting, and analyzing data related to City of Toronto rights-of-way.  This includes:
+MOVE is a data platform for viewing, requesting, and analyzing data related to City of Toronto rights-of-way.  This includes:
 
 - CRASH collision data;
 - FLOW counts;
@@ -9,13 +9,13 @@ Flashcrow is a data platform for viewing, requesting, and analyzing data related
 
 ## Points of Contact
 
-To contact the Flashcrow team:
+To contact the MOVE team:
 
 | If... | Contact: | Who? |
 | --- | --- | --- |
-| You have a question related to Flashcrow development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
-| You have a question related to Flashcrow design practices, usability, or accessibility | Design Lead | [Shine Chaudhuri](Shine.Chaudhuri@toronto.ca) |
-| You have a question related to Flashcrow user testing, upcoming launches, or roadmaps | Product Manager | [Ruth Birman](Ruth.Birman@toronto.ca) |
+| You have a question related to MOVE development, deployment, security, or of an otherwise technical nature | Tech Lead | [Evan Savage](mailto:Evan.Savage@toronto.ca) |
+| You have a question related to MOVE design practices, usability, or accessibility | Design Lead | [Shine Chaudhuri](Shine.Chaudhuri@toronto.ca) |
+| You have a question related to MOVE user testing, upcoming launches, or roadmaps | Product Manager | [Maddy Ewins](Maddy.Ewins@toronto.ca) |
 | Your question isn't captured above, or you're not sure who to contact | Service Owner | [Aakash Harpalani](mailto:Aakash.Harpalani@toronto.ca) |
 
 We will try to respond to any questions within 48 hours.  However, given the small size of our team, please understand if it takes us a bit longer to respond sometimes.
@@ -25,27 +25,13 @@ We will try to respond to any questions within 48 hours.  However, given the sma
 See the [MOVE Developer Handbook](https://www.notion.so/bditto/MOVE-Developer-Handbook-182de05ad8a94888b52ccc68093a497a).  This guide will help you:
 
 - request the necessary permissions from City of Toronto IT and the Big Data Innovation Team;
-- install Flashcrow prerequisites on your City of Toronto computer;
-- configure and run Flashcrow inside a virtual machine using [Vagrant](https://www.vagrantup.com/);
+- install MOVE prerequisites on your City of Toronto computer;
+- configure and run MOVE inside a virtual machine using [Vagrant](https://www.vagrantup.com/);
 - understand team practices around communication, source control, code editing, and code style.
-
-## Deployment
-
-To deploy the Flashcrow web application, you will need access to the AWS CodeCommit repository.  Once you have that:
-
-```
-git remote add code-commit https://git-codecommit.us-east-1.amazonaws.com/v1/repos/bdit_flashcrow
-
-env $(xargs < ~/move-env.config) ./scripts/deployment/code-commit/deploy_code_commit.sh
-```
-
-For now, please use the `deploy_code_commit.sh` script for all deployments to AWS CodeCommit!  We're working with Cloud Services on a deployment process that includes continuous integration (CI) testing; in the meantime, that script runs our CI tests before pushing to AWS CodeCommit.
-
-Any versions pushed to AWS CodeCommit are automatically deployed to [`web-dev`](https://move.intra.dev-toronto.ca).
 
 ## Code Documentation
 
-Working on Flashcrow development?  Help improve our documentation!  If you come across something you'd like to see documented, first [submit a bug report](https://github.com/CityofToronto/bdit_flashcrow/issues/new/choose) with the [documentation label](https://github.com/CityofToronto/bdit_flashcrow/labels/documentation).
+Working on MOVE development?  Help improve our documentation!  If you come across something you'd like to see documented, first [submit a bug report](https://github.com/CityofToronto/bdit_flashcrow/issues/new/choose) with the [documentation label](https://github.com/CityofToronto/bdit_flashcrow/labels/documentation).
 
 Once the bug report has been submitted, you can either [submit a pull request](https://github.com/CityofToronto/bdit_flashcrow/pulls), or assign it to whoever's best suited to follow up.
 
