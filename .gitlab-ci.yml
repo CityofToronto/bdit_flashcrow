@@ -9,16 +9,15 @@ cache:
   paths:
     - node_modules/
 
-before_script:
-  - nvm install
-  - nvm use
-  - npm install -g pnpm
-  - pnpm install
-  - cp -r /data/config-private/* .
-
 # run coverage tests on every feature branch
 test-coverage:
   stage: test
+  before_script:
+    - nvm install
+    - nvm use
+    - npm install -g pnpm
+    - pnpm install
+    - cp -r /data/config-private/* .
   script:
     - npm run test:db-startup
     - npm run ci:jest-coverage
@@ -29,6 +28,12 @@ test-coverage:
 # run rest of CI tests on every release branch
 test-ci-rest:
   stage: test
+  before_script:
+    - nvm install
+    - nvm use
+    - npm install -g pnpm
+    - pnpm install
+    - cp -r /data/config-private/* .
   script:
     - npm run ci:npm-audit
     - npm run ci:npm-outdated
@@ -41,9 +46,8 @@ test-ci-rest:
 deploy-dev:
   stage: deploy
   script:
-    - git push https://git-codecommit.ca-central-1.amazonaws.com/v1/repos/bdit_flashcrow HEAD:master
+    - echo deploy-dev
   only:
-    - gh577-dual-push-config
     - master
 
 # deploy QA branch automatically
