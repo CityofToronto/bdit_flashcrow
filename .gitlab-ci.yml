@@ -46,8 +46,9 @@ test-ci-rest:
 deploy-dev:
   stage: deploy
   script:
-    - echo deploy-dev
+    - ./scripts/deployment/code-commit/deploy_code_commit.sh
   only:
+    - gh579-cd-interim-codecommit
     - master
 
 # deploy QA branch automatically
