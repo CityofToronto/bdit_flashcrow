@@ -48,7 +48,6 @@ deploy-dev:
   script:
     - ./scripts/deployment/code-commit/deploy_code_commit.sh
   only:
-    - gh579-cd-interim-codecommit
     - master
 
 # deploy QA branch automatically
