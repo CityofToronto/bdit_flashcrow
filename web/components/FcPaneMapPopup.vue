@@ -33,9 +33,13 @@
 
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, LocationMode, MAX_LOCATIONS } from '@/lib/Constants';
+import {
+  CentrelineType,
+  LocationMode,
+  LocationSelectionType,
+} from '@/lib/Constants';
 import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
@@ -255,7 +259,6 @@ function getFeatureIcon({ layerId, feature, details }) {
   return null;
 }
 
-
 export default {
   name: 'PaneMapPopup',
   components: {
@@ -295,7 +298,7 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return false;
         }
-        return this.locationEditIndex === -1 && this.locationsEdit.length >= MAX_LOCATIONS;
+        return this.locationsEditIndex === -1 && this.locationsEditFull;
       }
       return false;
     },
@@ -308,7 +311,7 @@ export default {
         return false;
       }
       const { centrelineId, centrelineType } = this.feature.properties;
-      return this.locationsEdit.findIndex(
+      return this.locationsEditSelection.locations.findIndex(
         location => location.centrelineType === centrelineType
           && location.centrelineId === centrelineId,
       );
@@ -334,10 +337,10 @@ export default {
         if (this.featureLocationsEditIndex !== -1) {
           return `Remove Location #${this.featureLocationsEditIndex + 1}`;
         }
-        if (this.locationEditIndex === -1) {
+        if (this.locationsEditIndex === -1) {
           return 'Add Location';
         }
-        return `Set Location #${this.locationEditIndex + 1}`;
+        return `Set Location #${this.locationsEditIndex + 1}`;
       }
       return 'View Data';
     },
@@ -380,7 +383,12 @@ export default {
       }
       return null;
     },
-    ...mapState(['locationEditIndex', 'locationMode', 'locationsEdit']),
+    ...mapState([
+      'locationsEditIndex',
+      'locationsEditSelection',
+      'locationMode',
+    ]),
+    ...mapGetters(['locationsEditFull']),
   },
   watch: {
     coordinates() {
@@ -446,7 +454,7 @@ export default {
       const s1 = CompositeId.encode([feature]);
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params: { s1, selectionTypeName: LocationSelectionType.POINTS.name },
       });
     },
     createPopup() {

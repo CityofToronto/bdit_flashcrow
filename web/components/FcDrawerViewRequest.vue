@@ -99,11 +99,15 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
-import CompositeId from '@/lib/io/CompositeId';
 import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
 import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -205,6 +209,7 @@ export default {
       return 'Requests';
     },
     ...mapState(['auth', 'backViewRequest', 'locations']),
+    ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
   },
   methods: {
     async actionAcceptChanges() {
@@ -257,13 +262,13 @@ export default {
       await this.updateMoreActions();
     },
     actionViewData() {
-      if (this.locations.length === 0) {
+      if (this.locationsEmpty) {
         return;
       }
-      const s1 = CompositeId.encode(this.locations);
+      const params = this.locationsRouteParams;
       const route = {
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params,
       };
       this.$router.push(route);
     },

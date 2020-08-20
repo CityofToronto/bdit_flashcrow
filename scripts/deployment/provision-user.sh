@@ -2,7 +2,7 @@
 #
 # provision-user.sh
 #
-# Installs Python, node, and the Flashcrow application itself during
+# Installs Python, node, and the MOVE application itself during
 # provisioning.  This script is intended to be run as a non-root user, and is run
 # and is run after provision-admin.sh.
 #

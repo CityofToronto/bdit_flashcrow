@@ -7,7 +7,8 @@
         v-on="on"
         class="fc-nav-brand"
         link
-        :to="{ name: 'viewData' }">
+        :to="{ name: 'viewData' }"
+        @click="actionClick">
         <v-list-item-icon>
           <v-img
             alt="MOVE Logo"
@@ -25,6 +26,12 @@
 <script>
 export default {
   name: 'FcDashboardNavBrand',
+  methods: {
+    actionClick() {
+      const event = this.$analytics.buttonEvent('MOVE', this.$el);
+      this.$analytics.send([event]);
+    },
+  },
 };
 </script>
 

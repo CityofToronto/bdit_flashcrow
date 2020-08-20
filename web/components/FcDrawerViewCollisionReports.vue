@@ -102,14 +102,10 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
-import { ReportFormat, ReportType } from '@/lib/Constants';
-import {
-  getLocationsByCentreline,
-  getReport,
-  getReportWeb,
-} from '@/lib/api/WebApi';
+import { LocationSelectionType, ReportFormat, ReportType } from '@/lib/Constants';
+import { getReport, getReportWeb } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -165,7 +161,7 @@ export default {
       return {};
     },
     ...mapState(['locations']),
-    ...mapGetters(['locationsDescription', 's1']),
+    ...mapGetters(['locationsDescription', 'locationsRouteParams']),
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
@@ -181,11 +177,10 @@ export default {
       next();
       return;
     }
-    const { s1 } = from.params;
-    const { name } = to;
-    if (name === 'viewDataAtLocation') {
-      const { s1: s1Next } = to.params;
-      if (s1 === s1Next) {
+    if (to.name === 'viewDataAtLocation') {
+      const { s1, selectionTypeName } = from.params;
+      const { s1: s1Next, selectionTypeName: selectionTypeNameNext } = to.params;
+      if (s1 === s1Next && selectionTypeName === selectionTypeNameNext) {
         next();
         return;
       }
@@ -196,14 +191,18 @@ export default {
   },
   methods: {
     async actionDownload(format) {
-      const { activeReportType, filterParamsCollision } = this;
-      if (activeReportType === null) {
+      if (this.activeReportType === null) {
         return;
       }
       this.downloadLoading = true;
 
-      const { s1 } = this.$route.params;
-      const reportData = await getReport(activeReportType, s1, format, filterParamsCollision);
+      const id = CompositeId.encode(this.locations);
+      const reportData = await getReport(
+        this.activeReportType,
+        id,
+        format,
+        this.filterParamsCollision,
+      );
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -214,36 +213,36 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      const { s1 } = this.$route.params;
+      const params = this.locationsRouteParams;
       this.$router.push({
         name: 'viewDataAtLocation',
-        params: { s1 },
+        params,
       });
     },
     async loadAsyncForRoute(to) {
-      const { s1: s1Next } = to.params;
-      const { s1 } = this;
+      const { s1, selectionTypeName } = to.params;
+      const features = CompositeId.decode(s1);
+      const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+      await this.initLocations({ features, selectionType });
       this.updateReportLayout();
-      if (s1 !== s1Next) {
-        const features = CompositeId.decode(s1Next);
-        const locations = await getLocationsByCentreline(features);
-        this.setLocations(locations);
-      }
     },
     async updateReportLayout() {
-      const { activeReportType, filterParamsCollision } = this;
-      if (activeReportType === null) {
+      if (this.activeReportType === null) {
         return;
       }
       this.loadingReportLayout = true;
 
-      const { s1 } = this.$route.params;
-      const reportLayout = await getReportWeb(activeReportType, s1, filterParamsCollision);
+      const id = CompositeId.encode(this.locations);
+      const reportLayout = await getReportWeb(
+        this.activeReportType,
+        id,
+        this.filterParamsCollision,
+      );
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocations']),
+    ...mapActions(['initLocations']),
   },
 };
 </script>

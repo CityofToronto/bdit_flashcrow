@@ -5,6 +5,7 @@
       ...typeAttrs,
       ...$attrs,
     }"
+    @click="actionClick"
     v-on="$listeners">
     <slot></slot>
   </v-btn>
@@ -45,6 +46,19 @@ export default {
   computed: {
     typeAttrs() {
       return BUTTON_ATTRS[this.type];
+    },
+  },
+  methods: {
+    actionClick() {
+      let ihtml = '';
+      if (Object.prototype.hasOwnProperty.call(this.$attrs, 'aria-label')) {
+        ihtml = this.$attrs['aria-label'];
+      } else {
+        ihtml = this.$el.innerText.trim();
+      }
+
+      const event = this.$analytics.buttonEvent(ihtml, this.$el);
+      this.$analytics.send([event]);
     },
   },
 };

@@ -2,6 +2,7 @@ import { Enum } from '@/lib/ClassUtils';
 import { CentrelineType } from '@/lib/Constants';
 import Joi from '@/lib/model/Joi';
 import DateTime from '@/lib/time/DateTime';
+import DateTimeZone from '@/lib/time/DateTimeZone';
 
 class Color extends Enum {}
 const colorValues = ['RED', 'GREEN', 'BLUE'];
@@ -84,6 +85,43 @@ test('Joi.dateTime [optional / required]', () => {
   expect(result.error).toBeUndefined();
 
   result = Joi.dateTime().required().validate(null);
+  expect(result.error).not.toBeUndefined();
+});
+
+test('Joi.dateTimeZone', () => {
+  let dtz = DateTimeZone.utc();
+  let result = Joi.dateTimeZone().validate(dtz);
+  expect(result.error).toBeUndefined();
+  expect(result.value).toEqual(dtz);
+
+  result = Joi.dateTimeZone().validate(dtz.toSQL());
+  expect(result.error).toBeUndefined();
+  expect(result.value).toEqual(dtz);
+
+  const dt = DateTime.invalid('because i say so');
+  dtz = new DateTimeZone(dt);
+  result = Joi.dateTimeZone().validate(dtz);
+  expect(result.error).not.toBeUndefined();
+
+  dtz = 'blarghlflarghl';
+  result = Joi.dateTimeZone().validate(dtz);
+  expect(result.error).not.toBeUndefined();
+});
+
+test('Joi.dateTimeZone [optional / required]', () => {
+  let result = Joi.dateTimeZone().validate(undefined);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.dateTimeZone().optional().validate(undefined);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.dateTimeZone().required().validate(undefined);
+  expect(result.error).not.toBeUndefined();
+
+  result = Joi.dateTimeZone().allow(null).required().validate(null);
+  expect(result.error).toBeUndefined();
+
+  result = Joi.dateTimeZone().required().validate(null);
   expect(result.error).not.toBeUndefined();
 });
 

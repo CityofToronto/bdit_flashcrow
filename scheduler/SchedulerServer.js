@@ -1,0 +1,18 @@
+import JobController from '@/lib/controller/JobController';
+import JobManager from '@/lib/jobs/JobManager';
+import MoveServer from '@/lib/server/MoveServer';
+
+class SchedulerServer extends MoveServer {
+  constructor(args) {
+    super('scheduler', args);
+
+    // TODO: re-enable CSRF before release
+    this
+      .addInitModule(JobManager)
+      .addController(JobController)
+      .addCleanupModule(JobManager)
+      .enableAuth({ csrf: false });
+  }
+}
+
+export default SchedulerServer;

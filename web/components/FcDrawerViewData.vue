@@ -1,200 +1,55 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <div class="flex-grow-0 flex-shrink-0 pa-5">
-      <FcSelectorSingleLocation />
-    </div>
+    <header class="flex-grow-0 flex-shrink-0 shading">
+      <FcSelectorMultiLocation
+        v-if="locationMode.multi"
+        :detail-view="detailView">
+        <template v-slot:action>
+          <FcButton
+            type="secondary"
+            @click="actionToggleDetailView">
+            <span v-if="detailView">Aggregate View</span>
+            <span v-else>Detail View</span>
+          </FcButton>
+        </template>
+      </FcSelectorMultiLocation>
+      <div v-else class="pa-5">
+        <FcSelectorSingleLocation />
+        <FcHeaderSingleLocation
+          class="mt-6"
+          :location="location" />
+        <div class="d-flex mt-4">
+          <FcSummaryPoi :location="location" />
+          <v-spacer></v-spacer>
+          <FcButton
+            type="secondary"
+            @click="actionAddLocation">
+            <v-icon color="primary" left>mdi-map-marker-plus</v-icon>
+            Add Location
+          </FcButton>
+        </div>
+      </div>
+    </header>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+      <v-divider></v-divider>
       <v-progress-linear
         v-if="loading"
         indeterminate />
       <template v-else>
-        <header class="px-5 pt-1 pb-5">
-          <h1
-            class="display-3 text-truncate"
-            :title="locationsDescription">
-            {{locationsDescription}}
-          </h1>
-          <div class="label mt-5">
-            <span v-if="locationFeatureType !== null">
-              {{locationFeatureType.description}} &#x2022;
-            </span>
-            <span>{{studySummaryHeaderText}}</span>
-          </div>
-          <div class="mt-4">
-            <div class="label mb-1">Nearby</div>
-            <div>
-              <div
-                v-if="!hasPoisNearby"
-                class="display-2">
-                None
-              </div>
-              <v-tooltip
-                v-if="poiSummary.hospital !== null"
-                bottom>
-                <template v-slot:activator="{ on }">
-                  <v-chip
-                    v-on="on"
-                    class="mr-2"
-                    color="pink lighten-4"
-                    text-color="pink darken-4">
-                    <v-avatar left>
-                      <v-icon>mdi-hospital-box</v-icon>
-                    </v-avatar>
-                    Hospital Zone
-                  </v-chip>
-                </template>
-                <span>{{Math.round(poiSummary.hospital.geom_dist)}} m</span>
-              </v-tooltip>
-              <v-tooltip
-                v-if="poiSummary.school !== null"
-                bottom>
-                <template v-slot:activator="{ on }">
-                  <v-chip
-                    v-on="on"
-                    class="mr-2"
-                    color="teal lighten-4"
-                    text-color="teal darken-4">
-                    <v-avatar left>
-                      <v-icon>mdi-school</v-icon>
-                    </v-avatar>
-                    School Zone
-                  </v-chip>
-                </template>
-                <span>{{Math.round(poiSummary.school.geom_dist)}} m</span>
-              </v-tooltip>
-            </div>
-          </div>
-        </header>
-
-        <v-divider></v-divider>
-
-        <section class="shading">
-          <header class="pa-5">
-            <div class="align-center d-flex">
-              <h2 class="headline">Collisions</h2>
-              <div class="pl-3 subtitle-1">{{collisionTotal}} total</div>
-              <v-spacer></v-spacer>
-              <FcDialogCollisionFilters
-                v-if="showFiltersCollision"
-                v-model="showFiltersCollision"
-                v-bind="filtersCollision"
-                @set-filters="setFiltersCollision">
-              </FcDialogCollisionFilters>
-              <FcButton
-                v-if="collisionTotal > 0"
-                type="secondary"
-                @click.stop="showFiltersCollision = true">
-                <v-icon
-                  :color="colorIconFilterCollision"
-                  left>mdi-filter-variant</v-icon>
-                Filter
-              </FcButton>
-            </div>
-
-            <div
-              v-if="filterChipsCollision.length > 0"
-              class="mt-5">
-              <v-chip
-                v-for="(filterChip, i) in filterChipsCollision"
-                :key="i"
-                class="mb-2 mr-2 primary--text"
-                color="light-blue lighten-5"
-                @click="removeFilterCollision(filterChip)">
-                <v-icon left>mdi-check</v-icon>
-                {{filterChip.label}}
-              </v-chip>
-            </div>
-          </header>
-
-          <FcDataTableCollisions
-            class="shading"
-            :collision-summary="collisionSummary"
-            :loading="loadingCollisions"
-            @show-reports="actionShowReportsCollision" />
-        </section>
-
-        <v-divider></v-divider>
-
-        <section>
-          <header class="pa-5">
-            <div class="align-center d-flex">
-              <h2 class="headline">Studies</h2>
-              <div class="pl-3 subtitle-1">{{studyTotal}} total</div>
-              <v-spacer></v-spacer>
-              <FcDialogStudyFilters
-                v-if="showFiltersStudy"
-                v-model="showFiltersStudy"
-                v-bind="filtersStudy"
-                @set-filters="setFiltersStudy">
-              </FcDialogStudyFilters>
-              <FcButton
-                v-if="studyTotal > 0"
-                type="secondary"
-                @click.stop="showFiltersStudy = true">
-                <v-icon
-                  :color="colorIconFilterStudy"
-                  left>mdi-filter-variant</v-icon>
-                Filter
-              </FcButton>
-              <FcButton
-                class="ml-3"
-                type="primary"
-                @click="actionRequestStudy">
-                <v-icon left>mdi-plus-box</v-icon>
-                Request Study
-              </FcButton>
-            </div>
-
-            <div
-              v-if="filterChipsStudy.length > 0"
-              class="mt-5">
-              <v-chip
-                v-for="(filterChip, i) in filterChipsStudy"
-                :key="i"
-                class="mb-2 mr-2 primary--text"
-                color="light-blue lighten-5"
-                @click="removeFilterStudy(filterChip)">
-                <v-icon left>mdi-check</v-icon>
-                {{filterChip.label}}
-              </v-chip>
-            </div>
-          </header>
-          <div
-            v-if="studyTotal === 0"
-            class="my-8 py-12 secondary--text text-center">
-            There are no studies for this location,<br>
-            please request a study if necessary
-          </div>
-          <div
-            v-else-if="studySummary.length === 0"
-            class="my-8 py-12 secondary--text text-center">
-            No studies match the active filters,<br>
-            clear one or more filters to see studies
-          </div>
-          <FcDataTableStudies
-            v-else
-            :loading="loadingStudies"
-            :study-summary="studySummary"
-            @show-reports="actionShowReportsStudy" />
-          <div class="pa-5">
-            <div
-              v-for="studyRequest in studyRequestsPending"
-              :key="studyRequest.id"
-              class="align-center d-flex">
-              <v-icon
-                color="warning"
-                left>mdi-information</v-icon>
-              <div>
-                {{studyRequest.studyType.label}}
-                has been requested on {{studyRequest.createdAt | date}}.
-                <router-link :to="{
-                  name: 'requestStudyView',
-                  params: { id: studyRequest.id },
-                }">View details.</router-link>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FcViewDataMultiEdit
+          v-if="locationMode === LocationMode.MULTI_EDIT"
+          :locations="locationsEdit"
+          :locations-selection="locationsEditSelection" />
+        <FcViewDataDetail
+          v-else-if="locationMode === LocationMode.SINGLE"
+          :location="location" />
+        <FcViewDataDetail
+          v-else-if="detailView"
+          :location="locationActive" />
+        <FcViewDataAggregate
+          v-else
+          :locations="locations"
+          :locations-selection="locationsSelection" />
       </template>
     </section>
   </div>
@@ -202,218 +57,126 @@
 
 <script>
 import {
+  mapActions,
   mapGetters,
   mapMutations,
   mapState,
 } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
 import {
-  getCollisionsByCentrelineSummary,
-  getCollisionsByCentrelineTotal,
-  getLocationsByCentreline,
-  getPoiByCentrelineSummary,
-  getStudiesByCentrelineSummary,
-  getStudiesByCentrelineTotal,
-  getStudyRequestsByCentrelinePending,
-} from '@/lib/api/WebApi';
+  LocationMode,
+  LocationSelectionType,
+} from '@/lib/Constants';
 import CompositeId from '@/lib/io/CompositeId';
-import DateTime from '@/lib/time/DateTime';
-import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcDataTableCollisions from '@/web/components/FcDataTableCollisions.vue';
-import FcDataTableStudies from '@/web/components/FcDataTableStudies.vue';
-import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollisionFilters.vue';
-import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
+import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
+import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
-import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
+import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
+import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerViewData',
   mixins: [
-    FcMixinAuthScope,
     FcMixinRouteAsync,
   ],
   components: {
     FcButton,
-    FcDataTableCollisions,
-    FcDataTableStudies,
-    FcDialogCollisionFilters,
-    FcDialogStudyFilters,
+    FcHeaderSingleLocation,
+    FcSelectorMultiLocation,
     FcSelectorSingleLocation,
+    FcSummaryPoi,
+    FcViewDataAggregate,
+    FcViewDataDetail,
+    FcViewDataMultiEdit,
   },
   data() {
     return {
-      collisionSummary: {
-        amount: 0,
-        ksi: 0,
-        validated: 0,
-      },
-      collisionTotal: 0,
-      loadingCollisions: false,
-      loadingStudies: false,
-      poiSummary: {
-        school: null,
-      },
-      showFiltersCollision: false,
-      showFiltersStudy: false,
-      studyRequestsPending: [],
-      studySummary: [],
-      studyTotal: 0,
+      detailView: false,
+      LocationMode,
     };
   },
   computed: {
-    colorIconFilterCollision() {
-      if (this.filterChipsCollision.length === 0) {
-        return 'unselected';
-      }
-      return 'primary';
-    },
-    colorIconFilterStudy() {
-      if (this.filterChipsStudy.length === 0) {
-        return 'unselected';
-      }
-      return 'primary';
-    },
-    studySummaryHeaderText() {
-      const n = this.studySummary.length;
-      if (n === 0) {
-        return 'No Studies';
-      }
-      const nStr = n === 1 ? '1 Study Type' : `${n} Study Types`;
-      const mostRecentDate = DateTime.max(
-        ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
-      );
-      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
-      return `${nStr} (${mostRecentDateStr})`;
-    },
-    hasPoisNearby() {
-      const { hospital, school } = this.poiSummary;
-      return hospital !== null || school !== null;
-    },
-    ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
-    ...mapState(['auth', 'legendOptions', 'locations']),
-    ...mapGetters('viewData', [
-      'filterChipsCollision',
-      'filterChipsStudy',
-      'filterParamsCollision',
-      'filterParamsStudy',
+    ...mapState([
+      'locationMode',
+      'locations',
+      'locationsEdit',
+      'locationsEditSelection',
+      'locationsSelection',
     ]),
-    ...mapGetters(['locationFeatureType', 'locationsDescription', 's1']),
+    ...mapGetters([
+      'location',
+      'locationActive',
+      'locationsEmpty',
+      'locationsRouteParams',
+    ]),
   },
   watch: {
-    async filterParamsCollision() {
-      this.loadingCollisions = true;
-      const collisionSummary = await getCollisionsByCentrelineSummary(
-        this.locations,
-        this.filterParamsCollision,
-      );
-      this.collisionSummary = collisionSummary;
-      this.loadingCollisions = false;
+    locationMode() {
+      this.detailView = false;
     },
-    async filterParamsStudy() {
-      this.loadingStudies = true;
-      const studySummary = await getStudiesByCentrelineSummary(
-        this.locations,
-        this.filterParamsStudy,
-      );
-      this.studySummary = studySummary;
-      this.loadingStudies = false;
-    },
-    locations(locations, locationsPrev) {
-      if (locations.length === 0) {
-        /*
-         * Normally `this.loading = true` is paired with `this.loading = false` after some
-         * asynchronous operation.  In this case, however, we're using it to hide the View Data
-         * drawer contents to prevent errors after clearing `FcSelectorSingleLocation`.  This is OK,
-         * as the next line jumps to View Map which destroys this drawer component anyways.
-         */
-        this.loading = true;
-        this.$router.push({
-          name: 'viewData',
-        });
-        return;
-      }
-      const s1 = CompositeId.encode(locations);
-      const s1Prev = CompositeId.encode(locationsPrev);
-      if (s1 !== s1Prev) {
+    locationsSelection: {
+      deep: true,
+      handler() {
+        if (this.locationsEmpty) {
+          /*
+           * Normally `this.loading = true` is paired with `this.loading = false` after some
+           * asynchronous operation.  In this case, however, we're using it to hide the View Data
+           * drawer contents to prevent errors after clearing `FcSelectorSingleLocation`.  This is
+           * OK, as the next line jumps to View Map which destroys this drawer component anyways.
+           */
+          this.loading = true;
+          this.$router.push({
+            name: 'viewData',
+          });
+          return;
+        }
+
+        const params = this.locationsRouteParams;
+        const { s1, selectionTypeName } = this.$route.params;
         /*
          * Guard against duplicate navigation, which can happen when first loading the page.
          */
-        const { s1: s1Route } = this.$route.params;
-        if (s1 !== s1Route) {
+        if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
           /*
            * Update the URL to match the new location.  This allows the user to navigate between
            * recently selected locations with the back / forward browser buttons.
            */
           this.$router.push({
             name: 'viewDataAtLocation',
-            params: { s1 },
+            params,
           });
         }
-      }
+      },
     },
   },
   methods: {
-    actionRequestStudy() {
-      this.$router.push({ name: 'requestStudyNew' });
+    actionAddLocation() {
+      this.setLocationMode(LocationMode.MULTI_EDIT);
     },
-    actionShowReportsCollision() {
-      const { s1 } = this.$route.params;
-      this.$router.push({
-        name: 'viewCollisionReportsAtLocation',
-        params: { s1 },
-      });
-    },
-    actionShowReportsStudy({ category: { studyType } }) {
-      const { s1 } = this.$route.params;
-      this.$router.push({
-        name: 'viewStudyReportsAtLocation',
-        params: { s1, studyTypeName: studyType.name },
-      });
+    actionToggleDetailView() {
+      if (this.detailView) {
+        this.setLocationsIndex(-1);
+        this.detailView = false;
+      } else {
+        this.setLocationsIndex(0);
+        this.detailView = true;
+      }
     },
     async loadAsyncForRoute(to) {
-      const { s1: s1Next } = to.params;
-      const features = CompositeId.decode(s1Next);
-      const tasks = [
-        getCollisionsByCentrelineSummary(features, this.filterParamsCollision),
-        getCollisionsByCentrelineTotal(features),
-        getPoiByCentrelineSummary(features[0]),
-        getStudiesByCentrelineSummary(features, this.filterParamsStudy),
-        getStudiesByCentrelineTotal(features),
-      ];
-      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        tasks.push(getStudyRequestsByCentrelinePending(features));
-      }
-      const [
-        collisionSummary,
-        collisionTotal,
-        poiSummary,
-        studySummary,
-        studyTotal,
-        studyRequestsPending = [],
-      ] = await Promise.all(tasks);
-      this.collisionSummary = collisionSummary;
-      this.collisionTotal = collisionTotal;
-      this.poiSummary = poiSummary;
-      this.studyRequestsPending = studyRequestsPending;
-      this.studySummary = studySummary;
-      this.studyTotal = studyTotal;
-
-      const { s1 } = this;
-      if (s1 !== s1Next) {
-        const locations = await getLocationsByCentreline(features);
-        this.setLocations(locations);
-      }
+      const { s1, selectionTypeName } = to.params;
+      const features = CompositeId.decode(s1);
+      const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+      await this.initLocations({ features, selectionType });
     },
-    ...mapMutations('viewData', [
-      'removeFilterCollision',
-      'removeFilterStudy',
-      'setFiltersCollision',
-      'setFiltersStudy',
+    ...mapMutations([
+      'setLocationMode',
+      'setLocationsIndex',
     ]),
-    ...mapMutations(['setLocations']),
+    ...mapActions(['initLocations']),
   },
 };
 </script>

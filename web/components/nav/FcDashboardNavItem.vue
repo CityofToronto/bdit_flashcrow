@@ -10,7 +10,8 @@
         color="primary"
         :disabled="disabled"
         link
-        :to="to">
+        :to="to"
+        @click="actionClick">
         <v-list-item-icon>
           <v-icon>mdi-{{icon}}</v-icon>
         </v-list-item-icon>
@@ -56,6 +57,12 @@ export default {
       return name === 'requestStudyView' && backViewRequestName === toName;
     },
     ...mapState(['backViewRequest']),
+  },
+  methods: {
+    actionClick() {
+      const event = this.$analytics.buttonEvent(this.label, this.$el);
+      this.$analytics.send([event]);
+    },
   },
 };
 </script>

@@ -19,7 +19,7 @@ The `web` folder contains the MOVE Web Application Frontend, written as an SPA (
 
 As noted, `web/views` is exclusively for components that appear as the top-level component bound to a route in `router.js`.  All other components should be in the `web/components` hierarchy.
 
-Note that we currently have no formal process around promoting components into `web/components/tds`.  It is recommended that any new components you create go in `web/components` or other subfolders thereof, and that their names start with `Fc` (short for "Flashcrow").
+Note that we currently have no formal process around promoting components into `web/components/tds`.  It is recommended that any new components you create go in `web/components` or other subfolders thereof, and that their names start with `Fc` (short for "Flashcrow", an old working project title for MOVE).
 
 Components in TDS should:
 

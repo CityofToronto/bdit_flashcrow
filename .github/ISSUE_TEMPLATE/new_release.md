@@ -10,14 +10,15 @@ assignees: candu
 **Release Checklist**
 
 These scripts must pass:
-- [ ] `npm run ci:jest-coverage` (to fix: add / improve tests!)
 - [ ] `npm run ci:npm-outdated` (to fix: `npx ncu -u`, `npm install`, `npm update`)
 - [ ] `npm run ci:npm-audit` (to fix: `npx resolve-audit`)
+- [ ] `npm run ci:jest-coverage` (to fix: add / improve tests!)
 - [ ] `npm run frontend:build` (to fix: address issues)
 - [ ] `npm run docs:build` (to fix: address issues)
 
 Manual browser testing:
 - [ ] Chrome
+- [ ] Edge
 - [ ] Firefox
 
 Manual browser testing - feature list:

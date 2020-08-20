@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.5] - 2020-08-13
+
+### Added
+- File storage layer with filesystem support (S3 support to come later!)
+- Backend implementation of report generation job
+
+### Changed
+- `BackendClient` is now isomorphic, and can be used to make HTTP calls between MOVE backend services
+
+## [0.9.4] - 2020-08-04
+
+### Added
+- MOVE Scheduler: a new backend service for managing background jobs such as bulk report generation
+
+## [0.9.3] - 2020-08-04
+### Changed
+- Run multiple instances of MOVE Reporter in AWS environments
+
+### Added
+- Configurable port for MOVE Reporter
+
+## [0.9.2] - 2020-07-30
+### Added
+- Analytics tracking through City of Toronto Oracle Infinity account
+
+## [0.9.1] - 2020-07-27
+### Added
+- Multi-location support in View Data
+
+## [0.9.0] - 2020-07-17
+### Changed
+- Several REST API endpoints now support multi-location queries
+
+### Added
+- "In development" message bar at top
+- Support for Edge
+- Search by traffic signal control (TSC / PX) number in location search, e.g. "signal:1234" or "px:1234"
+- Search by arterycode number in location search, e.g. "artery:5678"
+- Map and location selection interactions for multi-location
+- Corridor routing between selected locations
+
 ## [0.8.1] - 2020-06-19
 ### Fixed
 - Empty datasets no longer crash 24-hour detailed and summary reports

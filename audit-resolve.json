@@ -349,6 +349,16 @@
       "decision": "ignore",
       "madeAt": 1592255706297,
       "expiresAt": 1592860496277
+    },
+    "1213|@vue/cli>@vue/cli-ui>vue-cli-plugin-apollo>nodemon>update-notifier>configstore>dot-prop": {
+      "decision": "ignore",
+      "madeAt": 1597349436331,
+      "expiresAt": 1597954221084
+    },
+    "1548|@vue/cli-service>copy-webpack-plugin>serialize-javascript": {
+      "decision": "ignore",
+      "madeAt": 1597349438371,
+      "expiresAt": 1597954221084
     }
   },
   "rules": {},

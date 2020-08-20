@@ -132,19 +132,29 @@ export default {
     },
   },
   watch: {
+    internalValue() {
+      if (this.internalValue !== null) {
+        this.query = this.internalValue.description;
+        this.state = LocationSearchState.VALUE_SELECTED;
+      }
+    },
     query: debounce(async function processQuery() {
       if (this.state !== LocationSearchState.QUERY_TYPING) {
         return;
       }
       this.loading = true;
       this.state = LocationSearchState.QUERY_SENT;
-      const locationSuggestions = await getLocationSuggestions(this.query, {});
+      const { query } = this;
+      const locationSuggestions = await getLocationSuggestions(query, {});
       if (this.state !== LocationSearchState.QUERY_SENT) {
         return;
       }
       this.locationSuggestions = locationSuggestions;
       this.loading = false;
       this.state = LocationSearchState.SUGGESTIONS_RECEIVED;
+
+      const event = this.$analytics.locationSearchEvent(query, locationSuggestions.length);
+      await this.$analytics.send([event]);
     }, 200),
     showLocationSuggestions() {
       if (this.showLocationSuggestions) {

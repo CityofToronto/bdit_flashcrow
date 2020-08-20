@@ -45,11 +45,12 @@ fi
 # create ramdisk using diskutil
 echo "Creating ramdisk..."
 sudo mkdir ${RAMDISK_MOUNT_POINT}
-RAMDISK_DEVICE=$(sudo mount -t tmpfs -o size=1g tmpfs ${RAMDISK_MOUNT_POINT})
+RAMDISK_DEVICE=$(sudo mount -t tmpfs -o size=2g tmpfs ${RAMDISK_MOUNT_POINT})
 echo "$RAMDISK_DEVICE" | sudo tee ${RAMDISK_DEVICE_FILE}
 
 # give 'vagrant' user/group ownership of the RAM-disk folder.
-sudo chown -R vagrant:vagrant ${RAMDISK_MOUNT_POINT}
+sudo chown -R "${USER}:${USER}" ${RAMDISK_MOUNT_POINT}
+sudo chown -R "${USER}:${USER}" /var/run/postgresql/
 mkdir ${RAMDISK_DATA_DIR}
 chmod -R g+rw ${RAMDISK_MOUNT_POINT}
 touch "${RAMDISK_PGPASS}"

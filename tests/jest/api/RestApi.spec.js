@@ -7,23 +7,27 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import config from '@/lib/config/MoveConfig';
+import db from '@/lib/db/db';
 import UserDAO from '@/lib/db/UserDAO';
 import CompositeId from '@/lib/io/CompositeId';
 import AuthState from '@/lib/model/AuthState';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
-import { initialize } from '@/web/MoveServer';
+import WebServer from '@/web/WebServer';
 
 let server;
 let client;
 
 beforeAll(async () => {
-  server = await initialize();
+  const webServer = new WebServer({ port: config.port });
+  server = await webServer.initialize();
   client = new InjectBackendClient(server);
 }, 60000);
 afterAll(async () => {
   await server.stop();
+  db.$pool.end();
 }, 60000);
 
 test('AuthController.getAuth', async () => {
@@ -65,7 +69,7 @@ test('LocationController.getLocationSuggestions', async () => {
     q: 'Danforth and Main',
     limit: 3,
   };
-  const response = await client.fetch('/location/suggest', { data });
+  const response = await client.fetch('/locations/suggest', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.length).toBe(3);
   expectSuggestionsContain(response.result, 13460034);
@@ -73,29 +77,26 @@ test('LocationController.getLocationSuggestions', async () => {
 
 test('LocationController.getLocationsByCentreline', async () => {
   // empty list of features
-  let data = {
-    centrelineId: [],
-    centrelineType: [],
-  };
-  let response = await client.fetch('/location/centreline', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // invalid feature
-  data = {
-    centrelineId: [-1],
-    centrelineType: [-1],
-  };
-  response = await client.fetch('/location/centreline', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+  let features = [];
+  let s1 = CompositeId.encode(features);
+  let data = { s1 };
+  let response = await client.fetch('/locations/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
 
   // valid multi-fetch
-  data = {
-    centrelineId: [30000549, 111569],
-    centrelineType: [CentrelineType.INTERSECTION, CentrelineType.SEGMENT],
-  };
-  response = await client.fetch('/location/centreline', { data });
+  features = [
+    { centrelineId: 13447240, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
+  data = { s1 };
+  response = await client.fetch('/locations/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.size).toBe(2);
+  expect(response.result.length).toEqual(features.length);
+  response.result.forEach(({ centrelineId, centrelineType }, i) => {
+    expect({ centrelineId, centrelineType }).toEqual(features[i]);
+  });
 });
 
 function expectNumPerCategoryStudy(actual, expected) {

@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import { AuthScope } from '@/lib/Constants';
 import { hasAuthScope } from '@/lib/auth/ScopeMatcher';
+import analyticsClient from '@/web/analytics/analyticsClient';
 import store from '@/web/store';
 import { restoreLoginState, saveLoginState } from '@/web/store/LoginState';
 
@@ -81,7 +82,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1',
+        path: '/view/location/:s1/:selectionTypeName',
         name: 'viewDataAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -94,7 +95,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1/reports/collision',
+        path: '/view/location/:s1/:selectionTypeName/reports/collision',
         name: 'viewCollisionReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -107,7 +108,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1/reports/:studyTypeName',
+        path: '/view/location/:s1/:selectionTypeName/reports/:studyTypeName',
         name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -200,7 +201,6 @@ function routeMetaKey(to, key, defaultValue) {
   return routeWithKey.meta[key];
 }
 
-
 /**
  * As part of "security by design", our default assumption is that a route requires
  * authentication, and that no specific scopes are required.  A route must manually
@@ -243,6 +243,10 @@ router.beforeEach(async (to, from, next) => {
       }
     } else {
       next(false);
+
+      const event = analyticsClient.signInEvent();
+      await analyticsClient.send([event]);
+
       saveLoginState(to);
       document.forms.formSignIn.submit();
     }
@@ -272,8 +276,26 @@ function afterEachSetTitle(to) {
   document.title = title;
 }
 
+function afterEachAppRouteEvent() {
+  const event = analyticsClient.appRouteEvent();
+  analyticsClient.send([event]);
+}
+
 router.afterEach((to) => {
   afterEachSetTitle(to);
+
+  /*
+   * To accurately log the page title, this must be called after `afterEachSetTitle()`.
+   * Otherwise, the analytics event will contain the old page title from before the
+   * `vue-router` transition.
+   *
+   * Since the event is recorded in `afterEach`, an error here (e.g. if the analytics
+   * service is unreachable) cannot abort the route transition.  That's a good thing!
+   * In the event of an analytics outage, or of a bug in `analyticsClient`, ideally
+   * only analytics tracking should be affected - the rest of MOVE should continue to
+   * function as normal.
+   */
+  afterEachAppRouteEvent();
 });
 
 function onErrorShowToast(err) {

@@ -13,7 +13,15 @@
         v-if="!drawerOpen">
         <FcSelectorMultiLocation
           v-if="locationMode.multi"
-          class="elevation-2" />
+          class="elevation-2">
+          <template v-slot:action>
+            <FcButton
+              type="tertiary"
+              @click="actionViewData">
+              View Data
+            </FcButton>
+          </template>
+        </FcSelectorMultiLocation>
         <FcSelectorSingleLocation
           v-else
           class="mt-5 ml-5" />
@@ -90,10 +98,11 @@
 <script>
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
+import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -221,38 +230,100 @@ export default {
         this.setLegendOptions(legendOptions);
       },
     },
-    locationsForMode() {
-      return this.locationMode === LocationMode.MULTI_EDIT ? this.locationsEdit : this.locations;
-    },
     locationsGeoJson() {
-      const features = this.locationsForMode.map(
-        ({ geom: geometry, ...properties }) => ({ type: 'Feature', geometry, properties }),
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locationsForMode,
+        this.locationsSelectionForMode.locations,
       );
+
+      const features = this.locationsForMode.map((location, i) => {
+        const { geom: geometry, ...propertiesRest } = location;
+
+        const waypointIndices = locationsWaypointIndices[i];
+        let selected = false;
+
+        if (this.locationMode === LocationMode.MULTI_EDIT
+          && waypointIndices.includes(this.locationsEditIndex)) {
+          selected = true;
+        } else if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
+          selected = true;
+        }
+
+        const properties = {
+          selected,
+          ...propertiesRest,
+        };
+        return { type: 'Feature', geometry, properties };
+      });
       return {
         type: 'FeatureCollection',
         features,
       };
     },
     locationsMarkersGeoJson() {
-      const features = this.locationsForMode.map((location, i) => {
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locationsForMode,
+        this.locationsSelectionForMode.locations,
+      );
+
+      const features = [];
+      this.locationsForMode.forEach((location, i) => {
         const {
           geom,
           lat,
           lng,
-          ...properties
+          ...propertiesRest
         } = location;
+
         const geometry = {
           type: 'Point',
           coordinates: [lng, lat],
         };
-        const { multi } = this.locationMode;
-        properties.multi = multi;
-        if (multi) {
-          properties.locationIndex = i;
-          properties.selected = i === this.locationEditIndex;
+
+        const waypointIndices = locationsWaypointIndices[i];
+        const k = waypointIndices.length;
+        /*
+         * `locationIndex === -1` here indicates that the location is not a waypoint, and
+         * can be drawn using a corridor marker.
+         */
+        let locationIndex = -1;
+        let selected = false;
+        if (k === 0) {
+          if (propertiesRest.centrelineType === CentrelineType.SEGMENT) {
+            // We only show corridor markers at intersections.
+            return;
+          }
+        } else if (this.locationMode === LocationMode.MULTI_EDIT
+          && waypointIndices.includes(this.locationsEditIndex)) {
+          /*
+           * In this case, we might have several consecutive waypoints at the same location,
+           * which might cause the currently selected waypoint to be hidden - so we prioritize
+           * it.
+           */
+          locationIndex = this.locationsEditIndex;
+          selected = true;
+        } else {
+          /*
+           * Here there is no selected waypoint, so we just show the last matching waypoint.
+           */
+          locationIndex = waypointIndices[k - 1];
         }
-        return { type: 'Feature', geometry, properties };
+
+        if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
+          selected = true;
+        }
+
+        const { multi } = this.locationMode;
+        const properties = {
+          locationIndex,
+          multi,
+          selected,
+          ...propertiesRest,
+        };
+        const feature = { type: 'Feature', geometry, properties };
+        features.push(feature);
       });
+
       return {
         type: 'FeatureCollection',
         features,
@@ -297,10 +368,14 @@ export default {
     ...mapState([
       'drawerOpen',
       'legendOptions',
-      'locationEditIndex',
+      'locationsEditIndex',
+      'locationsIndex',
       'locationMode',
-      'locations',
-      'locationsEdit',
+    ]),
+    ...mapGetters([
+      'locationsForMode',
+      'locationsRouteParams',
+      'locationsSelectionForMode',
     ]),
   },
   created() {
@@ -343,7 +418,7 @@ export default {
         'bottom-right',
       );
 
-      this.easeToLocations(this.locations, []);
+      this.easeToLocations(this.locationsForMode, []);
 
       this.map.on('dataloading', () => {
         this.loading = true;
@@ -426,6 +501,17 @@ export default {
         this.setLocationMode(LocationMode.SINGLE);
       }
     },
+    actionViewData() {
+      const { name } = this.$route;
+      if (name === 'viewDataAtLocation') {
+        this.setDrawerOpen(true);
+      }
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params,
+      });
+    },
     clearHoveredFeature() {
       this.hoveredFeature = null;
     },
@@ -458,7 +544,6 @@ export default {
           maxZoom: MapZoom.LEVEL_1.minzoom,
           padding: 64,
         });
-        cameraOptions.zoom = Math.max(this.map.getZoom(), cameraOptions.zoom);
         this.map.easeTo(cameraOptions);
       } else if (locationsPrev.length === 0) {
         /*
@@ -603,6 +688,12 @@ export default {
     position: absolute;
     top: 0;
     z-index: var(--z-index-controls);
+    & > .fc-selector-multi-location {
+      background-color: var(--v-shading-base);
+      border-radius: 8px;
+      height: 387px;
+      width: 664px;
+    }
   }
   & > .fc-pane-map-legend {
     top: 20px;

@@ -29,9 +29,12 @@
     </v-navigation-drawer>
     <v-main>
       <v-container
-        class="fill-height pa-0"
+        class="d-flex fill-height flex-column pa-0"
         fluid>
-        <router-view></router-view>
+        <FcDashboardNavInDevelopment />
+        <div class="flex-grow-1" style="width: 100%;">
+          <router-view></router-view>
+        </div>
       </v-container>
     </v-main>
   </v-app>
@@ -43,20 +46,25 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 
+import FcDialogAlertInDevelopment from
+  '@/web/components/dialogs/FcDialogAlertInDevelopment.vue';
 import FcDialogAlertStudyRequestUrgent from
   '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
 import FcDialogConfirmUnauthorized from
   '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
-import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
+import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
+import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
 
 export default {
   name: 'App',
   components: {
-    FcDashboardNavBrand,
     FcDashboardNav,
+    FcDashboardNavBrand,
+    FcDashboardNavInDevelopment,
     FcDashboardNavUser,
+    FcDialogAlertInDevelopment,
     FcDialogAlertStudyRequestUrgent,
     FcDialogConfirmUnauthorized,
   },

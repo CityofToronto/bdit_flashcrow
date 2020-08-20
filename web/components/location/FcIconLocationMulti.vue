@@ -1,8 +1,13 @@
 <template>
   <div
     class="fc-icon-location-multi">
-    <img :src="src" :alt="alt" />
+    <img
+      :alt="alt"
+      height="20"
+      :src="src"
+      :width="width" />
     <div
+      v-if="locationIndex !== -1"
       class="subtitle-2"
       :class="{
         'primary--text': selected,
@@ -17,7 +22,11 @@ export default {
   props: {
     locationIndex: {
       type: Number,
-      default: null,
+      default: -1,
+    },
+    midblock: {
+      type: Boolean,
+      default: false,
     },
     selected: {
       type: Boolean,
@@ -26,14 +35,25 @@ export default {
   },
   computed: {
     alt() {
+      if (this.locationIndex === -1) {
+        if (this.midblock) {
+          return 'Included midblock between locations';
+        }
+        return 'Included intersection between locations';
+      }
       const i = this.locationIndex + 1;
       return `Location #${i}`;
     },
     src() {
-      if (this.selected) {
-        return '/icons/map/location-multi-small-selected.svg';
+      const suffixSelected = this.selected ? '-selected' : '';
+      if (this.locationIndex === -1) {
+        const suffixMidblock = this.midblock ? '-midblock' : '';
+        return `/icons/map/location-multi-corridor${suffixMidblock}${suffixSelected}.svg`;
       }
-      return '/icons/map/location-multi-small.svg';
+      return `/icons/map/location-multi-small${suffixSelected}.svg`;
+    },
+    width() {
+      return this.midblock ? 20 : 16;
     },
   },
 };

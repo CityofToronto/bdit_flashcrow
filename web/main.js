@@ -4,11 +4,12 @@ import Vuelidate from 'vuelidate';
 import Vuetify from 'vuetify/lib/framework';
 import en from 'vuetify/es5/locale/en';
 
-import App from '@/web/App.vue';
-import router from '@/web/router';
-import store from '@/web/store';
 import { formatDuration } from '@/lib/StringFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import App from '@/web/App.vue';
+import analyticsClient from '@/web/analytics/analyticsClient';
+import router from '@/web/router';
+import store from '@/web/store';
 
 Vue.use(Vuelidate);
 Vue.use(Vuetify);
@@ -68,9 +69,33 @@ const vuetify = new Vuetify({
   },
 });
 
-new Vue({
+/*
+ * Inject the singleton analytics client into all Vue components as `this.$analytics`.
+ * See https://vuejs.org/v2/guide/plugins.html#Writing-a-Plugin for why this works.
+ *
+ * Note that, at this point, `analyticsClient.appContext === null`.
+ */
+Object.defineProperty(Vue.prototype, '$analytics', {
+  get() { return analyticsClient; },
+});
+
+const appContext = new Vue({
   render: h => h(App),
   router,
   store,
   vuetify,
 }).$mount('#app');
+
+/*
+ * Once the application context has been created above, set that context in our
+ * singleton analytics client.
+ *
+ * Note that, due to the tick-based nature of Vue rendering, this will be called
+ * before any components actually render, and definitely before `router.afterEach()`
+ * is reached.  This allows us to ensure that `analyticsClient.appContext !== null`
+ * before any analytics events are sent.
+ *
+ * This two-stage init / set approach is necessary to avoid a circular dependency
+ * between the application context and the analytics client.
+ */
+analyticsClient.setAppContext(appContext);

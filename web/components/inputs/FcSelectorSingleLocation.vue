@@ -24,8 +24,9 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
+import { LocationSelectionType } from '@/lib/Constants';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
@@ -43,23 +44,24 @@ export default {
     },
     internalLocation: {
       get() {
-        if (this.locations.length === 0) {
-          return null;
-        }
-        return this.locations[0];
+        return this.location;
       },
       set(internalLocation) {
-        if (internalLocation === null) {
-          this.setLocations([]);
-        } else {
-          this.setLocations([internalLocation]);
+        const locations = [];
+        if (internalLocation !== null) {
+          locations.push(internalLocation);
         }
+        this.setLocations(locations);
+        this.setLocationsSelection({
+          locations,
+          selectionType: LocationSelectionType.POINTS,
+        });
       },
     },
-    ...mapState(['locations']),
+    ...mapGetters(['location']),
   },
   methods: {
-    ...mapMutations(['setLocations']),
+    ...mapMutations(['setLocations', 'setLocationsSelection']),
   },
 };
 </script>
