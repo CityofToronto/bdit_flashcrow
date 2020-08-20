@@ -13,6 +13,8 @@ drop table if exists flashcrow_dev_data.gis_traffic_signal;
 drop table if exists flashcrow_dev_data.traffic_arterydata;
 drop table if exists flashcrow_dev_data.traffic_category;
 
+drop table if exists flashcrow_dev_data.volume_aadt;
+
 create table flashcrow_dev_data.counts_arteries_centreline (like counts.arteries_centreline including indexes);
 
 create table flashcrow_dev_data.gis_centreline (like gis.centreline including indexes);
@@ -23,6 +25,8 @@ create table flashcrow_dev_data.gis_traffic_signal (like gis.traffic_signal incl
 
 create table flashcrow_dev_data.traffic_arterydata (like "TRAFFIC"."ARTERYDATA" including indexes);
 create table flashcrow_dev_data.traffic_category (like "TRAFFIC"."CATEGORY" including indexes);
+
+create table flashcrow_dev_data.volume_aadt (like volume.aadt including indexes);
 
 -- SAMPLED DATA
 
@@ -41,8 +45,12 @@ drop table if exists flashcrow_dev_data.traffic_cnt_det;
 
 create table flashcrow_dev_data.collisions_events (like collisions.events including indexes);
 insert into flashcrow_dev_data.collisions_events
+  select * from collisions.events
+  where ksi;
+insert into flashcrow_dev_data.collisions_events
   select * from collisions.events tablesample bernoulli (10)
-  where accdate >= '2009-01-01';
+  where accdate >= '2005-01-01'
+on conflict do nothing;
 insert into flashcrow_dev_data.collisions_events
   select t.* from collisions.events as t
   join collisions.events_centreline as u USING (collision_id)
@@ -66,16 +74,16 @@ insert into flashcrow_dev_data.collisions_involved
 
 create table flashcrow_dev_data.counts_studies (like counts.studies including indexes);
 insert into flashcrow_dev_data.counts_studies
-  select * from counts.studies tablesample bernoulli (0.25)
-  where start_date >= '2009-01-01'
+  select * from counts.studies tablesample bernoulli (0.1)
+  where start_date >= '2005-01-01'
   and "CATEGORY_ID" = 2;
 insert into flashcrow_dev_data.counts_studies
-  select * from counts.studies tablesample bernoulli (0.5)
-  where start_date >= '2009-01-01'
+  select * from counts.studies tablesample bernoulli (1)
+  where start_date >= '2005-01-01'
   and "CATEGORY_ID" = 6;
 insert into flashcrow_dev_data.counts_studies
-  select * from counts.studies tablesample bernoulli (2)
-  where start_date >= '2009-01-01'
+  select * from counts.studies tablesample bernoulli (5)
+  where start_date >= '2005-01-01'
   and "CATEGORY_ID" not in (2, 6);
 insert into flashcrow_dev_data.counts_studies
   select * from counts.studies

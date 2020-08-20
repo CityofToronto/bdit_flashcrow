@@ -35,6 +35,9 @@ mkdir -p /data/dev_data
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.traffic_arterydata -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.traffic_arterydata/"TRAFFIC"."ARTERYDATA"/g'
 
+  # shellcheck disable=SC2046
+  env $(xargs < "/home/ec2-user/cot-env.config") pg_dump -t flashcrow_dev_data.volume_aadt -x --no-owner --clean --if-exists --schema-only | sed 's/flashcrow_dev_data.volume_aadt/volume.aadt/g'
+
   #
   # copy data for unsampled views
   #
@@ -72,6 +75,11 @@ mkdir -p /data/dev_data
   echo 'COPY "TRAFFIC"."ARTERYDATA" FROM stdin;'
   # shellcheck disable=SC2046
   env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM \"TRAFFIC\".\"ARTERYDATA\") TO stdout (FORMAT text, ENCODING 'UTF-8')"
+  echo '\.'
+
+  echo 'COPY volume.aadt FROM stdin;'
+  # shellcheck disable=SC2046
+  env $(xargs < "/home/ec2-user/cot-env.config") psql -v ON_ERROR_STOP=1 -c "COPY (SELECT * FROM volume.aadt) TO stdout (FORMAT text, ENCODING 'UTF-8')"
   echo '\.'
 
   #
