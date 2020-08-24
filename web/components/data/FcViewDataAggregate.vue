@@ -32,13 +32,9 @@
               <v-icon color="primary" left>mdi-file-eye</v-icon>
               <span>View Report</span>
             </FcButton>
-            <FcButton
+            <FcMenuDownloadReportFormat
               v-else
-              class="ml-2"
-              type="primary">
-              <v-icon left>mdi-cloud-download</v-icon>
-              Download
-            </FcButton>
+              @download-report-format="actionDownloadReportFormat" />
           </template>
         </FcHeaderCollisions>
 
@@ -82,13 +78,9 @@
               <v-icon color="primary" left>mdi-plus-box</v-icon>
               Request New Counts
             </FcButton>
-            <FcButton
+            <FcMenuDownloadReportFormat
               v-else
-              class="ml-2"
-              type="primary">
-              <v-icon left>mdi-cloud-download</v-icon>
-              Download
-            </FcButton>
+              @download-report-format="actionDownloadReportFormat" />
           </template>
         </FcHeaderStudies>
 
@@ -123,6 +115,7 @@ import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 
 class ExportMode extends Enum {}
 ExportMode.init([
@@ -138,6 +131,7 @@ export default {
     FcButton,
     FcHeaderCollisions,
     FcHeaderStudies,
+    FcMenuDownloadReportFormat,
   },
   props: {
     locations: Array,
@@ -232,6 +226,10 @@ export default {
     this.syncLocations();
   },
   methods: {
+    actionDownloadReportFormat() {
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
+    },
     actionRequestStudy() {
       /* eslint-disable-next-line no-alert */
       window.alert('Coming Soon!');

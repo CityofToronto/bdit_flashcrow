@@ -109,28 +109,9 @@
               <v-icon color="primary" left>mdi-cog</v-icon>
               Set Parameters
             </FcButton>
-            <v-menu>
-              <template v-slot:activator="{ on, attrs }">
-                <FcButton
-                  v-bind="attrs"
-                  v-on="on"
-                  class="ml-2"
-                  type="secondary"
-                  :loading="loadingDownload">
-                  <v-icon color="primary" left>mdi-cloud-download</v-icon> Download
-                </FcButton>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="{ label, value } in itemsDownloadFormats"
-                  :key="value"
-                  @click="actionDownload(value)">
-                  <v-list-item-title>
-                    {{label}}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <FcMenuDownloadReportFormat
+              type="secondary"
+              @download-report-format="actionDownload" />
           </div>
         </div>
       </section>
@@ -163,6 +144,7 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -178,6 +160,7 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcDialogReportParameters,
+    FcMenuDownloadReportFormat,
     FcReport,
   },
   data() {

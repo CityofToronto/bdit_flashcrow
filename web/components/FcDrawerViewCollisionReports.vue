@@ -71,28 +71,9 @@
           class="fc-report-wrapper pa-3">
           <FcReport v-bind="reportLayout" />
           <div class="fc-report-actions pa-3">
-            <v-menu>
-              <template v-slot:activator="{ on, attrs }">
-                <FcButton
-                  v-bind="attrs"
-                  v-on="on"
-                  class="ml-2"
-                  type="secondary"
-                  :loading="loadingDownload">
-                  <v-icon color="primary" left>mdi-cloud-download</v-icon> Download
-                </FcButton>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="{ label, value } in itemsDownloadFormats"
-                  :key="value"
-                  @click="actionDownload(value)">
-                  <v-list-item-title>
-                    {{label}}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <FcMenuDownloadReportFormat
+              type="secondary"
+              @download-report-format="actionDownload" />
           </div>
         </div>
       </section>
@@ -109,6 +90,7 @@ import { getReport, getReportWeb } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -123,6 +105,7 @@ export default {
   components: {
     FcButton,
     FcDialogConfirm,
+    FcMenuDownloadReportFormat,
     FcReport,
   },
   data() {
