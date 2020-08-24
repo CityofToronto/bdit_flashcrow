@@ -53,16 +53,6 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <div class="d-flex mt-4 mr-5">
-        <v-spacer></v-spacer>
-        <FcButton
-          class="flex-grow-0 flex-shrink-0"
-          :disabled="collisionSummary.amount === 0"
-          type="tertiary"
-          @click="$emit('show-reports')">
-          <span>View Total Reports</span>
-        </FcButton>
-      </div>
     </template>
   </div>
 </template>
@@ -72,13 +62,11 @@ import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
-    FcButton,
     FcIconLocationMulti,
     FcTextSummaryFraction,
   },

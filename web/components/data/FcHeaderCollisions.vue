@@ -12,6 +12,7 @@
       </FcDialogCollisionFilters>
       <FcButton
         v-if="collisionTotal > 0"
+        :disabled="disabled"
         type="secondary"
         @click.stop="showFiltersCollision = true">
         <v-icon
@@ -19,6 +20,7 @@
           left>mdi-filter-variant</v-icon>
         Filter
       </FcButton>
+      <slot name="action" />
     </div>
 
     <div
@@ -51,6 +53,10 @@ export default {
   },
   props: {
     collisionTotal: Number,
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

@@ -5,7 +5,34 @@
       indeterminate />
     <template v-else>
       <section>
-        <FcHeaderCollisions :collision-total="collisionTotal" />
+        <FcHeaderCollisions
+          :collision-total="collisionTotal"
+          :disabled="exportMode === ExportMode.STUDIES">
+          <template v-slot:action>
+            <FcButton
+              class="ml-2"
+              :disabled="exportMode === ExportMode.STUDIES"
+              type="secondary"
+              @click="actionToggleExportMode(ExportMode.COLLISIONS)">
+              <template v-if="exportMode === ExportMode.COLLISIONS">
+                <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
+                <span>Cancel Export</span>
+              </template>
+              <template v-else>
+                <v-icon color="primary" left>mdi-file-export</v-icon>
+                <span>Export Reports</span>
+              </template>
+            </FcButton>
+            <FcButton
+              class="ml-2"
+              :disabled="collisionSummary.amount === 0 || exportMode === ExportMode.STUDIES"
+              type="secondary"
+              @click="actionShowReportsCollision">
+              <v-icon color="primary" left>mdi-file-eye</v-icon>
+              <span>View Report</span>
+            </FcButton>
+          </template>
+        </FcHeaderCollisions>
 
         <FcAggregateCollisions
           :collision-summary="collisionSummary"
@@ -14,21 +41,37 @@
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
           :locations="locations"
-          :locations-selection="locationsSelection"
-          @show-reports="actionShowReportsCollision" />
+          :locations-selection="locationsSelection" />
       </section>
 
       <v-divider></v-divider>
 
       <section>
-        <FcHeaderStudies :study-total="studyTotal">
+        <FcHeaderStudies
+          :disabled="exportMode === ExportMode.COLLISIONS"
+          :study-total="studyTotal">
           <template v-slot:action>
             <FcButton
-              class="ml-3"
+              class="ml-2"
+              :disabled="exportMode === ExportMode.COLLISIONS"
+              type="secondary"
+              @click="actionToggleExportMode(ExportMode.STUDIES)">
+              <template v-if="exportMode === ExportMode.STUDIES">
+                <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
+                <span>Cancel Export</span>
+              </template>
+              <template v-else>
+                <v-icon color="primary" left>mdi-file-export</v-icon>
+                <span>Export Reports</span>
+              </template>
+            </FcButton>
+            <FcButton
+              class="ml-2"
+              :disabled="exportMode === ExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Batch Request Study
+              Request New Counts
             </FcButton>
           </template>
         </FcHeaderStudies>
@@ -50,6 +93,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import { Enum } from '@/lib/ClassUtils';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -63,6 +107,12 @@ import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+
+class ExportMode extends Enum {}
+ExportMode.init([
+  'COLLISIONS',
+  'STUDIES',
+]);
 
 export default {
   name: 'FcViewDataAggregate',
@@ -102,6 +152,8 @@ export default {
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
+      exportMode: null,
+      ExportMode,
       loading: false,
       loadingCollisions: false,
       loadingStudies: false,
@@ -222,6 +274,13 @@ export default {
       this.studyTotal = studyTotal;
 
       this.loading = false;
+    },
+    actionToggleExportMode(exportMode) {
+      if (this.exportMode === exportMode) {
+        this.exportMode = null;
+      } else {
+        this.exportMode = exportMode;
+      }
     },
   },
 };

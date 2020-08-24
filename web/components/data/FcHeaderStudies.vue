@@ -12,6 +12,7 @@
       </FcDialogStudyFilters>
       <FcButton
         v-if="studyTotal > 0"
+        :disabled="disabled"
         type="secondary"
         @click.stop="showFiltersStudy = true">
         <v-icon
@@ -51,6 +52,10 @@ export default {
     FcDialogStudyFilters,
   },
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     studyTotal: Number,
   },
   data() {
