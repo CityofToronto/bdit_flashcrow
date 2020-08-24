@@ -11,7 +11,7 @@
           <template v-slot:action>
             <FcButton
               class="ml-2"
-              :disabled="exportMode === ExportMode.STUDIES"
+              :disabled="collisionSummary.amount === 0 || exportMode === ExportMode.STUDIES"
               type="secondary"
               @click="actionToggleExportMode(ExportMode.COLLISIONS)">
               <template v-if="exportMode === ExportMode.COLLISIONS">
@@ -24,12 +24,20 @@
               </template>
             </FcButton>
             <FcButton
+              v-if="exportMode !== ExportMode.COLLISIONS"
               class="ml-2"
               :disabled="collisionSummary.amount === 0 || exportMode === ExportMode.STUDIES"
               type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" left>mdi-file-eye</v-icon>
               <span>View Report</span>
+            </FcButton>
+            <FcButton
+              v-else
+              class="ml-2"
+              type="primary">
+              <v-icon left>mdi-cloud-download</v-icon>
+              Download
             </FcButton>
           </template>
         </FcHeaderCollisions>
@@ -66,12 +74,20 @@
               </template>
             </FcButton>
             <FcButton
+              v-if="exportMode !== ExportMode.STUDIES"
               class="ml-2"
               :disabled="exportMode === ExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
               Request New Counts
+            </FcButton>
+            <FcButton
+              v-else
+              class="ml-2"
+              type="primary">
+              <v-icon left>mdi-cloud-download</v-icon>
+              Download
             </FcButton>
           </template>
         </FcHeaderStudies>
