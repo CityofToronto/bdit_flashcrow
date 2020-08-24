@@ -300,7 +300,7 @@ router.afterEach((to) => {
 
 function onErrorShowToast(err) {
   return {
-    variant: 'error',
+    color: 'error',
     text: err.message,
   };
 }

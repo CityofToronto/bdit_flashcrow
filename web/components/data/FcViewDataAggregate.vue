@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 import { Enum } from '@/lib/ClassUtils';
 import {
@@ -227,8 +227,16 @@ export default {
   },
   methods: {
     actionDownloadReportFormat() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+      this.setToast({
+        action: {
+          callback: () => {
+            /* eslint-disable-next-line no-alert */
+            window.alert('Coming Soon!');
+          },
+          text: 'Undo',
+        },
+        text: 'Generating reports (10 of 23, 2 minutes)',
+      });
     },
     actionRequestStudy() {
       /* eslint-disable-next-line no-alert */
@@ -294,8 +302,12 @@ export default {
         this.exportMode = null;
       } else {
         this.exportMode = exportMode;
+        this.setToast({
+          text: 'You\'re currently in Export Report Mode.',
+        });
       }
     },
+    ...mapMutations(['setToast']),
   },
 };
 </script>

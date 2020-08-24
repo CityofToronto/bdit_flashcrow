@@ -5,16 +5,9 @@
       v-model="hasDialog"
       :is="'FcDialog' + dialog"
       v-bind="dialogData" />
-    <v-snackbar
-      v-if="hasToast"
-      v-model="hasToast"
-      bottom
-      class="fc-toast"
-      :color="toast.variant"
-      left
-      :timeout="10000">
-      <span class="body-1">{{toast.text}}</span>
-    </v-snackbar>
+    <FcToast
+      v-if="toast !== null"
+      v-bind="toast" />
     <v-navigation-drawer
       app
       mini-variant
@@ -52,6 +45,7 @@ import FcDialogAlertStudyRequestUrgent from
   '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
 import FcDialogConfirmUnauthorized from
   '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
+import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
@@ -67,6 +61,7 @@ export default {
     FcDialogAlertInDevelopment,
     FcDialogAlertStudyRequestUrgent,
     FcDialogConfirmUnauthorized,
+    FcToast,
   },
   computed: {
     hasDialog: {
@@ -76,16 +71,6 @@ export default {
       set(hasDialog) {
         if (!hasDialog) {
           this.clearDialog();
-        }
-      },
-    },
-    hasToast: {
-      get() {
-        return this.toast !== null;
-      },
-      set(hasToast) {
-        if (!hasToast) {
-          this.clearToast();
         }
       },
     },
@@ -109,10 +94,6 @@ export default {
   font-size: 0.875rem;
   font-weight: normal;
   line-height: 1.25rem;
-
-  & .fc-toast {
-    left: 76px;
-  }
 
   & .v-input--selection-controls__input + .v-label {
     color: var(--v-default-base);
