@@ -190,7 +190,10 @@ export default {
       }
 
       const now = DateTimeZone.utc();
-      const elapsed = now.valueOf() - startedAt.valueOf();
+      let elapsed = now.valueOf() - startedAt.valueOf();
+      if (elapsed < INTERVAL_GET_JOB) {
+        elapsed = INTERVAL_GET_JOB;
+      }
       const f = progressCurrent / progressTotal;
       const timeRemaining = Math.round(elapsed * (1 - f) / f);
 

@@ -34,7 +34,7 @@
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
-              @download-report-format="actionDownloadReportFormat" />
+              @download-report-format="actionDownloadReportFormatCollisions" />
           </template>
         </FcHeaderCollisions>
 
@@ -80,7 +80,7 @@
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
-              @download-report-format="actionDownloadReportFormat" />
+              @download-report-format="actionDownloadReportFormatStudies" />
           </template>
         </FcHeaderStudies>
 
@@ -109,7 +109,8 @@ import {
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineSummaryPerLocation,
   getStudiesByCentrelineTotal,
-  postJobGenerateReports,
+  postJobGenerateCollisionReports,
+  postJobGenerateStudyReports,
 } from '@/lib/api/WebApi';
 import FcAggregateCollisions from '@/web/components/data/FcAggregateCollisions.vue';
 import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
@@ -228,19 +229,23 @@ export default {
     this.syncLocations();
   },
   methods: {
-    async actionDownloadReportFormat(reportFormat) {
-      if (this.exportMode === ExportMode.COLLISIONS) {
-        this.actionDownloadReportFormatCollisions(reportFormat);
-      } else if (this.exportMode === ExportMode.STUDIES) {
-        this.actionDownloadReportFormatStudies(reportFormat);
-      }
-    },
-    async actionDownloadReportFormatCollisions(/* reportFormat */) {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+    async actionDownloadReportFormatCollisions(reportFormat) {
+      const job = await postJobGenerateCollisionReports(
+        this.auth.csrf,
+        this.locations,
+        this.filterParamsCollision,
+        reportFormat,
+      );
+
+      this.setToast({
+        toast: 'Job',
+        toastData: { job },
+      });
+
+      this.exportMode = null;
     },
     async actionDownloadReportFormatStudies(reportFormat) {
-      const job = await postJobGenerateReports(
+      const job = await postJobGenerateStudyReports(
         this.auth.csrf,
         this.locations,
         this.filterParamsStudy,
@@ -251,6 +256,8 @@ export default {
         toast: 'Job',
         toastData: { job },
       });
+
+      this.exportMode = null;
     },
     actionRequestStudy() {
       /* eslint-disable-next-line no-alert */

@@ -16,3 +16,13 @@ test('QueryString.get', () => {
     a: ['1', '2'],
   })).toEqual('a=1&a=2');
 });
+
+test('QueryString.get [null values]', () => {
+  expect(QueryString.get({
+    a: null,
+  })).toEqual('');
+  expect(QueryString.get({
+    a: '1',
+    b: null,
+  })).toEqual('a=1');
+});
