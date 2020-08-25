@@ -1,17 +1,40 @@
-import FunctionUtils from '@/lib/FunctionUtils';
+import { asyncDelay, debounce } from '@/lib/FunctionUtils';
 
 jest.useFakeTimers();
 
-test('FunctionUtils.debounce()', () => {
+test('FunctionUtils.asyncDelay', async () => {
+  let resolved = false;
+  async function asyncDelayHelper(wait) {
+    await asyncDelay(wait);
+    resolved = true;
+  }
+
+  const WAIT_MS = 10;
+  asyncDelayHelper(WAIT_MS);
+  expect(resolved).toBe(false);
+
+  jest.advanceTimersByTime(WAIT_MS - 1);
+  /*
+   * Allow event loop to fire so that our `asyncDelayHelper` promise can be
+   * resolved if it's ready.  (It's not ready yet, but we use the same trick
+   * below once it is.)
+   */
+  await Promise.resolve();
+  expect(resolved).toBe(false);
+
+  jest.advanceTimersByTime(1);
+  await Promise.resolve();
+  expect(resolved).toBe(true);
+});
+
+test('FunctionUtils.debounce', () => {
   const WAIT_MS = 10;
   let x = 0;
-  const foo = FunctionUtils.debounce(() => {
+  const foo = debounce(() => {
     x += 1;
   }, WAIT_MS);
 
   foo();
-  expect(setTimeout).toHaveBeenCalledTimes(1);
-  expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), WAIT_MS);
   expect(x).toEqual(0);
 
   foo();

@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { Enum } from '@/lib/ClassUtils';
 import {
@@ -109,6 +109,7 @@ import {
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineSummaryPerLocation,
   getStudiesByCentrelineTotal,
+  postJobGenerateReports,
 } from '@/lib/api/WebApi';
 import FcAggregateCollisions from '@/web/components/data/FcAggregateCollisions.vue';
 import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
@@ -175,6 +176,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['auth']),
     ...mapGetters('viewData', [
       'filterParamsCollision',
       'filterParamsStudy',
@@ -226,16 +228,17 @@ export default {
     this.syncLocations();
   },
   methods: {
-    actionDownloadReportFormat() {
+    async actionDownloadReportFormat(reportFormat) {
+      const job = await postJobGenerateReports(
+        this.auth.csrf,
+        this.locations,
+        this.filterParamsStudy,
+        reportFormat,
+      );
+
       this.setToast({
-        action: {
-          callback: () => {
-            /* eslint-disable-next-line no-alert */
-            window.alert('Coming Soon!');
-          },
-          text: 'Undo',
-        },
-        text: 'Generating reports (10 of 23, 2 minutes)',
+        toast: 'Job',
+        toastData: { job },
       });
     },
     actionRequestStudy() {
@@ -302,12 +305,10 @@ export default {
         this.exportMode = null;
       } else {
         this.exportMode = exportMode;
-        this.setToast({
-          text: 'You\'re currently in Export Report Mode.',
-        });
+        this.setToastInfo('You\'re currently in Export Report Mode.');
       }
     },
-    ...mapMutations(['setToast']),
+    ...mapMutations(['setToast', 'setToastInfo']),
   },
 };
 </script>

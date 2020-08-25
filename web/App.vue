@@ -5,9 +5,11 @@
       v-model="hasDialog"
       :is="'FcDialog' + dialog"
       v-bind="dialogData" />
-    <FcToast
-      v-if="toast !== null"
-      v-bind="toast" />
+    <component
+      v-if="hasToast"
+      v-model="hasToast"
+      :is="'FcToast' + toast"
+      v-bind="toastData" />
     <v-navigation-drawer
       app
       mini-variant
@@ -45,7 +47,8 @@ import FcDialogAlertStudyRequestUrgent from
   '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
 import FcDialogConfirmUnauthorized from
   '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
-import FcToast from '@/web/components/dialogs/FcToast.vue';
+import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
+import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
@@ -61,7 +64,8 @@ export default {
     FcDialogAlertInDevelopment,
     FcDialogAlertStudyRequestUrgent,
     FcDialogConfirmUnauthorized,
-    FcToast,
+    FcToastInfo,
+    FcToastJob,
   },
   computed: {
     hasDialog: {
@@ -74,12 +78,23 @@ export default {
         }
       },
     },
+    hasToast: {
+      get() {
+        return this.toast !== null;
+      },
+      set(hasToast) {
+        if (!hasToast) {
+          this.clearDialog();
+        }
+      },
+    },
     ...mapState([
       'auth',
       'dialog',
       'dialogData',
       'location',
       'toast',
+      'toastData',
     ]),
   },
   methods: {

@@ -42,6 +42,7 @@ export default new Vuex.Store({
     dialogData: {},
     drawerOpen: false,
     toast: null,
+    toastData: {},
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
@@ -152,6 +153,7 @@ export default new Vuex.Store({
     },
     clearToast(state) {
       Vue.set(state, 'toast', null);
+      Vue.set(state, 'toastData', {});
     },
     setDialog(state, { dialog, dialogData = {} }) {
       Vue.set(state, 'dialog', dialog);
@@ -160,8 +162,13 @@ export default new Vuex.Store({
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
     },
-    setToast(state, toast) {
+    setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
+      Vue.set(state, 'toastData', toastData);
+    },
+    setToastInfo(state, text) {
+      Vue.set(state, 'toast', 'Info');
+      Vue.set(state, 'toastData', { text });
     },
     // NAVIGATION
     setBackViewRequest(state, backViewRequest) {
