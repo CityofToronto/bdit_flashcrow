@@ -61,6 +61,23 @@ test('StorageStrategyFilesystem [buffer API, fuzz test]', async () => {
   }
 });
 
+test('StorageStrategyFilesystem [buffer API, directory traversal]', async () => {
+  const storage = new StorageStrategyFilesystem('/data/move-storage/buffer');
+
+  let namespace = '../..';
+  let key = 'bar';
+  const value = Buffer.from('baz');
+  await expect(storage.put(namespace, key, value)).rejects.toBeInstanceOf(Error);
+  await expect(storage.has(namespace, key)).rejects.toBeInstanceOf(Error);
+  await expect(storage.get(namespace, key)).rejects.toBeInstanceOf(Error);
+
+  namespace = 'bar';
+  key = '../..';
+  await expect(storage.put(namespace, key, value)).rejects.toBeInstanceOf(Error);
+  await expect(storage.has(namespace, key)).rejects.toBeInstanceOf(Error);
+  await expect(storage.get(namespace, key)).rejects.toBeInstanceOf(Error);
+});
+
 test('StorageStrategyFilesystem [stream API]', async () => {
   const storage = new StorageStrategyFilesystem('/data/move-storage/stream');
   const namespace = 'foo';
@@ -113,4 +130,26 @@ test('StorageStrategyFilesystem [stream API, fuzz test]', async () => {
     valueStream = storage.getStream(namespace, key);
     await expect(readableStreamToBuffer(valueStream)).resolves.toEqual(value);
   }
+});
+
+test('StorageStrategyFilesystem [stream API, directory traversal]', async () => {
+  const storage = new StorageStrategyFilesystem('/data/move-storage/stream');
+
+  let namespace = '../..';
+  let key = 'bar';
+  const value = Buffer.from('baz');
+  const valueStream = bufferToDuplexStream(value);
+  await expect(storage.putStream(namespace, key, valueStream)).rejects.toBeInstanceOf(Error);
+  await expect(storage.has(namespace, key)).rejects.toBeInstanceOf(Error);
+  expect(() => {
+    storage.getStream(namespace, key);
+  }).toThrow(Error);
+
+  namespace = 'bar';
+  key = '../..';
+  await expect(storage.putStream(namespace, key, valueStream)).rejects.toBeInstanceOf(Error);
+  await expect(storage.has(namespace, key)).rejects.toBeInstanceOf(Error);
+  expect(() => {
+    storage.getStream(namespace, key);
+  }).toThrow(Error);
 });

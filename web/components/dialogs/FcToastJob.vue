@@ -9,15 +9,16 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { saveAs } from 'file-saver';
+import { mapMutations, mapState } from 'vuex';
 
-import { getJob } from '@/lib/api/WebApi';
-import DateTime from '@/lib/time/DateTime';
+import { getJob, getStorage, putJobCancel } from '@/lib/api/WebApi';
+import DateTimeZone from '@/lib/time/DateTimeZone';
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 const INTERVAL_TICK = 1000;
-const INTERVAL_GET_JOB = 5000;
+const INTERVAL_GET_JOB = 3000;
 
 export default {
   name: 'FcToastJob',
@@ -44,34 +45,43 @@ export default {
   },
   computed: {
     action() {
-      const { state } = this.job;
+      const { state } = this.internalJob;
       if (state === 'created' || state === 'active') {
         return 'Undo';
       }
       if (state === 'completed') {
         return 'Download';
       }
-      return null;
+      return 'Close';
     },
     color() {
-      const { state } = this.job;
+      const { state } = this.internalJob;
       if (state === 'failed') {
         return 'error';
       }
       return 'black';
     },
     text() {
-      const { progressCurrent, progressTotal, state } = this.job;
+      const { progressCurrent, progressTotal, state } = this.internalJob;
       if (state === 'created') {
-        return 'Generating reports (waiting to start)';
+        return 'Generating reports';
       }
-      if (progressCurrent === progressTotal) {
-        return 'Archiving reports';
+      if (state === 'active') {
+        if (progressCurrent === progressTotal) {
+          return `Archiving reports (${progressTotal} reports)`;
+        }
+        if (progressCurrent === 0 || this.textTimeRemaining === null) {
+          return `Generating reports (${progressCurrent} of ${progressTotal})`;
+        }
+        return `Generating reports (${progressCurrent} of ${progressTotal}, ${this.textTimeRemaining})`;
       }
-      if (progressCurrent === 0 || this.timeRemaining === null) {
-        return 'Generating reports (estimating time)';
+      if (state === 'completed') {
+        return `Reports ready (${progressTotal} reports)`;
       }
-      return `Generating reports (${progressCurrent} of ${progressTotal}, ${this.textTimeRemaining})`;
+      if (state === 'failed') {
+        return 'Reports failed';
+      }
+      return null;
     },
     textTimeRemaining() {
       if (this.timeRemaining === null) {
@@ -104,25 +114,41 @@ export default {
       }
       return 'now';
     },
+    ...mapState(['auth']),
   },
   methods: {
-    actionDownload() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+    async actionDownload() {
+      const { result } = this.internalJob;
+      if (result === null) {
+        return;
+      }
+
+      this.loading = true;
+
+      const { namespace, key } = result;
+      const storageData = await getStorage(namespace, key);
+      saveAs(storageData, key);
+
+      this.loading = false;
     },
     actionToast() {
-      const { state } = this.job;
+      const { state } = this.internalJob;
       if (state === 'created' || state === 'active') {
         this.actionUndo();
       } else if (state === 'completed') {
         this.actionDownload();
       }
     },
-    actionUndo() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+    async actionUndo() {
+      this.loading = true;
+
+      const job = await putJobCancel(this.auth.csrf, this.internalJob);
+      this.internalJob = job;
+
+      this.loading = false;
     },
     clearIntervals() {
+      console.log('clearIntervals');
       if (this.intervalGetJob !== null) {
         window.clearInterval(this.intervalGetJob);
         this.intervalGetJob = null;
@@ -152,15 +178,18 @@ export default {
         startedAt,
         state,
       } = this.internalJob;
-      if (state !== 'created' || state !== 'active') {
+      if (state !== 'created' && state !== 'active') {
         this.clearIntervals();
         this.timeRemaining = null;
       }
       if (progressCurrent === this.progressCurrentPrev) {
         return;
       }
+      if (progressCurrent === progressTotal) {
+        this.timeRemaining = null;
+      }
 
-      const now = DateTime.local();
+      const now = DateTimeZone.utc();
       const elapsed = now.valueOf() - startedAt.valueOf();
       const f = progressCurrent / progressTotal;
       const timeRemaining = Math.round(elapsed * (1 - f) / f);
@@ -172,7 +201,11 @@ export default {
       if (this.timeRemaining === null) {
         return;
       }
-      this.timeRemaining -= INTERVAL_TICK;
+      if (this.timeRemaining <= INTERVAL_TICK) {
+        this.timeRemaining = 0;
+      } else {
+        this.timeRemaining -= INTERVAL_TICK;
+      }
     },
     ...mapMutations(['clearToast']),
   },

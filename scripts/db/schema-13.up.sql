@@ -1,5 +1,8 @@
 BEGIN;
 
+-- The `pgboss` schema is created by `scheduler` via `PG_BOSS.start()`, and does
+-- not need to be created here.
+
 CREATE TABLE "sessions" (
   "id" UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
   "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

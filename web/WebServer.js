@@ -3,6 +3,7 @@ import CollisionController from '@/lib/controller/CollisionController';
 import DynamicTileController from '@/lib/controller/DynamicTileController';
 import LocationController from '@/lib/controller/LocationController';
 import PoiController from '@/lib/controller/PoiController';
+import StorageController from '@/lib/controller/StorageController';
 import StudyController from '@/lib/controller/StudyController';
 import StudyRequestController from '@/lib/controller/StudyRequestController';
 import UserController from '@/lib/controller/UserController';
@@ -18,6 +19,7 @@ class WebServer extends MoveServer {
       .addController(DynamicTileController)
       .addController(LocationController)
       .addController(PoiController)
+      .addController(StorageController)
       .addController(StudyController)
       .addController(StudyRequestController)
       .addController(UserController)

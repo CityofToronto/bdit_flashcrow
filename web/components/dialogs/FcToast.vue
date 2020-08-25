@@ -10,6 +10,7 @@
       <FcButton
         v-if="action !== null"
         color="white"
+        :disabled="loading"
         :loading="loading"
         type="tertiary"
         v-bind="attrs"

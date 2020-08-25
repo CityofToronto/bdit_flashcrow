@@ -229,6 +229,17 @@ export default {
   },
   methods: {
     async actionDownloadReportFormat(reportFormat) {
+      if (this.exportMode === ExportMode.COLLISIONS) {
+        this.actionDownloadReportFormatCollisions(reportFormat);
+      } else if (this.exportMode === ExportMode.STUDIES) {
+        this.actionDownloadReportFormatStudies(reportFormat);
+      }
+    },
+    async actionDownloadReportFormatCollisions(/* reportFormat */) {
+      /* eslint-disable-next-line no-alert */
+      window.alert('Coming Soon!');
+    },
+    async actionDownloadReportFormatStudies(reportFormat) {
       const job = await postJobGenerateReports(
         this.auth.csrf,
         this.locations,
