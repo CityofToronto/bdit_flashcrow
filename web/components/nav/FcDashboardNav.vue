@@ -19,6 +19,10 @@
       icon="clipboard-list"
       label="Track Requests"
       :to="{ name: 'requestsTrack' }" />
+    <FcDashboardNavItem
+      icon="download"
+      label="Manage Downloads"
+      :to="{ name: 'downloadsManage' }" />
   </v-list>
 </template>
 

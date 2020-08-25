@@ -57,6 +57,14 @@ const router = new Router({
         next();
       },
     },
+    {
+      path: '/downloads/manage',
+      name: 'downloadsManage',
+      meta: {
+        title: 'Manage Downloads',
+      },
+      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcDownloadsManage.vue'),
+    },
     // DRAWER ROUTES
     {
       path: '/',
