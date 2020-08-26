@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ReportFormat, ReportType } from '@/lib/Constants';
+import { ReportExportMode, ReportFormat, ReportType } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import JobMetadataDAO from '@/lib/db/JobMetadataDAO';
 import UserDAO from '@/lib/db/UserDAO';
@@ -18,10 +18,12 @@ test('JobMetadataDAO', async () => {
     id: jobId1,
     name: JobType.GENERATE_REPORTS.jobName,
     data: {
+      reportExportMode: ReportExportMode.STUDIES,
       reports: [
         { type: ReportType.SPEED_PERCENTILE, id: '4/12345', format: ReportFormat.PDF },
         { type: ReportType.SPEED_PERCENTILE, id: '4/67890', format: ReportFormat.PDF },
       ],
+      s1: 's1:AMgvmB8PvmB',
     },
     createdon: DateTimeZone.utc(),
   };
@@ -34,6 +36,7 @@ test('JobMetadataDAO', async () => {
     jobId: jobId1,
     userId: persistedUser.id,
     type: JobType.GENERATE_REPORTS,
+    description: 'Study Reports: King St E / Jarvis St + 1 location',
     state: 'created',
     dismissed: false,
     progressCurrent: 0,
@@ -41,6 +44,10 @@ test('JobMetadataDAO', async () => {
     createdAt: transientJob1.createdon,
     startedAt: null,
     completedAt: null,
+    metadata: {
+      reportExportMode: ReportExportMode.STUDIES,
+      s1: 's1:AMgvmB8PvmB',
+    },
     result: null,
   });
 
@@ -64,6 +71,8 @@ test('JobMetadataDAO', async () => {
     id: jobId2,
     name: JobType.GENERATE_REPORTS.jobName,
     data: {
+      s1: 's1:AMgvmB8PvmB',
+      reportExportMode: ReportExportMode.STUDIES,
       reports: [
         { type: ReportType.COUNT_SUMMARY_24H, id: '1/4321', format: ReportFormat.CSV },
         { type: ReportType.COUNT_SUMMARY_24H, id: '1/8765', format: ReportFormat.CSV },
@@ -81,7 +90,7 @@ test('JobMetadataDAO', async () => {
   persistedJobMetadata2.progressCurrent = 2;
   persistedJobMetadata2.startedAt = persistedJobMetadata1.startedAt;
   persistedJobMetadata2.completedAt = DateTimeZone.utc();
-  persistedJobMetadata2.result = { zipLink: '1f2e3d4c' };
+  persistedJobMetadata2.result = { namespace: 'reports', key: '1f2e3d4c.zip' };
   fetchedJobMetadata = await JobMetadataDAO.update(persistedJobMetadata2);
   expect(fetchedJobMetadata).toEqual(persistedJobMetadata2);
 });
