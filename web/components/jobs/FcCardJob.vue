@@ -1,10 +1,27 @@
 <template>
-  <FcToast
-    v-model="internalValue"
-    :action="action"
-    :color="color"
-    :text="text"
-    @toast-action="actionToast" />
+  <v-card class="fc-card-job mb-4">
+    <v-card-title>
+      <div>
+        <h3>{{job.jobId}}</h3>
+        <div class="body-1 mt-1">
+          {{text}} &#x2022; {{textUpdatedAt}}
+        </div>
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <FcButton
+        v-if="action !== null"
+        :disabled="loading"
+        :loading="loading"
+        type="secondary"
+        v-bind="attrs"
+        @click="actionCard">
+        <v-icon color="primary" left>{{iconAction}}</v-icon>
+        {{action}}
+      </FcButton>
+    </v-card-title>
+  </v-card>
 </template>
 
 <script>
@@ -13,14 +30,12 @@ import { mapState } from 'vuex';
 
 import { getStorage, putJobCancel } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
-import FcToast from '@/web/components/dialogs/FcToast.vue';
-import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
-  name: 'FcToastJob',
-  mixins: [FcMixinVModelProxy(Boolean)],
+  name: 'FcCardJob',
   components: {
-    FcToast,
+    FcButton,
   },
   props: {
     job: Object,
@@ -52,14 +67,39 @@ export default {
       if (state === 'completed') {
         return 'Download';
       }
-      return 'Close';
+      return null;
     },
-    color() {
+    iconAction() {
       const { state } = this.internalJob;
-      if (state === 'failed') {
-        return 'error';
+      if (state === 'created' || state === 'active') {
+        return 'mdi-undo';
       }
-      return 'black';
+      if (state === 'completed') {
+        return 'mdi-download';
+      }
+      return null;
+    },
+    textUpdatedAt() {
+      const { state } = this.internalJob;
+      if (state === 'created') {
+        const { createdAt } = this.internalJob;
+        const createdAtStr = createdAt.toRelative();
+        return `submitted ${createdAtStr}`;
+      }
+      if (state === 'active') {
+        const { startedAt } = this.internalJob;
+        const startedAtStr = startedAt.toRelative();
+        return `started ${startedAtStr}`;
+      }
+      const { completedAt } = this.internalJob;
+      const completedAtStr = completedAt.toRelative();
+      if (state === 'completed') {
+        return `completed ${completedAtStr}`;
+      }
+      if (state === 'failed') {
+        return `failed ${completedAtStr}`;
+      }
+      return `last updated ${completedAtStr}`;
     },
     ...mapState(['auth']),
   },
@@ -74,7 +114,7 @@ export default {
       const storageData = await getStorage(namespace, key);
       saveAs(storageData, key);
     },
-    actionToast() {
+    actionCard() {
       const { state } = this.internalJob;
       if (state === 'created' || state === 'active') {
         this.actionUndo();
