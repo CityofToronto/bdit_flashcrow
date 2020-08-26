@@ -2,7 +2,7 @@
   <v-card class="fc-card-job mb-4">
     <v-card-title>
       <div>
-        <h3>{{job.jobId}}</h3>
+        <h2>{{job.jobId}}</h2>
         <div class="body-1 mt-1">
           {{text}} &#x2022; {{textUpdatedAt}}
         </div>

@@ -39,3 +39,5 @@ BEGIN;
 UPDATE "APP_META"."DB_UPDATE" SET "currentVersion" = $LATEST_VERSION;
 COMMIT;
 EOF
+
+git add "$DIR_DB/schema-${NEXT_VERSION}.up.sql" "$DIR_DB/schema-${NEXT_VERSION}.down.sql"
