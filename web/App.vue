@@ -8,6 +8,7 @@
     <component
       v-if="hasToast"
       v-model="hasToast"
+      :key="toastKey"
       :is="'FcToast' + toast"
       v-bind="toastData" />
     <v-navigation-drawer
@@ -95,6 +96,7 @@ export default {
       'location',
       'toast',
       'toastData',
+      'toastKey',
     ]),
   },
   methods: {

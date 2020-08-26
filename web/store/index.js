@@ -43,6 +43,7 @@ export default new Vuex.Store({
     drawerOpen: false,
     toast: null,
     toastData: {},
+    toastKey: 0,
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
@@ -165,10 +166,12 @@ export default new Vuex.Store({
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
       Vue.set(state, 'toastData', toastData);
+      Vue.set(state, 'toastKey', state.toastKey + 1);
     },
     setToastInfo(state, text) {
       Vue.set(state, 'toast', 'Info');
       Vue.set(state, 'toastData', { text });
+      Vue.set(state, 'toastKey', state.toastKey + 1);
     },
     // NAVIGATION
     setBackViewRequest(state, backViewRequest) {

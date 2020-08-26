@@ -7,14 +7,16 @@
       <section>
         <FcHeaderCollisions
           :collision-total="collisionTotal"
-          :disabled="exportMode === ExportMode.STUDIES">
+          :disabled="reportExportMode === ReportExportMode.STUDIES">
           <template v-slot:action>
             <FcButton
               class="ml-2"
-              :disabled="collisionSummary.amount === 0 || exportMode === ExportMode.STUDIES"
+              :disabled="
+                collisionSummary.amount === 0
+                || reportExportMode === ReportExportMode.STUDIES"
               type="secondary"
-              @click="actionToggleExportMode(ExportMode.COLLISIONS)">
-              <template v-if="exportMode === ExportMode.COLLISIONS">
+              @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
+              <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
                 <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
                 <span>Cancel Export</span>
               </template>
@@ -24,9 +26,11 @@
               </template>
             </FcButton>
             <FcButton
-              v-if="exportMode !== ExportMode.COLLISIONS"
+              v-if="reportExportMode !== ReportExportMode.COLLISIONS"
               class="ml-2"
-              :disabled="collisionSummary.amount === 0 || exportMode === ExportMode.STUDIES"
+              :disabled="
+                collisionSummary.amount === 0
+                || reportExportMode === ReportExportMode.STUDIES"
               type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" left>mdi-file-eye</v-icon>
@@ -52,15 +56,15 @@
 
       <section>
         <FcHeaderStudies
-          :disabled="exportMode === ExportMode.COLLISIONS"
+          :disabled="reportExportMode === ReportExportMode.COLLISIONS"
           :study-total="studyTotal">
           <template v-slot:action>
             <FcButton
               class="ml-2"
-              :disabled="exportMode === ExportMode.COLLISIONS"
+              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
-              @click="actionToggleExportMode(ExportMode.STUDIES)">
-              <template v-if="exportMode === ExportMode.STUDIES">
+              @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
+              <template v-if="reportExportMode === ReportExportMode.STUDIES">
                 <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
                 <span>Cancel Export</span>
               </template>
@@ -70,9 +74,9 @@
               </template>
             </FcButton>
             <FcButton
-              v-if="exportMode !== ExportMode.STUDIES"
+              v-if="reportExportMode !== ReportExportMode.STUDIES"
               class="ml-2"
-              :disabled="exportMode === ExportMode.COLLISIONS"
+              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
@@ -101,7 +105,7 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { Enum } from '@/lib/ClassUtils';
+import { ReportExportMode } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -118,12 +122,6 @@ import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-
-class ExportMode extends Enum {}
-ExportMode.init([
-  'COLLISIONS',
-  'STUDIES',
-]);
 
 export default {
   name: 'FcViewDataAggregate',
@@ -164,8 +162,8 @@ export default {
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
-      exportMode: null,
-      ExportMode,
+      reportExportMode: null,
+      ReportExportMode,
       loading: false,
       loadingCollisions: false,
       loadingStudies: false,
@@ -242,7 +240,7 @@ export default {
         toastData: { job },
       });
 
-      this.exportMode = null;
+      this.reportExportMode = null;
     },
     async actionDownloadReportFormatStudies(reportFormat) {
       const job = await postJobGenerateStudyReports(
@@ -257,7 +255,7 @@ export default {
         toastData: { job },
       });
 
-      this.exportMode = null;
+      this.reportExportMode = null;
     },
     actionRequestStudy() {
       /* eslint-disable-next-line no-alert */
@@ -318,11 +316,12 @@ export default {
 
       this.loading = false;
     },
-    actionToggleExportMode(exportMode) {
-      if (this.exportMode === exportMode) {
-        this.exportMode = null;
+    actionToggleReportExportMode(reportExportMode) {
+      if (this.reportExportMode === reportExportMode) {
+        this.reportExportMode = null;
+        this.setToastInfo('You\'re no longer in Export Report Mode.');
       } else {
-        this.exportMode = exportMode;
+        this.reportExportMode = reportExportMode;
         this.setToastInfo('You\'re currently in Export Report Mode.');
       }
     },
