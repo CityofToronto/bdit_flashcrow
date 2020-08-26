@@ -61,7 +61,9 @@
           <template v-slot:action>
             <FcButton
               class="ml-2"
-              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
+              :disabled="
+                studySummary.length === 0
+                || reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
               @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
               <template v-if="reportExportMode === ReportExportMode.STUDIES">
@@ -76,7 +78,9 @@
             <FcButton
               v-if="reportExportMode !== ReportExportMode.STUDIES"
               class="ml-2"
-              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
+              :disabled="
+                studySummary.length === 0
+                || reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>

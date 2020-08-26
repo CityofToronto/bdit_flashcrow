@@ -1,5 +1,18 @@
 import ObjectUtils from '@/lib/ObjectUtils';
 
+class Foo extends Object {}
+
+test('ObjectUtils.isEmpty', () => {
+  let obj = {};
+  expect(ObjectUtils.isEmpty(obj)).toBe(true);
+
+  obj = { x: 42 };
+  expect(ObjectUtils.isEmpty(obj)).toBe(false);
+
+  obj = new Foo();
+  expect(ObjectUtils.isEmpty(obj)).toBe(false);
+});
+
 test('ObjectUtils.map', () => {
   let obj = {};
   let mappedObj = ObjectUtils.map(obj, x => x * x);

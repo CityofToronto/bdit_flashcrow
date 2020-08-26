@@ -20,8 +20,20 @@
     </header>
 
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
+      <div
+        v-if="loading"
+        class="ma-3 text-center">
+        <v-progress-circular
+          class="ma-3"
+          color="primary"
+          indeterminate
+          size="80" />
+        <div class="font-weight-regular headline secondary--text">
+          This page is loading, please wait.
+        </div>
+      </div>
       <v-card
-        v-if="jobs.length === 0"
+        v-else-if="jobs.length === 0"
         outlined>
         <v-card-title>
           <div>
@@ -41,10 +53,12 @@
           </FcButton>
         </v-card-title>
       </v-card>
-      <FcCardJob
-        v-for="job in jobs"
-        :key="job.jobId"
-        :job="job" />
+      <template v-else>
+        <FcCardJob
+          v-for="job in jobs"
+          :key="job.jobId"
+          :job="job" />
+      </template>
     </section>
   </section>
 </template>

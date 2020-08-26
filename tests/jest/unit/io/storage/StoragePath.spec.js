@@ -2,7 +2,7 @@ import { ReportFormat, ReportType } from '@/lib/Constants';
 import StoragePath from '@/lib/io/storage/StoragePath';
 
 test('StoragePath.forReport', () => {
-  const report = {
+  let report = {
     type: ReportType.SPEED_PERCENTILE,
     id: '1/2345',
     format: ReportFormat.CSV,
@@ -10,6 +10,19 @@ test('StoragePath.forReport', () => {
   expect(StoragePath.forReport(report)).toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS,
     key: 'SPEED_PERCENTILE_1_2345.csv',
+  });
+
+  report = {
+    type: ReportType.COLLISION_DIRECTORY,
+    id: 's1:AkttmBoXtmB',
+    format: ReportFormat.PDF,
+    // options
+    foo: 1,
+    bar: 'baz',
+  };
+  expect(StoragePath.forReport(report)).toEqual({
+    namespace: StoragePath.NAMESPACE_REPORTS,
+    key: 'COLLISION_DIRECTORY_s1:AkttmBoXtmB_204c1293.pdf',
   });
 });
 

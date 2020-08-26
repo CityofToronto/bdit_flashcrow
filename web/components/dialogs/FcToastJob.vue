@@ -11,7 +11,7 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobCancel } from '@/lib/api/WebApi';
+import { getStorage, putJobCancel, putJobDismiss } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -73,6 +73,9 @@ export default {
       const { namespace, key } = result;
       const storageData = await getStorage(namespace, key);
       saveAs(storageData, key);
+
+      const job = await putJobDismiss(this.auth.csrf, this.internalJob);
+      this.internalJob = job;
     },
     actionToast() {
       const { state } = this.internalJob;

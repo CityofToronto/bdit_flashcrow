@@ -1,8 +1,12 @@
 <template>
-  <v-card class="fc-card-job mb-4">
+  <v-card
+    class="fc-card-job mb-4"
+    :class="{
+      'fc-card-job-dismissed': internalJob.dismissed,
+    }">
     <v-card-title>
       <div>
-        <h2>{{job.jobId}}</h2>
+        <h2>{{job.description}}</h2>
         <div class="body-1 mt-1">
           {{text}} &#x2022; {{textUpdatedAt}}
         </div>
@@ -12,12 +16,13 @@
 
       <FcButton
         v-if="action !== null"
-        :disabled="loading"
-        :loading="loading"
-        type="secondary"
-        v-bind="attrs"
+        :type="internalJob.dismissed ? 'secondary' : 'primary'"
         @click="actionCard">
-        <v-icon color="primary" left>{{iconAction}}</v-icon>
+        <v-icon
+          :color="internalJob.dismissed ? 'primary' : 'white'"
+          left>
+          {{iconAction}}
+        </v-icon>
         {{action}}
       </FcButton>
     </v-card-title>
@@ -28,7 +33,7 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobCancel } from '@/lib/api/WebApi';
+import { getStorage, putJobCancel, putJobDismiss } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -113,6 +118,9 @@ export default {
       const { namespace, key } = result;
       const storageData = await getStorage(namespace, key);
       saveAs(storageData, key);
+
+      const job = await putJobDismiss(this.auth.csrf, this.internalJob);
+      this.internalJob = job;
     },
     actionCard() {
       const { state } = this.internalJob;
@@ -134,3 +142,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.v-sheet.v-card.fc-card-job {
+  border-left: 4px solid var(--v-primary-base);
+  &.fc-card-job-dismissed {
+    border-left: 0;
+  }
+}
+</style>
