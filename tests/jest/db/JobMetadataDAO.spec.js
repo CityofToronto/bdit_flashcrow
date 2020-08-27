@@ -66,6 +66,15 @@ test('JobMetadataDAO', async () => {
   let fetchedJobMetadatas = await JobMetadataDAO.byUser(persistedUser);
   expect(fetchedJobMetadatas).toContainEqual(persistedJobMetadata1);
 
+  let existsNew = await JobMetadataDAO.byUserExistsNew(persistedUser);
+  expect(existsNew).toBe(true);
+
+  persistedJobMetadata1.dismissed = true;
+  fetchedJobMetadata = await JobMetadataDAO.update(persistedJobMetadata1);
+  expect(fetchedJobMetadata).toEqual(persistedJobMetadata1);
+  existsNew = await JobMetadataDAO.byUserExistsNew(persistedUser);
+  expect(existsNew).toBe(false);
+
   const jobId2 = uuidv4();
   const transientJob2 = {
     id: jobId2,
@@ -93,4 +102,7 @@ test('JobMetadataDAO', async () => {
   persistedJobMetadata2.result = { namespace: 'reports', key: '1f2e3d4c.zip' };
   fetchedJobMetadata = await JobMetadataDAO.update(persistedJobMetadata2);
   expect(fetchedJobMetadata).toEqual(persistedJobMetadata2);
+
+  existsNew = await JobMetadataDAO.byUserExistsNew(persistedUser);
+  expect(existsNew).toBe(true);
 });
