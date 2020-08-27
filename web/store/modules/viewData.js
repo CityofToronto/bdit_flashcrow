@@ -4,6 +4,7 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 export default {
   namespaced: true,
   state: {
+    detailView: false,
     filtersCollision: {
       datesFrom: -1,
       daysOfWeek: [],
@@ -175,6 +176,9 @@ export default {
           values.splice(i, 1);
         }
       }
+    },
+    setDetailView(state, detailView) {
+      state.detailView = detailView;
     },
     setFiltersCollision(state, filtersCollision) {
       state.filtersCollision = filtersCollision;

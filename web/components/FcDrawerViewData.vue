@@ -95,7 +95,6 @@ export default {
   },
   data() {
     return {
-      detailView: false,
       LocationMode,
     };
   },
@@ -107,6 +106,7 @@ export default {
       'locationsEditSelection',
       'locationsSelection',
     ]),
+    ...mapState('viewData', ['detailView']),
     ...mapGetters([
       'location',
       'locationActive',
@@ -116,7 +116,7 @@ export default {
   },
   watch: {
     locationMode() {
-      this.detailView = false;
+      this.setDetailView(false);
     },
     locationsSelection: {
       deep: true,
@@ -160,10 +160,10 @@ export default {
     actionToggleDetailView() {
       if (this.detailView) {
         this.setLocationsIndex(-1);
-        this.detailView = false;
+        this.setDetailView(false);
       } else {
         this.setLocationsIndex(0);
-        this.detailView = true;
+        this.setDetailView(true);
       }
     },
     async loadAsyncForRoute(to) {
@@ -176,6 +176,7 @@ export default {
       'setLocationMode',
       'setLocationsIndex',
     ]),
+    ...mapMutations('viewData', ['setDetailView']),
     ...mapActions(['initLocations']),
   },
 };

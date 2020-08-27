@@ -54,24 +54,24 @@
         </v-card-title>
       </v-card>
       <template v-else>
-        <section v-if="jobsInProgress.length > 0">
+        <section v-if="jobsSections.inProgress.length > 0">
           <h2 class="my-6">In Progress</h2>
           <FcCardJob
-            v-for="job in jobsInProgress"
+            v-for="job in jobsSections.inProgress"
             :key="job.jobId"
             :job="job" />
         </section>
-        <section v-if="jobsNewlyCompleted.length > 0">
+        <section v-if="jobsSections.newlyCompleted.length > 0">
           <h2 class="my-6">Completed</h2>
           <FcCardJob
-            v-for="job in jobsNewlyCompleted"
+            v-for="job in jobsSections.newlyCompleted"
             :key="job.jobId"
             :job="job" />
         </section>
-        <section v-if="jobsOld.length > 0">
+        <section v-if="jobsSections.old.length > 0">
           <h2 class="my-6">History</h2>
           <FcCardJob
-            v-for="job in jobsOld"
+            v-for="job in jobsSections.old"
             :key="job.jobId"
             :job="job" />
         </section>
@@ -103,14 +103,23 @@ export default {
     };
   },
   computed: {
-    jobsInProgress() {
-      return this.jobs.filter(job => job.state === 'created' || job.state === 'active');
-    },
-    jobsNewlyCompleted() {
-      return this.jobs.filter(job => job.state === 'completed' && !job.dismissed);
-    },
-    jobsOld() {
-      return this.jobs.filter(job => job.dismissed);
+    jobsSections() {
+      const jobsSections = {
+        inProgress: [],
+        newlyCompleted: [],
+        old: [],
+      };
+      this.jobs.forEach((job) => {
+        const { dismissed, state } = job;
+        if (state === 'created' || state === 'active') {
+          jobsSections.inProgress.push(job);
+        } else if (state === 'completed' && !dismissed) {
+          jobsSections.newlyCompleted.push(job);
+        } else {
+          jobsSections.old.push(job);
+        }
+      });
+      return jobsSections;
     },
     labelViewData() {
       if (this.locationsEmpty) {
