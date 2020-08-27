@@ -1,12 +1,15 @@
 <template>
   <v-card
-    class="fc-card-job mb-4"
+    class="fc-card-job mb-4 ml-4"
     :class="{
+      'fc-card-job-cancelled': internalJob.state === 'cancelled',
       'fc-card-job-dismissed': internalJob.dismissed,
-    }">
+      'fc-card-job-failed': internalJob.state === 'failed',
+    }"
+    :outlined="internalJob.state === 'cancelled' || internalJob.state === 'failed'">
     <v-card-title>
       <div>
-        <h2>{{job.description}}</h2>
+        <h3>{{job.description}}</h3>
         <div class="body-1 mt-1">
           {{text}} &#x2022; {{textUpdatedAt}}
         </div>
@@ -18,9 +21,7 @@
         v-if="action !== null"
         :type="internalJob.dismissed ? 'secondary' : 'primary'"
         @click="actionCard">
-        <v-icon
-          :color="internalJob.dismissed ? 'primary' : 'white'"
-          left>
+        <v-icon left>
           {{iconAction}}
         </v-icon>
         {{action}}
@@ -146,6 +147,10 @@ export default {
 <style lang="scss">
 .v-sheet.v-card.fc-card-job {
   border-left: 4px solid var(--v-primary-base);
+  &.fc-card-job-cancelled,
+  &.fc-card-job-failed {
+    opacity: 0.5;
+  }
   &.fc-card-job-dismissed {
     border-left: 0;
   }
