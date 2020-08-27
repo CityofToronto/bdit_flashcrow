@@ -41,7 +41,7 @@
             </v-chip>
           </div>
           <v-spacer></v-spacer>
-          <v-menu>
+          <v-menu v-if="studies.length > 0">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
                 v-bind="attrs"
@@ -69,7 +69,8 @@
         <v-tabs v-model="indexActiveReportType">
           <v-tab
             v-for="reportType in reportTypes"
-            :key="reportType.name">
+            :key="reportType.name"
+            :disabled="studies.length === 0">
             {{reportType.label}}
           </v-tab>
         </v-tabs>
@@ -88,6 +89,13 @@
             size="80" />
           <div class="font-weight-regular headline secondary--text">
             This page is loading, please wait.
+          </div>
+        </div>
+        <div
+          v-else-if="studies.length === 0"
+          class="ma-3 text-center">
+          <div class="font-weight-regular headline secondary--text">
+            Report not available, try a different location.
           </div>
         </div>
         <div
@@ -343,6 +351,9 @@ export default {
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
 
+      if (this.locationActive === null) {
+        this.setLocationsIndex(0);
+      }
       const studyType = StudyType.enumValueOf(studyTypeName);
       const studies = await getStudiesByCentreline(
         [this.locationActive],
@@ -359,6 +370,7 @@ export default {
     async updateReportLayout() {
       const { activeReportType, activeStudy, reportParameters } = this;
       if (activeReportType === null || activeStudy === null) {
+        this.reportLayout = null;
         return;
       }
       this.loadingReportLayout = true;
