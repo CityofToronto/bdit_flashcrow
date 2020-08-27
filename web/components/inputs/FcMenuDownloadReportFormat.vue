@@ -12,7 +12,8 @@
           :color="type === 'secondary' ? 'primary' : 'white'">
           mdi-cloud-download
         </v-icon>
-        Download
+        <span>Download</span>
+        <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
     <v-list>

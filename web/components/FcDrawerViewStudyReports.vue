@@ -26,7 +26,38 @@
           <h1 class="headline ml-4">{{studyType.label}}</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{locationActive.description}}</span>
+            <span>&#x2022;</span>
+            <span v-if="locationMode === LocationMode.SINGLE">
+              {{location.description}}
+            </span>
+            <v-menu
+              v-else
+              max-height="320">
+              <template v-slot:activator="{ on, attrs }">
+                <FcButton
+                  v-bind="attrs"
+                  v-on="on"
+                  class="flex-grow-0 mt-0 ml-2"
+                  type="secondary">
+                  <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
+                  <span class="pl-2">{{locationActive.description}}</span>
+                  <v-icon right>mdi-menu-down</v-icon>
+                </FcButton>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(location, i) in locations"
+                  :key="i"
+                  @click="setLocationsIndex(i)">
+                  <v-list-item-title>
+                    <div class="d-flex">
+                      <FcIconLocationMulti v-bind="locationsIconProps[i]" />
+                      <span class="pl-2">{{location.description}}</span>
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -50,7 +81,7 @@
                 type="secondary">
                 <v-icon color="primary" left>mdi-history</v-icon>
                 {{labelActiveStudy}}
-                <v-icon>mdi-menu-down</v-icon>
+                <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
             <v-list>
@@ -137,6 +168,7 @@ import {
 } from 'vuex';
 
 import {
+  LocationMode,
   LocationSelectionType,
   ReportFormat,
   ReportType,
@@ -147,12 +179,14 @@ import {
   getReportWeb,
   getStudiesByCentreline,
 } from '@/lib/api/WebApi';
+import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
+import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -168,6 +202,7 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcDialogReportParameters,
+    FcIconLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,
   },
@@ -187,6 +222,7 @@ export default {
       leaveConfirmed: false,
       loadingDownload: false,
       loadingReportLayout: false,
+      LocationMode,
       nextRoute: null,
       reportLayout: null,
       reportUserParameters,
@@ -246,6 +282,14 @@ export default {
       const dayOfWeek = TimeFormatters.formatDayOfWeek(activeStudy.startDate);
       return `${date} (${dayOfWeek})`;
     },
+    locationsIconProps() {
+      const locationsIconProps = getLocationsIconProps(
+        this.locations,
+        this.locationsSelection.locations,
+      );
+      locationsIconProps[this.locationsIndex].selected = true;
+      return locationsIconProps;
+    },
     reportParameters: {
       get() {
         const { activeReportType, reportUserParameters } = this;
@@ -271,8 +315,14 @@ export default {
       const { studyTypeName } = this.$route.params;
       return StudyType.enumValueOf(studyTypeName);
     },
-    ...mapState(['locations']),
+    ...mapState([
+      'locationMode',
+      'locations',
+      'locationsIndex',
+      'locationsSelection',
+    ]),
     ...mapGetters([
+      'location',
       'locationActive',
       'locationsRouteParams',
     ]),
