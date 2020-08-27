@@ -22,7 +22,7 @@ test('StoragePath.forReport', () => {
   };
   expect(StoragePath.forReport(report)).toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS,
-    key: 'COLLISION_DIRECTORY_s1:AkttmBoXtmB_204c1293.pdf',
+    key: 'COLLISION_DIRECTORY_s1:AkttmBoXtmB_204c1293209bcf240d71f87d91f3f0eb.pdf',
   });
 });
 
