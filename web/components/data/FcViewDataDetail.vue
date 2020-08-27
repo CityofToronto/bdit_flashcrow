@@ -150,12 +150,21 @@ export default {
       window.alert('Coming Soon!');
     },
     actionShowReportsCollision() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'viewCollisionReportsAtLocation',
+        params,
+      });
     },
-    actionShowReportsStudy(/* { category: { studyType } } */) {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+    actionShowReportsStudy({ category: { studyType } }) {
+      const params = {
+        ...this.locationsRouteParams,
+        studyTypeName: studyType.name,
+      };
+      this.$router.push({
+        name: 'viewStudyReportsAtLocation',
+        params,
+      });
     },
     async syncLocation() {
       if (this.location === null) {

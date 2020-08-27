@@ -76,7 +76,7 @@
                   <FcButton
                     class="mr-n4 mt-2"
                     type="tertiary"
-                    @click="$emit('show-reports', j)">
+                    @click="$emit('show-reports', { item, locationsIndex: j })">
                     <span>View Reports</span>
                   </FcButton>
                 </div>

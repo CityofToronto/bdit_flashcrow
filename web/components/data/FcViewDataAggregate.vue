@@ -188,10 +188,10 @@ export default {
   },
   computed: {
     ...mapState(['auth']),
+    ...mapGetters(['locationsRouteParams']),
     ...mapGetters('viewData', [
       'filterParamsCollision',
       'filterParamsStudy',
-      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -280,9 +280,20 @@ export default {
         params,
       });
     },
-    actionShowReportsStudy() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+    actionShowReportsStudy({
+      item: { category: { studyType } },
+      locationsIndex,
+    }) {
+      this.setLocationsIndex(locationsIndex);
+
+      const params = {
+        ...this.locationsRouteParams,
+        studyTypeName: studyType.name,
+      };
+      this.$router.push({
+        name: 'viewStudyReportsAtLocation',
+        params,
+      });
     },
     async syncLocations() {
       if (this.locations.length === 0) {
@@ -337,7 +348,12 @@ export default {
         this.setToastInfo('You\'re currently in Export Report Mode.');
       }
     },
-    ...mapMutations(['setToast', 'setToastInfo']),
+    ...mapMutations([
+      'setLocationsIndex',
+      'setToast',
+      'setToastInfo',
+    ]),
+    ...mapMutations('viewData', ['setDetailView']),
   },
 };
 </script>

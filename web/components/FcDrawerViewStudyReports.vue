@@ -26,7 +26,7 @@
           <h1 class="headline ml-4">{{studyType.label}}</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{locationsDescription}}</span>
+            <span>&#x2022; {{locationActive.description}}</span>
             <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -264,7 +264,10 @@ export default {
       return StudyType.enumValueOf(studyTypeName);
     },
     ...mapState(['locations']),
-    ...mapGetters(['locationsDescription', 'locationsRouteParams']),
+    ...mapGetters([
+      'locationActive',
+      'locationsRouteParams',
+    ]),
     ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
@@ -273,6 +276,18 @@ export default {
     },
     activeStudy() {
       this.updateReportLayout();
+    },
+    async locationActive() {
+      const studies = await getStudiesByCentreline(
+        [this.locationActive],
+        this.studyType,
+        this.filterParamsStudyReports,
+        { limit: 10, offset: 0 },
+      );
+
+      this.indexActiveReportType = 0;
+      this.indexActiveStudy = 0;
+      this.studies = studies;
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -330,7 +345,7 @@ export default {
 
       const studyType = StudyType.enumValueOf(studyTypeName);
       const studies = await getStudiesByCentreline(
-        this.locations,
+        [this.locationActive],
         studyType,
         this.filterParamsStudyReports,
         { limit: 10, offset: 0 },
@@ -355,7 +370,7 @@ export default {
 
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocations']),
+    ...mapMutations(['setLocationsIndex']),
     ...mapActions(['initLocations']),
   },
 };

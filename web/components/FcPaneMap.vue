@@ -11,8 +11,11 @@
       <div
         class="pane-map-location-search"
         v-if="!drawerOpen">
+        <FcSelectorCollapsedLocation
+          v-if="collapseLocationSearch"
+          class="mt-5 ml-5" />
         <FcSelectorMultiLocation
-          v-if="locationMode.multi"
+          v-else-if="locationMode.multi"
           class="elevation-2">
           <template v-slot:action>
             <FcButton
@@ -107,6 +110,7 @@ import GeoStyle from '@/lib/geo/GeoStyle';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
+import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
@@ -146,6 +150,7 @@ export default {
     FcButton,
     FcPaneMapLegend,
     FcPaneMapPopup,
+    FcSelectorCollapsedLocation,
     FcSelectorMultiLocation,
     FcSelectorSingleLocation,
   },
@@ -212,6 +217,11 @@ export default {
       }
       const { layer: { id: layerId } } = this.selectedFeature;
       return layerId === 'intersections' || layerId === 'midblocks';
+    },
+    collapseLocationSearch() {
+      const { name } = this.$route;
+      return name === 'viewCollisionReportsAtLocation'
+        || name === 'viewStudyReportsAtLocation';
     },
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
