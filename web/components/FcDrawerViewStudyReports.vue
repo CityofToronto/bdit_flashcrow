@@ -48,6 +48,7 @@
                 <v-list-item
                   v-for="(location, i) in locations"
                   :key="i"
+                  :disabled="studySummaryPerLocation[0].perLocation[i].n === 0"
                   @click="setLocationsIndex(i)">
                   <v-list-item-title>
                     <div class="d-flex">
@@ -178,6 +179,7 @@ import {
   getReport,
   getReportWeb,
   getStudiesByCentreline,
+  getStudiesByCentrelineSummaryPerLocation,
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
@@ -229,6 +231,7 @@ export default {
       showConfirmLeave: false,
       showReportParameters: false,
       studies: [],
+      studySummaryPerLocation: [],
     };
   },
   computed: {
@@ -405,13 +408,25 @@ export default {
         this.setLocationsIndex(0);
       }
       const studyType = StudyType.enumValueOf(studyTypeName);
-      const studies = await getStudiesByCentreline(
-        [this.locationActive],
-        studyType,
-        this.filterParamsStudyReports,
-        { limit: 10, offset: 0 },
-      );
+
+      const tasks = [
+        getStudiesByCentreline(
+          [this.locationActive],
+          studyType,
+          this.filterParamsStudyReports,
+          { limit: 10, offset: 0 },
+        ),
+        getStudiesByCentrelineSummaryPerLocation(
+          this.locations,
+          this.filterParamsStudyReports,
+        ),
+      ];
+      const [
+        studies,
+        studySummaryPerLocation,
+      ] = await Promise.all(tasks);
       this.studies = studies;
+      this.studySummaryPerLocation = studySummaryPerLocation;
     },
     setReportParameters(reportParameters) {
       this.reportParameters = reportParameters;
