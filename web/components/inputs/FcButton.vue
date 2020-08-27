@@ -12,6 +12,11 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
+
+import { hasAuthScope } from '@/lib/auth/ScopeMatcher';
+import { saveLoginState } from '@/web/store/LoginState';
+
 const BUTTON_ATTRS = {
   primary: {
     color: 'primary',
@@ -41,12 +46,17 @@ const BUTTON_ATTRS = {
 export default {
   name: 'FcButton',
   props: {
+    scope: {
+      type: Array,
+      default: null,
+    },
     type: String,
   },
   computed: {
     typeAttrs() {
       return BUTTON_ATTRS[this.type];
     },
+    ...mapState(['auth']),
   },
   methods: {
     actionClick() {
@@ -59,7 +69,31 @@ export default {
 
       const event = this.$analytics.buttonEvent(ihtml, this.$el);
       this.$analytics.send([event]);
+      return this.actionClickAuth();
     },
+    actionClickAuth() {
+      const { auth: { loggedIn, user }, scope } = this;
+      if (scope === null) {
+        return true;
+      }
+      if (loggedIn) {
+        if (hasAuthScope(user, scope)) {
+          return true;
+        }
+        this.setDialog({
+          dialog: 'ConfirmUnauthorized',
+          dialogData: { scope },
+        });
+        return false;
+      }
+      const event = this.$analytics.signInEvent();
+      this.$analytics.send([event]);
+
+      saveLoginState(this.$route);
+      document.forms.formSignIn.submit();
+      return false;
+    },
+    ...mapMutations(['setDialog']),
   },
 };
 </script>

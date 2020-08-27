@@ -14,6 +14,7 @@
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
+              :scope="[]"
               type="secondary"
               @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
               <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
@@ -31,6 +32,7 @@
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
+              :scope="[]"
               type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" left>mdi-file-eye</v-icon>
@@ -64,6 +66,7 @@
               :disabled="
                 studySummary.length === 0
                 || reportExportMode === ReportExportMode.COLLISIONS"
+              :scope="[]"
               type="secondary"
               @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
               <template v-if="reportExportMode === ReportExportMode.STUDIES">
@@ -81,6 +84,7 @@
               :disabled="
                 studySummary.length === 0
                 || reportExportMode === ReportExportMode.COLLISIONS"
+              :scope="[]"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
@@ -126,9 +130,13 @@ import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
   name: 'FcViewDataAggregate',
+  mixins: [
+    FcMixinAuthScope,
+  ],
   components: {
     FcAggregateCollisions,
     FcAggregateStudies,
