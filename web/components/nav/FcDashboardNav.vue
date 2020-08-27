@@ -20,6 +20,7 @@
       label="Track Requests"
       :to="{ name: 'requestsTrack' }" />
     <FcDashboardNavItem
+      :badge="jobsExistsNew"
       icon="download"
       label="Manage Downloads"
       :to="{ name: 'downloadsManage' }" />
@@ -27,14 +28,21 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
+import { getJobsExistsNew } from '@/lib/api/WebApi';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 
 export default {
   name: 'FcDashboardNav',
   components: {
     FcDashboardNavItem,
+  },
+  data() {
+    return {
+      jobsExistsNew: false,
+      loading: true,
+    };
   },
   computed: {
     toViewMap() {
@@ -47,7 +55,29 @@ export default {
         params,
       };
     },
+    ...mapState(['auth']),
     ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
+  },
+  watch: {
+    'auth.loggedIn': function watchAuthLoggedIn() {
+      this.loadAsync();
+    },
+  },
+  created() {
+    this.loadAsync();
+  },
+  methods: {
+    async loadAsync() {
+      if (!this.auth.loggedIn) {
+        this.jobsExistsNew = false;
+        return;
+      }
+
+      this.loading = true;
+      const jobsExistsNew = await getJobsExistsNew();
+      this.jobsExistsNew = jobsExistsNew;
+      this.loading = false;
+    },
   },
 };
 </script>
