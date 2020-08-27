@@ -28,7 +28,7 @@
             class="ml-1 font-weight-regular headline secondary--text">
             <span>&#x2022;</span>
             <span v-if="locationMode === LocationMode.SINGLE">
-              {{location.description}}
+              {{locationActive.description}}
             </span>
             <v-menu
               v-else

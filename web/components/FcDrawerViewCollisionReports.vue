@@ -26,7 +26,42 @@
           <h1 class="headline ml-4">Collisions</h1>
           <div
             class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022; {{locationsDescription}}</span>
+            <span>&#x2022;</span>
+            <span v-if="locationMode === LocationMode.SINGLE">
+              {{locationActive.description}}
+            </span>
+            <span v-else-if="!detailView">
+              {{locationsDescription}}
+            </span>
+            <v-menu
+              v-else
+              max-height="320">
+              <template v-slot:activator="{ on, attrs }">
+                <FcButton
+                  v-bind="attrs"
+                  v-on="on"
+                  class="flex-grow-0 mt-0 ml-2"
+                  type="secondary">
+                  <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
+                  <span class="pl-2">{{locationActive.description}}</span>
+                  <v-icon right>mdi-menu-down</v-icon>
+                </FcButton>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(location, i) in locations"
+                  :key="i"
+                  :disabled="collisionSummaryPerLocation[i].amount === 0"
+                  @click="setLocationsIndex(i)">
+                  <v-list-item-title>
+                    <div class="d-flex">
+                      <FcIconLocationMulti v-bind="locationsIconProps[i]" />
+                      <span class="pl-2">{{location.description}}</span>
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
             <span v-if="filterChipsCollision.length > 0"> &#x2022;</span>
           </div>
           <div
@@ -83,14 +118,30 @@
 
 <script>
 import { saveAs } from 'file-saver';
-import { mapActions, mapGetters, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
-import { LocationSelectionType, ReportFormat, ReportType } from '@/lib/Constants';
-import { getReport, getReportWeb } from '@/lib/api/WebApi';
+import {
+  LocationMode,
+  LocationSelectionType,
+  ReportFormat,
+  ReportType,
+} from '@/lib/Constants';
+import {
+  getCollisionsByCentrelineSummaryPerLocation,
+  getReport,
+  getReportWeb,
+} from '@/lib/api/WebApi';
+import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
+import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -105,13 +156,16 @@ export default {
   components: {
     FcButton,
     FcDialogConfirm,
+    FcIconLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,
   },
   data() {
     return {
+      collisionSummaryPerLocation: [],
       indexActiveReportType: 0,
       leaveConfirmed: false,
+      LocationMode,
       loadingDownload: false,
       loadingReportLayout: false,
       nextRoute: null,
@@ -124,6 +178,12 @@ export default {
     };
   },
   computed: {
+    activeLocations() {
+      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
+        return [this.locationActive];
+      }
+      return this.locations;
+    },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;
       if (indexActiveReportType >= reportTypes.length) {
@@ -139,15 +199,36 @@ export default {
         .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
         .map(({ name }) => ({ label: name, value: name }));
     },
+    locationsIconProps() {
+      const locationsIconProps = getLocationsIconProps(
+        this.locations,
+        this.locationsSelection.locations,
+      );
+      locationsIconProps[this.locationsIndex].selected = true;
+      return locationsIconProps;
+    },
     reportParameters() {
       // TODO: we'll probably have to figure this one out...
       return {};
     },
-    ...mapState(['locations']),
-    ...mapGetters(['locationsDescription', 'locationsRouteParams']),
+    ...mapState([
+      'locationMode',
+      'locations',
+      'locationsIndex',
+      'locationsSelection',
+    ]),
+    ...mapState('viewData', ['detailView']),
+    ...mapGetters([
+      'locationActive',
+      'locationsDescription',
+      'locationsRouteParams',
+    ]),
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
+    activeLocations() {
+      this.updateReportLayout();
+    },
     activeReportType() {
       this.updateReportLayout();
     },
@@ -207,6 +288,17 @@ export default {
       const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
+
+      if (this.locationActive === null) {
+        this.setLocationsIndex(0);
+      }
+
+      const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
+        this.locations,
+        this.filterParamsCollision,
+      );
+      this.collisionSummaryPerLocation = collisionSummaryPerLocation;
+
       this.updateReportLayout();
     },
     async updateReportLayout() {
@@ -215,7 +307,7 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const id = CompositeId.encode(this.locations);
+      const id = CompositeId.encode(this.activeLocations);
       const reportLayout = await getReportWeb(
         this.activeReportType,
         id,
@@ -225,6 +317,7 @@ export default {
 
       this.loadingReportLayout = false;
     },
+    ...mapMutations(['setLocationsIndex']),
     ...mapActions(['initLocations']),
   },
 };

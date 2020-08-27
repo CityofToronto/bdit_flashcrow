@@ -102,10 +102,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['locationsRouteParams']),
     ...mapGetters('viewData', [
       'filterParamsCollision',
       'filterParamsStudy',
-      'locationsRouteParams',
     ]),
   },
   watch: {

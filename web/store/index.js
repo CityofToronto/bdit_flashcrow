@@ -97,7 +97,10 @@ export default new Vuex.Store({
       const { locations } = state.locationsSelection;
       return locations[0];
     },
-    locationActive(state) {
+    locationActive(state, getters) {
+      if (state.locationMode === LocationMode.SINGLE) {
+        return getters.location;
+      }
       const n = state.locations.length;
       if (state.locationsIndex < 0 || state.locationsIndex >= n) {
         return null;
