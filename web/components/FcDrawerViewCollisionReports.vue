@@ -325,7 +325,7 @@ export default {
 
 <style lang="scss">
 .fc-drawer-view-collision-reports {
-  max-height: 50vh;
+  max-height: calc(50vh - 26px);
 
   .fc-report-wrapper {
     position: relative;
@@ -338,6 +338,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-collision-reports {
-  max-height: calc(100vh - 60px);
+  max-height: calc(100vh - 116px);
 }
 </style>
