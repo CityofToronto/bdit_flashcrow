@@ -353,7 +353,6 @@ export default {
       'setToast',
       'setToastInfo',
     ]),
-    ...mapMutations('viewData', ['setDetailView']),
   },
 };
 </script>

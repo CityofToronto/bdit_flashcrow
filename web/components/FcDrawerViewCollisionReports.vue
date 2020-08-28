@@ -178,7 +178,7 @@ export default {
     };
   },
   computed: {
-    activeLocations() {
+    locationsActive() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
         return [this.locationActive];
       }
@@ -207,10 +207,6 @@ export default {
       locationsIconProps[this.locationsIndex].selected = true;
       return locationsIconProps;
     },
-    reportParameters() {
-      // TODO: we'll probably have to figure this one out...
-      return {};
-    },
     ...mapState([
       'locationMode',
       'locations',
@@ -226,7 +222,7 @@ export default {
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
-    activeLocations() {
+    locationsActive() {
       this.updateReportLayout();
     },
     activeReportType() {
@@ -307,7 +303,7 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const id = CompositeId.encode(this.activeLocations);
+      const id = CompositeId.encode(this.locationsActive);
       const reportLayout = await getReportWeb(
         this.activeReportType,
         id,
