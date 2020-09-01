@@ -7,6 +7,9 @@ import {
 
 test('StringFormatters.formatCombinedStreet', async () => {
   expect(formatCombinedStreet(null, null, null)).toBe(null);
+  expect(formatCombinedStreet(' ', null, null)).toBe(null);
+  expect(formatCombinedStreet(' ', ' ', null)).toBe(null);
+  expect(formatCombinedStreet(' ', ' ', ' ')).toBe(null);
   expect(formatCombinedStreet(null, 'Ave', 'W')).toBe(null);
 
   expect(formatCombinedStreet(
