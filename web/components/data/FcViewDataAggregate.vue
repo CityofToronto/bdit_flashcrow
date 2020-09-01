@@ -32,7 +32,6 @@
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
-              :scope="[]"
               type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" left>mdi-file-eye</v-icon>
@@ -40,6 +39,7 @@
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
+              :require-auth="true"
               @download-report-format="actionDownloadReportFormatCollisions" />
           </template>
         </FcHeaderCollisions>
@@ -84,7 +84,6 @@
               :disabled="
                 studySummary.length === 0
                 || reportExportMode === ReportExportMode.COLLISIONS"
-              :scope="[]"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
@@ -92,6 +91,7 @@
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
+              :require-auth="true"
               @download-report-format="actionDownloadReportFormatStudies" />
           </template>
         </FcHeaderStudies>

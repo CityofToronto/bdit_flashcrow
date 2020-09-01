@@ -6,6 +6,7 @@
         v-on="on"
         class="ml-2"
         :loading="loading"
+        :scope="requireAuth ? [] : null"
         :type="type">
         <v-icon
           left
@@ -51,6 +52,10 @@ export default {
     reportType: {
       type: ReportType,
       default: null,
+    },
+    requireAuth: {
+      type: Boolean,
+      default: false,
     },
     type: {
       type: String,
