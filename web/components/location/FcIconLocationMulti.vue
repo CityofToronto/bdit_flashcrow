@@ -5,7 +5,7 @@
       :alt="alt"
       height="20"
       :src="src"
-      :width="width" />
+      :width="16" />
     <div
       v-if="locationIndex !== -1"
       class="subtitle-2"
@@ -51,9 +51,6 @@ export default {
         return `/icons/map/location-multi-corridor${suffixMidblock}${suffixSelected}.svg`;
       }
       return `/icons/map/location-multi-small${suffixSelected}.svg`;
-    },
-    width() {
-      return this.midblock ? 20 : 16;
     },
   },
 };

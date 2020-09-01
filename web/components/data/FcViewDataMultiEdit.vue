@@ -32,23 +32,11 @@
       </div>
       <div class="mt-5">
         <h2 class="fc-multi-edit-inset headline pb-1">Selected Locations</h2>
-        <div class="ml-6">
-          <div
-            v-for="(location, i) in locations"
-            :key="i"
-            class="d-flex mt-8">
-            <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-            <span
-              class="title"
-              :class="{
-                'pl-8': locationsIconProps[i].midblock,
-                'pl-9': !locationsIconProps[i].midblock,
-                'font-weight-regular': locationsIconProps[i].locationIndex === -1,
-              }">
-              {{location.description}}
-            </span>
-          </div>
-        </div>
+        <FcListLocationMulti
+          class="ml-6"
+          icon-classes="mr-5"
+          :locations="locations"
+          :locations-selection="locationsSelection" />
       </div>
     </template>
   </div>
@@ -63,12 +51,12 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcViewDataMultiEdit',
   components: {
-    FcIconLocationMulti,
+    FcListLocationMulti,
   },
   props: {
     locations: Array,

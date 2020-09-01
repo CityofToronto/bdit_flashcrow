@@ -25,31 +25,21 @@
               small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
-            <div
-              v-for="(location, i) in locations"
-              :key="i"
-              class="d-flex pa-3 pr-8"
-              :class="{
-                'data-empty': collisionSummaryPerLocation[i][field.name] === 0,
-              }">
-              <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-              <span
-                class="title"
-                :class="{
-                  'pl-4': locationsIconProps[i].midblock,
-                  'pl-5': !locationsIconProps[i].midblock,
-                  'font-weight-regular': locationsIconProps[i].locationIndex === -1,
-                }">
-                {{location.description}}
-              </span>
-              <v-spacer></v-spacer>
-              <FcTextSummaryFraction
-                :a="collisionSummaryPerLocation[i][field.name]"
-                :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
-                class="flex-grow-0 flex-shrink-0 mr-5"
-                :show-b="hasFiltersCollision"
-                small />
-            </div>
+            <FcListLocationMulti
+              class="shading"
+              :disabled="disabledPerLocationByField[field.name]"
+              icon-classes="mr-4"
+              :locations="locations"
+              :locations-selection="locationsSelection">
+              <template v-slot:action="{ i }">
+                <FcTextSummaryFraction
+                  :a="collisionSummaryPerLocation[i][field.name]"
+                  :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
+                  class="flex-grow-0 flex-shrink-0 mr-5"
+                  :show-b="hasFiltersCollision"
+                  small />
+              </template>
+            </FcListLocationMulti>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -62,12 +52,12 @@ import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
-    FcIconLocationMulti,
+    FcListLocationMulti,
     FcTextSummaryFraction,
   },
   props: {
@@ -92,6 +82,15 @@ export default {
     };
   },
   computed: {
+    disabledPerLocationByField() {
+      const disabledPerLocationByField = {};
+      this.fields.forEach((field) => {
+        disabledPerLocationByField[field.name] = this.collisionSummaryPerLocation.map(
+          value => value[field.name] === 0,
+        );
+      });
+      return disabledPerLocationByField;
+    },
     locationsIconProps() {
       return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
