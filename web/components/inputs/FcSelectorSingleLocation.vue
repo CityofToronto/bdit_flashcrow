@@ -20,7 +20,7 @@ export default {
   computed: {
     internalLocation: {
       get() {
-        return this.location;
+        return this.locationActive;
       },
       set(internalLocation) {
         const locations = [];
@@ -34,7 +34,7 @@ export default {
         });
       },
     },
-    ...mapGetters(['location']),
+    ...mapGetters(['locationActive']),
   },
   methods: {
     ...mapMutations(['setLocations', 'setLocationsSelection']),

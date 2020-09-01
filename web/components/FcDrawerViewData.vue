@@ -17,9 +17,9 @@
         <FcSelectorSingleLocation />
         <FcHeaderSingleLocation
           class="mt-6"
-          :location="location" />
+          :location="locationActive" />
         <div class="d-flex mt-4">
-          <FcSummaryPoi :location="location" />
+          <FcSummaryPoi :location="locationActive" />
           <v-spacer></v-spacer>
           <FcButton
             type="secondary"
@@ -41,10 +41,7 @@
           :locations="locationsEdit"
           :locations-selection="locationsEditSelection" />
         <FcViewDataDetail
-          v-else-if="locationMode === LocationMode.SINGLE"
-          :location="location" />
-        <FcViewDataDetail
-          v-else-if="detailView"
+          v-else-if="locationMode === LocationMode.SINGLE || detailView"
           :location="locationActive" />
         <FcViewDataAggregate
           v-else
@@ -108,7 +105,6 @@ export default {
     ]),
     ...mapState('viewData', ['detailView']),
     ...mapGetters([
-      'location',
       'locationActive',
       'locationsEmpty',
       'locationsRouteParams',

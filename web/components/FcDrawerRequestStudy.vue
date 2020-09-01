@@ -182,7 +182,7 @@ export default {
       return this.$route.name === 'requestStudyNew';
     },
     labelNavigateBack() {
-      if (this.isCreate && this.location === null) {
+      if (this.isCreate && this.locationActive === null) {
         return 'View Map';
       }
       return 'View Data';
@@ -205,10 +205,10 @@ export default {
       };
     },
     subtitle() {
-      if (this.location === null) {
+      if (this.locationActive === null) {
         return 'needs location';
       }
-      return this.location.description;
+      return this.locationActive.description;
     },
     title() {
       if (this.isCreate) {
@@ -218,13 +218,13 @@ export default {
       return `Edit Request #${id}`;
     },
     ...mapState(['locations', 'now']),
-    ...mapGetters(['location', 'locationsEmpty', 'locationsRouteParams']),
+    ...mapGetters(['locationActive', 'locationsEmpty', 'locationsRouteParams']),
   },
   watch: {
     estimatedDeliveryDate() {
       this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
     },
-    location() {
+    locationActive() {
       this.updateStudyRequestLocation();
     },
   },
@@ -270,9 +270,9 @@ export default {
       let studyRequest;
       let studyRequestLocation;
       if (this.isCreate) {
-        const { location, now } = this;
+        const { locationActive, now } = this;
         studyRequest = makeStudyRequest(now);
-        studyRequestLocation = location;
+        studyRequestLocation = locationActive;
       } else {
         const { id } = to.params;
         const result = await getStudyRequest(id);
@@ -284,8 +284,8 @@ export default {
       this.updateStudyRequestLocation();
     },
     updateStudyRequestLocation() {
-      const { location } = this;
-      if (location === null) {
+      const { locationActive } = this;
+      if (locationActive === null) {
         this.studyRequest.centrelineId = null;
         this.studyRequest.centrelineType = null;
         this.studyRequest.geom = null;
@@ -295,7 +295,7 @@ export default {
           centrelineType,
           lng,
           lat,
-        } = location;
+        } = locationActive;
         const geom = {
           type: 'Point',
           coordinates: [lng, lat],

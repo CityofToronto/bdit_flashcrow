@@ -325,7 +325,6 @@ export default {
       'locationsSelection',
     ]),
     ...mapGetters([
-      'location',
       'locationActive',
       'locationsRouteParams',
     ]),

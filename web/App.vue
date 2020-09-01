@@ -93,7 +93,6 @@ export default {
       'auth',
       'dialog',
       'dialogData',
-      'location',
       'toast',
       'toastData',
       'toastKey',
