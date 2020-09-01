@@ -47,20 +47,12 @@
                   <v-icon right>mdi-menu-down</v-icon>
                 </FcButton>
               </template>
-              <v-list>
-                <v-list-item
-                  v-for="(location, i) in locations"
-                  :key="i"
-                  :disabled="collisionSummaryPerLocation[i].amount === 0"
-                  @click="setLocationsIndex(i)">
-                  <v-list-item-title>
-                    <div class="d-flex">
-                      <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-                      <span class="pl-2">{{location.description}}</span>
-                    </div>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <FcListLocationMulti
+                :disabled="disabledPerLocation"
+                icon-classes="mr-2"
+                :locations="locations"
+                :locations-selection="locationsSelection"
+                @click-location="setLocationsIndex" />
             </v-menu>
             <span v-if="filterChipsCollision.length > 0"> &#x2022;</span>
           </div>
@@ -142,6 +134,7 @@ import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -157,6 +150,7 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcIconLocationMulti,
+    FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,
   },
@@ -178,6 +172,9 @@ export default {
     };
   },
   computed: {
+    disabledPerLocation() {
+      return this.collisionSummaryPerLocation.map(({ amount }) => amount === 0);
+    },
     locationsActive() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
         return [this.locationActive];

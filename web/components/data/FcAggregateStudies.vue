@@ -38,50 +38,37 @@
               small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
-            <div
-              v-for="(location, j) in locations"
-              :key="i + '_' + j"
-              class="d-flex pa-3 pr-8"
-              :class="{
-                'data-empty': itemsPerLocation[i][j].mostRecent === null,
-              }">
-              <FcIconLocationMulti v-bind="locationsIconProps[j]" />
-              <div
-                class="body-1 flex-grow-1 flex-shrink-1"
-                :class="{
-                  'pl-4': locationsIconProps[j].midblock,
-                  'pl-5': !locationsIconProps[j].midblock,
-                }">
-                <div
-                  :class="{
-                    'body-1': locationsIconProps[j].locationIndex === -1,
-                    title: locationsIconProps[j].locationIndex !== -1,
-                  }">
-                  {{location.description}}
-                </div>
+            <FcListLocationMulti
+              class="shading"
+              :disabled="disabledPerLocationByItem[i]"
+              icon-classes="mr-4"
+              :locations="locations"
+              :locations-selection="locationsSelection">
+              <template v-slot:subtitle="{ i: j }">
                 <FcTextMostRecent
                   v-if="itemsPerLocation[i][j].mostRecent !== null"
                   class="mt-2"
                   :study="itemsPerLocation[i][j].mostRecent" />
-              </div>
-              <v-spacer></v-spacer>
-              <div class="display-1 flex-grow-0 flex-shrink-0 mr-5">
-                <FcTextSummaryFraction
-                  :a="itemsPerLocation[i][j].n"
-                  :b="itemsPerLocation[i][j].nUnfiltered"
-                  class="text-right"
-                  :show-b="hasFiltersStudy"
-                  small />
-                <div v-if="itemsPerLocation[i][j].n > 0">
-                  <FcButton
-                    class="mr-n4 mt-2"
-                    type="tertiary"
-                    @click="$emit('show-reports', { item, locationsIndex: j })">
-                    <span>View Reports</span>
-                  </FcButton>
+              </template>
+              <template v-slot:action="{ i: j }">
+                <div class="mr-9">
+                  <FcTextSummaryFraction
+                    :a="itemsPerLocation[i][j].n"
+                    :b="itemsPerLocation[i][j].nUnfiltered"
+                    class="text-right"
+                    :show-b="hasFiltersStudy"
+                    small />
+                  <div v-if="itemsPerLocation[i][j].n > 0">
+                    <FcButton
+                      class="mr-n4 mt-1"
+                      type="tertiary"
+                      @click="$emit('show-reports', { item, locationsIndex: j })">
+                      <span>View Reports</span>
+                    </FcButton>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </template>
+            </FcListLocationMulti>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -96,13 +83,13 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcAggregateStudies',
   components: {
     FcButton,
-    FcIconLocationMulti,
+    FcListLocationMulti,
     FcTextMostRecent,
     FcTextSummaryFraction,
   },
@@ -121,6 +108,11 @@ export default {
     };
   },
   computed: {
+    disabledPerLocationByItem() {
+      return this.itemsPerLocation.map(
+        itemsPerLocation => itemsPerLocation.map(({ n }) => n === 0),
+      );
+    },
     items() {
       return this.studySummaryUnfiltered.map(({ category, n }) => {
         let item = this.studySummary.find(

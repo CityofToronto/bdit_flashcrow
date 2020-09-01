@@ -3,7 +3,8 @@
     <v-list-item
       v-for="(location, i) in locations"
       :key="i"
-      :disabled="disabledNormalized[i]">
+      :disabled="disabledNormalized[i]"
+      @click="$emit('click-location', i)">
       <v-list-item-title>
         <div class="d-flex">
           <FcIconLocationMulti

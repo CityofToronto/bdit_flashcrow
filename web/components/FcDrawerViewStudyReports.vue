@@ -44,20 +44,12 @@
                   <v-icon right>mdi-menu-down</v-icon>
                 </FcButton>
               </template>
-              <v-list>
-                <v-list-item
-                  v-for="(location, i) in locations"
-                  :key="i"
-                  :disabled="studySummaryPerLocation[0].perLocation[i].n === 0"
-                  @click="setLocationsIndex(i)">
-                  <v-list-item-title>
-                    <div class="d-flex">
-                      <FcIconLocationMulti v-bind="locationsIconProps[i]" />
-                      <span class="pl-2">{{location.description}}</span>
-                    </div>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <FcListLocationMulti
+                :disabled="disabledPerLocation"
+                icon-classes="mr-2"
+                :locations="locations"
+                :locations-selection="locationsSelection"
+                @click-location="setLocationsIndex" />
             </v-menu>
             <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
           </div>
@@ -189,6 +181,7 @@ import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportPar
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -205,6 +198,7 @@ export default {
     FcDialogConfirm,
     FcDialogReportParameters,
     FcIconLocationMulti,
+    FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,
   },
@@ -248,6 +242,11 @@ export default {
         return null;
       }
       return reportTypes[indexActiveReportType];
+    },
+    disabledPerLocation() {
+      return this.studySummaryPerLocation[0].perLocation.map(
+        ({ n }) => n === 0,
+      );
     },
     filterChipsStudyNoStudyTypes() {
       return this.filterChipsStudy

@@ -35,7 +35,7 @@
                 <FcTextSummaryFraction
                   :a="collisionSummaryPerLocation[i][field.name]"
                   :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
-                  class="flex-grow-0 flex-shrink-0 mr-5"
+                  class="mr-9"
                   :show-b="hasFiltersCollision"
                   small />
               </template>
