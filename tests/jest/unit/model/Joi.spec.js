@@ -1,5 +1,4 @@
 import { Enum } from '@/lib/ClassUtils';
-import { CentrelineType } from '@/lib/Constants';
 import Joi from '@/lib/model/Joi';
 import DateTime from '@/lib/time/DateTime';
 import DateTimeZone from '@/lib/time/DateTimeZone';
@@ -28,7 +27,7 @@ test('Joi.compositeId', () => {
   let compositeId = 's1:A';
   let result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).toBeUndefined();
-  expect(result.value).toEqual([]);
+  expect(result.value).toEqual(compositeId);
 
   compositeId = 's1:AAAAAA';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
@@ -37,9 +36,12 @@ test('Joi.compositeId', () => {
   compositeId = 's1:ACAAAA';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
   expect(result.error).toBeUndefined();
-  expect(result.value).toEqual([
-    { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION },
-  ]);
+  expect(result.value).toEqual(compositeId);
+
+  compositeId = 's1:AQhwmBUvwmB';
+  result = Joi.compositeId().ofType('s1').validate(compositeId);
+  expect(result.error).toBeUndefined();
+  expect(result.value).toEqual(compositeId);
 
   compositeId = 's2:A';
   result = Joi.compositeId().ofType('s1').validate(compositeId);
