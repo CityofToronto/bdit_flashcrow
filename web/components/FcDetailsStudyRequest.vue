@@ -181,6 +181,7 @@ import {
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
+import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
@@ -302,6 +303,23 @@ export default {
       }
       return errors;
     },
+    estimatedDeliveryDate() {
+      const { now, studyRequest } = this;
+      if (studyRequest === null) {
+        return null;
+      }
+      const { dueDate, urgent } = studyRequest;
+      if (dueDate === null) {
+        return null;
+      }
+      if (urgent) {
+        return dueDate;
+      }
+      return DateTime.max(
+        dueDate.minus({ weeks: 1 }),
+        now.plus({ months: 2 }),
+      );
+    },
     itemsDaysOfWeek() {
       return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
     },
@@ -374,6 +392,9 @@ export default {
     ...mapState(['now']),
   },
   watch: {
+    estimatedDeliveryDate() {
+      this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
+    },
     'internalValue.studyType.automatic': function watchStudyTypeAutomatic() {
       if (this.internalValue.studyType.automatic) {
         this.internalValue.duration = 24;

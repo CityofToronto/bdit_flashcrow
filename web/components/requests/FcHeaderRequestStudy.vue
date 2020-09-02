@@ -25,8 +25,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
+import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -36,6 +37,7 @@ export default {
   },
   props: {
     isCreate: Boolean,
+    isSingleLocation: Boolean,
   },
   computed: {
     labelNavigateBack() {
@@ -45,18 +47,29 @@ export default {
       return 'View Data';
     },
     subtitle() {
-      if (this.locationActive === null) {
-        return 'needs location';
+      if (this.isSingleLocation) {
+        if (this.locationActive === null) {
+          return 'needs location';
+        }
+        return this.locationActive.description;
       }
-      return this.locationActive.description;
+      return getLocationsDescription(this.locations);
     },
     title() {
       if (this.isCreate) {
-        return 'Request Study';
+        if (this.isSingleLocation) {
+          return 'Request Study';
+        }
+        return 'Bulk Request Study';
       }
       const { id } = this.$route.params;
-      return `Edit Request #${id}`;
+      if (this.isSingleLocation) {
+        return `Edit Request #${id}`;
+      }
+      return `Edit Bulk Request #${id}`;
     },
+    ...mapState(['locationMode', 'locations']),
+    ...mapState('viewData', ['detailView']),
     ...mapGetters(['locationActive']),
   },
 };

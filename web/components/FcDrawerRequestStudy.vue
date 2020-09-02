@@ -7,6 +7,7 @@
     <header class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderRequestStudy
         :is-create="isCreate"
+        :is-single-location="isSingleLocation"
         @action-navigate-back="actionNavigateBack" />
     </header>
 
@@ -16,12 +17,17 @@
       v-if="loading"
       indeterminate />
     <template v-else>
-      <FcDetailsStudyRequest
-        v-model="studyRequest"
-        class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5"
-        :is-create="isCreate"
-        :location="locationActive"
-        :v="$v.studyRequest" />
+      <div class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
+        <FcDetailsStudyRequest
+          v-if="isSingleLocation"
+          v-model="studyRequest"
+          :is-create="isCreate"
+          :location="locationActive"
+          :v="$v.studyRequest" />
+        <h2 v-else>
+          TODO: multi-location request study wizard!
+        </h2>
+      </div>
 
       <v-divider></v-divider>
 
@@ -45,10 +51,12 @@ import {
   mapState,
 } from 'vuex';
 
-import { LocationSelectionType } from '@/lib/Constants';
+import {
+  LocationMode,
+  LocationSelectionType,
+} from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
-import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcDialogConfirmRequestStudyLeave
@@ -97,25 +105,17 @@ export default {
     };
   },
   computed: {
-    estimatedDeliveryDate() {
-      const { now, studyRequest } = this;
-      if (studyRequest === null) {
-        return null;
-      }
-      const { dueDate, urgent } = studyRequest;
-      if (dueDate === null) {
-        return null;
-      }
-      if (urgent) {
-        return dueDate;
-      }
-      return DateTime.max(
-        dueDate.minus({ weeks: 1 }),
-        now.plus({ months: 2 }),
-      );
-    },
     isCreate() {
       return this.$route.name === 'requestStudyNew';
+    },
+    isSingleLocation() {
+      return this.locationMode === LocationMode.SINGLE || this.detailView;
+    },
+    locationsActive() {
+      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
+        return [this.locationActive];
+      }
+      return this.locations;
     },
     routeNavigateBack() {
       if (!this.isCreate) {
@@ -134,13 +134,17 @@ export default {
         params,
       };
     },
-    ...mapState(['locations', 'now']),
-    ...mapGetters(['locationActive', 'locationsEmpty', 'locationsRouteParams']),
-  },
-  watch: {
-    estimatedDeliveryDate() {
-      this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
-    },
+    ...mapState([
+      'locationMode',
+      'locations',
+      'now',
+    ]),
+    ...mapState('viewData', ['detailView']),
+    ...mapGetters([
+      'locationActive',
+      'locationsEmpty',
+      'locationsRouteParams',
+    ]),
   },
   validations: ValidationsStudyRequest,
   beforeRouteLeave(to, from, next) {
