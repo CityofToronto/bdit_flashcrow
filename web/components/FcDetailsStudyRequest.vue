@@ -1,5 +1,8 @@
 <template>
   <section>
+    <v-messages
+      v-bind="attrsMessagesTop"></v-messages>
+
     <div class="mt-4">
       <FcRadioGroup
         v-model="v.studyType.$model"
@@ -173,8 +176,10 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
+  REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_REQUIRES_REASONS,
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
+  REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
@@ -194,6 +199,7 @@ export default {
   },
   props: {
     isCreate: Boolean,
+    location: Object,
     v: Object,
   },
   data() {
@@ -208,6 +214,19 @@ export default {
     };
   },
   computed: {
+    attrsMessagesTop() {
+      if (!this.v.centrelineId.required
+        || !this.v.centrelineType.required
+        || !this.v.geom.required) {
+        return {
+          color: 'error',
+          value: [REQUEST_STUDY_REQUIRES_LOCATION.text],
+        };
+      }
+      return {
+        value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
+      };
+    },
     errorMessagesCcEmails() {
       const errors = [];
       if (!this.v.ccEmails.requiredIfUrgent) {
@@ -407,6 +426,38 @@ export default {
       } else {
         this.internalValue.dueDate = this.dueDate;
       }
+    },
+    location() {
+      this.updateStudyRequestLocation();
+    },
+  },
+  created() {
+
+  },
+  methods: {
+    updateStudyRequestLocation() {
+      if (this.location === null) {
+        this.studyRequest.centrelineId = null;
+        this.studyRequest.centrelineType = null;
+        this.studyRequest.geom = null;
+      } else {
+        const {
+          centrelineId,
+          centrelineType,
+          lng,
+          lat,
+        } = this.location;
+        const geom = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        this.studyRequest.centrelineId = centrelineId;
+        this.studyRequest.centrelineType = centrelineType;
+        this.studyRequest.geom = geom;
+      }
+      this.v.centrelineId.$touch();
+      this.v.centrelineType.$touch();
+      this.v.geom.$touch();
     },
   },
 };

@@ -1,90 +1,39 @@
 <template>
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
-    <FcDialogConfirm
+    <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
-      :textCancel="isCreate ? 'Stay on this page' : 'Keep editing'"
-      :textOk="isCreate ? 'Quit' : 'Discard'"
-      :title="isCreate ? 'Quit study request?' : 'Discard changes?'"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        <span v-if="isCreate">
-          Leaving this page will cause a loss of all entered data.
-          Are you sure you want to quit?
-        </span>
-        <span v-else>
-          You have made changes to the study request that have not been saved.
-          Do you wish to discard these changes?
-        </span>
-      </span>
-    </FcDialogConfirm>
-    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
-      <FcButton
-        v-if="isCreate"
-        type="secondary"
-        @click="actionNavigateBack">
-        <v-icon left>mdi-chevron-left</v-icon>
-        {{labelNavigateBack}}
-      </FcButton>
-      <h1 class="flex-grow-1 headline text-center">
-        <span>
-          {{title}}:
-        </span>
-        <span class="font-weight-regular">
-          {{subtitle}}
-        </span>
-      </h1>
-      <div v-if="!isCreate">
-        <FcButton
-          class="mr-2"
-          type="tertiary"
-          @click="actionNavigateBack">
-          Cancel
-        </FcButton>
-        <FcButton
-          :disabled="$v.studyRequest.$invalid"
-          type="primary"
-          @click="onFinish">
-          Save
-        </FcButton>
-      </div>
-    </div>
+      :is-create="isCreate"
+      @action-ok="actionLeave" />
+    <header class="flex-grow-0 flex-shrink-0 shading">
+      <FcHeaderRequestStudy
+        :is-create="isCreate"
+        @action-navigate-back="actionNavigateBack" />
+    </header>
+
     <v-divider></v-divider>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <v-progress-linear
-        v-if="loading"
-        indeterminate />
-      <div
-        v-else
-        class="pl-5 py-5">
-        <v-messages
-          v-bind="attrsMessagesTop"></v-messages>
 
-        <FcDetailsStudyRequest
-          v-model="studyRequest"
-          class="pr-5"
+    <v-progress-linear
+      v-if="loading"
+      indeterminate />
+    <template v-else>
+      <FcDetailsStudyRequest
+        v-model="studyRequest"
+        class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5"
+        :is-create="isCreate"
+        :location="locationActive"
+        :v="$v.studyRequest" />
+
+      <v-divider></v-divider>
+
+      <footer class="flex-grow-0 flex-shrink-0">
+        <FcFooterRequestStudy
           :is-create="isCreate"
-          :v="$v.studyRequest" />
-
-        <section
-          v-if="isCreate"
-          class="pr-5 mt-6 text-right">
-          <div>
-            <FcButton
-              class="mr-2"
-              type="tertiary"
-              @click="actionNavigateBack">
-              Cancel
-            </FcButton>
-            <FcButton
-              :disabled="$v.studyRequest.$invalid"
-              type="primary"
-              @click="onFinish">
-              Submit Request
-            </FcButton>
-          </div>
-        </section>
-      </div>
-    </section>
+          :study-request="studyRequest"
+          :v="$v.studyRequest"
+          @action-navigate-back="actionNavigateBack"
+          @action-submit="actionSubmit" />
+      </footer>
+    </template>
   </div>
 </template>
 
@@ -96,16 +45,16 @@ import {
   mapState,
 } from 'vuex';
 
+import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
-import {
-  REQUEST_STUDY_REQUIRES_LOCATION,
-  REQUEST_STUDY_TIME_TO_FULFILL,
-} from '@/lib/i18n/Strings';
+import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
+import FcFooterRequestStudy from '@/web/components/requests/FcFooterRequestStudy.vue';
+import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudyRequest(now) {
@@ -134,33 +83,20 @@ export default {
   name: 'FcDrawerRequestStudy',
   mixins: [FcMixinRouteAsync],
   components: {
-    FcButton,
     FcDetailsStudyRequest,
-    FcDialogConfirm,
+    FcDialogConfirmRequestStudyLeave,
+    FcFooterRequestStudy,
+    FcHeaderRequestStudy,
   },
   data() {
     return {
       leaveConfirmed: false,
       nextRoute: null,
-      REQUEST_STUDY_TIME_TO_FULFILL,
       showConfirmLeave: false,
       studyRequest: null,
     };
   },
   computed: {
-    attrsMessagesTop() {
-      if (!this.$v.studyRequest.centrelineId.required
-        || !this.$v.studyRequest.centrelineType.required
-        || !this.$v.studyRequest.geom.required) {
-        return {
-          color: 'error',
-          value: [REQUEST_STUDY_REQUIRES_LOCATION.text],
-        };
-      }
-      return {
-        value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
-      };
-    },
     estimatedDeliveryDate() {
       const { now, studyRequest } = this;
       if (studyRequest === null) {
@@ -181,41 +117,22 @@ export default {
     isCreate() {
       return this.$route.name === 'requestStudyNew';
     },
-    labelNavigateBack() {
-      if (this.isCreate && this.locationActive === null) {
-        return 'View Map';
-      }
-      return 'View Data';
-    },
-    routeFinish() {
-      if (this.isCreate) {
-        const params = this.locationsRouteParams;
+    routeNavigateBack() {
+      if (!this.isCreate) {
+        const { id } = this.$route.params;
         return {
-          name: 'viewDataAtLocation',
-          params,
+          name: 'requestStudyView',
+          params: { id },
         };
       }
-      if (this.studyRequest === null) {
-        return null;
+      if (this.locationsEmpty) {
+        return { name: 'viewData' };
       }
-      const { id } = this.studyRequest;
+      const params = this.locationsRouteParams;
       return {
-        name: 'requestStudyView',
-        params: { id },
+        name: 'viewDataAtLocation',
+        params,
       };
-    },
-    subtitle() {
-      if (this.locationActive === null) {
-        return 'needs location';
-      }
-      return this.locationActive.description;
-    },
-    title() {
-      if (this.isCreate) {
-        return 'Request Study';
-      }
-      const { id } = this.$route.params;
-      return `Edit Request #${id}`;
     },
     ...mapState(['locations', 'now']),
     ...mapGetters(['locationActive', 'locationsEmpty', 'locationsRouteParams']),
@@ -223,9 +140,6 @@ export default {
   watch: {
     estimatedDeliveryDate() {
       this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
-    },
-    locationActive() {
-      this.updateStudyRequestLocation();
     },
   },
   validations: ValidationsStudyRequest,
@@ -244,78 +158,40 @@ export default {
       this.$router.push(this.nextRoute);
     },
     actionNavigateBack() {
-      if (!this.isCreate) {
-        const { id } = this.$route.params;
-        this.$router.push({
-          name: 'requestStudyView',
-          params: { id },
-        });
-      } else if (this.locationsEmpty) {
-        this.$router.push({ name: 'viewData' });
-      } else {
-        const params = this.locationsRouteParams;
-        this.$router.push({
-          name: 'viewDataAtLocation',
-          params,
-        });
-      }
+      this.$router.push(this.routeNavigateBack);
     },
-    onFinish() {
-      const { studyRequest } = this;
-      this.saveStudyRequest(studyRequest);
+    actionSubmit() {
+      this.saveStudyRequest(this.studyRequest);
       this.leaveConfirmed = true;
-      this.$router.push(this.routeFinish);
+      this.$router.push(this.routeNavigateBack);
     },
     async loadAsyncForRoute(to) {
       let studyRequest;
-      let studyRequestLocation;
       if (this.isCreate) {
-        const { locationActive, now } = this;
+        const { s1, selectionTypeName } = to.params;
+        const features = CompositeId.decode(s1);
+        const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+        await this.initLocations({ features, selectionType });
+        const { now } = this;
         studyRequest = makeStudyRequest(now);
-        studyRequestLocation = locationActive;
       } else {
         const { id } = to.params;
         const result = await getStudyRequest(id);
         studyRequest = result.studyRequest;
-        studyRequestLocation = result.studyRequestLocation;
+        const features = [result.studyRequestLocation];
+        const selectionType = LocationSelectionType.POINTS;
+        await this.initLocations({ features, selectionType });
       }
       this.studyRequest = studyRequest;
-      this.setLocations([studyRequestLocation]);
-      this.updateStudyRequestLocation();
-    },
-    updateStudyRequestLocation() {
-      const { locationActive } = this;
-      if (locationActive === null) {
-        this.studyRequest.centrelineId = null;
-        this.studyRequest.centrelineType = null;
-        this.studyRequest.geom = null;
-      } else {
-        const {
-          centrelineId,
-          centrelineType,
-          lng,
-          lat,
-        } = locationActive;
-        const geom = {
-          type: 'Point',
-          coordinates: [lng, lat],
-        };
-        this.studyRequest.centrelineId = centrelineId;
-        this.studyRequest.centrelineType = centrelineType;
-        this.studyRequest.geom = geom;
-      }
-      this.$v.studyRequest.centrelineId.$touch();
-      this.$v.studyRequest.centrelineType.$touch();
-      this.$v.studyRequest.geom.$touch();
     },
     ...mapMutations(['setLocations']),
-    ...mapActions(['saveStudyRequest']),
+    ...mapActions(['initLocations', 'saveStudyRequest']),
   },
 };
 </script>
 
 <style lang="scss">
 .fc-drawer-request-study {
-  max-height: 100vh;
+  max-height: calc(100vh - 52px);
 }
 </style>

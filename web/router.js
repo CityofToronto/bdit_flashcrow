@@ -112,7 +112,7 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewCollisionReports.vue'),
         beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', false);
+          store.commit('setDrawerOpen', true);
           next();
         },
       }, {
@@ -125,11 +125,11 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewStudyReports.vue'),
         beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', false);
+          store.commit('setDrawerOpen', true);
           next();
         },
       }, {
-        path: '/requests/study/new',
+        path: '/requests/study/new/:s1/:selectionTypeName',
         name: 'requestStudyNew',
         meta: {
           auth: {
