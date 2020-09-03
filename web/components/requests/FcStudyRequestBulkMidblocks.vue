@@ -12,6 +12,7 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   props: {
     locations: Array,
+    locationsSelected: Array,
   },
 };
 </script>

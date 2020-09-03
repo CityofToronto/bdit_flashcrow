@@ -14,13 +14,22 @@
           class="mt-2"
           :value="attrsMessagesTop"></v-messages>
       </div>
+
+      <FcHeaderStudyRequestBulkIntersections
+        v-if="step === 1"
+        class="mt-6"
+        :locations="locations" />
     </header>
+
+    <v-divider v-if="step === 1"></v-divider>
 
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <FcStudyRequestBulkIntersections
         v-if="step === 1"
         v-model="internalValue"
-        :locations="locations" />
+        :intersection-indices="intersectionIndices"
+        :locations="locations"
+        :locations-selection="locationsSelection" />
       <FcStudyRequestBulkMidblocks
         v-else-if="step === 2"
         v-model="internalValue"
@@ -98,11 +107,22 @@
 </template>
 
 <script>
+import { CentrelineType } from '@/lib/Constants';
 import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcHeaderStudyRequestBulkIntersections
+  from '@/web/components/requests/FcHeaderStudyRequestBulkIntersections.vue';
 import FcStepperStudyRequestBulk from '@/web/components/requests/FcStepperStudyRequestBulk.vue';
+import FcStudyRequestBulkConfirm
+  from '@/web/components/requests/FcStudyRequestBulkConfirm.vue';
+import FcStudyRequestBulkDetails
+  from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
+import FcStudyRequestBulkIntersections
+  from '@/web/components/requests/FcStudyRequestBulkIntersections.vue';
+import FcStudyRequestBulkMidblocks
+  from '@/web/components/requests/FcStudyRequestBulkMidblocks.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -110,10 +130,16 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
+    FcHeaderStudyRequestBulkIntersections,
     FcStepperStudyRequestBulk,
+    FcStudyRequestBulkConfirm,
+    FcStudyRequestBulkDetails,
+    FcStudyRequestBulkIntersections,
+    FcStudyRequestBulkMidblocks,
   },
   props: {
     locations: Array,
+    locationsSelection: Object,
   },
   data() {
     return {
@@ -135,6 +161,15 @@ export default {
         return ['Let\'s make sure all the details are correct.'];
       }
       return [];
+    },
+    intersectionIndices() {
+      const intersectionIndices = [];
+      this.locations.forEach(({ centrelineType }, i) => {
+        if (centrelineType === CentrelineType.INTERSECTION) {
+          intersectionIndices.push(i);
+        }
+      });
+      return intersectionIndices;
     },
   },
   methods: {

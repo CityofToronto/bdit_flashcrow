@@ -24,7 +24,8 @@
       <FcDetailsStudyRequestBulk
         v-if="isBulk"
         v-model="studyRequestBulk"
-        :locations="locations" />
+        :locations="locations"
+        :locations-selection="locationsSelection" />
       <FcDetailsStudyRequest
         v-else
         v-model="studyRequest"
@@ -151,6 +152,7 @@ export default {
     ...mapState([
       'locationMode',
       'locations',
+      'locationsSelection',
       'now',
     ]),
     ...mapState('viewData', ['detailView']),
