@@ -445,38 +445,6 @@ export default {
         this.internalValue.dueDate = this.dueDate;
       }
     },
-    location() {
-      this.updateStudyRequestLocation();
-    },
-  },
-  created() {
-    this.updateStudyRequestLocation();
-  },
-  methods: {
-    updateStudyRequestLocation() {
-      if (this.location === null) {
-        this.studyRequest.centrelineId = null;
-        this.studyRequest.centrelineType = null;
-        this.studyRequest.geom = null;
-      } else {
-        const {
-          centrelineId,
-          centrelineType,
-          lng,
-          lat,
-        } = this.location;
-        const geom = {
-          type: 'Point',
-          coordinates: [lng, lat],
-        };
-        this.studyRequest.centrelineId = centrelineId;
-        this.studyRequest.centrelineType = centrelineType;
-        this.studyRequest.geom = geom;
-      }
-      this.v.centrelineId.$touch();
-      this.v.centrelineType.$touch();
-      this.v.geom.$touch();
-    },
   },
 };
 </script>
