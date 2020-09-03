@@ -19,7 +19,8 @@
           </div>
         </template>
       </v-card-text>
-      <v-card-actions v-if="!loading && featureSelectable">
+      <v-card-actions
+        v-if="!loading && featureSelectable && showAction">
         <FcButton
           type="tertiary"
           :disabled="disabledActionSelected"
@@ -267,6 +268,10 @@ export default {
   props: {
     feature: Object,
     hovered: Boolean,
+    showAction: {
+      type: Boolean,
+      default: true,
+    },
   },
   inject: {
     map: {
@@ -290,10 +295,6 @@ export default {
       return getFeatureDescription(this.featureDetails);
     },
     disabledActionSelected() {
-      const { name } = this.$route;
-      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
-        return false;
-      }
       if (this.locationMode === LocationMode.MULTI_EDIT) {
         if (this.featureLocationsEditIndex !== -1) {
           return false;
@@ -329,10 +330,6 @@ export default {
       return this.feature.layer.id;
     },
     textActionSelected() {
-      const { name } = this.$route;
-      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
-        return 'Set Study Location';
-      }
       if (this.locationMode === LocationMode.MULTI_EDIT) {
         if (this.featureLocationsEditIndex !== -1) {
           return `Remove Location #${this.featureLocationsEditIndex + 1}`;
@@ -418,10 +415,7 @@ export default {
       this.removeLocationEdit(this.featureLocationsEditIndex);
     },
     actionSelected() {
-      const { name } = this.$route;
-      if (name === 'requestStudyEdit' || name === 'requestStudyNew') {
-        this.actionSetStudyLocation();
-      } else if (this.locationMode === LocationMode.MULTI_EDIT) {
+      if (this.locationMode === LocationMode.MULTI_EDIT) {
         if (this.featureLocationsEditIndex !== -1) {
           this.actionRemoveLocationEdit();
         } else {

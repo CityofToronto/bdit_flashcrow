@@ -32,6 +32,7 @@ export default {
 <style lang="scss">
 .fc-selector-collapsed-location {
   & > button.fc-button.v-btn.fc-search-bar-open {
+    height: 38px;
     min-width: 36px;
     width: 36px;
   }

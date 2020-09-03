@@ -12,7 +12,7 @@
         class="pane-map-location-search"
         v-if="!drawerOpen">
         <FcSelectorCollapsedLocation
-          v-if="collapseLocationSearch"
+          v-if="!showLocationSelection"
           class="mt-5 ml-5" />
         <FcSelectorMultiLocation
           v-else-if="locationMode.multi"
@@ -56,6 +56,7 @@
                 primary: locationMode.multi,
                 'white--text': locationMode.multi,
               }"
+              :disabled="!showLocationSelection"
               type="fab-text"
               @click="actionToggleLocationMode"
               v-on="on">
@@ -85,12 +86,14 @@
         v-if="showHoveredPopup"
         :key="'h:' + featureKeyHovered"
         :feature="hoveredFeature"
-        :hovered="true" />
+        :hovered="true"
+        :show-action="showLocationSelection" />
       <FcPaneMapPopup
         v-if="showSelectedPopup"
         :key="'s:' + featureKeySelected"
         :feature="selectedFeature"
-        :hovered="false" />
+        :hovered="false"
+        :show-action="showLocationSelection" />
     </template>
     <div
       v-else
@@ -105,8 +108,10 @@ import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
+import { InvalidCompositeIdError } from '@/lib/error/MoveErrors';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
+import CompositeId from '@/lib/io/CompositeId';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
@@ -131,17 +136,30 @@ function getFeatureKey(feature) {
   return `${layerId}:${id}`;
 }
 
-function getFeatureKeyRoute($route) {
-  const {
-    params: {
-      centrelineId = null,
-      centrelineType = null,
-    },
-  } = $route;
-  if (centrelineType === null || centrelineId === null) {
+function getFeatureKeyRoute($route, locationMode) {
+  if (locationMode.multi) {
     return null;
   }
-  return `c:${centrelineType}:${centrelineId}`;
+  const { name } = $route;
+  if (name === 'viewData'
+    || name === 'requestStudyEdit'
+    || name === 'requestStudyView') {
+    return null;
+  }
+  const { s1 } = $route.params;
+  try {
+    const features = CompositeId.decode(s1);
+    if (features.length === 0) {
+      return null;
+    }
+    const [{ centrelineId, centrelineType }] = features;
+    return `c:${centrelineType}:${centrelineId}`;
+  } catch (err) {
+    if (err instanceof InvalidCompositeIdError) {
+      return null;
+    }
+    throw err;
+  }
 }
 
 export default {
@@ -166,6 +184,10 @@ export default {
     background: {
       type: Boolean,
       default: false,
+    },
+    showLocationSelection: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -218,16 +240,11 @@ export default {
       const { layer: { id: layerId } } = this.selectedFeature;
       return layerId === 'intersections' || layerId === 'midblocks';
     },
-    collapseLocationSearch() {
-      const { name } = this.$route;
-      return name === 'viewCollisionReportsAtLocation'
-        || name === 'viewStudyReportsAtLocation';
-    },
     featureKeyHovered() {
       return getFeatureKey(this.hoveredFeature);
     },
     featureKeyRoute() {
-      return getFeatureKeyRoute(this.$route);
+      return getFeatureKeyRoute(this.$route, this.locationMode);
     },
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
@@ -362,9 +379,8 @@ export default {
       if (this.selectedFeature === null) {
         return false;
       }
-      const { vertical = false } = this.$route.meta;
       const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
-      if (vertical) {
+      if (this.vertical) {
         return !featureMatchesRoute;
       }
       return !this.drawerOpen || !featureMatchesRoute;
@@ -374,6 +390,10 @@ export default {
         return 'Switch to single-location mode';
       }
       return 'Add location';
+    },
+    vertical() {
+      const { vertical = false } = this.$route.meta;
+      return vertical;
     },
     ...mapState([
       'drawerOpen',
@@ -496,6 +516,11 @@ export default {
     },
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
+    },
+    showLocationSelection() {
+      if (!this.showLocationSelection) {
+        this.clearSelectedFeature();
+      }
     },
     $route() {
       Vue.nextTick(() => {
@@ -638,6 +663,9 @@ export default {
       return features[0];
     },
     onMapClick(e) {
+      if (!this.showLocationSelection) {
+        return;
+      }
       const feature = this.getFeatureForPoint(e.point, {
         selectableOnly: true,
       });

@@ -54,7 +54,8 @@
           'order-1': vertical,
         }">
         <FcPaneMap
-          :background="mapBackground" />
+          :background="mapBackground"
+          :show-location-selection="showLocationSelection" />
       </div>
     </div>
   </div>
@@ -97,6 +98,14 @@ export default {
     showDrawer() {
       const { drawerOpen, hasDrawer, vertical } = this;
       return (hasDrawer && drawerOpen) || vertical;
+    },
+    showLocationSelection() {
+      const { name } = this.$route;
+      return name !== 'requestStudyEdit'
+        && name !== 'requestStudyNew'
+        && name !== 'requestStudyView'
+        && name !== 'viewCollisionReportsAtLocation'
+        && name !== 'viewStudyReportsAtLocation';
     },
     vertical() {
       const { vertical = false } = this.$route.meta;
