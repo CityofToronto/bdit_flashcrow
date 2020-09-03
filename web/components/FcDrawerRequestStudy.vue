@@ -5,6 +5,7 @@
       :is-bulk="isBulk"
       :is-create="isCreate"
       @action-ok="actionLeave" />
+
     <header class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderRequestStudy
         :is-bulk="isBulk"
@@ -17,32 +18,22 @@
     <v-progress-linear
       v-if="loading"
       indeterminate />
-    <template v-else>
-      <div class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
-        <FcDetailsStudyRequest
-          v-if="locationMode === LocationMode.SINGLE || detailView"
-          v-model="studyRequest"
-          :is-create="isCreate"
-          :location="locationActive"
-          :v="$v.studyRequest" />
-        <FcDetailsStudyRequestBulk
-          v-else
-          v-model="studyRequestBulk"
-          :is-create="isCreate"
-          :locations="locations" />
-      </div>
-
-      <v-divider></v-divider>
-
-      <footer class="flex-grow-0 flex-shrink-0">
-        <FcFooterRequestStudy
-          :is-create="isCreate"
-          :study-request="studyRequest"
-          :v="$v.studyRequest"
-          @action-navigate-back="actionNavigateBack"
-          @action-submit="actionSubmit" />
-      </footer>
-    </template>
+    <div
+      v-else
+      class="flex-grow-1 flex-shrink-1 min-height-0">
+      <FcDetailsStudyRequestBulk
+        v-if="isBulk"
+        v-model="studyRequestBulk"
+        :locations="locations" />
+      <FcDetailsStudyRequest
+        v-else
+        v-model="studyRequest"
+        :is-create="isCreate"
+        :location="locationActive"
+        :v="$v.studyRequest"
+        @action-navigate-back="actionNavigateBack"
+        @action-submit="actionSubmitStudyRequest" />
+    </div>
   </div>
 </template>
 
@@ -65,7 +56,6 @@ import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcDetailsStudyRequestBulk from '@/web/components/requests/FcDetailsStudyRequestBulk.vue';
-import FcFooterRequestStudy from '@/web/components/requests/FcFooterRequestStudy.vue';
 import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -116,7 +106,6 @@ export default {
     FcDetailsStudyRequest,
     FcDetailsStudyRequestBulk,
     FcDialogConfirmRequestStudyLeave,
-    FcFooterRequestStudy,
     FcHeaderRequestStudy,
   },
   data() {
@@ -186,12 +175,8 @@ export default {
       this.leaveConfirmed = true;
       this.$router.push(this.nextRoute);
     },
-    actionNavigateBack() {
-      this.$router.push(this.routeNavigateBack);
-    },
-    actionSubmit() {
-      this.saveStudyRequest(this.studyRequest);
-      this.leaveConfirmed = true;
+    actionNavigateBack(leaveConfirmed = false) {
+      this.leaveConfirmed = leaveConfirmed;
       this.$router.push(this.routeNavigateBack);
     },
     async loadAsyncForRoute(to) {
@@ -222,7 +207,7 @@ export default {
       }
     },
     ...mapMutations(['setLocations']),
-    ...mapActions(['initLocations', 'saveStudyRequest']),
+    ...mapActions(['initLocations']),
   },
 };
 </script>

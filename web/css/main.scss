@@ -64,6 +64,15 @@ body {
   padding: 0;
 }
 
+/* FLEX LAYOUT FIXES */
+.min-height-0 {
+  min-height: 0;
+}
+
+.max-height-fill {
+  max-height: 100%;
+}
+
 /* TYPOGRAPHY */
 .label,
 .subtitle-1,

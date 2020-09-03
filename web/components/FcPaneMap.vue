@@ -46,6 +46,7 @@
       </div>
       <div class="pane-map-navigate">
         <v-tooltip
+          v-if="showLocationSelection"
           left
           :z-index="100">
           <template v-slot:activator="{ on }">
@@ -56,7 +57,6 @@
                 primary: locationMode.multi,
                 'white--text': locationMode.multi,
               }"
-              :disabled="!showLocationSelection"
               type="fab-text"
               @click="actionToggleLocationMode"
               v-on="on">

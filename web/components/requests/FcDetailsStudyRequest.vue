@@ -1,168 +1,191 @@
 <template>
-  <section>
-    <v-messages
-      v-bind="attrsMessagesTop"></v-messages>
-
-    <div class="mt-4">
-      <FcRadioGroup
-        v-model="v.studyType.$model"
-        hide-details
-        :items="itemsStudyType">
-        <template v-slot:legend>
-          <h2 class="headline">Study Type</h2>
-        </template>
-      </FcRadioGroup>
+  <section class="d-flex flex-column max-height-fill">
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
       <v-messages
-        class="mt-2"
-        color="error"
-        :value="errorMessagesStudyType"></v-messages>
-    </div>
-
-    <div class="mt-4">
-      <h3 class="headline">311 Information</h3>
-      <v-row>
-        <v-col cols="8">
-          <v-text-field
-            v-model="internalValue.serviceRequestId"
-            label="Service Number"
-            :messages="[OPTIONAL.text]"
-            outlined>
-          </v-text-field>
-        </v-col>
-      </v-row>
-    </div>
-
-    <div class="mt-4">
-      <h3 class="headline">Reasons</h3>
-      <FcCheckboxGroupChips
-        v-model="v.reasons.$model"
-        :items="itemsReasons"></FcCheckboxGroupChips>
-      <v-messages
-        class="mt-1"
-        color="error"
-        :value="errorMessagesReasons"></v-messages>
-    </div>
-
-    <template v-if="internalValue.studyType">
-      <v-divider class="my-3"></v-divider>
-
-      <h2 class="display-1">{{internalValue.studyType.label}}</h2>
+        :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
       <div class="mt-4">
-        <h3 class="headline">Study Days</h3>
-        <FcCheckboxGroupChips
-          v-model="v.daysOfWeek.$model"
-          :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
-        <v-messages
-          v-if="errorMessagesDaysOfWeek.length > 0"
-          class="mt-1"
-          color="error"
-          :value="errorMessagesDaysOfWeek"></v-messages>
-        <v-messages
-          v-else
-          class="mt-1"
-          :value="messagesDaysOfWeek"></v-messages>
-      </div>
-
-      <div v-if="internalValue.studyType.automatic" class="mt-4">
         <FcRadioGroup
-          v-model="v.duration.$model"
-          :items="[
-            { label: '1 day', sublabel: '24 hours', value: 24 },
-            { label: '2 days', sublabel: '48 hours', value: 48 },
-            { label: '3 days', sublabel: '72 hours', value: 72 },
-            { label: '4 days', sublabel: '96 hours', value: 96 },
-            { label: '5 days', sublabel: '120 hours', value: 120 },
-            { label: '1 week', sublabel: '168 hours', value: 168 },
-          ]">
-          <template v-slot:legend>
-            <h3 class="headline">Study Duration</h3>
-          </template>
-        </FcRadioGroup>
-      </div>
-      <div
-        v-else
-        class="mt-4">
-        <FcRadioGroup
-          v-model="internalValue.hours"
+          v-model="v.studyType.$model"
           hide-details
-          :items="itemsHours">
+          :items="itemsStudyType">
           <template v-slot:legend>
-            <h3 class="headline">Study Hours</h3>
+            <h2 class="headline">Study Type</h2>
           </template>
         </FcRadioGroup>
+        <v-messages
+          class="mt-2"
+          color="error"
+          :value="errorMessagesStudyType"></v-messages>
       </div>
 
-      <v-textarea
-        v-model="v.notes.$model"
-        class="mt-4"
-        :error-messages="errorMessagesNotes"
-        label="Additional Information"
-        :messages="messagesNotes"
-        no-resize
-        outlined
-        rows="4"
-        @blur="v.notes.$touch()"></v-textarea>
-    </template>
-
-    <v-divider class="my-3"></v-divider>
-
-    <div class="mt-4">
-      <h3 class="headline">Escalate Priority</h3>
-      <v-checkbox
-        v-model="internalValue.urgent"
-        class="mt-1"
-        label="Urgent"
-        :messages="[OPTIONAL.text]" />
-      <template v-if="internalValue.urgent">
+      <div class="mt-4">
+        <h3 class="headline">311 Information</h3>
         <v-row>
           <v-col cols="8">
-            <FcDatePicker
-              v-model="v.dueDate.$model"
-              class="mt-3"
-              :error-messages="errorMessagesDueDate"
-              label="Due Date"
-              :max="maxDueDate"
-              :min="minDueDate"
-              :success="!v.dueDate.$invalid">
-            </FcDatePicker>
+            <v-text-field
+              v-model="internalValue.serviceRequestId"
+              label="Service Number"
+              :messages="[OPTIONAL.text]"
+              outlined>
+            </v-text-field>
           </v-col>
         </v-row>
+      </div>
+
+      <div class="mt-4">
+        <h3 class="headline">Reasons</h3>
+        <FcCheckboxGroupChips
+          v-model="v.reasons.$model"
+          :items="itemsReasons"></FcCheckboxGroupChips>
+        <v-messages
+          class="mt-1"
+          color="error"
+          :value="errorMessagesReasons"></v-messages>
+      </div>
+
+      <template v-if="internalValue.studyType">
+        <v-divider class="my-3"></v-divider>
+
+        <h2 class="display-1">{{internalValue.studyType.label}}</h2>
+
+        <div class="mt-4">
+          <h3 class="headline">Study Days</h3>
+          <FcCheckboxGroupChips
+            v-model="v.daysOfWeek.$model"
+            :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
+          <v-messages
+            v-if="errorMessagesDaysOfWeek.length > 0"
+            class="mt-1"
+            color="error"
+            :value="errorMessagesDaysOfWeek"></v-messages>
+          <v-messages
+            v-else
+            class="mt-1"
+            :value="messagesDaysOfWeek"></v-messages>
+        </div>
+
+        <div v-if="internalValue.studyType.automatic" class="mt-4">
+          <FcRadioGroup
+            v-model="v.duration.$model"
+            :items="[
+              { label: '1 day', sublabel: '24 hours', value: 24 },
+              { label: '2 days', sublabel: '48 hours', value: 48 },
+              { label: '3 days', sublabel: '72 hours', value: 72 },
+              { label: '4 days', sublabel: '96 hours', value: 96 },
+              { label: '5 days', sublabel: '120 hours', value: 120 },
+              { label: '1 week', sublabel: '168 hours', value: 168 },
+            ]">
+            <template v-slot:legend>
+              <h3 class="headline">Study Duration</h3>
+            </template>
+          </FcRadioGroup>
+        </div>
+        <div
+          v-else
+          class="mt-4">
+          <FcRadioGroup
+            v-model="internalValue.hours"
+            hide-details
+            :items="itemsHours">
+            <template v-slot:legend>
+              <h3 class="headline">Study Hours</h3>
+            </template>
+          </FcRadioGroup>
+        </div>
+
+        <v-textarea
+          v-model="v.notes.$model"
+          class="mt-4"
+          :error-messages="errorMessagesNotes"
+          label="Additional Information"
+          :messages="messagesNotes"
+          no-resize
+          outlined
+          rows="4"
+          @blur="v.notes.$touch()"></v-textarea>
       </template>
-    </div>
 
-    <div class="mt-4">
-      <h3 class="headline">Inform Other Staff</h3>
-      <v-row>
-        <v-col cols="8">
-          <FcInputTextArray
-            v-model="v.ccEmails.$model"
-            :error-messages="errorMessagesCcEmails"
-            label="Staff Email"
-            :messages="messagesCcEmails"
-            :success="internalValue.urgent && !v.ccEmails.$invalid" />
-        </v-col>
-      </v-row>
-    </div>
+      <v-divider class="my-3"></v-divider>
 
-    <div class="mt-4">
-      <v-textarea
-        v-model="v.urgentReason.$model"
-        class="mt-3"
-        :error-messages="errorMessagesUrgentReason"
-        label="Additional Information"
-        :messages="messagesUrgentReason"
-        no-resize
-        outlined
-        rows="4"
-        :success="internalValue.urgent && !v.urgentReason.$invalid"
-        @blur="v.urgentReason.$touch()"></v-textarea>
-    </div>
+      <div class="mt-4">
+        <h3 class="headline">Escalate Priority</h3>
+        <v-checkbox
+          v-model="internalValue.urgent"
+          class="mt-1"
+          label="Urgent"
+          :messages="[OPTIONAL.text]" />
+        <template v-if="internalValue.urgent">
+          <v-row>
+            <v-col cols="8">
+              <FcDatePicker
+                v-model="v.dueDate.$model"
+                class="mt-3"
+                :error-messages="errorMessagesDueDate"
+                label="Due Date"
+                :max="maxDueDate"
+                :min="minDueDate"
+                :success="!v.dueDate.$invalid">
+              </FcDatePicker>
+            </v-col>
+          </v-row>
+        </template>
+      </div>
+
+      <div class="mt-4">
+        <h3 class="headline">Inform Other Staff</h3>
+        <v-row>
+          <v-col cols="8">
+            <FcInputTextArray
+              v-model="v.ccEmails.$model"
+              :error-messages="errorMessagesCcEmails"
+              label="Staff Email"
+              :messages="messagesCcEmails"
+              :success="internalValue.urgent && !v.ccEmails.$invalid" />
+          </v-col>
+        </v-row>
+      </div>
+
+      <div class="mt-4">
+        <v-textarea
+          v-model="v.urgentReason.$model"
+          class="mt-3"
+          :error-messages="errorMessagesUrgentReason"
+          label="Additional Information"
+          :messages="messagesUrgentReason"
+          no-resize
+          outlined
+          rows="4"
+          :success="internalValue.urgent && !v.urgentReason.$invalid"
+          @blur="v.urgentReason.$touch()"></v-textarea>
+      </div>
+    </section>
+
+    <v-divider></v-divider>
+
+    <footer class="flex-grow-0 flex-shrink-0">
+      <div class="align-center d-flex px-3 py-2">
+        <v-spacer></v-spacer>
+        <FcButton
+          class="mr-2"
+          type="tertiary"
+          @click="$emit('action-navigate-back')">
+          Cancel
+        </FcButton>
+        <FcButton
+          :disabled="v.$invalid"
+          type="primary"
+          @click="actionSubmit">
+          <span v-if="isCreate">Submit</span>
+          <span v-else>Save</span>
+        </FcButton>
+      </div>
+    </footer>
   </section>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import {
@@ -176,13 +199,13 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
-  REQUEST_STUDY_REQUIRES_LOCATION,
   REQUEST_STUDY_REQUIRES_REASONS,
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
@@ -193,6 +216,7 @@ export default {
   name: 'FcDetailsStudyRequest',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
+    FcButton,
     FcCheckboxGroupChips,
     FcDatePicker,
     FcInputTextArray,
@@ -212,22 +236,10 @@ export default {
       OPTIONAL,
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
+      REQUEST_STUDY_TIME_TO_FULFILL,
     };
   },
   computed: {
-    attrsMessagesTop() {
-      if (!this.v.centrelineId.required
-        || !this.v.centrelineType.required
-        || !this.v.geom.required) {
-        return {
-          color: 'error',
-          value: [REQUEST_STUDY_REQUIRES_LOCATION.text],
-        };
-      }
-      return {
-        value: [REQUEST_STUDY_TIME_TO_FULFILL.text],
-      };
-    },
     errorMessagesCcEmails() {
       const errors = [];
       if (!this.v.ccEmails.requiredIfUrgent) {
@@ -445,6 +457,13 @@ export default {
         this.internalValue.dueDate = this.dueDate;
       }
     },
+  },
+  methods: {
+    actionSubmit() {
+      this.saveStudyRequest(this.studyRequest);
+      this.$emit('action-navigate-back', true);
+    },
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>
