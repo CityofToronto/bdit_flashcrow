@@ -36,41 +36,46 @@ export default {
     FcButton,
   },
   props: {
+    isBulk: Boolean,
     isCreate: Boolean,
-    isSingleLocation: Boolean,
   },
   computed: {
     labelNavigateBack() {
-      if (this.isCreate && this.locationActive === null) {
-        return 'View Map';
+      if (this.isCreate) {
+        if (this.locationsEmpty) {
+          return 'View Map';
+        }
+        return 'View Data';
       }
-      return 'View Data';
+      // TODO: handle bulk requests
+      const { id } = this.$route.params;
+      return `View Request #${id}`;
     },
     subtitle() {
-      if (this.isSingleLocation) {
-        if (this.locationActive === null) {
-          return 'needs location';
-        }
-        return this.locationActive.description;
+      if (this.isBulk) {
+        return getLocationsDescription(this.locations);
       }
-      return getLocationsDescription(this.locations);
+      if (this.locationActive === null) {
+        return 'needs location';
+      }
+      return this.locationActive.description;
     },
     title() {
       if (this.isCreate) {
-        if (this.isSingleLocation) {
-          return 'Request Study';
+        if (this.isBulk) {
+          return 'Bulk Request Study';
         }
-        return 'Bulk Request Study';
+        return 'Request Study';
       }
       const { id } = this.$route.params;
-      if (this.isSingleLocation) {
-        return `Edit Request #${id}`;
+      if (this.isBulk) {
+        return `Edit Bulk Request #${id}`;
       }
-      return `Edit Bulk Request #${id}`;
+      return `Edit Request #${id}`;
     },
     ...mapState(['locationMode', 'locations']),
     ...mapState('viewData', ['detailView']),
-    ...mapGetters(['locationActive']),
+    ...mapGetters(['locationActive', 'locationsEmpty']),
   },
 };
 </script>

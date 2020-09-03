@@ -13,7 +13,7 @@
         </template>
       </FcRadioGroup>
       <v-messages
-        class="mt-1"
+        class="mt-2"
         color="error"
         :value="errorMessagesStudyType"></v-messages>
     </div>
@@ -281,9 +281,6 @@ export default {
     },
     errorMessagesReasons() {
       const errors = [];
-      if (!this.v.reasons.$dirty) {
-        return errors;
-      }
       if (!this.v.reasons.required) {
         errors.push(REQUEST_STUDY_REQUIRES_REASONS.text);
       }
@@ -453,7 +450,7 @@ export default {
     },
   },
   created() {
-
+    this.updateStudyRequestLocation();
   },
   methods: {
     updateStudyRequestLocation() {

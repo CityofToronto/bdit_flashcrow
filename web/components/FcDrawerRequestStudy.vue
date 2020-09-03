@@ -2,12 +2,13 @@
   <div class="fc-drawer-request-study d-flex fill-height flex-column">
     <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
+      :is-bulk="isBulk"
       :is-create="isCreate"
       @action-ok="actionLeave" />
     <header class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderRequestStudy
+        :is-bulk="isBulk"
         :is-create="isCreate"
-        :is-single-location="isSingleLocation"
         @action-navigate-back="actionNavigateBack" />
     </header>
 
@@ -19,14 +20,16 @@
     <template v-else>
       <div class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
         <FcDetailsStudyRequest
-          v-if="isSingleLocation"
+          v-if="locationMode === LocationMode.SINGLE || detailView"
           v-model="studyRequest"
           :is-create="isCreate"
           :location="locationActive"
           :v="$v.studyRequest" />
-        <h2 v-else>
-          TODO: multi-location request study wizard!
-        </h2>
+        <FcDetailsStudyRequestBulk
+          v-else
+          v-model="studyRequestBulk"
+          :is-create="isCreate"
+          :locations="locations" />
       </div>
 
       <v-divider></v-divider>
@@ -58,15 +61,26 @@ import {
 import { getStudyRequest } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
-import FcDetailsStudyRequest from '@/web/components/FcDetailsStudyRequest.vue';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
+import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
+import FcDetailsStudyRequestBulk from '@/web/components/requests/FcDetailsStudyRequestBulk.vue';
 import FcFooterRequestStudy from '@/web/components/requests/FcFooterRequestStudy.vue';
 import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
-function makeStudyRequest(now) {
+function makeStudyRequest(now, location) {
   const dueDate = now.plus({ months: 3 });
+  const {
+    centrelineId,
+    centrelineType,
+    lng,
+    lat,
+  } = location;
+  const geom = {
+    type: 'Point',
+    coordinates: [lng, lat],
+  };
   return {
     serviceRequestId: null,
     urgent: false,
@@ -81,9 +95,17 @@ function makeStudyRequest(now) {
     duration: null,
     hours: null,
     notes: '',
-    centrelineId: null,
-    centrelineType: null,
-    geom: null,
+    centrelineId,
+    centrelineType,
+    geom,
+  };
+}
+
+/* eslint-disable-next-line no-unused-vars */
+function makeStudyRequestBulk(now, locations) {
+  // const dueDate = now.plus({ months: 3 });
+  return {
+    // TODO: bulk study request fields
   };
 }
 
@@ -92,6 +114,7 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcDetailsStudyRequest,
+    FcDetailsStudyRequestBulk,
     FcDialogConfirmRequestStudyLeave,
     FcFooterRequestStudy,
     FcHeaderRequestStudy,
@@ -99,17 +122,18 @@ export default {
   data() {
     return {
       leaveConfirmed: false,
+      LocationMode,
       nextRoute: null,
       showConfirmLeave: false,
       studyRequest: null,
     };
   },
   computed: {
+    isBulk() {
+      return this.locationMode !== LocationMode.SINGLE && !this.detailView;
+    },
     isCreate() {
       return this.$route.name === 'requestStudyNew';
-    },
-    isSingleLocation() {
-      return this.locationMode === LocationMode.SINGLE || this.detailView;
     },
     locationsActive() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
@@ -118,20 +142,21 @@ export default {
       return this.locations;
     },
     routeNavigateBack() {
-      if (!this.isCreate) {
-        const { id } = this.$route.params;
+      if (this.isCreate) {
+        if (this.locationsEmpty) {
+          return { name: 'viewData' };
+        }
+        const params = this.locationsRouteParams;
         return {
-          name: 'requestStudyView',
-          params: { id },
+          name: 'viewDataAtLocation',
+          params,
         };
       }
-      if (this.locationsEmpty) {
-        return { name: 'viewData' };
-      }
-      const params = this.locationsRouteParams;
+      // TODO: handle bulk requests
+      const { id } = this.$route.params;
       return {
-        name: 'viewDataAtLocation',
-        params,
+        name: 'requestStudyView',
+        params: { id },
       };
     },
     ...mapState([
@@ -170,23 +195,31 @@ export default {
       this.$router.push(this.routeNavigateBack);
     },
     async loadAsyncForRoute(to) {
-      let studyRequest;
       if (this.isCreate) {
         const { s1, selectionTypeName } = to.params;
         const features = CompositeId.decode(s1);
         const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
         await this.initLocations({ features, selectionType });
-        const { now } = this;
-        studyRequest = makeStudyRequest(now);
+
+        if (this.isBulk) {
+          const studyRequestBulk = makeStudyRequestBulk(this.now, this.locations);
+          this.studyRequest = null;
+          this.studyRequestBulk = studyRequestBulk;
+        } else {
+          const studyRequest = makeStudyRequest(this.now, this.locationActive);
+          this.studyRequest = studyRequest;
+          this.studyRequestBulk = null;
+        }
       } else {
+        // TODO: handle bulk study request
         const { id } = to.params;
-        const result = await getStudyRequest(id);
-        studyRequest = result.studyRequest;
-        const features = [result.studyRequestLocation];
+        const { studyRequest, studyRequestLocation } = await getStudyRequest(id);
+        const features = [studyRequestLocation];
         const selectionType = LocationSelectionType.POINTS;
         await this.initLocations({ features, selectionType });
+
+        this.studyRequest = studyRequest;
       }
-      this.studyRequest = studyRequest;
     },
     ...mapMutations(['setLocations']),
     ...mapActions(['initLocations', 'saveStudyRequest']),
