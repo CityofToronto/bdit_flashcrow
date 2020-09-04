@@ -29,7 +29,7 @@
           </v-col>
           <v-col class="py-2" cols="6">
             <v-select
-              v-model="studyRequest.daysOfWeek"
+              v-model="internalDaysOfWeek"
               dense
               :disabled="!selected"
               hide-details
@@ -40,17 +40,6 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col class="py-2" cols="6">
-            <v-select
-              v-model="studyRequest.reasons"
-              dense
-              :disabled="!selected"
-              hide-details
-              :items="itemsReasons"
-              label="Reasons"
-              multiple
-              outlined />
-          </v-col>
           <v-col class="py-2" cols="6">
             <v-select
               v-model="studyRequest.hours"
@@ -81,11 +70,7 @@
 
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
-import {
-  StudyHours,
-  StudyRequestReason,
-  StudyType,
-} from '@/lib/Constants';
+import { StudyHours, StudyType } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
@@ -105,12 +90,12 @@ export default {
     studyRequest: Object,
   },
   computed: {
-    internalReasons: {
+    internalDaysOfWeek: {
       get() {
-        return this.studyRequest.reasons.map(({ name }) => name);
+        return this.studyRequest.daysOfWeek;
       },
-      set(reasons) {
-        this.studyRequest.reasons = reasons.map(name => StudyRequestReason.enumValueOf(name));
+      set(daysOfWeek) {
+        this.studyRequest.daysOfWeek = ArrayUtils.sortBy(daysOfWeek, i => i);
       },
     },
     itemsDaysOfWeek() {
@@ -121,13 +106,6 @@ export default {
         const { description } = value;
         return { text: description, value };
       });
-    },
-    itemsReasons() {
-      const itemsReasons = StudyRequestReason.enumValues.map((value) => {
-        const { name, text } = value;
-        return { text, value: name };
-      });
-      return ArrayUtils.sortBy(itemsReasons, ({ text }) => text);
     },
     itemsStudyType() {
       const itemsStudyType = StudyType.enumValues.map((studyType) => {
