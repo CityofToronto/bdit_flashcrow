@@ -15,6 +15,7 @@
           <FcButton
             v-bind="attrs"
             v-on="on"
+            :disabled="selectAll === false"
             type="secondary">
             <span>Study Type</span>
             <v-icon right>mdi-menu-down</v-icon>
@@ -39,6 +40,7 @@
             v-bind="attrs"
             v-on="on"
             class="ml-2"
+            :disabled="selectAll === false"
             type="secondary">
             <span>Reason</span>
             <v-icon right>mdi-menu-down</v-icon>
@@ -63,6 +65,7 @@
             v-bind="attrs"
             v-on="on"
             class="ml-2"
+            :disabled="selectAll === false"
             type="secondary">
             <span>Days</span>
             <v-icon right>mdi-menu-down</v-icon>
@@ -87,6 +90,7 @@
             v-bind="attrs"
             v-on="on"
             class="ml-2"
+            :disabled="selectAll === false"
             type="secondary">
             <span>Hours</span>
             <v-icon right>mdi-menu-down</v-icon>
