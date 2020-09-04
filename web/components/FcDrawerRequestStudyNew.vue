@@ -1,15 +1,15 @@
 <template>
-  <div class="fc-drawer-request-study d-flex fill-height flex-column">
+  <div class="fc-drawer-request-study-new d-flex fill-height flex-column">
     <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
       :is-bulk="isBulk"
-      :is-create="isCreate"
+      :is-create="true"
       @action-ok="actionLeave" />
 
     <header class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderRequestStudy
         :is-bulk="isBulk"
-        :is-create="isCreate"
+        :is-create="true"
         @action-navigate-back="actionNavigateBack" />
     </header>
 
@@ -21,7 +21,7 @@
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 min-height-0">
-      <FcDetailsStudyRequestBulk
+      <FcCreateStudyRequestBulk
         v-if="isBulk"
         v-model="studyRequestBulk"
         :locations="locations"
@@ -29,34 +29,27 @@
       <FcDetailsStudyRequest
         v-else
         v-model="studyRequest"
-        :is-create="isCreate"
+        :is-create="true"
         :location="locationActive"
         :v="$v.studyRequest"
-        @action-navigate-back="actionNavigateBack"
-        @action-submit="actionSubmitStudyRequest" />
+        @action-navigate-back="actionNavigateBack" />
     </div>
   </div>
 </template>
 
 <script>
-import {
-  mapActions,
-  mapGetters,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import {
   LocationMode,
   LocationSelectionType,
 } from '@/lib/Constants';
-import { getStudyRequest } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
+import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcDetailsStudyRequestBulk from '@/web/components/requests/FcDetailsStudyRequestBulk.vue';
 import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -92,20 +85,22 @@ function makeStudyRequest(now, location) {
   };
 }
 
-/* eslint-disable-next-line no-unused-vars */
 function makeStudyRequestBulk(now, locations) {
-  // const dueDate = now.plus({ months: 3 });
+  const studyRequests = locations.map(
+    location => makeStudyRequest(now, location),
+  );
   return {
-    // TODO: bulk study request fields
+    name: null,
+    studyRequests,
   };
 }
 
 export default {
-  name: 'FcDrawerRequestStudy',
+  name: 'FcDrawerRequestStudyNew',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
-    FcDetailsStudyRequestBulk,
     FcDialogConfirmRequestStudyLeave,
     FcHeaderRequestStudy,
   },
@@ -116,14 +111,12 @@ export default {
       nextRoute: null,
       showConfirmLeave: false,
       studyRequest: null,
+      studyRequestBulk: null,
     };
   },
   computed: {
     isBulk() {
       return this.locationMode !== LocationMode.SINGLE && !this.detailView;
-    },
-    isCreate() {
-      return this.$route.name === 'requestStudyNew';
     },
     locationsActive() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
@@ -132,21 +125,13 @@ export default {
       return this.locations;
     },
     routeNavigateBack() {
-      if (this.isCreate) {
-        if (this.locationsEmpty) {
-          return { name: 'viewData' };
-        }
-        const params = this.locationsRouteParams;
-        return {
-          name: 'viewDataAtLocation',
-          params,
-        };
+      if (this.locationsEmpty) {
+        return { name: 'viewData' };
       }
-      // TODO: handle bulk requests
-      const { id } = this.$route.params;
+      const params = this.locationsRouteParams;
       return {
-        name: 'requestStudyView',
-        params: { id },
+        name: 'viewDataAtLocation',
+        params,
       };
     },
     ...mapState([
@@ -182,40 +167,28 @@ export default {
       this.$router.push(this.routeNavigateBack);
     },
     async loadAsyncForRoute(to) {
-      if (this.isCreate) {
-        const { s1, selectionTypeName } = to.params;
-        const features = CompositeId.decode(s1);
-        const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
-        await this.initLocations({ features, selectionType });
+      const { s1, selectionTypeName } = to.params;
+      const features = CompositeId.decode(s1);
+      const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
+      await this.initLocations({ features, selectionType });
 
-        if (this.isBulk) {
-          const studyRequestBulk = makeStudyRequestBulk(this.now, this.locations);
-          this.studyRequest = null;
-          this.studyRequestBulk = studyRequestBulk;
-        } else {
-          const studyRequest = makeStudyRequest(this.now, this.locationActive);
-          this.studyRequest = studyRequest;
-          this.studyRequestBulk = null;
-        }
+      if (this.isBulk) {
+        const studyRequestBulk = makeStudyRequestBulk(this.now, this.locations);
+        this.studyRequest = null;
+        this.studyRequestBulk = studyRequestBulk;
       } else {
-        // TODO: handle bulk study request
-        const { id } = to.params;
-        const { studyRequest, studyRequestLocation } = await getStudyRequest(id);
-        const features = [studyRequestLocation];
-        const selectionType = LocationSelectionType.POINTS;
-        await this.initLocations({ features, selectionType });
-
+        const studyRequest = makeStudyRequest(this.now, this.locationActive);
         this.studyRequest = studyRequest;
+        this.studyRequestBulk = null;
       }
     },
-    ...mapMutations(['setLocations']),
     ...mapActions(['initLocations']),
   },
 };
 </script>
 
 <style lang="scss">
-.fc-drawer-request-study {
+.fc-drawer-request-study-new {
   max-height: calc(100vh - 52px);
 }
 </style>

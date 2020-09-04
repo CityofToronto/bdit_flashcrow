@@ -1,31 +1,20 @@
 <template>
   <section class="min-height-fill shading py-2">
     <div
-      v-for="i in intersectionIndices"
+      v-for="i in indicesIntersections"
       :key="i"
       class="align-center d-flex">
       <v-checkbox
-        v-model="intersectionsSelected"
+        v-model="internalValue"
         class="mx-5"
         :value="i" />
-      <v-card
-        class="fc-study-request-bulk-intersection flex-grow-1 flex-shrink-1 mr-5 my-2"
-        :class="{
-          selected: intersectionsSelected.includes(i),
-        }"
-        flat>
-        <v-card-title class="align-start">
-          <FcIconLocationMulti
-            class="mr-5"
-            v-bind="locationsIconProps[i]" />
-          <div>
-            <div>{{locations[i].description}}</div>
-            <FcTextMostRecent
-              class="font-weight-regular"
-              :study="study" />
-          </div>
-        </v-card-title>
-      </v-card>
+      <FcCardStudyRequest
+        class="flex-grow-1 flex-shrink-1 mr-5 my-2"
+        :icon-props="locationsIconProps[i]"
+        :location="locations[i]"
+        :selected="internalValue.includes(i)"
+        :study="study"
+        :study-request="studyRequests[i]" />
     </div>
   </section>
 </template>
@@ -34,25 +23,24 @@
 import { StudyHours } from '@/lib/Constants';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
-import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcStudyRequestBulkIntersections',
-  mixins: [FcMixinVModelProxy(Object)],
+  mixins: [FcMixinVModelProxy(Array)],
   components: {
-    FcIconLocationMulti,
-    FcTextMostRecent,
+    FcCardStudyRequest,
   },
   props: {
-    intersectionIndices: Array,
+    indicesIntersections: Array,
     locations: Array,
     locationsSelection: Object,
+    studyRequests: Array,
   },
   data() {
     return {
-      intersectionsSelected: [...this.intersectionIndices],
+      // TODO: get actual study info
       study: {
         duration: null,
         hours: StudyHours.ROUTINE,
@@ -67,12 +55,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.fc-study-request-bulk-intersection.theme--light.v-sheet {
-  border: 1px solid var(--v-border-base);
-  &.selected {
-    border: 2px solid var(--v-primary-base);
-  }
-}
-</style>

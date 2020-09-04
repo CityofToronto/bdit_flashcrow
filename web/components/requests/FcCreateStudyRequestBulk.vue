@@ -17,8 +17,10 @@
 
       <FcHeaderStudyRequestBulkIntersections
         v-if="step === 1"
+        v-model="indicesIntersectionsSelected"
         class="mt-6"
-        :locations="locations" />
+        :indices-intersections="indicesIntersections"
+        :study-requests="studyRequests" />
     </header>
 
     <v-divider v-if="step === 1"></v-divider>
@@ -26,14 +28,18 @@
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <FcStudyRequestBulkIntersections
         v-if="step === 1"
-        v-model="internalValue"
-        :intersection-indices="intersectionIndices"
+        v-model="indicesIntersectionsSelected"
+        :indices-intersections="indicesIntersections"
         :locations="locations"
-        :locations-selection="locationsSelection" />
+        :locations-selection="locationsSelection"
+        :study-requests="studyRequests" />
       <FcStudyRequestBulkMidblocks
         v-else-if="step === 2"
-        v-model="internalValue"
-        :locations="locations" />
+        v-model="indicesMidblocksSelected"
+        :indices-midblocks="indicesMidblocks"
+        :locations="locations"
+        :locations-selection="locationsSelection"
+        :study-requests="studyRequests" />
       <FcStudyRequestBulkDetails
         v-else-if="step === 3"
         v-model="internalValue" />
@@ -107,7 +113,9 @@
 </template>
 
 <script>
+import ArrayUtils from '@/lib/ArrayUtils';
 import { CentrelineType } from '@/lib/Constants';
+import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
@@ -126,7 +134,7 @@ import FcStudyRequestBulkMidblocks
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcDetailsStudyRequestBulk',
+  name: 'FcCreateStudyRequestBulk',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
@@ -142,8 +150,29 @@ export default {
     locationsSelection: Object,
   },
   data() {
+    const studyRequests = [...this.value.studyRequests];
+
+    const indicesIntersections = [];
+    const indicesMidblocks = [];
+    this.locations.forEach((location, i) => {
+      if (location.centrelineType === CentrelineType.INTERSECTION) {
+        indicesIntersections.push(i);
+      } else if (location.centrelineType === CentrelineType.SEGMENT) {
+        indicesMidblocks.push(i);
+      } else {
+        throw new InvalidCentrelineTypeError(location.centrelineType);
+      }
+    });
+
+    const indicesIntersectionsSelected = [...indicesIntersections];
+    const indicesMidblocksSelected = [...indicesMidblocks];
     return {
+      indicesIntersections,
+      indicesIntersectionsSelected,
+      indicesMidblocks,
+      indicesMidblocksSelected,
       step: 1,
+      studyRequests,
     };
   },
   computed: {
@@ -162,14 +191,20 @@ export default {
       }
       return [];
     },
-    intersectionIndices() {
-      const intersectionIndices = [];
-      this.locations.forEach(({ centrelineType }, i) => {
-        if (centrelineType === CentrelineType.INTERSECTION) {
-          intersectionIndices.push(i);
-        }
-      });
-      return intersectionIndices;
+    indicesSelected() {
+      const indicesSelected = [
+        ...this.indicesIntersectionsSelected,
+        ...this.indicesMidblocksSelected,
+      ];
+      return ArrayUtils.sortBy(indicesSelected, i => i);
+    },
+    studyRequestsSelected() {
+      return this.indicesSelected.map(i => this.studyRequests[i]);
+    },
+  },
+  watch: {
+    studyRequestsSelected() {
+      this.internalValue.studyRequests = this.studyRequestsSelected;
     },
   },
   methods: {

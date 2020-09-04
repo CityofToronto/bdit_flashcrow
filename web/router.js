@@ -137,7 +137,7 @@ const router = new Router({
           },
           title: 'New Request',
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudy.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
@@ -153,7 +153,7 @@ const router = new Router({
             return `Edit Request #${id}`;
           },
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudy.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();

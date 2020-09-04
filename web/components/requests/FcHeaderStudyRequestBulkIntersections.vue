@@ -114,18 +114,34 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcHeaderStudyRequestBulkIntersections',
-  mixins: [FcMixinVModelProxy(Object)],
+  mixins: [FcMixinVModelProxy(Array)],
   components: {
     FcButton,
   },
   props: {
-    locations: Array,
-    locationsSelected: Array,
+    indicesIntersections: Array,
+    studyRequests: Array,
   },
-  data() {
-    return {
-      selectAll: false,
-    };
+  computed: {
+    selectAll: {
+      get() {
+        const k = this.internalValue.length;
+        if (k === 0) {
+          return false;
+        }
+        if (k === this.indicesIntersections.length) {
+          return true;
+        }
+        return null;
+      },
+      set(selectAll) {
+        if (selectAll) {
+          this.internalValue = [...this.indicesIntersections];
+        } else {
+          this.internalValue = [];
+        }
+      },
+    },
   },
 };
 </script>
