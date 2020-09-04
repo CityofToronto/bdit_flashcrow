@@ -1,7 +1,7 @@
 <template>
   <section class="min-height-fill shading py-2">
     <div
-      v-for="i in indicesIntersections"
+      v-for="i in indices"
       :key="i"
       class="align-center d-flex">
       <v-checkbox
@@ -27,13 +27,13 @@ import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcStudyRequestBulkIntersections',
+  name: 'FcStudyRequestBulkLocations',
   mixins: [FcMixinVModelProxy(Array)],
   components: {
     FcCardStudyRequest,
   },
   props: {
-    indicesIntersections: Array,
+    indices: Array,
     locations: Array,
     locationsSelection: Object,
     studyRequests: Array,

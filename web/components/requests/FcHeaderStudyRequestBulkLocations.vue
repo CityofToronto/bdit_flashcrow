@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <h3 class="headline mx-5">Select Intersections</h3>
-    <div class="align-center d-flex mt-2 mx-5">
+  <div class="mx-5">
+    <h3 class="headline">{{title}}</h3>
+    <div class="align-center d-flex">
       <v-checkbox
         v-model="selectAll"
         class="mr-6"
@@ -63,14 +63,15 @@ import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcHeaderStudyRequestBulkIntersections',
+  name: 'FcHeaderStudyRequestBulkLocations',
   mixins: [FcMixinVModelProxy(Array)],
   components: {
     FcButton,
   },
   props: {
-    indicesIntersections: Array,
+    indices: Array,
     studyRequests: Array,
+    title: String,
   },
   computed: {
     itemsHours() {
@@ -92,14 +93,14 @@ export default {
         if (k === 0) {
           return false;
         }
-        if (k === this.indicesIntersections.length) {
+        if (k === this.indices.length) {
           return true;
         }
         return null;
       },
       set(selectAll) {
         if (selectAll) {
-          this.internalValue = [...this.indicesIntersections];
+          this.internalValue = [...this.indices];
         } else {
           this.internalValue = [];
         }

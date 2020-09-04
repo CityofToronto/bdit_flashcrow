@@ -15,28 +15,36 @@
           :value="attrsMessagesTop"></v-messages>
       </div>
 
-      <FcHeaderStudyRequestBulkIntersections
+      <FcHeaderStudyRequestBulkLocations
         v-if="step === 1"
         v-model="indicesIntersectionsSelected"
         class="mt-6"
-        :indices-intersections="indicesIntersections"
-        :study-requests="studyRequests" />
+        :indices="indicesIntersections"
+        :study-requests="studyRequests"
+        title="Select Intersections" />
+      <FcHeaderStudyRequestBulkLocations
+        v-else-if="step === 2"
+        v-model="indicesMidblocksSelected"
+        class="mt-6"
+        :indices="indicesMidblocks"
+        :study-requests="studyRequests"
+        title="Select Midblocks" />
     </header>
 
-    <v-divider v-if="step === 1"></v-divider>
+    <v-divider v-if="step === 1 || step === 2"></v-divider>
 
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <FcStudyRequestBulkIntersections
+      <FcStudyRequestBulkLocations
         v-if="step === 1"
         v-model="indicesIntersectionsSelected"
-        :indices-intersections="indicesIntersections"
+        :indices="indicesIntersections"
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-requests="studyRequests" />
-      <FcStudyRequestBulkMidblocks
+      <FcStudyRequestBulkLocations
         v-else-if="step === 2"
         v-model="indicesMidblocksSelected"
-        :indices-midblocks="indicesMidblocks"
+        :indices="indicesMidblocks"
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-requests="studyRequests" />
@@ -120,17 +128,15 @@ import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcHeaderStudyRequestBulkIntersections
-  from '@/web/components/requests/FcHeaderStudyRequestBulkIntersections.vue';
+import FcHeaderStudyRequestBulkLocations
+  from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
 import FcStepperStudyRequestBulk from '@/web/components/requests/FcStepperStudyRequestBulk.vue';
 import FcStudyRequestBulkConfirm
   from '@/web/components/requests/FcStudyRequestBulkConfirm.vue';
 import FcStudyRequestBulkDetails
   from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
-import FcStudyRequestBulkIntersections
-  from '@/web/components/requests/FcStudyRequestBulkIntersections.vue';
-import FcStudyRequestBulkMidblocks
-  from '@/web/components/requests/FcStudyRequestBulkMidblocks.vue';
+import FcStudyRequestBulkLocations
+  from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -138,12 +144,11 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
-    FcHeaderStudyRequestBulkIntersections,
+    FcHeaderStudyRequestBulkLocations,
     FcStepperStudyRequestBulk,
     FcStudyRequestBulkConfirm,
     FcStudyRequestBulkDetails,
-    FcStudyRequestBulkIntersections,
-    FcStudyRequestBulkMidblocks,
+    FcStudyRequestBulkLocations,
   },
   props: {
     locations: Array,
