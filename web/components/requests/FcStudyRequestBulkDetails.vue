@@ -18,11 +18,11 @@
       <h3 class="headline">Reason for Request</h3>
       <v-row>
         <v-col cols="8">
-          <v-select
+          <FcSelectEnum
             v-model="internalValue.reason"
             hide-details
-            :items="itemsReasons"
             label="Reason"
+            :of-type="StudyRequestReason"
             outlined />
         </v-col>
       </v-row>
@@ -35,7 +35,7 @@
         class="mt-1"
         label="Urgent"
         :messages="[OPTIONAL.text]" />
-      <template v-if="urgent">
+      <template v-if="internalValue.urgent">
         <v-row>
           <v-col cols="8">
             <FcDatePicker
@@ -76,11 +76,11 @@
 <script>
 import { mapState } from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyRequestReason } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
+import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -89,20 +89,15 @@ export default {
   components: {
     FcDatePicker,
     FcInputTextArray,
+    FcSelectEnum,
   },
   data() {
     return {
       OPTIONAL,
+      StudyRequestReason,
     };
   },
   computed: {
-    itemsReasons() {
-      const itemsReasons = StudyRequestReason.enumValues.map((value) => {
-        const { name, text } = value;
-        return { text, value: name };
-      });
-      return ArrayUtils.sortBy(itemsReasons, ({ text }) => text);
-    },
     maxDueDate() {
       const { now, urgent } = this;
       if (urgent) {
@@ -126,7 +121,7 @@ export default {
     ...mapState(['now']),
   },
   watch: {
-    'internalValue.ccEmails': function watchCcEamails() {
+    'internalValue.ccEmails': function watchCcEmails() {
       const { ccEmails, studyRequests } = this.internalValue;
       const n = studyRequests.length;
       for (let i = 0; i < n; i++) {

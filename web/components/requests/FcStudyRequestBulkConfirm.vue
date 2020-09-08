@@ -25,7 +25,7 @@
                 class="flex-grow-1 flex-shrink-1 mr-5 my-2 shading"
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
-                :study-request="studyRequests[i]" />
+                :study-request="studyRequestBulk.studyRequests[i]" />
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -65,7 +65,7 @@
                 class="flex-grow-1 flex-shrink-1 mr-5 my-2 shading"
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
-                :study-request="studyRequests[i]" />
+                :study-request="studyRequestBulk.studyRequests[i]" />
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -84,6 +84,62 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <v-row
+      class="mt-5"
+      no-gutters>
+      <v-col class="py-2" cols="6">
+        <div class="subtitle-1">
+          Study Name
+        </div>
+        <div class="mt-1 display-1">
+          {{studyRequestBulk.name}}
+        </div>
+      </v-col>
+      <v-col class="py-2" cols="6">
+        <div class="subtitle-1">
+          Due Date
+        </div>
+        <div class="mt-1 display-1">
+          {{studyRequestBulk.dueDate | date}}
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row
+      class="mt-5"
+      no-gutters>
+      <v-col class="py-2" cols="6">
+        <div class="subtitle-1">
+          Service Request Number
+        </div>
+        <div class="mt-1 display-1">
+          9950602
+        </div>
+      </v-col>
+      <v-col class="py-2" cols="6">
+        <div class="subtitle-1">
+          Reason
+        </div>
+        <div class="mt-1 display-1">
+          {{studyRequestBulk.reason.text}}
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row
+      class="mt-5"
+      no-gutters>
+      <v-col class="py-2" cols="12">
+        <div class="subtitle-1">
+          Additional Information
+        </div>
+        <div class="mt-1 display-1">
+          <span v-if="studyRequestBulk.urgentReason">{{studyRequestBulk.urgentReason}}</span>
+          <span v-else>None</span>
+        </div>
+      </v-col>
+    </v-row>
   </section>
 </template>
 
@@ -103,7 +159,7 @@ export default {
     indicesMidblocksSelected: Array,
     locations: Array,
     locationsSelection: Object,
-    studyRequests: Array,
+    studyRequestBulk: Object,
   },
   computed: {
     locationsIconProps() {

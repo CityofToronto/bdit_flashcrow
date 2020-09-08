@@ -57,7 +57,7 @@
         :indices-midblocks-selected="indicesMidblocksSelected"
         :locations="locations"
         :locations-selection="locationsSelection"
-        :study-requests="studyRequests"
+        :study-request-bulk="internalValue"
         @remove-study="actionRemoveStudy" />
       <div v-else class="flex-grow-1 flex-shrink-1 text-center">
         <h2 class="fc-study-request-bulk-submitted display-3">

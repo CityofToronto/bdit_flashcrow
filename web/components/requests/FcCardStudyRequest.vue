@@ -18,13 +18,14 @@
       <div class="mx-9">
         <v-row>
           <v-col class="py-2" cols="6">
-            <v-select
+            <FcSelectEnum
               v-model="studyRequest.studyType"
               dense
               :disabled="!selected"
               hide-details
-              :items="itemsStudyType"
+              item-text="label"
               label="Study Type"
+              :of-type="StudyType"
               outlined />
           </v-col>
           <v-col class="py-2" cols="6">
@@ -41,13 +42,14 @@
         </v-row>
         <v-row>
           <v-col class="py-2" cols="6">
-            <v-select
+            <FcSelectEnum
               v-model="studyRequest.hours"
               dense
               :disabled="!selected"
               hide-details
-              :items="itemsHours"
+              item-text="description"
               label="Hours"
+              :of-type="StudyHours"
               outlined />
           </v-col>
         </v-row>
@@ -74,12 +76,14 @@ import { StudyHours, StudyType } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
 export default {
   name: 'FcCardStudyRequest',
   components: {
     FcIconLocationMulti,
+    FcSelectEnum,
     FcTextMostRecent,
   },
   props: {
@@ -88,6 +92,12 @@ export default {
     selected: Boolean,
     study: Object,
     studyRequest: Object,
+  },
+  data() {
+    return {
+      StudyHours,
+      StudyType,
+    };
   },
   computed: {
     internalDaysOfWeek: {
@@ -100,19 +110,6 @@ export default {
     },
     itemsDaysOfWeek() {
       return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
-    },
-    itemsHours() {
-      return StudyHours.enumValues.map((value) => {
-        const { description } = value;
-        return { text: description, value };
-      });
-    },
-    itemsStudyType() {
-      const itemsStudyType = StudyType.enumValues.map((studyType) => {
-        const { label } = studyType;
-        return { text: label, value: studyType };
-      });
-      return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
     },
     messagesNotes() {
       const { hours } = this.studyRequest;
