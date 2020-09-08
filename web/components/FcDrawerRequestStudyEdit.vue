@@ -36,7 +36,6 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
-import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -64,7 +63,6 @@ export default {
     },
     ...mapGetters(['locationActive']),
   },
-  validations: ValidationsStudyRequest,
   beforeRouteLeave(to, from, next) {
     if (this.leaveConfirmed) {
       next();

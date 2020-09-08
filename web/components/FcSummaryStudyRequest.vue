@@ -113,7 +113,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import { numConsecutiveDaysOfWeek } from '@/lib/validation/ValidationsStudyRequest';
+import { numConsecutiveDaysOfWeek } from '@/lib/time/TimeUtils';
 import FcStatusStudyRequest from '@/web/components/FcStatusStudyRequest.vue';
 
 export default {

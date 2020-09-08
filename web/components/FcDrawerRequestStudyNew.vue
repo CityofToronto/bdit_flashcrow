@@ -45,7 +45,6 @@ import {
   LocationSelectionType,
 } from '@/lib/Constants';
 import CompositeId from '@/lib/io/CompositeId';
-import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
@@ -153,7 +152,6 @@ export default {
       'locationsRouteParams',
     ]),
   },
-  validations: ValidationsStudyRequest,
   beforeRouteLeave(to, from, next) {
     if (this.leaveConfirmed) {
       next();

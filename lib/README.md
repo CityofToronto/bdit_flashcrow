@@ -20,5 +20,4 @@ The `lib` folder contains the MOVE Web Application Backend, which is a [Hapi](ht
 - `lib/model`: `Joi` schemas for different types of objects in our system;
 - `lib/reports`: MOVE Reporter libraries;
 - `lib/test`: testing-related utilities, mostly to setup and teardown database / API tests;
-- `lib/time`: time-related utilities, mostly for human-readable formatting of dates and times;
-- `lib/validation`: [Vuelidate](https://vuelidate.netlify.com/) schemas for use in frontend components.
+- `lib/time`: time-related utilities, mostly for human-readable formatting of dates and times.
