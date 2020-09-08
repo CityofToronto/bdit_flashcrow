@@ -86,12 +86,18 @@ function makeStudyRequest(now, location) {
 }
 
 function makeStudyRequestBulk(now, locations) {
+  const dueDate = now.plus({ months: 3 });
   const studyRequests = locations.map(
     location => makeStudyRequest(now, location),
   );
   return {
+    ccEmails: [],
+    dueDate,
     name: null,
+    reason: null,
     studyRequests,
+    urgent: false,
+    urgentReason: null,
   };
 }
 

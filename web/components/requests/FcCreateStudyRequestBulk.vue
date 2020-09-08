@@ -53,7 +53,12 @@
         v-model="internalValue" />
       <FcStudyRequestBulkConfirm
         v-else-if="step === 4"
-        v-model="internalValue" />
+        :indices-intersections-selected="indicesIntersectionsSelected"
+        :indices-midblocks-selected="indicesMidblocksSelected"
+        :locations="locations"
+        :locations-selection="locationsSelection"
+        :study-requests="studyRequests"
+        @remove-study="actionRemoveStudy" />
       <div v-else class="flex-grow-1 flex-shrink-1 text-center">
         <h2 class="fc-study-request-bulk-submitted display-3">
           New Count Request Submitted
@@ -213,6 +218,17 @@ export default {
     },
   },
   methods: {
+    actionRemoveStudy(i) {
+      let j = this.indicesIntersectionsSelected.indexOf(i);
+      if (j !== -1) {
+        this.indicesIntersectionsSelected.splice(j, 1);
+      } else {
+        j = this.indicesMidblocksSelected.indexOf(i);
+        if (j !== -1) {
+          this.indicesMidblocksSelected.splice(j, 1);
+        }
+      }
+    },
     actionSubmit() {
       // TODO: actually save
       this.step = null;

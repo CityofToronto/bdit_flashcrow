@@ -19,7 +19,7 @@
       <v-row>
         <v-col cols="8">
           <v-select
-            v-model="reason"
+            v-model="internalValue.reason"
             hide-details
             :items="itemsReasons"
             label="Reason"
@@ -31,7 +31,7 @@
     <div class="mt-4">
       <h3 class="headline">Escalate Priority</h3>
       <v-checkbox
-        v-model="urgent"
+        v-model="internalValue.urgent"
         class="mt-1"
         label="Urgent"
         :messages="[OPTIONAL.text]" />
@@ -39,7 +39,7 @@
         <v-row>
           <v-col cols="8">
             <FcDatePicker
-              v-model="dueDate"
+              v-model="internalValue.dueDate"
               class="mt-3"
               label="Due Date"
               :max="maxDueDate"
@@ -55,7 +55,7 @@
       <v-row>
         <v-col cols="8">
           <FcInputTextArray
-            v-model="ccEmails"
+            v-model="internalValue.ccEmails"
             label="Staff Email" />
         </v-col>
       </v-row>
@@ -63,7 +63,7 @@
 
     <div>
       <v-textarea
-        v-model="urgentReason"
+        v-model="internalValue.urgentReason"
         label="Additional Information"
         :messages="messagesUrgentReason"
         no-resize
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyRequestReason } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
@@ -91,11 +93,6 @@ export default {
   data() {
     return {
       OPTIONAL,
-      ccEmails: [],
-      dueDate: null,
-      reason: null,
-      urgent: false,
-      urgentReason: null,
     };
   },
   computed: {
@@ -106,20 +103,63 @@ export default {
       });
       return ArrayUtils.sortBy(itemsReasons, ({ text }) => text);
     },
+    maxDueDate() {
+      const { now, urgent } = this;
+      if (urgent) {
+        return now.plus({ months: 2 });
+      }
+      return null;
+    },
     messagesUrgentReason() {
       if (this.urgent) {
         return [];
       }
       return [OPTIONAL.text];
     },
+    minDueDate() {
+      const { now, urgent } = this;
+      if (urgent) {
+        return now.plus({ weeks: 1 });
+      }
+      return now.plus({ months: 2 });
+    },
+    ...mapState(['now']),
   },
   watch: {
-    reason() {
-      const reasons = this.reason === null ? [] : [this.reason];
-      const { studyRequests } = this.internalValue;
+    'internalValue.ccEmails': function watchCcEamails() {
+      const { ccEmails, studyRequests } = this.internalValue;
       const n = studyRequests.length;
       for (let i = 0; i < n; i++) {
-        studyRequests[i] = reasons;
+        studyRequests[i].ccEmails = ccEmails;
+      }
+    },
+    'internalValue.dueDate': function watchDueDate() {
+      const { dueDate, studyRequests } = this.internalValue;
+      const n = studyRequests.length;
+      for (let i = 0; i < n; i++) {
+        studyRequests[i].dueDate = dueDate;
+      }
+    },
+    'internalValue.reason': function watchReason() {
+      const { reason, studyRequests } = this.internalValue;
+      const reasons = reason === null ? [] : [reason];
+      const n = studyRequests.length;
+      for (let i = 0; i < n; i++) {
+        studyRequests[i].reasons = reasons;
+      }
+    },
+    'internalValue.urgent': function watchUrgent() {
+      const { urgent, studyRequests } = this.internalValue;
+      const n = studyRequests.length;
+      for (let i = 0; i < n; i++) {
+        studyRequests[i].urgent = urgent;
+      }
+    },
+    'internalValue.urgentReason': function watchUrgentReason() {
+      const { urgentReason, studyRequests } = this.internalValue;
+      const n = studyRequests.length;
+      for (let i = 0; i < n; i++) {
+        studyRequests[i].urgentReason = urgentReason;
       }
     },
   },

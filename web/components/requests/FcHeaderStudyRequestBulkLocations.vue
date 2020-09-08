@@ -1,6 +1,6 @@
 <template>
   <div class="mx-5">
-    <h3 class="headline">{{title}}</h3>
+    <h3 class="headline">{{title}} &#x2022; {{subtitle}}</h3>
     <div class="align-center d-flex">
       <v-checkbox
         v-model="selectAll"
@@ -26,7 +26,7 @@
             v-for="({ text, value }, i) in itemsStudyType"
             :key="i"
             @click="actionSetStudyType(value)">
-            <v-list-title>{{text}}</v-list-title>
+            <v-list-item-title>{{text}}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -48,7 +48,7 @@
             v-for="({ text, value }, i) in itemsHours"
             :key="i"
             @click="actionSetHours(value)">
-            <v-list-title>{{text}}</v-list-title>
+            <v-list-item-title>{{text}}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -105,6 +105,11 @@ export default {
           this.internalValue = [];
         }
       },
+    },
+    subtitle() {
+      const k = this.internalValue.length;
+      const n = this.indices.length;
+      return `${k} / ${n} selected`;
     },
   },
   methods: {
