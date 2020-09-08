@@ -93,6 +93,7 @@ test('StudyRequestDAO', async () => {
   // set as urgent with second user
   persistedStudyRequest.urgent = true;
   persistedStudyRequest.urgentReason = 'because I said so';
+  persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser2);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);

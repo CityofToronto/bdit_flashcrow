@@ -14,10 +14,9 @@ test('StudyRequest', () => {
     serviceRequestId: null,
     urgent: false,
     urgentReason: null,
-    assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    reason: StudyRequestReason.TSC,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],
@@ -40,32 +39,51 @@ test('StudyRequest', () => {
   transientStudyRequest.daysOfWeek = [];
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['daysOfWeek']);
+  expect(result.error.details[0].type).toEqual('array.includesRequiredUnknowns');
 
   // days of week should be greater than 0!
   transientStudyRequest.daysOfWeek = [-1];
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['daysOfWeek', 0]);
+  expect(result.error.details[0].type).toEqual('number.min');
 
   // days of week should be less than 7!
   transientStudyRequest.daysOfWeek = [7];
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['daysOfWeek', 0]);
+  expect(result.error.details[0].type).toEqual('number.max');
 
   // urgent requests should have a reason!
   transientStudyRequest.daysOfWeek = [2, 3, 4];
   transientStudyRequest.urgent = true;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['urgentReason']);
+  expect(result.error.details[0].type).toEqual('string.base');
 
   // urgent requests should have CC emails!
   transientStudyRequest.urgentReason = 'because i said so';
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['ccEmails']);
+  expect(result.error.details[0].type).toEqual('array.min');
 
-  // emails should be @toronto.ca!
+  // CC emails should be valid email addresses!
+  transientStudyRequest.ccEmails = ['3rwufio1uy0fh'];
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['ccEmails', 0]);
+  expect(result.error.details[0].type).toEqual('string.email');
+
+  // CC emails should be @toronto.ca!
   transientStudyRequest.ccEmails = ['not.city.staff@gmail.com'];
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['ccEmails', 0]);
+  expect(result.error.details[0].type).toEqual('string.pattern.base');
 
   transientStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
   result = StudyRequest.create.validate(transientStudyRequest);
@@ -81,6 +99,8 @@ test('StudyRequest', () => {
   transientStudyRequest.notes = null;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['notes']);
+  expect(result.error.details[0].type).toEqual('string.base');
 
   transientStudyRequest.hours = StudyHours.SCHOOL;
   result = StudyRequest.create.validate(transientStudyRequest);
@@ -96,6 +116,8 @@ test('StudyRequest', () => {
   transientStudyRequest.hours = null;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['duration']);
+  expect(result.error.details[0].type).toEqual('number.base');
 
   transientStudyRequest.duration = 24;
   result = StudyRequest.create.validate(transientStudyRequest);
@@ -106,9 +128,13 @@ test('StudyRequest', () => {
   transientStudyRequest.duration = 25;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['duration']);
+  expect(result.error.details[0].type).toEqual('number.multiple');
 
   // duration should fit in selected days!
   transientStudyRequest.duration = 96;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['duration']);
+  expect(result.error.details[0].type).toEqual('any.custom');
 });
