@@ -5,43 +5,42 @@
         :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
       <div class="mt-4">
-        <FcRadioGroup
-          v-model="v.studyType.$model"
-          hide-details
-          :items="itemsStudyType">
-          <template v-slot:legend>
-            <h2 class="headline">Study Type</h2>
-          </template>
-        </FcRadioGroup>
-        <v-messages
-          class="mt-2"
-          color="error"
-          :value="errorMessagesStudyType"></v-messages>
-      </div>
-
-      <div class="mt-4">
-        <h3 class="headline">311 Information</h3>
+        <h2 class="headline">Study Type</h2>
         <v-row>
           <v-col cols="8">
-            <v-text-field
-              v-model="internalValue.serviceRequestId"
-              label="Service Number"
-              :messages="[OPTIONAL.text]"
-              outlined>
-            </v-text-field>
+            <FcSelectEnum
+              v-model="$v.internalValue.studyType.$model"
+              hide-details
+              item-text="label"
+              label="Study Type"
+              :of-type="StudyType"
+              outlined />
           </v-col>
         </v-row>
+        <v-messages
+          v-if="errorMessagesStudyType.length > 0"
+          class="mt-1"
+          color="error"
+          :value="errorMessagesStudyType" />
       </div>
 
       <div class="mt-4">
-        <h3 class="headline">Reasons</h3>
-        <FcCheckboxGroupChips
-          v-model="v.reasons.$model"
-          :items="itemsReasons"></FcCheckboxGroupChips>
+        <h2 class="headline">Reason for Request</h2>
+        <v-row>
+          <v-col cols="8">
+            <FcSelectEnum
+              v-model="$v.internalValue.reason.$model"
+              hide-details
+              label="Reason"
+              :of-type="StudyRequestReason"
+              outlined />
+          </v-col>
+        </v-row>
         <v-messages
+          v-if="errorMessagesReason.length > 0"
           class="mt-1"
           color="error"
-          :value="errorMessagesReasons"></v-messages>
+          :value="errorMessagesReason" />
       </div>
 
       <template v-if="internalValue.studyType">
@@ -52,7 +51,7 @@
         <div class="mt-4">
           <h3 class="headline">Study Days</h3>
           <FcCheckboxGroupChips
-            v-model="v.daysOfWeek.$model"
+            v-model="$v.internalValue.daysOfWeek.$model"
             :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
           <v-messages
             v-if="errorMessagesDaysOfWeek.length > 0"
@@ -67,7 +66,7 @@
 
         <div v-if="internalValue.studyType.automatic" class="mt-4">
           <FcRadioGroup
-            v-model="v.duration.$model"
+            v-model="$v.internalValue.duration.$model"
             :items="[
               { label: '1 day', sublabel: '24 hours', value: 24 },
               { label: '2 days', sublabel: '48 hours', value: 48 },
@@ -95,7 +94,7 @@
         </div>
 
         <v-textarea
-          v-model="v.notes.$model"
+          v-model="$v.internalValue.notes.$model"
           class="mt-4"
           :error-messages="errorMessagesNotes"
           label="Additional Information"
@@ -103,7 +102,7 @@
           no-resize
           outlined
           rows="4"
-          @blur="v.notes.$touch()"></v-textarea>
+          @blur="$v.internalValue.notes.$touch()"></v-textarea>
       </template>
 
       <v-divider class="my-3"></v-divider>
@@ -119,7 +118,7 @@
           <v-row>
             <v-col cols="8">
               <FcDatePicker
-                v-model="v.dueDate.$model"
+                v-model="$v.internalValue.dueDate.$model"
                 class="mt-3"
                 :error-messages="errorMessagesDueDate"
                 label="Due Date"
@@ -137,7 +136,7 @@
         <v-row>
           <v-col cols="8">
             <FcInputTextArray
-              v-model="v.ccEmails.$model"
+              v-model="$v.internalValue.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
               label="Staff Email"
               :messages="messagesCcEmails"
@@ -148,7 +147,7 @@
 
       <div class="mt-4">
         <v-textarea
-          v-model="v.urgentReason.$model"
+          v-model="$v.internalValue.urgentReason.$model"
           class="mt-3"
           :error-messages="errorMessagesUrgentReason"
           label="Additional Information"
@@ -157,7 +156,7 @@
           outlined
           rows="4"
           :success="internalValue.urgent && !v.urgentReason.$invalid"
-          @blur="v.urgentReason.$touch()"></v-textarea>
+          @blur="$v.internalValue.urgentReason.$touch()"></v-textarea>
       </div>
     </section>
 
@@ -173,7 +172,7 @@
           Cancel
         </FcButton>
         <FcButton
-          :disabled="v.$invalid"
+          :disabled="$v.internalValue.$invalid"
           type="primary"
           @click="actionSubmit">
           <span v-if="isCreate">Submit</span>
@@ -199,17 +198,19 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
-  REQUEST_STUDY_REQUIRES_REASONS,
+  REQUEST_STUDY_REQUIRES_REASON,
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
+import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -221,6 +222,7 @@ export default {
     FcDatePicker,
     FcInputTextArray,
     FcRadioGroup,
+    FcSelectEnum,
   },
   props: {
     isCreate: Boolean,
@@ -237,22 +239,24 @@ export default {
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
       REQUEST_STUDY_TIME_TO_FULFILL,
+      StudyRequestReason,
+      StudyType,
     };
   },
   computed: {
     errorMessagesCcEmails() {
       const errors = [];
-      if (!this.v.ccEmails.requiredIfUrgent) {
+      if (!this.$v.internalValue.ccEmails.requiredIfUrgent) {
         errors.push('Please provide an additional point of contact for this urgent request.');
       }
       this.internalValue.ccEmails.forEach((_, i) => {
-        if (!this.v.ccEmails.$each[i].$dirty) {
+        if (!this.$v.internalValue.ccEmails.$each[i].$dirty) {
           return;
         }
-        if (!this.v.ccEmails.$each[i].required) {
+        if (!this.$v.internalValue.ccEmails.$each[i].required) {
           errors.push('Please enter a value.');
         }
-        if (!this.v.ccEmails.$each[i].torontoInternal) {
+        if (!this.$v.internalValue.ccEmails.$each[i].torontoInternal) {
           errors.push('Please enter a valid @toronto.ca email address.');
         }
       });
@@ -260,14 +264,14 @@ export default {
     },
     errorMessagesDaysOfWeek() {
       const errors = [];
-      if (!this.v.daysOfWeek.$dirty && !this.v.duration.$dirty) {
+      if (!this.$v.internalValue.daysOfWeek.$dirty && !this.$v.internalValue.duration.$dirty) {
         return errors;
       }
-      if (!this.v.daysOfWeek.required) {
+      if (!this.$v.internalValue.daysOfWeek.required) {
         errors.push(REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK.text);
       }
       const { duration } = this.internalValue;
-      if (!this.v.duration.needsValidDaysOfWeek) {
+      if (!this.$v.internalValue.duration.needsValidDaysOfWeek) {
         const n = duration / 24;
         const msg = `Please select ${n} consecutive days or reduce study duration.`;
         errors.push(msg);
@@ -276,48 +280,48 @@ export default {
     },
     errorMessagesDueDate() {
       const errors = [];
-      if (!this.v.dueDate.required) {
+      if (!this.$v.internalValue.dueDate.required) {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text);
       }
       return errors;
     },
     errorMessagesNotes() {
       const errors = [];
-      if (!this.v.notes.$dirty) {
+      if (!this.$v.internalValue.notes.$dirty) {
         return errors;
       }
-      if (!this.v.notes.requiredIfOtherHours) {
+      if (!this.$v.internalValue.notes.requiredIfOtherHours) {
         errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
       }
       return errors;
     },
-    errorMessagesReasons() {
+    errorMessagesReason() {
       const errors = [];
-      if (!this.v.reasons.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_REASONS.text);
+      if (!this.$v.internalValue.reason.required) {
+        errors.push(REQUEST_STUDY_REQUIRES_REASON.text);
       }
       return errors;
     },
     errorMessagesStudyType() {
       const errors = [];
-      if (!this.v.studyType.required) {
+      if (!this.$v.internalValue.studyType.required) {
         errors.push(REQUEST_STUDY_REQUIRES_STUDY_TYPE.text);
       }
       return errors;
     },
     errorMessagesUrgentReason() {
       const errors = [];
-      if (!this.v.urgentReason.requiredIfUrgent) {
+      if (!this.$v.internalValue.urgentReason.requiredIfUrgent) {
         errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
       }
       return errors;
     },
     estimatedDeliveryDate() {
-      const { now, studyRequest } = this;
-      if (studyRequest === null) {
+      const { internalValue, now } = this;
+      if (internalValue === null) {
         return null;
       }
-      const { dueDate, urgent } = studyRequest;
+      const { dueDate, urgent } = internalValue;
       if (dueDate === null) {
         return null;
       }
@@ -337,13 +341,6 @@ export default {
         const { hint, description: label } = value;
         return { hint, label, value };
       });
-    },
-    itemsReasons() {
-      const itemsReasons = StudyRequestReason.enumValues.map((value) => {
-        const { text } = value;
-        return { text, value };
-      });
-      return ArrayUtils.sortBy(itemsReasons, ({ text }) => text);
     },
     itemsStudyType() {
       const itemsStudyType = StudyType.enumValues.map((studyType) => {
@@ -400,9 +397,12 @@ export default {
     },
     ...mapState(['now']),
   },
+  validations: {
+    internalValue: ValidationsStudyRequest,
+  },
   watch: {
     estimatedDeliveryDate() {
-      this.studyRequest.estimatedDeliveryDate = this.estimatedDeliveryDate;
+      this.internalValue.estimatedDeliveryDate = this.estimatedDeliveryDate;
     },
     'internalValue.studyType.automatic': function watchStudyTypeAutomatic() {
       if (this.internalValue.studyType.automatic) {
@@ -460,7 +460,7 @@ export default {
   },
   methods: {
     actionSubmit() {
-      this.saveStudyRequest(this.studyRequest);
+      this.saveStudyRequest(this.internalValue);
       this.$emit('action-navigate-back', true);
     },
     ...mapActions(['saveStudyRequest']),

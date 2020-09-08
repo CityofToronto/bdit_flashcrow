@@ -1,5 +1,6 @@
 import { format } from 'd3-format';
 import Vue from 'vue';
+import Vuelidate from 'vuelidate';
 import Vuetify from 'vuetify/lib/framework';
 import en from 'vuetify/es5/locale/en';
 
@@ -10,6 +11,7 @@ import analyticsClient from '@/web/analytics/analyticsClient';
 import router from '@/web/router';
 import store from '@/web/store';
 
+Vue.use(Vuelidate);
 Vue.use(Vuetify);
 
 Vue.filter('durationHuman', formatDuration);

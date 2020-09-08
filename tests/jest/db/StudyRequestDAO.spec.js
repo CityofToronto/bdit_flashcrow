@@ -27,7 +27,7 @@ test('StudyRequestDAO', async () => {
     assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    reason: StudyRequestReason.TSC,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],
@@ -78,7 +78,7 @@ test('StudyRequestDAO', async () => {
   expect(all).toContainEqual(persistedStudyRequest);
 
   // update study request fields
-  persistedStudyRequest.reasons = ['TSC'];
+  persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
   persistedStudyRequest.serviceRequestId = '12345';
 
   // update existing study fields
