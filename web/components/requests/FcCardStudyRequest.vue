@@ -44,15 +44,16 @@
         </v-row>
         <v-row>
           <v-col class="py-2" cols="6">
-            <FcSelectEnum
-              v-model="studyRequest.hours"
+            <FcStudyRequestDuration
+              v-if="studyRequest.studyType.automatic"
               dense
               :disabled="!selected"
-              hide-details
-              item-text="description"
-              label="Hours"
-              :of-type="StudyHours"
-              outlined />
+              :v="v" />
+            <FcStudyRequestHours
+              v-else
+              dense
+              :disabled="!selected"
+              :v="v" />
           </v-col>
         </v-row>
         <v-row>
@@ -87,12 +88,16 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
+import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 
 export default {
   name: 'FcCardStudyRequest',
   components: {
     FcIconLocationMulti,
     FcSelectEnum,
+    FcStudyRequestDuration,
+    FcStudyRequestHours,
     FcTextMostRecent,
   },
   props: {
@@ -150,6 +155,23 @@ export default {
     },
     itemsDaysOfWeek() {
       return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
+    },
+    itemsDuration() {
+      return [
+        { text: '1 day', value: 24 },
+        { text: '2 days', value: 48 },
+        { text: '3 days', value: 72 },
+        { text: '4 days', value: 96 },
+        { text: '5 days', value: 120 },
+        { text: '1 week', value: 168 },
+      ];
+    },
+    messagesDuration() {
+      const { duration } = this.studyRequest;
+      if (duration === null) {
+        return [];
+      }
+      return [`${duration} hours`];
     },
     messagesNotes() {
       const { hours } = this.studyRequest;

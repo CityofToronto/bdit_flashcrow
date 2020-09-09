@@ -52,7 +52,8 @@
         :v="$v.studyRequests" />
       <FcStudyRequestBulkDetails
         v-else-if="step === 3"
-        v-model="internalValue" />
+        v-model="internalValue"
+        :v="$v.internalValue" />
       <FcStudyRequestBulkConfirm
         v-else-if="step === 4"
         :indices-intersections-selected="indicesIntersectionsSelected"
@@ -150,10 +151,11 @@ import FcStudyRequestBulkLocations
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 function cardStudyRequestInvalid(v) {
-  return v.studyType.$invalid
-    || v.daysOfWeek.$invalid
+  return v.daysOfWeek.$invalid
     || v.duration.$invalid
-    || v.notes.$invalid;
+    || v.hours.$invalid
+    || v.notes.$invalid
+    || v.studyType.$invalid;
 }
 
 export default {

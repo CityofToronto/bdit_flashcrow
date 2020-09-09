@@ -91,6 +91,9 @@ export default {
     FcInputTextArray,
     FcSelectEnum,
   },
+  props: {
+    v: Object,
+  },
   data() {
     return {
       OPTIONAL,

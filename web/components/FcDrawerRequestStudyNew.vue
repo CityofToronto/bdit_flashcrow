@@ -40,8 +40,11 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 import {
+  CentrelineType,
   LocationMode,
   LocationSelectionType,
+  StudyHours,
+  StudyType,
 } from '@/lib/Constants';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirmRequestStudyLeave
@@ -63,6 +66,15 @@ function makeStudyRequest(now, location) {
     type: 'Point',
     coordinates: [lng, lat],
   };
+  let duration = null;
+  let hours = null;
+  let studyType = null;
+  if (centrelineType === CentrelineType.INTERSECTION) {
+    hours = StudyHours.ROUTINE;
+    studyType = StudyType.TMC;
+  } else {
+    duration = 72;
+  }
   return {
     serviceRequestId: null,
     urgent: false,
@@ -72,10 +84,10 @@ function makeStudyRequest(now, location) {
     reason: null,
     reasonOther: null,
     ccEmails: [],
-    studyType: null,
+    studyType,
     daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: null,
+    duration,
+    hours,
     notes: '',
     centrelineId,
     centrelineType,

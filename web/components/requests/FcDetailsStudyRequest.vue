@@ -74,33 +74,23 @@
               :value="messagesDaysOfWeek"></v-messages>
           </div>
 
-          <div v-if="internalValue.studyType.automatic" class="mt-4">
-            <FcRadioGroup
-              v-model="$v.internalValue.duration.$model"
-              :items="[
-                { label: '1 day', sublabel: '24 hours', value: 24 },
-                { label: '2 days', sublabel: '48 hours', value: 48 },
-                { label: '3 days', sublabel: '72 hours', value: 72 },
-                { label: '4 days', sublabel: '96 hours', value: 96 },
-                { label: '5 days', sublabel: '120 hours', value: 120 },
-                { label: '1 week', sublabel: '168 hours', value: 168 },
-              ]">
-              <template v-slot:legend>
-                <h3 class="headline">Study Duration</h3>
-              </template>
-            </FcRadioGroup>
-          </div>
-          <div
-            v-else
-            class="mt-4">
-            <FcRadioGroup
-              v-model="internalValue.hours"
-              hide-details
-              :items="itemsHours">
-              <template v-slot:legend>
-                <h3 class="headline">Study Hours</h3>
-              </template>
-            </FcRadioGroup>
+          <div class="mt-4">
+            <template v-if="internalValue.studyType.automatic">
+              <h3 class="headline">Study Duration</h3>
+              <v-row>
+                <v-col cols="8">
+                  <FcStudyRequestDuration :v="$v.internalValue" />
+                </v-col>
+              </v-row>
+            </template>
+            <template v-else>
+              <h3 class="headline">Study Hours</h3>
+              <v-row>
+                <v-col cols="8">
+                  <FcStudyRequestHours :v="$v.internalValue" />
+                </v-col>
+              </v-row>
+            </template>
           </div>
 
           <v-textarea
@@ -224,8 +214,9 @@ import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
-import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
+import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
+import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -236,8 +227,9 @@ export default {
     FcCheckboxGroupChips,
     FcDatePicker,
     FcInputTextArray,
-    FcRadioGroup,
     FcSelectEnum,
+    FcStudyRequestDuration,
+    FcStudyRequestHours,
   },
   props: {
     isCreate: Boolean,
