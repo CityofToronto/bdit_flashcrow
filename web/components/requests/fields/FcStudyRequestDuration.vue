@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import { numConsecutiveDaysOfWeek } from '@/lib/time/TimeUtils';
+
 export default {
   name: 'FcStudyRequestDuration',
   props: {
@@ -34,6 +36,12 @@ export default {
       }
       return [`${duration} hours`];
     },
+  },
+  created() {
+    const daysOfWeek = this.v.daysOfWeek.$model;
+    const n = numConsecutiveDaysOfWeek(daysOfWeek);
+    this.v.duration.$model = n * 24;
+    this.v.hours.$model = null;
   },
 };
 </script>

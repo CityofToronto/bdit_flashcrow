@@ -33,8 +33,8 @@ export default {
       if (!this.v.daysOfWeek.required) {
         errors.push(REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK.text);
       }
-      const { duration } = this.internalValue;
       if (!this.v.duration.needsValidDaysOfWeek) {
+        const duration = this.v.duration.$model;
         const n = duration / 24;
         const msg = `Please select ${n} consecutive days or reduce study duration.`;
         errors.push(msg);

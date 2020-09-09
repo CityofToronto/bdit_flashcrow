@@ -170,7 +170,6 @@
 import { mapActions, mapState } from 'vuex';
 
 import {
-  StudyHours,
   StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
@@ -178,13 +177,11 @@ import {
   OPTIONAL,
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
-  REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
   REQUEST_STUDY_REQUIRES_REASON,
   REQUEST_STUDY_REQUIRES_REASON_OTHER,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
-import TimeFormatters from '@/lib/time/TimeFormatters';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
@@ -250,22 +247,6 @@ export default {
       });
       return errors;
     },
-    errorMessagesDaysOfWeek() {
-      const errors = [];
-      if (!this.$v.internalValue.daysOfWeek.$dirty && !this.$v.internalValue.duration.$dirty) {
-        return errors;
-      }
-      if (!this.$v.internalValue.daysOfWeek.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK.text);
-      }
-      const { duration } = this.internalValue;
-      if (!this.$v.internalValue.duration.needsValidDaysOfWeek) {
-        const n = duration / 24;
-        const msg = `Please select ${n} consecutive days or reduce study duration.`;
-        errors.push(msg);
-      }
-      return errors;
-    },
     errorMessagesDueDate() {
       const errors = [];
       if (!this.$v.internalValue.dueDate.required) {
@@ -310,9 +291,6 @@ export default {
         dueDate.minus({ weeks: 1 }),
         now.plus({ months: 2 }),
       );
-    },
-    itemsDaysOfWeek() {
-      return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
     },
     maxDueDate() {
       const { now, internalValue: { urgent } } = this;
@@ -368,15 +346,6 @@ export default {
       } else {
         this.reasonOther = this.internalValue.reasonOther;
         this.internalValue.reasonOther = null;
-      }
-    },
-    'internalValue.studyType.automatic': function watchStudyTypeAutomatic() {
-      if (this.internalValue.studyType.automatic) {
-        this.internalValue.duration = 24;
-        this.internalValue.hours = null;
-      } else {
-        this.internalValue.duration = null;
-        this.internalValue.hours = StudyHours.ROUTINE;
       }
     },
     'internalValue.urgent': function watchUrgent(urgent, urgentPrev) {

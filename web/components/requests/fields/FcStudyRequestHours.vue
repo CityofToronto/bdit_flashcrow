@@ -34,5 +34,9 @@ export default {
       return hours.hint;
     },
   },
+  created() {
+    this.v.duration.$model = null;
+    this.v.hours.$model = StudyHours.ROUTINE;
+  },
 };
 </script>

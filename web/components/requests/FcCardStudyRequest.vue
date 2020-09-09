@@ -30,7 +30,7 @@
               :v="v" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="studyRequest.studyType !== null">
           <v-col class="py-2" cols="6">
             <FcStudyRequestDuration
               v-if="studyRequest.studyType.automatic"
