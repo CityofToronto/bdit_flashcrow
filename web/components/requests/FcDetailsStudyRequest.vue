@@ -9,14 +9,7 @@
           <h2 class="headline">Study Type</h2>
           <v-row>
             <v-col cols="8">
-              <FcSelectEnum
-                v-model="$v.internalValue.studyType.$model"
-                :error-messages="errorMessagesStudyType"
-                hide-details="auto"
-                item-text="label"
-                label="Study Type"
-                :of-type="StudyType"
-                outlined />
+              <FcStudyRequestStudyType :v="$v.internalValue" />
             </v-col>
           </v-row>
         </div>
@@ -60,18 +53,11 @@
 
           <div class="mt-4">
             <h3 class="headline">Study Days</h3>
-            <FcCheckboxGroupChips
-              v-model="$v.internalValue.daysOfWeek.$model"
-              :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
-            <v-messages
-              v-if="errorMessagesDaysOfWeek.length > 0"
-              class="mt-1"
-              color="error"
-              :value="errorMessagesDaysOfWeek"></v-messages>
-            <v-messages
-              v-else
-              class="mt-1"
-              :value="messagesDaysOfWeek"></v-messages>
+            <v-row>
+              <v-col cols="8">
+                <FcStudyRequestDaysOfWeek :v="$v.internalValue" />
+              </v-col>
+            </v-row>
           </div>
 
           <div class="mt-4">
@@ -93,16 +79,9 @@
             </template>
           </div>
 
-          <v-textarea
-            v-model="$v.internalValue.notes.$model"
+          <FcStudyRequestNotes
             class="mt-4"
-            :error-messages="errorMessagesNotes"
-            label="Additional Information"
-            :messages="messagesNotes"
-            no-resize
-            outlined
-            rows="4"
-            @blur="$v.internalValue.notes.$touch()"></v-textarea>
+            :v="$v.internalValue" />
         </section>
       </template>
 
@@ -190,7 +169,6 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
 import {
   StudyHours,
   StudyRequestReason,
@@ -198,25 +176,26 @@ import {
 } from '@/lib/Constants';
 import {
   OPTIONAL,
-  REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES,
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
   REQUEST_STUDY_REQUIRES_REASON,
   REQUEST_STUDY_REQUIRES_REASON_OTHER,
-  REQUEST_STUDY_REQUIRES_STUDY_TYPE,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcCheckboxGroupChips from '@/web/components/inputs/FcCheckboxGroupChips.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
+import FcStudyRequestDaysOfWeek
+  from '@/web/components/requests/fields/FcStudyRequestDaysOfWeek.vue';
 import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
+import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
+import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -224,12 +203,14 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
-    FcCheckboxGroupChips,
     FcDatePicker,
     FcInputTextArray,
     FcSelectEnum,
+    FcStudyRequestDaysOfWeek,
     FcStudyRequestDuration,
     FcStudyRequestHours,
+    FcStudyRequestNotes,
+    FcStudyRequestStudyType,
   },
   props: {
     isCreate: Boolean,
@@ -292,13 +273,6 @@ export default {
       }
       return errors;
     },
-    errorMessagesNotes() {
-      const errors = [];
-      if (!this.$v.internalValue.notes.requiredIfOtherHours) {
-        errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
-      }
-      return errors;
-    },
     errorMessagesReason() {
       const errors = [];
       if (!this.$v.internalValue.reason.required) {
@@ -310,13 +284,6 @@ export default {
       const errors = [];
       if (!this.$v.internalValue.reasonOther.requiredIfOtherReason) {
         errors.push(REQUEST_STUDY_REQUIRES_REASON_OTHER.text);
-      }
-      return errors;
-    },
-    errorMessagesStudyType() {
-      const errors = [];
-      if (!this.$v.internalValue.studyType.required) {
-        errors.push(REQUEST_STUDY_REQUIRES_STUDY_TYPE.text);
       }
       return errors;
     },
@@ -347,19 +314,6 @@ export default {
     itemsDaysOfWeek() {
       return TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
     },
-    itemsHours() {
-      return StudyHours.enumValues.map((value) => {
-        const { hint, description: label } = value;
-        return { hint, label, value };
-      });
-    },
-    itemsStudyType() {
-      const itemsStudyType = StudyType.enumValues.map((studyType) => {
-        const { label } = studyType;
-        return { label, value: studyType };
-      });
-      return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
-    },
     maxDueDate() {
       const { now, internalValue: { urgent } } = this;
       if (urgent) {
@@ -384,13 +338,6 @@ export default {
         return [`The study will be performed across ${n} consecutive days.`];
       }
       return ['The study will be performed on one of these days.'];
-    },
-    messagesNotes() {
-      const { hours } = this.internalValue;
-      if (hours === StudyHours.OTHER) {
-        return [];
-      }
-      return [OPTIONAL.text];
     },
     messagesUrgentReason() {
       const { urgent } = this.internalValue;
