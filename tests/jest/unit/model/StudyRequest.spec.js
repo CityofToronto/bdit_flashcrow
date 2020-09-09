@@ -11,12 +11,12 @@ test('StudyRequest', () => {
   const now = DateTime.local();
 
   const transientStudyRequest = {
-    serviceRequestId: null,
     urgent: false,
     urgentReason: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
     reason: StudyRequestReason.TSC,
+    reasonOther: null,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],
@@ -56,7 +56,7 @@ test('StudyRequest', () => {
   expect(result.error.details[0].path).toEqual(['daysOfWeek', 0]);
   expect(result.error.details[0].type).toEqual('number.max');
 
-  // urgent requests should have a reason!
+  // urgent requests should have an urgent reason!
   transientStudyRequest.daysOfWeek = [2, 3, 4];
   transientStudyRequest.urgent = true;
   result = StudyRequest.create.validate(transientStudyRequest);
@@ -137,4 +137,25 @@ test('StudyRequest', () => {
   expect(result.error).not.toBeUndefined();
   expect(result.error.details[0].path).toEqual(['duration']);
   expect(result.error.details[0].type).toEqual('any.custom');
+
+  // non-other reasons should not have long-form reason text!
+  transientStudyRequest.duration = 72;
+  transientStudyRequest.reasonOther = 'i should not have entered this';
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['reasonOther']);
+  expect(result.error.details[0].type).toEqual('any.only');
+
+  // other reasons should have long-form reason text!
+  transientStudyRequest.reason = StudyRequestReason.OTHER;
+  transientStudyRequest.reasonOther = null;
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['reasonOther']);
+  expect(result.error.details[0].type).toEqual('string.base');
+
+  transientStudyRequest.reasonOther = 'i should not have entered this';
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.value).toEqual(transientStudyRequest);
+  expect(result.error).toBeUndefined();
 });

@@ -21,13 +21,13 @@ test('StudyRequestDAO', async () => {
   const persistedUser = await UserDAO.create(transientUser);
   const now = DateTime.local();
   const transientStudyRequest = {
-    serviceRequestId: null,
     urgent: false,
     urgentReason: null,
     assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
     reason: StudyRequestReason.TSC,
+    reasonOther: null,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],
@@ -77,14 +77,25 @@ test('StudyRequestDAO', async () => {
   let all = await StudyRequestDAO.all();
   expect(all).toContainEqual(persistedStudyRequest);
 
-  // update study request fields
-  persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
-  persistedStudyRequest.serviceRequestId = '12345';
-
   // update existing study fields
   persistedStudyRequest.daysOfWeek = [3, 4];
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
+
+  // update request reason
+  persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
+
+  // update request reason: other
+  persistedStudyRequest.reason = StudyRequestReason.OTHER;
+  persistedStudyRequest.reasonOther = 'unicorns!';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);

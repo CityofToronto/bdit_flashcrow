@@ -3,7 +3,6 @@
     v-model="internalValue"
     append-icon="mdi-plus"
     deletable-chips
-    dense
     multiple
     outlined
     small-chips

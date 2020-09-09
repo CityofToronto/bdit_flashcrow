@@ -1,163 +1,177 @@
 <template>
-  <section class="d-flex flex-column max-height-fill">
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pa-5">
-      <v-messages
-        :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
-
-      <div class="mt-4">
-        <h2 class="headline">Study Type</h2>
-        <v-row>
-          <v-col cols="8">
-            <FcSelectEnum
-              v-model="$v.internalValue.studyType.$model"
-              hide-details
-              item-text="label"
-              label="Study Type"
-              :of-type="StudyType"
-              outlined />
-          </v-col>
-        </v-row>
+  <section class="d-flex flex-column min-height-fill max-height-fill">
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+      <section class="pa-5">
         <v-messages
-          v-if="errorMessagesStudyType.length > 0"
-          class="mt-1"
-          color="error"
-          :value="errorMessagesStudyType" />
-      </div>
-
-      <div class="mt-4">
-        <h2 class="headline">Reason for Request</h2>
-        <v-row>
-          <v-col cols="8">
-            <FcSelectEnum
-              v-model="$v.internalValue.reason.$model"
-              hide-details
-              label="Reason"
-              :of-type="StudyRequestReason"
-              outlined />
-          </v-col>
-        </v-row>
-        <v-messages
-          v-if="errorMessagesReason.length > 0"
-          class="mt-1"
-          color="error"
-          :value="errorMessagesReason" />
-      </div>
-
-      <template v-if="internalValue.studyType">
-        <v-divider class="my-3"></v-divider>
-
-        <h2 class="display-1">{{internalValue.studyType.label}}</h2>
+          :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
 
         <div class="mt-4">
-          <h3 class="headline">Study Days</h3>
-          <FcCheckboxGroupChips
-            v-model="$v.internalValue.daysOfWeek.$model"
-            :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
-          <v-messages
-            v-if="errorMessagesDaysOfWeek.length > 0"
-            class="mt-1"
-            color="error"
-            :value="errorMessagesDaysOfWeek"></v-messages>
-          <v-messages
-            v-else
-            class="mt-1"
-            :value="messagesDaysOfWeek"></v-messages>
-        </div>
-
-        <div v-if="internalValue.studyType.automatic" class="mt-4">
-          <FcRadioGroup
-            v-model="$v.internalValue.duration.$model"
-            :items="[
-              { label: '1 day', sublabel: '24 hours', value: 24 },
-              { label: '2 days', sublabel: '48 hours', value: 48 },
-              { label: '3 days', sublabel: '72 hours', value: 72 },
-              { label: '4 days', sublabel: '96 hours', value: 96 },
-              { label: '5 days', sublabel: '120 hours', value: 120 },
-              { label: '1 week', sublabel: '168 hours', value: 168 },
-            ]">
-            <template v-slot:legend>
-              <h3 class="headline">Study Duration</h3>
-            </template>
-          </FcRadioGroup>
-        </div>
-        <div
-          v-else
-          class="mt-4">
-          <FcRadioGroup
-            v-model="internalValue.hours"
-            hide-details
-            :items="itemsHours">
-            <template v-slot:legend>
-              <h3 class="headline">Study Hours</h3>
-            </template>
-          </FcRadioGroup>
-        </div>
-
-        <v-textarea
-          v-model="$v.internalValue.notes.$model"
-          class="mt-4"
-          :error-messages="errorMessagesNotes"
-          label="Additional Information"
-          :messages="messagesNotes"
-          no-resize
-          outlined
-          rows="4"
-          @blur="$v.internalValue.notes.$touch()"></v-textarea>
-      </template>
-
-      <v-divider class="my-3"></v-divider>
-
-      <div class="mt-4">
-        <h3 class="headline">Escalate Priority</h3>
-        <v-checkbox
-          v-model="internalValue.urgent"
-          class="mt-1"
-          label="Urgent"
-          :messages="[OPTIONAL.text]" />
-        <template v-if="internalValue.urgent">
+          <h2 class="headline">Study Type</h2>
           <v-row>
             <v-col cols="8">
-              <FcDatePicker
-                v-model="$v.internalValue.dueDate.$model"
-                class="mt-3"
-                :error-messages="errorMessagesDueDate"
-                label="Due Date"
-                :max="maxDueDate"
-                :min="minDueDate"
-                :success="!v.dueDate.$invalid">
-              </FcDatePicker>
+              <FcSelectEnum
+                v-model="$v.internalValue.studyType.$model"
+                :error-messages="errorMessagesStudyType"
+                hide-details="auto"
+                item-text="label"
+                label="Study Type"
+                :of-type="StudyType"
+                outlined />
             </v-col>
           </v-row>
-        </template>
-      </div>
+        </div>
 
-      <div class="mt-4">
-        <h3 class="headline">Inform Other Staff</h3>
-        <v-row>
-          <v-col cols="8">
-            <FcInputTextArray
-              v-model="$v.internalValue.ccEmails.$model"
-              :error-messages="errorMessagesCcEmails"
-              label="Staff Email"
-              :messages="messagesCcEmails"
-              :success="internalValue.urgent && !v.ccEmails.$invalid" />
-          </v-col>
-        </v-row>
-      </div>
+        <div class="mt-4">
+          <h2 class="headline">Reason for Request</h2>
+          <v-row>
+            <v-col cols="8">
+              <FcSelectEnum
+                v-model="$v.internalValue.reason.$model"
+                :error-messages="errorMessagesReason"
+                hide-details="auto"
+                label="Reason"
+                :of-type="StudyRequestReason"
+                outlined />
+            </v-col>
+          </v-row>
+        </div>
 
-      <div class="mt-4">
-        <v-textarea
-          v-model="$v.internalValue.urgentReason.$model"
-          class="mt-3"
-          :error-messages="errorMessagesUrgentReason"
-          label="Additional Information"
-          :messages="messagesUrgentReason"
-          no-resize
-          outlined
-          rows="4"
-          :success="internalValue.urgent && !v.urgentReason.$invalid"
-          @blur="$v.internalValue.urgentReason.$touch()"></v-textarea>
-      </div>
+        <div
+          v-if="internalValue.reason === StudyRequestReason.OTHER"
+          class="mt-4">
+          <v-row>
+            <v-col cols="8">
+              <v-text-field
+                v-model="$v.internalValue.reasonOther.$model"
+                :error-messages="errorMessagesReasonOther"
+                hide-details="auto"
+                label="Other Reason"
+                outlined
+                :success="internalValue.reasonOther && !$v.internalValue.reasonOther.$invalid" />
+            </v-col>
+          </v-row>
+        </div>
+      </section>
+      <template v-if="internalValue.studyType">
+        <v-divider></v-divider>
+
+        <section class="pa-5 shading">
+          <h2 class="display-1">{{internalValue.studyType.label}}</h2>
+
+          <div class="mt-4">
+            <h3 class="headline">Study Days</h3>
+            <FcCheckboxGroupChips
+              v-model="$v.internalValue.daysOfWeek.$model"
+              :items="itemsDaysOfWeek"></FcCheckboxGroupChips>
+            <v-messages
+              v-if="errorMessagesDaysOfWeek.length > 0"
+              class="mt-1"
+              color="error"
+              :value="errorMessagesDaysOfWeek"></v-messages>
+            <v-messages
+              v-else
+              class="mt-1"
+              :value="messagesDaysOfWeek"></v-messages>
+          </div>
+
+          <div v-if="internalValue.studyType.automatic" class="mt-4">
+            <FcRadioGroup
+              v-model="$v.internalValue.duration.$model"
+              :items="[
+                { label: '1 day', sublabel: '24 hours', value: 24 },
+                { label: '2 days', sublabel: '48 hours', value: 48 },
+                { label: '3 days', sublabel: '72 hours', value: 72 },
+                { label: '4 days', sublabel: '96 hours', value: 96 },
+                { label: '5 days', sublabel: '120 hours', value: 120 },
+                { label: '1 week', sublabel: '168 hours', value: 168 },
+              ]">
+              <template v-slot:legend>
+                <h3 class="headline">Study Duration</h3>
+              </template>
+            </FcRadioGroup>
+          </div>
+          <div
+            v-else
+            class="mt-4">
+            <FcRadioGroup
+              v-model="internalValue.hours"
+              hide-details
+              :items="itemsHours">
+              <template v-slot:legend>
+                <h3 class="headline">Study Hours</h3>
+              </template>
+            </FcRadioGroup>
+          </div>
+
+          <v-textarea
+            v-model="$v.internalValue.notes.$model"
+            class="mt-4"
+            :error-messages="errorMessagesNotes"
+            label="Additional Information"
+            :messages="messagesNotes"
+            no-resize
+            outlined
+            rows="4"
+            @blur="$v.internalValue.notes.$touch()"></v-textarea>
+        </section>
+      </template>
+
+      <v-divider></v-divider>
+
+      <section class="pa-5">
+        <div class="mt-4">
+          <h3 class="headline">Escalate Priority</h3>
+          <v-checkbox
+            v-model="internalValue.urgent"
+            class="mt-1"
+            label="Urgent"
+            :messages="[OPTIONAL.text]" />
+          <template v-if="internalValue.urgent">
+            <v-row>
+              <v-col cols="8">
+                <FcDatePicker
+                  v-model="$v.internalValue.dueDate.$model"
+                  class="mt-3"
+                  :error-messages="errorMessagesDueDate"
+                  hide-details="auto"
+                  label="Due Date"
+                  :max="maxDueDate"
+                  :min="minDueDate"
+                  :success="!$v.internalValue.dueDate.$invalid">
+                </FcDatePicker>
+              </v-col>
+            </v-row>
+          </template>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="headline">Inform Other Staff</h3>
+          <v-row>
+            <v-col cols="8">
+              <FcInputTextArray
+                v-model="$v.internalValue.ccEmails.$model"
+                :error-messages="errorMessagesCcEmails"
+                label="Staff Email"
+                :messages="messagesCcEmails"
+                :success="internalValue.urgent && !$v.internalValue.ccEmails.$invalid" />
+            </v-col>
+          </v-row>
+        </div>
+
+        <div class="mt-4">
+          <v-textarea
+            v-model="$v.internalValue.urgentReason.$model"
+            class="mt-3"
+            :error-messages="errorMessagesUrgentReason"
+            label="Additional Information"
+            :messages="messagesUrgentReason"
+            no-resize
+            outlined
+            rows="4"
+            :success="internalValue.urgent && !$v.internalValue.urgentReason.$invalid"
+            @blur="$v.internalValue.urgentReason.$touch()"></v-textarea>
+        </div>
+      </section>
     </section>
 
     <v-divider></v-divider>
@@ -199,6 +213,7 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
   REQUEST_STUDY_REQUIRES_REASON,
+  REQUEST_STUDY_REQUIRES_REASON_OTHER,
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
@@ -227,7 +242,6 @@ export default {
   props: {
     isCreate: Boolean,
     location: Object,
-    v: Object,
   },
   data() {
     return {
@@ -236,6 +250,7 @@ export default {
       dueDateUrgent: null,
       // MESSAGES
       OPTIONAL,
+      reasonOther: null,
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
       REQUEST_STUDY_TIME_TO_FULFILL,
@@ -302,6 +317,13 @@ export default {
       }
       return errors;
     },
+    errorMessagesReasonOther() {
+      const errors = [];
+      if (!this.$v.internalValue.reasonOther.requiredIfOtherReason) {
+        errors.push(REQUEST_STUDY_REQUIRES_REASON_OTHER.text);
+      }
+      return errors;
+    },
     errorMessagesStudyType() {
       const errors = [];
       if (!this.$v.internalValue.studyType.required) {
@@ -318,7 +340,7 @@ export default {
     },
     estimatedDeliveryDate() {
       const { internalValue, now } = this;
-      if (internalValue === null) {
+      if (this.internalValue === null) {
         return null;
       }
       const { dueDate, urgent } = internalValue;
@@ -404,6 +426,14 @@ export default {
     estimatedDeliveryDate() {
       this.internalValue.estimatedDeliveryDate = this.estimatedDeliveryDate;
     },
+    'internalValue.reason': function watchReason() {
+      if (this.internalValue.reasonOther === StudyRequestReason.OTHER) {
+        this.internalValue.reasonOther = this.reasonOther;
+      } else {
+        this.reasonOther = this.internalValue.reasonOther;
+        this.internalValue.reasonOther = null;
+      }
+    },
     'internalValue.studyType.automatic': function watchStudyTypeAutomatic() {
       if (this.internalValue.studyType.automatic) {
         this.internalValue.duration = 24;
@@ -414,16 +444,13 @@ export default {
       }
     },
     'internalValue.urgent': function watchUrgent(urgent, urgentPrev) {
-      const {
-        internalValue: { createdAt, dueDate },
-        now,
-      } = this;
+      const { now } = this;
 
       // cache existing due date
       if (urgentPrev) {
-        this.dueDateUrgent = dueDate;
+        this.dueDateUrgent = this.internalValue.dueDate;
       } else {
-        this.dueDate = dueDate;
+        this.dueDate = this.internalValue.dueDate;
       }
 
       // update due date
@@ -451,7 +478,7 @@ export default {
            * Note that this can be before the current timestamp!  This is deliberate,
            * to help focus efforts on a 3-month turnaround time.
            */
-          this.internalValue.dueDate = createdAt.plus({ months: 3 });
+          this.internalValue.dueDate = this.internalValue.createdAt.plus({ months: 3 });
         }
       } else {
         this.internalValue.dueDate = this.dueDate;
