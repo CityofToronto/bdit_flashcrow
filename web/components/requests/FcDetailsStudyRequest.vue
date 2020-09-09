@@ -302,9 +302,6 @@ export default {
     },
     errorMessagesNotes() {
       const errors = [];
-      if (!this.$v.internalValue.notes.$dirty) {
-        return errors;
-      }
       if (!this.$v.internalValue.notes.requiredIfOtherHours) {
         errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
       }

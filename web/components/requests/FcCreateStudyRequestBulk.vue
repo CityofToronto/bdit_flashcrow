@@ -40,14 +40,16 @@
         :indices="indicesIntersections"
         :locations="locations"
         :locations-selection="locationsSelection"
-        :study-requests="studyRequests" />
+        :study-requests="studyRequests"
+        :v="$v.studyRequests" />
       <FcStudyRequestBulkLocations
         v-else-if="step === 2"
         v-model="indicesMidblocksSelected"
         :indices="indicesMidblocks"
         :locations="locations"
         :locations-selection="locationsSelection"
-        :study-requests="studyRequests" />
+        :study-requests="studyRequests"
+        :v="$v.studyRequests" />
       <FcStudyRequestBulkDetails
         v-else-if="step === 3"
         v-model="internalValue" />
@@ -103,7 +105,7 @@
 
         <FcButton
           v-if="step !== null && step < 4"
-          :disabled="false"
+          :disabled="disabledNext"
           type="primary"
           @click="step += 1">
           Continue
@@ -111,6 +113,7 @@
         <FcButton
           v-else-if="step === 4"
           type="primary"
+          :disabled="disabledNext"
           @click="actionSubmit">
           <span>Submit</span>
         </FcButton>
@@ -132,6 +135,8 @@ import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
+import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
+import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcHeaderStudyRequestBulkLocations
   from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
@@ -143,6 +148,13 @@ import FcStudyRequestBulkDetails
 import FcStudyRequestBulkLocations
   from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+function cardStudyRequestInvalid(v) {
+  return v.studyType.$invalid
+    || v.daysOfWeek.$invalid
+    || v.duration.$invalid
+    || v.notes.$invalid;
+}
 
 export default {
   name: 'FcCreateStudyRequestBulk',
@@ -201,6 +213,27 @@ export default {
       }
       return [];
     },
+    disabledNext() {
+      if (this.step === 1) {
+        return this.indicesIntersectionsSelected.some((i) => {
+          const v = this.$v.studyRequests.$each[i];
+          return cardStudyRequestInvalid(v);
+        });
+      }
+      if (this.step === 2) {
+        if (this.indicesSelected.length === 0) {
+          return true;
+        }
+        return this.indicesSelected.some((i) => {
+          const v = this.$v.studyRequests.$each[i];
+          return cardStudyRequestInvalid(v);
+        });
+      }
+      if (this.step === 3 || this.step === 4) {
+        return this.$v.internalValue.$invalid;
+      }
+      return false;
+    },
     indicesSelected() {
       const indicesSelected = [
         ...this.indicesIntersectionsSelected,
@@ -210,6 +243,12 @@ export default {
     },
     studyRequestsSelected() {
       return this.indicesSelected.map(i => this.studyRequests[i]);
+    },
+  },
+  validations: {
+    internalValue: ValidationsStudyRequestBulk,
+    studyRequests: {
+      $each: ValidationsStudyRequest,
     },
   },
   watch: {

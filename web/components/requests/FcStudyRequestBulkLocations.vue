@@ -14,7 +14,8 @@
         :location="locations[i]"
         :selected="internalValue.includes(i)"
         :study="study"
-        :study-request="studyRequests[i]" />
+        :study-request="studyRequests[i]"
+        :v="v.$each[i]" />
     </div>
   </section>
 </template>
@@ -37,6 +38,7 @@ export default {
     locations: Array,
     locationsSelection: Object,
     studyRequests: Array,
+    v: Object,
   },
   data() {
     return {

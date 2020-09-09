@@ -19,10 +19,11 @@
         <v-row>
           <v-col class="py-2" cols="6">
             <FcSelectEnum
-              v-model="studyRequest.studyType"
+              v-model="v.studyType.$model"
               dense
               :disabled="!selected"
-              hide-details
+              :error-messages="errorMessagesStudyType"
+              hide-details="auto"
               item-text="label"
               label="Study Type"
               :of-type="StudyType"
@@ -33,7 +34,8 @@
               v-model="internalDaysOfWeek"
               dense
               :disabled="!selected"
-              hide-details
+              :error-messages="errorMessagesDaysOfWeek"
+              hide-details="auto"
               :items="itemsDaysOfWeek"
               label="Days"
               multiple
@@ -56,13 +58,15 @@
         <v-row>
           <v-col class="py-2" cols="12">
             <v-textarea
-              v-model="studyRequest.notes"
+              v-model="v.notes.$model"
               :disabled="!selected"
+              :error-messages="errorMessagesNotes"
               label="Additional Information"
               :messages="messagesNotes"
               no-resize
               outlined
-              rows="4"></v-textarea>
+              rows="4"
+              @blur="v.notes.$touch()"></v-textarea>
           </v-col>
         </v-row>
       </div>
@@ -73,7 +77,12 @@
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
-import { OPTIONAL } from '@/lib/i18n/Strings';
+import {
+  OPTIONAL,
+  REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK,
+  REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES,
+  REQUEST_STUDY_REQUIRES_STUDY_TYPE,
+} from '@/lib/i18n/Strings';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
@@ -92,6 +101,7 @@ export default {
     selected: Boolean,
     study: Object,
     studyRequest: Object,
+    v: Object,
   },
   data() {
     return {
@@ -100,6 +110,36 @@ export default {
     };
   },
   computed: {
+    errorMessagesDaysOfWeek() {
+      const errors = [];
+      if (!this.v.daysOfWeek.required) {
+        errors.push(REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK.text);
+      }
+      if (!this.v.daysOfWeek.$dirty && !this.v.duration.$dirty) {
+        return errors;
+      }
+      const { duration } = this.internalValue;
+      if (!this.v.duration.needsValidDaysOfWeek) {
+        const n = duration / 24;
+        const msg = `Please select ${n} consecutive days or reduce study duration.`;
+        errors.push(msg);
+      }
+      return errors;
+    },
+    errorMessagesNotes() {
+      const errors = [];
+      if (!this.v.notes.requiredIfOtherHours) {
+        errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
+      }
+      return errors;
+    },
+    errorMessagesStudyType() {
+      const errors = [];
+      if (!this.v.studyType.required) {
+        errors.push(REQUEST_STUDY_REQUIRES_STUDY_TYPE.text);
+      }
+      return errors;
+    },
     internalDaysOfWeek: {
       get() {
         return this.studyRequest.daysOfWeek;
