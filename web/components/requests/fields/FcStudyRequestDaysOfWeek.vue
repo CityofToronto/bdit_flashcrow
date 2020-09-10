@@ -5,6 +5,7 @@
     hide-details="auto"
     :items="itemsDaysOfWeek"
     label="Days"
+    :messages="messagesDaysOfWeek"
     multiple
     outlined
     v-bind="$attrs" />
@@ -48,6 +49,18 @@ export default {
       set(daysOfWeek) {
         this.v.daysOfWeek.$model = ArrayUtils.sortBy(daysOfWeek, i => i);
       },
+    },
+    messagesDaysOfWeek() {
+      const studyType = this.v.studyType.$model;
+      if (studyType !== null && studyType.automatic) {
+        const duration = this.v.duration.$model;
+        const n = duration / 24;
+        if (n === 1) {
+          return ['The study will be performed on one of these days.'];
+        }
+        return [`The study will be performed across ${n} consecutive days.`];
+      }
+      return ['The study will be performed on one of these days.'];
     },
   },
 };

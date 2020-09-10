@@ -103,6 +103,7 @@ function makeStudyRequestBulk(now, locations) {
   return {
     ccEmails: [],
     dueDate,
+    estimatedDeliveryDate: null,
     name: null,
     reason: null,
     reasonOther: null,

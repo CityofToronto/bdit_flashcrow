@@ -32,12 +32,25 @@
         </v-row>
         <v-row>
           <v-col class="py-2" cols="6">
-            <div class="subtitle-1">
-              Hours
-            </div>
-            <div class="mt-1 display-1">
-              {{studyRequest.hours.description}}
-            </div>
+            <template v-if="studyRequest.studyType.automatic">
+              <div class="subtitle-1">
+                Duration
+              </div>
+              <div class="mt-1 display-1">
+                {{studyRequest.duration | durationHuman}}
+              </div>
+              <v-messages
+                class="mt-1"
+                :value="[studyRequest.duration + ' hours']"></v-messages>
+            </template>
+            <template v-else>
+              <div class="subtitle-1">
+                Hours
+              </div>
+              <div class="mt-1 display-1">
+                {{studyRequest.hours.description}}
+              </div>
+            </template>
           </v-col>
         </v-row>
         <v-row>
