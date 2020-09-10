@@ -1,7 +1,6 @@
 import {
   CentrelineType,
   StudyHours,
-  StudyRequestAssignee,
   StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
@@ -24,13 +23,12 @@ test('StudyRequestCommentDAO', async () => {
   const userCreated1 = await UserDAO.create(user1);
   const now = DateTime.local();
   const transientStudyRequest = {
-    serviceRequestId: '12345',
     urgent: false,
     urgentReason: null,
-    assignedTo: StudyRequestAssignee.FIELD_STAFF,
     dueDate: now.plus({ months: 4 }),
     estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
-    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    reason: StudyRequestReason.PED_SAFETY,
+    reasonOther: null,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],

@@ -458,13 +458,12 @@ test('StudyRequestController', async () => {
 
   const now = DateTime.local();
   const transientStudyRequest = {
-    serviceRequestId: null,
     urgent: false,
     urgentReason: null,
-    assignedTo: null,
     dueDate: now.plus({ months: 3 }),
     estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reasons: [StudyRequestReason.TSC, StudyRequestReason.PED_SAFETY],
+    reason: StudyRequestReason.PED_SAFETY,
+    reasonOther: null,
     ccEmails: [],
     studyType: StudyType.TMC,
     daysOfWeek: [2, 3, 4],
@@ -579,8 +578,8 @@ test('StudyRequestController', async () => {
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // update study request fields
-  persistedStudyRequest.reasons = [StudyRequestReason.TSC];
-  persistedStudyRequest.serviceRequestId = '12345';
+  persistedStudyRequest.reason = StudyRequestReason.OTHER;
+  persistedStudyRequest.reasonOther = 'not really sure, but it seemed good at the time';
 
   // cannot update non-existent study request
   client.setUser(requester);
@@ -623,6 +622,7 @@ test('StudyRequestController', async () => {
   expect(fetchedStudyRequest.lastEditorId).toEqual(requester.id);
 
   // update more study request fields and set urgent
+  persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
   persistedStudyRequest.daysOfWeek = [3, 4];
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
