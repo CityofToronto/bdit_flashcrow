@@ -37,6 +37,20 @@ import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyReques
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
+function mapWatchers(keys) {
+  const watchers = {};
+  keys.forEach((key) => {
+    watchers[`internalValue.${key}`] = function watcher() {
+      const { studyRequests, [key]: value } = this.internalValue;
+      const n = studyRequests.length;
+      for (let i = 0; i < n; i++) {
+        studyRequests[i][key] = value;
+      }
+    };
+  });
+  return watchers;
+}
+
 export default {
   name: 'FcStudyRequestBulkDetails',
   mixins: [FcMixinVModelProxy(Object)],
@@ -54,55 +68,15 @@ export default {
     };
   },
   watch: {
-    'internalValue.ccEmails': function watchCcEmails() {
-      const { ccEmails, studyRequests } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].ccEmails = ccEmails;
-      }
-    },
-    'internalValue.dueDate': function watchDueDate() {
-      const { dueDate, studyRequests } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].dueDate = dueDate;
-      }
-    },
-    'internalValue.estimatedDeliveryDate': function watchDueDate() {
-      const { estimatedDeliveryDate, studyRequests } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].estimatedDeliveryDate = estimatedDeliveryDate;
-      }
-    },
-    'internalValue.reason': function watchReason() {
-      const { reason, studyRequests } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].reason = reason;
-      }
-    },
-    'internalValue.reasonOther': function watchReason() {
-      const { reasonOther, studyRequests } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].reasonOther = reasonOther;
-      }
-    },
-    'internalValue.urgent': function watchUrgent() {
-      const { studyRequests, urgent } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].urgent = urgent;
-      }
-    },
-    'internalValue.urgentReason': function watchUrgentReason() {
-      const { studyRequests, urgentReason } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i].urgentReason = urgentReason;
-      }
-    },
+    ...mapWatchers([
+      'ccEmails',
+      'dueDate',
+      'estimatedDeliveryDate',
+      'reason',
+      'reasonOther',
+      'urgent',
+      'urgentReason',
+    ]),
   },
 };
 </script>

@@ -29,7 +29,7 @@ import {
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 
 export default {
-  name: '',
+  name: 'FcStudyRequestReason',
   components: {
     FcSelectEnum,
   },
