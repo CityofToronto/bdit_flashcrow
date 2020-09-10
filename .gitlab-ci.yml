@@ -17,7 +17,7 @@ test-coverage:
     - nvm use
     - npm install -g pnpm
     - pnpm install
-    - cp -r /data/config-private/* .
+    - cp -r /home/ec2-user/config-private/* .
   script:
     - npm run test:db-startup
     - npm run ci:jest-coverage
@@ -33,7 +33,7 @@ test-ci-rest:
     - nvm use
     - npm install -g pnpm
     - pnpm install
-    - cp -r /data/config-private/* .
+    - cp -r /home/ec2-user/config-private/* .
   script:
     - npm run ci:npm-audit
     - npm run ci:npm-outdated

@@ -8,7 +8,7 @@ source /home/ec2-user/.bash_profile
 set -u
 
 # copy private config to repo
-cp -r /data/config-private/* /home/ec2-user/flashcrow
+cp -r /home/ec2-user/flashcrow.config.js /home/ec2-user/flashcrow/lib/config/private.js
 
 # copy nginx / forever configs from repo
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/nginx.conf /etc/nginx/

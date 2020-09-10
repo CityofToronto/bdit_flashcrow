@@ -208,7 +208,6 @@ export default {
   },
   methods: {
     actionSetDaysOfWeek(dayOfWeek, selectedPrev) {
-      console.log(dayOfWeek, selectedPrev);
       const selected = selectedPrev !== true;
       if (selected) {
         this.internalValue.forEach((i) => {
