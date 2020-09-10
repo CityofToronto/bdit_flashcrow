@@ -67,7 +67,7 @@
           New Count Request Submitted
         </h2>
         <p class="body-1 mt-6 mb-0">You have submitted a request for</p>
-        <p class="title mt-2 mb-6">Don Mills Corridor</p>
+        <p class="title mt-2 mb-6">{{internalValue.name}}</p>
         <FcButton
           type="secondary"
           @click="actionViewDetails">
@@ -130,6 +130,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 import ArrayUtils from '@/lib/ArrayUtils';
 import { CentrelineType } from '@/lib/Constants';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
@@ -273,11 +275,13 @@ export default {
     actionSubmit() {
       // TODO: actually save
       this.step = null;
+      this.setToastInfo('Your new count request has been submitted.');
     },
     actionViewDetails() {
       /* eslint-disable-next-line no-alert */
       window.alert('Coming Soon!');
     },
+    ...mapMutations(['setToastInfo']),
   },
 };
 </script>
