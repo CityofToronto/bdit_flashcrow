@@ -9,10 +9,7 @@
     <div
       v-if="locationIndex !== -1"
       class="subtitle-2"
-      :class="{
-        'primary--text': selected,
-        'white--text': !selected,
-      }">{{locationIndex + 1}}</div>
+      :class="textClass">{{locationIndex + 1}}</div>
   </div>
 </template>
 
@@ -20,6 +17,10 @@
 export default {
   name: 'FcIconLocationMulti',
   props: {
+    deselected: {
+      type: Boolean,
+      default: false,
+    },
     locationIndex: {
       type: Number,
       default: -1,
@@ -45,12 +46,38 @@ export default {
       return `Location #${i}`;
     },
     src() {
-      const suffixSelected = this.selected ? '-selected' : '';
-      if (this.locationIndex === -1) {
-        const suffixMidblock = this.midblock ? '-midblock' : '';
-        return `/icons/map/location-multi-corridor${suffixMidblock}${suffixSelected}.svg`;
+      const { suffixState, suffixType } = this;
+      return `/icons/map/location-multi${suffixType}${suffixState}.svg`;
+    },
+    suffixState() {
+      if (this.deselected) {
+        return '-deselected';
       }
-      return `/icons/map/location-multi-small${suffixSelected}.svg`;
+      if (this.selected) {
+        return '-selected';
+      }
+      return '';
+    },
+    suffixType() {
+      if (this.locationIndex === -1) {
+        if (this.midblock) {
+          return '-midblock';
+        }
+        return '-intersection';
+      }
+      return '-small';
+    },
+    textClass() {
+      if (this.locationIndex === -1) {
+        return null;
+      }
+      if (this.deselected) {
+        return 'secondary--text';
+      }
+      if (this.selected) {
+        return 'primary--text';
+      }
+      return 'white--text';
     },
   },
 };

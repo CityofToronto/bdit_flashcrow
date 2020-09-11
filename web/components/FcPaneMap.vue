@@ -315,12 +315,8 @@ export default {
          */
         let locationIndex = -1;
         let selected = false;
-        if (k === 0) {
-          if (propertiesRest.centrelineType === CentrelineType.SEGMENT) {
-            // We only show corridor markers at intersections.
-            return;
-          }
-        } else if (this.locationMode === LocationMode.MULTI_EDIT
+        const midblock = propertiesRest.centrelineType === CentrelineType.SEGMENT;
+        if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
           /*
            * In this case, we might have several consecutive waypoints at the same location,
@@ -329,7 +325,7 @@ export default {
            */
           locationIndex = this.locationsEditIndex;
           selected = true;
-        } else {
+        } else if (k > 0) {
           /*
            * Here there is no selected waypoint, so we just show the last matching waypoint.
            */
@@ -342,7 +338,9 @@ export default {
 
         const { multi } = this.locationMode;
         const properties = {
+          deselected: false,
           locationIndex,
+          midblock,
           multi,
           selected,
           ...propertiesRest,

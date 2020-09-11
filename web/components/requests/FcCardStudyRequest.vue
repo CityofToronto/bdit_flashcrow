@@ -6,6 +6,7 @@
     <v-card-title class="align-start pb-2">
       <FcIconLocationMulti
         class="mr-5"
+        :deselected="!selected"
         v-bind="iconProps" />
       <div class="fc-card-study-request-title">
         <div>{{location.description}}</div>

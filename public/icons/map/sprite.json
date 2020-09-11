@@ -13,19 +13,54 @@
     "x": 40,
     "y": 0
   },
-  "location-multi-corridor": {
-    "height": 20,
+  "location-multi-deselected": {
+    "height": 38,
     "pixelRatio": 1,
-    "width": 16,
-    "x": 144,
+    "width": 29,
+    "x": 110,
     "y": 0
   },
-  "location-multi-corridor-selected": {
+  "location-multi-intersection": {
+    "height": 21,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 139,
+    "y": 0
+  },
+  "location-multi-intersection-deselected": {
+    "height": 21,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 94,
+    "y": 40
+  },
+  "location-multi-intersection-selected": {
+    "height": 21,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 110,
+    "y": 40
+  },
+  "location-multi-midblock": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 60,
+    "x": 142,
     "y": 40
+  },
+  "location-multi-midblock-deselected": {
+    "height": 20,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 0,
+    "y": 80
+  },
+  "location-multi-midblock-selected": {
+    "height": 20,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 16,
+    "y": 80
   },
   "location-multi-selected": {
     "height": 40,
@@ -38,15 +73,22 @@
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 76,
+    "x": 32,
+    "y": 80
+  },
+  "location-multi-small-deselected": {
+    "height": 21,
+    "pixelRatio": 1,
+    "width": 16,
+    "x": 126,
     "y": 40
   },
   "location-multi-small-selected": {
     "height": 20,
     "pixelRatio": 1,
     "width": 16,
-    "x": 92,
-    "y": 40
+    "x": 48,
+    "y": 80
   },
   "location-single": {
     "height": 40,
@@ -66,7 +108,7 @@
     "height": 34,
     "pixelRatio": 1,
     "width": 34,
-    "x": 110,
-    "y": 0
+    "x": 60,
+    "y": 40
   }
 }
