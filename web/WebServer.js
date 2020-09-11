@@ -6,6 +6,7 @@ import PoiController from '@/lib/controller/PoiController';
 import StorageController from '@/lib/controller/StorageController';
 import StudyController from '@/lib/controller/StudyController';
 import StudyRequestController from '@/lib/controller/StudyRequestController';
+import StudyRequestBulkController from '@/lib/controller/StudyRequestBulkController';
 import UserController from '@/lib/controller/UserController';
 import MoveServer from '@/lib/server/MoveServer';
 
@@ -22,6 +23,7 @@ class WebServer extends MoveServer {
       .addController(StorageController)
       .addController(StudyController)
       .addController(StudyRequestController)
+      .addController(StudyRequestBulkController)
       .addController(UserController)
       .enableAuth();
   }
