@@ -267,16 +267,23 @@ export default {
         const { geom: geometry, ...propertiesRest } = location;
 
         const waypointIndices = locationsWaypointIndices[i];
-        let selected = false;
 
+        let deselected = false;
+        let selected = false;
         if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
           selected = true;
-        } else if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
-          selected = true;
+        } else if (this.locationMode === LocationMode.MULTI) {
+          if (this.locationsIndicesDeselected.includes(i)) {
+            deselected = true;
+          }
+          if (this.locationsIndex === i) {
+            selected = true;
+          }
         }
 
         const properties = {
+          deselected,
           selected,
           ...propertiesRest,
         };
@@ -314,8 +321,8 @@ export default {
          * can be drawn using a corridor marker.
          */
         let locationIndex = -1;
+        let deselected = false;
         let selected = false;
-        const midblock = propertiesRest.centrelineType === CentrelineType.SEGMENT;
         if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
           /*
@@ -332,13 +339,19 @@ export default {
           locationIndex = waypointIndices[k - 1];
         }
 
-        if (this.locationMode === LocationMode.MULTI && i === this.locationsIndex) {
-          selected = true;
+        if (this.locationMode === LocationMode.MULTI) {
+          if (this.locationsIndicesDeselected.includes(i)) {
+            deselected = true;
+          }
+          if (this.locationsIndex === i) {
+            selected = true;
+          }
         }
 
+        const midblock = propertiesRest.centrelineType === CentrelineType.SEGMENT;
         const { multi } = this.locationMode;
         const properties = {
-          deselected: false,
+          deselected,
           locationIndex,
           midblock,
           multi,
@@ -398,6 +411,7 @@ export default {
       'legendOptions',
       'locationsEditIndex',
       'locationsIndex',
+      'locationsIndicesDeselected',
       'locationMode',
     ]),
     ...mapGetters([

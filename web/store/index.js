@@ -49,6 +49,7 @@ export default new Vuex.Store({
     // LOCATION
     locations: [],
     locationsIndex: -1,
+    locationsIndicesDeselected: [],
     locationsSelection: {
       locations: [],
       selectionType: LocationSelectionType.POINTS,
@@ -194,6 +195,8 @@ export default new Vuex.Store({
     saveLocationsEdit(state) {
       const { locations, selectionType } = state.locationsEditSelection;
       Vue.set(state, 'locations', [...state.locationsEdit]);
+      Vue.set(state, 'locationsIndex', -1);
+      Vue.set(state, 'locationsIndicesDeselected', []);
       Vue.set(state, 'locationsSelection', {
         locations: [...locations],
         selectionType,
@@ -253,6 +256,9 @@ export default new Vuex.Store({
     },
     setLocationsIndex(state, locationsIndex) {
       Vue.set(state, 'locationsIndex', locationsIndex);
+    },
+    setLocationsIndicesDeselected(state, locationsIndicesDeselected) {
+      Vue.set(state, 'locationsIndicesDeselected', locationsIndicesDeselected);
     },
     setLocationsSelection(state, locationsSelection) {
       const { locations, selectionType } = locationsSelection;

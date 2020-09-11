@@ -238,6 +238,16 @@ export default {
       }
       return false;
     },
+    indicesDeselected() {
+      const indicesDeselected = [];
+      const n = this.locations.length;
+      for (let i = 0; i < n; i++) {
+        if (!this.indicesSelected.includes(i)) {
+          indicesDeselected.push(i);
+        }
+      }
+      return indicesDeselected;
+    },
     indicesSelected() {
       const indicesSelected = [
         ...this.indicesIntersectionsSelected,
@@ -256,9 +266,18 @@ export default {
     },
   },
   watch: {
+    indicesDeselected() {
+      this.setLocationsIndicesDeselected(this.indicesDeselected);
+    },
     studyRequestsSelected() {
       this.internalValue.studyRequests = this.studyRequestsSelected;
     },
+  },
+  created() {
+    this.setLocationsIndicesDeselected([]);
+  },
+  beforeDestroy() {
+    this.setLocationsIndicesDeselected([]);
   },
   methods: {
     actionRemoveStudy(i) {
@@ -281,7 +300,7 @@ export default {
       /* eslint-disable-next-line no-alert */
       window.alert('Coming Soon!');
     },
-    ...mapMutations(['setToastInfo']),
+    ...mapMutations(['setLocationsIndicesDeselected', 'setToastInfo']),
   },
 };
 </script>
