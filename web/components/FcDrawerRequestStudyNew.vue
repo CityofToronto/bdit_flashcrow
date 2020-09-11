@@ -95,8 +95,9 @@ function makeStudyRequest(now, location) {
   };
 }
 
-function makeStudyRequestBulk(now, locations) {
+function makeStudyRequestBulk(now, locations, locationsSelection) {
   const dueDate = now.plus({ months: 3 });
+  const s1 = CompositeId.encode(locationsSelection.locations);
   const studyRequests = locations.map(
     location => makeStudyRequest(now, location),
   );
@@ -107,6 +108,8 @@ function makeStudyRequestBulk(now, locations) {
     name: null,
     reason: null,
     reasonOther: null,
+    s1,
+    selectionType: locationsSelection.selectionType,
     studyRequests,
     urgent: false,
     urgentReason: null,
@@ -190,7 +193,11 @@ export default {
       await this.initLocations({ features, selectionType });
 
       if (this.isBulk) {
-        const studyRequestBulk = makeStudyRequestBulk(this.now, this.locations);
+        const studyRequestBulk = makeStudyRequestBulk(
+          this.now,
+          this.locations,
+          this.locationsSelection,
+        );
         this.studyRequest = null;
         this.studyRequestBulk = studyRequestBulk;
       } else {
