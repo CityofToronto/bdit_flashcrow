@@ -1,6 +1,5 @@
 import SvgGenerator from '@/lib/reports/svg/SvgGenerator';
 import SvgStringRenderer from '@/lib/reports/svg/SvgStringRenderer';
-import 'd3-selection-multi';
 
 class NoopSvgGenerator extends SvgGenerator {
   /* eslint-disable-next-line class-methods-use-this */

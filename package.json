@@ -55,7 +55,6 @@
     "d3-format": "^2.0.0",
     "d3-scale": "^3.2.2",
     "d3-selection": "^2.0.0",
-    "d3-selection-multi": "^1.0.1",
     "esm": "^3.2.25",
     "file-saver": "^2.0.2",
     "jsdom": "^16.4.0",

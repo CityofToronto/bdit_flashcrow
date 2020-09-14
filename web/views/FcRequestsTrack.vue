@@ -638,7 +638,7 @@ export default {
 <style lang="scss">
 .fc-requests-track {
   background-color: var(--v-shading-base);
-  max-height: 100vh;
+  max-height: calc(100vh - 52px);
   width: 100%;
 
   & .fc-shortcut-chips .v-chip.v-chip {
