@@ -11,7 +11,9 @@ import {
   getLocationsByCentreline,
   getLocationsByCorridor,
   postStudyRequest,
+  postStudyRequestBulk,
   putStudyRequest,
+  putStudyRequestBulk,
 } from '@/lib/api/WebApi';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import {
@@ -300,6 +302,25 @@ export default new Vuex.Store({
         return putStudyRequest(csrf, studyRequest);
       }
       return postStudyRequest(csrf, studyRequest);
+    },
+    async saveStudyRequestBulk({ state, commit }, studyRequestBulk) {
+      const { id, urgent } = studyRequestBulk;
+      const update = id !== undefined;
+      if (urgent && !update) {
+        commit('setDialog', {
+          dialog: 'AlertStudyRequestUrgent',
+          dialogData: { update },
+        });
+      } else {
+        const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
+        commit('setToast', toast);
+      }
+
+      const { csrf } = state.auth;
+      if (update) {
+        return putStudyRequestBulk(csrf, studyRequestBulk);
+      }
+      return postStudyRequestBulk(csrf, studyRequestBulk);
     },
     // LOCATION
     async initLocations({ commit, state }, { features, selectionType: selectionTypeNext }) {

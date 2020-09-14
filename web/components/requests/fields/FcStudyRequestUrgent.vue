@@ -165,8 +165,11 @@ export default {
     ...mapState(['now']),
   },
   watch: {
-    estimatedDeliveryDate() {
-      this.v.estimatedDeliveryDate.$model = this.estimatedDeliveryDate;
+    estimatedDeliveryDate: {
+      handler() {
+        this.v.estimatedDeliveryDate.$model = this.estimatedDeliveryDate;
+      },
+      immediate: true,
     },
     'v.urgent.$model': function watchUrgent(urgent, urgentPrev) {
       const { now } = this;

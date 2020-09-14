@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 import {
   StudyRequestReason,
@@ -152,23 +152,6 @@ export default {
       StudyRequestReason,
       StudyType,
     };
-  },
-  computed: {
-    maxDueDate() {
-      const { now, internalValue: { urgent } } = this;
-      if (urgent) {
-        return now.plus({ months: 2 });
-      }
-      return null;
-    },
-    minDueDate() {
-      const { now, internalValue: { urgent } } = this;
-      if (urgent) {
-        return now.plus({ weeks: 1 });
-      }
-      return now.plus({ months: 2 });
-    },
-    ...mapState(['now']),
   },
   validations: {
     internalValue: ValidationsStudyRequest,

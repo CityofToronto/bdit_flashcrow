@@ -5,8 +5,9 @@
       <v-row>
         <v-col cols="8">
           <v-text-field
-            v-model="internalValue.name"
-            label="Set Title for Bulk Request"
+            v-model="v.name.$model"
+            :error-messages="errorMessagesName"
+            label="Set Name for Bulk Request"
             :messages="['Required']"
             outlined>
           </v-text-field>
@@ -40,12 +41,15 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 function mapWatchers(keys) {
   const watchers = {};
   keys.forEach((key) => {
-    watchers[`internalValue.${key}`] = function watcher() {
-      const { studyRequests, [key]: value } = this.internalValue;
-      const n = studyRequests.length;
-      for (let i = 0; i < n; i++) {
-        studyRequests[i][key] = value;
-      }
+    watchers[`internalValue.${key}`] = {
+      handler() {
+        const { studyRequests, [key]: value } = this.internalValue;
+        const n = studyRequests.length;
+        for (let i = 0; i < n; i++) {
+          studyRequests[i][key] = value;
+        }
+      },
+      immediate: true,
     };
   });
   return watchers;
@@ -66,6 +70,15 @@ export default {
       OPTIONAL,
       StudyRequestReason,
     };
+  },
+  computed: {
+    errorMessagesName() {
+      const errors = [];
+      if (!this.v.name.required) {
+        errors.push('Please enter a name for this request.');
+      }
+      return errors;
+    },
   },
   watch: {
     ...mapWatchers([

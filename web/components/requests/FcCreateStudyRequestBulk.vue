@@ -61,6 +61,7 @@
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-request-bulk="internalValue"
+        :study-requests="studyRequests"
         @remove-study="actionRemoveStudy" />
       <div v-else class="flex-grow-1 flex-shrink-1 text-center">
         <h2 class="fc-study-request-bulk-submitted display-3">
@@ -130,7 +131,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import { CentrelineType } from '@/lib/Constants';
@@ -292,7 +293,7 @@ export default {
       }
     },
     actionSubmit() {
-      // TODO: actually save
+      this.saveStudyRequestBulk(this.internalValue);
       this.step = null;
       this.setToastInfo('Your new count request has been submitted.');
     },
@@ -301,6 +302,7 @@ export default {
       window.alert('Coming Soon!');
     },
     ...mapMutations(['setLocationsIndicesDeselected', 'setToastInfo']),
+    ...mapActions(['saveStudyRequestBulk']),
   },
 };
 </script>

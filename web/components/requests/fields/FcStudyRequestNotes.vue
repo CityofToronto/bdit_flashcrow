@@ -1,6 +1,6 @@
 <template>
   <v-textarea
-    v-model="v.notes.$model"
+    v-model="internalNotes"
     :error-messages="errorMessagesNotes"
     label="Additional Information"
     :messages="messagesNotes"
@@ -27,6 +27,22 @@ export default {
         errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
       }
       return errors;
+    },
+    internalNotes: {
+      get() {
+        const notes = this.v.notes.$model;
+        if (notes === null) {
+          return '';
+        }
+        return notes;
+      },
+      set(internalNotes) {
+        if (internalNotes === null) {
+          this.v.notes.$model = '';
+        } else {
+          this.v.notes.$model = internalNotes;
+        }
+      },
     },
     messagesNotes() {
       const hours = this.v.hours.$model;

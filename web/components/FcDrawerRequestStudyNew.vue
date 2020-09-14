@@ -76,7 +76,6 @@ function makeStudyRequest(now, location) {
     duration = 72;
   }
   return {
-    serviceRequestId: null,
     urgent: false,
     urgentReason: null,
     dueDate,

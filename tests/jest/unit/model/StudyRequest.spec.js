@@ -96,11 +96,11 @@ test('StudyRequest', () => {
   expect(result.error).toBeUndefined();
 
   // notes should be non-empty for requests with OTHER hours!
-  transientStudyRequest.notes = null;
+  transientStudyRequest.notes = '';
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
   expect(result.error.details[0].path).toEqual(['notes']);
-  expect(result.error.details[0].type).toEqual('string.base');
+  expect(result.error.details[0].type).toEqual('string.empty');
 
   transientStudyRequest.hours = StudyHours.SCHOOL;
   result = StudyRequest.create.validate(transientStudyRequest);

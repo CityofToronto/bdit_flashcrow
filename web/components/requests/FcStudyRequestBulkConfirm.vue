@@ -25,7 +25,7 @@
                 class="flex-grow-1 flex-shrink-1 mr-5 my-2 shading"
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
-                :study-request="studyRequestBulk.studyRequests[i]" />
+                :study-request="studyRequests[i]" />
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -65,7 +65,7 @@
                 class="flex-grow-1 flex-shrink-1 mr-5 my-2 shading"
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
-                :study-request="studyRequestBulk.studyRequests[i]" />
+                :study-request="studyRequests[i]" />
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
                   <FcButton
@@ -160,6 +160,7 @@ export default {
     locations: Array,
     locationsSelection: Object,
     studyRequestBulk: Object,
+    studyRequests: Array,
   },
   computed: {
     locationsIconProps() {
