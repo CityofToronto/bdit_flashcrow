@@ -1,7 +1,4 @@
 {
-  "error-level": 2,
-  "reject": [
-    "openid-client",
-    "sass-loader"
-  ]
+  "errorLevel": 2,
+  "reject": []
 }
