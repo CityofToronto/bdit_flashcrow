@@ -54,7 +54,7 @@ deploy-dev:
 deploy-qa:
   stage: deploy
   script:
-    - echo deploy-qa
+    - ./scripts/deployment/code-commit/deploy_code_commit.sh
   only:
     - deploy-qa
 
