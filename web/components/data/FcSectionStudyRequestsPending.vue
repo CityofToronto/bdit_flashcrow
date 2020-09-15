@@ -3,12 +3,12 @@
     <div
       v-for="studyRequest in studyRequestsPending"
       :key="studyRequest.id"
-      class="align-center d-flex">
+      class="align-center d-flex mb-1">
       <v-icon
         color="warning"
         left>mdi-information</v-icon>
       <div>
-        {{studyRequest.studyType.label}}
+        <strong>{{studyRequest.studyType.label}}</strong>
         has been requested on {{studyRequest.createdAt | date}}.
         <router-link :to="{
           name: 'requestStudyView',
