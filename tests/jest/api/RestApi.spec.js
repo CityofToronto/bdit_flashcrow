@@ -561,21 +561,21 @@ test('StudyRequestController', async () => {
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
+  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
 
   // other ETT1s can fetch all
   client.setUser(ett1);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
+  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
 
   // supervisors can fetch all
   client.setUser(supervisor);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
+  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
 
   // update study request fields
   persistedStudyRequest.reason = StudyRequestReason.OTHER;
