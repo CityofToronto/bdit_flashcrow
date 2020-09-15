@@ -96,7 +96,7 @@
             :loading="loading"
             :loading-items="loadingSaveStudyRequest"
             @assign-to="actionAssignTo"
-            @show-request="actionShowRequest" />
+            @show-item="actionShowItem" />
         </v-card-text>
       </v-card>
     </section>
@@ -117,6 +117,7 @@ import {
 } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import { getStudyRequests } from '@/lib/api/WebApi';
+import { bulkAssignedToStr, bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
@@ -281,6 +282,104 @@ function statusFilterText(items, status) {
     }
   });
   return `${text} (${n})`;
+}
+
+function normalizeItemStudyRequest(
+  studyRequestLocations,
+  studyRequestUsers,
+  studyRequest,
+) {
+  const {
+    assignedTo,
+    centrelineId,
+    centrelineType,
+    createdAt,
+    dueDate,
+    id,
+    lastEditedAt,
+    status,
+    urgent,
+    userId,
+  } = studyRequest;
+
+  const feature = { centrelineId, centrelineType };
+  const key = centrelineKey(feature);
+  let location = null;
+  if (studyRequestLocations.has(key)) {
+    location = studyRequestLocations.get(key);
+  }
+
+  let requestedBy = null;
+  if (studyRequestUsers.has(userId)) {
+    const { uniqueName } = studyRequestUsers.get(userId);
+    const i = uniqueName.indexOf('\\');
+    requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
+  }
+
+  const assignedToStr = assignedTo === null ? 'None' : assignedTo.text;
+
+  return {
+    type: ItemType.STUDY_REQUEST,
+    ariaLabel: `View Request #${id}`,
+    assignedTo: assignedToStr,
+    createdAt,
+    dueDate,
+    id,
+    lastEditedAt,
+    location,
+    requestedBy,
+    status,
+    studyRequest,
+    urgent,
+  };
+}
+
+function normalizeItemStudyRequestBulk(
+  studyRequestLocations,
+  studyRequestUsers,
+  studyRequestBulk,
+) {
+  const {
+    id,
+    createdAt,
+    dueDate,
+    lastEditedAt,
+    studyRequests,
+    urgent,
+    userId,
+  } = studyRequestBulk;
+
+  const studyRequestsNormalized = studyRequests.map(
+    studyRequest => normalizeItemStudyRequest(
+      studyRequestLocations,
+      studyRequestUsers,
+      studyRequest,
+    ),
+  );
+
+  let requestedBy = null;
+  if (studyRequestUsers.has(userId)) {
+    const { uniqueName } = studyRequestUsers.get(userId);
+    const i = uniqueName.indexOf('\\');
+    requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
+  }
+
+  return {
+    type: ItemType.STUDY_REQUEST_BULK,
+    ariaLabel: `View Bulk Request: ${studyRequestBulk.name}`,
+    assignedTo: bulkAssignedToStr(studyRequests),
+    createdAt,
+    dueDate,
+    id,
+    lastEditedAt,
+    requestedBy,
+    status: bulkStatus(studyRequests),
+    studyRequestBulk: {
+      ...studyRequestBulk,
+      studyRequests: studyRequestsNormalized,
+    },
+    urgent,
+  };
 }
 
 function filtersMatchItem(filters, user, { studyRequest }) {
@@ -490,35 +589,24 @@ export default {
       return items;
     },
     itemsNormalized() {
-      return this.studyRequests.map((studyRequest) => {
-        const {
-          centrelineId,
-          centrelineType,
-          id,
-          userId,
-        } = studyRequest;
-
-        const feature = { centrelineId, centrelineType };
-        const key = centrelineKey(feature);
-        let location = null;
-        if (this.studyRequestLocations.has(key)) {
-          location = this.studyRequestLocations.get(key);
-        }
-
-        let requestedBy = null;
-        if (this.studyRequestUsers.has(userId)) {
-          const { uniqueName } = this.studyRequestUsers.get(userId);
-          const i = uniqueName.indexOf('\\');
-          requestedBy = i === -1 ? uniqueName : uniqueName.slice(i + 1);
-        }
-
-        return {
-          id,
-          location,
-          requestedBy,
+      const itemsStudyRequests = this.studyRequests.map(
+        studyRequest => normalizeItemStudyRequest(
+          this.studyRequestLocations,
+          this.studyRequestUsers,
           studyRequest,
-        };
-      });
+        ),
+      );
+      const itemsStudyRequestsBulk = this.studyRequestsBulk.map(
+        studyRequestBulk => normalizeItemStudyRequestBulk(
+          this.studyRequestLocations,
+          this.studyRequestUsers,
+          studyRequestBulk,
+        ),
+      );
+      return [
+        ...itemsStudyRequests,
+        ...itemsStudyRequestsBulk,
+      ];
     },
     selectAll: {
       get() {
@@ -594,10 +682,14 @@ export default {
       await this.loadAsyncForRoute();
       this.loading = false;
     },
-    actionShowRequest({ studyRequest }) {
+    actionShowItem(item) {
+      const { id, type } = item;
+      const name = type === ItemType.STUDY_REQUEST_BULK
+        ? 'requestStudyBulkView'
+        : 'requestStudyView';
       const route = {
-        name: 'requestStudyView',
-        params: { id: studyRequest.id },
+        name,
+        params: { id },
       };
       this.$router.push(route);
     },

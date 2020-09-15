@@ -29,20 +29,33 @@
     <template v-slot:item.ID="{ item }">
       <span
         class="text-truncate"
-        :title="item.studyRequest.id">
-        {{item.studyRequest.id}}
+        :title="item.id">
+        {{item.id}}
       </span>
     </template>
     <template v-slot:item.LOCATION="{ item }">
-      <div class="text-wrap">
-        <span v-if="item.location !== null">
+      <div class="align-center d-flex">
+        <template v-if="item.type.name === 'STUDY_REQUEST_BULK'">
+          <v-icon left>mdi-map-marker-multiple</v-icon>
+          <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
+          <v-spacer></v-spacer>
+          <v-icon right>mdi-menu-down</v-icon>
+        </template>
+        <div
+          v-else-if="item.location !== null"
+          class="text-wrap">
           {{item.location.description}}
-        </span>
+        </div>
       </div>
     </template>
     <template v-slot:item.STUDY_TYPE="{ item }">
       <div class="text-wrap">
-        {{item.studyRequest.studyType.label}}
+        <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
+          Multiple Location ({{item.studyRequestBulk.studyRequests.length}})
+        </span>
+        <span v-else>
+          {{item.studyRequest.studyType.label}}
+        </span>
       </div>
     </template>
     <template v-slot:item.REQUESTER="{ item }">
@@ -55,11 +68,14 @@
       </div>
     </template>
     <template v-slot:item.CREATED_AT="{ item }">
-      <span>{{item.studyRequest.createdAt | date}}</span>
+      <span>{{item.createdAt | date}}</span>
     </template>
     <template v-slot:item.ASSIGNED_TO="{ item }">
+      <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
+        {{item.assignedTo}}
+      </span>
       <v-menu
-        v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
+        v-else-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
           && (
             item.studyRequest.status.canTransitionTo(StudyRequestStatus.ASSIGNED)
             || item.studyRequest.status === StudyRequestStatus.ASSIGNED
@@ -91,23 +107,20 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <span v-else-if="item.studyRequest.assignedTo === null">
-        None
-      </span>
-      <span v-else>{{item.studyRequest.assignedTo.text}}</span>
+      <span v-else>{{item.assignedTo}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
-      <span>{{item.studyRequest.dueDate | date}}</span>
+      <span>{{item.dueDate | date}}</span>
     </template>
     <template v-slot:item.STATUS="{ item }">
       <div class="align-center d-flex">
-        <v-icon :color="item.studyRequest.status.color" class="ml-n2">mdi-circle-medium</v-icon>
-        <span>{{item.studyRequest.status.text}}</span>
+        <v-icon :color="item.status.color" class="ml-n2">mdi-circle-medium</v-icon>
+        <span>{{item.status.text}}</span>
       </div>
     </template>
     <template v-slot:item.LAST_EDITED_AT="{ item }">
-      <span v-if="item.studyRequest.lastEditedAt !== null">
-        {{item.studyRequest.lastEditedAt | date}}
+      <span v-if="item.lastEditedAt !== null">
+        {{item.lastEditedAt | date}}
       </span>
     </template>
     <template v-slot:header.ACTIONS>
@@ -116,24 +129,19 @@
     <template v-slot:item.ACTIONS="{ item }">
       <div class="text-right">
         <v-icon
-          v-if="item.studyRequest.urgent"
+          v-if="item.urgent"
           class="mr-2"
           color="warning"
           title="Urgent">mdi-clipboard-alert</v-icon>
 
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <FcButton
-              :aria-label="'View Request #' + item.studyRequest.id"
-              class="btn-show-request"
-              type="secondary"
-              @click="$emit('show-request', item)"
-              v-on="on">
-              <v-icon>mdi-open-in-new</v-icon>
-            </FcButton>
-          </template>
-          <span>View Request #{{item.studyRequest.id}}</span>
-        </v-tooltip>
+        <FcButtonAria
+          :aria-label="item.ariaLabel"
+          button-class="btn-show-request"
+          top
+          type="secondary"
+          @click="$emit('show-item', item)">
+          <v-icon>mdi-open-in-new</v-icon>
+        </FcButtonAria>
       </div>
     </template>
   </FcDataTable>
@@ -147,6 +155,7 @@ import {
 } from '@/lib/Constants';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -158,6 +167,7 @@ export default {
   ],
   components: {
     FcButton,
+    FcButtonAria,
     FcDataTable,
   },
   props: {
