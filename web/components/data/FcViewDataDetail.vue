@@ -148,8 +148,11 @@ export default {
   },
   methods: {
     actionRequestStudy() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'requestStudyNew',
+        params,
+      });
     },
     actionShowReportsCollision() {
       const params = this.locationsRouteParams;
