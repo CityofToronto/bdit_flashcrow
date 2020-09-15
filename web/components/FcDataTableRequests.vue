@@ -125,10 +125,11 @@
           <template v-slot:activator="{ on }">
             <FcButton
               :aria-label="'View Request #' + item.studyRequest.id"
-              type="icon"
+              class="btn-show-request"
+              type="secondary"
               @click="$emit('show-request', item)"
               v-on="on">
-              <v-icon>mdi-file-eye</v-icon>
+              <v-icon>mdi-open-in-new</v-icon>
             </FcButton>
           </template>
           <span>View Request #{{item.studyRequest.id}}</span>
@@ -221,6 +222,11 @@ export default {
   & th.fc-data-table-header-ACTIONS {
     min-width: 100px;
     width: 100px;
+  }
+
+  & .fc-button.btn-show-request {
+    min-width: 36px;
+    padding: 0;
   }
 }
 </style>

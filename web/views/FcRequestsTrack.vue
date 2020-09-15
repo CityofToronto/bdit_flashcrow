@@ -397,6 +397,7 @@ export default {
       SHORTCUT_CHIPS,
       showFilters: false,
       studyRequests: [],
+      studyRequestsBulk: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
     };
@@ -497,7 +498,8 @@ export default {
           userId,
         } = studyRequest;
 
-        const key = centrelineKey(centrelineType, centrelineId);
+        const feature = { centrelineId, centrelineType };
+        const key = centrelineKey(feature);
         let location = null;
         if (this.studyRequestLocations.has(key)) {
           location = this.studyRequestLocations.get(key);
@@ -602,11 +604,13 @@ export default {
     async loadAsyncForRoute() {
       const {
         studyRequests,
+        studyRequestsBulk,
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequests();
 
       this.studyRequests = studyRequests;
+      this.studyRequestsBulk = studyRequestsBulk;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },

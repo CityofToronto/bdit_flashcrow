@@ -215,8 +215,8 @@ export default {
     },
     locationsEditKeys() {
       const keyCounter = new Map();
-      return this.locationsEditSelection.locations.map(({ centrelineId, centrelineType }) => {
-        const key = centrelineKey(centrelineType, centrelineId);
+      return this.locationsEditSelection.locations.map((location) => {
+        const key = centrelineKey(location);
         let counter = 0;
         if (keyCounter.has(key)) {
           counter = keyCounter.get(key) + 1;
