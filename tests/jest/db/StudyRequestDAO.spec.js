@@ -77,6 +77,10 @@ test('StudyRequestDAO', async () => {
   let all = await StudyRequestDAO.all();
   expect(all).toContainEqual(persistedStudyRequest);
 
+  // fetch all non-bulk
+  let allNonBulk = await StudyRequestDAO.allNonBulk();
+  expect(allNonBulk).toContainEqual(persistedStudyRequest);
+
   // update existing study fields
   persistedStudyRequest.daysOfWeek = [3, 4];
   persistedStudyRequest.hours = StudyHours.SCHOOL;
@@ -164,4 +168,8 @@ test('StudyRequestDAO', async () => {
   // fetch all
   all = await StudyRequestDAO.all();
   expect(all).not.toContainEqual(persistedStudyRequest);
+
+  // fetch all non-bulk
+  allNonBulk = await StudyRequestDAO.allNonBulk();
+  expect(allNonBulk).not.toContainEqual(persistedStudyRequest);
 });

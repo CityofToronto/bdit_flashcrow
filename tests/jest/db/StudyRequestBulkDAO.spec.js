@@ -6,6 +6,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import db from '@/lib/db/db';
+import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import CompositeId from '@/lib/io/CompositeId';
@@ -109,6 +110,22 @@ test('StudyRequestBulkDAO', async () => {
   let fetchedStudyRequestBulk = await StudyRequestBulkDAO.byId(persistedStudyRequestBulk.id);
   expect(fetchedStudyRequestBulk).toEqual(persistedStudyRequestBulk);
 
+  // fetch using byIds
+  let fetchedStudyRequestsBulk = await StudyRequestBulkDAO.byIds([persistedStudyRequestBulk.id]);
+  expect(fetchedStudyRequestsBulk).toEqual([persistedStudyRequestBulk]);
+
+  // fetch all
+  let all = await StudyRequestBulkDAO.all();
+  expect(all).toContainEqual(persistedStudyRequestBulk);
+
+  // fetch study requests by bulk request
+  let byStudyRequestBulk = await StudyRequestDAO.byStudyRequestBulk(persistedStudyRequestBulk);
+  expect(byStudyRequestBulk).toEqual(persistedStudyRequestBulk.studyRequests);
+
+  // fetch study requests by bulk requests
+  let byStudyRequestsBulk = await StudyRequestDAO.byStudyRequestsBulk([persistedStudyRequestBulk]);
+  expect(byStudyRequestsBulk).toEqual(persistedStudyRequestBulk.studyRequests);
+
   // update existing bulk request fields
   persistedStudyRequestBulk.name = 'new and improved bulk study request';
   persistedStudyRequestBulk.reason = StudyRequestReason.OTHER;
@@ -149,4 +166,20 @@ test('StudyRequestBulkDAO', async () => {
   await expect(StudyRequestBulkDAO.delete(persistedStudyRequestBulk)).resolves.toBe(true);
   fetchedStudyRequestBulk = await StudyRequestBulkDAO.byId(persistedStudyRequestBulk.id);
   expect(fetchedStudyRequestBulk).toBeNull();
+
+  // fetch using byIds
+  fetchedStudyRequestsBulk = await StudyRequestBulkDAO.byIds([persistedStudyRequestBulk.id]);
+  expect(fetchedStudyRequestsBulk).toEqual([]);
+
+  // fetch all
+  all = await StudyRequestBulkDAO.all();
+  expect(all).not.toContainEqual(persistedStudyRequestBulk);
+
+  // fetch study requests by bulk request
+  byStudyRequestBulk = await StudyRequestDAO.byStudyRequestBulk(persistedStudyRequestBulk);
+  expect(byStudyRequestBulk).toEqual([]);
+
+  // fetch study requests by bulk requests
+  byStudyRequestsBulk = await StudyRequestDAO.byStudyRequestsBulk([persistedStudyRequestBulk]);
+  expect(byStudyRequestsBulk).toEqual([]);
 });
