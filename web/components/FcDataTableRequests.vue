@@ -5,11 +5,12 @@
     :columns="columns"
     fixed-header
     height="100%"
+    item-key="key"
     :items="items"
     :loading="loading"
     must-sort
     show-select
-    sort-by="ID"
+    sort-by="DUE_DATE"
     :sort-desc="true"
     :sort-keys="sortKeys">
     <template v-slot:no-data>
@@ -28,6 +29,7 @@
     </template>
     <template v-slot:item.ID="{ item }">
       <span
+        v-if="item.type.name === 'STUDY_REQUEST'"
         class="text-truncate"
         :title="item.id">
         {{item.id}}

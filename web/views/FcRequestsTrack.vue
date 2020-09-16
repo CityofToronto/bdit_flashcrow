@@ -370,7 +370,7 @@ function normalizeItemStudyRequestBulk(
     assignedTo: bulkAssignedToStr(studyRequests),
     createdAt,
     dueDate,
-    id,
+    id: `STUDY_REQUEST_BULK:${id}`,
     lastEditedAt,
     requestedBy,
     status: bulkStatus(studyRequests),
