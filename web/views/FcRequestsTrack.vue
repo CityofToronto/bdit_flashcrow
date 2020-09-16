@@ -95,6 +95,7 @@
             :items="items"
             :loading="loading"
             :loading-items="loadingSaveStudyRequest"
+            :sort-by.sync="sortBy"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
         </v-card-text>
@@ -495,6 +496,7 @@ export default {
       selectedItems: [],
       SHORTCUT_CHIPS,
       showFilters: false,
+      sortBy: 'DUE_DATE',
       studyRequests: [],
       studyRequestsBulk: [],
       studyRequestLocations: new Map(),

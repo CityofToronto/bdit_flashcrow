@@ -15,7 +15,7 @@
     show-expand
     show-select
     single-expand
-    sort-by="DUE_DATE"
+    :sort-by.sync="internalSortBy"
     :sort-desc="true"
     :sort-keys="sortKeys">
     <template v-slot:no-data>
@@ -170,6 +170,7 @@
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
             :loading-items="loadingItems"
+            :sort-by="internalSortBy"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
         </td>
@@ -213,6 +214,7 @@ export default {
       default: false,
     },
     loadingItems: Set,
+    sortBy: String,
   },
   data() {
     const itemsAssignedTo = [
@@ -261,6 +263,16 @@ export default {
       sortKeys,
       StudyRequestStatus,
     };
+  },
+  computed: {
+    internalSortBy: {
+      get() {
+        return this.sortBy;
+      },
+      set(internalSortBy) {
+        this.$emit('update:sortBy', internalSortBy);
+      },
+    },
   },
   methods: {
     actionAssignTo(payload) {
@@ -324,7 +336,7 @@ export default {
     min-width: 140px;
     width: 140px;
   }
-  & th:nth-child(11),
+  & td:nth-child(11),
   & th.fc-data-table-header-ACTIONS {
     min-width: 105px;
     width: 105px;

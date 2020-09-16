@@ -12,6 +12,7 @@
     :items="itemsOrLoading"
     :loading="loading"
     :show-select="showSelect"
+    :sort-by.sync="internalSortBy"
     v-bind="$attrs">
     <template
       v-if="showSelect"
@@ -75,6 +76,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    sortBy: String,
     sortKeys: {
       type: Object,
       default() { return {}; },
@@ -92,6 +94,14 @@ export default {
           ...options,
         };
       });
+    },
+    internalSortBy: {
+      get() {
+        return this.sortBy;
+      },
+      set(internalSortBy) {
+        this.$emit('update:sortBy', internalSortBy);
+      },
     },
     itemsOrLoading() {
       if (this.loading) {
