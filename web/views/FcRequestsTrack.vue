@@ -466,7 +466,7 @@ export default {
   data() {
     const columns = [
       { value: 'ID', text: 'ID' },
-      { value: 'LOCATION', text: 'Location' },
+      { value: 'data-table-expand', text: 'Location' },
       { value: 'STUDY_TYPE', text: 'Type' },
       { value: 'REQUESTER', text: 'Requester' },
       { value: 'CREATED_AT', text: 'Date Created' },

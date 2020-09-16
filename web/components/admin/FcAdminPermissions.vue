@@ -47,7 +47,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import { AuthScope, SortKeys } from '@/lib/Constants';
+import { AuthScope } from '@/lib/Constants';
 import { getUsers, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -76,11 +76,14 @@ export default {
         text: name,
       })),
     ];
+    const sortKeys = {
+      UNIQUE_NAME: u => u.uniqueName,
+    };
     return {
       authScopeSlots,
       columns,
       loadingChangeUserScope: false,
-      sortKeys: SortKeys.Users,
+      sortKeys,
       users: [],
     };
   },

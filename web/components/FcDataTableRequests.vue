@@ -2,14 +2,19 @@
   <FcDataTable
     v-model="internalValue"
     class="fc-data-table-requests"
+    :class="{
+      'is-expanded-child': isExpandedChild,
+    }"
     :columns="columns"
     fixed-header
     height="100%"
-    item-key="key"
+    :hide-default-header="isExpandedChild"
     :items="items"
     :loading="loading"
     must-sort
+    show-expand
     show-select
+    single-expand
     sort-by="DUE_DATE"
     :sort-desc="true"
     :sort-keys="sortKeys">
@@ -31,23 +36,30 @@
       <span
         v-if="item.type.name === 'STUDY_REQUEST'"
         class="text-truncate"
-        :title="item.id">
-        {{item.id}}
+        :title="item.studyRequest.id">
+        {{item.studyRequest.id}}
       </span>
     </template>
-    <template v-slot:item.LOCATION="{ item }">
-      <div class="align-center d-flex">
-        <template v-if="item.type.name === 'STUDY_REQUEST_BULK'">
-          <v-icon left>mdi-map-marker-multiple</v-icon>
-          <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
-          <v-spacer></v-spacer>
-          <v-icon right>mdi-menu-down</v-icon>
-        </template>
-        <div
-          v-else-if="item.location !== null"
-          class="text-wrap">
-          {{item.location.description}}
-        </div>
+    <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
+      <div
+        v-if="item.type.name === 'STUDY_REQUEST_BULK'"
+        class="align-center d-flex">
+        <v-icon left>mdi-map-marker-multiple</v-icon>
+        <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
+        <v-spacer></v-spacer>
+        <FcButtonAria
+          :aria-label="'Expand Bulk Request: ' + item.studyRequestBulk.name"
+          right
+          type="icon"
+          @click="expand(!isExpanded)">
+          <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
+          <v-icon v-else>mdi-menu-down</v-icon>
+        </FcButtonAria>
+      </div>
+      <div
+        v-else-if="item.location !== null"
+        class="text-wrap">
+        {{item.location.description}}
       </div>
     </template>
     <template v-slot:item.STUDY_TYPE="{ item }">
@@ -102,7 +114,7 @@
           <v-list-item
             v-for="({ text, value }, i) in itemsAssignedTo"
             :key="i"
-            @click="$emit('assign-to', { item, assignedTo: value })">
+            @click="actionAssignTo({ item, assignedTo: value })">
             <v-list-item-title>
               {{text}}
             </v-list-item-title>
@@ -141,17 +153,33 @@
           button-class="btn-show-request"
           top
           type="secondary"
-          @click="$emit('show-item', item)">
+          @click="actionShowItem(item)">
           <v-icon>mdi-open-in-new</v-icon>
         </FcButtonAria>
       </div>
+    </template>
+    <template v-slot:expanded-item="{ headers, item }">
+      <template v-if="item.type.name === 'STUDY_REQUEST_BULK'">
+        <td
+          class="px-0"
+          :colspan="headers.length">
+          <FcDataTableRequests
+            :columns="columns"
+            :has-filters="hasFilters"
+            :is-expanded-child="true"
+            :items="item.studyRequestBulk.studyRequests"
+            :loading="loading"
+            :loading-items="loadingItems"
+            @assign-to="actionAssignTo"
+            @show-item="actionShowItem" />
+        </td>
+      </template>
     </template>
   </FcDataTable>
 </template>
 
 <script>
 import {
-  SortKeys,
   StudyRequestAssignee,
   StudyRequestStatus,
 } from '@/lib/Constants';
@@ -175,6 +203,10 @@ export default {
   props: {
     columns: Array,
     hasFilters: Boolean,
+    isExpandedChild: {
+      type: Boolean,
+      default: false,
+    },
     items: Array,
     loading: {
       type: Boolean,
@@ -190,55 +222,132 @@ export default {
       ),
     ];
 
+    const sortKeys = {
+      ASSIGNED_TO: (r) => {
+        const dueDate = r.dueDate.toString();
+        if (r.assignedTo !== 'None') {
+          return `${r.assignedTo}:${dueDate}`;
+        }
+        return `ZZZ:${dueDate}`;
+      },
+      CREATED_AT: r => r.createdAt.toString(),
+      'data-table-expand': (r) => {
+        const dueDate = r.dueDate.toString();
+        if (r.type.name === 'STUDY_REQUEST') {
+          return `${r.location.description}:${dueDate}`;
+        }
+        return `${r.studyRequestBulk.name}:${dueDate}`;
+      },
+      DUE_DATE: r => r.dueDate.toString(),
+      LAST_EDITED_AT: (r) => {
+        if (r.lastEditedAt === null) {
+          return `A:${r.dueDate.toString()}`;
+        }
+        return `B:${r.lastEditedAt.toString()}`;
+      },
+      REQUESTER: r => `${r.requestedBy}:${r.dueDate.toString()}`,
+      STATUS: r => `${r.status.ordinal}:${r.dueDate.toString()}`,
+      STUDY_TYPE: (r) => {
+        const dueDate = r.dueDate.toString();
+        if (r.type.name === 'STUDY_REQUEST') {
+          return `${r.studyRequest.studyType.label}:${dueDate}`;
+        }
+        return `ZZZ:${dueDate}`;
+      },
+    };
+
     return {
       itemsAssignedTo,
-      sortKeys: SortKeys.Requests,
+      sortKeys,
       StudyRequestStatus,
     };
+  },
+  methods: {
+    actionAssignTo(payload) {
+      this.$emit('assign-to', payload);
+    },
+    actionShowItem(payload) {
+      this.$emit('show-item', payload);
+    },
   },
 };
 </script>
 
 <style lang="scss">
 .fc-data-table-requests {
-  & td:not(:first-child):not(:last-child),
-  & th:not(:first-child):not(:last-child) {
-    padding: 0 8px;
+  & td:nth-child(1) {
+    min-width: 56px;
+    width: 56px;
   }
+  & td:nth-child(2),
   & th.fc-data-table-header-ID {
     min-width: 70px;
     width: 70px;
   }
-  & th.fc-data-table-header-LOCATION {
-    min-width: 100px;
+  & td:nth-child(3),
+  & th.fc-data-table-header-data-table-expand {
+    min-width: 210px !important;
+    width: auto !important;
   }
+  & td:nth-child(4),
   & th.fc-data-table-header-STUDY_TYPE {
-    min-width: 110px;
+    min-width: 210px;
+    width: 210px;
   }
+  & td:nth-child(5),
   & th.fc-data-table-header-REQUESTER {
-    min-width: 100px;
+    min-width: 140px;
+    width: 140px;
   }
+  & td:nth-child(6),
   & th.fc-data-table-header-CREATED_AT {
-    min-width: 120px;
+    min-width: 140px;
+    width: 140px;
   }
+  & td:nth-child(7),
   & th.fc-data-table-header-ASSIGNED_TO {
     min-width: 140px;
     width: 140px;
   }
+  & td:nth-child(8),
   & th.fc-data-table-header-DUE_DATE {
-    min-width: 125px;
+    min-width: 140px;
+    width: 140px;
   }
+  & td:nth-child(9),
+  & th.fc-data-table-header-STATUS {
+    min-width: 140px;
+    width: 140px;
+  }
+  & td:nth-child(10),
   & th.fc-data-table-header-LAST_EDITED_AT {
-    min-width: 120px;
+    min-width: 140px;
+    width: 140px;
   }
+  & th:nth-child(11),
   & th.fc-data-table-header-ACTIONS {
-    min-width: 100px;
-    width: 100px;
+    min-width: 105px;
+    width: 105px;
+  }
+
+  & td:not(:first-child):not(:last-child),
+  & th:not(:first-child):not(:last-child) {
+    padding: 0 8px;
   }
 
   & .fc-button.btn-show-request {
     min-width: 36px;
     padding: 0;
+  }
+
+  & tr.v-data-table__expanded.v-data-table__expanded__row {
+    background-color: rgba(0, 86, 149, 0.07);
+  }
+  &.is-expanded-child {
+    border-radius: 0;
+    & tbody {
+      background-color: rgba(0, 86, 149, 0.07);
+    }
   }
 }
 </style>
