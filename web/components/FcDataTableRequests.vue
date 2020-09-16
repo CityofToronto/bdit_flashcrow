@@ -65,7 +65,11 @@
     <template v-slot:item.STUDY_TYPE="{ item }">
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
-          Multiple Location ({{item.studyRequestBulk.studyRequests.length}})
+          Multiple Locations
+          <span v-if="hasFilters">
+            ({{item.studyRequestBulk.studyRequests.length}} / {{item.studyRequestsTotal}})
+          </span>
+          <span v-else>({{item.studyRequestBulk.studyRequests.length}})</span>
         </span>
         <span v-else>
           {{item.studyRequest.studyType.label}}

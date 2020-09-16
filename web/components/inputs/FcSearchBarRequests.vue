@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { SearchKeys } from '@/lib/Constants';
+import RequestSearchKeys from '@/lib/requests/RequestSearchKeys';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -33,7 +33,7 @@ export default {
   computed: {
     itemsColumn() {
       const searchableColumns = this.columns.filter(
-        column => Object.prototype.hasOwnProperty.call(SearchKeys.Requests, column.value),
+        column => Object.prototype.hasOwnProperty.call(RequestSearchKeys, column.value),
       );
       return [
         { text: 'All Columns', value: null },
