@@ -1,5 +1,5 @@
 <template>
-  <div class="pl-5">
+  <div>
     <section class="pr-5">
       <v-row class="mt-1 mb-2">
         <v-col cols="6">

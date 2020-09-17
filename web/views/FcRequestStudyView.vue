@@ -39,7 +39,9 @@
         </FcButton>
       </v-col>
     </v-row>
+
     <v-divider></v-divider>
+
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
@@ -59,7 +61,7 @@
           </v-col>
           <v-col cols="6">
             <FcSummaryStudyRequest
-              class="mr-5"
+              class="mx-5"
               :study-request="studyRequest"
               :study-request-changes="studyRequestChanges"
               :study-request-users="studyRequestUsers" />
@@ -73,7 +75,9 @@
               :show-search="false" />
           </v-col>
         </v-row>
+
         <v-divider></v-divider>
+
         <FcCommentsStudyRequest
           class="mt-4"
           :size-limit="240"
@@ -88,14 +92,13 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapGetters,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
-import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
+import {
+  AuthScope,
+  LocationSelectionType,
+  StudyRequestStatus,
+} from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
@@ -202,7 +205,6 @@ export default {
       return 'Requests';
     },
     ...mapState(['auth', 'backViewRequest', 'locations']),
-    ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
   },
   methods: {
     async actionAcceptChanges() {
@@ -254,17 +256,6 @@ export default {
       this.studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
       await this.updateMoreActions();
     },
-    actionViewData() {
-      if (this.locationsEmpty) {
-        return;
-      }
-      const params = this.locationsRouteParams;
-      const route = {
-        name: 'viewDataAtLocation',
-        params,
-      };
-      this.$router.push(route);
-    },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const {
@@ -276,13 +267,15 @@ export default {
       } = await getStudyRequest(id);
       const { user } = this.auth;
       this.studyRequestUsers.set(user.id, user);
+      const features = [studyRequestLocation];
+      const selectionType = LocationSelectionType.POINTS;
+      await this.initLocations({ features, selectionType });
 
       this.studyRequest = studyRequest;
       this.studyRequestChanges = studyRequestChanges;
       this.studyRequestComments = studyRequestComments;
       this.studyRequestLocation = studyRequestLocation;
       this.studyRequestUsers = studyRequestUsers;
-      this.setLocations([studyRequestLocation]);
     },
     onAddComment({ studyRequest, studyRequestComment }) {
       this.studyRequest = studyRequest;
@@ -304,8 +297,7 @@ export default {
       }
       this.loadingMoreActions = false;
     },
-    ...mapMutations(['setLocations']),
-    ...mapActions(['saveStudyRequest']),
+    ...mapActions(['initLocations', 'saveStudyRequest']),
   },
 };
 </script>
