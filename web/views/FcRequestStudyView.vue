@@ -1,92 +1,81 @@
 <template>
-  <div class="fc-drawer-view-request d-flex flex-column">
-    <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading">
-      <FcButton
-        type="secondary"
-        @click="actionNavigateBack">
-        <v-icon left>mdi-chevron-left</v-icon>
-        {{labelNavigateBack}}
-      </FcButton>
-      <h1 class="flex-grow-1 headline text-center">
-        <span>
-          Request #{{$route.params.id}}:
-        </span>
-        <v-progress-circular
-          v-if="loading"
-          color="primary"
-          indeterminate
-          :size="20"
-          :width="2" />
-        <span
-          v-else
-          class="font-weight-regular">
-          {{studyRequestLocation.description}}
-        </span>
-      </h1>
-      <FcButton
-        v-if="studyRequest !== null && studyRequest.status.dataViewable"
-        :disabled="loading"
-        type="secondary"
-        @click="actionViewData">
-        View Data
-      </FcButton>
-      <FcButton
-        v-else-if="studyRequest !== null && canEdit && studyRequest.status.editable"
-        :disabled="loading"
-        type="secondary"
-        @click="actionEdit">
-        <v-icon color="primary" left>mdi-pencil</v-icon> Edit
-      </FcButton>
-      <v-menu
-        v-if="itemsMoreActions.length > 0"
-        left>
-        <template v-slot:activator="{ on: onMenu }">
-          <v-tooltip
-            right
-            :z-index="100">
-            <template v-slot:activator="{ on: onTooltip }">
-              <FcButton
-                aria-label="More Actions"
-                class="ml-2"
-                :loading="loadingMoreActions"
-                type="icon"
-                v-on="{ ...onMenu, ...onTooltip }">
-                <v-icon>mdi-dots-vertical</v-icon>
-              </FcButton>
-            </template>
-            <span>More Actions</span>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <template
-            v-for="(item, i) in itemsMoreActions">
-            <v-divider
-              v-if="item === null"
-              :key="'divider_' + i" />
-            <v-list-item
-              v-else
-              :key="item.value"
-              @click="actionMoreActions(item.value)">
-              <v-list-item-title>
-                {{item.label}}
-              </v-list-item-title>
-            </v-list-item>
-          </template>
-        </v-list>
-      </v-menu>
-    </div>
+  <section class="fc-request-study-view d-flex flex-column fill-height">
+    <v-row
+      class="align-center flex-grow-0 flex-shrink-0 px-3 py-2 shading"
+      no-gutters>
+      <v-col cols="2">
+        <FcButton
+          type="secondary"
+          @click="actionNavigateBack">
+          <v-icon left>mdi-chevron-left</v-icon>
+          {{labelNavigateBack}}
+        </FcButton>
+      </v-col>
+      <v-col class="text-center" cols="8">
+        <h1 class="headline">
+          <span>
+            Request #{{$route.params.id}}:
+          </span>
+          <v-progress-circular
+            v-if="loading"
+            color="primary"
+            indeterminate
+            :size="20"
+            :width="2" />
+          <span
+            v-else
+            class="font-weight-regular">
+            {{studyRequestLocation.description}}
+          </span>
+        </h1>
+      </v-col>
+      <v-col class="text-right" cols="2">
+        <FcButton
+          v-if="studyRequest !== null && canEdit && studyRequest.status.editable"
+          :disabled="loading"
+          type="secondary"
+          @click="actionEdit">
+          <v-icon color="primary" left>mdi-pencil</v-icon> Edit
+        </FcButton>
+      </v-col>
+    </v-row>
     <v-divider></v-divider>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
         indeterminate />
       <div v-else>
-        <FcSummaryStudyRequest
-          :study-request="studyRequest"
-          :study-request-changes="studyRequestChanges"
-          :study-request-users="studyRequestUsers" />
+        <v-row
+          class="mb-6"
+          no-gutters>
+          <v-col class="mt-6 px-5" cols="12">
+            <h2 class="display-3 mb-4">
+              {{studyRequestLocation.description}}
+            </h2>
+            <FcStatusStudyRequest
+              class="mt-2"
+              :study-request="studyRequest"
+              :study-request-changes="studyRequestChanges" />
+          </v-col>
+          <v-col cols="6">
+            <FcSummaryStudyRequest
+              class="mr-5"
+              :study-request="studyRequest"
+              :study-request-changes="studyRequestChanges"
+              :study-request-users="studyRequestUsers" />
+          </v-col>
+          <v-col cols="6">
+            <FcPaneMap
+              class="mx-5"
+              :show-legend="false"
+              :show-location-selection="false"
+              :show-modes="false"
+              :show-search="false" />
+          </v-col>
+        </v-row>
         <v-divider></v-divider>
         <FcCommentsStudyRequest
+          class="mt-4"
           :size-limit="240"
           :study-request="studyRequest"
           :study-request-comments="studyRequestComments"
@@ -95,7 +84,7 @@
           @delete-comment="onDeleteComment" />
       </div>
     </section>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -108,14 +97,16 @@ import {
 
 import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
-import FcCommentsStudyRequest from '@/web/components/FcCommentsStudyRequest.vue';
-import FcSummaryStudyRequest from '@/web/components/FcSummaryStudyRequest.vue';
+import FcPaneMap from '@/web/components/FcPaneMap.vue';
+import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
+import FcStatusStudyRequest from '@/web/components/requests/FcStatusStudyRequest.vue';
+import FcSummaryStudyRequest from '@/web/components/requests/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
-  name: 'FcDrawerViewRequest',
+  name: 'FcRequestStudyView',
   mixins: [
     FcMixinAuthScope,
     FcMixinRouteAsync,
@@ -123,6 +114,8 @@ export default {
   components: {
     FcButton,
     FcCommentsStudyRequest,
+    FcPaneMap,
+    FcStatusStudyRequest,
     FcSummaryStudyRequest,
   },
   data() {
@@ -318,7 +311,8 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-drawer-view-request {
-  max-height: 100vh;
+.fc-request-study-view {
+  max-height: calc(100vh - 52px);
+  width: 100%;
 }
 </style>

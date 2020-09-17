@@ -6,6 +6,7 @@ import {
   LocationSelectionType,
   MAX_LOCATIONS,
 } from '@/lib/Constants';
+import { formatUsername } from '@/lib/StringFormatters';
 import {
   getAuth,
   getLocationsByCentreline,
@@ -78,12 +79,7 @@ export default new Vuex.Store({
       if (!state.auth.loggedIn) {
         return null;
       }
-      const { uniqueName } = state.auth.user;
-      const i = uniqueName.indexOf('\\');
-      if (i === -1) {
-        return uniqueName;
-      }
-      return uniqueName.slice(i + 1);
+      return formatUsername(state.auth.user);
     },
     userScope(state) {
       if (!state.auth.loggedIn) {

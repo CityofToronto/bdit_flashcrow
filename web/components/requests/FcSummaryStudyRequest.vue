@@ -2,18 +2,11 @@
   <div class="pl-5">
     <section class="pr-5">
       <v-row class="mt-1 mb-2">
-        <v-col class="pb-0" cols="12">
-          <div class="subtitle-1">Status</div>
-          <FcStatusStudyRequest
-            class="mt-2"
-            :study-request="studyRequest"
-            :study-request-changes="studyRequestChanges" />
-        </v-col>
         <v-col cols="6">
           <div class="subtitle-1">Requester</div>
           <div class="mt-1 display-1">
             <span v-if="requestedBy !== null">
-              {{requestedBy}}
+              {{requestedBy | username}}
             </span>
           </div>
         </v-col>
@@ -28,11 +21,8 @@
         </v-col>
         <v-col cols="6">
           <div class="subtitle-1">Reasons</div>
-          <div
-            v-for="(reason, i) in studyRequest.reasons"
-            :key="i"
-            class="mt-1 display-1">
-            {{reason.text}}
+          <div class="mt-1 display-1">
+            {{studyRequest.reason.text}}
           </div>
         </v-col>
         <v-col cols="6">
@@ -42,7 +32,7 @@
           </div>
           <div
             v-if="studyRequest.urgent"
-            class="align-center d-flex mt-1">
+            class="align-center d-flex">
             <v-icon color="warning" left>mdi-clipboard-alert</v-icon>
             <v-messages
               :value="['This request has been marked as urgent.']"></v-messages>
@@ -114,13 +104,9 @@
 import { mapState } from 'vuex';
 
 import { numConsecutiveDaysOfWeek } from '@/lib/time/TimeUtils';
-import FcStatusStudyRequest from '@/web/components/FcStatusStudyRequest.vue';
 
 export default {
   name: 'FcSummaryStudyRequest',
-  components: {
-    FcStatusStudyRequest,
-  },
   props: {
     studyRequest: Object,
     studyRequestChanges: Array,
@@ -150,12 +136,7 @@ export default {
       if (!studyRequestUsers.has(studyRequest.userId)) {
         return null;
       }
-      const { uniqueName } = studyRequestUsers.get(studyRequest.userId);
-      const i = uniqueName.indexOf('\\');
-      if (i === -1) {
-        return uniqueName;
-      }
-      return uniqueName.slice(i + 1);
+      return studyRequestUsers.get(studyRequest.userId);
     },
     ...mapState(['auth']),
   },

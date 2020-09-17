@@ -67,6 +67,11 @@ import { mapMutations, mapState } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 
+const ROUTES_SHOW_LOCATION_SELECTION = [
+  'viewData',
+  'viewDataAtLocation',
+];
+
 export default {
   name: 'FcLayoutDrawerMap',
   components: {
@@ -101,11 +106,7 @@ export default {
     },
     showLocationSelection() {
       const { name } = this.$route;
-      return name !== 'requestStudyEdit'
-        && name !== 'requestStudyNew'
-        && name !== 'requestStudyView'
-        && name !== 'viewCollisionReportsAtLocation'
-        && name !== 'viewStudyReportsAtLocation';
+      return ROUTES_SHOW_LOCATION_SELECTION.includes(name);
     },
     vertical() {
       const { vertical = false } = this.$route.meta;

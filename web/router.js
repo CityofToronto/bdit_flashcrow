@@ -58,6 +58,32 @@ const router = new Router({
       },
     },
     {
+      path: '/requests/study/:id',
+      name: 'requestStudyView',
+      meta: {
+        auth: {
+          scope: [AuthScope.STUDY_REQUESTS],
+        },
+        title({ params: { id } }) {
+          return `View Request #${id}`;
+        },
+      },
+      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyView.vue'),
+    },
+    {
+      path: '/requests/study/bulk/:id',
+      name: 'requestStudyBulkView',
+      meta: {
+        auth: {
+          scope: [AuthScope.STUDY_REQUESTS],
+        },
+        title({ params: { id } }) {
+          return `View Bulk Request #${id}`;
+        },
+      },
+      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyBulkView.vue'),
+    },
+    {
       path: '/downloads/manage',
       name: 'downloadsManage',
       meta: {
@@ -159,17 +185,17 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/requests/study/:id',
-        name: 'requestStudyView',
+        path: '/requests/study/bulk/:id/edit',
+        name: 'requestStudyBulkEdit',
         meta: {
           auth: {
-            scope: [AuthScope.STUDY_REQUESTS],
+            scope: [AuthScope.STUDY_REQUESTS_EDIT],
           },
           title({ params: { id } }) {
-            return `View Request #${id}`;
+            return `Edit Request #${id}`;
           },
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerViewRequest.vue'),
+        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();

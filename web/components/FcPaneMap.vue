@@ -10,7 +10,7 @@
       </div>
       <div
         class="pane-map-location-search"
-        v-if="!drawerOpen">
+        v-if="!drawerOpen && showSearch">
         <FcSelectorCollapsedLocation
           v-if="!showLocationSelection"
           class="mt-5 ml-5" />
@@ -30,8 +30,11 @@
           class="mt-5 ml-5" />
       </div>
       <FcPaneMapLegend
+        v-if="showLegend"
         v-model="internalLegendOptions" />
-      <div class="pane-map-mode">
+      <div
+        v-if="showModes"
+        class="pane-map-mode">
         <FcButton
           class="mr-2"
           type="fab-text"
@@ -185,7 +188,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    showLegend: {
+      type: Boolean,
+      default: true,
+    },
     showLocationSelection: {
+      type: Boolean,
+      default: true,
+    },
+    showModes: {
+      type: Boolean,
+      default: true,
+    },
+    showSearch: {
       type: Boolean,
       default: true,
     },

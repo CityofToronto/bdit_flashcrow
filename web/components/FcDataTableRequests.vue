@@ -81,7 +81,7 @@
         <span
           v-if="item.requestedBy !== null"
           :title="item.requestedBy">
-          {{item.requestedBy}}
+          {{item.requestedBy | username}}
         </span>
       </div>
     </template>

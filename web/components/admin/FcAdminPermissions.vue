@@ -10,7 +10,7 @@
       :sort-desc="false"
       :sort-keys="sortKeys">
       <template v-slot:item.UNIQUE_NAME="{ item }">
-        <span>{{item.uniqueName}}</span>
+        <span>{{item | username}}</span>
       </template>
       <template
         v-for="{ authScope, itemSlot } of authScopeSlots"
@@ -48,6 +48,7 @@
 import { mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
+import { formatUsername } from '@/lib/StringFormatters';
 import { getUsers, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -77,7 +78,7 @@ export default {
       })),
     ];
     const sortKeys = {
-      UNIQUE_NAME: u => u.uniqueName,
+      UNIQUE_NAME: formatUsername,
     };
     return {
       authScopeSlots,

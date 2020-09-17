@@ -322,15 +322,15 @@ export default {
     actionShowItem(item) {
       let route;
       if (item.type === ItemType.STUDY_REQUEST_BULK) {
-        const id = item.studyRequestBulk;
+        const { id } = item.studyRequestBulk;
         route = {
           name: 'requestStudyBulkView',
           params: { id },
         };
       } else {
-        const id = item.studyRequest;
+        const { id } = item.studyRequest;
         route = {
-          name: 'requestStudyBulk',
+          name: 'requestStudyView',
           params: { id },
         };
       }
