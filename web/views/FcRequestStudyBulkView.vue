@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
@@ -169,13 +169,11 @@ export default {
       );
     },
     labelNavigateBack() {
-      const { backViewRequest: { name } } = this;
-      if (name === 'viewDataAtLocation') {
-        return 'View Data';
-      }
       return 'Requests';
     },
-    ...mapState(['backViewRequest']),
+    routeNavigateBack() {
+      return { name: 'requestsTrack' };
+    },
   },
   methods: {
     actionAssignTo() {
@@ -190,8 +188,7 @@ export default {
       this.$router.push(route);
     },
     actionNavigateBack() {
-      const { backViewRequest: route } = this;
-      this.$router.push(route);
+      this.$router.push(this.routeNavigateBack);
     },
     actionShowItem(item) {
       const { id } = item.studyRequest;

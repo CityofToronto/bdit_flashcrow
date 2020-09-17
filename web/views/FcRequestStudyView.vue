@@ -99,7 +99,7 @@ import {
   LocationSelectionType,
   StudyRequestStatus,
 } from '@/lib/Constants';
-import { getStudyRequest } from '@/lib/api/WebApi';
+import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcStatusStudyRequest from '@/web/components/requests/FcStatusStudyRequest.vue';
@@ -125,6 +125,7 @@ export default {
     return {
       loadingMoreActions: false,
       studyRequest: null,
+      studyRequestBulkName: null,
       studyRequestChanges: [],
       studyRequestComments: [],
       studyRequestLocation: null,
@@ -198,13 +199,22 @@ export default {
       ];
     },
     labelNavigateBack() {
-      const { backViewRequest: { name } } = this;
-      if (name === 'viewDataAtLocation') {
-        return 'View Data';
+      if (this.studyRequestBulkName !== null) {
+        return this.studyRequestBulkName;
       }
       return 'Requests';
     },
-    ...mapState(['auth', 'backViewRequest', 'locations']),
+    routeNavigateBack() {
+      if (this.studyRequest === null || this.studyRequest.studyRequestBulkId === null) {
+        return { name: 'requestsTrack' };
+      }
+      const id = this.studyRequest.studyRequestBulkId;
+      return {
+        name: 'requestStudyBulkView',
+        params: { id },
+      };
+    },
+    ...mapState(['auth', 'locations']),
   },
   methods: {
     async actionAcceptChanges() {
@@ -242,8 +252,7 @@ export default {
       }
     },
     actionNavigateBack() {
-      const { backViewRequest: route } = this;
-      this.$router.push(route);
+      this.$router.push(this.routeNavigateBack);
     },
     async actionReopen() {
       if (this.studyRequest.status === StudyRequestStatus.CANCELLED) {
@@ -265,16 +274,23 @@ export default {
         studyRequestLocation,
         studyRequestUsers,
       } = await getStudyRequest(id);
-      const { user } = this.auth;
-      this.studyRequestUsers.set(user.id, user);
       const features = [studyRequestLocation];
       const selectionType = LocationSelectionType.POINTS;
       await this.initLocations({ features, selectionType });
 
+      let studyRequestBulkName = null;
+      if (studyRequest.studyRequestBulkId !== null) {
+        studyRequestBulkName = await getStudyRequestBulkName(studyRequest.studyRequestBulkId);
+      }
+
       this.studyRequest = studyRequest;
+      this.studyRequestBulkName = studyRequestBulkName;
       this.studyRequestChanges = studyRequestChanges;
       this.studyRequestComments = studyRequestComments;
       this.studyRequestLocation = studyRequestLocation;
+
+      const { user } = this.auth;
+      this.studyRequestUsers.set(user.id, user);
       this.studyRequestUsers = studyRequestUsers;
     },
     onAddComment({ studyRequest, studyRequestComment }) {
