@@ -64,7 +64,8 @@
               class="mx-5"
               :study-request="studyRequest"
               :study-request-changes="studyRequestChanges"
-              :study-request-users="studyRequestUsers" />
+              :study-request-users="studyRequestUsers"
+              style="min-height: 320px;" />
           </v-col>
           <v-col cols="6">
             <FcPaneMap

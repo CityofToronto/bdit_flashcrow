@@ -11,16 +11,7 @@
           </div>
         </v-col>
         <v-col cols="6">
-          <div class="subtitle-1">Service Request Number</div>
-          <div class="mt-1 display-1">
-            <span v-if="studyRequest.serviceRequestId">
-              {{studyRequest.serviceRequestId}}
-            </span>
-            <span v-else>None</span>
-          </div>
-        </v-col>
-        <v-col cols="6">
-          <div class="subtitle-1">Reasons</div>
+          <div class="subtitle-1">Reason</div>
           <div class="mt-1 display-1">
             {{studyRequest.reason.text}}
           </div>
@@ -101,15 +92,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 import { numConsecutiveDaysOfWeek } from '@/lib/time/TimeUtils';
 
 export default {
   name: 'FcSummaryStudyRequest',
   props: {
     studyRequest: Object,
-    studyRequestChanges: Array,
     studyRequestUsers: Map,
   },
   computed: {
@@ -138,7 +126,6 @@ export default {
       }
       return studyRequestUsers.get(studyRequest.userId);
     },
-    ...mapState(['auth']),
   },
 };
 </script>

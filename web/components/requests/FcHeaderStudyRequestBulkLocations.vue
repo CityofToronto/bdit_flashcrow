@@ -10,98 +10,45 @@
 
       <v-spacer></v-spacer>
 
-      <v-menu>
-        <template v-slot:activator="{ on, attrs }">
-          <FcButton
-            v-bind="attrs"
-            v-on="on"
-            :disabled="selectAll === false"
-            type="secondary">
-            <span>Study Type</span>
-            <v-icon right>mdi-menu-down</v-icon>
-          </FcButton>
+      <FcMenu
+        :items="itemsStudyType"
+        @action-menu="actionSetStudyType">
+        <span>Study Type</span>
+      </FcMenu>
+      <FcMenu
+        button-class="ml-2"
+        :disabled="selectAll === false"
+        :items="itemsDaysOfWeek"
+        min-width="120"
+        @action-menu="actionSetDaysOfWeek">
+        <template v-slot:item="{ item }">
+          <div class="align-center d-flex">
+            <v-simple-checkbox
+              class="mx-2"
+              dense
+              :indeterminate="selected === null"
+              :value="selected"
+              @click="actionSetDaysOfWeek(item.value, item.selected)" />
+            <span>{{text}}</span>
+          </div>
         </template>
-        <v-list>
-          <v-list-item
-            v-for="({ text, value }, i) in itemsStudyType"
-            :key="i"
-            @click="actionSetStudyType(value)">
-            <v-list-item-title>{{text}}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <span>Days</span>
+      </FcMenu>
 
-      <v-menu min-width="120">
-        <template v-slot:activator="{ on, attrs }">
-          <FcButton
-            v-bind="attrs"
-            v-on="on"
-            class="ml-2"
-            :disabled="selectAll === false"
-            type="secondary">
-            <span>Days</span>
-            <v-icon right>mdi-menu-down</v-icon>
-          </FcButton>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="({ selected, text, value }, i) in itemsDaysOfWeek"
-            :key="i"
-            @click="actionSetDaysOfWeek(value, selected)">
-            <v-list-item-title class="align-center d-flex">
-              <v-simple-checkbox
-                class="mx-2"
-                dense
-                :indeterminate="selected === null"
-                :value="selected"
-                @click="actionSetDaysOfWeek(value, selected)" />
-              <span>{{text}}</span>
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <v-menu v-if="showDuration">
-        <template v-slot:activator="{ on, attrs }">
-          <FcButton
-            v-bind="attrs"
-            v-on="on"
-            class="ml-2"
-            type="secondary">
-            <span>Duration</span>
-            <v-icon right>mdi-menu-down</v-icon>
-          </FcButton>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="({ text, value }, i) in itemsDuration"
-            :key="i"
-            @click="actionSetDuration(value)">
-            <v-list-item-title>{{text}}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <v-menu v-if="showHours">
-        <template v-slot:activator="{ on, attrs }">
-          <FcButton
-            v-bind="attrs"
-            v-on="on"
-            class="ml-2"
-            type="secondary">
-            <span>Hours</span>
-            <v-icon right>mdi-menu-down</v-icon>
-          </FcButton>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="({ text, value }, i) in itemsHours"
-            :key="i"
-            @click="actionSetHours(value)">
-            <v-list-item-title>{{text}}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <FcMenu
+        v-if="showDuration"
+        button-class="ml-2"
+        :items="itemsDuration"
+        @action-menu="actionSetDuration">
+        <span>Duration</span>
+      </FcMenu>
+      <FcMenu
+        v-if="showHours"
+        button-class="ml-2"
+        :items="itemsHours"
+        @action-menu="actionSetHours">
+        <span>Hours</span>
+      </FcMenu>
     </div>
   </div>
 </template>
@@ -110,14 +57,14 @@
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcHeaderStudyRequestBulkLocations',
   mixins: [FcMixinVModelProxy(Array)],
   components: {
-    FcButton,
+    FcMenu,
   },
   props: {
     indices: Array,
@@ -207,7 +154,7 @@ export default {
     },
   },
   methods: {
-    actionSetDaysOfWeek(dayOfWeek, selectedPrev) {
+    actionSetDaysOfWeek({ selected: selectedPrev, value: dayOfWeek }) {
       const selected = selectedPrev !== true;
       if (selected) {
         this.internalValue.forEach((i) => {
@@ -228,17 +175,17 @@ export default {
         });
       }
     },
-    actionSetDuration(duration) {
+    actionSetDuration({ value: duration }) {
       this.internalValue.forEach((i) => {
         this.studyRequests[i].duration = duration;
       });
     },
-    actionSetHours(hours) {
+    actionSetHours({ value: hours }) {
       this.internalValue.forEach((i) => {
         this.studyRequests[i].hours = hours;
       });
     },
-    actionSetStudyType(studyType) {
+    actionSetStudyType({ value: studyType }) {
       this.internalValue.forEach((i) => {
         this.studyRequests[i].studyType = studyType;
       });

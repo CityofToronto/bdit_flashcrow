@@ -59,9 +59,11 @@
             </div>
           </v-col>
           <v-col cols="6">
-            <div class="mx-5" style="height: 320px;">
-              TODO: summary details
-            </div>
+            <FcSummaryStudyRequestBulk
+              class="mx-5"
+              :study-request-bulk="studyRequestBulk"
+              :study-request-users="studyRequestUsers"
+              style="min-height: 320px;" />
           </v-col>
           <v-col cols="6">
             <FcPaneMap
@@ -73,18 +75,38 @@
           </v-col>
         </v-row>
 
-        <v-divider></v-divider>
+        <div class="mb-6 mx-5">
+          <div class="align-center d-flex px-4 py-2">
+            <v-simple-checkbox
+              v-model="selectAll"
+              class="mr-6"
+              :indeterminate="selectAll === null"></v-simple-checkbox>
 
-        <FcDataTableRequests
-          v-model="selectedItems"
-          :columns="columns"
-          :has-filters="false"
-          :items="itemsStudyRequests"
-          :loading="false"
-          :loading-items="loadingSaveStudyRequest"
-          :sort-by.sync="sortBy"
-          @assign-to="actionAssignTo"
-          @show-item="actionShowItem" />
+            <FcMenu
+              button-class="mr-2"
+              :items="itemsStatus">
+              <span>Mark all as</span>
+            </FcMenu>
+            <FcMenu
+              button-class="mr-2"
+              :items="itemsAssignedTo">
+              <span>Assign all to</span>
+            </FcMenu>
+          </div>
+
+          <v-divider></v-divider>
+
+          <FcDataTableRequests
+            v-model="selectedItems"
+            :columns="columns"
+            :has-filters="false"
+            :items="items"
+            :loading="false"
+            :loading-items="loadingSaveStudyRequest"
+            :sort-by.sync="sortBy"
+            @assign-to="actionAssignTo"
+            @show-item="actionShowItem" />
+        </div>
       </div>
     </section>
   </section>
@@ -93,14 +115,16 @@
 <script>
 import { mapActions } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, StudyRequestAssignee } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcSummaryStudyRequestBulk from '@/web/components/requests/FcSummaryStudyRequestBulk.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -113,7 +137,9 @@ export default {
   components: {
     FcButton,
     FcDataTableRequests,
+    FcMenu,
     FcPaneMap,
+    FcSummaryStudyRequestBulk,
   },
   data() {
     // TODO: DRY with Track Requests
@@ -124,7 +150,7 @@ export default {
       { value: 'REQUESTER', text: 'Requester' },
       { value: 'CREATED_AT', text: 'Date Created' },
       { value: 'ASSIGNED_TO', text: 'Assigned To' },
-      { value: 'DUE_DATE', text: 'Date Required' },
+      { value: 'DUE_DATE', text: 'Due Date' },
       { value: 'STATUS', text: 'Status' },
       { value: 'LAST_EDITED_AT', text: 'Last Updated' },
       { value: 'ACTIONS', text: '' },
@@ -156,7 +182,7 @@ export default {
       }
       return false;
     },
-    itemsStudyRequests() {
+    items() {
       if (this.studyRequestBulk === null) {
         return [];
       }
@@ -168,11 +194,42 @@ export default {
         ),
       );
     },
+    itemsAssignedTo() {
+      return [
+        { text: 'None', value: null },
+        ...StudyRequestAssignee.enumValues.map(
+          enumValue => ({ text: enumValue.text, value: enumValue }),
+        ),
+      ];
+    },
+    itemsStatus() {
+      // TODO: actually implement this
+      return [{ text: 'test', value: 'test' }];
+    },
     labelNavigateBack() {
       return 'Requests';
     },
     routeNavigateBack() {
       return { name: 'requestsTrack' };
+    },
+    selectAll: {
+      get() {
+        const k = this.selectedItems.length;
+        if (k === 0) {
+          return false;
+        }
+        if (k === this.items.length) {
+          return true;
+        }
+        return null;
+      },
+      set(selectAll) {
+        if (selectAll) {
+          this.selectedItems = this.items;
+        } else {
+          this.selectedItems = [];
+        }
+      },
     },
   },
   methods: {

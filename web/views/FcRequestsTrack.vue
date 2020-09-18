@@ -186,7 +186,7 @@ export default {
       { value: 'REQUESTER', text: 'Requester' },
       { value: 'CREATED_AT', text: 'Date Created' },
       { value: 'ASSIGNED_TO', text: 'Assigned To' },
-      { value: 'DUE_DATE', text: 'Date Required' },
+      { value: 'DUE_DATE', text: 'Due Date' },
       { value: 'STATUS', text: 'Status' },
       { value: 'LAST_EDITED_AT', text: 'Last Updated' },
       { value: 'ACTIONS', text: '' },

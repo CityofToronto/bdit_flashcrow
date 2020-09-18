@@ -85,61 +85,8 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-row
-      class="mt-5"
-      no-gutters>
-      <v-col class="py-2" cols="6">
-        <div class="subtitle-1">
-          Study Name
-        </div>
-        <div class="mt-1 display-1">
-          {{studyRequestBulk.name}}
-        </div>
-      </v-col>
-      <v-col class="py-2" cols="6">
-        <div class="subtitle-1">
-          Due Date
-        </div>
-        <div class="mt-1 display-1">
-          {{studyRequestBulk.dueDate | date}}
-        </div>
-      </v-col>
-    </v-row>
-
-    <v-row
-      class="mt-5"
-      no-gutters>
-      <v-col class="py-2" cols="6">
-        <div class="subtitle-1">
-          Service Request Number
-        </div>
-        <div class="mt-1 display-1">
-          9950602
-        </div>
-      </v-col>
-      <v-col class="py-2" cols="6">
-        <div class="subtitle-1">
-          Reason
-        </div>
-        <div class="mt-1 display-1">
-          {{studyRequestBulk.reason.text}}
-        </div>
-      </v-col>
-    </v-row>
-
-    <v-row
-      class="mt-5"
-      no-gutters>
-      <v-col class="py-2" cols="12">
-        <div class="subtitle-1">
-          Additional Information
-        </div>
-        <div class="mt-1 display-1">
-          <span v-if="studyRequestBulk.urgentReason">{{studyRequestBulk.urgentReason}}</span>
-          <span v-else>None</span>
-        </div>
-      </v-col>
-    </v-row>
+    <FcSummaryStudyRequestBulk
+      :study-request-bulk="studyRequestBulk" />
   </section>
 </template>
 
@@ -147,12 +94,14 @@
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCardStudyRequestConfirm from '@/web/components/requests/FcCardStudyRequestConfirm.vue';
+import FcSummaryStudyRequestBulk from '@/web/components/requests/FcSummaryStudyRequestBulk.vue';
 
 export default {
   name: 'FcStudyRequestBulkConfirm',
   components: {
     FcButton,
     FcCardStudyRequestConfirm,
+    FcSummaryStudyRequestBulk,
   },
   props: {
     indicesIntersectionsSelected: Array,
