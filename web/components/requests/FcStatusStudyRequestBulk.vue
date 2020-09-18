@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-status-study-request">
+  <div class="fc-status-study-request-bulk">
     <v-progress-linear
       background-color="border"
       class="status-progress"
@@ -26,7 +26,10 @@
         :cols="i === 2 ? 4 : 2">
         <template v-if="detail !== null">
           <div class="headline font-weight-regular">
-            {{detail.status.text}}
+            <span>{{detail.status.text}}</span>
+            <span v-if="detail.n > 0">
+              ({{detail.n}} / {{studyRequestBulk.studyRequests.length}})
+            </span>
           </div>
           <div class="mt-1 subtitle-2">
             {{detail.createdAt | date}}
@@ -42,12 +45,13 @@ import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyRequestStatus } from '@/lib/Constants';
+import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import { afterDateOf } from '@/lib/time/TimeUtils';
 
 export default {
-  name: 'FcStatusStudyRequest',
+  name: 'FcStatusStudyRequestBulk',
   props: {
-    studyRequest: Object,
+    studyRequestBulk: Object,
     studyRequestChanges: Array,
   },
   computed: {
@@ -70,86 +74,81 @@ export default {
       return details;
     },
     milestones() {
-      const { createdAt, status } = this.studyRequest;
+      const { createdAt } = this.studyRequestBulk;
+
+      let n = this.statusCounts.get(StudyRequestStatus.REQUESTED);
       const milestones = [{
         createdAt,
         status: StudyRequestStatus.REQUESTED,
+        n,
       }];
 
-      if (status === StudyRequestStatus.REQUESTED) {
-        return milestones;
-      }
-      if (status === StudyRequestStatus.CHANGES_NEEDED) {
+      n = this.statusCounts.get(StudyRequestStatus.CHANGES_NEEDED);
+      if (n > 0) {
         const changesNeeded = this.statusChanges.get(StudyRequestStatus.CHANGES_NEEDED);
-        /*
-         * During status changes to study requests, we first update the status on the
-         * `studyRequest` object, then persist that update.  The REST API response contains
-         * the change object, which we can then add into our local changes list.
-         *
-         * As such, there's a short period of time where the status has been updated,
-         * but no change object of the corresponding type is available.  This means we
-         * must guard against this here, only adding the change object to `milestones` if
-         * it's available.
-         *
-         * This same pattern is repeated for other status codes below.
-         */
         if (changesNeeded) {
-          milestones.push(changesNeeded);
+          milestones.push({ ...changesNeeded, n });
         }
-        return milestones;
-      }
-      if (status === StudyRequestStatus.CANCELLED) {
-        const cancelled = this.statusChanges.get(StudyRequestStatus.CANCELLED);
-        if (cancelled) {
-          milestones.push(cancelled);
+      } else {
+        n = this.statusCounts.get(StudyRequestStatus.CANCELLED);
+        if (n > 0) {
+          const cancelled = this.statusChanges.get(StudyRequestStatus.CANCELLED);
+          if (cancelled) {
+            milestones.push({ ...cancelled, n });
+          }
         }
-        return milestones;
       }
 
-      const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
-      if (assigned) {
-        milestones.push(assigned);
+      n = this.statusCounts.get(StudyRequestStatus.ASSIGNED);
+      if (n > 0 || this.progress >= 50) {
+        const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
+        if (assigned) {
+          milestones.push({ ...assigned, n });
+        }
       }
 
-      if (status === StudyRequestStatus.ASSIGNED) {
-        return milestones;
-      }
-      if (status === StudyRequestStatus.REJECTED) {
+      n = this.statusCounts.get(StudyRequestStatus.REJECTED);
+      if (n > 0) {
         const rejected = this.statusChanges.get(StudyRequestStatus.REJECTED);
         if (rejected) {
-          milestones.push(rejected);
+          milestones.push({ ...rejected, n });
         }
-        return milestones;
       }
-      // COMPLETED
-      const completed = this.statusChanges.get(StudyRequestStatus.COMPLETED);
-      if (completed) {
-        milestones.push(completed);
+
+      n = this.statusCounts.get(StudyRequestStatus.COMPLETED);
+      if (n > 0) {
+        const completed = this.statusChanges.get(StudyRequestStatus.COMPLETED);
+        if (completed) {
+          milestones.push({ ...completed, n });
+        }
       }
+
       return milestones;
     },
     progress() {
-      const { status } = this.studyRequest;
-      if (status === StudyRequestStatus.REQUESTED) {
-        const { createdAt } = this.studyRequest;
+      if (this.status === StudyRequestStatus.REQUESTED) {
+        const { createdAt } = this.studyRequestBulk;
         return afterDateOf(createdAt, this.now) ? 25 : 0;
       }
-      if (status === StudyRequestStatus.CHANGES_NEEDED
-        || status === StudyRequestStatus.CANCELLED) {
+      if (this.status === StudyRequestStatus.CHANGES_NEEDED
+        || this.status === StudyRequestStatus.CANCELLED) {
         return 25;
       }
-      if (status === StudyRequestStatus.ASSIGNED) {
+      if (this.status === StudyRequestStatus.ASSIGNED) {
         const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
         if (assigned) {
           return afterDateOf(assigned.createdAt, this.now) ? 75 : 50;
         }
         return 50;
       }
-      if (status === StudyRequestStatus.REJECTED) {
+      if (this.status === StudyRequestStatus.REJECTED) {
         return 75;
       }
       // COMPLETED
       return 100;
+    },
+    status() {
+      return bulkStatus(this.studyRequestBulk.studyRequests);
     },
     statusChanges() {
       const changesByStatus = ArrayUtils.groupBy(
@@ -159,13 +158,26 @@ export default {
       const mostRecentChangesByStatus = changesByStatus.map(g => [g[0].status, g[0]]);
       return new Map(mostRecentChangesByStatus);
     },
+    statusCounts() {
+      const statusCounts = new Map(
+        StudyRequestStatus.enumValues.map(
+          status => [status, 0],
+        ),
+      );
+      const { studyRequests } = this.studyRequestBulk;
+      studyRequests.forEach(({ status }) => {
+        const n = statusCounts.get(status);
+        statusCounts.set(status, n + 1);
+      });
+      return statusCounts;
+    },
     ...mapState(['now']),
   },
 };
 </script>
 
 <style lang="scss">
-.fc-status-study-request {
+.fc-status-study-request-bulk {
   position: relative;
 
   & > .status-progress {

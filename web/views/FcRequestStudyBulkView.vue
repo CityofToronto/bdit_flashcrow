@@ -54,9 +54,10 @@
             <h2 class="display-3 mb-4">
               {{studyRequestBulk.name}}
             </h2>
-            <div class="mt-2">
-              TODO: bulk status bar
-            </div>
+            <FcStatusStudyRequestBulk
+              class="mt-2"
+              :study-request-bulk="studyRequestBulk"
+              :study-request-changes="studyRequestChanges" />
           </v-col>
           <v-col cols="6">
             <FcSummaryStudyRequestBulk
@@ -122,6 +123,7 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcSummaryStudyRequestBulk from '@/web/components/requests/FcSummaryStudyRequestBulk.vue';
+import FcStatusStudyRequestBulk from '@/web/components/requests/FcStatusStudyRequestBulk.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
@@ -139,6 +141,7 @@ export default {
     FcDataTableRequests,
     FcMenu,
     FcPaneMap,
+    FcStatusStudyRequestBulk,
     FcSummaryStudyRequestBulk,
   },
   data() {
@@ -162,6 +165,7 @@ export default {
       selectedItems: [],
       sortBy: 'DUE_DATE',
       studyRequestBulk: null,
+      studyRequestChanges: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
     };
@@ -259,6 +263,7 @@ export default {
       const { id } = to.params;
       const {
         studyRequestBulk,
+        studyRequestChanges,
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequestBulk(id);
@@ -267,6 +272,7 @@ export default {
       await this.initLocations({ features, selectionType });
 
       this.studyRequestBulk = studyRequestBulk;
+      this.studyRequestChanges = studyRequestChanges;
       this.studyRequestLocations = studyRequestLocations;
 
       const { user } = this.auth;
