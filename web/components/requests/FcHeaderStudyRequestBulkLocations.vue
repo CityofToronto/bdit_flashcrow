@@ -26,10 +26,10 @@
             <v-simple-checkbox
               class="mx-2"
               dense
-              :indeterminate="selected === null"
-              :value="selected"
-              @click="actionSetDaysOfWeek(item.value, item.selected)" />
-            <span>{{text}}</span>
+              :indeterminate="item.selected === null"
+              :value="item.selected"
+              @click="actionSetDaysOfWeek(item)" />
+            <span>{{item.text}}</span>
           </div>
         </template>
         <span>Days</span>
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import { Ripple } from 'vuetify/lib/directives';
+
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -63,6 +65,9 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 export default {
   name: 'FcHeaderStudyRequestBulkLocations',
   mixins: [FcMixinVModelProxy(Array)],
+  directives: {
+    Ripple,
+  },
   components: {
     FcMenu,
   },

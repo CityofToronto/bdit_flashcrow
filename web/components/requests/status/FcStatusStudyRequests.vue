@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-status-study-request-bulk">
+  <div class="fc-status-study-requests">
     <v-progress-linear
       background-color="border"
       class="status-progress"
@@ -27,8 +27,8 @@
         <template v-if="detail !== null">
           <div class="headline font-weight-regular">
             <span>{{detail.status.text}}</span>
-            <span v-if="detail.n > 0">
-              ({{detail.n}} / {{studyRequestBulk.studyRequests.length}})
+            <span v-if="detail.n > 0 && detail.n < studyRequests.length">
+              ({{detail.n}} / {{studyRequests.length}})
             </span>
           </div>
           <div class="mt-1 subtitle-2">
@@ -46,12 +46,14 @@ import { mapState } from 'vuex';
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyRequestStatus } from '@/lib/Constants';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
+import DateTime from '@/lib/time/DateTime';
 import { afterDateOf } from '@/lib/time/TimeUtils';
 
 export default {
   name: 'FcStatusStudyRequestBulk',
   props: {
-    studyRequestBulk: Object,
+    createdAt: DateTime,
+    studyRequests: Array,
     studyRequestChanges: Array,
   },
   computed: {
@@ -74,11 +76,9 @@ export default {
       return details;
     },
     milestones() {
-      const { createdAt } = this.studyRequestBulk;
-
       let n = this.statusCounts.get(StudyRequestStatus.REQUESTED);
       const milestones = [{
-        createdAt,
+        createdAt: this.createdAt,
         status: StudyRequestStatus.REQUESTED,
         n,
       }];
@@ -127,8 +127,7 @@ export default {
     },
     progress() {
       if (this.status === StudyRequestStatus.REQUESTED) {
-        const { createdAt } = this.studyRequestBulk;
-        return afterDateOf(createdAt, this.now) ? 25 : 0;
+        return afterDateOf(this.createdAt, this.now) ? 25 : 0;
       }
       if (this.status === StudyRequestStatus.CHANGES_NEEDED
         || this.status === StudyRequestStatus.CANCELLED) {
@@ -148,7 +147,7 @@ export default {
       return 100;
     },
     status() {
-      return bulkStatus(this.studyRequestBulk.studyRequests);
+      return bulkStatus(this.studyRequests);
     },
     statusChanges() {
       const changesByStatus = ArrayUtils.groupBy(
@@ -164,8 +163,7 @@ export default {
           status => [status, 0],
         ),
       );
-      const { studyRequests } = this.studyRequestBulk;
-      studyRequests.forEach(({ status }) => {
+      this.studyRequests.forEach(({ status }) => {
         const n = statusCounts.get(status);
         statusCounts.set(status, n + 1);
       });
@@ -177,7 +175,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-status-study-request-bulk {
+.fc-status-study-requests {
   position: relative;
 
   & > .status-progress {

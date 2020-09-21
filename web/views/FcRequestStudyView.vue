@@ -54,9 +54,10 @@
             <h2 class="display-3 mb-4">
               {{studyRequestLocation.description}}
             </h2>
-            <FcStatusStudyRequest
+            <FcStatusStudyRequests
               class="mt-2"
-              :study-request="studyRequest"
+              :created-at="studyRequest.createdAt"
+              :study-requests="[studyRequest]"
               :study-request-changes="studyRequestChanges" />
           </v-col>
           <v-col cols="6">
@@ -105,7 +106,7 @@ import {
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
-import FcStatusStudyRequest from '@/web/components/requests/FcStatusStudyRequest.vue';
+import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -122,7 +123,7 @@ export default {
     FcButton,
     FcCommentsStudyRequest,
     FcPaneMap,
-    FcStatusStudyRequest,
+    FcStatusStudyRequests,
     FcSummaryStudy,
     FcSummaryStudyRequest,
   },

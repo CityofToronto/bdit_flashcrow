@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     hasItemSlot() {
-      return !!this.$slots.item;
+      return !!this.$scopedSlots.item;
     },
   },
 };

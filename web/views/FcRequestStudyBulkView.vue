@@ -54,9 +54,10 @@
             <h2 class="display-3 mb-4">
               {{studyRequestBulk.name}}
             </h2>
-            <FcStatusStudyRequestBulk
+            <FcStatusStudyRequests
               class="mt-2"
-              :study-request-bulk="studyRequestBulk"
+              :created-at="studyRequestBulk.createdAt"
+              :study-requests="studyRequestBulk.studyRequests"
               :study-request-changes="studyRequestChanges" />
           </v-col>
           <v-col cols="6">
@@ -122,7 +123,7 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
-import FcStatusStudyRequestBulk from '@/web/components/requests/FcStatusStudyRequestBulk.vue';
+import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -141,7 +142,7 @@ export default {
     FcDataTableRequests,
     FcMenu,
     FcPaneMap,
-    FcStatusStudyRequestBulk,
+    FcStatusStudyRequests,
     FcSummaryStudyRequest,
   },
   data() {
