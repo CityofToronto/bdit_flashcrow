@@ -83,16 +83,10 @@
               class="mr-6"
               :indeterminate="selectAll === null"></v-simple-checkbox>
 
-            <FcMenu
-              button-class="mr-2"
-              :items="itemsStatus">
-              <span>Mark all as</span>
-            </FcMenu>
-            <FcMenu
-              button-class="mr-2"
-              :items="itemsAssignedTo">
-              <span>Assign all to</span>
-            </FcMenu>
+            <FcMenuStudyRequestsStatus
+              :disabled="selectAll === false"
+              :status="bulkStatus"
+              :study-requests="selectedStudyRequests" />
           </div>
 
           <v-divider></v-divider>
@@ -114,6 +108,7 @@
 </template>
 
 <script>
+import { Ripple } from 'vuetify/lib/directives';
 import { mapActions } from 'vuex';
 
 import { AuthScope, StudyRequestAssignee } from '@/lib/Constants';
@@ -123,11 +118,12 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcMenuStudyRequestsStatus
+  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -137,10 +133,13 @@ export default {
     FcMixinAuthScope,
     FcMixinRouteAsync,
   ],
+  directives: {
+    Ripple,
+  },
   components: {
     FcButton,
     FcDataTableRequests,
-    FcMenu,
+    FcMenuStudyRequestsStatus,
     FcPaneMap,
     FcStatusStudyRequests,
     FcSummaryStudyRequest,
@@ -222,6 +221,9 @@ export default {
           this.selectedItems = [];
         }
       },
+    },
+    selectedStudyRequests() {
+      return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
   },
   methods: {
