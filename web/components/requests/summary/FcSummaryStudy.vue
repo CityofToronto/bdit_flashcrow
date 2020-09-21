@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     messagesDaysOfWeek() {
-      const { daysOfWeek, duration, studyType } = this.studyRequest;
+      const { daysOfWeek, duration, studyType } = this.study;
       if (studyType.automatic) {
         const k = numConsecutiveDaysOfWeek(daysOfWeek);
         const n = duration / 24;

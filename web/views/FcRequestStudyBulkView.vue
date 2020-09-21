@@ -84,9 +84,11 @@
               :indeterminate="selectAll === null"></v-simple-checkbox>
 
             <FcMenuStudyRequestsStatus
+              v-if="canEdit"
               :disabled="selectAll === false"
               :status="bulkStatus"
-              :study-requests="selectedStudyRequests" />
+              :study-requests="selectedStudyRequests"
+              @update="onUpdateStudyRequests" />
           </div>
 
           <v-divider></v-divider>
@@ -96,8 +98,7 @@
             :columns="columns"
             :has-filters="false"
             :items="items"
-            :loading="false"
-            :loading-items="loadingSaveStudyRequest"
+            :loading="loadingItems"
             :sort-by.sync="sortBy"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
@@ -111,7 +112,7 @@
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions } from 'vuex';
 
-import { AuthScope, StudyRequestAssignee } from '@/lib/Constants';
+import { AuthScope, StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
@@ -147,8 +148,7 @@ export default {
   data() {
     return {
       columns: RequestDataTableColumns,
-      loadingMoreActions: false,
-      loadingSaveStudyRequest: new Set(),
+      loadingItems: false,
       selectedItems: [],
       sortBy: 'DUE_DATE',
       studyRequestBulk: null,
@@ -193,10 +193,6 @@ export default {
         ),
       ];
     },
-    itemsStatus() {
-      // TODO: actually implement this
-      return [{ text: 'test', value: 'test' }];
-    },
     labelNavigateBack() {
       return 'Requests';
     },
@@ -227,8 +223,19 @@ export default {
     },
   },
   methods: {
-    actionAssignTo() {
-      // TODO: implement this
+    async actionAssignTo({ item, assignedTo }) {
+      const { studyRequest } = item;
+      studyRequest.assignedTo = assignedTo;
+      if (assignedTo === null) {
+        studyRequest.status = StudyRequestStatus.REQUESTED;
+      } else {
+        studyRequest.status = StudyRequestStatus.ASSIGNED;
+      }
+
+      this.loadingItems = false;
+      await this.saveStudyRequest(studyRequest);
+      await this.loadAsyncForRoute(this.$route);
+      this.loadingItems = false;
     },
     actionEdit() {
       const { id } = this.studyRequestBulk;
@@ -269,7 +276,13 @@ export default {
       this.studyRequestUsers.set(user.id, user);
       this.studyRequestUsers = studyRequestUsers;
     },
-    ...mapActions(['initLocations']),
+    async onUpdateStudyRequests() {
+      this.loadingItems = true;
+      await this.saveStudyRequestBulk(this.studyRequestBulk);
+      await this.loadAsyncForRoute(this.$route);
+      this.loadingItems = false;
+    },
+    ...mapActions(['initLocations', 'saveStudyRequest', 'saveStudyRequestBulk']),
   },
 };
 </script>

@@ -60,7 +60,6 @@
             :has-filters="hasFilters"
             :items="items"
             :loading="loading"
-            :loading-items="loadingSaveStudyRequest"
             :sort-by.sync="sortBy"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
@@ -191,7 +190,6 @@ export default {
         studyTypes: [],
         userOnly: false,
       },
-      loadingSaveStudyRequest: new Set(),
       search: {
         column: null,
         query: null,
@@ -269,13 +267,10 @@ export default {
         studyRequest.status = StudyRequestStatus.ASSIGNED;
       }
 
-      this.loadingSaveStudyRequest.add(item.id);
-      const {
-        studyRequest: studyRequestUpdated,
-      } = await this.saveStudyRequest(studyRequest);
-      /* eslint-disable-next-line no-param-reassign */
-      item.studyRequest = studyRequestUpdated;
-      this.loadingSaveStudyRequest.delete(item.id);
+      this.loading = false;
+      await this.saveStudyRequest(studyRequest);
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
     },
     actionDownload(items) {
       const rows = items.map(getItemRow);

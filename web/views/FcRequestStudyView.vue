@@ -30,13 +30,21 @@
         </h1>
       </v-col>
       <v-col class="text-right" cols="2">
-        <FcButton
-          v-if="studyRequest !== null && canEdit && studyRequest.status.editable"
-          :disabled="loading"
-          type="secondary"
-          @click="actionEdit">
-          <v-icon color="primary" left>mdi-pencil</v-icon> Edit
-        </FcButton>
+        <template v-if="studyRequest !== null && canEdit">
+          <FcButton
+            v-if="studyRequest.status.editable"
+            :disabled="loading"
+            type="secondary"
+            @click="actionEdit">
+            <v-icon color="primary" left>mdi-pencil</v-icon> Edit
+          </FcButton>
+
+          <FcMenuStudyRequestsStatus
+            button-class="ml-2"
+            :status="studyRequest.status"
+            :study-requests="[studyRequest]"
+            @update="onUpdateStudyRequest" />
+        </template>
       </v-col>
     </v-row>
 
@@ -60,12 +68,13 @@
               :study-requests="[studyRequest]"
               :study-request-changes="studyRequestChanges" />
           </v-col>
-          <v-col cols="6">
+          <v-col class="px-5" cols="6">
             <FcSummaryStudyRequest
-              class="mx-5"
               :study-request="studyRequest"
               :study-request-changes="studyRequestChanges"
               :study-request-users="studyRequestUsers" />
+
+            <v-divider></v-divider>
 
             <FcSummaryStudy
               :study="studyRequest" />
@@ -98,14 +107,12 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 
-import {
-  AuthScope,
-  LocationSelectionType,
-  StudyRequestStatus,
-} from '@/lib/Constants';
+import { AuthScope, LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
+import FcMenuStudyRequestsStatus
+  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
@@ -122,6 +129,7 @@ export default {
   components: {
     FcButton,
     FcCommentsStudyRequest,
+    FcMenuStudyRequestsStatus,
     FcPaneMap,
     FcStatusStudyRequests,
     FcSummaryStudy,
@@ -139,22 +147,6 @@ export default {
     };
   },
   computed: {
-    canAcceptChanges() {
-      return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
-        && this.studyRequest !== null
-        && this.studyRequest.status === StudyRequestStatus.CHANGES_NEEDED;
-    },
-    canCancel() {
-      return this.canEdit
-        && this.studyRequest !== null
-        && this.studyRequest.status.canTransitionTo(StudyRequestStatus.CANCELLED);
-    },
-    canClose() {
-      return this.canEdit
-        && this.studyRequest !== null
-        && this.studyRequest.status === StudyRequestStatus.COMPLETED
-        && !this.studyRequest.closed;
-    },
     canEdit() {
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
         return true;
@@ -163,46 +155,6 @@ export default {
         return this.auth.user.id === this.studyRequest.userId;
       }
       return false;
-    },
-    canReopen() {
-      return this.canEdit
-        && this.studyRequest !== null
-        && this.studyRequest.closed;
-    },
-    canRequestChanges() {
-      return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
-        && this.studyRequest !== null
-        && this.studyRequest.status.canTransitionTo(StudyRequestStatus.CHANGES_NEEDED);
-    },
-    itemsMoreActions() {
-      const topItems = [];
-      if (this.canAcceptChanges) {
-        topItems.push({ label: 'Accept Changes', value: 'acceptChanges' });
-      }
-      if (this.canRequestChanges) {
-        topItems.push({ label: 'Request Changes', value: 'requestChanges' });
-      }
-
-      const bottomItems = [];
-      if (this.canCancel) {
-        bottomItems.push({ label: 'Cancel', value: 'cancel' });
-      }
-      if (this.canClose) {
-        bottomItems.push({ label: 'Close', value: 'close' });
-      }
-      if (this.canReopen) {
-        bottomItems.push({ label: 'Reopen', value: 'reopen' });
-      }
-
-      const divider = [];
-      if (topItems.length > 0 && bottomItems.length > 0) {
-        divider.push(null);
-      }
-      return [
-        ...topItems,
-        ...divider,
-        ...bottomItems,
-      ];
     },
     labelNavigateBack() {
       if (this.studyRequestBulkName !== null) {
@@ -223,19 +175,6 @@ export default {
     ...mapState(['auth', 'locations']),
   },
   methods: {
-    async actionAcceptChanges() {
-      this.studyRequest.status = StudyRequestStatus.REQUESTED;
-      await this.updateMoreActions();
-    },
-    async actionCancel() {
-      this.studyRequest.status = StudyRequestStatus.CANCELLED;
-      this.studyRequest.closed = true;
-      await this.updateMoreActions();
-    },
-    async actionClose() {
-      this.studyRequest.closed = true;
-      await this.updateMoreActions();
-    },
     actionEdit() {
       const { id } = this.studyRequest;
       const route = {
@@ -244,32 +183,8 @@ export default {
       };
       this.$router.push(route);
     },
-    actionMoreActions(value) {
-      if (value === 'acceptChanges') {
-        this.actionAcceptChanges();
-      } else if (value === 'cancel') {
-        this.actionCancel();
-      } else if (value === 'close') {
-        this.actionClose();
-      } else if (value === 'reopen') {
-        this.actionReopen();
-      } else if (value === 'requestChanges') {
-        this.actionRequestChanges();
-      }
-    },
     actionNavigateBack() {
       this.$router.push(this.routeNavigateBack);
-    },
-    async actionReopen() {
-      if (this.studyRequest.status === StudyRequestStatus.CANCELLED) {
-        this.studyRequest.status = StudyRequestStatus.REQUESTED;
-      }
-      this.studyRequest.closed = false;
-      await this.updateMoreActions();
-    },
-    async actionRequestChanges() {
-      this.studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
-      await this.updateMoreActions();
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
@@ -307,17 +222,11 @@ export default {
       this.studyRequest = studyRequest;
       this.studyRequestComments.splice(i, 1);
     },
-    async updateMoreActions() {
-      this.loadingMoreActions = true;
-      const {
-        studyRequest,
-        studyRequestChange,
-      } = await this.saveStudyRequest(this.studyRequest);
-      this.studyRequest = studyRequest;
-      if (studyRequestChange !== null) {
-        this.studyRequestChanges.unshift(studyRequestChange);
-      }
-      this.loadingMoreActions = false;
+    async onUpdateStudyRequest() {
+      this.loading = true;
+      await this.saveStudyRequest(this.studyRequest);
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
     },
     ...mapActions(['initLocations', 'saveStudyRequest']),
   },

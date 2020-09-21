@@ -4,7 +4,6 @@
     no-gutters>
     <v-col cols="2">
       <FcButton
-        v-if="isCreate"
         type="secondary"
         @click="$emit('action-navigate-back')">
         <v-icon left>mdi-chevron-left</v-icon>

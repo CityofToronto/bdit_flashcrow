@@ -611,9 +611,8 @@ test('StudyRequestController', async () => {
     data: persistedStudyRequest,
   });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.studyRequest.id).toEqual(persistedStudyRequest.id);
-  expect(response.result.studyRequestChange).toBeNull();
-  persistedStudyRequest = response.result.studyRequest;
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
 
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
@@ -636,8 +635,7 @@ test('StudyRequestController', async () => {
     data: persistedStudyRequest,
   });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.studyRequestChange).toBeNull();
-  persistedStudyRequest = response.result.studyRequest;
+  persistedStudyRequest = response.result;
 
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
   fetchedStudyRequest = response.result;

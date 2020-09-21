@@ -290,7 +290,7 @@ export default new Vuex.Store({
         });
       } else {
         const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
-        commit('setToast', toast);
+        commit('setToastInfo', toast.text);
       }
 
       const { csrf } = state.auth;
@@ -309,7 +309,7 @@ export default new Vuex.Store({
         });
       } else {
         const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
-        commit('setToast', toast);
+        commit('setToastInfo', toast.text);
       }
 
       const { csrf } = state.auth;

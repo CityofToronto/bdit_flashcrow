@@ -100,7 +100,6 @@
           )">
         <template v-slot:activator="{ on }">
           <FcButton
-            :loading="loadingItems.has(item.id)"
             class="body-1 text-none"
             small
             type="secondary"
@@ -173,7 +172,6 @@
             :is-expanded-child="true"
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
-            :loading-items="loadingItems"
             :sort-by="internalSortBy"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
@@ -217,7 +215,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    loadingItems: Set,
     sortBy: String,
   },
   data() {

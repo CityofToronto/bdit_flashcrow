@@ -35,7 +35,10 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
+import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -43,6 +46,8 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcDetailsStudyRequest,
+    FcDialogConfirmRequestStudyLeave,
+    FcHeaderRequestStudy,
   },
   data() {
     return {
