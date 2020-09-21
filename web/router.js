@@ -192,7 +192,7 @@ const router = new Router({
             scope: [AuthScope.STUDY_REQUESTS_EDIT],
           },
           title({ params: { id } }) {
-            return `Edit Request #${id}`;
+            return `Edit Bulk Request #${id}`;
           },
         },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),

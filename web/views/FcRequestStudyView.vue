@@ -64,8 +64,10 @@
               class="mx-5"
               :study-request="studyRequest"
               :study-request-changes="studyRequestChanges"
-              :study-request-users="studyRequestUsers"
-              style="min-height: 320px;" />
+              :study-request-users="studyRequestUsers" />
+
+            <FcSummaryStudy
+              :study="studyRequest" />
           </v-col>
           <v-col cols="6">
             <FcPaneMap
@@ -104,7 +106,8 @@ import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcStatusStudyRequest from '@/web/components/requests/FcStatusStudyRequest.vue';
-import FcSummaryStudyRequest from '@/web/components/requests/FcSummaryStudyRequest.vue';
+import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
+import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -120,6 +123,7 @@ export default {
     FcCommentsStudyRequest,
     FcPaneMap,
     FcStatusStudyRequest,
+    FcSummaryStudy,
     FcSummaryStudyRequest,
   },
   data() {

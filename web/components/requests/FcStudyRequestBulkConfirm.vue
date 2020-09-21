@@ -85,8 +85,8 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <FcSummaryStudyRequestBulk
-      :study-request-bulk="studyRequestBulk" />
+    <FcSummaryStudyRequest
+      :study-request="studyRequestBulk" />
   </section>
 </template>
 
@@ -94,14 +94,14 @@
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCardStudyRequestConfirm from '@/web/components/requests/FcCardStudyRequestConfirm.vue';
-import FcSummaryStudyRequestBulk from '@/web/components/requests/FcSummaryStudyRequestBulk.vue';
+import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 
 export default {
   name: 'FcStudyRequestBulkConfirm',
   components: {
     FcButton,
     FcCardStudyRequestConfirm,
-    FcSummaryStudyRequestBulk,
+    FcSummaryStudyRequest,
   },
   props: {
     indicesIntersectionsSelected: Array,

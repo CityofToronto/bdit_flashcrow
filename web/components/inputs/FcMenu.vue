@@ -2,11 +2,14 @@
   <v-menu :min-width="minWidth">
     <template v-slot:activator="{ on, attrs }">
       <FcButton
-        v-bind="attrs"
-        v-on="on"
         :class="buttonClass"
         :disabled="disabled"
-        type="secondary">
+        type="secondary"
+        v-bind="{
+          ...attrs,
+          ...$attrs,
+        }"
+        v-on="on">
         <slot></slot>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>

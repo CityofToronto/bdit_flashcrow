@@ -739,6 +739,7 @@ export default {
 <style lang="scss">
 .pane-map {
   background-color: var(--white);
+  min-height: 320px;
   &.mapboxgl-map {
     font: inherit;
   }

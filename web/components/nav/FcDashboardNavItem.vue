@@ -33,6 +33,11 @@
 <script>
 import { mapState } from 'vuex';
 
+const ROUTES_BACK_REQUEST_VIEW = [
+  'requestStudyBulkView',
+  'requestStudyView',
+];
+
 export default {
   name: 'FcDashboardNavItem',
   props: {
@@ -64,7 +69,7 @@ export default {
       if (this.activeRouteNames.includes(name)) {
         return true;
       }
-      return name === 'requestStudyView' && backViewRequestName === toName;
+      return ROUTES_BACK_REQUEST_VIEW.includes(name) && backViewRequestName === toName;
     },
     ...mapState(['backViewRequest']),
   },

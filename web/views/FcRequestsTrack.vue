@@ -84,6 +84,7 @@ import {
   getStudyRequestItem,
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
+import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
@@ -179,20 +180,8 @@ export default {
     FcStudyRequestFilterShortcuts,
   },
   data() {
-    const columns = [
-      { value: 'ID', text: 'ID' },
-      { value: 'data-table-expand', text: 'Location' },
-      { value: 'STUDY_TYPE', text: 'Type' },
-      { value: 'REQUESTER', text: 'Requester' },
-      { value: 'CREATED_AT', text: 'Date Created' },
-      { value: 'ASSIGNED_TO', text: 'Assigned To' },
-      { value: 'DUE_DATE', text: 'Due Date' },
-      { value: 'STATUS', text: 'Status' },
-      { value: 'LAST_EDITED_AT', text: 'Last Updated' },
-      { value: 'ACTIONS', text: '' },
-    ];
     return {
-      columns,
+      columns: RequestDataTableColumns,
       filters: {
         assignees: [],
         closed: false,

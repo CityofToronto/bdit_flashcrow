@@ -60,11 +60,10 @@
               :study-request-changes="studyRequestChanges" />
           </v-col>
           <v-col cols="6">
-            <FcSummaryStudyRequestBulk
+            <FcSummaryStudyRequest
               class="mx-5"
-              :study-request-bulk="studyRequestBulk"
-              :study-request-users="studyRequestUsers"
-              style="min-height: 320px;" />
+              :study-request="studyRequestBulk"
+              :study-request-users="studyRequestUsers" />
           </v-col>
           <v-col cols="6">
             <FcPaneMap
@@ -120,10 +119,11 @@ import { AuthScope, StudyRequestAssignee } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
+import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
-import FcSummaryStudyRequestBulk from '@/web/components/requests/FcSummaryStudyRequestBulk.vue';
 import FcStatusStudyRequestBulk from '@/web/components/requests/FcStatusStudyRequestBulk.vue';
+import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
@@ -142,24 +142,11 @@ export default {
     FcMenu,
     FcPaneMap,
     FcStatusStudyRequestBulk,
-    FcSummaryStudyRequestBulk,
+    FcSummaryStudyRequest,
   },
   data() {
-    // TODO: DRY with Track Requests
-    const columns = [
-      { value: 'ID', text: 'ID' },
-      { value: 'data-table-expand', text: 'Location' },
-      { value: 'STUDY_TYPE', text: 'Type' },
-      { value: 'REQUESTER', text: 'Requester' },
-      { value: 'CREATED_AT', text: 'Date Created' },
-      { value: 'ASSIGNED_TO', text: 'Assigned To' },
-      { value: 'DUE_DATE', text: 'Due Date' },
-      { value: 'STATUS', text: 'Status' },
-      { value: 'LAST_EDITED_AT', text: 'Last Updated' },
-      { value: 'ACTIONS', text: '' },
-    ];
     return {
-      columns,
+      columns: RequestDataTableColumns,
       loadingMoreActions: false,
       loadingSaveStudyRequest: new Set(),
       selectedItems: [],
