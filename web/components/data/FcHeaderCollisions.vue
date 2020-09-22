@@ -11,8 +11,7 @@
         @set-filters="setFiltersCollision">
       </FcDialogCollisionFilters>
       <FcButton
-        v-if="collisionTotal > 0"
-        :disabled="disabled"
+        :disabled="disabled || collisionTotal === 0"
         type="secondary"
         @click.stop="showFiltersCollision = true">
         <v-icon

@@ -11,8 +11,7 @@
         @set-filters="setFiltersStudy">
       </FcDialogStudyFilters>
       <FcButton
-        v-if="studyTotal > 0"
-        :disabled="disabled"
+        :disabled="disabled || studyTotal === 0"
         type="secondary"
         @click.stop="showFiltersStudy = true">
         <v-icon

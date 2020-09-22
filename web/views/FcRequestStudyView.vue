@@ -38,7 +38,6 @@
           <v-col class="px-5" cols="6">
             <FcSummaryStudyRequest
               :study-request="studyRequest"
-              :study-request-changes="studyRequestChanges"
               :study-request-users="studyRequestUsers" />
 
             <v-divider></v-divider>

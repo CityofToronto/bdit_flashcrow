@@ -10,10 +10,12 @@
         </div>
       </v-col>
       <v-col cols="6">
-        <div class="subtitle-1">Submitted</div>
-        <div class="mt-1 display-1">
-          {{studyRequest.createdAt | date}}
-        </div>
+        <template v-if="!isCreate">
+          <div class="subtitle-1">Submitted</div>
+          <div class="mt-1 display-1">
+            {{studyRequest.createdAt | date}}
+          </div>
+        </template>
       </v-col>
       <v-col cols="6">
         <div class="subtitle-1">Reason</div>
@@ -51,20 +53,33 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'FcSummaryStudyRequest',
   props: {
+    isCreate: {
+      type: Boolean,
+      default: false,
+    },
     studyRequest: Object,
-    studyRequestUsers: Map,
+    studyRequestUsers: {
+      type: Map,
+      default() { return new Map(); },
+    },
   },
   computed: {
     requestedBy() {
+      if (this.isCreate) {
+        return this.auth.user;
+      }
       const { studyRequest, studyRequestUsers } = this;
       if (!studyRequestUsers.has(studyRequest.userId)) {
         return null;
       }
       return studyRequestUsers.get(studyRequest.userId);
     },
+    ...mapState(['auth']),
   },
 };
 </script>

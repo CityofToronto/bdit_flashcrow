@@ -86,6 +86,7 @@
     </v-expansion-panels>
 
     <FcSummaryStudyRequest
+      :is-create="true"
       :study-request="studyRequestBulk" />
   </section>
 </template>

@@ -81,9 +81,7 @@
             <FcButton
               v-if="reportExportMode !== ReportExportMode.STUDIES"
               class="ml-2"
-              :disabled="
-                studySummary.length === 0
-                || reportExportMode === ReportExportMode.COLLISIONS"
+              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
