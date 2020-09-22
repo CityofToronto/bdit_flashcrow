@@ -2,7 +2,8 @@
   <v-menu
     v-model="showMenu"
     :close-on-content-click="false"
-    min-width="200">
+    min-width="200"
+    z-index="100">
     <template v-slot:activator="{ on, attrs }">
       <FcButton
         :class="buttonClass"
@@ -31,6 +32,7 @@
         <v-list-group
           v-else
           :key="i"
+          v-model="showSubmenu"
           class="fc-submenu-study-requests-status"
           :disabled="item.disabled">
           <template v-slot:activator>
@@ -78,6 +80,7 @@ export default {
   data() {
     return {
       showMenu: false,
+      showSubmenu: false,
     };
   },
   computed: {
@@ -156,6 +159,13 @@ export default {
           value: StudyRequestStatus.REQUESTED,
         },
       ];
+    },
+  },
+  watch: {
+    showMenu() {
+      if (!this.showMenu) {
+        this.showSubmenu = false;
+      }
     },
   },
   methods: {
