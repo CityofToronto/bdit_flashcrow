@@ -110,7 +110,8 @@ export default {
         if (this.studyRequest === null) {
           return null;
         }
-        return this.studyRequest.name;
+        const { id } = this.$route.params;
+        return `Bulk Request #${id}`;
       }
       if (name === 'requestStudyEdit') {
         const { id } = this.$route.params;

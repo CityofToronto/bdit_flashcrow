@@ -63,6 +63,7 @@ export default {
     FcStudyRequestUrgent,
   },
   props: {
+    isCreate: Boolean,
     v: Object,
   },
   data() {

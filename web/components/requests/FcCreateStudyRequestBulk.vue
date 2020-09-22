@@ -53,6 +53,7 @@
       <FcStudyRequestBulkDetails
         v-else-if="step === 3"
         v-model="internalValue"
+        :is-create="true"
         :v="$v.internalValue" />
       <FcStudyRequestBulkConfirm
         v-else-if="step === 4"
