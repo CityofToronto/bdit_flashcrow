@@ -75,6 +75,16 @@ export default new Vuex.Store({
   },
   getters: {
     // NAVIGATION
+    labelBackViewRequest(state, getters) {
+      const { name } = state.backViewRequest;
+      if (name === 'requestsTrack') {
+        return 'Track Requests';
+      }
+      if (getters.locationsEmpty) {
+        return 'View Map';
+      }
+      return 'View Data';
+    },
     routeBackViewRequest(state, getters) {
       const { name } = state.backViewRequest;
       if (name === 'requestsTrack') {

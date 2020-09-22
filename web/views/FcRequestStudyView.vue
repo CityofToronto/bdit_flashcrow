@@ -25,6 +25,10 @@
             <h2 class="display-3 mb-4">
               {{studyRequestLocation.description}}
             </h2>
+            <FcBreadcrumbsStudyRequest
+              class="mb-6"
+              :study-request="studyRequest"
+              :study-request-bulk-name="studyRequestBulkName" />
             <FcStatusStudyRequests
               class="mt-2"
               :created-at="studyRequest.createdAt"
@@ -74,6 +78,8 @@ import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
+import FcBreadcrumbsStudyRequest
+  from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
@@ -90,6 +96,7 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
+    FcBreadcrumbsStudyRequest,
     FcCommentsStudyRequest,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,

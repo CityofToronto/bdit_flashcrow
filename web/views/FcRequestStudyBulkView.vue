@@ -17,6 +17,9 @@
             <h2 class="display-3 mb-4">
               {{studyRequestBulk.name}}
             </h2>
+            <FcBreadcrumbsStudyRequest
+              class="mb-6"
+              :study-request="studyRequestBulk" />
             <FcStatusStudyRequests
               class="mt-2"
               :created-at="studyRequestBulk.createdAt"
@@ -82,6 +85,8 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcBreadcrumbsStudyRequest
+  from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
@@ -101,6 +106,7 @@ export default {
     Ripple,
   },
   components: {
+    FcBreadcrumbsStudyRequest,
     FcDataTableRequests,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
