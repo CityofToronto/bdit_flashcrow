@@ -162,12 +162,6 @@ export default {
         ),
       ];
     },
-    labelNavigateBack() {
-      return 'Requests';
-    },
-    routeNavigateBack() {
-      return { name: 'requestsTrack' };
-    },
     selectAll: {
       get() {
         const k = this.selectedItems.length;
@@ -213,9 +207,6 @@ export default {
         params: { id },
       };
       this.$router.push(route);
-    },
-    actionNavigateBack() {
-      this.$router.push(this.routeNavigateBack);
     },
     actionShowItem(item) {
       const { id } = item.studyRequest;
