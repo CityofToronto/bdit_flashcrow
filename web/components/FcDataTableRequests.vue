@@ -16,7 +16,7 @@
     show-select
     single-expand
     :sort-by.sync="internalSortBy"
-    :sort-desc="true"
+    :sort-desc.sync="internalSortDesc"
     :sort-keys="sortKeys">
     <template v-slot:no-data>
       <div class="mt-8 pt-7 secondary--text">
@@ -173,6 +173,7 @@
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
             :sort-by="internalSortBy"
+            :sort-desc="internalSortDesc"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
         </td>
@@ -186,6 +187,7 @@ import {
   StudyRequestAssignee,
   StudyRequestStatus,
 } from '@/lib/Constants';
+import { formatUsername } from '@/lib/StringFormatters';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
@@ -216,6 +218,7 @@ export default {
       default: false,
     },
     sortBy: String,
+    sortDesc: Boolean,
   },
   data() {
     const itemsAssignedTo = [
@@ -248,7 +251,10 @@ export default {
         }
         return `B:${r.lastEditedAt.toString()}`;
       },
-      REQUESTER: r => `${r.requestedBy}:${r.dueDate.toString()}`,
+      REQUESTER: (r) => {
+        const requestedBy = formatUsername(r.requestedBy);
+        return `${requestedBy}:${r.dueDate.toString()}`;
+      },
       STATUS: r => `${r.status.ordinal}:${r.dueDate.toString()}`,
       STUDY_TYPE: (r) => {
         const dueDate = r.dueDate.toString();
@@ -272,6 +278,14 @@ export default {
       },
       set(internalSortBy) {
         this.$emit('update:sortBy', internalSortBy);
+      },
+    },
+    internalSortDesc: {
+      get() {
+        return this.sortDesc;
+      },
+      set(internalSortDesc) {
+        this.$emit('update:sortDesc', internalSortDesc);
       },
     },
   },

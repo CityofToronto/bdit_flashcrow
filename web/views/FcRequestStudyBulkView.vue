@@ -66,6 +66,7 @@
             :items="items"
             :loading="loadingItems"
             :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
         </div>
@@ -120,6 +121,7 @@ export default {
       loadingItems: false,
       selectedItems: [],
       sortBy: 'DUE_DATE',
+      sortDesc: true,
       studyRequestBulk: null,
       studyRequestChanges: [],
       studyRequestLocations: new Map(),

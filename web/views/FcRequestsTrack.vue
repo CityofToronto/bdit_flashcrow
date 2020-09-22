@@ -61,6 +61,7 @@
             :items="items"
             :loading="loading"
             :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
             @assign-to="actionAssignTo"
             @show-item="actionShowItem" />
         </v-card-text>
@@ -196,6 +197,7 @@ export default {
       },
       selectedItems: [],
       sortBy: 'DUE_DATE',
+      sortDesc: true,
       studyRequests: [],
       studyRequestsBulk: [],
       studyRequestLocations: new Map(),
