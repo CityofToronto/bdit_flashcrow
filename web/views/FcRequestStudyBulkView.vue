@@ -1,44 +1,7 @@
 <template>
   <section class="fc-request-study-bulk-view d-flex flex-column fill-height">
-    <v-row
-      class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2 shading"
-      no-gutters>
-      <v-col cols="2">
-        <FcButton
-          type="secondary"
-          @click="actionNavigateBack">
-          <v-icon left>mdi-chevron-left</v-icon>
-          {{labelNavigateBack}}
-        </FcButton>
-      </v-col>
-      <v-col class="text-center" cols="8">
-        <h1 class="headline">
-          <span>
-            Bulk Request #{{$route.params.id}}:
-          </span>
-          <v-progress-circular
-            v-if="loading"
-            color="primary"
-            indeterminate
-            :size="20"
-            :width="2" />
-          <span
-            v-else
-            class="font-weight-regular">
-            {{studyRequestBulk.name}}
-          </span>
-        </h1>
-      </v-col>
-      <v-col class="text-right" cols="2">
-        <FcButton
-          v-if="studyRequestBulk !== null && canEdit && bulkStatus.editable"
-          :disabled="loading"
-          type="secondary"
-          @click="actionEdit">
-          <v-icon color="primary" left>mdi-pencil</v-icon> Edit
-        </FcButton>
-      </v-col>
-    </v-row>
+    <FcNavStudyRequest
+      :study-request="studyRequestBulk" />
 
     <v-divider></v-divider>
 
@@ -119,12 +82,12 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -138,9 +101,9 @@ export default {
     Ripple,
   },
   components: {
-    FcButton,
     FcDataTableRequests,
     FcMenuStudyRequestsStatus,
+    FcNavStudyRequest,
     FcPaneMap,
     FcStatusStudyRequests,
     FcSummaryStudyRequest,

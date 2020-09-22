@@ -1,52 +1,15 @@
 <template>
   <section class="fc-request-study-view d-flex flex-column fill-height">
-    <v-row
-      class="align-center flex-grow-0 flex-shrink-0 px-3 py-2 shading"
-      no-gutters>
-      <v-col cols="2">
-        <FcButton
-          type="secondary"
-          @click="actionNavigateBack">
-          <v-icon left>mdi-chevron-left</v-icon>
-          {{labelNavigateBack}}
-        </FcButton>
-      </v-col>
-      <v-col class="text-center" cols="8">
-        <h1 class="headline">
-          <span>
-            Request #{{$route.params.id}}:
-          </span>
-          <v-progress-circular
-            v-if="loading"
-            color="primary"
-            indeterminate
-            :size="20"
-            :width="2" />
-          <span
-            v-else
-            class="font-weight-regular">
-            {{studyRequestLocation.description}}
-          </span>
-        </h1>
-      </v-col>
-      <v-col class="text-right" cols="2">
-        <template v-if="studyRequest !== null && canEdit">
-          <FcButton
-            v-if="studyRequest.status.editable"
-            :disabled="loading"
-            type="secondary"
-            @click="actionEdit">
-            <v-icon color="primary" left>mdi-pencil</v-icon> Edit
-          </FcButton>
-
-          <FcMenuStudyRequestsStatus
-            button-class="ml-2"
-            :status="studyRequest.status"
-            :study-requests="[studyRequest]"
-            @update="onUpdateStudyRequest" />
-        </template>
-      </v-col>
-    </v-row>
+    <FcNavStudyRequest
+      :study-request="studyRequest"
+      :study-request-bulk-name="studyRequestBulkName">
+      <FcMenuStudyRequestsStatus
+        v-if="studyRequest !== null"
+        button-class="ml-2"
+        :status="studyRequest.status"
+        :study-requests="[studyRequest]"
+        @update="onUpdateStudyRequest" />
+    </FcNavStudyRequest>
 
     <v-divider></v-divider>
 
@@ -107,16 +70,16 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 
-import { AuthScope, LocationSelectionType } from '@/lib/Constants';
+import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -127,9 +90,9 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
-    FcButton,
     FcCommentsStudyRequest,
     FcMenuStudyRequestsStatus,
+    FcNavStudyRequest,
     FcPaneMap,
     FcStatusStudyRequests,
     FcSummaryStudy,
@@ -137,7 +100,6 @@ export default {
   },
   data() {
     return {
-      loadingMoreActions: false,
       studyRequest: null,
       studyRequestBulkName: null,
       studyRequestChanges: [],
@@ -147,45 +109,9 @@ export default {
     };
   },
   computed: {
-    canEdit() {
-      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return true;
-      }
-      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS_EDIT)) {
-        return this.auth.user.id === this.studyRequest.userId;
-      }
-      return false;
-    },
-    labelNavigateBack() {
-      if (this.studyRequestBulkName !== null) {
-        return this.studyRequestBulkName;
-      }
-      return 'Requests';
-    },
-    routeNavigateBack() {
-      if (this.studyRequest === null || this.studyRequest.studyRequestBulkId === null) {
-        return { name: 'requestsTrack' };
-      }
-      const id = this.studyRequest.studyRequestBulkId;
-      return {
-        name: 'requestStudyBulkView',
-        params: { id },
-      };
-    },
-    ...mapState(['auth', 'locations']),
+    ...mapState(['locations']),
   },
   methods: {
-    actionEdit() {
-      const { id } = this.studyRequest;
-      const route = {
-        name: 'requestStudyEdit',
-        params: { id },
-      };
-      this.$router.push(route);
-    },
-    actionNavigateBack() {
-      this.$router.push(this.routeNavigateBack);
-    },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const {

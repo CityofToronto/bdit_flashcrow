@@ -1,17 +1,8 @@
 <template>
   <div class="fc-drawer-request-study-edit d-flex fill-height flex-column">
-    <FcDialogConfirmRequestStudyLeave
-      v-model="showConfirmLeave"
-      :is-bulk="false"
-      :is-create="false"
-      @action-ok="actionLeave" />
-
-    <header class="flex-grow-0 flex-shrink-0 shading">
-      <FcHeaderRequestStudy
-        :is-bulk="false"
-        :is-create="false"
-        @action-navigate-back="actionNavigateBack" />
-    </header>
+    <FcNavStudyRequest
+      ref="nav"
+      :study-request="studyRequest" />
 
     <v-divider></v-divider>
 
@@ -25,7 +16,7 @@
         v-model="studyRequest"
         :is-create="false"
         :location="locationActive"
-        @action-navigate-back="actionNavigateBack" />
+        @action-leave="actionLeave" />
     </div>
   </div>
 </template>
@@ -35,10 +26,8 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -46,44 +35,23 @@ export default {
   mixins: [FcMixinRouteAsync],
   components: {
     FcDetailsStudyRequest,
-    FcDialogConfirmRequestStudyLeave,
-    FcHeaderRequestStudy,
+    FcNavStudyRequest,
   },
   data() {
     return {
-      leaveConfirmed: false,
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequest: null,
     };
   },
   computed: {
-    routeNavigateBack() {
-      const { id } = this.$route.params;
-      return {
-        name: 'requestStudyView',
-        params: { id },
-      };
-    },
     ...mapGetters(['locationActive']),
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-      return;
-    }
-    this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed = false) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.routeNavigateBack);
+    actionLeave(leaveConfirmed = false) {
+      if (leaveConfirmed) {
+        this.$refs.nav.actionLeave();
+      } else {
+        this.$refs.nav.actionConfirmLeave();
+      }
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;

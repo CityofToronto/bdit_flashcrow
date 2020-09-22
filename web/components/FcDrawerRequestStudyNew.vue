@@ -1,17 +1,9 @@
 <template>
   <div class="fc-drawer-request-study-new d-flex fill-height flex-column">
-    <FcDialogConfirmRequestStudyLeave
-      v-model="showConfirmLeave"
-      :is-bulk="isBulk"
+    <FcNavStudyRequest
+      ref="nav"
       :is-create="true"
-      @action-ok="actionLeave" />
-
-    <header class="flex-grow-0 flex-shrink-0 shading">
-      <FcHeaderRequestStudy
-        :is-bulk="isBulk"
-        :is-create="true"
-        @action-navigate-back="actionNavigateBack" />
-    </header>
+      :study-request="isBulk ? studyRequestBulk : studyRequest" />
 
     <v-divider></v-divider>
 
@@ -25,13 +17,14 @@
         v-if="isBulk"
         v-model="studyRequestBulk"
         :locations="locations"
-        :locations-selection="locationsSelection" />
+        :locations-selection="locationsSelection"
+        @action-leave="actionLeave" />
       <FcDetailsStudyRequest
         v-else
         v-model="studyRequest"
         :is-create="true"
         :location="locationActive"
-        @action-navigate-back="actionNavigateBack" />
+        @action-leave="actionLeave" />
     </div>
   </div>
 </template>
@@ -47,11 +40,9 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import CompositeId from '@/lib/io/CompositeId';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcHeaderRequestStudy from '@/web/components/requests/FcHeaderRequestStudy.vue';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudyRequest(now, location) {
@@ -121,15 +112,11 @@ export default {
   components: {
     FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
-    FcDialogConfirmRequestStudyLeave,
-    FcHeaderRequestStudy,
+    FcNavStudyRequest,
   },
   data() {
     return {
-      leaveConfirmed: false,
       LocationMode,
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequest: null,
       studyRequestBulk: null,
     };
@@ -144,16 +131,6 @@ export default {
       }
       return this.locations;
     },
-    routeNavigateBack() {
-      if (this.locationsEmpty) {
-        return { name: 'viewData' };
-      }
-      const params = this.locationsRouteParams;
-      return {
-        name: 'viewDataAtLocation',
-        params,
-      };
-    },
     ...mapState([
       'locationMode',
       'locations',
@@ -165,25 +142,16 @@ export default {
       'locationActive',
       'locationsEmpty',
       'locationsRouteParams',
+      'routeBackViewRequest',
     ]),
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-      return;
-    }
-    this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed = false) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.routeNavigateBack);
+    actionLeave(leaveConfirmed = false) {
+      if (leaveConfirmed) {
+        this.$refs.nav.actionLeave();
+      } else {
+        this.$refs.nav.actionConfirmLeave();
+      }
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;

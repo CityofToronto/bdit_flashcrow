@@ -74,6 +74,21 @@ export default new Vuex.Store({
     },
   },
   getters: {
+    // NAVIGATION
+    routeBackViewRequest(state, getters) {
+      const { name } = state.backViewRequest;
+      if (name === 'requestsTrack') {
+        return { name: 'requestsTrack' };
+      }
+      if (getters.locationsEmpty) {
+        return { name: 'viewData' };
+      }
+      const params = getters.locationsRouteParams;
+      return {
+        name: 'viewDataAtLocation',
+        params,
+      };
+    },
     // AUTH / HELPERS STATE
     username(state) {
       if (!state.auth.loggedIn) {

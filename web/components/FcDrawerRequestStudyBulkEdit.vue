@@ -1,6 +1,18 @@
 <template>
   <div class="fc-drawer-request-study-bulk-edit d-flex fill-height flex-column">
-    TODO: bulk edit flow
+    <FcNavStudyRequest
+      :study-request="studyRequestBulk" />
+
+    <v-divider></v-divider>
+
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+      <v-progress-linear
+        v-if="loading"
+        indeterminate />
+      <div v-else>
+        <h2>TODO: bulk edit</h2>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -9,49 +21,26 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit',
   mixins: [FcMixinRouteAsync],
+  components: {
+    FcNavStudyRequest,
+  },
   data() {
     return {
-      leaveConfirmed: false,
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequestBulk: null,
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
     };
   },
   computed: {
-    routeNavigateBack() {
-      const { id } = this.$route.params;
-      return {
-        name: 'requestStudyBulkView',
-        params: { id },
-      };
-    },
     ...mapGetters(['locationActive']),
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-      return;
-    }
-    this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed = false) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.routeNavigateBack);
-    },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const {

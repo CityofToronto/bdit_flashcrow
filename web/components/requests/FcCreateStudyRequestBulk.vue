@@ -84,7 +84,7 @@
         <FcButton
           v-if="step !== null && step > 1"
           type="tertiary"
-          @click="$emit('action-navigate-back')">
+          @click="$emit('action-leave')">
           Quit
         </FcButton>
 
@@ -94,7 +94,7 @@
           v-if="step === 1"
           class="mr-2"
           type="tertiary"
-          @click="$emit('action-navigate-back')">
+          @click="$emit('action-leave')">
           Cancel
         </FcButton>
         <FcButton
@@ -122,7 +122,7 @@
         <FcButton
           v-else
           type="primary"
-          @click="$emit('action-navigate-back', true)">
+          @click="$emit('action-leave', true)">
           Close
         </FcButton>
       </div>

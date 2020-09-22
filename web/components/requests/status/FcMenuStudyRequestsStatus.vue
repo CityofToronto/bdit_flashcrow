@@ -7,7 +7,7 @@
     <template v-slot:activator="{ on, attrs }">
       <FcButton
         :class="buttonClass"
-        :disabled="disabled"
+        :disabled="disabled || !hasAvailableAction"
         type="secondary"
         v-bind="attrs"
         v-on="on">
@@ -119,6 +119,9 @@ export default {
       return this.studyRequests.every(
         ({ status }) => status.canTransitionTo(StudyRequestStatus.CHANGES_NEEDED),
       );
+    },
+    hasAvailableAction() {
+      return this.items.some(({ disabled }) => !disabled);
     },
     items() {
       return [
@@ -238,6 +241,9 @@ export default {
 <style lang="scss">
 .fc-submenu-study-requests-status.v-list-group--disabled {
   opacity: 0.38;
+  & > div:hover::before {
+    background-color: transparent;
+  }
 }
 
 .fc-item-study-requests-status.v-list-item--disabled .v-icon {

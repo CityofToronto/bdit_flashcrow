@@ -13,6 +13,7 @@
       :to="toViewMap" />
     <FcDashboardNavItem
       :active-route-names="[
+        'requestStudyBulkEdit',
         'requestStudyEdit',
         'requestStudyNew',
       ]"
