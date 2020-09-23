@@ -22,7 +22,6 @@ mkdir -p /home/ec2-user/log/flashcrow
 cd /home/ec2-user/flashcrow
 nvm use
 npm ci
-pip install -r requirements.txt
 
 # build static files into dist
 npm run frontend:build

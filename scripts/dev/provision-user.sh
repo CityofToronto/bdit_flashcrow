@@ -2,7 +2,7 @@
 #
 # provision-user.sh
 #
-# Installs Python, node, and the MOVE application itself during
+# Installs node and the MOVE application itself during
 # provisioning.  This script is intended to be run as a non-root user
 # (e.g. vagrant in development, ec2-user in production), and is run
 # after provision-admin.sh.
@@ -65,10 +65,9 @@ parse_args "$@"
 mkdir -p "$HOME/git"
 git clone "https://${GH_USER}:${GH_PASSWORD}@github.com/CityofToronto/bdit_flashcrow.git" "$HOME/git/bdit_flashcrow"
 
-# install Python, node dependencies
-echo "installing Python, node dependencies..."
+# install node dependencies
+echo "installing node dependencies..."
 cd "$HOME/git/bdit_flashcrow"
-pip install -r requirements.txt
 nvm use
 npm config --global set proxy http://proxy.toronto.ca:8080
 npm install

@@ -8,7 +8,6 @@ $packagesToInstall = @(
   "jq",
   "nginx@1.13.6",
   "nodejs-lts@10.15.1",
-  "python@3.7.2",
   "shellcheck",
   "tar",
   "vagrant"
