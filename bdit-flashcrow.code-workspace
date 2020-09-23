@@ -2,7 +2,6 @@
 	"extensions": {
 		"recommendations": [
 			"dbaeumer.vscode-eslint",
-			"ms-python.python",
       "ms-vscode-remote.vscode-remote-extensionpack",
       "octref.vetur",
 			"stylelint.vscode-stylelint"

@@ -137,9 +137,6 @@
     "*.scss": [
       "stylelint"
     ],
-    "*.py": [
-      "pylint"
-    ],
     "*.sh": [
       "shellcheck --shell=bash"
     ],
