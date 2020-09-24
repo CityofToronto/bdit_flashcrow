@@ -94,7 +94,7 @@ echo "localhost:5433:flashcrow:flashcrow:${PG_USER_PASSWORD}" >> ${RAMDISK_PGPAS
 # and run any database migrations
 echo "Setting up MOVE application database..."
 psql -h localhost -p 5433 -U flashcrow_dba postgres -v pgPassword="'$PG_USER_PASSWORD'" < "${GIT_ROOT}/scripts/dev/provision-db-vagrant.sql"
-psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/deployment/rds/collision_factors.sql"
+psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/test/db/collision_factors.sql"
 psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/db/db-update-install.sql"
 "${GIT_ROOT}/scripts/db/db-update.sh" --psqlArgs "-h localhost -p 5433 -U flashcrow flashcrow"
 
