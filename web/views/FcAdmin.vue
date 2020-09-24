@@ -40,7 +40,7 @@ export default {
 
 <style lang="scss">
 .fc-admin {
-  max-height: 100vh;
+  max-height: var(--full-height);
   width: 100%;
 }
 </style>

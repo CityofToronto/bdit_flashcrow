@@ -167,7 +167,11 @@ export default {
 
 <style lang="scss">
 .fc-request-study-view {
-  max-height: calc(100vh - 52px);
+  max-height: var(--full-height);
   width: 100%;
+
+  & .pane-map {
+    min-height: 400px;
+  }
 }
 </style>

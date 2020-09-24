@@ -466,6 +466,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-study-reports {
-  max-height: calc(100vh - 116px);
+  max-height: calc(var(--full-height) - 64px);
 }
 </style>

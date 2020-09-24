@@ -65,6 +65,6 @@ export default {
 
 <style lang="scss">
 .fc-drawer-request-study-edit {
-  max-height: calc(100vh - 52px);
+  max-height: var(--full-height);
 }
 </style>

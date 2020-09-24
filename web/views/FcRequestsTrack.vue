@@ -343,7 +343,7 @@ export default {
 <style lang="scss">
 .fc-requests-track {
   background-color: var(--v-shading-base);
-  max-height: calc(100vh - 52px);
+  max-height: var(--full-height);
   width: 100%;
 
   & .fc-requests-track-card {

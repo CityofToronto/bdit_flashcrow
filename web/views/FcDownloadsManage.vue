@@ -159,7 +159,7 @@ export default {
 <style lang="scss">
 .fc-downloads-manage {
   background-color: var(--v-shading-base);
-  max-height: 100vh;
+  max-height: var(--full-height);
   width: 100%;
 }
 </style>

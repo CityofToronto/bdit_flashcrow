@@ -180,6 +180,6 @@ export default {
 
 <style lang="scss">
 .fc-drawer-view-data {
-  max-height: 100vh;
+  max-height: var(--full-height);
 }
 </style>
