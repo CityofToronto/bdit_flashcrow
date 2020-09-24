@@ -42,8 +42,6 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 
-import FcDialogAlertInDevelopment from
-  '@/web/components/dialogs/FcDialogAlertInDevelopment.vue';
 import FcDialogAlertStudyRequestUrgent from
   '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
 import FcDialogConfirmUnauthorized from
@@ -62,7 +60,6 @@ export default {
     FcDashboardNavBrand,
     FcDashboardNavInDevelopment,
     FcDashboardNavUser,
-    FcDialogAlertInDevelopment,
     FcDialogAlertStudyRequestUrgent,
     FcDialogConfirmUnauthorized,
     FcToastInfo,

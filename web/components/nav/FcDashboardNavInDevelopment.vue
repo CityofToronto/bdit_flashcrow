@@ -1,30 +1,23 @@
 <template>
   <div class="fc-dashboard-nav-in-development align-center d-flex px-5 py-2 warning lighten-3">
     <div class="headline">
-      This is a development version of MOVE. You may experience unexpected downtime
-      and bugs at this time!
+      This is a beta version of MOVE. If you encounter a bug, help make MOVE better
+      by reporting it!
     </div>
     <v-spacer></v-spacer>
     <FcButton
-      class="mr-2"
-      dense
       type="secondary"
-      @click="actionLearnMore">
-      <v-icon left>mdi-information</v-icon>
-      Learn More
-    </FcButton>
-    <FcButton
-      type="secondary"
-      @click="actionContactUs">
-      <v-icon left>mdi-email-send</v-icon>
-      Contact Us
+      @click="actionReportBug">
+      <v-icon left>mdi-message-alert</v-icon>
+      Report a Bug
     </FcButton>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapState } from 'vuex';
 
+import { formatUsername } from '@/lib/StringFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -32,18 +25,24 @@ export default {
   components: {
     FcButton,
   },
+  computed: {
+    urlReportBug() {
+      const username = encodeURIComponent(this.username);
+      const url = encodeURIComponent(window.location.href);
+      return `https://docs.google.com/forms/d/e/1FAIpQLSeENA2S8dA678ENanNFwdZ811TUjVjIYolloBlRo12idib5UQ/viewform?entry.135357596=${username}&entry.1262500898=${url}`;
+    },
+    username() {
+      if (this.auth.loggedIn) {
+        return formatUsername(this.auth.user);
+      }
+      return '';
+    },
+    ...mapState(['auth']),
+  },
   methods: {
-    actionContactUs() {
-      const url = 'mailto:move-team@toronto.ca';
-      window.open(url, '_blank');
+    actionReportBug() {
+      window.open(this.urlReportBug, '_blank');
     },
-    actionLearnMore() {
-      this.setDialog({
-        dialog: 'AlertInDevelopment',
-        dialogData: {},
-      });
-    },
-    ...mapMutations(['setDialog']),
   },
 };
 </script>
