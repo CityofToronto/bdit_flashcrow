@@ -222,7 +222,7 @@ export default {
   },
   data() {
     const itemsAssignedTo = [
-      { text: 'None', value: null },
+      { text: 'Unassigned', value: null },
       ...StudyRequestAssignee.enumValues.map(
         enumValue => ({ text: enumValue.text, value: enumValue }),
       ),

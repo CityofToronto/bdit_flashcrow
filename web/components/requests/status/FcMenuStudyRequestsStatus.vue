@@ -12,7 +12,7 @@
         v-bind="attrs"
         v-on="on">
         <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
-        <span>Status</span>
+        <span>Set Status</span>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -55,7 +55,10 @@
 </template>
 
 <script>
-import { AuthScope, StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
+import { mapMutations } from 'vuex';
+
+import { StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
+import RequestActions from '@/lib/requests/RequestActions';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
@@ -74,6 +77,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showAssignTo: {
+      type: Boolean,
+      default: true,
+    },
     status: StudyRequestStatus,
     studyRequests: Array,
   },
@@ -85,83 +92,75 @@ export default {
   },
   computed: {
     canAssignTo() {
-      if (!this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return false;
-      }
-      return this.studyRequests.every(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.ASSIGNED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canAssignTo(this.auth.user, studyRequest),
       );
     },
     canCancel() {
-      return this.studyRequests.every(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.CANCELLED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canCancel(this.auth.user, studyRequest),
       );
     },
     canMarkCompleted() {
-      return this.studyRequests.every(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.COMPLETED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canMarkCompleted(this.auth.user, studyRequest),
       );
     },
     canRejectData() {
-      return this.studyRequests.every(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.REJECTED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canRejectData(this.auth.user, studyRequest),
       );
     },
     canReopen() {
-      return this.studyRequests.every(
-        ({ closed, status }) => closed && status.canTransitionTo(StudyRequestStatus.REQUESTED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canReopen(this.auth.user, studyRequest),
       );
     },
     canRequestChanges() {
-      if (!this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return false;
-      }
-      return this.studyRequests.every(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.CHANGES_NEEDED),
+      return this.studyRequests.some(
+        studyRequest => RequestActions.canRequestChanges(this.auth.user, studyRequest),
       );
     },
     hasAvailableAction() {
       return this.items.some(({ disabled }) => !disabled);
     },
     items() {
-      return [
-        {
-          disabled: !this.canRequestChanges,
-          text: 'Request Changes',
-          value: StudyRequestStatus.CHANGES_NEEDED,
-        },
-        {
+      const items = [{
+        disabled: !this.canRequestChanges,
+        text: 'Request Changes',
+        value: StudyRequestStatus.CHANGES_NEEDED,
+      }];
+      if (this.showAssignTo) {
+        items.push({
           disabled: !this.canAssignTo,
           items: [
-            { text: 'None', value: null },
+            { text: 'Unassigned', value: null },
             ...StudyRequestAssignee.enumValues.map(
               enumValue => ({ text: enumValue.text, value: enumValue }),
             ),
           ],
           text: 'Assign To',
           value: StudyRequestStatus.ASSIGNED,
-        },
-        {
-          disabled: !this.canMarkCompleted,
-          text: 'Mark Completed',
-          value: StudyRequestStatus.COMPLETED,
-        },
-        {
-          disabled: !this.canRejectData,
-          text: 'Reject Data',
-          value: StudyRequestStatus.REJECTED,
-        },
-        {
-          disabled: !this.canCancel,
-          text: 'Cancel',
-          value: StudyRequestStatus.CANCELLED,
-        },
-        {
-          disabled: !this.canReopen,
-          text: 'Reopen',
-          value: StudyRequestStatus.REQUESTED,
-        },
-      ];
+        });
+      }
+      items.push({
+        disabled: !this.canMarkCompleted,
+        text: 'Mark Completed',
+        value: StudyRequestStatus.COMPLETED,
+      }, {
+        disabled: !this.canRejectData,
+        text: 'Reject Data',
+        value: StudyRequestStatus.REJECTED,
+      }, {
+        disabled: !this.canCancel,
+        text: 'Cancel',
+        value: StudyRequestStatus.CANCELLED,
+      }, {
+        disabled: !this.canReopen,
+        text: 'Reopen',
+        value: StudyRequestStatus.REQUESTED,
+      });
+      return items;
     },
   },
   watch: {
@@ -175,27 +174,67 @@ export default {
     /* eslint-disable no-param-reassign */
     actionAssignTo(subitem) {
       const assignedTo = subitem.value;
-
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.assignedTo = assignedTo;
-        if (assignedTo === null) {
-          studyRequest.status = StudyRequestStatus.REQUESTED;
+        if (RequestActions.canAssignTo(this.auth.user, studyRequest)) {
+          RequestActions.actionAssignTo(studyRequest, assignedTo);
         } else {
-          studyRequest.status = StudyRequestStatus.ASSIGNED;
+          studyRequestsUnactionable.push(studyRequest);
         }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'assign',
+            actionVerbPastTense: 'assigned',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionCancel() {
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.status = StudyRequestStatus.CANCELLED;
-        studyRequest.closed = true;
+        if (RequestActions.canCancel(this.auth.user, studyRequest)) {
+          RequestActions.actionCancel(studyRequest);
+        } else {
+          studyRequestsUnactionable.push(studyRequest);
+        }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'cancel',
+            actionVerbPastTense: 'cancelled',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionMarkCompleted() {
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.status = StudyRequestStatus.COMPLETED;
-        studyRequest.closed = true;
+        if (RequestActions.canMarkCompleted(this.auth.user, studyRequest)) {
+          RequestActions.actionMarkCompleted(studyRequest);
+        } else {
+          studyRequestsUnactionable.push(studyRequest);
+        }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'complete',
+            actionVerbPastTense: 'completed',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionMenu(item, subitem) {
       this.showMenu = false;
@@ -217,23 +256,70 @@ export default {
       this.$emit('update');
     },
     actionRejectData() {
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.status = StudyRequestStatus.REJECTED;
-        studyRequest.closed = true;
+        if (RequestActions.canRejectData(this.auth.user, studyRequest)) {
+          RequestActions.actionRejectData(studyRequest);
+        } else {
+          studyRequestsUnactionable.push(studyRequest);
+        }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'reject',
+            actionVerbPastTense: 'rejected',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionReopen() {
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.status = StudyRequestStatus.REQUESTED;
-        studyRequest.closed = false;
+        if (RequestActions.canReopen(this.auth.user, studyRequest)) {
+          RequestActions.actionReopen(studyRequest);
+        } else {
+          studyRequestsUnactionable.push(studyRequest);
+        }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'reopen',
+            actionVerbPastTense: 'reopened',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionRequestChanges() {
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+        if (RequestActions.canRequestChanges(this.auth.user, studyRequest)) {
+          RequestActions.actionRequestChanges(studyRequest);
+        } else {
+          studyRequestsUnactionable.push(studyRequest);
+        }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'request changes for',
+            actionVerbPastTense: 'returned to submitter for changes',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     /* eslint-enable no-param-reassign */
+    ...mapMutations(['setDialog']),
   },
 };
 </script>

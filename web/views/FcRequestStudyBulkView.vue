@@ -49,12 +49,19 @@
               class="mr-6"
               :indeterminate="selectAll === null"></v-simple-checkbox>
 
-            <FcMenuStudyRequestsStatus
-              v-if="canEdit"
-              :disabled="selectAll === false"
-              :status="bulkStatus"
-              :study-requests="selectedStudyRequests"
-              @update="onUpdateStudyRequests" />
+            <template v-if="canEdit">
+              <FcMenuStudyRequestsStatus
+                :disabled="selectAll === false"
+                :status="bulkStatus"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
+
+              <FcMenuStudyRequestsAssignTo
+                button-class="ml-2"
+                :disabled="selectAll === false"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
+            </template>
           </div>
 
           <v-divider></v-divider>
@@ -79,7 +86,7 @@
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions } from 'vuex';
 
-import { AuthScope, StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
+import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
@@ -89,6 +96,8 @@ import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcBreadcrumbsStudyRequest
   from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
+import FcMenuStudyRequestsAssignTo
+  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
@@ -109,6 +118,7 @@ export default {
   components: {
     FcBreadcrumbsStudyRequest,
     FcDataTableRequests,
+    FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
     FcPaneMap,
@@ -130,9 +140,6 @@ export default {
   },
   computed: {
     bulkStatus() {
-      if (this.studyRequestBulk === null) {
-        return null;
-      }
       return bulkStatus(this.studyRequestBulk.studyRequests);
     },
     canEdit() {
@@ -155,14 +162,6 @@ export default {
           studyRequest,
         ),
       );
-    },
-    itemsAssignedTo() {
-      return [
-        { text: 'None', value: null },
-        ...StudyRequestAssignee.enumValues.map(
-          enumValue => ({ text: enumValue.text, value: enumValue }),
-        ),
-      ];
     },
     selectAll: {
       get() {
@@ -242,6 +241,7 @@ export default {
       this.loadingItems = true;
       await this.saveStudyRequestBulk(this.studyRequestBulk);
       await this.loadAsyncForRoute(this.$route);
+      this.selectedItems = [];
       this.loadingItems = false;
     },
     ...mapActions(['initLocations', 'saveStudyRequest', 'saveStudyRequestBulk']),
