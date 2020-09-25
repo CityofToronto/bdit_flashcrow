@@ -132,7 +132,7 @@ test('CollisionDAO.byCentrelineTotal', async () => {
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
   ];
   let result = await CollisionDAO.byCentrelineTotal(features);
-  expect(result).toBe(212);
+  expect(result).toBeGreaterThanOrEqual(212);
 
   features = [
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
