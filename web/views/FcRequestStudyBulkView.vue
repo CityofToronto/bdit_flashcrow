@@ -74,8 +74,7 @@
             :loading="loadingItems"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
-            @assign-to="actionAssignTo"
-            @show-item="actionShowItem" />
+            @update="onUpdateStudyRequests" />
         </div>
       </div>
     </section>
@@ -205,14 +204,6 @@ export default {
       const { id } = this.studyRequestBulk;
       const route = {
         name: 'requestStudyBulkEdit',
-        params: { id },
-      };
-      this.$router.push(route);
-    },
-    actionShowItem(item) {
-      const { id } = item.studyRequest;
-      const route = {
-        name: 'requestStudyView',
         params: { id },
       };
       this.$router.push(route);

@@ -62,8 +62,7 @@
             :loading="loading"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
-            @assign-to="actionAssignTo"
-            @show-item="actionShowItem" />
+            @assign-to="actionAssignTo" />
         </v-card-text>
       </v-card>
     </section>
@@ -85,7 +84,6 @@ import {
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -304,23 +302,6 @@ export default {
       this.loading = true;
       await this.loadAsyncForRoute();
       this.loading = false;
-    },
-    actionShowItem(item) {
-      let route;
-      if (item.type === ItemType.STUDY_REQUEST_BULK) {
-        const { id } = item.studyRequestBulk;
-        route = {
-          name: 'requestStudyBulkView',
-          params: { id },
-        };
-      } else {
-        const { id } = item.studyRequest;
-        route = {
-          name: 'requestStudyView',
-          params: { id },
-        };
-      }
-      this.$router.push(route);
     },
     async loadAsyncForRoute() {
       const {

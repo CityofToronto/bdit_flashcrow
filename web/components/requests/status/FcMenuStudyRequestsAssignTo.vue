@@ -1,12 +1,17 @@
 <template>
   <v-menu>
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{ on, attrs }">
       <FcButton
         :class="buttonClass"
         :disabled="disabled"
         type="secondary"
+        v-bind="{
+          ...attrs,
+          ...$attrs,
+        }"
         v-on="on">
-        <span>Assign To</span>
+        <span>{{text}}</span>
+        <v-spacer></v-spacer>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -48,6 +53,10 @@ export default {
       default: false,
     },
     studyRequests: Array,
+    text: {
+      type: String,
+      default: 'Assign To',
+    },
   },
   computed: {
     assignedToStr() {

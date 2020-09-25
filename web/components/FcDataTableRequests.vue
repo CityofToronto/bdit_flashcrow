@@ -89,41 +89,14 @@
       <span>{{item.createdAt | date}}</span>
     </template>
     <template v-slot:item.ASSIGNED_TO="{ item }">
-      <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
-        {{item.assignedTo}}
-      </span>
-      <v-menu
-        v-else-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)
-          && (
-            item.studyRequest.status.canTransitionTo(StudyRequestStatus.ASSIGNED)
-            || item.studyRequest.status === StudyRequestStatus.ASSIGNED
-          )">
-        <template v-slot:activator="{ on }">
-          <FcButton
-            class="body-1 text-none"
-            small
-            type="secondary"
-            width="120"
-            v-on="on">
-            <span v-if="item.studyRequest.assignedTo === null">
-              None
-            </span>
-            <span v-else>{{item.studyRequest.assignedTo.text}}</span>
-            <v-spacer></v-spacer>
-            <v-icon right>mdi-menu-down</v-icon>
-          </FcButton>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="({ text, value }, i) in itemsAssignedTo"
-            :key="i"
-            @click="actionAssignTo({ item, assignedTo: value })">
-            <v-list-item-title>
-              {{text}}
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <FcMenuStudyRequestsAssignTo
+        v-if="canAssignTo(item)"
+        button-class="body-1"
+        small
+        :study-requests="[item.studyRequest]"
+        :text="item.assignedTo"
+        width="140"
+        @update="onUpdateStudyRequests" />
       <span v-else>{{item.assignedTo}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
@@ -173,9 +146,7 @@
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
             :sort-by="internalSortBy"
-            :sort-desc="internalSortDesc"
-            @assign-to="actionAssignTo"
-            @show-item="actionShowItem" />
+            :sort-desc="internalSortDesc" />
         </td>
       </template>
     </template>
@@ -188,9 +159,12 @@ import {
   StudyRequestStatus,
 } from '@/lib/Constants';
 import { formatUsername } from '@/lib/StringFormatters';
+import RequestActions from '@/lib/requests/RequestActions';
+import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+import FcMenuStudyRequestsAssignTo
+  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -201,9 +175,9 @@ export default {
     FcMixinVModelProxy(Array),
   ],
   components: {
-    FcButton,
     FcButtonAria,
     FcDataTable,
+    FcMenuStudyRequestsAssignTo,
   },
   props: {
     columns: Array,
@@ -231,7 +205,7 @@ export default {
     const sortKeys = {
       ASSIGNED_TO: (r) => {
         const dueDate = r.dueDate.toString();
-        if (r.assignedTo !== 'None') {
+        if (r.assignedTo !== 'Unassigned') {
           return `${r.assignedTo}:${dueDate}`;
         }
         return `ZZZ:${dueDate}`;
@@ -290,11 +264,31 @@ export default {
     },
   },
   methods: {
-    actionAssignTo(payload) {
-      this.$emit('assign-to', payload);
+    actionShowItem(item) {
+      let route;
+      if (item.type === ItemType.STUDY_REQUEST_BULK) {
+        const { id } = item.studyRequestBulk;
+        route = {
+          name: 'requestStudyBulkView',
+          params: { id },
+        };
+      } else {
+        const { id } = item.studyRequest;
+        route = {
+          name: 'requestStudyView',
+          params: { id },
+        };
+      }
+      this.$router.push(route);
     },
-    actionShowItem(payload) {
-      this.$emit('show-item', payload);
+    canAssignTo(item) {
+      if (item.type === ItemType.STUDY_REQUEST_BULK) {
+        return false;
+      }
+      return RequestActions.canAssignTo(this.auth.user, item.studyRequest);
+    },
+    onUpdateStudyRequests() {
+      this.$emit('update');
     },
   },
 };
