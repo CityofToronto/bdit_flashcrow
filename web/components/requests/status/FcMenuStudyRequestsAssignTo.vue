@@ -13,11 +13,10 @@
     <v-list>
       <v-list-item
         v-for="(item, i) in items"
-        :disabled="item.disabled"
         :key="i"
         @click="actionAssignTo(item)">
         <v-list-item-title>
-          {{text}}
+          {{item.text}}
         </v-list-item-title>
       </v-list-item>
     </v-list>
@@ -25,7 +24,10 @@
 </template>
 
 <script>
-import { AuthScope, StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
+import { mapMutations } from 'vuex';
+
+import { StudyRequestAssignee } from '@/lib/Constants';
+import RequestActions from '@/lib/requests/RequestActions';
 import { bulkAssignedToStr } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -52,12 +54,8 @@ export default {
       return bulkAssignedToStr(this.studyRequests);
     },
     canAssignTo() {
-      if (!this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return false;
-      }
       return this.studyRequests.some(
-        ({ status }) => status.canTransitionTo(StudyRequestStatus.ASSIGNED)
-          || status === StudyRequestStatus.ASSIGNED,
+        studyRequest => RequestActions.canAssignTo(this.auth.user, studyRequest),
       );
     },
     items() {
@@ -73,21 +71,32 @@ export default {
     /* eslint-disable no-param-reassign */
     actionAssignTo(item) {
       const assignedTo = item.value;
-
+      const studyRequestsUnactionable = [];
       this.studyRequests.forEach((studyRequest) => {
-        studyRequest.assignedTo = assignedTo;
-        if (assignedTo === null) {
-          studyRequest.status = StudyRequestStatus.REQUESTED;
+        if (RequestActions.canAssignTo(this.auth.user, studyRequest)) {
+          RequestActions.actionAssignTo(studyRequest, assignedTo);
         } else {
-          studyRequest.status = StudyRequestStatus.ASSIGNED;
+          studyRequestsUnactionable.push(studyRequest);
         }
       });
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            actionVerb: 'assign',
+            actionVerbPastTense: 'assigned',
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      }
     },
     actionMenu(item) {
       this.actionAssignTo(item);
       this.$emit('update');
     },
     /* eslint-enable no-param-reassign */
+    ...mapMutations(['setDialog']),
   },
 };
 </script>

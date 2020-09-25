@@ -211,7 +211,7 @@ export default {
     },
     items() {
       return this.itemsNormalized
-        .map(item => filterItem(this.filters, this.search, this.user, item))
+        .map(item => filterItem(this.filters, this.search, this.auth.user, item))
         .filter(item => item !== null);
     },
     itemsNormalized() {
