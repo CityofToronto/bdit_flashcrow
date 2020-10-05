@@ -83,14 +83,14 @@
 
 <script>
 import { Ripple } from 'vuetify/lib/directives';
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
+import { bulkIndicesDeselected, bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcBreadcrumbsStudyRequest
   from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
@@ -184,6 +184,13 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
+    ...mapState(['locations']),
+  },
+  created() {
+    this.setLocationsIndicesDeselected([]);
+  },
+  beforeDestroy() {
+    this.setLocationsIndicesDeselected([]);
   },
   methods: {
     actionEdit() {
@@ -217,6 +224,12 @@ export default {
       this.studyRequestChanges = studyRequestChanges;
       this.studyRequestLocations = studyRequestLocations;
 
+      const indicesDeselected = bulkIndicesDeselected(
+        this.locations,
+        this.studyRequestBulk.studyRequests,
+      );
+      this.setLocationsIndicesDeselected(indicesDeselected);
+
       const { user } = this.auth;
       this.studyRequestUsers.set(user.id, user);
       this.studyRequestUsers = studyRequestUsers;
@@ -228,6 +241,7 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.loadingItems = false;
     },
+    ...mapMutations(['setLocationsIndicesDeselected']),
     ...mapActions(['initLocations', 'saveStudyRequest', 'saveStudyRequestBulk']),
   },
 };
