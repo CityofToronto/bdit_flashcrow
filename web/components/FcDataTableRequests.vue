@@ -33,11 +33,18 @@
     </template>
     <template v-slot:item.SELECT="{ item }">
       <v-checkbox
+        v-if="item.type === ItemType.STUDY_REQUEST"
         v-model="internalValue"
         class="mt-0 pt-0"
         hide-details
-        :indeterminate="false"
         :value="item" />
+      <v-checkbox
+        v-else
+        class="mt-0 pt-0"
+        hide-details
+        :indeterminate="selectAll[item.id] === null"
+        :value="selectAll[item.id]"
+        @click="actionSelectAll(item)" />
     </template>
     <template v-slot:item.ID="{ item }">
       <span
@@ -152,6 +159,7 @@
           class="px-0"
           :colspan="headers.length">
           <FcDataTableRequests
+            v-model="internalValue"
             :columns="columns"
             :has-filters="hasFilters"
             :items="item.studyRequestBulk.studyRequests"
@@ -178,11 +186,29 @@ import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+function getSelectAll(internalValue, item) {
+  let k = 0;
+  item.studyRequestBulk.studyRequests.forEach((subitem) => {
+    if (internalValue.includes(subitem)) {
+      k += 1;
+    }
+  });
+  if (k === 0) {
+    return false;
+  }
+  if (k === item.studyRequestBulk.studyRequests.length) {
+    return true;
+  }
+  return null;
+}
 
 export default {
   name: 'FcDataTableRequests',
   mixins: [
     FcMixinAuthScope,
+    FcMixinVModelProxy(Array),
   ],
   components: {
     FcButtonAria,
@@ -203,7 +229,6 @@ export default {
     },
     sortBy: String,
     sortDesc: Boolean,
-    value: Array,
   },
   data() {
     const itemsAssignedTo = [
@@ -252,6 +277,7 @@ export default {
 
     return {
       itemsAssignedTo,
+      ItemType,
       sortKeys,
       StudyRequestStatus,
     };
@@ -273,19 +299,41 @@ export default {
         this.$emit('update:sortDesc', internalSortDesc);
       },
     },
-    internalValue: {
-      get() {
-        return this.value;
-      },
-      set(internalValue) {
-        this.$emit('input', internalValue);
-      },
-    },
     isExpandedChild() {
       return this.parentItem !== null;
     },
+    selectAll() {
+      const selectAll = {};
+      this.items.forEach((item) => {
+        if (item.type === ItemType.STUDY_REQUEST) {
+          return;
+        }
+        selectAll[item.id] = getSelectAll(this.internalValue, item);
+      });
+      return selectAll;
+    },
   },
   methods: {
+    actionSelectAll(item) {
+      const selectAll = getSelectAll(this.internalValue, item);
+      if (selectAll === true) {
+        // deselect all in bulk study request
+        item.studyRequestBulk.studyRequests.forEach((subitem) => {
+          const i = this.internalValue.indexOf(subitem);
+          if (i !== -1) {
+            this.internalValue.splice(i, 1);
+          }
+        });
+      } else {
+        // select all in bulk study request
+        item.studyRequestBulk.studyRequests.forEach((subitem) => {
+          const i = this.internalValue.indexOf(subitem);
+          if (i === -1) {
+            this.internalValue.push(subitem);
+          }
+        });
+      }
+    },
     actionShowItem(item) {
       let route;
       if (item.type === ItemType.STUDY_REQUEST_BULK) {

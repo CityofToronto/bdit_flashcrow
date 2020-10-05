@@ -21,10 +21,11 @@
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
       <v-card class="fc-requests-track-card">
         <v-card-title class="align-center d-flex py-2">
-          <v-simple-checkbox
+          <v-checkbox
             v-model="selectAll"
-            class="mr-6"
-            :indeterminate="selectAll === null"></v-simple-checkbox>
+            class="mt-0 mr-3 pt-0"
+            hide-details
+            :indeterminate="selectAll === null" />
 
           <FcButton
             v-if="selectedItems.length === 0"
@@ -84,6 +85,7 @@ import {
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
+import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -232,20 +234,33 @@ export default {
         ...itemsStudyRequestsBulk,
       ];
     },
+    itemsStudyRequest() {
+      const itemsAll = [];
+      this.items.forEach((item) => {
+        if (item.type === ItemType.STUDY_REQUEST) {
+          itemsAll.push(item);
+        } else {
+          item.studyRequestBulk.studyRequests.forEach((subitem) => {
+            itemsAll.push(subitem);
+          });
+        }
+      });
+      return itemsAll;
+    },
     selectAll: {
       get() {
         const k = this.selectedItems.length;
         if (k === 0) {
           return false;
         }
-        if (k === this.items.length) {
+        if (k === this.itemsStudyRequest.length) {
           return true;
         }
         return null;
       },
       set(selectAll) {
         if (selectAll) {
-          this.selectedItems = this.items;
+          this.selectedItems = this.itemsStudyRequest;
         } else {
           this.selectedItems = [];
         }
