@@ -343,6 +343,15 @@ export default new Vuex.Store({
       }
       return postStudyRequestBulk(csrf, studyRequestBulk);
     },
+    async updateStudyRequests({ state, commit }, studyRequests) {
+      commit('setToastInfo', `Updated ${studyRequests.length} study request(s).`);
+
+      const { csrf } = state.auth;
+      const tasks = studyRequests.map(
+        studyRequest => putStudyRequest(csrf, studyRequest),
+      );
+      return Promise.all(tasks);
+    },
     // LOCATION
     async initLocations({ commit, state }, { features, selectionType: selectionTypeNext }) {
       const { locations, selectionType } = state.locationsSelection;

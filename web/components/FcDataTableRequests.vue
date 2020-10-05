@@ -43,7 +43,7 @@
         class="mt-0 pt-0"
         hide-details
         :indeterminate="selectAll[item.id] === null"
-        :value="selectAll[item.id]"
+        :input-value="selectAll[item.id]"
         @click="actionSelectAll(item)" />
     </template>
     <template v-slot:item.ID="{ item }">
@@ -112,7 +112,7 @@
         :study-requests="[item.studyRequest]"
         :text="item.assignedTo"
         width="140"
-        @update="onUpdateStudyRequests" />
+        @update="actionUpdateItem(item)" />
       <span v-else>{{item.assignedTo}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
@@ -166,7 +166,8 @@
             :loading="loading"
             :parent-item="item"
             :sort-by="internalSortBy"
-            :sort-desc="internalSortDesc" />
+            :sort-desc="internalSortDesc"
+            @update-item="actionUpdateItem" />
         </td>
       </template>
     </template>
@@ -351,14 +352,14 @@ export default {
       }
       this.$router.push(route);
     },
+    actionUpdateItem(item) {
+      this.$emit('update-item', item);
+    },
     canAssignTo(item) {
       if (item.type === ItemType.STUDY_REQUEST_BULK) {
         return false;
       }
       return RequestActions.canAssignTo(this.auth.user, item.studyRequest);
-    },
-    onUpdateStudyRequests() {
-      this.$emit('update');
     },
   },
 };

@@ -28,7 +28,34 @@
             :indeterminate="selectAll === null" />
 
           <FcButton
-            v-if="selectedItems.length === 0"
+            class="mr-2"
+            :disabled="selectAll === false"
+            type="secondary"
+            @click="actionDownload(selectedItems)">
+            <v-icon color="primary" left>mdi-cloud-download</v-icon>
+            Download
+          </FcButton>
+          <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
+            <FcMenuStudyRequestsStatus
+              button-class="mr-2"
+              :disabled="selectAll === false"
+              :study-requests="selectedStudyRequests"
+              @update="onUpdateStudyRequests" />
+
+            <FcMenuStudyRequestsAssignTo
+              button-class="mr-2"
+              :disabled="selectAll === false"
+              :study-requests="selectedStudyRequests"
+              @update="onUpdateStudyRequests" />
+          </template>
+
+          <FcStudyRequestFilters
+            v-model="filters"
+            :items="items" />
+
+          <v-spacer></v-spacer>
+
+          <FcButton
             class="mr-2"
             :loading="loading"
             type="secondary"
@@ -38,18 +65,6 @@
               left>mdi-refresh</v-icon>
             Refresh
           </FcButton>
-          <FcButton
-            v-else
-            class="mr-2"
-            type="secondary"
-            @click="actionDownload(selectedItems)">
-            <v-icon color="primary" left>mdi-cloud-download</v-icon>
-            Download
-          </FcButton>
-
-          <FcStudyRequestFilters
-            v-model="filters"
-            :items="items" />
         </v-card-title>
 
         <v-divider></v-divider>
@@ -63,7 +78,7 @@
             :loading="loading"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
-            @assign-to="actionAssignTo" />
+            @update-item="actionUpdateItem" />
         </v-card-text>
       </v-card>
     </section>
@@ -76,7 +91,7 @@ import { saveAs } from 'file-saver';
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapState } from 'vuex';
 
-import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
+import { AuthScope } from '@/lib/Constants';
 import { formatDuration } from '@/lib/StringFormatters';
 import { getStudyRequests } from '@/lib/api/WebApi';
 import { filterItem, getFilterChips } from '@/lib/requests/RequestFilters';
@@ -93,6 +108,10 @@ import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue
 import FcStudyRequestFilters from '@/web/components/requests/FcStudyRequestFilters.vue';
 import FcStudyRequestFilterShortcuts
   from '@/web/components/requests/FcStudyRequestFilterShortcuts.vue';
+import FcMenuStudyRequestsAssignTo
+  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
+import FcMenuStudyRequestsStatus
+  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -175,6 +194,8 @@ export default {
   components: {
     FcButton,
     FcDataTableRequests,
+    FcMenuStudyRequestsAssignTo,
+    FcMenuStudyRequestsStatus,
     FcSearchBarRequests,
     FcStudyRequestFilters,
     FcStudyRequestFilterShortcuts,
@@ -266,6 +287,9 @@ export default {
         }
       },
     },
+    selectedStudyRequests() {
+      return this.selectedItems.map(({ studyRequest }) => studyRequest);
+    },
     ...mapState(['auth']),
   },
   created() {
@@ -273,20 +297,6 @@ export default {
     this.filters.userOnly = userOnly;
   },
   methods: {
-    async actionAssignTo({ item, assignedTo }) {
-      const { studyRequest } = item;
-      studyRequest.assignedTo = assignedTo;
-      if (assignedTo === null) {
-        studyRequest.status = StudyRequestStatus.REQUESTED;
-      } else {
-        studyRequest.status = StudyRequestStatus.ASSIGNED;
-      }
-
-      this.loading = false;
-      await this.saveStudyRequest(studyRequest);
-      await this.loadAsyncForRoute(this.$route);
-      this.loading = false;
-    },
     actionDownload(items) {
       const rows = items.map(getItemRow);
       const columns = [
@@ -318,6 +328,13 @@ export default {
       await this.loadAsyncForRoute();
       this.loading = false;
     },
+    async actionUpdateItem(item) {
+      this.loading = true;
+      this.selectedItems = [];
+      await this.saveStudyRequest(item.studyRequest);
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
+    },
     async loadAsyncForRoute() {
       const {
         studyRequests,
@@ -331,7 +348,15 @@ export default {
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
     },
-    ...mapActions(['saveStudyRequest']),
+    async onUpdateStudyRequests() {
+      this.loading = true;
+      const studyRequests = this.selectedStudyRequests;
+      this.selectedItems = [];
+      await this.updateStudyRequests(studyRequests);
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
+    },
+    ...mapActions(['saveStudyRequest', 'updateStudyRequests']),
   },
 };
 </script>

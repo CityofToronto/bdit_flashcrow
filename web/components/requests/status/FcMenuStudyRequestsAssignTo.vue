@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on, attrs }">
       <FcButton
         :class="buttonClass"
-        :disabled="disabled"
+        :disabled="disabled || !canAssignTo"
         type="secondary"
         v-bind="{
           ...attrs,
@@ -19,7 +19,7 @@
       <v-list-item
         v-for="(item, i) in items"
         :key="i"
-        @click="actionAssignTo(item)">
+        @click="actionMenu(item)">
         <v-list-item-title>
           {{item.text}}
         </v-list-item-title>

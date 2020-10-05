@@ -11,7 +11,12 @@
         type="secondary"
         v-bind="attrs"
         v-on="on">
-        <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
+        <v-icon
+          v-if="status !== null"
+          :color="status.color"
+          left>
+          mdi-circle-medium
+        </v-icon>
         <span>Set Status</span>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
@@ -81,7 +86,10 @@ export default {
       type: Boolean,
       default: true,
     },
-    status: StudyRequestStatus,
+    status: {
+      type: StudyRequestStatus,
+      default: null,
+    },
     studyRequests: Array,
   },
   data() {

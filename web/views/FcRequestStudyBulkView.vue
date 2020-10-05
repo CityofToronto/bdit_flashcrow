@@ -74,7 +74,7 @@
             :loading="loadingItems"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
-            @update="onUpdateStudyRequests" />
+            @update-item="actionUpdateItem" />
         </div>
       </div>
     </section>
@@ -85,7 +85,7 @@
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions } from 'vuex';
 
-import { AuthScope, StudyRequestStatus } from '@/lib/Constants';
+import { AuthScope } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
@@ -186,20 +186,6 @@ export default {
     },
   },
   methods: {
-    async actionAssignTo({ item, assignedTo }) {
-      const { studyRequest } = item;
-      studyRequest.assignedTo = assignedTo;
-      if (assignedTo === null) {
-        studyRequest.status = StudyRequestStatus.REQUESTED;
-      } else {
-        studyRequest.status = StudyRequestStatus.ASSIGNED;
-      }
-
-      this.loadingItems = false;
-      await this.saveStudyRequest(studyRequest);
-      await this.loadAsyncForRoute(this.$route);
-      this.loadingItems = false;
-    },
     actionEdit() {
       const { id } = this.studyRequestBulk;
       const route = {
@@ -207,6 +193,13 @@ export default {
         params: { id },
       };
       this.$router.push(route);
+    },
+    async actionUpdateItem(item) {
+      this.loadingItems = true;
+      this.selectedItems = [];
+      await this.saveStudyRequest(item.studyRequest);
+      await this.loadAsyncForRoute(this.$route);
+      this.loadingItems = false;
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
@@ -230,9 +223,9 @@ export default {
     },
     async onUpdateStudyRequests() {
       this.loadingItems = true;
+      this.selectedItems = [];
       await this.saveStudyRequestBulk(this.studyRequestBulk);
       await this.loadAsyncForRoute(this.$route);
-      this.selectedItems = [];
       this.loadingItems = false;
     },
     ...mapActions(['initLocations', 'saveStudyRequest', 'saveStudyRequestBulk']),
