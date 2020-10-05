@@ -1,6 +1,5 @@
 <template>
   <FcDataTable
-    v-model="internalValue"
     class="fc-data-table-requests"
     :class="{
       'is-expanded-child': isExpandedChild,
@@ -13,7 +12,6 @@
     :loading="loading"
     must-sort
     show-expand
-    show-select
     single-expand
     :sort-by.sync="internalSortBy"
     :sort-desc.sync="internalSortDesc"
@@ -30,7 +28,16 @@
         </span>
       </div>
     </template>
-    <template v-slot:header.data-table-select>
+    <template v-slot:header.SELECT>
+      <span class="sr-only">Select</span>
+    </template>
+    <template v-slot:item.SELECT="{ item }">
+      <v-checkbox
+        v-model="internalValue"
+        class="mt-0 pt-0"
+        hide-details
+        :indeterminate="false"
+        :value="item" />
     </template>
     <template v-slot:item.ID="{ item }">
       <span
@@ -79,14 +86,16 @@
     <template v-slot:item.REQUESTER="{ item }">
       <div class="text-truncate">
         <span
-          v-if="item.requestedBy !== null"
+          v-if="!isExpandedChild && item.requestedBy !== null"
           :title="item.requestedBy">
           {{item.requestedBy | username}}
         </span>
       </div>
     </template>
     <template v-slot:item.CREATED_AT="{ item }">
-      <span>{{item.createdAt | date}}</span>
+      <span v-if="!isExpandedChild">
+        {{item.createdAt | date}}
+      </span>
     </template>
     <template v-slot:item.ASSIGNED_TO="{ item }">
       <FcMenuStudyRequestsAssignTo
@@ -100,7 +109,10 @@
       <span v-else>{{item.assignedTo}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
-      <span>{{item.dueDate | date}}</span>
+      <span
+        v-if="parentItem === null || !item.dueDate.equals(parentItem.dueDate)">
+        {{item.dueDate | date}}
+      </span>
     </template>
     <template v-slot:item.STATUS="{ item }">
       <div class="align-center d-flex">
@@ -142,9 +154,9 @@
           <FcDataTableRequests
             :columns="columns"
             :has-filters="hasFilters"
-            :is-expanded-child="true"
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
+            :parent-item="item"
             :sort-by="internalSortBy"
             :sort-desc="internalSortDesc" />
         </td>
@@ -166,13 +178,11 @@ import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDataTableRequests',
   mixins: [
     FcMixinAuthScope,
-    FcMixinVModelProxy(Array),
   ],
   components: {
     FcButtonAria,
@@ -182,17 +192,18 @@ export default {
   props: {
     columns: Array,
     hasFilters: Boolean,
-    isExpandedChild: {
-      type: Boolean,
-      default: false,
-    },
     items: Array,
     loading: {
       type: Boolean,
       default: false,
     },
+    parentItem: {
+      type: Object,
+      default: null,
+    },
     sortBy: String,
     sortDesc: Boolean,
+    value: Array,
   },
   data() {
     const itemsAssignedTo = [
@@ -261,6 +272,17 @@ export default {
       set(internalSortDesc) {
         this.$emit('update:sortDesc', internalSortDesc);
       },
+    },
+    internalValue: {
+      get() {
+        return this.value;
+      },
+      set(internalValue) {
+        this.$emit('input', internalValue);
+      },
+    },
+    isExpandedChild() {
+      return this.parentItem !== null;
     },
   },
   methods: {
