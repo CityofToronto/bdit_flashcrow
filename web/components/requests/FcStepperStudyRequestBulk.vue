@@ -7,7 +7,7 @@
       <v-stepper-step
         class="pa-2"
         :complete="internalValue > 1"
-        editable
+        :editable="internalValue > 1"
         :step="1">
         Select intersections
       </v-stepper-step>
@@ -17,7 +17,7 @@
       <v-stepper-step
         class="pa-2"
         :complete="internalValue > 2"
-        editable
+        :editable="internalValue > 2"
         :step="2">
         Select midblocks
       </v-stepper-step>
@@ -27,7 +27,7 @@
       <v-stepper-step
         class="pa-2"
         :complete="internalValue > 3"
-        editable
+        :editable="internalValue > 3"
         :step="3">
         Request details
       </v-stepper-step>
@@ -36,7 +36,6 @@
 
       <v-stepper-step
         class="pa-2"
-        editable
         :step="4">
         Review &amp; Submit
       </v-stepper-step>

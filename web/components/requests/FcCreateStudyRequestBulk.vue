@@ -67,6 +67,8 @@
         <p class="body-1 mt-6 mb-0">You have submitted a request for</p>
         <p class="title mt-2 mb-6">{{internalValue.name}}</p>
         <FcButton
+          :disabled="loadingSubmit"
+          :loading="loadingSubmit"
           type="secondary"
           @click="actionViewDetails">
           View Details
@@ -195,6 +197,7 @@ export default {
       indicesIntersectionsSelected,
       indicesMidblocks,
       indicesMidblocksSelected,
+      loadingSubmit: false,
       step: 1,
       studyRequests,
     };
@@ -295,14 +298,26 @@ export default {
         }
       }
     },
-    actionSubmit() {
-      this.saveStudyRequestBulk(this.internalValue);
+    async actionSubmit() {
+      this.loadingSubmit = true;
       this.step = null;
+
+      const studyRequestBulk = await this.saveStudyRequestBulk(this.internalValue);
+      this.internalValue = studyRequestBulk;
+
       this.setToastInfo('Your new count request has been submitted.');
+      this.loadingSubmit = false;
     },
     actionViewDetails() {
-      /* eslint-disable-next-line no-alert */
-      window.alert('Coming Soon!');
+      if (this.loadingSubmit) {
+        return;
+      }
+      const { id } = this.internalValue;
+      const route = {
+        name: 'requestStudyBulkView',
+        params: { id },
+      };
+      this.$router.push(route);
     },
     ...mapMutations(['setLocationsIndicesDeselected', 'setToastInfo']),
     ...mapActions(['saveStudyRequestBulk']),
