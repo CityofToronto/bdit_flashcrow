@@ -18,6 +18,7 @@
         v-model="studyRequestBulk"
         :locations="locations"
         :locations-selection="locationsSelection"
+        :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
         @action-leave="actionLeave" />
       <FcDetailsStudyRequest
         v-else
@@ -39,6 +40,7 @@ import {
   StudyHours,
   StudyType,
 } from '@/lib/Constants';
+import { getStudiesByCentrelineSummaryPerLocation } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
@@ -119,6 +121,7 @@ export default {
       LocationMode,
       studyRequest: null,
       studyRequestBulk: null,
+      studySummaryPerLocationUnfiltered: [],
     };
   },
   computed: {
@@ -160,6 +163,12 @@ export default {
       await this.initLocations({ features, selectionType });
 
       if (this.isBulk) {
+        const studySummaryPerLocationUnfiltered = await getStudiesByCentrelineSummaryPerLocation(
+          this.locations,
+          {},
+        );
+        this.studySummaryPerLocationUnfiltered = studySummaryPerLocationUnfiltered;
+
         const studyRequestBulk = makeStudyRequestBulk(
           this.now,
           this.locations,

@@ -12,8 +12,8 @@
         class="flex-grow-1 flex-shrink-1 mr-5 my-1"
         :icon-props="locationsIconProps[i]"
         :location="locations[i]"
+        :most-recent-by-study-type="mostRecentByLocationAndStudyType[i]"
         :selected="internalValue.includes(i)"
-        :study="study"
         :study-request="studyRequests[i]"
         :v="v.$each[i]" />
     </div>
@@ -21,9 +21,8 @@
 </template>
 
 <script>
-import { StudyHours } from '@/lib/Constants';
+import { StudyType } from '@/lib/Constants';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import DateTime from '@/lib/time/DateTime';
 import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -38,21 +37,25 @@ export default {
     locations: Array,
     locationsSelection: Object,
     studyRequests: Array,
+    studySummaryPerLocationUnfiltered: Array,
     v: Object,
-  },
-  data() {
-    return {
-      // TODO: get actual study info
-      study: {
-        duration: null,
-        hours: StudyHours.ROUTINE,
-        startDate: DateTime.local(),
-      },
-    };
   },
   computed: {
     locationsIconProps() {
       return getLocationsIconProps(this.locations, this.locationsSelection.locations);
+    },
+    mostRecentByLocationAndStudyType() {
+      return this.locations.map((_, i) => {
+        const mostRecentByStudyType = new Map(
+          StudyType.enumValues.map(studyType => [studyType, null]),
+        );
+        this.studySummaryPerLocationUnfiltered.forEach(({ category, perLocation }) => {
+          const { studyType } = category;
+          const { mostRecent } = perLocation[i];
+          mostRecentByStudyType.set(studyType, mostRecent);
+        });
+        return mostRecentByStudyType;
+      });
     },
   },
 };

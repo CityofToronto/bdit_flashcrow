@@ -11,8 +11,9 @@
       <div class="fc-card-study-request-title">
         <div>{{location.description}}</div>
         <FcTextMostRecent
+          v-if="studyRequest.studyType !== null"
           class="font-weight-regular"
-          :study="study" />
+          :study="mostRecentByStudyType.get(studyRequest.studyType)" />
       </div>
     </v-card-title>
     <v-card-text class="pb-0">
@@ -82,8 +83,8 @@ export default {
   props: {
     iconProps: Object,
     location: Object,
+    mostRecentByStudyType: Map,
     selected: Boolean,
-    study: Object,
     studyRequest: Object,
     v: Object,
   },

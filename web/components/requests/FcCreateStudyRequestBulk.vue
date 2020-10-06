@@ -37,6 +37,7 @@
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-requests="studyRequests"
+        :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
         :v="$v.studyRequests" />
       <FcStudyRequestBulkLocations
         v-else-if="step === 2"
@@ -45,6 +46,7 @@
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-requests="studyRequests"
+        :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
         :v="$v.studyRequests" />
       <FcStudyRequestBulkDetails
         v-else-if="step === 3"
@@ -174,6 +176,7 @@ export default {
   props: {
     locations: Array,
     locationsSelection: Object,
+    studySummaryPerLocationUnfiltered: Array,
   },
   data() {
     const studyRequests = [...this.value.studyRequests];
