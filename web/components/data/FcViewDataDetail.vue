@@ -24,7 +24,7 @@
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Request Study
+              Request New
             </FcButton>
           </template>
         </FcHeaderStudies>

@@ -85,7 +85,7 @@
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Request New Counts
+              Request New
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else

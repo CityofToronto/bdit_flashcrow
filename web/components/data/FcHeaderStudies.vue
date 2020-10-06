@@ -1,8 +1,10 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <h2 class="headline">Studies</h2>
-      <div class="pl-3 subtitle-1">{{studyTotal}} total</div>
+      <div>
+        <h2 class="headline">Studies</h2>
+        <div class="pt-1 subtitle-1">{{studyTotal}} total</div>
+      </div>
       <v-spacer></v-spacer>
       <FcDialogStudyFilters
         v-if="showFiltersStudy"
