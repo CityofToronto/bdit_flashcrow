@@ -16,7 +16,7 @@
         v-model="studyRequest"
         :is-create="false"
         :location="locationActive"
-        @action-leave="actionLeave" />
+        @action-navigate-back="actionLeave" />
     </div>
   </div>
 </template>

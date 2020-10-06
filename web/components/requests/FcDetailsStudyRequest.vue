@@ -83,7 +83,7 @@
         <FcButton
           class="mr-2"
           type="tertiary"
-          @click="$emit('action-leave')">
+          @click="$emit('action-navigate-back')">
           Cancel
         </FcButton>
         <FcButton
@@ -161,7 +161,7 @@ export default {
   methods: {
     actionSubmit() {
       this.saveStudyRequest(this.internalValue);
-      this.$emit('action-leave', true);
+      this.$emit('action-navigate-back', true);
     },
     ...mapActions(['saveStudyRequest']),
   },

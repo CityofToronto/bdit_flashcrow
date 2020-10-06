@@ -1,10 +1,5 @@
 <template>
   <div class="fc-nav-study-request flex-grow-0 flex-shrink-0">
-    <FcDialogConfirmRequestStudyLeave
-      v-model="showConfirmLeave"
-      :is-create="isCreate"
-      @action-ok="actionLeave" />
-
     <v-row
       class="align-center px-3 py-2 shading"
       no-gutters>
@@ -12,7 +7,7 @@
         <FcButton
           :loading="labelNavigateBack === null"
           type="secondary"
-          @click="actionConfirmLeave">
+          @click="actionNavigateBack">
           <v-icon left>mdi-chevron-left</v-icon>
           {{labelNavigateBack}}
         </FcButton>
@@ -58,8 +53,6 @@ import { mapGetters, mapState } from 'vuex';
 import { AuthScope, LocationMode } from '@/lib/Constants';
 import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
@@ -68,7 +61,6 @@ export default {
   mixins: [FcMixinAuthScope],
   components: {
     FcButton,
-    FcDialogConfirmRequestStudyLeave,
   },
   props: {
     isCreate: {
@@ -80,12 +72,6 @@ export default {
       type: String,
       default: null,
     },
-  },
-  data() {
-    return {
-      nextRoute: null,
-      showConfirmLeave: false,
-    };
   },
   computed: {
     canEdit() {
@@ -229,16 +215,6 @@ export default {
     ]),
   },
   methods: {
-    actionConfirmLeave() {
-      const { name } = this.$route;
-      if (name === 'requestStudyBulkEdit'
-        || name === 'requestStudyEdit'
-        || name === 'requestStudyNew') {
-        this.showConfirmLeave = true;
-      } else {
-        this.actionLeave();
-      }
-    },
     actionEdit() {
       let { name } = this.$route;
       if (name === 'requestStudyBulkView') {
@@ -252,7 +228,7 @@ export default {
       const route = { name, params: { id } };
       this.$router.push(route);
     },
-    actionLeave() {
+    actionNavigateBack() {
       this.$router.push(this.routeNavigateBack);
     },
   },
