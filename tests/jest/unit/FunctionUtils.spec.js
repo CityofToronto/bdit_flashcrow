@@ -1,4 +1,4 @@
-import { asyncDelay, debounce } from '@/lib/FunctionUtils';
+import { asyncDelay, debounce, identity } from '@/lib/FunctionUtils';
 
 jest.useFakeTimers();
 
@@ -49,4 +49,12 @@ test('FunctionUtils.debounce', () => {
 
   jest.advanceTimersByTime(WAIT_MS);
   expect(x).toEqual(1);
+});
+
+test('FunctionUtils.identity', () => {
+  let x = 42;
+  expect(identity(x)).toBe(x);
+
+  x = { a: 'foo', b: true };
+  expect(identity(x)).toBe(x);
 });
