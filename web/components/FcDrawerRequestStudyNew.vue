@@ -1,16 +1,9 @@
 <template>
   <div class="fc-drawer-request-study-new d-flex fill-height flex-column">
-    <FcDialogConfirm
+    <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
-      text-cancel="Stay on this page"
-      text-ok="Quit"
-      title="Quit study request?"
-      @action-ok="actionLeave">
-      <span>
-        Leaving this page will cause a loss of all entered data.
-        Are you sure you want to quit?
-      </span>
-    </FcDialogConfirm>
+      :is-create="true"
+      @action-ok="actionLeave" />
 
     <FcNavStudyRequest
       ref="nav"
@@ -31,7 +24,8 @@
         :locations="locations"
         :locations-selection="locationsSelection"
         :study-summary-per-location-unfiltered="studySummaryPerLocationUnfiltered"
-        @action-navigate-back="actionNavigateBack" />
+        @action-navigate-back="actionNavigateBack"
+        @action-view-details="actionViewDetails" />
       <FcDetailsStudyRequest
         v-else
         v-model="studyRequest"
@@ -56,7 +50,8 @@ import { getStudiesByCentrelineSummaryPerLocation } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -127,7 +122,7 @@ export default {
   components: {
     FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
-    FcDialogConfirm,
+    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
   },
   data() {
@@ -180,6 +175,15 @@ export default {
     actionNavigateBack(leaveConfirmed) {
       this.leaveConfirmed = leaveConfirmed;
       this.$router.push(this.$refs.nav.routeNavigateBack);
+    },
+    actionViewDetails() {
+      const { id } = this.studyRequestBulk;
+      const route = {
+        name: 'requestStudyBulkView',
+        params: { id },
+      };
+      this.leaveConfirmed = true;
+      this.$router.push(route);
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;

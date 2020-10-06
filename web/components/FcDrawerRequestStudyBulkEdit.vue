@@ -1,5 +1,10 @@
 <template>
   <div class="fc-drawer-request-study-bulk-edit d-flex fill-height flex-column">
+    <FcDialogConfirmRequestStudyLeave
+      v-model="showConfirmLeave"
+      :is-create="false"
+      @action-ok="actionLeave" />
+
     <FcNavStudyRequest
       ref="nav"
       :study-request="studyRequestBulk" />
@@ -14,7 +19,7 @@
       class="flex-grow-1 flex-shrink-1 min-height-0">
       <FcEditStudyRequestBulk
         v-model="studyRequestBulk"
-        @action-cancel="actionCancel"
+        @action-cancel="actionNavigateBack"
         @action-save="actionSave" />
     </div>
   </div>
@@ -26,6 +31,8 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { bulkIndicesDeselected } from '@/lib/requests/RequestStudyBulkUtils';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcEditStudyRequestBulk from '@/web/components/requests/FcEditStudyRequestBulk.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -34,11 +41,14 @@ export default {
   name: 'FcDrawerRequestStudyBulkEdit',
   mixins: [FcMixinRouteAsync],
   components: {
+    FcDialogConfirmRequestStudyLeave,
     FcEditStudyRequestBulk,
     FcNavStudyRequest,
   },
   data() {
     return {
+      nextRoute: null,
+      showConfirmLeave: false,
       studyRequestBulk: null,
     };
   },
@@ -51,13 +61,26 @@ export default {
   beforeDestroy() {
     this.setLocationsIndicesDeselected([]);
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.leaveConfirmed) {
+      next();
+    } else {
+      this.nextRoute = to;
+      this.showConfirmLeave = true;
+    }
+  },
   methods: {
-    actionCancel() {
-      this.$refs.nav.actionConfirmLeave();
+    actionLeave() {
+      this.leaveConfirmed = true;
+      this.$router.push(this.nextRoute);
+    },
+    actionNavigateBack(leaveConfirmed) {
+      this.leaveConfirmed = leaveConfirmed;
+      this.$router.push(this.$refs.nav.routeNavigateBack);
     },
     actionSave() {
       this.saveStudyRequestBulk(this.studyRequestBulk);
-      this.$refs.nav.actionLeave();
+      this.actionNavigateBack(true);
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;

@@ -317,12 +317,7 @@ export default {
       if (this.loadingSubmit) {
         return;
       }
-      const { id } = this.internalValue;
-      const route = {
-        name: 'requestStudyBulkView',
-        params: { id },
-      };
-      this.$router.push(route);
+      this.$emit('action-view-details');
     },
     ...mapMutations(['setLocationsIndicesDeselected', 'setToastInfo']),
     ...mapActions(['saveStudyRequestBulk']),
