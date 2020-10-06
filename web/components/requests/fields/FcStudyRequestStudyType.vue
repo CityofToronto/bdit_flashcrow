@@ -3,6 +3,7 @@
     v-model="v.studyType.$model"
     :error-messages="errorMessagesStudyType"
     hide-details="auto"
+    :items="items"
     item-text="label"
     label="Study Type"
     :of-type="StudyType"
@@ -12,6 +13,7 @@
 
 <script>
 import { StudyType } from '@/lib/Constants';
+import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import { REQUEST_STUDY_REQUIRES_STUDY_TYPE } from '@/lib/i18n/Strings';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 
@@ -21,6 +23,7 @@ export default {
     FcSelectEnum,
   },
   props: {
+    location: Object,
     v: Object,
   },
   data() {
@@ -33,6 +36,9 @@ export default {
         errors.push(REQUEST_STUDY_REQUIRES_STUDY_TYPE.text);
       }
       return errors;
+    },
+    items() {
+      return getLocationStudyTypes(this.location);
     },
   },
 };

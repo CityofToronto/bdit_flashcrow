@@ -6,6 +6,7 @@ import {
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
   getLocationFeatureType,
+  getLocationStudyTypes,
   getLocationsDescription,
   getLocationsIconProps,
   getLocationsWaypointIndices,
@@ -38,6 +39,28 @@ test('CentrelineUtils.getLocationFeatureType', () => {
   expect(() => {
     getLocationFeatureType(location);
   }).toThrow(InvalidCentrelineTypeError);
+});
+
+test('CentrelineUtils.getLocationStudyTypes', () => {
+  RoadIntersectionType.enumValues.forEach(({ featureCode }) => {
+    const location = {
+      centrelineType: CentrelineType.INTERSECTION,
+      featureCode,
+    };
+    expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+  });
+  RoadSegmentType.enumValues.forEach(({ featureCode }) => {
+    const location = {
+      centrelineType: CentrelineType.SEGMENT,
+      featureCode,
+    };
+    expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+  });
+  const location = {
+    centrelineType: CentrelineType.SEGMENT,
+    featureCode: null,
+  };
+  expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
 });
 
 test('CentrelineUtils.getLocationsDescription', () => {

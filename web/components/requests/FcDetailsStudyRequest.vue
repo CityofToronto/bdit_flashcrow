@@ -9,7 +9,9 @@
           <h2 class="headline">Study Type</h2>
           <v-row>
             <v-col cols="8">
-              <FcStudyRequestStudyType :v="$v.internalValue" />
+              <FcStudyRequestStudyType
+                :location="location"
+                :v="$v.internalValue" />
             </v-col>
           </v-row>
         </div>

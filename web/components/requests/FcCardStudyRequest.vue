@@ -23,6 +23,7 @@
             <FcStudyRequestStudyType
               dense
               :disabled="!selected"
+              :location="location"
               :v="v" />
           </v-col>
           <v-col class="py-2" cols="6">

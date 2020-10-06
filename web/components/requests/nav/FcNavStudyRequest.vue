@@ -8,7 +8,7 @@
     <v-row
       class="align-center px-3 py-2 shading"
       no-gutters>
-      <v-col cols="2">
+      <v-col cols="3">
         <FcButton
           :loading="labelNavigateBack === null"
           type="secondary"
@@ -17,7 +17,7 @@
           {{labelNavigateBack}}
         </FcButton>
       </v-col>
-      <v-col class="text-center" cols="6" offset="1">
+      <v-col class="text-center" cols="6">
         <h1
           class="headline text-truncate"
           :title="subtitle === null ? title : (title + ': ' + subtitle)">
@@ -37,7 +37,7 @@
           </span>
         </h1>
       </v-col>
-      <v-col class="text-right" cols="2" offset="1">
+      <v-col class="text-right" cols="3">
         <FcButton
           v-if="showEdit"
           :disabled="!canEdit || status === null || !status.editable"

@@ -1,8 +1,7 @@
 <template>
   <v-select
     v-model="internalValue"
-    class="fc-select"
-    :items="ofType.enumValues"
+    :items="itemsNormalized"
     :item-value="itemValue"
     v-bind="$attrs" />
 </template>
@@ -33,6 +32,10 @@ function toInternalValue(value) {
 export default {
   name: 'FcSelectEnum',
   props: {
+    items: {
+      type: Array,
+      default: null,
+    },
     itemValue: {
       type: String,
       default: 'name',
@@ -49,6 +52,12 @@ export default {
         const value = fromInternalValue(this.ofType, internalValue);
         this.$emit('input', value);
       },
+    },
+    itemsNormalized() {
+      if (this.items === null) {
+        return this.ofType.enumValues;
+      }
+      return this.items;
     },
   },
 };
