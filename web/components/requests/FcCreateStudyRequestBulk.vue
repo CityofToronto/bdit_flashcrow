@@ -19,11 +19,13 @@
         v-if="step === 1"
         v-model="indicesIntersectionsSelected"
         :indices="indicesIntersections"
+        :locations="locations"
         :study-requests="studyRequests" />
       <FcHeaderStudyRequestBulkLocations
         v-else-if="step === 2"
         v-model="indicesMidblocksSelected"
         :indices="indicesMidblocks"
+        :locations="locations"
         :study-requests="studyRequests" />
     </header>
 

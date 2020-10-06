@@ -42,10 +42,12 @@ import { mapMutations, mapState } from 'vuex';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 
-import FcDialogAlertStudyRequestsUnactionable
-  from '@/web/components/dialogs/FcDialogAlertStudyRequestsUnactionable.vue';
 import FcDialogAlertStudyRequestUrgent
   from '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
+import FcDialogAlertStudyRequestsUnactionable
+  from '@/web/components/dialogs/FcDialogAlertStudyRequestsUnactionable.vue';
+import FcDialogAlertStudyTypeUnactionable
+  from '@/web/components/dialogs/FcDialogAlertStudyTypeUnactionable.vue';
 import FcDialogConfirmUnauthorized
   from '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
 import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
@@ -62,8 +64,9 @@ export default {
     FcDashboardNavBrand,
     FcDashboardNavInDevelopment,
     FcDashboardNavUser,
-    FcDialogAlertStudyRequestsUnactionable,
     FcDialogAlertStudyRequestUrgent,
+    FcDialogAlertStudyRequestsUnactionable,
+    FcDialogAlertStudyTypeUnactionable,
     FcDialogConfirmUnauthorized,
     FcToastInfo,
     FcToastJob,

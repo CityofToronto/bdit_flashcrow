@@ -10,6 +10,7 @@
       <v-spacer></v-spacer>
 
       <FcMenu
+        :disabled="selectAll === false"
         :items="itemsStudyType"
         @action-menu="actionSetStudyType">
         <span>Study Type</span>
@@ -54,9 +55,11 @@
 
 <script>
 import { Ripple } from 'vuetify/lib/directives';
+import { mapMutations } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours, StudyType } from '@/lib/Constants';
+import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -72,6 +75,7 @@ export default {
   },
   props: {
     indices: Array,
+    locations: Array,
     studyRequests: Array,
   },
   computed: {
@@ -107,11 +111,20 @@ export default {
       });
     },
     itemsStudyType() {
-      const itemsStudyType = StudyType.enumValues.map((studyType) => {
+      const itemsStudyType = this.locationsStudyTypes.map((studyType) => {
         const { label } = studyType;
         return { text: label, value: studyType };
       });
       return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
+    },
+    locationsStudyTypes() {
+      let locationIndices = this.indices;
+      if (this.internalValue.length > 0) {
+        locationIndices = this.internalValue;
+      }
+      return StudyType.enumValues.filter(studyType => locationIndices.some(
+        i => getLocationStudyTypes(this.locations[i]).includes(studyType),
+      ));
     },
     selectAll: {
       get() {
@@ -184,10 +197,27 @@ export default {
       });
     },
     actionSetStudyType({ value: studyType }) {
+      const indicesUnactionable = [];
       this.internalValue.forEach((i) => {
-        this.studyRequests[i].studyType = studyType;
+        const studyTypes = getLocationStudyTypes(this.locations[i]);
+        if (studyTypes.includes(studyType)) {
+          this.studyRequests[i].studyType = studyType;
+        } else {
+          indicesUnactionable.push(i);
+        }
       });
+      if (indicesUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyTypeUnactionable',
+          dialogData: {
+            indicesUnactionable,
+            locations: this.locations,
+            studyType,
+          },
+        });
+      }
     },
+    ...mapMutations(['setDialog']),
   },
 };
 </script>
