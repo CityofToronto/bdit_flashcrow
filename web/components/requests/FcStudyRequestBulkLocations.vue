@@ -1,5 +1,5 @@
 <template>
-  <section class="min-height-fill shading py-2">
+  <section class="min-height-fill shading py-1">
     <div
       v-for="i in indices"
       :key="i"
@@ -9,7 +9,7 @@
         class="mx-5"
         :value="i" />
       <FcCardStudyRequest
-        class="flex-grow-1 flex-shrink-1 mr-5 my-2"
+        class="flex-grow-1 flex-shrink-1 mr-5 my-1"
         :icon-props="locationsIconProps[i]"
         :location="locations[i]"
         :selected="internalValue.includes(i)"

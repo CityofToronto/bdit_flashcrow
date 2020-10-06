@@ -1,6 +1,5 @@
 <template>
   <div class="mx-5">
-    <h3 class="headline">{{title}} &#x2022; {{subtitle}}</h3>
     <div class="align-center d-flex">
       <v-checkbox
         v-model="selectAll"
@@ -74,7 +73,6 @@ export default {
   props: {
     indices: Array,
     studyRequests: Array,
-    title: String,
   },
   computed: {
     itemsDuration() {
@@ -151,11 +149,6 @@ export default {
         const { studyType } = this.studyRequests[i];
         return studyType !== null && !studyType.automatic;
       });
-    },
-    subtitle() {
-      const k = this.internalValue.length;
-      const n = this.indices.length;
-      return `${k} / ${n} selected`;
     },
   },
   methods: {

@@ -12,23 +12,19 @@
         <h2 class="display-3">Requesting New Counts</h2>
         <v-messages
           class="mt-2"
-          :value="attrsMessagesTop"></v-messages>
+          :value="messagesTop"></v-messages>
       </div>
 
       <FcHeaderStudyRequestBulkLocations
         v-if="step === 1"
         v-model="indicesIntersectionsSelected"
-        class="mt-6"
         :indices="indicesIntersections"
-        :study-requests="studyRequests"
-        title="Select Intersections" />
+        :study-requests="studyRequests" />
       <FcHeaderStudyRequestBulkLocations
         v-else-if="step === 2"
         v-model="indicesMidblocksSelected"
-        class="mt-6"
         :indices="indicesMidblocks"
-        :study-requests="studyRequests"
-        title="Select Midblocks" />
+        :study-requests="studyRequests" />
     </header>
 
     <v-divider v-if="step === 1 || step === 2"></v-divider>
@@ -204,21 +200,6 @@ export default {
     };
   },
   computed: {
-    attrsMessagesTop() {
-      if (this.step === 1) {
-        return ['Select the intersections to be included in this study request.'];
-      }
-      if (this.step === 2) {
-        return ['Select the midblocks to be included in this study request.'];
-      }
-      if (this.step === 3) {
-        return [REQUEST_STUDY_TIME_TO_FULFILL.text];
-      }
-      if (this.step === 4) {
-        return ['Let\'s make sure all the details are correct.'];
-      }
-      return [];
-    },
     disabledNext() {
       if (this.step === 1) {
         return this.indicesIntersectionsSelected.some((i) => {
@@ -256,6 +237,27 @@ export default {
         ...this.indicesMidblocksSelected,
       ];
       return ArrayUtils.sortBy(indicesSelected, i => i);
+    },
+    messagesTop() {
+      if (this.step === 1) {
+        const k = this.indicesIntersectionsSelected.length;
+        const n = this.indicesIntersections.length;
+        const subtitle = `${k} / ${n} selected`;
+        return [`Select intersections for this study request \u2022 ${subtitle}`];
+      }
+      if (this.step === 2) {
+        const k = this.indicesMidblocksSelected.length;
+        const n = this.indicesMidblocks.length;
+        const subtitle = `${k} / ${n} selected`;
+        return [`Select midblocks for this study request \u2022 ${subtitle}`];
+      }
+      if (this.step === 3) {
+        return [REQUEST_STUDY_TIME_TO_FULFILL.text];
+      }
+      if (this.step === 4) {
+        return ['Let\'s make sure all the details are correct.'];
+      }
+      return [];
     },
     studyRequestsSelected() {
       return this.indicesSelected.map(i => this.studyRequests[i]);

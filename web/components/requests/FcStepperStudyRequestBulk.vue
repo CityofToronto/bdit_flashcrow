@@ -1,9 +1,11 @@
 <template>
   <v-stepper
     v-model="internalValue"
-    class="elevation-0">
-    <v-stepper-header class="elevation-0">
+    class="fc-stepper-study-request-bulk elevation-0"
+    alt-labels>
+    <v-stepper-header class="elevation-0 px-3 pt-1">
       <v-stepper-step
+        class="pa-2"
         :complete="internalValue > 1"
         editable
         :step="1">
@@ -13,6 +15,7 @@
       <v-icon small>mdi-chevron-right</v-icon>
 
       <v-stepper-step
+        class="pa-2"
         :complete="internalValue > 2"
         editable
         :step="2">
@@ -22,6 +25,7 @@
       <v-icon small>mdi-chevron-right</v-icon>
 
       <v-stepper-step
+        class="pa-2"
         :complete="internalValue > 3"
         editable
         :step="3">
@@ -31,6 +35,7 @@
       <v-icon small>mdi-chevron-right</v-icon>
 
       <v-stepper-step
+        class="pa-2"
         editable
         :step="4">
         Review &amp; Submit
@@ -47,3 +52,11 @@ export default {
   mixins: [FcMixinVModelProxy(Number)],
 };
 </script>
+
+<style lang="scss">
+.fc-stepper-study-request-bulk {
+  &.v-stepper--alt-labels .v-stepper__step {
+    flex-basis: auto;
+  }
+}
+</style>

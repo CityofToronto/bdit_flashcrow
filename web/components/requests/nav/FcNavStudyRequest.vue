@@ -17,8 +17,10 @@
           {{labelNavigateBack}}
         </FcButton>
       </v-col>
-      <v-col class="text-center" cols="8">
-        <h1 class="headline">
+      <v-col class="text-center" cols="6" offset="1">
+        <h1
+          class="headline text-truncate"
+          :title="subtitle === null ? title : (title + ': ' + subtitle)">
           <span>
             {{title}}:
           </span>
@@ -35,7 +37,7 @@
           </span>
         </h1>
       </v-col>
-      <v-col class="text-right" cols="2">
+      <v-col class="text-right" cols="2" offset="1">
         <FcButton
           v-if="showEdit"
           :disabled="!canEdit || status === null || !status.editable"
