@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import {
+  LegendMode,
   LocationMode,
   LocationSelectionType,
   MAX_LOCATIONS,
@@ -50,6 +51,23 @@ export default new Vuex.Store({
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
+    legendMode: LegendMode.NORMAL,
+    legendOptions: {
+      datesFrom: 3,
+      layers: {
+        collisions: true,
+        studies: true,
+        volume: true,
+      },
+    },
+    legendOptionsFocusLocations: {
+      datesFrom: 3,
+      layers: {
+        collisions: false,
+        studies: true,
+        volume: true,
+      },
+    },
     locations: [],
     locationsIndex: -1,
     locationsIndicesDeselected: [],
@@ -64,14 +82,6 @@ export default new Vuex.Store({
       selectionType: LocationSelectionType.POINTS,
     },
     locationMode: LocationMode.SINGLE,
-    legendOptions: {
-      datesFrom: 3,
-      layers: {
-        collisions: true,
-        studies: true,
-        volume: true,
-      },
-    },
   },
   getters: {
     // NAVIGATION
@@ -114,6 +124,12 @@ export default new Vuex.Store({
       return scope;
     },
     // LOCATION
+    legendOptionsForMode(state) {
+      if (state.legendMode === LegendMode.FOCUS_LOCATIONS) {
+        return state.legendOptionsFocusLocations;
+      }
+      return state.legendOptions;
+    },
     locationActive(state, getters) {
       if (state.locationMode === LocationMode.SINGLE) {
         if (getters.locationsEmpty) {
@@ -236,6 +252,27 @@ export default new Vuex.Store({
         Vue.set(state, 'locationMode', LocationMode.SINGLE);
       }
     },
+    setLegendMode(state, legendMode) {
+      Vue.set(state, 'legendMode', legendMode);
+      if (legendMode === LegendMode.FOCUS_LOCATIONS) {
+        const { datesFrom, layers } = state.legendOptions;
+        const legendOptionsFocusLocations = {
+          datesFrom,
+          layers: {
+            ...layers,
+            collisions: false,
+          },
+        };
+        Vue.set(state, 'legendOptionsFocusLocations', legendOptionsFocusLocations);
+      }
+    },
+    setLegendOptions(state, legendOptions) {
+      if (state.legendMode === LegendMode.FOCUS_LOCATIONS) {
+        Vue.set(state, 'legendOptionsFocusLocations', legendOptions);
+      } else {
+        Vue.set(state, 'legendOptions', legendOptions);
+      }
+    },
     setLocationEdit(state, location) {
       if (state.locationsEditIndex === -1) {
         state.locationsEditSelection.locations.push(location);
@@ -292,9 +329,6 @@ export default new Vuex.Store({
     },
     setLocationsEdit(state, locationsEdit) {
       Vue.set(state, 'locationsEdit', [...locationsEdit]);
-    },
-    setLegendOptions(state, legendOptions) {
-      Vue.set(state, 'legendOptions', legendOptions);
     },
   },
   actions: {

@@ -109,7 +109,12 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
 import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { CentrelineType, LocationMode, MapZoom } from '@/lib/Constants';
+import {
+  CentrelineType,
+  LegendMode,
+  LocationMode,
+  MapZoom,
+} from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { InvalidCompositeIdError } from '@/lib/error/MoveErrors';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
@@ -126,6 +131,14 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
+
+const ROUTES_FOCUS_LOCATIONS = [
+  'requestStudyBulkEdit',
+  'requestStudyBulkView',
+  'requestStudyEdit',
+  'requestStudyNew',
+  'requestStudyView',
+];
 
 function getFeatureKey(feature) {
   if (feature === null) {
@@ -264,9 +277,13 @@ export default {
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
     },
+    focusLocations() {
+      return this.locationMode === LocationMode.MULTI_EDIT
+        || ROUTES_FOCUS_LOCATIONS.includes(this.$route.name);
+    },
     internalLegendOptions: {
       get() {
-        return this.legendOptions;
+        return this.legendOptionsForMode;
       },
       set(legendOptions) {
         this.setLegendOptions(legendOptions);
@@ -383,12 +400,12 @@ export default {
       };
     },
     mapOptions() {
-      const { aerial, legendOptions } = this;
+      const { aerial, internalLegendOptions } = this;
       const { dark } = this.$vuetify.theme;
       return {
         aerial,
         dark,
-        ...legendOptions,
+        ...internalLegendOptions,
       };
     },
     mapStyle() {
@@ -423,13 +440,13 @@ export default {
     },
     ...mapState([
       'drawerOpen',
-      'legendOptions',
       'locationsEditIndex',
       'locationsIndex',
       'locationsIndicesDeselected',
       'locationMode',
     ]),
     ...mapGetters([
+      'legendOptionsForMode',
       'locationsForMode',
       'locationsRouteParams',
       'locationsSelectionForMode',
@@ -518,6 +535,16 @@ export default {
       Vue.nextTick(() => {
         this.map.resize();
       });
+    },
+    focusLocations: {
+      handler() {
+        if (this.focusLocations) {
+          this.setLegendMode(LegendMode.FOCUS_LOCATIONS);
+        } else {
+          this.setLegendMode(LegendMode.NORMAL);
+        }
+      },
+      immediate: true,
     },
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
@@ -729,6 +756,7 @@ export default {
     },
     ...mapMutations([
       'setDrawerOpen',
+      'setLegendMode',
       'setLegendOptions',
       'setLocationMode',
     ]),

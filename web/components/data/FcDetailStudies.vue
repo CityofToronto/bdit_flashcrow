@@ -15,7 +15,9 @@
         :key="item.category.id"
         class="ml-5">
         <v-divider v-if="i > 0"></v-divider>
-        <div class="align-center d-flex mb-4 pr-5">
+        <div
+          class="align-center d-flex pr-5"
+          :class="i === 0 ? 'mb-4' : 'my-4'">
           <div class="body-1 flex-grow-1 flex-shrink-1">
             <div v-if="item.category.studyType === null">
               Unknown
