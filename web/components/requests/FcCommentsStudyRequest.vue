@@ -43,12 +43,14 @@
             </div>
           </div>
           <v-spacer></v-spacer>
-          <FcButton
+          <FcButtonAria
             v-if="auth.user.id === comment.userId"
+            aria-label="Delete comment"
+            left
             type="icon"
             @click="actionDeleteComment(i)">
             <v-icon>mdi-delete</v-icon>
-          </FcButton>
+          </FcButtonAria>
         </header>
         <div class="mt-2 mb-4">
           {{ comment.comment }}
@@ -66,11 +68,13 @@ import {
   postStudyRequestComment,
 } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
 export default {
   name: 'FcCommentsStudyRequest',
   components: {
     FcButton,
+    FcButtonAria,
   },
   props: {
     sizeLimit: Number,

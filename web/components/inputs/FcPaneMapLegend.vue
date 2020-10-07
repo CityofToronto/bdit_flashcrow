@@ -2,8 +2,9 @@
   <v-card class="fc-pane-map-legend" width="200">
     <v-card-text>
       <h2 class="headline">Viewing data from</h2>
-      <FcSelect
+      <v-select
         v-model="internalValue.datesFrom"
+        :aria-label="ariaLabelDatesFrom"
         hide-details
         :items="itemsDatesFrom" />
       <h2 class="headline mt-6">Legend</h2>
@@ -37,14 +38,10 @@
 </template>
 
 <script>
-import FcSelect from '@/web/components/inputs/FcSelect.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcPaneMapLegend',
-  components: {
-    FcSelect,
-  },
   mixins: [FcMixinVModelProxy(Object)],
   data() {
     const itemsDatesFrom = [

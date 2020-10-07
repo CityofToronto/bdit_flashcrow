@@ -1,5 +1,5 @@
 <template>
-  <FcSelect
+  <v-select
     v-model="internalValue"
     :items="itemsNormalized"
     :item-text="itemText"
@@ -9,7 +9,6 @@
 
 <script>
 import { Enum } from '@/lib/ClassUtils';
-import FcSelect from '@/web/components/inputs/FcSelect.vue';
 
 function fromInternalValue(ofType, internalValue) {
   if (Array.isArray(internalValue)) {
@@ -33,9 +32,6 @@ function toInternalValue(value) {
 
 export default {
   name: 'FcSelectEnum',
-  components: {
-    FcSelect,
-  },
   props: {
     items: {
       type: Array,

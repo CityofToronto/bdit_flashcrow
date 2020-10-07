@@ -14,8 +14,8 @@
         dense
         hide-details
         :items="itemsColumn"
-        outlined>
-      </v-select>
+        label="Search by"
+        outlined />
     </template>
   </v-text-field>
 </template>
