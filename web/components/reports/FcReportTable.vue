@@ -1,6 +1,6 @@
 <template>
   <div class="fc-report-table">
-    <h3 v-if="title">{{title}}</h3>
+    <h2 v-if="title">{{title}}</h2>
     <table
       class="my-2"
       :class="{ 'auto-width': autoWidthTable }">

@@ -179,6 +179,7 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
@@ -188,6 +189,7 @@ import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 export default {
   name: 'FcSelectorMultiLocation',
   components: {
+    FcButton,
     FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcDisplayLocationMulti,

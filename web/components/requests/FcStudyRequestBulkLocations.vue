@@ -4,10 +4,18 @@
       v-for="i in indices"
       :key="i"
       class="align-center d-flex">
-      <v-checkbox
-        v-model="internalValue"
-        class="mx-5"
-        :value="i" />
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-checkbox
+              v-model="internalValue"
+              :aria-label="'Include ' + locations[i].description + ' in request'"
+              class="mx-5"
+              :value="i" />
+          </div>
+        </template>
+        <span>Include {{locations[i].description}} in request</span>
+      </v-tooltip>
       <FcCardStudyRequest
         class="flex-grow-1 flex-shrink-1 mr-5 my-1"
         :icon-props="locationsIconProps[i]"

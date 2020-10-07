@@ -6,6 +6,7 @@
       class="fc-input-location-search">
       <v-text-field
         v-model="locationsSelection.locations[i].description"
+        :aria-label="'Location #' + (i + 1) + ': ' + locationsSelection.locations[i].description"
         autocomplete="off"
         dense
         flat

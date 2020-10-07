@@ -11,6 +11,7 @@
       <template v-slot:activator="{ on: onMenu }">
         <v-text-field
           v-model="query"
+          :aria-label="query"
           autocomplete="off"
           dense
           :flat="hasLocationIndex"

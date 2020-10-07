@@ -8,6 +8,7 @@
       :width="16" />
     <div
       v-if="locationIndex !== -1"
+      aria-hidden="true"
       class="subtitle-2"
       :class="textClass">{{locationIndex + 1}}</div>
   </div>
