@@ -2,10 +2,10 @@
   <v-card class="fc-pane-map-legend" width="200">
     <v-card-text>
       <h2 class="headline">Viewing data from</h2>
-      <v-select
+      <FcSelect
         v-model="internalValue.datesFrom"
         hide-details
-        :items="itemsDatesFrom"></v-select>
+        :items="itemsDatesFrom" />
       <h2 class="headline mt-6">Legend</h2>
       <div
         v-for="layer in layers"
@@ -17,23 +17,19 @@
         <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
         <v-tooltip left>
           <template v-slot:activator="{ on }">
-            <v-checkbox
-              v-model="internalValue.layers[layer.value]"
-              class="mt-0"
-              color="secondary"
-              hide-details
-              off-icon="mdi-eye-off"
-              on-icon="mdi-eye"
-              v-on="on"></v-checkbox>
+            <div v-on="on">
+              <v-checkbox
+                v-model="internalValue.layers[layer.value]"
+                :aria-label="layerLabels[layer.value]"
+                class="mt-0"
+                color="secondary"
+                hide-details
+                off-icon="mdi-eye-off"
+                on-icon="mdi-eye"
+                v-on="on"></v-checkbox>
+            </div>
           </template>
-          <span>
-            <span v-if="internalValue.layers[layer.value]">
-              Hide {{layer.text}}
-            </span>
-            <span v-else>
-              Show {{layer.text}}
-            </span>
-          </span>
+          <span>{{layerLabels[layer.value]}}</span>
         </v-tooltip>
       </div>
     </v-card-text>
@@ -41,10 +37,14 @@
 </template>
 
 <script>
+import FcSelect from '@/web/components/inputs/FcSelect.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcPaneMapLegend',
+  components: {
+    FcSelect,
+  },
   mixins: [FcMixinVModelProxy(Object)],
   data() {
     const itemsDatesFrom = [
@@ -62,6 +62,25 @@ export default {
       itemsDatesFrom,
       layers,
     };
+  },
+  computed: {
+    ariaLabelDatesFrom() {
+      const { datesFrom } = this.internalValue;
+      const item = this.itemsDatesFrom.find(({ value }) => value === datesFrom);
+      if (item === undefined) {
+        return null;
+      }
+      return item.text;
+    },
+    layerLabels() {
+      const layerLabels = {};
+      this.layers.forEach(({ text, value }) => {
+        const layerActive = this.internalValue.layers[value];
+        const prefix = layerActive ? 'Hide' : 'Show';
+        layerLabels[value] = `${prefix} ${text}`;
+      });
+      return layerLabels;
+    },
   },
 };
 </script>

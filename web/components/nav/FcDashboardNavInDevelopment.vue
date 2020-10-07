@@ -1,9 +1,9 @@
 <template>
   <div class="fc-dashboard-nav-in-development align-center d-flex px-5 py-2 warning lighten-3">
-    <div class="headline">
+    <h1 class="headline">
       This is a beta version of MOVE. If you encounter a bug, help make MOVE better
       by reporting it!
-    </div>
+    </h1>
     <v-spacer></v-spacer>
     <FcButton
       type="secondary"
