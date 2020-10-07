@@ -2,6 +2,9 @@
   <div
     class="fill-height pane-map"
     @mouseleave="clearHoveredFeature">
+    <FcDialogConfirmMultiLocationLeave
+      v-model="showConfirmMultiLocationLeave" />
+
     <template v-if="!background">
       <div class="pane-map-progress">
         <v-progress-linear
@@ -19,7 +22,7 @@
           class="elevation-2">
           <template v-slot:action>
             <FcButton
-              type="tertiary"
+              type="secondary"
               @click="actionViewData">
               View Data
             </FcButton>
@@ -60,6 +63,7 @@
                 primary: locationMode.multi,
                 'white--text': locationMode.multi,
               }"
+              :disabled="locationMode === LocationMode.MULTI_EDIT"
               type="fab-text"
               @click="actionToggleLocationMode"
               v-on="on">
@@ -121,6 +125,8 @@ import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
 import CompositeId from '@/lib/io/CompositeId';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
+import FcDialogConfirmMultiLocationLeave
+  from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
@@ -182,6 +188,7 @@ export default {
   name: 'FcPaneMap',
   components: {
     FcButton,
+    FcDialogConfirmMultiLocationLeave,
     FcPaneMapLegend,
     FcPaneMapPopup,
     FcSelectorCollapsedLocation,
@@ -227,8 +234,10 @@ export default {
       // keeps track of which feature we are currently hovering over
       hoveredFeature: null,
       loading: false,
+      LocationMode,
       // keeps track of currently selected feature
       selectedFeature: null,
+      showConfirmMultiLocationLeave: false,
     };
   },
   computed: {
@@ -586,6 +595,8 @@ export default {
     actionToggleLocationMode() {
       if (this.locationMode === LocationMode.SINGLE) {
         this.setLocationMode(LocationMode.MULTI_EDIT);
+      } else if (this.locationsForMode.length > 1) {
+        this.showConfirmMultiLocationLeave = true;
       } else {
         this.setLocationMode(LocationMode.SINGLE);
       }

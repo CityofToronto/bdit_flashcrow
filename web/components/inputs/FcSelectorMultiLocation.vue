@@ -1,5 +1,8 @@
 <template>
   <div class="fc-selector-multi-location d-flex flex-column pa-5">
+    <FcDialogConfirmMultiLocationLeave
+      v-model="showConfirmMultiLocationLeave" />
+
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
@@ -106,7 +109,7 @@
 
           <FcButton
             type="tertiary"
-            @click="cancelLocationsEdit">
+            @click="showConfirmMultiLocationLeave = true">
             Cancel
           </FcButton>
           <FcButton
@@ -172,6 +175,8 @@ import {
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcDialogConfirmMultiLocationLeave
+  from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
@@ -182,6 +187,7 @@ export default {
   name: 'FcSelectorMultiLocation',
   components: {
     FcButton,
+    FcDialogConfirmMultiLocationLeave,
     FcDisplayLocationMulti,
     FcHeaderSingleLocation,
     FcInputLocationSearch,
@@ -198,6 +204,7 @@ export default {
       loading: false,
       LocationMode,
       locationToAdd: null,
+      showConfirmMultiLocationLeave: false,
     };
   },
   computed: {

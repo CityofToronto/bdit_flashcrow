@@ -3,7 +3,7 @@
       v-model="internalValue"
       :textCancel="isCreate ? 'Stay on this page' : 'Keep editing'"
       :textOk="isCreate ? 'Quit' : 'Discard'"
-      :title="isCreate ? 'Quit study request?' : 'Discard changes?'"
+      :title="isCreate ? 'Quit study request?' : 'Discard study request changes?'"
       @action-ok="$emit('action-ok')">
       <span class="body-1">
         <span v-if="isCreate">
