@@ -50,6 +50,7 @@ import FcDialogAlertStudyTypeUnactionable
   from '@/web/components/dialogs/FcDialogAlertStudyTypeUnactionable.vue';
 import FcDialogConfirmUnauthorized
   from '@/web/components/dialogs/FcDialogConfirmUnauthorized.vue';
+import FcToastBackendError from '@/web/components/dialogs/FcToastBackendError.vue';
 import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
 import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
@@ -68,6 +69,7 @@ export default {
     FcDialogAlertStudyRequestsUnactionable,
     FcDialogAlertStudyTypeUnactionable,
     FcDialogConfirmUnauthorized,
+    FcToastBackendError,
     FcToastInfo,
     FcToastJob,
   },

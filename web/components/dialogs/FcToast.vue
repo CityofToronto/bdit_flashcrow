@@ -5,6 +5,7 @@
     class="fc-toast pb-5 pl-7"
     :color="color + ' darker-1'"
     :timeout="timeout">
+    <slot name="icon"></slot>
     <span class="body-1">{{text}}</span>
     <template v-slot:action="{ attrs }">
       <FcButton

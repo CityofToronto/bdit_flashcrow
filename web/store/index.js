@@ -208,6 +208,11 @@ export default new Vuex.Store({
       Vue.set(state, 'toastData', toastData);
       Vue.set(state, 'toastKey', state.toastKey + 1);
     },
+    setToastBackendError(state, err) {
+      Vue.set(state, 'toast', 'BackendError');
+      Vue.set(state, 'toastData', { err });
+      Vue.set(state, 'toastKey', state.toastKey + 1);
+    },
     setToastInfo(state, text) {
       Vue.set(state, 'toast', 'Info');
       Vue.set(state, 'toastData', { text });
@@ -400,10 +405,16 @@ export default new Vuex.Store({
         locations: locationsNext,
         selectionType: selectionTypeNext,
       };
-      commit('setLocationsSelection', locationsSelection);
       if (selectionTypeNext === LocationSelectionType.CORRIDOR) {
-        locationsNext = await getLocationsByCorridor(locationsNext);
+        try {
+          locationsNext = await getLocationsByCorridor(locationsNext);
+        } catch (err) {
+          commit('setToastBackendError', err);
+          throw err;
+        }
       }
+
+      commit('setLocationsSelection', locationsSelection);
       commit('setLocations', locationsNext);
     },
     async syncLocationsEdit({ commit, state }) {

@@ -113,7 +113,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || locationsEditEmpty"
+            :disabled="loading || locationsEditEmpty || hasError"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
@@ -201,6 +201,7 @@ export default {
   },
   data() {
     return {
+      hasError: false,
       loading: false,
       LocationMode,
       locationToAdd: null,
@@ -301,7 +302,13 @@ export default {
       deep: true,
       async handler() {
         this.loading = true;
-        await this.syncLocationsEdit();
+        try {
+          await this.syncLocationsEdit();
+          this.hasError = false;
+        } catch (err) {
+          this.setToastBackendError(err);
+          this.hasError = true;
+        }
         this.loading = false;
       },
     },
@@ -332,6 +339,7 @@ export default {
       'setLocationEditSelectionType',
       'setLocationsIndex',
       'setLocationMode',
+      'setToastBackendError',
     ]),
   },
 };
