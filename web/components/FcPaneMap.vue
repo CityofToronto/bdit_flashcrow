@@ -748,11 +748,15 @@ export default {
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
-      this.map.getSource('locations').setData(this.locationsGeoJson);
+      if (this.map !== null) {
+        this.map.getSource('locations').setData(this.locationsGeoJson);
+      }
     },
     updateLocationsMarkersSource() {
       GeoStyle.setData('locations-markers', this.locationsMarkersGeoJson);
-      this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
+      if (this.map !== null) {
+        this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
+      }
     },
     ...mapMutations([
       'setDrawerOpen',

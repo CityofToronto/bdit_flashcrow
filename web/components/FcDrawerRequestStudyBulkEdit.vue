@@ -31,24 +31,23 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { bulkIndicesDeselected } from '@/lib/requests/RequestStudyBulkUtils';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcEditStudyRequestBulk from '@/web/components/requests/FcEditStudyRequestBulk.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
+import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinRequestStudyLeaveGuard,
+    FcMixinRouteAsync,
+  ],
   components: {
-    FcDialogConfirmRequestStudyLeave,
     FcEditStudyRequestBulk,
     FcNavStudyRequest,
   },
   data() {
     return {
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequestBulk: null,
     };
   },
@@ -61,23 +60,7 @@ export default {
   beforeDestroy() {
     this.setLocationsIndicesDeselected([]);
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-    } else {
-      this.nextRoute = to;
-      this.showConfirmLeave = true;
-    }
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.$refs.nav.routeNavigateBack);
-    },
     actionSave() {
       this.saveStudyRequestBulk(this.studyRequestBulk);
       this.actionNavigateBack(true);

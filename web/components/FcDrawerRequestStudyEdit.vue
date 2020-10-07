@@ -32,46 +32,29 @@ import { mapActions, mapGetters } from 'vuex';
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest } from '@/lib/api/WebApi';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
+import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerRequestStudyEdit',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinRequestStudyLeaveGuard,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcDetailsStudyRequest,
-    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
   },
   data() {
     return {
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequest: null,
     };
   },
   computed: {
     ...mapGetters(['locationActive']),
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-    } else {
-      this.nextRoute = to;
-      this.showConfirmLeave = true;
-    }
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.$refs.nav.routeNavigateBack);
-    },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const { studyRequest, studyRequestLocation } = await getStudyRequest(id);

@@ -50,9 +50,8 @@ import { getStudiesByCentrelineSummaryPerLocation } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
+import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudyRequest(now, location) {
@@ -118,18 +117,18 @@ function makeStudyRequestBulk(now, locations, locationsSelection) {
 
 export default {
   name: 'FcDrawerRequestStudyNew',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinRequestStudyLeaveGuard,
+    FcMixinRouteAsync,
+  ],
   components: {
     FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
-    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
   },
   data() {
     return {
       LocationMode,
-      nextRoute: null,
-      showConfirmLeave: false,
       studyRequest: null,
       studyRequestBulk: null,
       studySummaryPerLocationUnfiltered: [],
@@ -159,23 +158,7 @@ export default {
       'routeBackViewRequest',
     ]),
   },
-  beforeRouteLeave(to, from, next) {
-    if (this.leaveConfirmed) {
-      next();
-    } else {
-      this.nextRoute = to;
-      this.showConfirmLeave = true;
-    }
-  },
   methods: {
-    actionLeave() {
-      this.leaveConfirmed = true;
-      this.$router.push(this.nextRoute);
-    },
-    actionNavigateBack(leaveConfirmed) {
-      this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.$refs.nav.routeNavigateBack);
-    },
     actionViewDetails() {
       const { id } = this.studyRequestBulk;
       const route = {

@@ -134,7 +134,7 @@
         <template v-else>
           <span
             v-if="textLocationsSelectionIncludes !== null"
-            class="secondary--text">
+            class="pr-2 secondary--text">
             {{textLocationsSelectionIncludes}}
           </span>
 

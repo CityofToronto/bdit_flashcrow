@@ -2,6 +2,7 @@ import {
   CentrelineType,
   RoadIntersectionType,
   RoadSegmentType,
+  StudyType,
 } from '@/lib/Constants';
 import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
@@ -47,20 +48,34 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
       centrelineType: CentrelineType.INTERSECTION,
       featureCode,
     };
-    expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+    expect(getLocationStudyTypes(location)).toEqual([StudyType.TMC]);
   });
   RoadSegmentType.enumValues.forEach(({ featureCode }) => {
     const location = {
       centrelineType: CentrelineType.SEGMENT,
       featureCode,
     };
-    expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+    const studyTypes = getLocationStudyTypes(location);
+    expect(studyTypes).toBeInstanceOf(Array);
+    expect(studyTypes).not.toContain(StudyType.TMC);
   });
-  const location = {
+  let location = {
     centrelineType: CentrelineType.SEGMENT,
     featureCode: null,
   };
   expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+
+  location = {
+    centrelineType: CentrelineType.SEGMENT,
+    featureCode: RoadSegmentType.MAJOR_ARTERIAL.featureCode,
+  };
+  expect(getLocationStudyTypes(location)).toContain(StudyType.RESCU);
+
+  location = {
+    centrelineType: CentrelineType.SEGMENT,
+    featureCode: RoadSegmentType.MINOR_ARTERIAL.featureCode,
+  };
+  expect(getLocationStudyTypes(location)).not.toContain(StudyType.RESCU);
 });
 
 test('CentrelineUtils.getLocationsDescription', () => {
