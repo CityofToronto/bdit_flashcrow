@@ -216,6 +216,9 @@ export default {
           return;
         }
       }
+      if (this.internalValue !== null) {
+        this.query = this.internalValue.description;
+      }
       this.hasFocus = false;
     },
     actionFocus() {
