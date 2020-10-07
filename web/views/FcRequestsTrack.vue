@@ -21,11 +21,19 @@
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
       <v-card class="fc-requests-track-card">
         <v-card-title class="align-center d-flex py-2">
-          <v-checkbox
-            v-model="selectAll"
-            class="mt-0 mr-3 pt-0"
-            hide-details
-            :indeterminate="selectAll === null" />
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="selectAll"
+                  aria-label="Select all"
+                  class="mt-0 mr-3 pt-0"
+                  hide-details
+                  :indeterminate="selectAll === null"/>
+              </div>
+            </template>
+            <span>Select all</span>
+          </v-tooltip>
 
           <FcButton
             class="mr-2"

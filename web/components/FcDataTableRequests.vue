@@ -32,19 +32,37 @@
       <span class="sr-only">Select</span>
     </template>
     <template v-slot:item.SELECT="{ item }">
-      <v-checkbox
-        v-if="item.type === ItemType.STUDY_REQUEST"
-        v-model="internalValue"
-        class="mt-0 pt-0"
-        hide-details
-        :value="item" />
-      <v-checkbox
-        v-else
-        class="mt-0 pt-0"
-        hide-details
-        :indeterminate="selectAll[item.id] === null"
-        :input-value="selectAll[item.id]"
-        @click="actionSelectAll(item)" />
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-checkbox
+              v-if="item.type === ItemType.STUDY_REQUEST"
+              v-model="internalValue"
+              :aria-label="'Select Request #' + item.studyRequest.id"
+              class="mt-0 pt-0"
+              hide-details
+              :value="item" />
+            <v-checkbox
+              v-else
+              :aria-label="
+                'Select Bulk Request #' + item.studyRequestBulk.id
+                + ': ' + item.studyRequestBulk.name
+              "
+              class="mt-0 pt-0"
+              hide-details
+              :indeterminate="selectAll[item.id] === null"
+              :input-value="selectAll[item.id]"
+              @click="actionSelectAll(item)" />
+          </div>
+        </template>
+        <span v-if="item.type === ItemType.STUDY_REQUEST">
+          Select Request #{{item.studyRequest.id}}
+        </span>
+        <span v-else>
+          Select Bulk Request #{{item.studyRequestBulk.id}}: {{item.studyRequestBulk.name}}
+        </span>
+      </v-tooltip>
+
     </template>
     <template v-slot:item.ID="{ item }">
       <span
@@ -62,7 +80,9 @@
         <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
         <v-spacer></v-spacer>
         <FcButtonAria
-          :aria-label="'Expand Bulk Request: ' + item.studyRequestBulk.name"
+          :aria-label="
+            (isExpanded ? 'Collapse' : 'Expand') + ' Bulk Request: ' + item.studyRequestBulk.name
+          "
           right
           type="icon"
           @click="expand(!isExpanded)">

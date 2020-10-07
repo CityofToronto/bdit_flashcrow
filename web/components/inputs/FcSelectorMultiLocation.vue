@@ -32,11 +32,13 @@
           v-for="(_, i) in locationsEditSelection.locations"
           :key="'remove_' + i"
           class="fc-input-location-search-remove">
-          <FcButton
+          <FcButtonAria
+            :aria-label="'Remove Location #' + (i + 1)"
+            right
             type="icon"
             @click="removeLocationEdit(i)">
             <v-icon>mdi-close</v-icon>
-          </FcButton>
+          </FcButtonAria>
         </div>
       </div>
     </div>
@@ -177,7 +179,7 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
@@ -186,7 +188,7 @@ import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 export default {
   name: 'FcSelectorMultiLocation',
   components: {
-    FcButton,
+    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcDisplayLocationMulti,
     FcHeaderSingleLocation,
