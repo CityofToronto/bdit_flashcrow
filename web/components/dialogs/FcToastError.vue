@@ -1,22 +1,26 @@
 <template>
-  <FcToastError
+  <FcToast
     v-model="internalValue"
     color="error"
-    :text="err.response.data.message" />
+    :text="text">
+    <template v-slot:icon>
+      <v-icon left>mdi-alert-circle</v-icon>
+    </template>
+  </FcToast>
 </template>
 
 <script>
-import FcToastError from '@/web/components/dialogs/FcToastError.vue';
+import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcToastBackendError',
+  name: 'FcToastError',
   mixins: [FcMixinVModelProxy(Boolean)],
   components: {
-    FcToastError,
+    FcToast,
   },
   props: {
-    err: Error,
+    text: String,
   },
 };
 </script>

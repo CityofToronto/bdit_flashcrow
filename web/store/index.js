@@ -213,6 +213,11 @@ export default new Vuex.Store({
       Vue.set(state, 'toastData', { err });
       Vue.set(state, 'toastKey', state.toastKey + 1);
     },
+    setToastError(state, text) {
+      Vue.set(state, 'toast', 'Error');
+      Vue.set(state, 'toastData', { text });
+      Vue.set(state, 'toastKey', state.toastKey + 1);
+    },
     setToastInfo(state, text) {
       Vue.set(state, 'toast', 'Info');
       Vue.set(state, 'toastData', { text });
@@ -393,6 +398,11 @@ export default new Vuex.Store({
     },
     // LOCATION
     async initLocations({ commit, state }, { features, selectionType: selectionTypeNext }) {
+      if (features.length > MAX_LOCATIONS) {
+        commit('setToastError', `Maximum of ${MAX_LOCATIONS} selected locations.`);
+        return;
+      }
+
       const { locations, selectionType } = state.locationsSelection;
       const s1 = CompositeId.encode(locations);
       const s1Next = CompositeId.encode(features);
