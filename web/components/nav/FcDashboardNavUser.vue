@@ -18,13 +18,18 @@
     </div>
     <v-menu
       v-if="auth.loggedIn"
-      top>
-      <template v-slot:activator="{ on: onMenu }">
+      :attach="$el"
+      :min-width="140"
+      top
+      :z-index="100">
+      <template v-slot:activator="{ attrs, on: onMenu }">
         <v-tooltip right>
           <template v-slot:activator="{ on: onTooltip }">
             <FcButton
+              ref="btn"
               :aria-label="username"
               type="fab-icon"
+              v-bind="attrs"
               v-on="{ ...onMenu, ...onTooltip }">
               <v-icon>mdi-account-circle</v-icon>
             </FcButton>
@@ -32,18 +37,14 @@
           <span>{{username}}</span>
         </v-tooltip>
       </template>
-      <v-list>
-        <template
-          v-if="hasAuthScope(AuthScope.ADMIN)">
-          <v-list-item
-            link
-            :to="{ name: 'admin' }">
-            <v-list-item-title>Admin Console</v-list-item-title>
-          </v-list-item>
-          <v-divider></v-divider>
-        </template>
+      <v-list class="text-left" id="fc_menu_user">
         <v-list-item
-          @click="actionSignOut()">
+          v-if="hasAuthScope(AuthScope.ADMIN)"
+          @click="actionAdmin">
+          <v-list-item-title>Admin Console</v-list-item-title>
+        </v-list-item>
+        <v-list-item
+          @click="actionSignOut">
           <v-list-item-title>Sign out</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -86,6 +87,9 @@ export default {
     ...mapGetters(['username']),
   },
   methods: {
+    actionAdmin() {
+      this.$router.push({ name: 'admin' });
+    },
     actionSignIn() {
       Vue.nextTick(async () => {
         const event = this.$analytics.signInEvent();
@@ -104,3 +108,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+#fc_menu_user {
+  background: white;
+}
+</style>
