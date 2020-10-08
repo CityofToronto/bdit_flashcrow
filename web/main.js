@@ -57,6 +57,8 @@ const vuetify = new Vuetify({
         shading: '#fafafa',
         border: '#e0e0e0',
         unselected: '#acacac',
+        // status colors
+        error: '#df323b',
         // request status
         statusRequested: '#2ec3cc',
         statusChangesNeeded: '#404040',

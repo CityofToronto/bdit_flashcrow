@@ -56,6 +56,17 @@ export default {
 .fc-stepper-study-request-bulk {
   &.v-stepper--alt-labels .v-stepper__step {
     flex-basis: auto;
+    & > .v-stepper__label {
+      color: var(--v-default-base);
+    }
+    &.v-stepper__step--inactive {
+      & > .v-stepper__step__step {
+        background: var(--v-secondary-base) !important;
+      }
+      & > .v-stepper__label {
+        color: var(--v-secondary-base);
+      }
+    }
   }
 }
 </style>
