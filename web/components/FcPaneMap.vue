@@ -456,6 +456,7 @@ export default {
     ]),
     ...mapGetters([
       'legendOptionsForMode',
+      'locationActive',
       'locationsForMode',
       'locationsRouteParams',
       'locationsSelectionForMode',
@@ -558,6 +559,24 @@ export default {
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 200),
+    locationActive() {
+      if (this.locationActive === null || this.locationMode !== LocationMode.SINGLE) {
+        return;
+      }
+      const { description, geom, ...locationActiveRest } = this.locationActive;
+      const properties = {
+        ...locationActiveRest,
+        name: description,
+      };
+      const layerId = properties.centrelineType === CentrelineType.INTERSECTION
+        ? 'intersections'
+        : 'midblocks';
+      this.selectedFeature = {
+        geometry: geom,
+        layer: { id: layerId },
+        properties,
+      };
+    },
     mapStyle() {
       this.map.setStyle(this.mapStyle);
       this.updateLocationsSource();

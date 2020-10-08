@@ -402,7 +402,6 @@ export default {
     this.createPopup();
   },
   mounted() {
-    this.createPopup();
     this.popup.setLngLat(this.coordinates);
     this.popup.setDOMContent(this.$refs.content.$el);
     this.popup.addTo(this.map);
