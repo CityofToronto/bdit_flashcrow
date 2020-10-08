@@ -10,6 +10,7 @@
           <v-row>
             <v-col cols="8">
               <FcStudyRequestStudyType
+                ref="autofocus"
                 :location="location"
                 :v="$v.internalValue" />
             </v-col>
@@ -121,11 +122,15 @@ import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequest
 import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcDetailsStudyRequest',
-  mixins: [FcMixinVModelProxy(Object)],
+  mixins: [
+    FcMixinInputAutofocus,
+    FcMixinVModelProxy(Object),
+  ],
   components: {
     FcButton,
     FcStudyRequestDaysOfWeek,
