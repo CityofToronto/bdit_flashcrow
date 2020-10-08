@@ -7,7 +7,7 @@
       min-width="290px"
       offset-y
       transition="scale-transition">
-      <template v-slot:activator="{ on }">
+      <template v-slot:activator="{ on: onMenu }">
         <v-text-field
           v-model="valueFormatted"
           append-icon="mdi-calendar"
@@ -17,7 +17,25 @@
           @blur="resetValueFormatted"
           @input="updateValueFormatted"
           @click:append="showMenu = !showMenu"
-          v-on="on"></v-text-field>
+          v-on="onMenu">
+          <template v-slot:append>
+            <v-tooltip right>
+              <template v-slot:activator="{ on: onTooltip }">
+                <v-icon
+                  aria-label="Select date using calendar"
+                  :color="color"
+                  right
+                  v-on="{
+                    ...onMenu,
+                    ...onTooltip,
+                  }">
+                  mdi-calendar
+                </v-icon>
+              </template>
+              <span>Select date using calendar</span>
+            </v-tooltip>
+          </template>
+        </v-text-field>
       </template>
       <v-date-picker
         v-model="internalValue"
@@ -79,6 +97,15 @@ export default {
     };
   },
   computed: {
+    color() {
+      if (this.$attrs.success) {
+        return 'success';
+      }
+      if (this.$attrs['error-messages'].length > 0) {
+        return 'error';
+      }
+      return null;
+    },
     internalMax() {
       return toInternalValue(this.max);
     },

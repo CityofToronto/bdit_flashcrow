@@ -14,7 +14,7 @@
             class="mt-3"
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
-            label="Due Date"
+            label="Due Date (MM/DD/YYYY)"
             :max="maxDueDate"
             :min="minDueDate"
             :success="!v.dueDate.$invalid">
