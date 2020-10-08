@@ -1,8 +1,10 @@
+import Vue from 'vue';
+
 const SELECTOR_INPUT = 'button, input';
 
 export default {
   mounted() {
-    this.autofocus();
+    Vue.nextTick(() => this.autofocus());
   },
   methods: {
     autofocus() {

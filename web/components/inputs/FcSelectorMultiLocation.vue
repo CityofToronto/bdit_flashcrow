@@ -18,6 +18,7 @@
             @location-remove="actionRemove" />
           <FcInputLocationSearch
             v-if="!locationsEditFull"
+            ref="autofocus"
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationsEditIndex(-1)"
@@ -185,9 +186,11 @@ import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
 import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 
 export default {
   name: 'FcSelectorMultiLocation',
+  mixins: [FcMixinInputAutofocus],
   components: {
     FcButton,
     FcButtonAria,
