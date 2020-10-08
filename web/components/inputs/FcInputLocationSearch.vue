@@ -8,7 +8,7 @@
       :close-on-content-click="false"
       :offset-y="true"
       :open-on-click="false">
-      <template v-slot:activator="{ on: onMenu }">
+      <template v-slot:activator="{ attrs, on: onMenu }">
         <v-text-field
           v-model="query"
           :aria-label="query"
@@ -19,7 +19,10 @@
           label="Choose location or click on the map"
           :loading="loading"
           solo
-          v-bind="$attrs"
+          v-bind="{
+            ...attrs,
+            ...$attrs,
+          }"
           @blur="actionBlur"
           @focus="actionFocus"
           @input="actionInput"

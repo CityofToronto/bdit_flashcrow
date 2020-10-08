@@ -1,19 +1,20 @@
 <template>
-  <div>
+  <div class="fc-date-picker">
     <v-menu
       v-model="showMenu"
+      :attach="$el"
       :close-on-content-click="false"
       max-width="290px"
       min-width="290px"
       offset-y
       transition="scale-transition">
-      <template v-slot:activator="{ on: onMenu }">
+      <template v-slot:activator="{ attrs, on: onMenu }">
         <v-text-field
           v-model="valueFormatted"
           append-icon="mdi-calendar"
           offset-y
           outlined
-          v-bind="$attrs"
+          v-bind="{ ...attrs, ...$attrs }"
           @blur="resetValueFormatted"
           @input="updateValueFormatted"
           @click:append="showMenu = !showMenu"
@@ -141,3 +142,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-date-picker {
+  position: relative;
+}
+</style>
