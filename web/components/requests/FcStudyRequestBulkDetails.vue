@@ -5,6 +5,7 @@
       <v-row>
         <v-col cols="8">
           <v-text-field
+            ref="autofocus"
             v-model="v.name.$model"
             :error-messages="errorMessagesName"
             label="Set Name for Bulk Request"
@@ -36,6 +37,7 @@ import { StudyRequestReason } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
 import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 function mapWatchers(keys) {
@@ -57,7 +59,10 @@ function mapWatchers(keys) {
 
 export default {
   name: 'FcStudyRequestBulkDetails',
-  mixins: [FcMixinVModelProxy(Object)],
+  mixins: [
+    FcMixinInputAutofocus,
+    FcMixinVModelProxy(Object),
+  ],
   components: {
     FcStudyRequestReason,
     FcStudyRequestUrgent,

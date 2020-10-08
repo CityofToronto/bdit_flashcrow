@@ -4,7 +4,9 @@
       accordion
       flat
       focusable>
-      <v-expansion-panel class="fc-study-request-bulk-confirm-locations">
+      <v-expansion-panel
+        ref="autofocus"
+        class="fc-study-request-bulk-confirm-locations">
         <v-expansion-panel-header>
           <span class="body-1">Intersections</span>
           <v-spacer></v-spacer>
@@ -29,7 +31,7 @@
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
                   <FcButton
-                    aria-label="Remove Study from Request"
+                    :aria-label="'Remove ' + locations[i].description + ' from Request'"
                     class="mr-4"
                     type="icon"
                     @click="$emit('remove-study', i)"
@@ -37,7 +39,7 @@
                     <v-icon>mdi-close</v-icon>
                   </FcButton>
                 </template>
-                <span>Remove Study from Request</span>
+                <span>Remove {{locations[i].description}} from Request</span>
               </v-tooltip>
             </div>
           </template>
@@ -85,9 +87,11 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <FcSummaryStudyRequest
-      :is-create="true"
-      :study-request="studyRequestBulk" />
+    <div class="mr-5 mt-4">
+      <FcSummaryStudyRequest
+        :is-create="true"
+        :study-request="studyRequestBulk" />
+    </div>
   </section>
 </template>
 
@@ -96,9 +100,11 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCardStudyRequestConfirm from '@/web/components/requests/FcCardStudyRequestConfirm.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 
 export default {
   name: 'FcStudyRequestBulkConfirm',
+  mixins: [FcMixinInputAutofocus],
   components: {
     FcButton,
     FcCardStudyRequestConfirm,

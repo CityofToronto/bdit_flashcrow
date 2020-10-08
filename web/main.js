@@ -58,7 +58,8 @@ const vuetify = new Vuetify({
         border: '#e0e0e0',
         unselected: '#acacac',
         // status colors
-        error: '#df323b',
+        error: '#df323b', // in default Vuetify: 'error darken-1'
+        success: '#00791e', // in default Vuetify: 'success darken-2'
         // request status
         statusRequested: '#2ec3cc',
         statusChangesNeeded: '#404040',

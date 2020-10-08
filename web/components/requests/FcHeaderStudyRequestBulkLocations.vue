@@ -2,6 +2,7 @@
   <div class="mx-5">
     <div class="align-center d-flex">
       <v-checkbox
+        ref="autofocus"
         v-model="selectAll"
         class="mr-6"
         label="Select all"
@@ -62,11 +63,15 @@ import { StudyHours, StudyType } from '@/lib/Constants';
 import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcHeaderStudyRequestBulkLocations',
-  mixins: [FcMixinVModelProxy(Array)],
+  mixins: [
+    FcMixinInputAutofocus,
+    FcMixinVModelProxy(Array),
+  ],
   directives: {
     Ripple,
   },

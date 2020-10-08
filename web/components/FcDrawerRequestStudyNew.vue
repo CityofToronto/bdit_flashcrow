@@ -158,6 +158,18 @@ export default {
       'routeBackViewRequest',
     ]),
   },
+  watch: {
+    studyRequestBulk() {
+      if (this.studyRequestBulk !== null && this.studyRequestBulk.id !== undefined) {
+        /*
+         * This allows the user to leave the final "step" of the bulk request wizard without
+         * being warned about losing data - which is untrue at that point, as the request has
+         * already been saved.
+         */
+        this.leaveConfirmed = true;
+      }
+    },
+  },
   methods: {
     actionViewDetails() {
       const { id } = this.studyRequestBulk;
@@ -165,7 +177,6 @@ export default {
         name: 'requestStudyBulkView',
         params: { id },
       };
-      this.leaveConfirmed = true;
       this.$router.push(route);
     },
     async loadAsyncForRoute(to) {

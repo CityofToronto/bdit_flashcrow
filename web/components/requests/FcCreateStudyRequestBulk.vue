@@ -17,12 +17,14 @@
 
       <FcHeaderStudyRequestBulkLocations
         v-if="step === 1"
+        key="header_1"
         v-model="indicesIntersectionsSelected"
         :indices="indicesIntersections"
         :locations="locations"
         :study-requests="studyRequests" />
       <FcHeaderStudyRequestBulkLocations
         v-else-if="step === 2"
+        key="header_2"
         v-model="indicesMidblocksSelected"
         :indices="indicesMidblocks"
         :locations="locations"

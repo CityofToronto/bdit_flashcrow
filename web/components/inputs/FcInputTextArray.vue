@@ -2,11 +2,28 @@
   <v-combobox
     v-model="internalValue"
     append-icon="mdi-plus"
-    deletable-chips
+    hide-no-data
     multiple
     outlined
-    small-chips
-    v-bind="$attrs"></v-combobox>
+    v-bind="$attrs">
+    <template v-slot:selection="{ attrs, item, parent, selected }">
+      <v-chip
+        color="secondary"
+        :input-value="selected"
+        label
+        small
+        v-bind="attrs">
+        <span>{{item}}</span>
+        <v-icon
+          :aria-label="'Remove ' + item"
+          right
+          small
+          @click="parent.selectItem(item)">
+          mdi-close-circle
+        </v-icon>
+      </v-chip>
+    </template>
+  </v-combobox>
 </template>
 
 <script>
