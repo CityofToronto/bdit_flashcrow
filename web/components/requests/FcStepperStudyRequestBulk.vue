@@ -5,9 +5,11 @@
     alt-labels>
     <v-stepper-header class="elevation-0 px-3 pt-1">
       <v-stepper-step
+        :aria-disabled="!hasIntersections"
         class="pa-2"
-        :complete="internalValue > 1"
-        :editable="internalValue > 1"
+        :class="{ disabled: !hasIntersections }"
+        :complete="hasIntersections && internalValue > 1"
+        :editable="hasIntersections > 0 && internalValue > 1"
         :step="1">
         Select intersections
       </v-stepper-step>
@@ -15,9 +17,11 @@
       <v-icon small>mdi-chevron-right</v-icon>
 
       <v-stepper-step
+        :aria-disabled="!hasMidblocks"
         class="pa-2"
-        :complete="internalValue > 2"
-        :editable="internalValue > 2"
+        :class="{ disabled: !hasMidblocks }"
+        :complete="hasMidblocks && internalValue > 2"
+        :editable="hasMidblocks && internalValue > 2"
         :step="2">
         Select midblocks
       </v-stepper-step>
@@ -49,6 +53,18 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 export default {
   name: 'FcStepperStudyRequestBulk',
   mixins: [FcMixinVModelProxy(Number)],
+  props: {
+    indicesIntersections: Array,
+    indicesMidblocks: Array,
+  },
+  computed: {
+    hasIntersections() {
+      return this.indicesIntersections.length > 0;
+    },
+    hasMidblocks() {
+      return this.indicesMidblocks.length > 0;
+    },
+  },
 };
 </script>
 
@@ -58,6 +74,10 @@ export default {
     flex-basis: auto;
     & > .v-stepper__label {
       color: var(--v-default-base);
+    }
+    &.disabled {
+      opacity: 0.38;
+      pointer-events: none;
     }
     &.v-stepper__step--inactive {
       & > .v-stepper__step__step {

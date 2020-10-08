@@ -6,6 +6,8 @@
       <FcStepperStudyRequestBulk
         v-if="step !== null"
         v-model="step"
+        :indices-intersections="indicesIntersections"
+        :indices-midblocks="indicesMidblocks"
         class="mb-2" />
 
       <div class="px-5">
@@ -96,7 +98,7 @@
         <v-spacer></v-spacer>
 
         <FcButton
-          v-if="step === 1"
+          v-if="step === 1 || (step === 2 && indicesIntersections.length === 0)"
           class="mr-2"
           type="tertiary"
           @click="$emit('action-navigate-back')">
@@ -106,7 +108,7 @@
           v-else-if="step !== null"
           class="mr-2"
           type="tertiary"
-          @click="step -= 1">
+          @click="actionBack">
           Back
         </FcButton>
 
@@ -114,7 +116,7 @@
           v-if="step !== null && step < 4"
           :disabled="disabledNext"
           type="primary"
-          @click="step += 1">
+          @click="actionNext">
           Continue
         </FcButton>
         <FcButton
@@ -199,13 +201,15 @@ export default {
 
     const indicesIntersectionsSelected = [...indicesIntersections];
     const indicesMidblocksSelected = [...indicesMidblocks];
+
+    const step = indicesIntersections.length > 0 ? 1 : 2;
     return {
       indicesIntersections,
       indicesIntersectionsSelected,
       indicesMidblocks,
       indicesMidblocksSelected,
       loadingSubmit: false,
-      step: 1,
+      step,
       studyRequests,
     };
   },
@@ -294,6 +298,20 @@ export default {
     this.setLocationsIndicesDeselected([]);
   },
   methods: {
+    actionBack() {
+      if (this.step === 3 && this.indicesMidblocks.length === 0) {
+        this.step = 1;
+      } else {
+        this.step -= 1;
+      }
+    },
+    actionNext() {
+      if (this.step === 1 && this.indicesMidblocks.length === 0) {
+        this.step = 3;
+      } else {
+        this.step += 1;
+      }
+    },
     actionRemoveStudy(i) {
       let j = this.indicesIntersectionsSelected.indexOf(i);
       if (j !== -1) {

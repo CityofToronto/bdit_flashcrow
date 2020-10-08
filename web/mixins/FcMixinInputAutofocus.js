@@ -6,7 +6,11 @@ export default {
   },
   methods: {
     autofocus() {
-      let $autofocus = this.$refs.autofocus.$el;
+      const { autofocus } = this.$refs;
+      if (autofocus === undefined) {
+        return;
+      }
+      let $autofocus = autofocus.$el;
       if (!$autofocus.matches(SELECTOR_INPUT)) {
         $autofocus = $autofocus.querySelector(SELECTOR_INPUT);
       }
