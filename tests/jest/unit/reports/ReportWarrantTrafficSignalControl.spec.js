@@ -125,7 +125,6 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
   } = setup_5_38661();
   const options = {
     adequateTrial: true,
-    preparedBy: 'Foo Bar',
     preventablesByYear: [3, 5, 10],
     startYear: 2016,
   };
@@ -162,7 +161,6 @@ test('ReportWarrantTrafficSignalControl#generateCsv [Overlea and Thorncliffe: 5/
   } = setup_5_38661();
   const options = {
     adequateTrial: true,
-    preparedBy: 'Foo Bar',
     preventablesByYear: [3, 5, 10],
     startYear: 2016,
   };

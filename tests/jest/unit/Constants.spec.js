@@ -17,9 +17,6 @@ test('ReportParameter#defaultValue', () => {
     state: { now: { year: 2020 } },
   })).toEqual(2017);
   expect(ReportParameter.PREVENTABLE_COLLISIONS.defaultValue()).toEqual([0, 0, 0]);
-  expect(ReportParameter.USERNAME.defaultValue({
-    getters: { username: 'foo' },
-  })).toEqual('foo');
 });
 
 test('StudyHours#hint', () => {
