@@ -64,6 +64,8 @@ module.exports = {
         message: 'Please use Object.defineProperty instead.',
       },
     ],
+    'vue/no-mutating-props': 'off',
+    'vue/valid-v-slot': 'off',
   },
   parserOptions: {
     parser: 'babel-eslint',

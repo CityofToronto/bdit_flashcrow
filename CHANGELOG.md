@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.8] - 2020-10-09
+
+### Added
+- Bulk request management actions in Track Requests
+
+### Changed
+- "In development" top bar changed for beta launch, added "Report a Bug"
+- Hide collisions layer for certain flows (e.g. Request Study, Edit Locations) to reduce visual clutter and make selection easier
+
+### Fixed
+- Proper request selection in Track Requests
+- Lots of a11y, usability, and other minor fixes
+
+### Removed
+- ETL scripts (these are now in [`bdit_move_etl`](https://github.com/CityofToronto/bdit_move_etl))
+- `STUDY_REQUESTS_EDIT` user authentication scope: use `STUDY_REQUESTS` instead to get view / create / edit permissions
+
 ## [0.9.7] - 2020-09-22
 
 ### Added
