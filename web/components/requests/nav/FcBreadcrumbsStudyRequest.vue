@@ -2,7 +2,16 @@
   <v-breadcrumbs
     class="pa-0"
     :divider="divider"
-    :items="items" />
+    :items="items">
+    <template v-slot:item="{ item }">
+      <v-breadcrumbs-item
+        :aria-disabled="item.disabled.toString()"
+        :disabled="item.disabled"
+        :to="item.to">
+        {{item.text}}
+      </v-breadcrumbs-item>
+    </template>
+  </v-breadcrumbs>
 </template>
 
 <script>
@@ -32,6 +41,7 @@ export default {
       const { name } = this.$route;
       if (name === 'requestStudyBulkView') {
         return {
+          disabled: true,
           text: this.studyRequest.name,
           to: {
             name: 'requestStudyBulkView',
@@ -42,6 +52,7 @@ export default {
       if (name === 'requestStudyView') {
         const text = getLocationsDescription(this.locationsSelection.locations);
         return {
+          disabled: true,
           text,
           to: {
             name: 'requestStudyView',
@@ -64,6 +75,7 @@ export default {
           return null;
         }
         return {
+          disabled: false,
           text: this.studyRequestBulkName,
           to: {
             name: 'requestStudyBulkView',
@@ -75,6 +87,7 @@ export default {
     },
     items() {
       const items = [{
+        disabled: false,
         text: this.labelBackViewRequest,
         to: this.routeBackViewRequest,
       }];

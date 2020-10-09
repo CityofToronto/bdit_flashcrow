@@ -166,7 +166,7 @@
         <FcButtonAria
           :aria-label="item.ariaLabel"
           button-class="btn-show-request"
-          top
+          left
           type="secondary"
           @click="actionShowItem(item)">
           <v-icon>mdi-open-in-new</v-icon>

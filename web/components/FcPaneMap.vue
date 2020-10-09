@@ -158,6 +158,14 @@ function getFeatureKey(feature) {
   return `${layerId}:${id}`;
 }
 
+function getFeatureKeyLocation(location) {
+  if (location === null) {
+    return null;
+  }
+  const { centrelineType, centrelineId } = location;
+  return `c:${centrelineType}:${centrelineId}`;
+}
+
 function getFeatureKeyRoute($route, locationMode) {
   if (locationMode.multi) {
     return null;
@@ -559,11 +567,15 @@ export default {
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 200),
-    locationActive() {
-      if (this.locationActive === null || this.locationMode.multi) {
+    locationActive(locationActive, locationActivePrev) {
+      if (locationActive === null) {
+        const featureKeyLocationActivePrev = getFeatureKeyLocation(locationActivePrev);
+        if (this.featureKeySelected === featureKeyLocationActivePrev) {
+          this.selectedFeature = null;
+        }
         return;
       }
-      const { description, geom, ...locationActiveRest } = this.locationActive;
+      const { description, geom, ...locationActiveRest } = locationActive;
       const properties = {
         ...locationActiveRest,
         name: description,
