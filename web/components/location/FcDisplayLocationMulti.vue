@@ -12,7 +12,8 @@
         flat
         hide-details
         readonly
-        solo>
+        solo
+        tabindex="-1">
         <template v-slot:append>
           <div class="align-center d-flex">
             <FcIconLocationMulti

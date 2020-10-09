@@ -52,7 +52,11 @@
                 <span>Clear Location</span>
               </v-tooltip>
               <v-divider vertical />
-              <v-icon right>mdi-magnify</v-icon>
+              <v-icon
+                :color="hasFocus ? 'primary' : null"
+                right>
+                mdi-magnify
+              </v-icon>
             </template>
           </template>
         </v-text-field>
@@ -246,6 +250,9 @@ export default {
 
 <style lang="scss">
 .fc-input-location-search {
+  & > .v-input--is-focused {
+    box-shadow: 0 0 0 2px var(--v-primary-base);
+  }
   &.v-select .v-input__append-inner .v-input__icon--append .v-icon {
     margin-top: 0;
   }

@@ -1,6 +1,7 @@
 <template>
   <div class="fc-selector-single-location">
     <FcInputLocationSearch
+      ref="autofocus"
       v-model="internalLocation"
       class="elevation-2" />
   </div>
@@ -11,9 +12,11 @@ import { mapGetters, mapMutations } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
+import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 
 export default {
   name: 'FcSelectorSingleLocation',
+  mixins: [FcMixinInputAutofocus],
   components: {
     FcInputLocationSearch,
   },

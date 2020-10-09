@@ -22,7 +22,7 @@
             v-model="locationToAdd"
             :location-index="-1"
             @focus="setLocationsEditIndex(-1)"
-            @location-add="addLocationEdit" />
+            @location-add="actionAdd" />
         </div>
         <v-messages
           class="mt-2"
@@ -161,6 +161,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import {
   mapActions,
   mapGetters,
@@ -311,6 +312,7 @@ export default {
         this.loading = true;
         try {
           await this.syncLocationsEdit();
+          Vue.nextTick(() => this.autofocus());
           this.hasError = false;
         } catch (err) {
           this.setToastBackendError(err);
@@ -321,6 +323,10 @@ export default {
     },
   },
   methods: {
+    actionAdd(location) {
+      this.addLocationEdit(location);
+      Vue.nextTick(() => this.autofocus());
+    },
     actionLocationNext() {
       if (this.locationsIndex <= this.locations.length - 1) {
         this.setLocationsIndex(this.locationsIndex + 1);
@@ -334,6 +340,7 @@ export default {
     actionRemove(i) {
       this.setLocationsEditIndex(-1);
       this.removeLocationEdit(i);
+      Vue.nextTick(() => this.autofocus());
     },
     ...mapActions(['syncLocationsEdit']),
     ...mapMutations([

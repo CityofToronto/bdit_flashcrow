@@ -38,5 +38,8 @@ export default {
 <style lang="scss">
 .v-application a.fc-nav-brand {
   color: transparent;
+  &:focus {
+    background-color: #e0e0e0;
+  }
 }
 </style>

@@ -560,7 +560,7 @@ export default {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 200),
     locationActive() {
-      if (this.locationActive === null || this.locationMode !== LocationMode.SINGLE) {
+      if (this.locationActive === null || this.locationMode.multi) {
         return;
       }
       const { description, geom, ...locationActiveRest } = this.locationActive;
@@ -576,6 +576,11 @@ export default {
         layer: { id: layerId },
         properties,
       };
+    },
+    locationMode() {
+      if (this.locationMode.multi) {
+        this.selectedFeature = null;
+      }
     },
     mapStyle() {
       this.map.setStyle(this.mapStyle);
@@ -860,6 +865,9 @@ export default {
         transition-duration: 0.28s;
         transition-property: background-color;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        &:focus {
+          background-color: #c1c1c1;
+        }
       }
     }
     & > .mapboxgl-ctrl-scale {
