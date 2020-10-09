@@ -145,7 +145,7 @@ export default {
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
         return true;
       }
-      if (this.studyRequestBulk !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS_EDIT)) {
+      if (this.studyRequestBulk !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         return this.auth.user.id === this.studyRequestBulk.userId;
       }
       return false;

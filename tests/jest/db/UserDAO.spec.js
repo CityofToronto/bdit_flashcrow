@@ -34,7 +34,7 @@ test('UserDAO', async () => {
   Object.assign(persistedUser1, { email, uniqueName });
   await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
   Object.assign(persistedUser1, {
-    scope: [AuthScope.STUDY_REQUESTS, AuthScope.STUDY_REQUESTS_EDIT],
+    scope: [AuthScope.STUDY_REQUESTS],
   });
   await expect(UserDAO.update(persistedUser1)).resolves.toEqual(persistedUser1);
   await expect(UserDAO.bySub(transientUser1.sub)).resolves.toEqual(persistedUser1);

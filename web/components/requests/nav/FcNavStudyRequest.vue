@@ -78,7 +78,7 @@ export default {
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
         return true;
       }
-      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS_EDIT)) {
+      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
         return this.auth.user.id === this.studyRequest.userId;
       }
       return false;

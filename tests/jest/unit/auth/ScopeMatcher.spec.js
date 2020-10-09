@@ -5,41 +5,37 @@ test('ScopeMatcher.hasAuthScope', () => {
   let user = null;
   expect(hasAuthScope(user, [])).toBe(false);
   expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS])).toBe(false);
-  expect(hasAuthScope(user, [
-    AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_EDIT,
-  ])).toBe(false);
 
   user = {
     scope: [AuthScope.STUDY_REQUESTS],
   };
   expect(hasAuthScope(user, [])).toBe(true);
   expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS])).toBe(true);
-  expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS_EDIT])).toBe(false);
+  expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS_ADMIN])).toBe(false);
   expect(hasAuthScope(user, [
     AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_EDIT,
+    AuthScope.STUDY_REQUESTS_ADMIN,
   ])).toBe(true);
   expect(hasAuthScope(user, [
     AuthScope.STUDY_REQUESTS_ADMIN,
-    AuthScope.STUDY_REQUESTS_EDIT,
+    AuthScope.ADMIN,
   ])).toBe(false);
 
   user = {
     scope: [
       AuthScope.STUDY_REQUESTS,
-      AuthScope.STUDY_REQUESTS_EDIT,
+      AuthScope.STUDY_REQUESTS_ADMIN,
     ],
   };
   expect(hasAuthScope(user, [])).toBe(true);
   expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS])).toBe(true);
-  expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS_EDIT])).toBe(true);
+  expect(hasAuthScope(user, [AuthScope.STUDY_REQUESTS_ADMIN])).toBe(true);
   expect(hasAuthScope(user, [
     AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_EDIT,
+    AuthScope.STUDY_REQUESTS_ADMIN,
   ])).toBe(true);
   expect(hasAuthScope(user, [
     AuthScope.STUDY_REQUESTS_ADMIN,
-    AuthScope.STUDY_REQUESTS_EDIT,
+    AuthScope.ADMIN,
   ])).toBe(true);
 });

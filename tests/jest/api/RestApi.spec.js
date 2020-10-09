@@ -429,32 +429,21 @@ test('StudyRequestController', async () => {
   expect(client.csrf).not.toBeNull();
 
   // requester can create requests and edit their own requests
-  const transientRequester = generateUser([
-    AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_EDIT,
-  ]);
+  const transientRequester = generateUser([AuthScope.STUDY_REQUESTS]);
   const requester = await UserDAO.create(transientRequester);
 
   // supervisors can manage all requests
   const transientSupervisor = generateUser([
     AuthScope.STUDY_REQUESTS,
     AuthScope.STUDY_REQUESTS_ADMIN,
-    AuthScope.STUDY_REQUESTS_EDIT,
   ]);
   const supervisor = await UserDAO.create(transientSupervisor);
 
   // other ETT1s have edit powers, but only on their own requests
   const transientETT1 = generateUser([
     AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_EDIT,
   ]);
   const ett1 = await UserDAO.create(transientETT1);
-
-  // other staff can only view requests; they cannot create or edit them
-  const transientStaff = generateUser([
-    AuthScope.STUDY_REQUESTS,
-  ]);
-  const staff = await UserDAO.create(transientStaff);
 
   const now = DateTime.local();
   const transientStudyRequest = {
@@ -481,14 +470,6 @@ test('StudyRequestController', async () => {
     { centrelineId: 13459445, centrelineType: CentrelineType.INTERSECTION },
   ];
   const s1 = CompositeId.encode(features);
-
-  // creating requests requires `STUDY_REQUESTS_EDIT` permission
-  client.setUser(staff);
-  response = await client.fetch('/requests/study', {
-    method: 'POST',
-    data: transientStudyRequest,
-  });
-  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
 
   // requester can create request
   client.setUser(requester);

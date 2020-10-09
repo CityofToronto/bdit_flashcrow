@@ -159,7 +159,7 @@ const router = new Router({
         name: 'requestStudyNew',
         meta: {
           auth: {
-            scope: [AuthScope.STUDY_REQUESTS_EDIT],
+            scope: [AuthScope.STUDY_REQUESTS],
           },
           title: 'New Request',
         },
@@ -173,7 +173,7 @@ const router = new Router({
         name: 'requestStudyEdit',
         meta: {
           auth: {
-            scope: [AuthScope.STUDY_REQUESTS_EDIT],
+            scope: [AuthScope.STUDY_REQUESTS],
           },
           title({ params: { id } }) {
             return `Edit Request #${id}`;
@@ -189,7 +189,7 @@ const router = new Router({
         name: 'requestStudyBulkEdit',
         meta: {
           auth: {
-            scope: [AuthScope.STUDY_REQUESTS_EDIT],
+            scope: [AuthScope.STUDY_REQUESTS],
           },
           title({ params: { id } }) {
             return `Edit Bulk Request #${id}`;
