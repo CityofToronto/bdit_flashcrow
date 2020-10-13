@@ -32,7 +32,7 @@
             </span>
             <v-menu
               v-else
-              max-height="320">
+              :max-height="320">
               <template v-slot:activator="{ on, attrs }">
                 <FcButton
                   v-bind="attrs"
@@ -65,7 +65,9 @@
             </v-chip>
           </div>
           <v-spacer></v-spacer>
-          <v-menu v-if="studies.length > 0">
+          <v-menu
+            v-if="studies.length > 0"
+            :max-height="320">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
                 v-bind="attrs"

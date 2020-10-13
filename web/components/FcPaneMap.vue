@@ -499,11 +499,11 @@ export default {
             'Powered by <a href="https://www.esri.com/">Esri</a>',
           ],
         }),
-        'bottom-right',
+        'bottom-left',
       );
       this.map.addControl(
-        new mapboxgl.ScaleControl({ maxWidth: 192, unit: 'metric' }),
-        'bottom-right',
+        new mapboxgl.ScaleControl({ maxWidth: 128, unit: 'metric' }),
+        'bottom-left',
       );
       this.map.addControl(
         new mapboxgl.NavigationControl({ showCompass: false }),
@@ -846,13 +846,13 @@ export default {
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {
-    bottom: 35px;
+    bottom: 10px;
     position: absolute;
     right: 58px;
     z-index: var(--z-index-controls);
   }
   & > .pane-map-navigate {
-    bottom: 102px;
+    bottom: 77px;
     position: absolute;
     right: 20px;
     z-index: var(--z-index-controls);
@@ -864,9 +864,39 @@ export default {
       width: 30px;
     }
   }
+  .mapboxgl-ctrl-bottom-left {
+    & > .mapboxgl-ctrl-scale {
+      background-color: hsla(0, 0%, 100%, 0.8);
+      border-color: #272727;
+      bottom: 0;
+      color: #272727;
+      font-size: 0.75rem;
+      height: 17px;
+      left: 174px;
+      line-height: 0.875rem;
+      position: absolute;
+    }
+    & > .mapboxgl-ctrl-attrib {
+      background-color: hsla(0, 0%, 100%, 0.8);
+      bottom: 10px;
+      color: #272727;
+      font-size: 0.75rem;
+      left: 19px;
+      line-height: 0.875rem;
+      padding: 2px;
+      position: absolute;
+      width: 160px;
+      & a {
+        color: #272727;
+      }
+      &.mapboxgl-compact {
+        margin: 0;
+      }
+    }
+  }
   .mapboxgl-ctrl-bottom-right {
     & > .mapboxgl-ctrl-group {
-      bottom: 25px;
+      bottom: 0;
       box-shadow:
         0 3px 1px -2px rgba(0, 0, 0, 0.2),
         0 2px 2px 0 rgba(0, 0, 0, 0.14),
@@ -880,29 +910,6 @@ export default {
         &:focus {
           background-color: #c1c1c1;
         }
-      }
-    }
-    & > .mapboxgl-ctrl-scale {
-      border-color: #272727;
-      bottom: 0;
-      color: #272727;
-      font-size: 0.75rem;
-      height: 17px;
-      line-height: 0.875rem;
-      position: absolute;
-      right: 174px;
-    }
-    & > .mapboxgl-ctrl-attrib {
-      bottom: 10px;
-      color: #272727;
-      font-size: 0.75rem;
-      line-height: 0.875rem;
-      padding: 2px;
-      position: absolute;
-      right: 19px;
-      width: 160px;
-      & a {
-        color: #272727;
       }
     }
   }
