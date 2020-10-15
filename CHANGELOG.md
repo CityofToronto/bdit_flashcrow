@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2020-10-15
+
+### Fixed
+- #666: fixed directional totals bug with 3-way intersections
+- #654: Poplar Plains now searchable in location search bar
+- #539: midblocks now have more readable / informative names
+- #455: report date dropdown, map bottom-right controls, and map legend no longer conflict on 1280x720 screens
+
 ## [0.9.8] - 2020-10-09
 
 ### Added
