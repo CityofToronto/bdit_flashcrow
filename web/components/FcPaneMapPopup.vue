@@ -120,11 +120,14 @@ async function getCentrelineDetails(feature, centrelineType) {
 function getCentrelineDescription(feature, { location }) {
   const description = [];
 
-  let { name } = feature.properties;
-  if (name) {
-    name = formatCountLocationDescription(name);
+  let name = location.description;
+  if (name === null) {
+    name = feature.properties.name;
+    if (name !== null) {
+      name = formatCountLocationDescription(name);
+    }
   }
-  description.push(name);
+  description.push(location.description);
 
   const locationFeatureType = getLocationFeatureType(location);
   if (locationFeatureType !== null) {
