@@ -46,9 +46,7 @@ As you can see, endpoint declarations provide useful information about authentic
 
 ## Authentication
 
-Note that many endpoints of this API do not require authentication; as noted above, those endpoints are configured with `auth: { mode: 'try' }`.
-
-For routes that do require authentication, you must provide a valid `session` cookie with your request.
+For routes that require authentication, you must provide a valid `session` cookie with your request.
 
 For non-`GET` routes that additionally modify MOVE application data, you must provide a CSRF token.  There are two ways to pass this token: via the `csrf` cookie, or via the `X-CSRF-Token` request header.
 
