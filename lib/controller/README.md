@@ -44,14 +44,6 @@ The MOVE REST API is built using `hapi`, a node.js-based server-side web framewo
 
 As you can see, endpoint declarations provide useful information about authentication requirements and expected request / response formats.
 
-## Authentication
-
-For routes that require authentication, you must provide a valid `session` cookie with your request.
-
-For non-`GET` routes that additionally modify MOVE application data, you must provide a CSRF token.  There are two ways to pass this token: via the `csrf` cookie, or via the `X-CSRF-Token` request header.
-
-To authenticate, log in via the MOVE web application and complete the OpenID Connect login flow.  MOVE does not currently offer programmatic authentication (e.g. via OAuth, OpenID Connect, etc.)
-
 ## Services
 
 The MOVE REST API is split across three services - `web`, `reporter`, and `scheduler`.  These services are reverse-proxied via `nginx` to different root paths, and each handle a subset of the controllers in this directory:
@@ -61,3 +53,31 @@ The MOVE REST API is split across three services - `web`, `reporter`, and `sched
 - `web`: `/api` (everything else).
 
 Paths in controllers are relative to these service root paths.  For instance: `CollisionController` is handled by `web`, so to call an endpoint `/collisions/byCentreline` in `CollisionController` you must make a request to `/api/collisions/byCentreline`.
+
+## Common HTTP Codes
+
+All MOVE REST API endpoints return common HTTP codes in the following circumstances.  Other circumstances are documented on a per-endpoint basis, as are any exceptions to these conventions.
+
+### HTTP 400: Bad Request
+
+Returned when the URL parameters, request body ("payload"), or GET query parameters are invalid or missing.
+
+### HTTP 403: Forbidden
+
+Returned when the user must authenticate to access the endpoint but is not authenticated, or when the user is authenticated but lacks sufficient permission (`scope`).
+
+### HTTP 404: Not Found
+
+Returned when the request URL does not correspond to a MOVE REST API endpoint, or when the request would refer to a non-existent resource (e.g. collision, traffic study, study request, etc.)
+
+## Authentication
+
+For routes that require authentication, you must provide a valid `session` cookie with your request.
+
+For non-`GET` routes that additionally modify MOVE application data, you must provide a CSRF token.  There are two ways to pass this token: via the `csrf` cookie, or via the `X-CSRF-Token` request header.
+
+To authenticate, log in via the MOVE web application and complete the OpenID Connect login flow.  MOVE does not currently offer programmatic authentication (e.g. via OAuth, OpenID Connect, etc.)
+
+## Validation
+
+Schemas for request parameters and body are specified using the validation library `joi`.  More complex schemas are stored in [`lib/model`](https://github.com/CityofToronto/bdit_flashcrow/tree/master/lib/model).
