@@ -69,13 +69,24 @@
           </div>
         </div>
 
-        <v-tabs v-model="indexActiveReportType">
-          <v-tab
-            v-for="reportType in reportTypes"
-            :key="reportType.name">
-            {{reportType.label}}
-          </v-tab>
-        </v-tabs>
+        <div class="align-center d-flex">
+          <v-tabs v-model="indexActiveReportType">
+            <v-tab
+              v-for="reportType in reportTypes"
+              :key="reportType.name">
+              {{reportType.label}}
+            </v-tab>
+          </v-tabs>
+
+          <v-spacer></v-spacer>
+
+          <div class="mr-3">
+            <FcMenuDownloadReportFormat
+              type="secondary"
+              @download-report-format="actionDownload" />
+          </div>
+        </div>
+
         <v-divider></v-divider>
       </div>
 
@@ -97,11 +108,6 @@
           v-else
           class="fc-report-wrapper pa-3">
           <FcReport v-bind="reportLayout" />
-          <div class="fc-report-actions pa-3">
-            <FcMenuDownloadReportFormat
-              type="secondary"
-              @download-report-format="actionDownload" />
-          </div>
         </div>
       </section>
     </template>

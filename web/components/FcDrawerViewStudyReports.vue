@@ -92,14 +92,38 @@
           </v-menu>
         </div>
 
-        <v-tabs v-model="indexActiveReportType">
-          <v-tab
-            v-for="reportType in reportTypes"
-            :key="reportType.name"
-            :disabled="studies.length === 0">
-            {{reportType.label}}
-          </v-tab>
-        </v-tabs>
+        <div class="align-center d-flex">
+          <v-tabs v-model="indexActiveReportType">
+            <v-tab
+              v-for="reportType in reportTypes"
+              :key="reportType.name"
+              :disabled="studies.length === 0">
+              {{reportType.label}}
+            </v-tab>
+          </v-tabs>
+
+          <v-spacer></v-spacer>
+
+          <FcDialogReportParameters
+            v-if="showReportParameters"
+            v-model="showReportParameters"
+            :report-parameters="reportParameters"
+            :report-type="activeReportType"
+            @set-report-parameters="setReportParameters">
+          </FcDialogReportParameters>
+          <FcButton
+            v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+            type="secondary"
+            @click.stop="showReportParameters = true">
+            <v-icon color="primary" left>mdi-cog</v-icon>
+            Set Parameters
+          </FcButton>
+          <div class="mr-3">
+            <FcMenuDownloadReportFormat
+              type="secondary"
+              @download-report-format="actionDownload" />
+          </div>
+        </div>
         <v-divider></v-divider>
       </div>
 
@@ -128,25 +152,6 @@
           v-else
           class="fc-report-wrapper pa-3">
           <FcReport v-bind="reportLayout" />
-          <div class="fc-report-actions pa-3">
-            <FcDialogReportParameters
-              v-if="showReportParameters"
-              v-model="showReportParameters"
-              :report-parameters="reportParameters"
-              :report-type="activeReportType"
-              @set-report-parameters="setReportParameters">
-            </FcDialogReportParameters>
-            <FcButton
-              v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
-              type="secondary"
-              @click.stop="showReportParameters = true">
-              <v-icon color="primary" left>mdi-cog</v-icon>
-              Set Parameters
-            </FcButton>
-            <FcMenuDownloadReportFormat
-              type="secondary"
-              @download-report-format="actionDownload" />
-          </div>
         </div>
       </section>
     </template>
