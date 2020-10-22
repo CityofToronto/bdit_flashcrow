@@ -36,6 +36,8 @@ beforeAll(MovePdfGenerator.init);
 function setup_4_2156283_single() {
   const study = {
     arteryGroupId: 2946,
+    centrelineId: 108387,
+    centrelineType: CentrelineType.SEGMENT,
     countGroupId: 2156281,
     endDate: DateTime.fromSQL('2019-03-07 00:00:00'),
     startDate: DateTime.fromSQL('2019-03-07 00:00:00'),
@@ -58,10 +60,31 @@ function setup_4_2156283_single() {
   }]]);
   const studyData = new Map([[2156283, countData_4_2156283]]);
   StudyDataDAO.byStudy.mockResolvedValue({ arteries, counts, studyData });
+  CentrelineDAO.byFeature.mockResolvedValue({
+    centrelineId: 108387,
+    centrelineType: CentrelineType.SEGMENT,
+    description: 'Morningside Ave: Ling Rd \u2013 Lawrence Ave E',
+    geom: {
+      type: 'LineString',
+      coordinates: [
+        [-79.185658967, 43.766607205],
+        [-79.18592188, 43.767247008],
+        [-79.186002302, 43.767454258],
+        [-79.186063368, 43.767652454],
+        [-79.186093667, 43.767796558],
+        [-79.18613935, 43.767967706],
+        [-79.186152665, 43.768093762],
+        [-79.18618223, 43.768228859],
+        [-79.186225546, 43.768408999],
+      ],
+    },
+  });
 }
 
 function setup_5_36781() {
   const study = {
+    centrelineId: 13464586,
+    centrelineType: CentrelineType.INTERSECTION,
     countGroupId: 36781,
     type: { id: 5, studyType: StudyType.TMC },
   };
@@ -74,6 +97,15 @@ function setup_5_36781() {
   }];
   const studyData = new Map([[36781, countData_5_36781]]);
   StudyDataDAO.byStudy.mockResolvedValue({ counts, studyData });
+  CentrelineDAO.byFeature.mockResolvedValue({
+    centrelineId: 13464586,
+    centrelineType: CentrelineType.INTERSECTION,
+    description: 'Gerrard St E / Sumach St',
+    geom: {
+      type: 'Point',
+      coordinates: [-79.361498301, 43.663158537],
+    },
+  });
 }
 
 function setup_5_38661() {
@@ -93,6 +125,9 @@ function setup_5_38661() {
   const studyData = new Map([[38661, countData_5_38661]]);
   StudyDataDAO.byStudy.mockResolvedValue({ counts, studyData });
   CentrelineDAO.byFeature.mockResolvedValue({
+    centrelineId: 13456854,
+    centrelineType: CentrelineType.INTERSECTION,
+    description: 'Overlea Blvd / Thorncliffe Park Dr',
     geom: {
       type: 'Point',
       coordinates: [-79.343625497, 43.70747321],

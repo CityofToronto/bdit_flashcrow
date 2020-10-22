@@ -26,6 +26,7 @@
   --disabled: #c9c9c9;  /* gray-20 */
   --disabled-dark: #adadad;  /* gray-30 */
 
+  --font-size-2xs: 0.625rem;
   --font-size-xs: 0.75rem;
   --font-size-s: 0.875rem;
   --font-size-m: 1rem;  /* 16px */
@@ -116,6 +117,15 @@ fieldset {
 }
 
 /* FONT SIZE */
+.font-size-2xs {
+  /*
+   * This font size is used exclusively for TMC summary reports, which need to be printable on
+   * letter-sized paper.  However, 0.625rem (10px) is too small on web to be accessible, so we
+   * cap it at the next size up here - this way the web reports have a readable font size, and
+   * we can still meet paper size requirements here.
+   */
+  font-size: var(--font-size-xs);
+}
 .font-size-xs {
   font-size: var(--font-size-xs);
 }

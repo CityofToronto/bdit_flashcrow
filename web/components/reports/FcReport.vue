@@ -1,17 +1,8 @@
 <template>
   <section class="fc-report">
-    <header class="fc-report-header align-center d-flex">
-      <div>
-        <img
-          alt="City of Toronto"
-          src="/cot_logo.png"
-          width="175" />
-      </div>
-      <div class="ml-3">
-        <div class="title">{{ORG_NAME}}</div>
-        <div class="display-1">{{type.label}}</div>
-      </div>
-    </header>
+    <FcReportHeader
+      :type="type"
+      v-bind="header" />
     <div>
       <template v-for="(contentRow, i) in content">
         <v-row
@@ -38,10 +29,12 @@
 </template>
 
 <script>
-import { ORG_NAME, ReportType } from '@/lib/Constants';
+import { ReportType } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
+import FcReportHeader
+  from '@/web/components/reports/FcReportHeader.vue';
 import FcReportMetadata
   from '@/web/components/reports/FcReportMetadata.vue';
 import FcReportPageBreak
@@ -53,27 +46,16 @@ export default {
   name: 'FcReport',
   components: {
     FcReportBarChart,
+    FcReportHeader,
     FcReportMetadata,
     FcReportPageBreak,
     FcReportTable,
   },
   props: {
-    type: ReportType,
-    date: DateTime,
     content: Array,
-  },
-  data() {
-    return {
-      ORG_NAME,
-    };
+    generatedAt: DateTime,
+    header: Object,
+    type: ReportType,
   },
 };
 </script>
-
-<style lang="scss">
-.fc-report {
-  & > .fc-report-header {
-    color: var(--v-primary-base);
-  }
-}
-</style>
