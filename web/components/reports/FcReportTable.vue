@@ -27,6 +27,7 @@
             <v-icon v-if="value === true">mdi-check</v-icon>
             <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
+            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
             <span v-else>{{value}}</span>
           </component>
         </tr>
@@ -43,6 +44,7 @@
             <v-icon v-if="value === true">mdi-check</v-icon>
             <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
+            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
             <span v-else>{{value}}</span>
           </component>
         </tr>
@@ -59,6 +61,7 @@
             <v-icon v-if="value === true">mdi-check</v-icon>
             <v-icon v-else-if="value === false">mdi-close</v-icon>
             <span v-else-if="value === null">&nbsp;</span>
+            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
             <span v-else>{{value}}</span>
           </component>
         </tr>

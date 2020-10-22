@@ -1,10 +1,10 @@
-import { format } from 'd3-format';
 import Vue from 'vue';
 import Vuelidate from 'vuelidate';
 import Vuetify from 'vuetify/lib/framework';
 import en from 'vuetify/es5/locale/en';
 
 import { formatDuration, formatUsername } from '@/lib/StringFormatters';
+import NumberFormatters from '@/lib/i18n/NumberFormatters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import App from '@/web/App.vue';
 import analyticsClient from '@/web/analytics/analyticsClient';
@@ -14,12 +14,12 @@ import store from '@/web/store';
 Vue.use(Vuelidate);
 Vue.use(Vuetify);
 
-Vue.filter('d3Format', (value, formatSpec) => format(formatSpec)(value));
 Vue.filter('date', TimeFormatters.formatDefault);
 Vue.filter('dateTime', TimeFormatters.formatDateTime);
 Vue.filter('dayOfWeek', TimeFormatters.formatDayOfWeek);
 Vue.filter('daysOfWeek', TimeFormatters.formatDaysOfWeek);
 Vue.filter('durationHuman', formatDuration);
+Vue.filter('number', NumberFormatters.formatDefault);
 Vue.filter('timeOfDay', TimeFormatters.formatTimeOfDay);
 Vue.filter('username', formatUsername);
 

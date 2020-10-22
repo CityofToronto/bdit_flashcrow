@@ -53,7 +53,7 @@ export default new Vuex.Store({
     // LOCATION
     legendMode: LegendMode.NORMAL,
     legendOptions: {
-      datesFrom: 3,
+      datesFrom: 10,
       layers: {
         collisions: true,
         studies: true,
@@ -61,7 +61,7 @@ export default new Vuex.Store({
       },
     },
     legendOptionsFocusLocations: {
-      datesFrom: 3,
+      datesFrom: 10,
       layers: {
         collisions: false,
         studies: true,
