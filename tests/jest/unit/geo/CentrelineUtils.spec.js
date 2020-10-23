@@ -1,5 +1,6 @@
 import {
   CentrelineType,
+  LocationSelectionType,
   RoadIntersectionType,
   RoadSegmentType,
   StudyType,
@@ -8,7 +9,9 @@ import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 import {
   getLocationFeatureType,
   getLocationStudyTypes,
+  getLocationsCorridorDescription,
   getLocationsDescription,
+  getLocationsSelectionDescription,
   getLocationsIconProps,
   getLocationsWaypointIndices,
 } from '@/lib/geo/CentrelineUtils';
@@ -78,6 +81,33 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
   expect(getLocationStudyTypes(location)).not.toContain(StudyType.RESCU);
 });
 
+test('CentrelineUtils.getLocationsCorridorDescription', () => {
+  let locations = [];
+  expect(getLocationsCorridorDescription(locations)).toBeNull();
+
+  locations = [
+    { description: 'Warden and St Clair' },
+  ];
+  expect(getLocationsCorridorDescription(locations)).toEqual('Warden and St Clair');
+
+  locations = [
+    { description: 'Warden and St Clair' },
+    { description: 'Warden and Bell Estate' },
+  ];
+  expect(getLocationsCorridorDescription(locations)).toEqual(
+    'Warden and St Clair \u2192 Warden and Bell Estate',
+  );
+
+  locations = [
+    { description: 'Warden and St Clair' },
+    { description: 'Warden and Bell Estate' },
+    { description: 'Warden and Cataraqui Cres' },
+  ];
+  expect(getLocationsCorridorDescription(locations)).toEqual(
+    'Warden and St Clair \u2192 Warden and Cataraqui Cres',
+  );
+});
+
 test('CentrelineUtils.getLocationsDescription', () => {
   let locations = [];
   expect(getLocationsDescription(locations)).toBeNull();
@@ -141,6 +171,51 @@ test('CentrelineUtils.getLocationsIconProps', () => {
     { locationIndex: -1, midblock: true },
     { locationIndex: 6, midblock: false },
   ]);
+});
+
+test('CentrelineUtils.getLocationsSelectionDescription', () => {
+  let locations = [];
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.POINTS,
+  })).toBeNull();
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.CORRIDOR,
+  })).toBeNull();
+
+  locations = [
+    { description: 'Warden and St Clair' },
+  ];
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.POINTS,
+  })).toEqual('Warden and St Clair');
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.CORRIDOR,
+  })).toEqual('Warden and St Clair');
+
+  locations = [
+    { description: 'Warden and St Clair' },
+    { description: 'Warden and Bell Estate' },
+  ];
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.POINTS,
+  })).toEqual('Warden and St Clair + 1 location');
+
+  locations = [
+    { description: 'Warden and St Clair' },
+    { description: 'Warden and Bell Estate' },
+    { description: 'Warden and Cataraqui Cres' },
+  ];
+  expect(getLocationsSelectionDescription({
+    locations,
+    selectionType: LocationSelectionType.CORRIDOR,
+  })).toEqual(
+    'Warden and St Clair \u2192 Warden and Cataraqui Cres',
+  );
 });
 
 test('CentrelineUtils.getLocationsWaypointIndices', () => {
