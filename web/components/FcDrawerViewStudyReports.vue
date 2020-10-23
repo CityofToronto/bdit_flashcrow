@@ -236,12 +236,12 @@ export default {
     };
   },
   computed: {
-    activeStudy() {
-      const { indexActiveStudy, studies } = this;
-      if (indexActiveStudy >= studies.length) {
+    activeReportId() {
+      if (this.activeStudy === null) {
         return null;
       }
-      return studies[indexActiveStudy];
+      const { countGroupId, type } = this.activeStudy;
+      return `${type.id}/${countGroupId}`;
     },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;
@@ -249,6 +249,13 @@ export default {
         return null;
       }
       return reportTypes[indexActiveReportType];
+    },
+    activeStudy() {
+      const { indexActiveStudy, studies } = this;
+      if (indexActiveStudy >= studies.length) {
+        return null;
+      }
+      return studies[indexActiveStudy];
     },
     disabledPerLocation() {
       return this.studySummaryPerLocation[0].perLocation.map(
@@ -337,10 +344,10 @@ export default {
     ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
   },
   watch: {
-    activeReportType() {
+    activeReportId() {
       this.updateReportLayout();
     },
-    activeStudy() {
+    activeReportType() {
       this.updateReportLayout();
     },
     async locationActive() {
@@ -378,15 +385,18 @@ export default {
   },
   methods: {
     async actionDownload(format) {
-      const { activeReportType, activeStudy, reportParameters } = this;
-      if (activeReportType === null || activeStudy === null) {
+      const { activeReportId, activeReportType, reportParameters } = this;
+      if (activeReportId === null || activeReportType === null) {
         return;
       }
       this.downloadLoading = true;
 
-      const { countGroupId, type } = activeStudy;
-      const id = `${type.id}/${countGroupId}`;
-      const reportData = await getReport(activeReportType, id, format, reportParameters);
+      const reportData = await getReport(
+        activeReportType,
+        activeReportId,
+        format,
+        reportParameters,
+      );
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
@@ -438,16 +448,18 @@ export default {
       this.updateReportLayout();
     },
     async updateReportLayout() {
-      const { activeReportType, activeStudy, reportParameters } = this;
-      if (activeReportType === null || activeStudy === null) {
+      const { activeReportId, activeReportType, reportParameters } = this;
+      if (activeReportId === null || activeReportType === null) {
         this.reportLayout = null;
         return;
       }
       this.loadingReportLayout = true;
 
-      const { countGroupId, type } = activeStudy;
-      const id = `${type.id}/${countGroupId}`;
-      const reportLayout = await getReportWeb(activeReportType, id, reportParameters);
+      const reportLayout = await getReportWeb(
+        activeReportType,
+        activeReportId,
+        reportParameters,
+      );
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;

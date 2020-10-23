@@ -178,14 +178,8 @@ export default {
     };
   },
   computed: {
-    disabledPerLocation() {
-      return this.collisionSummaryPerLocation.map(({ amount }) => amount === 0);
-    },
-    locationsActive() {
-      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
-        return [this.locationActive];
-      }
-      return this.locations;
+    activeReportId() {
+      return CompositeId.encode(this.locationsActive);
     },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;
@@ -194,6 +188,9 @@ export default {
       }
       return reportTypes[indexActiveReportType];
     },
+    disabledPerLocation() {
+      return this.collisionSummaryPerLocation.map(({ amount }) => amount === 0);
+    },
     itemsDownloadFormats() {
       if (this.downloadLoading || this.loadingReportLayout) {
         return [];
@@ -201,6 +198,12 @@ export default {
       return DOWNLOAD_FORMATS_SUPPORTED
         .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
         .map(({ name }) => ({ label: name, value: name }));
+    },
+    locationsActive() {
+      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
+        return [this.locationActive];
+      }
+      return this.locations;
     },
     locationsIconProps() {
       const locationsIconProps = getLocationsIconProps(
@@ -225,7 +228,7 @@ export default {
     ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
   },
   watch: {
-    locationsActive() {
+    activeReportId() {
       this.updateReportLayout();
     },
     activeReportType() {
@@ -259,10 +262,9 @@ export default {
       }
       this.downloadLoading = true;
 
-      const id = CompositeId.encode(this.locations);
       const reportData = await getReport(
         this.activeReportType,
-        id,
+        this.activeReportId,
         format,
         this.filterParamsCollision,
       );
@@ -306,10 +308,9 @@ export default {
       }
       this.loadingReportLayout = true;
 
-      const id = CompositeId.encode(this.locationsActive);
       const reportLayout = await getReportWeb(
         this.activeReportType,
-        id,
+        this.activeReportId,
         this.filterParamsCollision,
       );
       this.reportLayout = reportLayout;
