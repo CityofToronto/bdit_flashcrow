@@ -120,6 +120,7 @@
           </FcButton>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
+              :loading="loadingDownload"
               type="secondary"
               @download-report-format="actionDownload" />
           </div>
@@ -282,7 +283,7 @@ export default {
       });
     },
     itemsDownloadFormats() {
-      if (this.downloadLoading || this.loadingReportLayout) {
+      if (this.loadingDownload || this.loadingReportLayout) {
         return [];
       }
       return DOWNLOAD_FORMATS_SUPPORTED
@@ -389,7 +390,7 @@ export default {
       if (activeReportId === null || activeReportType === null) {
         return;
       }
-      this.downloadLoading = true;
+      this.loadingDownload = true;
 
       const reportData = await getReport(
         activeReportType,
@@ -400,7 +401,7 @@ export default {
       const filename = `report.${format}`;
       saveAs(reportData, filename);
 
-      this.downloadLoading = false;
+      this.loadingDownload = false;
     },
     actionLeave() {
       this.leaveConfirmed = true;
