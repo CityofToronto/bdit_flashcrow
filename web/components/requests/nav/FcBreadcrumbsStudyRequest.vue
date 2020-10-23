@@ -17,7 +17,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
+import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 
 export default {
   name: 'FcBreadcrumbsStudyRequest',
@@ -50,7 +50,7 @@ export default {
         };
       }
       if (name === 'requestStudyView') {
-        const text = getLocationsDescription(this.locationsSelection.locations);
+        const text = getLocationsSelectionDescription(this.locationsSelection);
         return {
           disabled: true,
           text,

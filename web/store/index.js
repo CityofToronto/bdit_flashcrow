@@ -17,7 +17,7 @@ import {
   putStudyRequest,
   putStudyRequestBulk,
 } from '@/lib/api/WebApi';
-import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
+import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
@@ -145,12 +145,10 @@ export default new Vuex.Store({
       return state.locations[state.locationsIndex];
     },
     locationsDescription(state) {
-      const { locations } = state.locationsSelection;
-      return getLocationsDescription(locations);
+      return getLocationsSelectionDescription(state.locationsSelection);
     },
     locationsEditDescription(state) {
-      const { locations } = state.locationsEditSelection;
-      return getLocationsDescription(locations);
+      return getLocationsSelectionDescription(state.locationsEditSelection);
     },
     locationsEditEmpty(state) {
       return state.locationsEditSelection.locations.length === 0;

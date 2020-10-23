@@ -51,7 +51,7 @@
 import { mapGetters, mapState } from 'vuex';
 
 import { AuthScope, LocationMode } from '@/lib/Constants';
-import { getLocationsDescription } from '@/lib/geo/CentrelineUtils';
+import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -173,13 +173,13 @@ export default {
         return this.studyRequest.name;
       }
       if (name === 'requestStudyNew' || name === 'requestStudyView') {
-        return getLocationsDescription(this.locationsSelection.locations);
+        return getLocationsSelectionDescription(this.locationsSelection);
       }
       if (name === 'requestStudyBulkEdit') {
         return this.studyRequest.name;
       }
       if (name === 'requestStudyEdit') {
-        return getLocationsDescription(this.locationsSelection.locations);
+        return getLocationsSelectionDescription(this.locationsSelection);
       }
       return null;
     },
