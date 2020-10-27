@@ -23,6 +23,30 @@ function expectSuggestionsContain(result, centrelineId) {
   expect(suggestedIds).toContain(centrelineId);
 }
 
+test('LocationController.getCompositeId', async () => {
+  const features = [
+    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  const data = {
+    centrelineId: features.map(({ centrelineId }) => centrelineId),
+    centrelineType: features.map(({ centrelineType }) => centrelineType),
+  };
+  const response = await client.fetch('/locations/compositeId', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  const { s1 } = response.result;
+  expect(CompositeId.decode(s1)).toEqual(features);
+});
+
+test('LocationController.getCompositeId [length mismatch]', async () => {
+  const data = {
+    centrelineId: [30000549, 111569],
+    centrelineType: [CentrelineType.SEGMENT],
+  };
+  const response = await client.fetch('/locations/compositeId', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
 test('LocationController.getLocationSuggestions', async () => {
   const data = {
     q: 'Danforth and Main',
@@ -56,4 +80,35 @@ test('LocationController.getLocationsByCentreline', async () => {
   response.result.forEach(({ centrelineId, centrelineType }, i) => {
     expect({ centrelineId, centrelineType }).toEqual(features[i]);
   });
+});
+
+test('LocationController.getLocationsByCorridor [empty]', async () => {
+  const features = [];
+  const s1 = CompositeId.encode(features);
+  const data = { s1 };
+  const response = await client.fetch('/locations/byCorridor', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
+});
+
+test('LocationController.getLocationsByCorridor [short corridor]', async () => {
+  const features = [
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT },
+  ];
+  let s1 = CompositeId.encode(features);
+  const data = { s1 };
+  const response = await client.fetch('/locations/byCorridor', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  const locations = response.result;
+  s1 = CompositeId.encode(locations);
+  expect(CompositeId.decode(s1)).toEqual([
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    features[1],
+  ]);
 });
