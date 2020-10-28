@@ -20,10 +20,10 @@ module.exports = {
       statements: 60,
     },
     'lib/controller': {
-      branches: 20,
-      functions: 40,
-      lines: 40,
-      statements: 40,
+      branches: 50,
+      functions: 60,
+      lines: 60,
+      statements: 60,
     },
     'lib/db': {
       branches: 75,
