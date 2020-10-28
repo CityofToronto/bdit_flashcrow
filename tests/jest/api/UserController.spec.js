@@ -85,11 +85,6 @@ test('UserController.getUsersByIds', async () => {
 });
 
 test('UserController.putUser', async () => {
-  // `GET /auth` to force generation of CSRF token
-  client.setUser(null);
-  let response = await client.fetch('/auth');
-  expect(client.csrf).not.toBeNull();
-
   const transientAdmin = generateUser([AuthScope.ADMIN]);
   const admin = await UserDAO.create(transientAdmin);
 
@@ -99,7 +94,7 @@ test('UserController.putUser', async () => {
   // non-admin users cannot change their own details!
   client.setUser(user);
   user.scope = [AuthScope.STUDY_REQUESTS, AuthScope.STUDY_REQUESTS_ADMIN];
-  response = await client.fetch(`/users/${user.id}`, {
+  let response = await client.fetch(`/users/${user.id}`, {
     method: 'PUT',
     data: user,
   });

@@ -16,6 +16,8 @@ import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 import WebServer from '@/web/WebServer';
 
+jest.mock('@/lib/email/Mailer');
+
 let server;
 let client;
 
@@ -30,11 +32,6 @@ afterAll(async () => {
 }, 60000);
 
 test('StudyRequestController', async () => {
-  // `GET /auth` to force generation of CSRF token
-  client.setUser(null);
-  let response = await client.fetch('/auth');
-  expect(client.csrf).not.toBeNull();
-
   // requester can create requests and edit their own requests
   const transientRequester = generateUser([AuthScope.STUDY_REQUESTS]);
   const requester = await UserDAO.create(transientRequester);
@@ -80,7 +77,7 @@ test('StudyRequestController', async () => {
 
   // requester can create request
   client.setUser(requester);
-  response = await client.fetch('/requests/study', {
+  let response = await client.fetch('/requests/study', {
     method: 'POST',
     data: transientStudyRequest,
   });
