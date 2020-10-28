@@ -112,3 +112,40 @@ test('LocationController.getLocationsByCorridor [short corridor]', async () => {
     features[1],
   ]);
 });
+
+test('LocationController.getLocationsByCorridor [too many input features]', async () => {
+  const features = [
+    { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  const s1 = CompositeId.encode(features);
+  const data = { s1 };
+  const response = await client.fetch('/locations/byCorridor', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
+test('LocationController.getLocationsByCorridor [too many output features]', async () => {
+  const features = [
+    { centrelineId: 13463436, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13459445, centrelineType: CentrelineType.INTERSECTION },
+  ];
+  const s1 = CompositeId.encode(features);
+  const data = { s1 };
+  const response = await client.fetch('/locations/byCorridor', { data });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
+test('LocationController.getLocationsByCorridor [no corridor found]', async () => {
+  const features = [
+    { centrelineId: 30106479, centrelineType: CentrelineType.SEGMENT },
+    { centrelineId: 13232810, centrelineType: CentrelineType.SEGMENT },
+  ];
+  const s1 = CompositeId.encode(features);
+  const data = { s1 };
+  const response = await client.fetch('/locations/byCorridor', { data });
+  expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
+});

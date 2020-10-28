@@ -47,3 +47,23 @@ test('StorageController.getStorage', async () => {
   response = await client.fetch(`/storage/${namespace}/${key}`);
   expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
 });
+
+test('StorageController.getStorage [no extension]', async () => {
+  const transientUser = generateUser();
+  const persistedUser = await UserDAO.create(transientUser);
+  client.setUser(persistedUser);
+
+  const namespace = 'test';
+  const uuid = uuidv4();
+  const key = `StorageController-${uuid}`;
+  const value = 'a,b\n42,foo';
+  const bufValue = Buffer.from(value);
+  await storageStrategy.put(namespace, key, bufValue);
+
+  const response = await client.fetch(`/storage/${namespace}/${key}`);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.headers['content-type']).toEqual('application/octet-stream');
+  expect(response.result).toEqual(value);
+
+  await storageStrategy.delete(namespace, key);
+});
