@@ -1,22 +1,44 @@
 import {
   AuthScope,
-  CentrelineType,
   HttpStatus,
   StudyHours,
   StudyRequestReason,
   StudyRequestStatus,
-  StudyType,
 } from '@/lib/Constants';
 import config from '@/lib/config/MoveConfig';
 import db from '@/lib/db/db';
+import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
+import Mailer from '@/lib/email/Mailer';
 import CompositeId from '@/lib/io/CompositeId';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
+import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
-import DateTime from '@/lib/time/DateTime';
 import WebServer from '@/web/WebServer';
 
+jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/email/Mailer');
+
+let requester;
+let supervisor;
+let ett1;
+
+async function initUsers() {
+  // requester can create requests and edit their own requests
+  const transientRequester = generateUser([AuthScope.STUDY_REQUESTS]);
+  requester = await UserDAO.create(transientRequester);
+
+  // supervisors can manage all requests
+  const transientSupervisor = generateUser([
+    AuthScope.STUDY_REQUESTS,
+    AuthScope.STUDY_REQUESTS_ADMIN,
+  ]);
+  supervisor = await UserDAO.create(transientSupervisor);
+
+  // other ETT1s have edit powers, but only on their own requests
+  const transientETT1 = generateUser([AuthScope.STUDY_REQUESTS]);
+  ett1 = await UserDAO.create(transientETT1);
+}
 
 let server;
 let client;
@@ -25,64 +47,36 @@ beforeAll(async () => {
   const webServer = new WebServer({ port: config.port });
   server = await webServer.initialize();
   client = new InjectBackendClient(server);
+
+  await initUsers();
 }, 60000);
 afterAll(async () => {
   await server.stop();
   db.$pool.end();
 }, 60000);
 
-test('StudyRequestController', async () => {
-  // requester can create requests and edit their own requests
-  const transientRequester = generateUser([AuthScope.STUDY_REQUESTS]);
-  const requester = await UserDAO.create(transientRequester);
+function mockDAOsForStudyRequest(studyRequest) {
+  const { centrelineId, centrelineType, geom } = studyRequest;
+  CentrelineDAO.byFeature.mockResolvedValue({
+    centrelineId,
+    centrelineType,
+    description: 'Mocked location description',
+    geom,
+  });
+}
 
-  // supervisors can manage all requests
-  const transientSupervisor = generateUser([
-    AuthScope.STUDY_REQUESTS,
-    AuthScope.STUDY_REQUESTS_ADMIN,
-  ]);
-  const supervisor = await UserDAO.create(transientSupervisor);
+test('StudyRequestController.postStudyRequest', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
 
-  // other ETT1s have edit powers, but only on their own requests
-  const transientETT1 = generateUser([
-    AuthScope.STUDY_REQUESTS,
-  ]);
-  const ett1 = await UserDAO.create(transientETT1);
-
-  const now = DateTime.local();
-  const transientStudyRequest = {
-    urgent: false,
-    urgentReason: null,
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reason: StudyRequestReason.PED_SAFETY,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.TMC,
-    daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: StudyHours.ROUTINE,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 13459445,
-    centrelineType: CentrelineType.INTERSECTION,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.333251, 43.709012],
-    },
-  };
-  const features = [
-    { centrelineId: 13459445, centrelineType: CentrelineType.INTERSECTION },
-  ];
-  const s1 = CompositeId.encode(features);
-
-  // requester can create request
   client.setUser(requester);
   let response = await client.fetch('/requests/study', {
     method: 'POST',
     data: transientStudyRequest,
   });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  let persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalled();
+  const persistedStudyRequest = response.result;
   expect(persistedStudyRequest.id).not.toBeNull();
   expect(persistedStudyRequest.userId).toBe(requester.id);
   expect(persistedStudyRequest.status).toBe(StudyRequestStatus.REQUESTED);
@@ -94,9 +88,21 @@ test('StudyRequestController', async () => {
     data: persistedStudyRequest,
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
+test('StudyRequestController.getStudyRequest', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  const persistedStudyRequest = response.result;
 
   // cannot fetch non-existent study request
-  response = await client.fetch('/requests/study/1234567890');
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id + 1000}`);
   expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
 
   // requester can fetch their own study request
@@ -118,6 +124,19 @@ test('StudyRequestController', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+});
+
+test('StudyRequestController.getStudyRequestsByCentrelinePending [non-bulk]', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  const persistedStudyRequest = response.result;
+  const s1 = CompositeId.encode([persistedStudyRequest]);
 
   // requester can fetch by centreline pending
   const data = { s1 };
@@ -140,12 +159,24 @@ test('StudyRequestController', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
+});
+
+test('StudyRequestController.getStudyRequests', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  const persistedStudyRequest = response.result;
 
   // requester can fetch all
   client.setUser(requester);
   response = await client.fetch('/requests/study');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequests = response.result;
+  let fetchedStudyRequests = response.result;
   expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
 
   // other ETT1s can fetch all
@@ -161,6 +192,18 @@ test('StudyRequestController', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
   expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
+});
+
+test('StudyRequestController.putStudyRequest', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  let persistedStudyRequest = response.result;
 
   // update study request fields
   persistedStudyRequest.reason = StudyRequestReason.OTHER;
@@ -201,7 +244,7 @@ test('StudyRequestController', async () => {
 
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequest = response.result;
+  let fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
   expect(fetchedStudyRequest.lastEditorId).toEqual(requester.id);
 
