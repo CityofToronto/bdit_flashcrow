@@ -2,6 +2,7 @@ import {
   AuthScope,
   HttpStatus,
   StudyHours,
+  StudyRequestAssignee,
   StudyRequestReason,
   StudyRequestStatus,
   StudyType,
@@ -15,6 +16,7 @@ import CompositeId from '@/lib/io/CompositeId';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
 import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
+import DateTime from '@/lib/time/DateTime';
 import WebServer from '@/web/WebServer';
 
 jest.mock('@/lib/db/CentrelineDAO');
@@ -272,4 +274,179 @@ test('StudyRequestController.putStudyRequest', async () => {
   fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
   expect(fetchedStudyRequest.lastEditorId).toEqual(supervisor.id);
+});
+
+test('StudyRequestController.putStudyRequest [read-only fields]', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  const persistedStudyRequest = response.result;
+
+  // cannot change ID
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      id: persistedStudyRequest.id + 1000,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // cannot change createdAt
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      createdAt: DateTime.local().minus({ weeks: 3 }),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // cannot change requester ID
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      userId: supervisor.id,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // cannot change lastEditorId
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      lastEditorId: ett1.id,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // cannot change lastEditedAt
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      lastEditedAt: DateTime.local().minus({ weeks: 3 }),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
+test('StudyRequestController.putStudyRequest [status changes]', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  let persistedStudyRequest = response.result;
+
+  // requester can cancel request
+  persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
+  persistedStudyRequest.closed = true;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+
+  // requester can reopen request
+  persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
+  persistedStudyRequest.closed = false;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+
+  // requester cannot request changes
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      status: StudyRequestStatus.CHANGES_NEEDED,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
+  // supervisor can request changes
+  client.setUser(supervisor);
+  persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+
+  // requester cannot assign
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      status: StudyRequestStatus.ASSIGNED,
+      assignedTo: StudyRequestAssignee.FIELD_STAFF,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
+  // supervisor can assign
+  client.setUser(supervisor);
+  persistedStudyRequest.status = StudyRequestStatus.ASSIGNED;
+  persistedStudyRequest.assignedTo = StudyRequestAssignee.FIELD_STAFF;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+
+  // requester cannot re-assign
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      assignedTo: StudyRequestAssignee.OTI,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
+  // supervisor can re-assign
+  client.setUser(supervisor);
+  persistedStudyRequest.assignedTo = StudyRequestAssignee.OTI;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+
+  // supervisor cannot make invalid transition
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      status: StudyRequestStatus.CHANGES_NEEDED,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });
