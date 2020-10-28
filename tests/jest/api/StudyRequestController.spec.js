@@ -4,6 +4,7 @@ import {
   StudyHours,
   StudyRequestReason,
   StudyRequestStatus,
+  StudyType,
 } from '@/lib/Constants';
 import config from '@/lib/config/MoveConfig';
 import db from '@/lib/db/db';
@@ -250,7 +251,9 @@ test('StudyRequestController.putStudyRequest', async () => {
 
   // update more study request fields and set urgent
   persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
-  persistedStudyRequest.daysOfWeek = [3, 4];
+  persistedStudyRequest.daysOfWeek = [1, 3, 4, 5];
+  persistedStudyRequest.studyType = StudyType.TMC;
+  persistedStudyRequest.duration = null;
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
   persistedStudyRequest.urgent = true;
