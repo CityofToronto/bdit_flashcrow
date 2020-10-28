@@ -129,7 +129,7 @@ test('StudyRequestController.getStudyRequest', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 });
 
-test('StudyRequestController.getStudyRequestsByCentrelinePending [non-bulk]', async () => {
+test('StudyRequestController.getStudyRequestsByCentrelinePending', async () => {
   const transientStudyRequest = generateStudyRequest();
   mockDAOsForStudyRequest(transientStudyRequest);
 
