@@ -20,13 +20,14 @@ const vueConfig = {
        * This header is slightly different from that used in production in two ways:
        *
        * - we allow `move.intra.dev-toronto.ca` as a `connect-src`, as we load several map assets
-       *   from the dev environment in local development;
+       *   from the dev environment in local development (but load them from `'self'` in
+       *   production);
        * - we allow `'unsafe-eval'` as a `script-src`, as this is needed by Vue in development
        *   (but not in production).
        *
        * Note that these two changes are *not* present in our `nginx` configs.
        */
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; font-src 'self' fonts.gstatic.com; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com; worker-src 'self' blob:",
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src-elem 'self' 'unsafe-inline'; worker-src 'self' blob:",
     },
     historyApiFallback: true,
     host: '0.0.0.0',
