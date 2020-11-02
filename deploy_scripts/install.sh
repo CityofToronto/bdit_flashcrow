@@ -20,7 +20,7 @@ if command -v nvm > /dev/null 2>&1; then
   echo "nvm already installed, skipping..."
 else
   echo "installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
   # ensure that nvm shims are available in current shell session
   export NVM_DIR="$HOME/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
