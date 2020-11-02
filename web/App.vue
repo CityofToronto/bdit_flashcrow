@@ -40,6 +40,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
+import '@mdi/font/css/materialdesignicons.css';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@/web/css/main.scss';
 

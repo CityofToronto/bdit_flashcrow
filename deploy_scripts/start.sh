@@ -21,7 +21,7 @@ mkdir -p /home/ec2-user/log/flashcrow
 # install node dependencies
 cd /home/ec2-user/flashcrow
 nvm use
-npm ci --only=production
+npm ci
 
 # build static files into dist
 npm run frontend:build

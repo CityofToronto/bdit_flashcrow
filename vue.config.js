@@ -26,7 +26,7 @@ const vueConfig = {
        *
        * Note that these two changes are *not* present in our `nginx` configs.
        */
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; font-src 'self' cdn.jsdelivr.net fonts.gstatic.com; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src-elem 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; worker-src 'self' blob:",
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; font-src 'self' fonts.gstatic.com; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src-elem 'self' 'unsafe-inline' fonts.googleapis.com; worker-src 'self' blob:",
     },
     historyApiFallback: true,
     host: '0.0.0.0',

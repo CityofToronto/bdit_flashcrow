@@ -39,6 +39,9 @@ Vue.config.productionTip = false;
  * This offers us flexibility in developing a standard look-and-feel across the application.
  */
 const vuetify = new Vuetify({
+  icons: {
+    iconfont: 'mdi',
+  },
   lang: {
     locales: { en },
     current: 'en',
