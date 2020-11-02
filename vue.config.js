@@ -25,7 +25,7 @@ const vueConfig = {
        *   production;
        * - we allow `'unsafe-eval'` as a `script-src` in development, but load scripts from
        *   `self` in production;
-       * - we allow `'unsafe-inline'` as a `style-src-elem` in development, but use a nonce in
+       * - we allow `'unsafe-inline'` as a `style-src` in development, but use a nonce in
        *   production.
        */
       'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
