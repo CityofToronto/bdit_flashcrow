@@ -17,17 +17,18 @@ const vueConfig = {
   devServer: {
     headers: {
       /*
-       * This header is slightly different from that used in production in two ways:
+       * This header is slightly different from that used in our production `nginx` configs
+       * in a few ways:
        *
-       * - we allow `move.intra.dev-toronto.ca` as a `connect-src`, as we load several map assets
-       *   from the dev environment in local development (but load them from `'self'` in
-       *   production);
-       * - we allow `'unsafe-eval'` as a `script-src`, as this is needed by Vue in development
-       *   (but not in production).
-       *
-       * Note that these two changes are *not* present in our `nginx` configs.
+       * - we allow `move.intra.dev-toronto.ca` as a `connect-src` to load map assets
+       *   from the dev environment in development, but load these assets from `'self'` in
+       *   production;
+       * - we allow `'unsafe-eval'` as a `script-src` in development, but load scripts from
+       *   `self` in production;
+       * - we allow `'unsafe-inline'` as a `style-src-elem` in development, but use a nonce in
+       *   production.
        */
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src-elem 'self' 'unsafe-inline'; worker-src 'self' blob:",
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io move.intra.dev-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
     },
     historyApiFallback: true,
     host: '0.0.0.0',

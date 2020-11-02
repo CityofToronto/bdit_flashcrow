@@ -25,6 +25,15 @@ Vue.filter('username', formatUsername);
 
 Vue.config.productionTip = false;
 
+function getCspNonce() {
+  const $cspNonce = document.querySelector('meta[name=csp-nonce]');
+  if ($cspNonce === null) {
+    return null;
+  }
+  return $cspNonce.getAttribute('content');
+}
+const cspNonce = getCspNonce();
+
 /*
  * Vuetify offers two major entry points to customization: SASS variables (as in
  * `styles/variables.scss`) and JavaScript options.
@@ -48,6 +57,7 @@ const vuetify = new Vuetify({
   },
   theme: {
     options: {
+      cspNonce,
       customProperties: true,
     },
     themes: {
