@@ -15,8 +15,7 @@ test-coverage:
   before_script:
     - nvm install
     - nvm use
-    - npm install -g pnpm
-    - pnpm install
+    - npm ci
     - cp -r /home/ec2-user/config-private/* .
   script:
     - npm run test:db-startup
@@ -31,8 +30,7 @@ test-ci-rest:
   before_script:
     - nvm install
     - nvm use
-    - npm install -g pnpm
-    - pnpm install
+    - npm ci
     - cp -r /home/ec2-user/config-private/* .
   script:
     - npm run ci:npm-audit
