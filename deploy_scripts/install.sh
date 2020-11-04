@@ -7,13 +7,6 @@ set +u
 source /home/ec2-user/.bash_profile
 set -u
 
-# section: enable_amazon_linux_extras
-sudo amazon-linux-extras enable nginx1.12
-
-# section: install_base
-sudo yum update -y
-sudo yum install -y nginx postgresql postgresql-contrib
-
 # section: pre_install_flashcrow
 ## /install_node.sh
 if command -v nvm > /dev/null 2>&1; then
