@@ -3,24 +3,25 @@
 
 set -euo pipefail
 
-set +u
-source /home/ec2-user/.bash_profile
-set -u
+# copy repo to /var/app/flashcrow
+sudo rm -rf /var/app/flashcrow
+sudo cp -R ~ec2-user/flashcrow /var/app
 
-# copy private config to repo
-cp -r /home/ec2-user/flashcrow.config.js /home/ec2-user/flashcrow/lib/config/private.js
+# copy private / forever configs to /var/app/flashcrow
+sudo chown -R ec2-user:ec2-user /var/app/flashcrow
+cp -r /home/ec2-user/flashcrow.config.js /var/app/flashcrow/lib/config/private.js
+cp /var/app/flashcrow/scripts/deployment/web/forever.json /var/app/flashcrow/forever.json
 
-# copy nginx / forever configs from repo
+# copy nginx configs to /etc/nginx
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/nginx.conf /etc/nginx/
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/default.d/*.conf /etc/nginx/default.d/
-cp /home/ec2-user/flashcrow/scripts/deployment/web/forever.json /home/ec2-user/forever.json
 
 # make log directory
-mkdir -p /home/ec2-user/log/flashcrow
+sudo mkdir -p /var/app/log
 
 # install node dependencies
-cd /home/ec2-user/flashcrow
-nvm use
+cd /var/app/flashcrow
+export PATH="/var/app/nodejs/bin:$PATH"
 npm ci
 
 # build static files into dist
@@ -34,11 +35,12 @@ sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 # update database
 . /home/ec2-user/psqlArgs.config
 # shellcheck disable=SC2154
-/home/ec2-user/flashcrow/scripts/db/db-update.sh --psqlArgs "$psqlArgs"
+/var/app/flashcrow/scripts/db/db-update.sh --psqlArgs "$psqlArgs"
 
 # start flashcrow
+cd /var/app/flashcrow
 # shellcheck disable=SC2046
-env $(xargs < /home/ec2-user/cot-env.config) NODE_ENV=production NODE_EXTRA_CA_CERTS=/home/ec2-user/flashcrow/ssl/extra-ca-certs.cer forever start /home/ec2-user/forever.json
+sudo -u appsvc env $(xargs < /var/app/config/cot-env.config) PATH="$PATH" NODE_ENV=production NODE_EXTRA_CA_CERTS=/var/app/ssl/extra-ca-certs.cer forever start /var/app/flashcrow/forever.json
 
 # need to restart nginx
 sudo service nginx restart
