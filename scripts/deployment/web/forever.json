@@ -5,11 +5,11 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "web/web.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
-    "pidFile": "/home/ec2-user/log/flashcrow/web.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/web.log",
-    "outFile": "/home/ec2-user/log/flashcrow/web.out",
-    "errFile": "/home/ec2-user/log/flashcrow/web.err"
+    "sourceDir": "/var/app/flashcrow",
+    "pidFile": "/var/app/log/web.pid",
+    "logFile": "/var/app/log/web.log",
+    "outFile": "/var/app/log/web.out",
+    "errFile": "/var/app/log/web.err"
   },
   {
     "id": "reporter-0",
@@ -17,12 +17,12 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "reporter/reporter.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8200],
-    "pidFile": "/home/ec2-user/log/flashcrow/reporter-0.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/reporter.log",
-    "outFile": "/home/ec2-user/log/flashcrow/reporter.out",
-    "errFile": "/home/ec2-user/log/flashcrow/reporter.err"
+    "pidFile": "/var/app/log/reporter-0.pid",
+    "logFile": "/var/app/log/reporter.log",
+    "outFile": "/var/app/log/reporter.out",
+    "errFile": "/var/app/log/reporter.err"
   },
   {
     "id": "reporter-1",
@@ -30,12 +30,12 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "reporter/reporter.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8201],
-    "pidFile": "/home/ec2-user/log/flashcrow/reporter-1.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/reporter.log",
-    "outFile": "/home/ec2-user/log/flashcrow/reporter.out",
-    "errFile": "/home/ec2-user/log/flashcrow/reporter.err"
+    "pidFile": "/var/app/log/reporter-1.pid",
+    "logFile": "/var/app/log/reporter.log",
+    "outFile": "/var/app/log/reporter.out",
+    "errFile": "/var/app/log/reporter.err"
   },
   {
     "id": "reporter-2",
@@ -43,12 +43,12 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "reporter/reporter.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8202],
-    "pidFile": "/home/ec2-user/log/flashcrow/reporter-2.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/reporter.log",
-    "outFile": "/home/ec2-user/log/flashcrow/reporter.out",
-    "errFile": "/home/ec2-user/log/flashcrow/reporter.err"
+    "pidFile": "/var/app/log/reporter-2.pid",
+    "logFile": "/var/app/log/reporter.log",
+    "outFile": "/var/app/log/reporter.out",
+    "errFile": "/var/app/log/reporter.err"
   },
   {
     "id": "reporter-3",
@@ -56,12 +56,12 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "reporter/reporter.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8203],
-    "pidFile": "/home/ec2-user/log/flashcrow/reporter-3.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/reporter.log",
-    "outFile": "/home/ec2-user/log/flashcrow/reporter.out",
-    "errFile": "/home/ec2-user/log/flashcrow/reporter.err"
+    "pidFile": "/var/app/log/reporter-3.pid",
+    "logFile": "/var/app/log/reporter.log",
+    "outFile": "/var/app/log/reporter.out",
+    "errFile": "/var/app/log/reporter.err"
   },
   {
     "id": "scheduler",
@@ -69,11 +69,11 @@
     "watch": false,
     "command": "node -r ./globalWindowShim -r esm -r module-alias/register",
     "script": "scheduler/scheduler.js",
-    "sourceDir": "/home/ec2-user/flashcrow",
+    "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8300],
-    "pidFile": "/home/ec2-user/log/flashcrow/scheduler.pid",
-    "logFile": "/home/ec2-user/log/flashcrow/scheduler.log",
-    "outFile": "/home/ec2-user/log/flashcrow/scheduler.out",
-    "errFile": "/home/ec2-user/log/flashcrow/scheduler.err"
+    "pidFile": "/var/app/log/scheduler.pid",
+    "logFile": "/var/app/log/scheduler.log",
+    "outFile": "/var/app/log/scheduler.out",
+    "errFile": "/var/app/log/scheduler.err"
   }
 ]

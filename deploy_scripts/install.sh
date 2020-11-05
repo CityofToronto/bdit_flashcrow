@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-npm install -g forever
+echo "Nothing to install."

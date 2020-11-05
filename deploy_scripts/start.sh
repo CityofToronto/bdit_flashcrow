@@ -10,7 +10,6 @@ sudo cp -R ~ec2-user/flashcrow /var/app
 # copy private / forever configs to /var/app/flashcrow
 sudo chown -R ec2-user:ec2-user /var/app/flashcrow
 cp -r /home/ec2-user/flashcrow.config.js /var/app/flashcrow/lib/config/private.js
-cp /var/app/flashcrow/scripts/deployment/web/forever.json /var/app/flashcrow/forever.json
 
 # copy nginx configs to /etc/nginx
 sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/nginx.conf /etc/nginx/
@@ -23,6 +22,7 @@ sudo mkdir -p /var/app/log
 cd /var/app/flashcrow
 export PATH="/var/app/nodejs/bin:$PATH"
 npm ci
+npm install -g forever
 
 # build static files into dist
 npm run frontend:build
@@ -40,7 +40,7 @@ sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 # start flashcrow
 cd /var/app/flashcrow
 # shellcheck disable=SC2046
-sudo -u appsvc env $(xargs < /var/app/config/cot-env.config) PATH="$PATH" NODE_ENV=production NODE_EXTRA_CA_CERTS=/var/app/ssl/extra-ca-certs.cer forever start /var/app/flashcrow/forever.json
+sudo -u appsvc env $(xargs < /var/app/config/cot-env.config) PATH="$PATH" NODE_ENV=production NODE_EXTRA_CA_CERTS=/var/app/ssl/extra-ca-certs.cer forever start /var/app/flashcrow/scripts/deployment/web/forever.json
 
 # need to restart nginx
 sudo service nginx restart
