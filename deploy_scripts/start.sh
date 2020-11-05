@@ -17,6 +17,11 @@ sudo cp /home/ec2-user/flashcrow/scripts/deployment/web/nginx/default.d/*.conf /
 
 # make log directory
 sudo mkdir -p /var/app/log
+sudo chown -R appsvc:appsvc /var/app/log
+
+# make move-storage directory
+sudo mkdir -p /data/move-storage
+sudo chown -R appsvc:appsvc /data/move-storage
 
 # install node dependencies
 cd /var/app/flashcrow
