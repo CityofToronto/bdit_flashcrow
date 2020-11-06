@@ -26,7 +26,7 @@ npm run docs:build
 
 # copy to web root
 sudo rm -rf /usr/share/nginx/html/flashcrow
-sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
+sudo cp -r /var/app/flashcrow/dist /usr/share/nginx/html/flashcrow
 
 # update database
 . /home/ec2-user/psqlArgs.config
@@ -37,3 +37,6 @@ sudo cp -r /home/ec2-user/flashcrow/dist /usr/share/nginx/html/flashcrow
 cd /var/app/flashcrow
 # shellcheck disable=SC2046
 sudo -u appsvc env $(xargs < /var/app/config/cot-env.config) PATH="$PATH" NODE_ENV=production NODE_EXTRA_CA_CERTS=/var/app/ssl/extra-ca-certs.cer forever start /var/app/flashcrow/scripts/deployment/web/forever.json
+
+# restart nginx, in case old file descriptors are open
+sudo service nginx restart
