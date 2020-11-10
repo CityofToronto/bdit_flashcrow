@@ -13,7 +13,6 @@
           v-model="valueFormatted"
           append-icon="mdi-calendar"
           offset-y
-          outlined
           v-bind="{ ...attrs, ...$attrs }"
           @blur="resetValueFormatted"
           @input="updateValueFormatted"
@@ -99,6 +98,9 @@ export default {
   },
   computed: {
     color() {
+      if (this.$attrs.disabled) {
+        return 'unselected';
+      }
       if (this.$attrs.success) {
         return 'success';
       }

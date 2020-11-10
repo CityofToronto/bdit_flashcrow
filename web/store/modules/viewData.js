@@ -6,14 +6,18 @@ export default {
   state: {
     detailView: false,
     filtersCollision: {
-      datesFrom: -1,
+      applyDateRange: false,
+      dateRangeStart: null,
+      dateRangeEnd: null,
       daysOfWeek: [],
       emphasisAreas: [],
       hoursOfDay: [0, 24],
       roadSurfaceConditions: [],
     },
     filtersStudy: {
-      datesFrom: -1,
+      applyDateRange: false,
+      dateRangeStart: null,
+      dateRangeEnd: null,
       daysOfWeek: [],
       hours: [],
       studyTypes: [],
@@ -22,7 +26,8 @@ export default {
   getters: {
     filterChipsCollision(state) {
       const {
-        datesFrom,
+        dateRangeStart,
+        dateRangeEnd,
         daysOfWeek,
         emphasisAreas,
         hoursOfDay,
@@ -35,10 +40,13 @@ export default {
         const filterChip = { filter: 'emphasisAreas', label, value };
         filterChipsCollision.push(filterChip);
       });
-      if (datesFrom !== -1) {
-        const label = `Collisions \u2264 ${datesFrom} years`;
-        const value = datesFrom;
-        const filterChip = { filter: 'datesFrom', label, value };
+      if (dateRangeStart !== null && dateRangeEnd !== null) {
+        const label = TimeFormatters.formatRangeDate({
+          start: dateRangeStart,
+          end: dateRangeEnd,
+        });
+        const value = { dateRangeStart, dateRangeEnd };
+        const filterChip = { filter: 'dateRange', label, value };
         filterChipsCollision.push(filterChip);
       }
       daysOfWeek.forEach((value) => {
@@ -63,7 +71,8 @@ export default {
     },
     filterChipsStudy(state) {
       const {
-        datesFrom,
+        dateRangeStart,
+        dateRangeEnd,
         daysOfWeek,
         hours,
         studyTypes,
@@ -79,10 +88,13 @@ export default {
         const filterChip = { filter: 'daysOfWeek', label, value };
         filterChipsStudy.push(filterChip);
       });
-      if (datesFrom !== -1) {
-        const label = `Studies \u2264 ${datesFrom} years`;
-        const value = datesFrom;
-        const filterChip = { filter: 'datesFrom', label, value };
+      if (dateRangeStart !== null && dateRangeEnd !== null) {
+        const label = TimeFormatters.formatRangeDate({
+          start: dateRangeStart,
+          end: dateRangeEnd,
+        });
+        const value = { dateRangeStart, dateRangeEnd };
+        const filterChip = { filter: 'dateRange', label, value };
         filterChipsStudy.push(filterChip);
       }
       hours.forEach((studyHours) => {
@@ -92,19 +104,19 @@ export default {
       });
       return filterChipsStudy;
     },
-    filterParamsCollision(state, getters, rootState) {
+    filterParamsCollision(state) {
       const {
-        datesFrom,
+        dateRangeStart,
+        dateRangeEnd,
         daysOfWeek,
         emphasisAreas,
         hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
         roadSurfaceConditions,
       } = state.filtersCollision;
       const params = {};
-      if (datesFrom !== -1) {
-        const { now } = rootState;
-        params.dateRangeStart = now.minus({ years: datesFrom });
-        params.dateRangeEnd = now;
+      if (dateRangeStart !== null && dateRangeEnd !== null) {
+        params.dateRangeStart = dateRangeStart;
+        params.dateRangeEnd = dateRangeEnd;
       }
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
@@ -121,18 +133,18 @@ export default {
       }
       return params;
     },
-    filterParamsStudy(state, getters, rootState) {
+    filterParamsStudy(state) {
       const {
-        datesFrom,
+        dateRangeStart,
+        dateRangeEnd,
         daysOfWeek,
         hours,
         studyTypes,
       } = state.filtersStudy;
       const params = {};
-      if (datesFrom !== -1) {
-        const { now } = rootState;
-        params.dateRangeStart = now.minus({ years: datesFrom });
-        params.dateRangeEnd = now;
+      if (dateRangeStart !== null && dateRangeEnd !== null) {
+        params.dateRangeStart = dateRangeStart;
+        params.dateRangeEnd = dateRangeEnd;
       }
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
@@ -154,8 +166,9 @@ export default {
   },
   mutations: {
     removeFilterCollision(state, { filter, value }) {
-      if (filter === 'datesFrom') {
-        state.filtersCollision.datesFrom = -1;
+      if (filter === 'dateRange') {
+        state.filtersCollision.dateRangeStart = null;
+        state.filtersCollision.dateRangeEnd = null;
       } else if (filter === 'hoursOfDay') {
         state.filtersCollision.hoursOfDay = [0, 24];
       } else {
@@ -167,8 +180,9 @@ export default {
       }
     },
     removeFilterStudy(state, { filter, value }) {
-      if (filter === 'datesFrom') {
-        state.filtersStudy.datesFrom = -1;
+      if (filter === 'dateRange') {
+        state.filtersCollision.dateRangeStart = null;
+        state.filtersCollision.dateRangeEnd = null;
       } else {
         const values = state.filtersStudy[filter];
         const i = values.indexOf(value);

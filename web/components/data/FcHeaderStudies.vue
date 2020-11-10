@@ -9,7 +9,7 @@
       <FcDialogStudyFilters
         v-if="showFiltersStudy"
         v-model="showFiltersStudy"
-        v-bind="filtersStudy"
+        :filters="filtersStudy"
         @set-filters="setFiltersStudy">
       </FcDialogStudyFilters>
       <FcButton

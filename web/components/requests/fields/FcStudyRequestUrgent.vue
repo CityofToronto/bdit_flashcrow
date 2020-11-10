@@ -17,6 +17,7 @@
             label="Due Date (MM/DD/YYYY)"
             :max="maxDueDate"
             :min="minDueDate"
+            outlined
             :success="!v.dueDate.$invalid">
           </FcDatePicker>
         </v-col>
