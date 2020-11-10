@@ -19,32 +19,42 @@
         <v-checkbox
           v-for="emphasisArea in CollisionEmphasisArea.enumValues"
           :key="emphasisArea.name"
-          v-model="internalEmphasisAreas"
+          v-model="internalFilters.emphasisAreas"
           class="mt-2"
           hide-details
           :label="emphasisArea.text"
           :value="emphasisArea"></v-checkbox>
 
-        <FcRadioGroup
-          v-model="internalDatesFrom"
-          class="mt-4"
+        <h2 class="body-1 mt-4">Dates</h2>
+        <v-checkbox
+          v-model="internalFilters.applyDateRange"
+          class="mt-2"
           hide-details
-          :items="[
-            { label: '3 years', value: 3 },
-            { label: '5 years', value: 5 },
-            { label: '10 years', value: 10 },
-            { label: 'All', value: -1 },
-          ]">
-          <template v-slot:legend>
-            <h2 class="body-1 secondary--text">Dates from</h2>
-          </template>
-        </FcRadioGroup>
+          label="Filter by date?"></v-checkbox>
+        <FcDatePicker
+          v-model="$v.internalFilters.dateRangeStart.$model"
+          class="mt-2"
+          :disabled="!internalFilters.applyDateRange"
+          :error-messages="errorMessagesDateRangeStart"
+          hide-details="auto"
+          label="From (MM/DD/YYYY)"
+          :max="now">
+        </FcDatePicker>
+        <FcDatePicker
+          v-model="$v.internalFilters.dateRangeEnd.$model"
+          class="mt-2"
+          :disabled="!internalFilters.applyDateRange"
+          :error-messages="errorMessagesDateRangeEnd"
+          hide-details="auto"
+          label="To (MM/DD/YYYY)"
+          :max="now">
+        </FcDatePicker>
 
         <h2 class="body-1 mt-4">Days of the Week</h2>
         <v-checkbox
           v-for="(label, i) in DAYS_OF_WEEK"
           :key="i"
-          v-model="internalDaysOfWeek"
+          v-model="internalFilters.daysOfWeek"
           class="mt-2"
           hide-details
           :label="label"
@@ -52,7 +62,7 @@
 
         <h2 class="body-1 mt-4">Time of Day</h2>
         <v-range-slider
-          v-model="internalHoursOfDay"
+          v-model="internalFilters.hoursOfDay"
           class="mt-11"
           hide-details
           :max="24"
@@ -63,7 +73,7 @@
         <v-checkbox
           v-for="roadSurfaceCondition in CollisionRoadSurfaceCondition.enumValues"
           :key="roadSurfaceCondition.name"
-          v-model="internalRoadSurfaceConditions"
+          v-model="internalFilters.roadSurfaceConditions"
           class="mt-2"
           hide-details
           :label="roadSurfaceCondition.text"
@@ -78,6 +88,7 @@
           Cancel
         </FcButton>
         <FcButton
+          :disabled="$v.internalFilters.$invalid"
           type="tertiary"
           @click="actionSave">
           Save
@@ -88,13 +99,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import {
   CollisionEmphasisArea,
   CollisionRoadSurfaceCondition,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import ValidationsFilters from '@/lib/validation/ValidationsFilters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
+import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -102,45 +116,50 @@ export default {
   mixins: [FcMixinVModelProxy(Boolean)],
   components: {
     FcButton,
-    FcRadioGroup,
+    FcDatePicker,
   },
   props: {
-    datesFrom: Number,
-    daysOfWeek: Array,
-    emphasisAreas: Array,
-    hoursOfDay: Array,
-    roadSurfaceConditions: Array,
+    filters: Object,
   },
   data() {
     return {
       CollisionEmphasisArea,
       CollisionRoadSurfaceCondition,
       DAYS_OF_WEEK: TimeFormatters.DAYS_OF_WEEK,
-      internalDatesFrom: this.datesFrom,
-      internalDaysOfWeek: this.daysOfWeek,
-      internalEmphasisAreas: this.emphasisAreas,
-      internalHoursOfDay: this.hoursOfDay,
-      internalRoadSurfaceConditions: this.roadSurfaceConditions,
+      internalFilters: { ...this.filters },
     };
   },
   computed: {
-    internalFilters() {
-      return {
-        datesFrom: this.internalDatesFrom,
-        daysOfWeek: this.internalDaysOfWeek,
-        emphasisAreas: this.internalEmphasisAreas,
-        hoursOfDay: this.internalHoursOfDay,
-        roadSurfaceConditions: this.internalRoadSurfaceConditions,
-      };
+    errorMessagesDateRangeStart() {
+      const errors = [];
+      if (!this.$v.internalFilters.dateRangeStart.requiredIfApplyDateRange) {
+        errors.push('Please provide a date in MM/DD/YYYY format.');
+      }
+      return errors;
     },
+    errorMessagesDateRangeEnd() {
+      const errors = [];
+      if (!this.$v.internalFilters.dateRangeEnd.requiredIfApplyDateRange) {
+        errors.push('Please provide a date in MM/DD/YYYY format.');
+      }
+      return errors;
+    },
+    ...mapState(['now']),
+  },
+  validations: {
+    internalFilters: ValidationsFilters,
   },
   methods: {
     actionClearAll() {
-      this.internalDatesFrom = -1;
-      this.internalDaysOfWeek = [];
-      this.internalEmphasisAreas = [];
-      this.internalHoursOfDay = [0, 24];
-      this.internalRoadSurfaceConditions = [];
+      this.internalFilters = {
+        applyDateRange: false,
+        dateRangeStart: null,
+        dateRangeEnd: null,
+        daysOfWeek: [],
+        emphasisAreas: [],
+        hoursOfDay: [0, 24],
+        roadSurfaceConditions: [],
+      };
     },
     actionSave() {
       this.$emit('set-filters', this.internalFilters);

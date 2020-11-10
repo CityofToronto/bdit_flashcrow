@@ -9,7 +9,7 @@
       <FcDialogCollisionFilters
         v-if="showFiltersCollision"
         v-model="showFiltersCollision"
-        v-bind="filtersCollision"
+        :filters="filtersCollision"
         @set-filters="setFiltersCollision">
       </FcDialogCollisionFilters>
       <FcButton
