@@ -22,7 +22,6 @@ test('LocationSearchDAO.arterySuggestions', async () => {
   expectSuggestionsContain(result, CentrelineType.SEGMENT, 908372);
 });
 
-
 test('LocationSearchDAO.getSuggestions', async () => {
   let result = await LocationSearchDAO.getSuggestions(null, 'Danforth and Main', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
@@ -54,10 +53,16 @@ test('LocationSearchDAO.getSuggestions', async () => {
   result = await LocationSearchDAO.getSuggestions(null, 'signal:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
+  result = await LocationSearchDAO.getSuggestions(null, 'tcs:1234', 3);
+  expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
+
   result = await LocationSearchDAO.getSuggestions(null, 'p:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
   result = await LocationSearchDAO.getSuggestions(null, 'sig:1234', 3);
+  expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
+
+  result = await LocationSearchDAO.getSuggestions(null, 'tc:1234', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13448866);
 
   result = await LocationSearchDAO.getSuggestions([LocationSearchType.ARTERY], 'artery:1234', 3);
