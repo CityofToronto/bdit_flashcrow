@@ -12,6 +12,17 @@ test('TimeFormatters.formatCsv()', () => {
   expect(TimeFormatters.formatCsv(t)).toEqual('2000-01-01 01:23');
 });
 
+test('TimeFormatters.formatCsvDate()', () => {
+  let t = null;
+  expect(TimeFormatters.formatCsvDate(t)).toEqual('');
+
+  t = DateTime.fromSQL('1986-07-31 21:16:00');
+  expect(TimeFormatters.formatCsvDate(t)).toEqual('1986-07-31');
+
+  t = DateTime.fromSQL('2000-01-01 01:23:45');
+  expect(TimeFormatters.formatCsvDate(t)).toEqual('2000-01-01');
+});
+
 test('TimeFormatters.formatDefault()', () => {
   let t = null;
   expect(TimeFormatters.formatDefault(t)).toEqual('');
