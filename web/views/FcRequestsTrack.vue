@@ -237,7 +237,7 @@ export default {
   },
   methods: {
     actionDownload(items) {
-      const csvStr = RequestItemExport.get(items);
+      const csvStr = RequestItemExport.get(items, this.studyRequestsBulk);
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
     },
