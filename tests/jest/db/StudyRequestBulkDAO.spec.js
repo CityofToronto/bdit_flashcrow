@@ -151,9 +151,12 @@ test('StudyRequestBulkDAO', async () => {
   expect(fetchedStudyRequestBulk.lastEditorId).toEqual(persistedUser2.id);
 
   // update sub-request fields
+  persistedStudyRequestBulk.studyRequests[0].studyType = StudyType.TMC;
+  persistedStudyRequestBulk.studyRequests[0].duration = null;
   persistedStudyRequestBulk.studyRequests[0].hours = StudyHours.SCHOOL;
   persistedStudyRequestBulk.studyRequests[1].studyType = StudyType.ATR_VOLUME_BICYCLE;
   persistedStudyRequestBulk.studyRequests[1].duration = 48;
+  persistedStudyRequestBulk.studyRequests[1].hours = null;
   persistedStudyRequestBulk = await StudyRequestBulkDAO.update(
     persistedStudyRequestBulk,
     persistedUser,
