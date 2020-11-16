@@ -53,3 +53,17 @@ test('AxiosBackendClient.getAxiosOptions()', () => {
     responseType: 'json',
   });
 });
+
+test('AxiosBackendClient.getUri', () => {
+  const client = new AxiosBackendClient('/foo');
+  expect(client.getUri('')).toEqual('/foo');
+  expect(client.getUri('/bar')).toEqual('/foo/bar');
+  expect(client.getUri('/bar', {
+    data: { a: '1', b: ['2', '3'] },
+  })).toEqual('/foo/bar?a=1&b=2&b=3');
+  expect(client.getUri('/bar', {
+    csrf: 'f00bar',
+    data: { a: '1', b: ['2', '3'] },
+    method: 'POST',
+  })).toEqual('/foo/bar');
+});

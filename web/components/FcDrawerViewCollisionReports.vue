@@ -116,7 +116,6 @@
 </template>
 
 <script>
-import { saveAs } from 'file-saver';
 import {
   mapActions,
   mapGetters,
@@ -132,7 +131,7 @@ import {
 } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummaryPerLocation,
-  getReport,
+  getReportDownload,
   getReportWeb,
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
@@ -144,11 +143,6 @@ import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.v
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-
-const DOWNLOAD_FORMATS_SUPPORTED = [
-  ReportFormat.CSV,
-  ReportFormat.PDF,
-];
 
 export default {
   name: 'FcDrawerViewCollisionReports',
@@ -196,7 +190,8 @@ export default {
       if (this.loadingDownload || this.loadingReportLayout) {
         return [];
       }
-      return DOWNLOAD_FORMATS_SUPPORTED
+      return ReportFormat.enumValues
+        .filter(reportFormat => reportFormat.download)
         .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
         .map(({ name }) => ({ label: name, value: name }));
     },
@@ -262,16 +257,12 @@ export default {
         return;
       }
       this.loadingDownload = true;
-
-      const reportData = await getReport(
+      getReportDownload(
         this.activeReportType,
         this.activeReportId,
         format,
         this.filterParamsCollision,
       );
-      const filename = `report.${format}`;
-      saveAs(reportData, filename);
-
       this.loadingDownload = false;
     },
     actionLeave() {

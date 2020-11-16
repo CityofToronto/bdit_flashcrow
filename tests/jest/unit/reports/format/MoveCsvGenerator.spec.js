@@ -60,16 +60,16 @@ test('MoveCsvGenerator#generate [DateTime]', async () => {
     hour: 7,
     minute: 45,
   });
-  const columns = ['Time', 'Count', 'Flag', 'Notes', 'JSON'];
+  const columns = ['Time', 'Count', 'Flag', 'Notes'];
   const rows = [
-    [dt, 42, true, 'foo', { x: 2 }],
-    [dt.plus({ minutes: 15 }), 1729, false, 'bar baz', { y: 'pi' }],
+    [dt, 42, true, 'foo'],
+    [dt.plus({ minutes: 15 }), 1729, false, 'bar baz'],
   ];
   const generator = new MoveCsvGenerator(columns, rows);
   const readableStream = await generator.generate();
   const str = await readableStreamToString(readableStream);
-  expect(str).toEqual(`Time,Count,Flag,Notes,JSON
-2000-01-01 07:45,42,1,foo,"{""x"":2}"
-2000-01-01 08:00,1729,,bar baz,"{""y"":""pi""}"
+  expect(str).toEqual(`Time,Count,Flag,Notes
+2000-01-01 07:45,42,1,foo
+2000-01-01 08:00,1729,,bar baz
 `);
 });

@@ -160,7 +160,6 @@
 </template>
 
 <script>
-import { saveAs } from 'file-saver';
 import {
   mapActions,
   mapGetters,
@@ -176,7 +175,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import {
-  getReport,
+  getReportDownload,
   getReportWeb,
   getStudiesByCentreline,
   getStudiesByCentrelineSummaryPerLocation,
@@ -192,11 +191,6 @@ import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.v
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-
-const DOWNLOAD_FORMATS_SUPPORTED = [
-  ReportFormat.CSV,
-  ReportFormat.PDF,
-];
 
 export default {
   name: 'FcDrawerViewStudyReports',
@@ -286,7 +280,8 @@ export default {
       if (this.loadingDownload || this.loadingReportLayout) {
         return [];
       }
-      return DOWNLOAD_FORMATS_SUPPORTED
+      return ReportFormat.enumValues
+        .filter(reportFormat => reportFormat.download)
         .filter(reportFormat => this.activeReportType.formats.includes(reportFormat))
         .map(({ name }) => ({ label: name, value: name }));
     },
@@ -391,16 +386,12 @@ export default {
         return;
       }
       this.loadingDownload = true;
-
-      const reportData = await getReport(
+      getReportDownload(
         activeReportType,
         activeReportId,
         format,
         reportParameters,
       );
-      const filename = `report.${format}`;
-      saveAs(reportData, filename);
-
       this.loadingDownload = false;
     },
     actionLeave() {
