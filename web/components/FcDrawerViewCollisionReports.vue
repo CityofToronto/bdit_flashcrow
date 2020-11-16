@@ -174,7 +174,9 @@ export default {
   },
   computed: {
     activeReportId() {
-      return CompositeId.encode(this.locationsActive);
+      const { locations, selectionType } = this.locationsSelection;
+      const s1 = CompositeId.encode(locations);
+      return `${s1}/${selectionType.name}`;
     },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;

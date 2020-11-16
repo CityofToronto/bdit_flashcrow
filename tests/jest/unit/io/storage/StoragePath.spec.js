@@ -32,7 +32,8 @@ test('StoragePath.forReportZip', async () => {
     id: '1/2345',
     format: ReportFormat.CSV,
   };
-  const { namespace, key } = await StoragePath.forReportZip([report]);
+  const storagePath = await StoragePath.forReport(report);
+  const { namespace, key } = await StoragePath.forReportZip([report], [storagePath]);
   expect(namespace).toEqual(StoragePath.NAMESPACE_REPORTS);
   expect(key).toMatch(/[a-f0-9]+\.zip/);
 });

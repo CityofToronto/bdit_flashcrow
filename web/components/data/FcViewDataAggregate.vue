@@ -250,7 +250,7 @@ export default {
     async actionDownloadReportFormatCollisions(reportFormat) {
       const job = await postJobGenerateCollisionReports(
         this.auth.csrf,
-        this.locations,
+        this.locationsSelection,
         this.filterParamsCollision,
         reportFormat,
       );
