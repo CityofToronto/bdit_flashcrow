@@ -265,7 +265,7 @@ export default {
     async actionDownloadReportFormatStudies(reportFormat) {
       const job = await postJobGenerateStudyReports(
         this.auth.csrf,
-        this.locations,
+        this.locationsSelection,
         this.filterParamsStudy,
         reportFormat,
       );
