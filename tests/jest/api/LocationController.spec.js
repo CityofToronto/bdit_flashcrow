@@ -147,5 +147,5 @@ test('LocationController.getLocationsByCorridor [no corridor found]', async () =
   const s1 = CompositeId.encode(features);
   const data = { s1 };
   const response = await client.fetch('/locations/byCorridor', { data });
-  expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
+  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });

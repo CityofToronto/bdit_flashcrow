@@ -1,7 +1,7 @@
 import PgBoss from 'pg-boss';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ReportFormat, ReportType } from '@/lib/Constants';
+import { LocationSelectionType, ReportFormat, ReportType } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import JobDAO from '@/lib/db/JobDAO';
 import JobType from '@/lib/jobs/JobType';
@@ -33,6 +33,8 @@ test('JobDAO', async () => {
         { type: ReportType.SPEED_PERCENTILE, id: '4/12345', format: ReportFormat.PDF },
         { type: ReportType.SPEED_PERCENTILE, id: '4/67890', format: ReportFormat.PDF },
       ],
+      s1: 's1:AMgvmB8PvmB',
+      selectionType: LocationSelectionType.POINTS,
     },
     createdon: DateTimeZone.utc(),
   };

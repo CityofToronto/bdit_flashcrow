@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { ReportExportMode, ReportFormat, ReportType } from '@/lib/Constants';
+import {
+  LocationSelectionType,
+  ReportExportMode,
+  ReportFormat,
+  ReportType,
+} from '@/lib/Constants';
 import db from '@/lib/db/db';
 import JobMetadataDAO from '@/lib/db/JobMetadataDAO';
 import UserDAO from '@/lib/db/UserDAO';
@@ -24,6 +29,7 @@ test('JobMetadataDAO', async () => {
         { type: ReportType.SPEED_PERCENTILE, id: '4/67890', format: ReportFormat.PDF },
       ],
       s1: 's1:AMgvmB8PvmB',
+      selectionType: LocationSelectionType.POINTS,
     },
     createdon: DateTimeZone.utc(),
   };
@@ -47,6 +53,7 @@ test('JobMetadataDAO', async () => {
     metadata: {
       reportExportMode: ReportExportMode.STUDIES,
       s1: 's1:AMgvmB8PvmB',
+      selectionType: LocationSelectionType.POINTS,
     },
     result: null,
   });
@@ -80,12 +87,13 @@ test('JobMetadataDAO', async () => {
     id: jobId2,
     name: JobType.GENERATE_REPORTS.jobName,
     data: {
-      s1: 's1:AMgvmB8PvmB',
       reportExportMode: ReportExportMode.STUDIES,
       reports: [
         { type: ReportType.COUNT_SUMMARY_24H, id: '1/4321', format: ReportFormat.CSV },
         { type: ReportType.COUNT_SUMMARY_24H, id: '1/8765', format: ReportFormat.CSV },
       ],
+      s1: 's1:AMgvmB8PvmB',
+      selectionType: LocationSelectionType.POINTS,
     },
     createdon: DateTimeZone.utc(),
   };
