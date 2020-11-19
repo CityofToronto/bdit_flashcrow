@@ -202,7 +202,7 @@ export default {
 @media screen and (max-height: 900px) {
   .fc-layout-drawer-map {
     &.vertical .fc-pane-map-legend {
-      max-height: 192px;
+      max-height: 218px;
       overflow: auto;
     }
   }

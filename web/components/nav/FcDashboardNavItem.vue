@@ -11,6 +11,7 @@
         :disabled="disabled"
         link
         :to="to"
+        v-bind="$attrs"
         @click="actionClick">
         <v-list-item-icon>
           <div class="fc-badge-wrapper">
@@ -55,12 +56,19 @@ export default {
     },
     icon: String,
     label: String,
-    to: Object,
+    to: {
+      type: Object,
+      default: null,
+    },
   },
   computed: {
     isActive() {
-      const { name } = this.$route;
       const { backViewRequest, to } = this;
+      if (to === null) {
+        return false;
+      }
+
+      const { name } = this.$route;
       const { name: backViewRequestName } = backViewRequest;
       const { name: toName } = to;
       if (name === toName) {

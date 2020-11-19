@@ -28,7 +28,6 @@
       <v-container
         class="d-flex fill-height flex-column pa-0"
         fluid>
-        <FcDashboardNavInDevelopment />
         <div class="flex-grow-1" style="width: 100%;">
           <router-view></router-view>
         </div>
@@ -58,7 +57,6 @@ import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
 import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
-import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
 
 export default {
@@ -66,7 +64,6 @@ export default {
   components: {
     FcDashboardNav,
     FcDashboardNavBrand,
-    FcDashboardNavInDevelopment,
     FcDashboardNavUser,
     FcDialogAlertStudyRequestUrgent,
     FcDialogAlertStudyRequestsUnactionable,

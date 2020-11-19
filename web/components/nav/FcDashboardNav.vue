@@ -25,12 +25,24 @@
       icon="download"
       label="Manage Downloads"
       :to="{ name: 'downloadsManage' }" />
+
+    <FcDashboardNavItem
+      icon="bug"
+      label="Report a Bug"
+      :href="urlReportBug"
+      target="_blank" />
+    <FcDashboardNavItem
+      icon="help-circle"
+      label="MOVE Help Centre"
+      href="https://www.notion.so/bditto/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc"
+      target="_blank" />
   </v-list>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex';
 
+import { formatUsername } from '@/lib/StringFormatters';
 import { getJobsExistsNew } from '@/lib/api/WebApi';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 
@@ -55,6 +67,18 @@ export default {
         name: 'viewDataAtLocation',
         params,
       };
+    },
+    urlReportBug() {
+      const paramUsername = encodeURIComponent(this.username);
+      const url = `${window.location.origin}${this.$route.fullPath}`;
+      const paramUrl = encodeURIComponent(url);
+      return `https://docs.google.com/forms/d/e/1FAIpQLSeENA2S8dA678ENanNFwdZ811TUjVjIYolloBlRo12idib5UQ/viewform?entry.135357596=${paramUsername}&entry.1262500898=${paramUrl}`;
+    },
+    username() {
+      if (this.auth.loggedIn) {
+        return formatUsername(this.auth.user);
+      }
+      return '';
     },
     ...mapState(['auth']),
     ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
