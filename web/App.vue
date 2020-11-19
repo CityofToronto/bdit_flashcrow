@@ -25,13 +25,7 @@
       </template>
     </v-navigation-drawer>
     <v-main>
-      <v-container
-        class="d-flex fill-height flex-column pa-0"
-        fluid>
-        <div class="flex-grow-1" style="width: 100%;">
-          <router-view></router-view>
-        </div>
-      </v-container>
+      <router-view></router-view>
     </v-main>
   </v-app>
 </template>

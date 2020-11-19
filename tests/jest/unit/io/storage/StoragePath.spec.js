@@ -19,6 +19,31 @@ jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/CountDAO');
 jest.mock('@/lib/db/StudyDAO');
 
+test('StoragePath.truncateDescription', () => {
+  expect(StoragePath.truncateDescription('a / b / c', 10)).toEqual('a / b / c');
+  expect(StoragePath.truncateDescription('a / b / c', 5)).toEqual('a / b');
+  expect(StoragePath.truncateDescription('a / b / c', 4)).toEqual('a');
+  expect(StoragePath.truncateDescription('a / b / c', 0)).toEqual('');
+  expect(StoragePath.truncateDescription('abcdef', 5)).toEqual('abcde');
+  expect(StoragePath.truncateDescription('abcdef', 6)).toEqual('abcdef');
+  expect(StoragePath.truncateDescription('abcdef', 7)).toEqual('abcdef');
+});
+
+test('StoragePath.sanitizeLocationDescription', () => {
+  expect(StoragePath.sanitizeLocationDescription(
+    'St Clair Ave W / Hounslow Heath Rd / Silverthorn Ave',
+    80,
+  )).toEqual('ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE');
+  expect(StoragePath.sanitizeLocationDescription(
+    'St Clair Ave W / Hounslow Heath Rd / Silverthorn Ave',
+    40,
+  )).toEqual('ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD');
+  expect(StoragePath.sanitizeLocationDescription(
+    'St Clair Ave W / Hounslow Heath Rd / Silverthorn Ave + 1 location',
+    80,
+  )).toEqual('ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION');
+});
+
 test('StoragePath.forReport [collision]', async () => {
   CentrelineDAO.byFeatures.mockResolvedValue([
     { description: 'St Clair Ave W / Hounslow Heath Rd / Silverthorn Ave' },
@@ -35,7 +60,7 @@ test('StoragePath.forReport [collision]', async () => {
   };
   await expect(StoragePath.forReport(report)).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_COLLISION,
-    key: 'COLLISION_DIRECTORY_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_s1:AkttmBoXtmB_POINTS_204c1293.pdf',
+    key: 'COLLISION_DIRECTORY_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_s1_AkttmBoXtmB_POINTS_204c1293.pdf',
   });
 });
 
@@ -105,7 +130,7 @@ test('StoragePath.forReportZip [collision]', async () => {
   };
   const storagePath = {
     namespace: StoragePath.NAMESPACE_REPORTS_COLLISION,
-    key: 'COLLISION_DIRECTORY_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_s1:AkttmBoXtmB_POINTS_204c1293.pdf',
+    key: 'COLLISION_DIRECTORY_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_s1_AkttmBoXtmB_POINTS_204c1293.pdf',
   };
   await expect(StoragePath.forReportZip({
     reportExportMode: ReportExportMode.COLLISIONS,
@@ -114,7 +139,7 @@ test('StoragePath.forReportZip [collision]', async () => {
     selectionType: LocationSelectionType.POINTS,
   }, [storagePath])).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_COLLISION,
-    key: 'COLLISION_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_9de06bf8.zip',
+    key: 'COLLISION_s1_AkttmBoXtmB_POINTS_b45aaa7b.zip',
   });
 });
 
@@ -140,6 +165,6 @@ test('StoragePath.forReportZip [study]', async () => {
     selectionType: LocationSelectionType.POINTS,
   }, [storagePath])).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_STUDY,
-    key: 'STUDY_SILVERTHORN_AVE_ROCKWELL_AVE-TURNBERRY_AVE_1_TOTAL_76976bae.zip',
+    key: 'STUDY_s1_ANHtIA_POINTS_76976bae.zip',
   });
 });
