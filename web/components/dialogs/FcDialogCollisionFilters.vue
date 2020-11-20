@@ -37,7 +37,7 @@
           :disabled="!internalFilters.applyDateRange"
           :error-messages="errorMessagesDateRangeStart"
           hide-details="auto"
-          label="From (MM/DD/YYYY)"
+          label="From (YYYY-MM-DD)"
           :max="now">
         </FcDatePicker>
         <FcDatePicker
@@ -46,7 +46,7 @@
           :disabled="!internalFilters.applyDateRange"
           :error-messages="errorMessagesDateRangeEnd"
           hide-details="auto"
-          label="To (MM/DD/YYYY)"
+          label="To (YYYY-MM-DD)"
           :max="now">
         </FcDatePicker>
 
@@ -133,14 +133,14 @@ export default {
     errorMessagesDateRangeStart() {
       const errors = [];
       if (!this.$v.internalFilters.dateRangeStart.requiredIfApplyDateRange) {
-        errors.push('Please provide a date in MM/DD/YYYY format.');
+        errors.push('Please provide a date in YYYY-MM-DD format.');
       }
       return errors;
     },
     errorMessagesDateRangeEnd() {
       const errors = [];
       if (!this.$v.internalFilters.dateRangeEnd.requiredIfApplyDateRange) {
-        errors.push('Please provide a date in MM/DD/YYYY format.');
+        errors.push('Please provide a date in YYYY-MM-DD format.');
       }
       return errors;
     },

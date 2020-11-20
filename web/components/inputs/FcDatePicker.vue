@@ -63,7 +63,7 @@ function fromValueFormatted(valueFormatted) {
   if (valueFormatted === null) {
     return null;
   }
-  const dt = DateTime.fromLocaleString(valueFormatted);
+  const dt = DateTime.fromISO(valueFormatted);
   if (!dt.isValid) {
     return null;
   }

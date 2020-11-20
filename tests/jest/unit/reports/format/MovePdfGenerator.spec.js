@@ -86,6 +86,8 @@ function setup_5_36781() {
     centrelineId: 13464586,
     centrelineType: CentrelineType.INTERSECTION,
     countGroupId: 36781,
+    endDate: DateTime.fromSQL('2018-02-27 00:00:00'),
+    startDate: DateTime.fromSQL('2018-02-27 00:00:00'),
     type: { id: 5, studyType: StudyType.TMC },
   };
   StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
@@ -113,6 +115,8 @@ function setup_5_38661() {
     centrelineId: 13456854,
     centrelineType: CentrelineType.INTERSECTION,
     countGroupId: 38661,
+    endDate: DateTime.fromSQL('2019-04-13 00:00:00'),
+    startDate: DateTime.fromSQL('2019-04-13 00:00:00'),
     type: { id: 5, studyType: StudyType.TMC },
   };
   StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);

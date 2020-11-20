@@ -28,10 +28,10 @@ test('TimeFormatters.formatDefault()', () => {
   expect(TimeFormatters.formatDefault(t)).toEqual('');
 
   t = DateTime.fromSQL('1986-07-31 21:16:00');
-  expect(TimeFormatters.formatDefault(t)).toEqual('7/31/1986');
+  expect(TimeFormatters.formatDefault(t)).toEqual('1986-07-31');
 
   t = DateTime.fromSQL('2000-01-01 01:23:45');
-  expect(TimeFormatters.formatDefault(t)).toEqual('1/1/2000');
+  expect(TimeFormatters.formatDefault(t)).toEqual('2000-01-01');
 });
 
 test('TimeFormatters.formatDateTime()', () => {
@@ -39,10 +39,10 @@ test('TimeFormatters.formatDateTime()', () => {
   expect(TimeFormatters.formatDateTime(t)).toEqual('');
 
   t = DateTime.fromSQL('1986-07-31 21:16:00');
-  expect(TimeFormatters.formatDateTime(t)).toEqual('Jul 31, 1986, 9:16 PM');
+  expect(TimeFormatters.formatDateTime(t)).toEqual('1986-07-31 21:16');
 
   t = DateTime.fromSQL('2000-01-01 01:23:45');
-  expect(TimeFormatters.formatDateTime(t)).toEqual('Jan 01, 2000, 1:23 AM');
+  expect(TimeFormatters.formatDateTime(t)).toEqual('2000-01-01 01:23');
 });
 
 test('TimeFormatters.formatDayOfWeek()', () => {
@@ -87,6 +87,16 @@ test('TimeFormatters.formatTimeOfDay()', () => {
   expect(TimeFormatters.formatTimeOfDay(t)).toEqual('01:23');
 });
 
+test('TimeFormatters.formatRangeDate()', () => {
+  let start = DateTime.fromSQL('1986-07-31 21:16:00');
+  let end = DateTime.fromSQL('1986-07-31 22:16:00');
+  expect(TimeFormatters.formatRangeDate({ start, end })).toEqual('1986-07-31');
+
+  start = DateTime.fromSQL('1986-07-31 00:00:00');
+  end = DateTime.fromSQL('2000-01-01 01:23:45');
+  expect(TimeFormatters.formatRangeDate({ start, end })).toEqual('1986-07-31 to 2000-01-01');
+});
+
 test('TimeFormatters.formatRangeTimeOfDay()', () => {
   let start = DateTime.fromSQL('1986-07-31 21:16:00');
   let end = DateTime.fromSQL('1986-07-31 22:16:00');
@@ -95,17 +105,6 @@ test('TimeFormatters.formatRangeTimeOfDay()', () => {
   start = DateTime.fromSQL('1986-07-31 00:00:00');
   end = DateTime.fromSQL('1986-07-31 01:23:45');
   expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('00:00\u201301:23');
-});
-
-test('TimeFormatters.formatYearMonth()', () => {
-  let t = null;
-  expect(TimeFormatters.formatYearMonth(t)).toEqual('');
-
-  t = DateTime.fromSQL('1986-07-31 21:16:00');
-  expect(TimeFormatters.formatYearMonth(t)).toEqual('Jul 1986');
-
-  t = DateTime.fromSQL('2000-01-01 01:23:45');
-  expect(TimeFormatters.formatYearMonth(t)).toEqual('Jan 2000');
 });
 
 test('TimeFormatters.DAYS_OF_WEEK', () => {

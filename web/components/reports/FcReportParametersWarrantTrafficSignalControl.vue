@@ -32,7 +32,7 @@
     <FcDatePicker
       v-model="internalValue.startDate"
       class="mt-2"
-      label="Start Date (MM/DD/YYYY)">
+      label="Start Date (YYYY-MM-DD)">
     </FcDatePicker>
     <v-text-field
       v-for="i in 3"

@@ -14,7 +14,7 @@
             class="mt-3"
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
-            label="Due Date (MM/DD/YYYY)"
+            label="Due Date (YYYY-MM-DD)"
             :max="maxDueDate"
             :min="minDueDate"
             outlined
