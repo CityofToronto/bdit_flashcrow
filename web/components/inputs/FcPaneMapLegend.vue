@@ -1,12 +1,12 @@
 <template>
   <v-card class="fc-pane-map-legend" width="200">
     <v-card-text>
-      <h2 class="headline">Viewing data from</h2>
+      <h2 class="headline">View on map</h2>
       <v-select
         v-model="internalValue.datesFrom"
         :aria-label="ariaLabelDatesFrom"
-        hide-details
-        :items="itemsDatesFrom" />
+        :items="itemsDatesFrom"
+        :messages="messagesDatesFrom" />
       <h2 class="headline mt-6">Legend</h2>
       <div
         v-for="layer in layers"
@@ -38,6 +38,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -78,6 +81,13 @@ export default {
       });
       return layerLabels;
     },
+    messagesDatesFrom() {
+      const { datesFrom } = this.internalValue;
+      const start = this.now.minus({ years: datesFrom });
+      const end = this.now;
+      return TimeFormatters.formatRangeDate({ start, end });
+    },
+    ...mapState(['now']),
   },
 };
 </script>
