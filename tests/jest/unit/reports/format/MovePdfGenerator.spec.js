@@ -276,8 +276,10 @@ test('WARRANT_TRAFFIC_SIGNAL_CONTROL', async () => {
   const reportInstance = ReportFactory.getInstance(ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL);
   const doc = await reportInstance.generate('5/38661', ReportFormat.PDF, {
     adequateTrial: true,
+    isTwoLane: null,
+    isXIntersection: null,
     preventablesByYear: [3, 5, 10],
-    startYear: 2016,
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   });
   expect(getNumPages(doc)).toBe(2);
 });

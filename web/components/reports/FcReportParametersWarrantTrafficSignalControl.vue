@@ -2,7 +2,8 @@
   <div class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
     <v-checkbox
       name="adequateTrial"
-      v-model="internalValue.adequateTrial">
+      v-model="internalValue.adequateTrial"
+      hide-details>
       <template v-slot:label>
         <span>
           <abbr
@@ -12,30 +13,86 @@
         </span>
       </template>
     </v-checkbox>
-    <v-text-field
-      v-model.number="internalValue.startYear"
-      label="Collisions: Start Year"
-      min="1985"
-      type="number"></v-text-field>
+
+    <h2 class="headline mt-4">Road Geometry Parameters</h2>
+    <v-select
+      v-model="internalValue.isTwoLane"
+      class="mt-2"
+      hide-details
+      :items="itemsIsTwoLane"
+      label="Road Width" />
+    <v-select
+      v-model="internalValue.isXIntersection"
+      class="mt-2"
+      hide-details
+      :items="itemsIsXIntersection"
+      label="Intersection Type" />
+
+    <h2 class="headline mt-4">Collision Parameters</h2>
+    <FcDatePicker
+      v-model="internalValue.startDate"
+      class="mt-2"
+      label="Start Date (MM/DD/YYYY)">
+    </FcDatePicker>
     <v-text-field
       v-for="i in 3"
-      :key="internalValue.startYear + i - 1"
+      :key="i"
       v-model.number="internalValue.preventablesByYear[i - 1]"
+      :disabled="internalValue.startDate === null"
       min="0"
       :name="'preventablesByYear' + (i - 1)"
       type="number">
       <template v-slot:label>
-        <span>Collisions: Preventable, {{internalValue.startYear + i - 1}}</span>
+        <span>Year {{i}}: {{startDateRanges[i - 1]}}</span>
       </template>
     </v-text-field>
   </div>
 </template>
 
 <script>
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcReportParametersWarrantTrafficSignalControl',
   mixins: [FcMixinVModelProxy(Object)],
+  components: {
+    FcDatePicker,
+  },
+  data() {
+    const itemsIsTwoLane = [
+      { text: 'Auto-detect', value: null },
+      { text: '1-2 lanes', value: true },
+      { text: '3+ lanes', value: false },
+    ];
+    const itemsIsXIntersection = [
+      { text: 'Auto-detect', value: null },
+      { text: 'T (3-way)', value: false },
+      { text: 'X (4-way)', value: true },
+    ];
+
+    return {
+      itemsIsTwoLane,
+      itemsIsXIntersection,
+    };
+  },
+  computed: {
+    startDateRanges() {
+      const startDateRanges = new Array(3);
+      if (this.internalStartValue === null) {
+        for (let i = 0; i < 3; i++) {
+          startDateRanges[i] = `Year ${i + 1}`;
+        }
+      } else {
+        for (let i = 0; i < 3; i++) {
+          const start = this.internalValue.startDate.plus({ years: i });
+          const end = this.internalValue.startDate.plus({ days: -1, years: i + 1 });
+          startDateRanges[i] = TimeFormatters.formatRangeDate({ start, end });
+        }
+      }
+      return startDateRanges;
+    },
+  },
 };
 </script>

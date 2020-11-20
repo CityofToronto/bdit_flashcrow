@@ -5,6 +5,7 @@ import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import { NotImplementedError } from '@/lib/error/MoveErrors';
 import ReportWarrantTrafficSignalControl from '@/lib/reports/ReportWarrantTrafficSignalControl';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import DateTime from '@/lib/time/DateTime';
 
 const countData_5_38661 = loadJsonSync(
   path.resolve(__dirname, './data/countData_5_38661.json'),
@@ -125,8 +126,10 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
   } = setup_5_38661();
   const options = {
     adequateTrial: true,
+    isTwoLane: null,
+    isXIntersection: null,
     preventablesByYear: [3, 5, 10],
-    startYear: 2016,
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
 
   let transformedData = reportInstance.transformData(study, {

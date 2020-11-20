@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="internalValue"
-    max-width="300"
+    max-width="336"
     scrollable>
     <v-card role="dialog">
       <v-card-title>Set Parameters</v-card-title>
@@ -27,6 +27,7 @@
 
 <script>
 import { ReportType } from '@/lib/Constants';
+import { reviver } from '@/lib/JsonUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
@@ -44,7 +45,11 @@ export default {
     reportType: ReportType,
   },
   data() {
-    const internalReportParameters = JSON.parse(JSON.stringify(this.reportParameters));
+    const internalReportParameters = JSON.parse(
+      JSON.stringify(this.reportParameters),
+      reviver,
+    );
+
     return {
       internalReportParameters,
     };
