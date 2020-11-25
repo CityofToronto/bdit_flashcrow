@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2020-11-25
+
+### Added
+- `Content-Security-Policy` header for added security around static resources
+- `tcs:` special keyword for signal search in location search bar
+- users can now access MOVE Help Centre
+
+### Changed
+- MOVE web services are now run as application-specific "service user"
+- Collision and study filters now use date range instead of 1 / 3 / 5 / 10 year selection
+- CSV export from Track Requests changed to meet Data Collection needs
+- MOVE now uses ISO 8601 `YYYY-MM-DD` date format
+- Session timeouts reduced, and set to expire after given period of inactivity (rather than total time since start-of-session)
+
+### Fixed
+- small bug in CodeCommit script, which caused it to fail for non-dev environments
+- downloaded report filenames now much more informative and user-friendly
+- users can now adjust intersection type and road width on signal warrants
+
+### Removed
+- unneeded dependencies
+- security headers (these are managed by Cloud Services-supplied `nginx` configuration)
+- "in beta" top bar (relevant in-app actions have been moved to left navbar)
+
 ## [0.10.1] - 2020-11-02
 
 ### Changed
