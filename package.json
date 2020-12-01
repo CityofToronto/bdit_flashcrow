@@ -42,7 +42,7 @@
     "@hapi/joi": "^17.1.1",
     "@mdi/font": "^5.8.55",
     "archiver": "^5.1.0",
-    "aws-sdk": "^2.799.0",
+    "aws-sdk": "^2.800.0",
     "axios": "^0.21.0",
     "csv-generate": "^3.3.0",
     "csv-stringify": "^5.5.3",
@@ -59,10 +59,10 @@
     "mime-types": "^2.1.27",
     "module-alias": "^2.2.2",
     "mustache": "^4.0.1",
-    "openid-client": "^4.2.1",
+    "openid-client": "^4.2.2",
     "pdfmake": "^0.1.68",
     "pg-boss": "^5.0.8",
-    "pg-promise": "^10.8.0",
+    "pg-promise": "^10.8.1",
     "uuid": "^8.3.1",
     "vt-pbf": "^3.1.1",
     "vue": "^2.6.12",
@@ -109,7 +109,7 @@
     "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.6.12",
     "vuetify-loader": "^1.6.0",
-    "webpack-bundle-analyzer": "^4.1.0"
+    "webpack-bundle-analyzer": "^4.2.0"
   },
   "browserslist": [
     "last 1 Chrome version",
