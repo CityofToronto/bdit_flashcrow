@@ -31,11 +31,6 @@
       label="Report a Bug"
       :href="urlReportBug"
       target="_blank" />
-    <FcDashboardNavItem
-      icon="help-circle"
-      label="MOVE Help Centre"
-      href="https://www.notion.so/bditto/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc"
-      target="_blank" />
   </v-list>
 </template>
 
