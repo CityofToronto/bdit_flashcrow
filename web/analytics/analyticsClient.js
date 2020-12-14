@@ -18,19 +18,22 @@ const STORAGE_KEY_VISITOR_ID = 'ca.toronto.move.visitorId';
  * between the page load and the analytics API request.  Note, however, that this cannot
  * be reliably done from within native event handlers (e.g. `onsubmit`).
  *
- * @param {string} accountId - Oracle Infinity account ID
- * @param {string} dcsId - Oracle Infinity tag ID
+ * @param {string} analyticsDomain - MOVE domain to send analytics events for
  * @example
  * const event = analyticsClient.buttonEvent();
  * // within a component: this.$analytics.buttonEvent()
  * await analyticsClient.send([event]);
  */
 class AnalyticsClient {
-  constructor(accountId, dcsId) {
-    this.accountId = accountId;
+  constructor(analyticsDomain) {
+    this.accountId = '97j62divdr';
     this.appContext = null;
-    this.analyticsDomain = AnalyticsClient.getAnalyticsDomain();
-    this.dcsId = dcsId;
+    this.analyticsDomain = analyticsDomain;
+    if (analyticsDomain === 'move.intra.prod-toronto.ca') {
+      this.dcsId = 'dcs222cuvxpomopzxhka14gun_8j3v';
+    } else {
+      this.dcsId = 'dcs222ldvxk938tpne9uk1e3u_1c4g';
+    }
     this.userLanguage = AnalyticsClient.getUserLanguage();
     this.visitorId = AnalyticsClient.getVisitorId();
   }
@@ -358,6 +361,8 @@ class AnalyticsClient {
   }
 }
 
+const ANALYTICS_DOMAIN = AnalyticsClient.getAnalyticsDomain();
+
 /**
  * Singleton analytics client instance, for use across the application.
  *
@@ -368,8 +373,5 @@ class AnalyticsClient {
  *
  * @type {AnalyticsClient}
  */
-const analyticsClient = new AnalyticsClient(
-  '97j62divdr',
-  'dcs222ldvxk938tpne9uk1e3u_1c4g',
-);
+const analyticsClient = new AnalyticsClient(ANALYTICS_DOMAIN);
 export default analyticsClient;
