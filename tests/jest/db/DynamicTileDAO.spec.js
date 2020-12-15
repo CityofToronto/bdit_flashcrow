@@ -46,21 +46,13 @@ test('DynamicTileDAO.getTileFeatures', async () => {
     DynamicTileDAO.getTileFeatures('noSuchLayer'),
   ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
 
-  // parameterized layer with invalid parameter
-  await expect(
-    DynamicTileDAO.getTileFeatures('collisionsLevel1'),
-  ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
-  await expect(
-    DynamicTileDAO.getTileFeatures('studies:blarghl'),
-  ).rejects.toBeInstanceOf(InvalidDynamicTileLayerError);
-
   // tile outside city boundaries
   await expect(
     DynamicTileDAO.getTileFeatures('hospitalsLevel1', 12, 345, 678),
   ).resolves.toHaveLength(0);
 
   // tile with features
-  const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1:3', 16, 18308, 23913);
+  const tileFeatures = await DynamicTileDAO.getTileFeatures('collisionsLevel1', 16, 18308, 23913);
   expect(tileFeatures.length).toBeGreaterThan(0);
   tileFeatures.forEach(expectValidTileFeature);
 });

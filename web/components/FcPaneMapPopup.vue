@@ -60,7 +60,7 @@ const SELECTABLE_LAYERS = [
 ];
 
 async function getCollisionDetails(feature) {
-  const { id: collisionId } = feature;
+  const { collisionId } = feature.properties;
   return getCollisionByCollisionId(collisionId);
 }
 
