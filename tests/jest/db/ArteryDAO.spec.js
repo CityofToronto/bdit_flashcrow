@@ -6,6 +6,23 @@ afterAll(() => {
   db.$pool.end();
 });
 
+function expectArteryMatches(actual, expected) {
+  const { geom: geomActual, ...restActual } = actual;
+  const { geom: geomExpected, ...restExpected } = expected;
+  expect(restActual).toEqual(restExpected);
+  expect(geomActual.type).toEqual(geomExpected.type);
+  expect(geomActual.coordinates[0]).toBeCloseTo(geomExpected.coordinates[0]);
+  expect(geomActual.coordinates[1]).toBeCloseTo(geomExpected.coordinates[1]);
+}
+
+function expectArteriesMatch(actual, expected) {
+  const n = expected.length;
+  expect(actual).toHaveLength(n);
+  for (let i = 0; i < n; i++) {
+    expectArteryMatches(actual[i], expected[i]);
+  }
+}
+
 test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('')).toBe(null);
   expect(ArteryDAO.getApproachDirection(null)).toBe(null);
@@ -20,7 +37,7 @@ test('ArteryDAO.getApproachDirection', async () => {
 test('ArteryDAO.byArteryCode', async () => {
   // intersection
   let result = await ArteryDAO.byArteryCode(1146);
-  expect(result).toEqual({
+  expectArteryMatches(result, {
     approachDir: null,
     arteryCode: 1146,
     centrelineId: 13446642,
@@ -38,7 +55,7 @@ test('ArteryDAO.byArteryCode', async () => {
 
   // segment
   result = await ArteryDAO.byArteryCode(1);
-  expect(result).toEqual({
+  expectArteryMatches(result, {
     approachDir: CardinalDirection.EAST,
     arteryCode: 1,
     centrelineId: 110795,
@@ -60,7 +77,7 @@ test('ArteryDAO.byStudy', async () => {
   let result = await ArteryDAO.byStudy({
     arteryGroupId: 23945,
   });
-  expect(result).toEqual([{
+  expectArteriesMatch(result, [{
     approachDir: null,
     arteryCode: 23945,
     centrelineId: 13446886,
@@ -80,7 +97,7 @@ test('ArteryDAO.byStudy', async () => {
   result = await ArteryDAO.byStudy({
     arteryGroupId: 32532,
   });
-  expect(result).toEqual([{
+  expectArteriesMatch(result, [{
     approachDir: CardinalDirection.EAST,
     arteryCode: 32532,
     centrelineId: 9278884,

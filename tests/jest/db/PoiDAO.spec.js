@@ -8,26 +8,22 @@ afterAll(() => {
 
 test('PoiDAO.byCentrelineSummary', async () => {
   let result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT, 1000);
-  expect(result).toEqual({
-    hospital: null,
-    school: { id: 898, geom_dist: 296.029139382713 },
-  });
+  expect(result.hospital).toEqual(null);
+  expect(result.school.id).toEqual(898);
+  expect(result.school.geom_dist).toBeCloseTo(296.029139382713);
 
   result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT, 250);
-  expect(result).toEqual({
-    hospital: null,
-    school: null,
-  });
+  expect(result.hospital).toEqual(null);
+  expect(result.school).toEqual(null);
 
   result = await PoiDAO.byCentrelineSummary(13465434, CentrelineType.INTERSECTION, 1000);
-  expect(result).toEqual({
-    hospital: { id: 1497390, geom_dist: 81.760698352711 },
-    school: { id: 141, geom_dist: 57.2059638042636 },
-  });
+  expect(result.hospital.id).toEqual(1497390);
+  expect(result.hospital.geom_dist).toBeCloseTo(81.760698352711);
+  expect(result.school.id).toEqual(141);
+  expect(result.school.geom_dist).toBeCloseTo(57.2059638042636);
 
   result = await PoiDAO.byCentrelineSummary(13465434, CentrelineType.INTERSECTION, 60);
-  expect(result).toEqual({
-    hospital: null,
-    school: { id: 141, geom_dist: 57.2059638042636 },
-  });
+  expect(result.hospital).toEqual(null);
+  expect(result.school.id).toEqual(141);
+  expect(result.school.geom_dist).toBeCloseTo(57.2059638042636);
 });

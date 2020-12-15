@@ -9,10 +9,10 @@ afterAll(() => {
 
 test('CollisionDAO.byCollisionId', async () => {
   // invalid ID
-  let result = await CollisionDAO.byCollisionId(-1);
+  let result = await CollisionDAO.byCollisionId('-1');
   expect(result).toBeNull();
 
-  result = await CollisionDAO.byCollisionId(1040350);
+  result = await CollisionDAO.byCollisionId('2012:1288425');
   expect(result).not.toBeNull();
   expect(result.centrelineId).toBe(1142194);
   expect(result.centrelineType).toBe(CentrelineType.SEGMENT);
