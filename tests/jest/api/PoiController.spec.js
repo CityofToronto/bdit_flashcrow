@@ -25,10 +25,9 @@ test('PoiController.getPoiByCentrelineSummary', async () => {
   };
   let response = await client.fetch('/poi/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({
-    hospital: null,
-    school: { id: 898, geom_dist: 296.029139382713 },
-  });
+  expect(response.result.hospital).toEqual(null);
+  expect(response.result.school.id).toEqual(898);
+  expect(response.result.school.geom_dist).toBeCloseTo(296.029139382713);
 
   data = {
     centrelineId: 1142194,
@@ -37,10 +36,8 @@ test('PoiController.getPoiByCentrelineSummary', async () => {
   };
   response = await client.fetch('/poi/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({
-    hospital: null,
-    school: null,
-  });
+  expect(response.result.hospital).toEqual(null);
+  expect(response.result.school).toEqual(null);
 
   data = {
     centrelineId: 13465434,
@@ -49,10 +46,10 @@ test('PoiController.getPoiByCentrelineSummary', async () => {
   };
   response = await client.fetch('/poi/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({
-    hospital: { id: 1497390, geom_dist: 81.760698352711 },
-    school: { id: 141, geom_dist: 57.2059638042636 },
-  });
+  expect(response.result.hospital.id).toEqual(1497390);
+  expect(response.result.hospital.geom_dist).toBeCloseTo(81.760698352711);
+  expect(response.result.school.id).toEqual(141);
+  expect(response.result.school.geom_dist).toBeCloseTo(57.2059638042636);
 
   data = {
     centrelineId: 13465434,
@@ -61,8 +58,7 @@ test('PoiController.getPoiByCentrelineSummary', async () => {
   };
   response = await client.fetch('/poi/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({
-    hospital: null,
-    school: { id: 141, geom_dist: 57.2059638042636 },
-  });
+  expect(response.result.hospital).toEqual(null);
+  expect(response.result.school.id).toEqual(141);
+  expect(response.result.school.geom_dist).toBeCloseTo(57.2059638042636);
 });

@@ -23,7 +23,7 @@ test('CollisionController.getCollisionByCollisionId', async () => {
   let response = await client.fetch('/collisions/999999999');
   expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
 
-  response = await client.fetch('/collisions/1040350');
+  response = await client.fetch('/collisions/2012:1288425');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.centrelineId).toBe(1142194);
   expect(response.result.centrelineType).toBe(CentrelineType.SEGMENT);

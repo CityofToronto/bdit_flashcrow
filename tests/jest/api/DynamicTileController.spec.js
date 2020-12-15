@@ -21,15 +21,12 @@ test('DynamicTileController.getDynamicTile [invalid layer]', async () => {
   let response = await client.fetch('/dynamicTiles/noSuchLayer/0/0/0.pbf');
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
-  response = await client.fetch('/dynamicTiles/collisionsLevel1/2/3/4.pbf');
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
   response = await client.fetch('/dynamicTiles/studies:blarghl/4/5/6.pbf');
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });
 
 test('DynamicTileController.getDynamicTile [sample tile]', async () => {
-  const response = await client.fetch('/dynamicTiles/studies:10/15/9162/11956.pbf');
+  const response = await client.fetch('/dynamicTiles/studies/15/9162/11956.pbf');
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.headers['content-type']).toEqual('application/vnd.mapbox-vector-tile');
 });
