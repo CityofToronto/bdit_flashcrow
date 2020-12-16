@@ -1,5 +1,7 @@
 <template>
-  <v-app id="fc_app">
+  <v-app
+    id="fc_app"
+    :class="frontendEnv.appClass">
     <component
       v-if="hasDialog"
       v-model="hasDialog"
@@ -25,7 +27,15 @@
       </template>
     </v-navigation-drawer>
     <v-main>
-      <router-view></router-view>
+      <v-container
+        class="d-flex fill-height flex-column pa-0"
+        fluid>
+        <FcDashboardNavInDevelopment
+          v-if="frontendEnv !== FrontendEnv.PROD" />
+        <div class="flex-grow-1" style="width: 100%;">
+          <router-view></router-view>
+        </div>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -51,13 +61,16 @@ import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
 import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
 import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
+import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
 import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
+import FrontendEnv from '@/web/config/FrontendEnv';
 
 export default {
   name: 'App',
   components: {
     FcDashboardNav,
     FcDashboardNavBrand,
+    FcDashboardNavInDevelopment,
     FcDashboardNavUser,
     FcDialogAlertStudyRequestUrgent,
     FcDialogAlertStudyRequestsUnactionable,
@@ -67,6 +80,9 @@ export default {
     FcToastError,
     FcToastInfo,
     FcToastJob,
+  },
+  data() {
+    return { FrontendEnv };
   },
   computed: {
     hasDialog: {
@@ -93,6 +109,7 @@ export default {
       'auth',
       'dialog',
       'dialogData',
+      'frontendEnv',
       'toast',
       'toastData',
       'toastKey',
@@ -106,10 +123,16 @@ export default {
 
 <style lang="scss">
 #fc_app {
+  --full-height: calc(100vh - 52px);
+
   color: var(--v-default-base);
   font-size: 0.875rem;
   font-weight: normal;
   line-height: 1.25rem;
+
+  &.is-prod {
+    --full-height: 100vh;
+  }
 
   & .fc-navigation-drawer {
     overflow: visible;

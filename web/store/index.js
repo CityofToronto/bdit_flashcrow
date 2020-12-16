@@ -24,6 +24,7 @@ import {
 } from '@/lib/i18n/Strings';
 import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
+import FrontendEnv from '@/web/config/FrontendEnv';
 import viewData from '@/web/store/modules/viewData';
 
 Vue.use(Vuex);
@@ -40,6 +41,7 @@ export default new Vuex.Store({
       loggedIn: false,
       user: null,
     },
+    frontendEnv: FrontendEnv.get(),
     now: DateTime.local(),
     // TOP-LEVEL UI
     dialog: null,

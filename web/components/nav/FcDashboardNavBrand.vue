@@ -15,17 +15,22 @@
             src="/logo_square.png"></v-img>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>MOVE</v-list-item-title>
+          <v-list-item-title>{{frontendEnv.appTitle}}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </template>
-    <span>MOVE</span>
+    <span>{{frontendEnv.appTitle}}</span>
   </v-tooltip>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'FcDashboardNavBrand',
+  computed: {
+    ...mapState(['frontendEnv']),
+  },
   methods: {
     actionClick() {
       const event = this.$analytics.buttonEvent('MOVE', this.$el);
