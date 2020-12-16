@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2020-12-16
+
+### Added
+- topbar returns to local, dev, and QA environments, now with "go to prod" button
+
+### Changed
+- studies layer now shows grey circles where there are studies, but none of them match current time range
+- collisions layers now use layer filters on 10-year tiles, instead of separate sources
+
+### Fixed
+- bug in Oracle Infinity analytics where we were using the dev / QA DCS ID in production
+- bug in collision popups related to `collision_id` drift between when `collisions` data was updated (nightly) and when vector tiles were generated (weekly)
+
 ## [1.0.0] - 2020-12-02
 
 No changes (except the version number!)

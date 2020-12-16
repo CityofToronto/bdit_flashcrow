@@ -1,4 +1,6 @@
 {
   "errorLevel": 2,
-  "reject": []
+  "reject": [
+    "mapbox-gl"
+  ]
 }
