@@ -29,7 +29,7 @@ FrontendEnv.init({
   },
   QA: {
     appClass: 'is-qa',
-    appTitle: 'MOVE (dev)',
+    appTitle: 'MOVE (QA)',
   },
   PROD: {
     appClass: 'is-prod',
