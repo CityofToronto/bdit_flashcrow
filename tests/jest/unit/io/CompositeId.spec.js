@@ -85,7 +85,7 @@ test('CompositeId [empty feature set]', () => {
 
 test('CompositeId [encode / decode]', () => {
   let features = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
   ];
   let compositeId = CompositeId.encode(features);
   expect(CompositeId.decode(compositeId)).toEqual(features);
@@ -97,7 +97,7 @@ test('CompositeId [encode / decode]', () => {
   expect(CompositeId.decode(compositeId)).toEqual(features);
 
   features = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
   ];
   compositeId = CompositeId.encode(features);

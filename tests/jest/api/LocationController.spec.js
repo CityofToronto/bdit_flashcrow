@@ -25,7 +25,7 @@ function expectSuggestionsContain(result, centrelineId) {
 
 test('LocationController.getCompositeId', async () => {
   const features = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
   ];
   const data = {
@@ -40,7 +40,7 @@ test('LocationController.getCompositeId', async () => {
 
 test('LocationController.getCompositeId [length mismatch]', async () => {
   const data = {
-    centrelineId: [30000549, 111569],
+    centrelineId: [13441579, 111569],
     centrelineType: [CentrelineType.SEGMENT],
   };
   const response = await client.fetch('/locations/compositeId', { data });
@@ -103,6 +103,7 @@ test('LocationController.getLocationsByCorridor [short corridor]', async () => {
   const locations = response.result;
   s1 = CompositeId.encode(locations);
   expect(CompositeId.decode(s1)).toEqual([
+    { centrelineId: 13456067, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
     { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 445346, centrelineType: CentrelineType.SEGMENT },
