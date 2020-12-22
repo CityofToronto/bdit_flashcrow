@@ -9,10 +9,10 @@ afterAll(() => {
 
 test('CentrelineDAO.byFeature', async () => {
   // intersection
-  let feature = { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION };
+  let feature = { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION };
   let result = await CentrelineDAO.byFeature(feature);
   expect(result).not.toBeNull();
-  expect(result.centrelineId).toEqual(30000549);
+  expect(result.centrelineId).toEqual(13441579);
   expect(result.centrelineType).toEqual(CentrelineType.INTERSECTION);
 
   // segment
@@ -58,7 +58,7 @@ test('CentrelineDAO.byFeatures', async () => {
 
   // single valid intersection
   query = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
   ];
   results = await CentrelineDAO.byFeatures(query);
   expectFeaturesResults(results, query);
@@ -72,15 +72,15 @@ test('CentrelineDAO.byFeatures', async () => {
 
   // duplicate value
   query = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
   ];
   results = await CentrelineDAO.byFeatures(query);
   expectFeaturesResults(results, query);
 
   // intersection + segment
   query = [
-    { centrelineId: 30000549, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
   ];
   results = await CentrelineDAO.byFeatures(query);
