@@ -104,19 +104,12 @@
 
           <v-spacer></v-spacer>
 
-          <FcDialogReportParameters
-            v-if="showReportParameters"
-            v-model="showReportParameters"
-            :report-parameters="reportParameters"
-            :report-type="activeReportType"
-            @set-report-parameters="setReportParameters">
-          </FcDialogReportParameters>
           <FcButton
-            v-if="activeReportType.name === 'WARRANT_TRAFFIC_SIGNAL_CONTROL'"
+            v-if="hasReportParameters && !showReportParameters"
             type="secondary"
             @click.stop="showReportParameters = true">
             <v-icon color="primary" left>mdi-cog</v-icon>
-            Set Parameters
+            Edit Parameters
           </FcButton>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
@@ -129,8 +122,13 @@
       </div>
 
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
+        <FcReportParameters
+          v-if="showReportParameters"
+          :report-parameters="reportParameters"
+          :report-type="activeReportType"
+          @set-report-parameters="setReportParameters" />
         <div
-          v-if="loadingReportLayout"
+          v-else-if="loadingReportLayout"
           class="ma-3 text-center">
           <v-progress-circular
             v-if="loadingReportLayout"
@@ -184,12 +182,12 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
-import FcDialogReportParameters from '@/web/components/dialogs/FcDialogReportParameters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
+import FcReportParameters from '@/web/components/reports/FcReportParameters.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -198,11 +196,11 @@ export default {
   components: {
     FcButton,
     FcDialogConfirm,
-    FcDialogReportParameters,
     FcIconLocationMulti,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,
+    FcReportParameters,
   },
   data() {
     const reportUserParameters = {};
@@ -267,6 +265,9 @@ export default {
         ...filterParamsStudy,
         studyTypes: [studyType],
       };
+    },
+    hasReportParameters() {
+      return this.activeReportType === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL;
     },
     itemsStudies() {
       return this.studies.map(({ startDate }, i) => {
@@ -341,10 +342,20 @@ export default {
   },
   watch: {
     activeReportId() {
-      this.updateReportLayout();
+      if (this.hasReportParameters) {
+        this.showReportParameters = true;
+      } else {
+        this.showReportParameters = false;
+        this.updateReportLayout();
+      }
     },
     activeReportType() {
-      this.updateReportLayout();
+      if (this.hasReportParameters) {
+        this.showReportParameters = true;
+      } else {
+        this.showReportParameters = false;
+        this.updateReportLayout();
+      }
     },
     async locationActive() {
       const studies = await getStudiesByCentreline(
@@ -437,6 +448,7 @@ export default {
     },
     setReportParameters(reportParameters) {
       this.reportParameters = reportParameters;
+      this.showReportParameters = false;
       this.updateReportLayout();
     },
     async updateReportLayout() {
