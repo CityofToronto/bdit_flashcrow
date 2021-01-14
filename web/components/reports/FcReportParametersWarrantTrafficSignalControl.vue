@@ -62,12 +62,10 @@ export default {
   },
   data() {
     const itemsIsTwoLane = [
-      { text: 'Auto-detect', value: null },
       { text: '1-2 lanes', value: true },
       { text: '3+ lanes', value: false },
     ];
     const itemsIsXIntersection = [
-      { text: 'Auto-detect', value: null },
       { text: 'T (3-way)', value: false },
       { text: 'X (4-way)', value: true },
     ];

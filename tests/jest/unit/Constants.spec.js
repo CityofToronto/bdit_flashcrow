@@ -14,7 +14,6 @@ test('HttpStatus#isOk', () => {
 
 test('ReportParameter#defaultValue', () => {
   expect(ReportParameter.BOOLEAN.defaultValue()).toEqual(true);
-  expect(ReportParameter.BOOLEAN_NULLABLE.defaultValue()).toEqual(null);
   const defaultValueDate = ReportParameter.DATE.defaultValue({
     state: {
       now: DateTime.fromObject({ year: 2020, month: 3, day: 17 }),

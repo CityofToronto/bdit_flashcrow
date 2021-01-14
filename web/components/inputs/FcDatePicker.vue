@@ -98,13 +98,18 @@ export default {
   },
   computed: {
     color() {
-      if (this.$attrs.disabled) {
+      const {
+        disabled = false,
+        success = false,
+        'error-messages': errorMessages = [],
+      } = this.$attrs;
+      if (disabled) {
         return 'unselected';
       }
-      if (this.$attrs.success) {
+      if (success) {
         return 'success';
       }
-      if (this.$attrs['error-messages'].length > 0) {
+      if (errorMessages.length > 0) {
         return 'error';
       }
       return null;

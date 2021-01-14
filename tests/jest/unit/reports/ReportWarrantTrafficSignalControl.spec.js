@@ -126,8 +126,8 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
   } = setup_5_38661();
   const options = {
     adequateTrial: true,
-    isTwoLane: null,
-    isXIntersection: null,
+    isTwoLane: false,
+    isXIntersection: true,
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -164,8 +164,10 @@ test('ReportWarrantTrafficSignalControl#generateCsv [Overlea and Thorncliffe: 5/
   } = setup_5_38661();
   const options = {
     adequateTrial: true,
+    isTwoLane: false,
+    isXIntersection: true,
     preventablesByYear: [3, 5, 10],
-    startYear: 2016,
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
   const transformedData = reportInstance.transformData(study, {
     count,
