@@ -31,3 +31,70 @@ test('ReportBaseFlowDirectional.computeMovementAndVehicleTotals', () => {
     expect(sumVehicleExits).toBe(sumVehicleEnters);
   }
 });
+
+test('ReportBaseFlowDirectional.getRoads', () => {
+  let segments = [];
+  expect(ReportBaseFlowDirectional.getRoads(segments)).toEqual([]);
+
+  segments = [{ roadId: 42 }];
+  expect(ReportBaseFlowDirectional.getRoads(segments)).toEqual([[0]]);
+
+  segments = [{ roadId: 42 }, { roadId: 42 }];
+  expect(ReportBaseFlowDirectional.getRoads(segments)).toEqual([[0, 1]]);
+
+  segments = [{ roadId: 42 }, { roadId: 1729 }];
+  expect(ReportBaseFlowDirectional.getRoads(segments)).toEqual([[0], [1]]);
+
+  segments = [{ roadId: 42 }, { roadId: 1729 }, { roadId: 42 }, { roadId: 73 }];
+  expect(ReportBaseFlowDirectional.getRoads(segments)).toEqual([[0, 2], [3], [1]]);
+});
+
+test('ReportBaseFlowDirectional.inferRoadDirections', () => {
+  let roads = [];
+  let directionCandidates = new Map();
+  expect(ReportBaseFlowDirectional.inferRoadDirections(roads, directionCandidates)).toEqual([
+    [CardinalDirection.SOUTH, CardinalDirection.NORTH],
+    [CardinalDirection.WEST, CardinalDirection.EAST],
+  ]);
+
+  roads = [[0]];
+  directionCandidates = new Map([[CardinalDirection.WEST, 0]]);
+  expect(ReportBaseFlowDirectional.inferRoadDirections(roads, directionCandidates)).toEqual([
+    [CardinalDirection.EAST, CardinalDirection.WEST],
+    [CardinalDirection.SOUTH, CardinalDirection.NORTH],
+  ]);
+
+  roads = [[0, 3], [2, 1]];
+  directionCandidates = new Map([
+    [CardinalDirection.WEST, 0],
+    [CardinalDirection.NORTH, 1],
+    [CardinalDirection.SOUTH, 2],
+    [CardinalDirection.EAST, 3],
+  ]);
+  expect(ReportBaseFlowDirectional.inferRoadDirections(roads, directionCandidates)).toEqual([
+    [CardinalDirection.EAST, CardinalDirection.WEST],
+    [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+  ]);
+
+  roads = [[0, 2], [1]];
+  directionCandidates = new Map([
+    [CardinalDirection.SOUTH, 0],
+    [CardinalDirection.EAST, 1],
+    [CardinalDirection.NORTH, 2],
+  ]);
+  expect(ReportBaseFlowDirectional.inferRoadDirections(roads, directionCandidates)).toEqual([
+    [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+    [CardinalDirection.WEST, CardinalDirection.EAST],
+  ]);
+
+  roads = [[0, 3], [2, 1]];
+  directionCandidates = new Map([
+    [CardinalDirection.NORTH, 1],
+    [CardinalDirection.SOUTH, 2],
+    [CardinalDirection.EAST, 3],
+  ]);
+  expect(ReportBaseFlowDirectional.inferRoadDirections(roads, directionCandidates)).toEqual([
+    [CardinalDirection.WEST, CardinalDirection.EAST],
+    [CardinalDirection.NORTH, CardinalDirection.SOUTH],
+  ]);
+});
