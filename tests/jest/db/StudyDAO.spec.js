@@ -214,7 +214,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerCategoryStudy(studySummary, [[3633, 'RESCU']]);
+  expectNumPerCategoryStudy(studySummary, [[3633, 'RESCU'], [2, 'TMC']]);
 
   // centreline feature with lots of counts, date range filters to empty
   features = [
@@ -361,7 +361,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation()', async () => {
     studyTypes: null,
   };
   studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerCategoryAndLocationStudy(studySummary, [[[3633], 'RESCU']]);
+  expectNumPerCategoryAndLocationStudy(studySummary, [[[3633], 'RESCU'], [[2], 'TMC']]);
 
   // centreline feature with lots of counts, date range filters to empty
   features = [
@@ -431,7 +431,7 @@ test('StudyDAO.byCentrelineTotal()', async () => {
     { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
   ];
   total = await StudyDAO.byCentrelineTotal(features);
-  expect(total).toBe(3633);
+  expect(total).toBe(3635);
 
   // centreline feature with more than one kind of count
   features = [
