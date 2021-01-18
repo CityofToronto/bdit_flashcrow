@@ -59,7 +59,6 @@
 
         <FcCommentsStudyRequest
           class="mt-4"
-          :size-limit="240"
           :study-request="studyRequest"
           :study-request-comments="studyRequestComments"
           :study-request-users="studyRequestUsers"

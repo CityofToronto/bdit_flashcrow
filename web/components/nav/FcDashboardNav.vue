@@ -28,8 +28,8 @@
 
     <FcDashboardNavItem
       icon="bug"
-      label="Report a Bug"
-      :href="urlReportBug"
+      label="Report an Issue"
+      :href="urlReportIssue"
       target="_blank" />
   </v-list>
 </template>
@@ -63,7 +63,7 @@ export default {
         params,
       };
     },
-    urlReportBug() {
+    urlReportIssue() {
       const paramUsername = encodeURIComponent(this.username);
       const url = `${window.location.origin}${this.$route.fullPath}`;
       const paramUrl = encodeURIComponent(url);

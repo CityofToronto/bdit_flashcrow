@@ -8,7 +8,6 @@
         <v-textarea
           v-model="commentText"
           class="mt-4"
-          :counter="sizeLimit"
           label="Compose message"
           :loading="loadingAddComment"
           no-resize
@@ -16,7 +15,7 @@
           rows="4"></v-textarea>
         <div class="text-right">
           <FcButton
-            :disabled="commentText.length === 0 || charsRemaining < 0"
+            :disabled="commentText.length === 0"
             :loading="loadingAddComment"
             type="primary"
             @click="actionAddComment">
@@ -77,7 +76,6 @@ export default {
     FcButtonAria,
   },
   props: {
-    sizeLimit: Number,
     studyRequest: Object,
     studyRequestComments: Array,
     studyRequestUsers: Map,
@@ -89,9 +87,6 @@ export default {
     };
   },
   computed: {
-    charsRemaining() {
-      return this.sizeLimit - this.commentText.length;
-    },
     ...mapState(['auth']),
   },
   methods: {
