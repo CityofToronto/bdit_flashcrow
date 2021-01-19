@@ -27,6 +27,21 @@ test('ArrayUtils.range()', () => {
   }
 });
 
+test('ArrayUtils.chunk()', () => {
+  expect(ArrayUtils.chunk([], 2)).toEqual([]);
+  expect(ArrayUtils.chunk(['a'], 2)).toEqual([['a']]);
+  expect(ArrayUtils.chunk(['a', 'b'], 2)).toEqual([['a', 'b']]);
+  expect(ArrayUtils.chunk(['a', 'b', 'c'], 2)).toEqual([
+    ['a', 'b'],
+    ['c'],
+  ]);
+  expect(ArrayUtils.chunk(ArrayUtils.range(11), 4)).toEqual([
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10],
+  ]);
+});
+
 test('ArrayUtils.sumObjects()', () => {
   const xs = [
     { a: 1, b: 2 },
