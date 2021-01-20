@@ -52,6 +52,8 @@
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+const REGEX_VALUE_FORMATTED = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
+
 function fromInternalValue(internalValue) {
   if (internalValue === null) {
     return null;
@@ -61,6 +63,10 @@ function fromInternalValue(internalValue) {
 
 function fromValueFormatted(valueFormatted) {
   if (valueFormatted === null) {
+    return null;
+  }
+  const match = REGEX_VALUE_FORMATTED.exec(valueFormatted);
+  if (match === null) {
     return null;
   }
   const dt = DateTime.fromISO(valueFormatted);
