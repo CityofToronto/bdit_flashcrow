@@ -80,6 +80,20 @@ test('LocationController.getLocationsByCentreline', async () => {
   response.result.forEach(({ centrelineId, centrelineType }, i) => {
     expect({ centrelineId, centrelineType }).toEqual(features[i]);
   });
+
+  // valid multi-fetch: non-existent intersection, existent segment
+  features = [
+    { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  s1 = CompositeId.encode(features);
+  data = { s1 };
+  response = await client.fetch('/locations/byCentreline', { data });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toEqual(features.length);
+  expect(response.result[0]).toBeNull();
+  expect(response.result[1].centrelineId).toEqual(features[1].centrelineId);
+  expect(response.result[1].centrelineType).toEqual(features[1].centrelineType);
 });
 
 test('LocationController.getLocationsByCorridor [empty]', async () => {

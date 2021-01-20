@@ -53,6 +53,8 @@ import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
+const MSG_LOCATION_REMOVED = 'Location removed from centreline';
+
 const SELECTABLE_LAYERS = [
   'studies',
   'intersections',
@@ -118,6 +120,13 @@ async function getCentrelineDetails(feature, centrelineType) {
 }
 
 function getCentrelineDescription(feature, { location }) {
+  if (location === null) {
+    /*
+     * Fallback if the centreline feature the user is hovering over has just been removed by a
+     * centreline update.  This is *extremely* unlikely to happen.
+     */
+    return [MSG_LOCATION_REMOVED];
+  }
   const description = [location.description];
 
   const locationFeatureType = getLocationFeatureType(location);
@@ -186,10 +195,20 @@ function getStudyDescription(feature, { location, studySummary }) {
     description.push(studyStr);
   });
 
-  const locationFeatureType = getLocationFeatureType(location);
-  if (locationFeatureType !== null) {
-    const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
-    description.push(locationStr);
+  if (location === null) {
+    /*
+     * Fallback in case this study refers to a location that has been removed from the
+     * centreline.
+     */
+    description.push(MSG_LOCATION_REMOVED);
+  } else {
+    const locationFeatureType = getLocationFeatureType(location);
+    if (locationFeatureType === null) {
+      description.push(location.description);
+    } else {
+      const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
+      description.push(locationStr);
+    }
   }
 
   return description;

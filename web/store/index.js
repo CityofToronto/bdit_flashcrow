@@ -411,6 +411,12 @@ export default new Vuex.Store({
       }
 
       let locationsNext = await getLocationsByCentreline(features);
+      /*
+       * Since this endpoint can return `null` values, we filter those out here.  If this does
+       * change the list of features, it should trigger an update of the route parameters.
+       */
+      locationsNext = locationsNext.filter(location => location !== null);
+
       const locationsSelection = {
         locations: locationsNext,
         selectionType: selectionTypeNext,
