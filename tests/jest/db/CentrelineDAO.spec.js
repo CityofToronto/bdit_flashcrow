@@ -33,14 +33,29 @@ test('CentrelineDAO.byFeature', async () => {
   await expect(
     CentrelineDAO.byFeature(feature),
   ).resolves.toBeNull();
+
+  // valid but non-existent ID, intersection
+  feature = { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION };
+  result = await CentrelineDAO.byFeature(feature);
+  expect(result).toBeNull();
+
+  // valid but non-existent ID, segment
+  feature = { centrelineId: 1, centrelineType: CentrelineType.SEGMENT };
+  result = await CentrelineDAO.byFeature(feature);
+  expect(result).toBeNull();
 });
 
 function expectFeaturesResults(results, expected) {
   expect(results.length).toBe(expected.length);
-  expected.forEach(({ centrelineId, centrelineType }, i) => {
+  expected.forEach((location, i) => {
     const result = results[i];
-    expect(result.centrelineId).toBe(centrelineId);
-    expect(result.centrelineType).toBe(centrelineType);
+    if (location === null) {
+      expect(result).toBeNull();
+    } else {
+      const { centrelineId, centrelineType } = location;
+      expect(result.centrelineId).toBe(centrelineId);
+      expect(result.centrelineType).toBe(centrelineType);
+    }
   });
 }
 
@@ -85,6 +100,22 @@ test('CentrelineDAO.byFeatures', async () => {
   ];
   results = await CentrelineDAO.byFeatures(query);
   expectFeaturesResults(results, query);
+
+  // existing intersection + non-existing segment
+  query = [
+    { centrelineId: 13441579, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 1, centrelineType: CentrelineType.SEGMENT },
+  ];
+  results = await CentrelineDAO.byFeatures(query);
+  expectFeaturesResults(results, [query[0], null]);
+
+  // non-existing intersection + existing segment
+  query = [
+    { centrelineId: 1, centrelineType: CentrelineType.INTERSECTION },
+    { centrelineId: 111569, centrelineType: CentrelineType.SEGMENT },
+  ];
+  results = await CentrelineDAO.byFeatures(query);
+  expectFeaturesResults(results, [null, query[1]]);
 });
 
 test('CentrelineDAO.featuresIncidentTo', async () => {
@@ -125,4 +156,12 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
   await expect(
     CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
   ).resolves.toEqual([]);
+
+  // non-existent intersection
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 1);
+  expect(result).toHaveLength(0);
+
+  // non-existent segment
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 1);
+  expect(result).toHaveLength(0);
 });

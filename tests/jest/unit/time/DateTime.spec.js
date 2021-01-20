@@ -50,7 +50,7 @@ test('DateTime [SQL parsing]', () => {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
     const dt2 = DateTime.fromSQL(dt.toSQL());
-    expect(dt.equals(dt2)).toBe(true);
+    expect(dt2.toMillis()).toBe(t);
   }
 });
 
@@ -59,7 +59,7 @@ test('DateTime [JSON parsing]', () => {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
     const dt2 = DateTime.fromJSON(dt.toJSON());
-    expect(dt.equals(dt2)).toBe(true);
+    expect(dt2.toMillis()).toBe(t);
   }
 });
 
@@ -68,6 +68,6 @@ test('DateTime [string parsing]', () => {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
     const dt2 = DateTime.fromString(dt.toString());
-    expect(dt.equals(dt2)).toBe(true);
+    expect(dt2.toMillis()).toBe(t);
   }
 });
