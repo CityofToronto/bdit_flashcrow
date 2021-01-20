@@ -93,6 +93,7 @@ function setup_5_36781() {
   StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
 
   const counts = [{
+    date: DateTime.fromSQL('2018-02-27 00:00:00'),
     hours: StudyHours.SCHOOL,
     id: 36781,
     locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
@@ -122,6 +123,7 @@ function setup_5_38661() {
   StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
 
   const counts = [{
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
     hours: StudyHours.ROUTINE,
     id: 38661,
     locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',

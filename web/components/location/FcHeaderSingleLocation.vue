@@ -50,7 +50,8 @@ export default {
         ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
       );
       const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
-      return `${nStr} (${mostRecentDateStr})`;
+      const dayOfWeek = TimeFormatters.formatDayOfWeek(mostRecentDate);
+      return `${nStr}: ${mostRecentDateStr} (${dayOfWeek})`;
     },
   },
   watch: {

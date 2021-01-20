@@ -14,7 +14,7 @@
           <div
             v-for="(line, i) in description"
             :key="i"
-            class="body-1">
+            class="body-1 mb-1">
             {{line}}
           </div>
         </template>
@@ -119,20 +119,26 @@ async function getCentrelineDetails(feature, centrelineType) {
   return { location };
 }
 
-function getCentrelineDescription(feature, { location }) {
+function getLocationDescription(location) {
   if (location === null) {
     /*
-     * Fallback if the centreline feature the user is hovering over has just been removed by a
-     * centreline update.  This is *extremely* unlikely to happen.
+     * Fallback in case this study refers to a location that has been removed from the
+     * centreline.
      */
-    return [MSG_LOCATION_REMOVED];
+    return MSG_LOCATION_REMOVED;
   }
-  const description = [location.description];
-
   const locationFeatureType = getLocationFeatureType(location);
-  if (locationFeatureType !== null) {
-    description.push(locationFeatureType.description);
+  if (locationFeatureType === null) {
+    return location.description;
   }
+  return `${locationFeatureType.description} \u00b7 ${location.description}`;
+}
+
+function getCentrelineDescription(feature, { location }) {
+  const description = [];
+
+  const locationStr = getLocationDescription(location);
+  description.push(locationStr);
 
   const { centrelineType } = feature.properties;
   if (centrelineType === CentrelineType.SEGMENT) {
@@ -191,25 +197,13 @@ function getStudyDescription(feature, { location, studySummary }) {
     }
     const { startDate } = mostRecent;
     const startDateStr = TimeFormatters.formatDefault(startDate);
-    const studyStr = `${label} (${startDateStr})`;
+    const dayOfWeek = TimeFormatters.formatDayOfWeek(startDate);
+    const studyStr = `${label}: ${startDateStr} (${dayOfWeek})`;
     description.push(studyStr);
   });
 
-  if (location === null) {
-    /*
-     * Fallback in case this study refers to a location that has been removed from the
-     * centreline.
-     */
-    description.push(MSG_LOCATION_REMOVED);
-  } else {
-    const locationFeatureType = getLocationFeatureType(location);
-    if (locationFeatureType === null) {
-      description.push(location.description);
-    } else {
-      const locationStr = `${locationFeatureType.description} \u00b7 ${location.description}`;
-      description.push(locationStr);
-    }
-  }
+  const locationStr = getLocationDescription(location);
+  description.push(locationStr);
 
   return description;
 }
