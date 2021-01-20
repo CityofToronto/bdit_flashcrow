@@ -60,7 +60,6 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
     };
     const studyTypes = getLocationStudyTypes(location);
     expect(studyTypes).toBeInstanceOf(Array);
-    expect(studyTypes).not.toContain(StudyType.TMC);
   });
   let location = {
     centrelineType: CentrelineType.SEGMENT,
