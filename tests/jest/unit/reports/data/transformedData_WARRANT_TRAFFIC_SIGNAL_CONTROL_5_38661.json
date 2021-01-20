@@ -211,5 +211,6 @@
     "b": true,
     "compliance": 100
   },
-  "combination": false
+  "combination": true,
+  "date": "2019-04-13 00:00:00.000"
 }

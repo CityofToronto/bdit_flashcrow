@@ -23,6 +23,7 @@ function setup_5_38661() {
   };
 
   const count = {
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
     hours: StudyHours.ROUTINE,
     id: 38661,
     locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
