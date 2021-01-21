@@ -1,16 +1,18 @@
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import UserDAO from '@/lib/db/UserDAO';
 import EmailStudyRequestRequested from '@/lib/email/EmailStudyRequestRequested';
 import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
 jest.mock('@/lib/db/CentrelineDAO');
+jest.mock('@/lib/db/UserDAO');
 
 test('EmailStudyRequestRequested', async () => {
-  const user = generateUser();
+  const requester = generateUser();
   const studyRequest = generateStudyRequest();
   studyRequest.id = 42;
-  const email = new EmailStudyRequestRequested(user, studyRequest);
+  const email = new EmailStudyRequestRequested(studyRequest);
 
   const { centrelineId, centrelineType } = studyRequest;
   CentrelineDAO.byFeature.mockResolvedValue({
@@ -18,11 +20,12 @@ test('EmailStudyRequestRequested', async () => {
     centrelineType,
     description: 'Test location',
   });
+  UserDAO.byId.mockResolvedValue(requester);
 
   await email.init();
 
   const recipients = email.getRecipients();
-  expect(recipients).toEqual([user.email, ...studyRequest.ccEmails]);
+  expect(recipients).toEqual([requester.email, ...studyRequest.ccEmails]);
 
   const subject = email.getSubject();
   expect(subject).toEqual('[MOVE] Request received for Test location');

@@ -1,16 +1,18 @@
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import UserDAO from '@/lib/db/UserDAO';
 import EmailStudyRequestBulkRequested from '@/lib/email/EmailStudyRequestBulkRequested';
 import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequestBulk } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
 jest.mock('@/lib/db/CentrelineDAO');
+jest.mock('@/lib/db/UserDAO');
 
 test('EmailStudyRequestBulkRequested', async () => {
-  const user = generateUser();
+  const requester = generateUser();
   const studyRequestBulk = generateStudyRequestBulk();
   studyRequestBulk.id = 17;
-  const email = new EmailStudyRequestBulkRequested(user, studyRequestBulk);
+  const email = new EmailStudyRequestBulkRequested(studyRequestBulk);
 
   const locations = studyRequestBulk.studyRequests.map(({ centrelineId, centrelineType }, i) => ({
     centrelineId,
@@ -18,11 +20,12 @@ test('EmailStudyRequestBulkRequested', async () => {
     description: `Test location #${i + 1}`,
   }));
   CentrelineDAO.byFeatures.mockResolvedValue(locations);
+  UserDAO.byId.mockResolvedValue(requester);
 
   await email.init();
 
   const recipients = email.getRecipients();
-  expect(recipients).toEqual([user.email, ...studyRequestBulk.ccEmails]);
+  expect(recipients).toEqual([requester.email, ...studyRequestBulk.ccEmails]);
 
   const subject = email.getSubject();
   expect(subject).toEqual(`[MOVE] Requests received for ${studyRequestBulk.name}`);
