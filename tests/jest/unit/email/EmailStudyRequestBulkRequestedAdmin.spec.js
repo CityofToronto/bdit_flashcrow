@@ -29,7 +29,7 @@ test('EmailStudyRequestBulkRequestedAdmin', async () => {
   expect(recipients).toEqual([EmailBase.TO_DATA_COLLECTION]);
 
   const subject = email.getSubject();
-  expect(subject).toEqual(`[MOVE] New bulk request for ${studyRequestBulk.name}`);
+  expect(subject).toEqual(`[MOVE] New requests for ${studyRequestBulk.name}`);
 
   const params = email.getBodyParams();
   const s1 = CompositeId.encode(locations);
