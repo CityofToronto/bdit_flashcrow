@@ -1,16 +1,16 @@
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
-import EmailStudyRequestConfirmation from '@/lib/email/EmailStudyRequestConfirmation';
+import EmailStudyRequestRequested from '@/lib/email/EmailStudyRequestRequested';
 import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
 jest.mock('@/lib/db/CentrelineDAO');
 
-test('EmailStudyRequestConfirmation', async () => {
+test('EmailStudyRequestRequested', async () => {
   const user = generateUser();
   const studyRequest = generateStudyRequest();
   studyRequest.id = 42;
-  const email = new EmailStudyRequestConfirmation(user, studyRequest);
+  const email = new EmailStudyRequestRequested(user, studyRequest);
 
   const { centrelineId, centrelineType } = studyRequest;
   CentrelineDAO.byFeature.mockResolvedValue({
