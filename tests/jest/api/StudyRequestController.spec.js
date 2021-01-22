@@ -352,6 +352,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   let persistedStudyRequest = response.result;
 
   // requester can cancel request
+  Mailer.send.mockClear();
   persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
   persistedStudyRequest.closed = true;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
@@ -361,8 +362,10 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.id).toEqual(persistedStudyRequest.id);
   persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(1);
 
   // requester can reopen request
+  Mailer.send.mockClear();
   persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
   persistedStudyRequest.closed = false;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
@@ -372,6 +375,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.id).toEqual(persistedStudyRequest.id);
   persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
 
   // requester cannot request changes
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
@@ -384,6 +388,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
 
   // supervisor can request changes
+  Mailer.send.mockClear();
   client.setUser(supervisor);
   persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
@@ -393,6 +398,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.id).toEqual(persistedStudyRequest.id);
   persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
 
   // requester cannot assign
   client.setUser(requester);
@@ -407,6 +413,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
 
   // supervisor can assign
+  Mailer.send.mockClear();
   client.setUser(supervisor);
   persistedStudyRequest.status = StudyRequestStatus.ASSIGNED;
   persistedStudyRequest.assignedTo = StudyRequestAssignee.FIELD_STAFF;
@@ -417,6 +424,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.id).toEqual(persistedStudyRequest.id);
   persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
 
   // requester cannot re-assign
   client.setUser(requester);
@@ -430,6 +438,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
 
   // supervisor can re-assign
+  Mailer.send.mockClear();
   client.setUser(supervisor);
   persistedStudyRequest.assignedTo = StudyRequestAssignee.OTI;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
@@ -439,6 +448,7 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.id).toEqual(persistedStudyRequest.id);
   persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
 
   // supervisor cannot make invalid transition
   client.setUser(supervisor);
@@ -450,6 +460,30 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
     },
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+
+  // requester cannot complete
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      status: StudyRequestStatus.COMPLETED,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
+  // supervisor can complete
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  persistedStudyRequest.status = StudyRequestStatus.COMPLETED;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(1);
 });
 
 function expectStudyRequestChanges(actual, expected) {
