@@ -74,6 +74,7 @@ function mockDAOsForStudyRequestBulk(studyRequestBulk) {
 test('StudyRequestBulkController.postStudyRequestBulk', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
+  Mailer.send.mockClear();
 
   client.setUser(requester);
   let response = await client.fetch('/requests/study/bulk', {
@@ -81,7 +82,7 @@ test('StudyRequestBulkController.postStudyRequestBulk', async () => {
     data: transientStudyRequestBulk,
   });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(Mailer.send).toHaveBeenCalled();
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
   const persistedStudyRequestBulk = response.result;
   expect(persistedStudyRequestBulk.id).not.toBeNull();
   expect(persistedStudyRequestBulk.userId).toBe(requester.id);

@@ -71,6 +71,7 @@ function mockDAOsForStudyRequest(studyRequest) {
 test('StudyRequestController.postStudyRequest', async () => {
   const transientStudyRequest = generateStudyRequest();
   mockDAOsForStudyRequest(transientStudyRequest);
+  Mailer.send.mockClear();
 
   client.setUser(requester);
   let response = await client.fetch('/requests/study', {
@@ -78,7 +79,7 @@ test('StudyRequestController.postStudyRequest', async () => {
     data: transientStudyRequest,
   });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(Mailer.send).toHaveBeenCalled();
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
   const persistedStudyRequest = response.result;
   expect(persistedStudyRequest.id).not.toBeNull();
   expect(persistedStudyRequest.userId).toBe(requester.id);
@@ -567,6 +568,7 @@ test('StudyRequestController [comments: post / get]', async () => {
   let persistedStudyRequest = response.result;
 
   // users can comment on their own requests: counts as edit operation
+  Mailer.send.mockClear();
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/comments`, {
     method: 'POST',
     data: { comment: 'comment from requester' },
@@ -577,6 +579,7 @@ test('StudyRequestController [comments: post / get]', async () => {
   expect(persistedStudyRequest.lastEditorId).toBe(requester.id);
   expect(persistedComment1.userId).toBe(requester.id);
   expect(persistedComment1.studyRequestId).toBe(persistedStudyRequest.id);
+  expect(Mailer.send).toHaveBeenCalledTimes(1);
 
   // getting comments
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/comments`);
