@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2021-01-26
+
+### Changed
+- CSV format for Collision Directory report now matches format of web / PDF reports
+- improvements to conflation of collisions and counts against centreline
+- day of week for count / study dates throughout interface
+- better email notifications around study requests
+- warrant report logic as per conversations, feedback with staff and management
+
+### Fixed
+- bug in text entry of dates in date picker
+- bug in location fetching in Track Requests
+- bug in Client, Study Type columns of requests CSV export
+- bug in TMC reports for offset intersections
+
 ## [1.0.1] - 2020-12-16
 
 ### Added
