@@ -15,15 +15,26 @@ In this guide, you will:
 
 Most of MOVE development takes place in a Vagrant VM.  This helps ensure that all developers have the same environment, and that this environment is as similar as possible to those in staging and production.
 
+## General Assumptions
+
+This guide assumes you're running Windows 10/  However, MOVE development itself takes place within a Linux-based VM managed by `vagrant`.  If you're using a different operating system:
+
+- install mentioned packages and utilities using the appropriate package manager;
+- note that file paths here use `\`, but your operating system may use `/` instead.
+
+We also assume that you'll be using Visual Studio Code with remote development over SSH for development.  (You can use other tools, but our configurations are tailored to this particular IDE setup, and we don't have the resources to manage multiple IDE configurations.)
+
 ## City of Toronto Developers: Read This!
 
-Developers at the City of Toronto have a couple of additional steps.  See [City of Toronto Installation Specifics](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb), and refer to that guide throughout this process for further details.
+Developers at the City of Toronto have a few additional steps, as well as some configurations that are specific to the internal City environment.  See [City of Toronto Installation Specifics](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb), and refer to that guide throughout this process for further details.
 
 ## Set up System Prerequisites
 
 ### Command-Line Tools: `git` and `vagrant`
 
 Install [`git`](https://git-scm.com/) and [`vagrant`](https://www.vagrantup.com/downloads) for use on the command line.
+
+[`scoop`](https://scoop.sh/) can help install these on Windows; for other operating systems, use the appropriate package manager.
 
 ### VirtualBox
 
@@ -37,36 +48,9 @@ Although development takes place within a Vagrant VM, you'll still need the Vagr
 git clone https://github.com/CityofToronto/bdit_flashcrow.git
 ```
 
-## Set up the MOVE development VM
-
-### Private Configuration
-
-Generate a random database password and create a file at `scripts\dev\provision.conf.yml` as follows:
-
-```yaml
-gh_user: "{your Github username}"
-gh_password: "{your Github password}"
-pg_password: "{database password}"
-```
-
-This file should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit this files into the repo!
-
-### Vagrant Cloud
-
-MOVE provides a private base box image at `cot-move/cot-move-dev` on Vagrant Cloud, based off the [Amazon Linux 2 VirtualBox image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-2-virtual-machine.html#amazon-linux-2-virtual-machine-download).  This image will be downloaded by `vagrant`.
-
-If you have never set up MOVE before, you will first need to log in to Vagrant Cloud:
-
-```powershell
-cd scripts\dev
-vagrant login
-```
-
-See [Accounts](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3) for Vagrant Cloud credentials.
-
 ### Start up the VM
 
-This will allow you to install the private base box image, which you can then start up using:
+You can now set up your development VM:
 
 ```powershell
 cd scripts\dev
@@ -75,43 +59,11 @@ vagrant up
 
 That's it!  This should install and run the development VM.  The first time you run this, it will take about 20-30 minutes.
 
-## Within the VM...
-
-To access the VM, you can use `vagrant ssh`:
-
-```powershell
-cd scripts\dev
-vagrant ssh
-```
-
-### Clone the MOVE repository (again)
-
-From within the development VM:
-
-```bash
-cd git
-git clone https://github.com/CityofToronto/bdit_flashcrow.git
-```
-
-### Install private config files
-
-See [Accounts :: Web Application Credentials](https://www.notion.so/bditto/Accounts-30b1efa06aef4baaa0468f10b60e69f3#c8ce1f4bab564efb8b23b37c64e679a6) for private config files.  Install these files within the VM as directed there.
-
-If you download these files to your host development machine, you can `scp` them over to the VM, e.g.:
-
-```powershell
-scp private.js vagrant@127.0.0.1:git/bdit_flashcrow/lib/config/private.js
-```
-
-Again: these files should be `.gitignore`'d.  Double-check that you've named them properly by verifying that they do not show up as untracked in `git status`, and *NEVER* commit these files into the repo!
-
 ## Set up IDE
 
 It is highly recommended that you use [Visual Studio Code](https://code.visualstudio.com/).  The MOVE repo comes with a Visual Studio Code workspace configuration; to work in other editors, you will have to roll your own configuration.
 
 If you already have Visual Studio Code installed, make sure that you have updated to version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
-
-The rest of this guide will assume that you're using Visual Studio Code with remote development over SSH.
 
 ### Install Visual Studio Code
 
@@ -127,10 +79,10 @@ We use the output of `vagrant ssh-config` to configure an OpenSSH-compatible ver
 
 ```powershell
 cd scripts\dev
-vagrant ssh-config | Out-File -Encoding utf8 ~\.ssh\config
+vagrant ssh-config
 ```
 
-From here, edit the first line of `~\.ssh\config` to read:
+From here, copy-paste the resulting output into `~\.ssh\config`, and edit the first line to read:
 
 ```conf
 Host 127.0.0.1
@@ -143,21 +95,69 @@ You can now follow step 2 on the [Remote Development using SSH](https://code.vis
 
 At this point, you'll be in a Visual Studio Code window with SSH access to the Vagrant VM, but you won't actually be in the MOVE workspace.
 
-Go to **File > Open Workspace...** and open `git/bdit_flashcrow/bdit-flashcrow.code-workspace`.  You should only have to do this the first time you open the MOVE workspace; by default, Visual Studio Code re-opens your most recently open workspace on startup.
+Go to **File > Open Workspace...** and open `~/flashcrow/bdit-flashcrow.code-workspace`.  You should only have to do this the first time you open the MOVE workspace; by default, Visual Studio Code re-opens your most recently open workspace on startup.
 
 ## Within the VM...
 
-To finish this off, we'll now install application dependencies and run MOVE from our Visual Studio Code workspace.
+At this point, you've set up a development environment using the `vagrant` VM!  This next section sets up necessary configuration for MOVE.
 
-### Install application dependencies
+### Additional dependencies
 
-To install application dependencies:
+For now, you will need to install the following:
 
 ```bash
-nvm install
-nvm use
-npm install
+sudo yum install -y ShellCheck
 ```
+
+These dependencies will be included in future versions of the `vagrant` VM base box and/or provisioning script.
+
+### Install private config files
+
+MOVE depends on two private configuration files: `lib/config/private.js` and `ssl/extra-ca-certs.cer`.  Both files are `.gitignore`'d, to prevent them from being committed to source control.
+
+`lib/config/private.js` is used to configure session secrets.  At the very least, you will require OpenID Connect credentials (in `openId`) and a `session` secret:
+
+```js
+export default {
+  development: {
+    openId: {
+      clientMetadata: {
+        client_id:
+        token_endpoint_auth_method:
+      },
+    },
+    session: {
+      password:
+    },
+  },
+  test: {
+    openId: {
+      clientMetadata: {
+        client_id:
+        token_endpoint_auth_method:
+      },
+    },
+    session: {
+      password:
+    },
+  },
+};
+```
+
+The `session` secret can be anything - e.g. the result of `uuidgen -r`.  The `openId` configuration should refer to an OpenID Connect-based authentication service.
+
+`extra-ca-certs.cer` is used in case your `openId` configuration points to an OpenID Connect-based authentication service that uses self-signed SSL certificates.  If this is the case, copy-paste the full certificate chain into this file.  If not, you should still create this file, but can leave it empty.
+
+### Development Dataset
+
+One final piece: MOVE relies on a number of database schemas, views, and tables for traffic count and collision data.
+
+In development, this is managed by a file `flashcrow-dev-data.sql`.  We have a version of this file available for City of Toronto developers, but currently we have neither an externally-available version nor any documentation on how to create one!  It's likely that this will come with efforts scheduled for Q1 / Q2 2021 to improve database documentation.
+
+If you have access to such a file, though, there are two requirements:
+
+- place it at `~/flashcrow-dev-data.sql`;
+- load it into your development database using `psql -U flashcrow < ~/flashcrow-dev-data.sql`.
 
 ### Run!
 
@@ -182,3 +182,11 @@ Congratulations!  Head back to the [MOVE Developer Handbook](https://www.notion.
 ## Troubleshooting
 
 If you encounter issues installing MOVE, document the problem and solution / workaround here.  If you haven't found a solution to your problem, reach out on Slack or submit a bug report.
+
+### Error: unknown encoding name from `vagrant up` on host machine
+
+To fix this, you can change the active codepage:
+
+```powershell
+chcp 1252
+```
