@@ -17,7 +17,7 @@ Most of MOVE development takes place in a Vagrant VM.  This helps ensure that al
 
 ## General Assumptions
 
-This guide assumes you're running Windows 10/  However, MOVE development itself takes place within a Linux-based VM managed by `vagrant`.  If you're using a different operating system:
+This guide assumes you're running Windows 10.  However, MOVE development itself takes place within a Linux-based VM managed by `vagrant`.  If you're using a different operating system:
 
 - install mentioned packages and utilities using the appropriate package manager;
 - note that file paths here use `\`, but your operating system may use `/` instead.
@@ -115,18 +115,20 @@ These dependencies will be included in future versions of the `vagrant` VM base 
 
 MOVE depends on two private configuration files: `lib/config/private.js` and `ssl/extra-ca-certs.cer`.  Both files are `.gitignore`'d, to prevent them from being committed to source control.
 
-`lib/config/private.js` is used to configure session secrets.  At the very least, you will require OpenID Connect credentials (in `openId`) and a `session` secret:
+`lib/config/private.js` is used to configure session secrets.  At the very least, you will require OpenID Connect credentials (in `openId`) and a `session` secret, and you will need these for both a `development` and a `test` environment:
 
 ```js
 export default {
   development: {
     openId: {
+      // OpenID connect credentials
       clientMetadata: {
         client_id:
         token_endpoint_auth_method:
       },
     },
     session: {
+      // session secret
       password:
     },
   },
@@ -144,7 +146,7 @@ export default {
 };
 ```
 
-The `session` secret can be anything - e.g. the result of `uuidgen -r`.  The `openId` configuration should refer to an OpenID Connect-based authentication service.
+The `session` secret can be anything - e.g. the result of `uuidgen -r`.  The `openId` configuration should refer to an OpenID Connect-based authentication service.  You can use the same configuration for both environments, or you can use different configurations.
 
 `extra-ca-certs.cer` is used in case your `openId` configuration points to an OpenID Connect-based authentication service that uses self-signed SSL certificates.  If this is the case, copy-paste the full certificate chain into this file.  If not, you should still create this file, but can leave it empty.
 
