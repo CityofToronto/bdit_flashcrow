@@ -4,7 +4,8 @@
 			"dbaeumer.vscode-eslint",
       "ms-vscode-remote.vscode-remote-extensionpack",
       "octref.vetur",
-			"stylelint.vscode-stylelint"
+      "stylelint.vscode-stylelint",
+      "timonwong.shellcheck"
 		]
 	},
 	"folders": [

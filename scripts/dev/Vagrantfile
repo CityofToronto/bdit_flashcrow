@@ -3,22 +3,23 @@
 
 require 'yaml'
 
-# You *MUST* create `provision.conf.yml` before running `vagrant up`.  The
-# Vagrant installation process relies on credentials provided in that file,
-# and since it contains credentials it is *NOT* included in our `git` repo.
-#
-# See the MOVE Installation Guide for more details:
-#
-# https://github.com/CityofToronto/bdit_flashcrow/blob/master/scripts/dev/README.md#set-up-move-config-files-on-host-machine
-provision_conf = YAML.load_file('provision.conf.yml')
-
 Vagrant.configure("2") do |config|
   config.vm.box = "cot-move/cot-move-dev"
-  config.vm.box_version = "0.0.1"
+  config.vm.box_version = "0.1.0"
 
   # PROXY CONFIGURATION
 
   if Vagrant.has_plugin?("vagrant-proxyconf")
+    # If you have `vagrant-proxyconf` installed, you *MUST* create `provision.conf.yml` before
+    # running `vagrant up` installed.  The Vagrant installation process relies on credentials
+    # provided in that file, and since it contains credentials it is *NOT* included in our
+    # `git` repo.
+    #
+    # See the MOVE Installation Guide for more details:
+    #
+    # https://github.com/CityofToronto/bdit_flashcrow/blob/master/scripts/dev/README.md#set-up-move-config-files-on-host-machine
+    provision_conf = YAML.load_file('provision.conf.yml')
+
     proxy_url = "http://#{provision_conf["proxy_user"]}:#{provision_conf["proxy_pass"]}@proxy.toronto.ca:8080"
     config.proxy.http     = proxy_url
     config.proxy.https    = proxy_url
@@ -30,14 +31,14 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |v|
     # see https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck
-    v.customize ["modifyvm", :id, "--memory", 8192]
+    v.customize ["modifyvm", :id, "--memory", 3072]
     # see https://www.mkwd.net/improve-vagrant-performance/
     v.cpus = 2
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     # see https://serverfault.com/questions/453185/vagrant-virtualbox-dns-10-0-2-3-not-working
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
     # turn on host I/O cache
-    v.customize ["storagectl", :id, "--name", "SATA", "--hostiocache", "on"]
+    v.customize ["storagectl", :id, "--name", "SATA Controller", "--hostiocache", "on"]
   end
 
   # 80xx: SERVICES
@@ -69,12 +70,5 @@ Vagrant.configure("2") do |config|
   # prevent surprises for developers.
   config.vm.box_check_update = false
 
-  shell_script = <<-EOF
-/vagrant/provision-admin.sh
-sudo -u vagrant /vagrant/provision-user.sh \
-  --ghUser "#{provision_conf["gh_user"]}" \
-  --ghPassword "#{provision_conf["gh_password"]}" \
-  --pgPassword "#{provision_conf["pg_password"]}"
-EOF
-  config.vm.provision "shell", privileged: true, inline: shell_script
+  config.vm.provision "shell", privileged: false, path: "provision-vm-vagrant.sh"
 end
