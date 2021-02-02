@@ -13,28 +13,16 @@
       :key="toastKey"
       :is="'FcToast' + toast"
       v-bind="toastData" />
-    <v-navigation-drawer
-      app
-      class="fc-navigation-drawer"
-      mini-variant
-      permanent>
-      <template v-slot:prepend>
-        <FcDashboardNavBrand />
-      </template>
-      <FcDashboardNav />
-      <template v-slot:append>
-        <FcDashboardNavUser />
-      </template>
-    </v-navigation-drawer>
-    <v-main>
+    <FcNavbar />
+    <v-main tag="div">
       <v-container
         class="d-flex fill-height flex-column pa-0"
         fluid>
-        <FcDashboardNavInDevelopment
+        <FcEnvBanner
           v-if="frontendEnv !== FrontendEnv.PROD" />
-        <div class="flex-grow-1" style="width: 100%;">
+        <main class="flex-grow-1" style="width: 100%;">
           <router-view></router-view>
-        </div>
+        </main>
       </v-container>
     </v-main>
   </v-app>
@@ -59,23 +47,19 @@ import FcToastBackendError from '@/web/components/dialogs/FcToastBackendError.vu
 import FcToastError from '@/web/components/dialogs/FcToastError.vue';
 import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
 import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
-import FcDashboardNav from '@/web/components/nav/FcDashboardNav.vue';
-import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
-import FcDashboardNavInDevelopment from '@/web/components/nav/FcDashboardNavInDevelopment.vue';
-import FcDashboardNavUser from '@/web/components/nav/FcDashboardNavUser.vue';
+import FcEnvBanner from '@/web/components/nav/FcEnvBanner.vue';
+import FcNavbar from '@/web/components/nav/FcNavbar.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
 
 export default {
   name: 'App',
   components: {
-    FcDashboardNav,
-    FcDashboardNavBrand,
-    FcDashboardNavInDevelopment,
-    FcDashboardNavUser,
     FcDialogAlertStudyRequestUrgent,
     FcDialogAlertStudyRequestsUnactionable,
     FcDialogAlertStudyTypeUnactionable,
     FcDialogConfirmUnauthorized,
+    FcEnvBanner,
+    FcNavbar,
     FcToastBackendError,
     FcToastError,
     FcToastInfo,
@@ -141,6 +125,11 @@ export default {
   & .v-input--selection-controls__input + .v-label {
     color: var(--v-default-base);
     padding-left: 24px;
+  }
+
+  & .v-tooltip__content {
+    background: rgba(33, 33, 33, 0.9);
+    font-size: 1rem;
   }
 }
 </style>

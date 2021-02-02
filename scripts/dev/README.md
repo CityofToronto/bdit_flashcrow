@@ -101,16 +101,6 @@ Go to **File > Open Workspace...** and open `~/flashcrow/bdit-flashcrow.code-wor
 
 At this point, you've set up a development environment using the `vagrant` VM!  This next section sets up necessary configuration for MOVE.
 
-### Additional dependencies
-
-For now, you will need to install the following:
-
-```bash
-sudo yum install -y ShellCheck
-```
-
-These dependencies will be included in future versions of the `vagrant` VM base box and/or provisioning script.
-
 ### Install private config files
 
 MOVE depends on two private configuration files: `lib/config/private.js` and `ssl/extra-ca-certs.cer`.  Both files are `.gitignore`'d, to prevent them from being committed to source control.
@@ -160,6 +150,22 @@ If you have access to such a file, though, there are two requirements:
 
 - place it at `~/flashcrow-dev-data.sql`;
 - load it into your development database using `psql -U flashcrow < ~/flashcrow-dev-data.sql`.
+
+### Additional Steps
+
+For linting bash scripts as part of our pre-commit checks, you'll need to install `ShellCheck`:
+
+```bash
+sudo yum install -y ShellCheck
+```
+
+You'll also need to manually load the `collision_factors` schema:
+
+```bash
+psql -U flashcrow < ~/flashcrow/scripts/test/db/collision_factors.sql
+```
+
+These steps will be included in future versions of the `vagrant` VM base box and/or provisioning script.
 
 ### Run!
 

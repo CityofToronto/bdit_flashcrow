@@ -1,37 +1,37 @@
 <template>
-  <v-list
-    class="d-flex fill-height flex-column justify-center"
-    dense>
-    <FcDashboardNavItem
-      :active-route-names="[
-        'viewCollisionReportsAtLocation',
-        'viewDataAtLocation',
-        'viewStudyReportsAtLocation',
-      ]"
-      icon="map"
-      label="View Map"
-      :to="toViewMap" />
-    <FcDashboardNavItem
-      :active-route-names="[
-        'requestStudyBulkEdit',
-        'requestStudyEdit',
-        'requestStudyNew',
-      ]"
-      icon="clipboard-list"
-      label="Track Requests"
-      :to="{ name: 'requestsTrack' }" />
-    <FcDashboardNavItem
-      :badge="jobsExistsNew"
-      icon="download"
-      label="Manage Downloads"
-      :to="{ name: 'downloadsManage' }" />
+  <nav class="d-flex fill-height flex-column justify-center">
+    <v-list dense>
+      <FcDashboardNavItem
+        :active-route-names="[
+          'viewCollisionReportsAtLocation',
+          'viewDataAtLocation',
+          'viewStudyReportsAtLocation',
+        ]"
+        icon="map"
+        label="View Map"
+        :to="toViewMap" />
+      <FcDashboardNavItem
+        :active-route-names="[
+          'requestStudyBulkEdit',
+          'requestStudyEdit',
+          'requestStudyNew',
+        ]"
+        icon="clipboard-list"
+        label="Track Requests"
+        :to="{ name: 'requestsTrack' }" />
+      <FcDashboardNavItem
+        :badge="jobsExistsNew"
+        icon="download"
+        label="Manage Downloads"
+        :to="{ name: 'downloadsManage' }" />
 
-    <FcDashboardNavItem
-      icon="bug"
-      label="Report an Issue"
-      :href="urlReportIssue"
-      target="_blank" />
-  </v-list>
+      <FcDashboardNavItem
+        icon="bug"
+        label="Report an Issue"
+        :href="urlReportIssue"
+        target="_blank" />
+    </v-list>
+  </nav>
 </template>
 
 <script>

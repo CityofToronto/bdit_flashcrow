@@ -1,26 +1,28 @@
 <template>
-  <v-tooltip
-    right
-    :z-index="100">
-    <template v-slot:activator="{ on }">
-      <v-list-item
-        v-on="on"
-        class="fc-nav-brand"
-        link
-        :to="{ name: 'viewData' }"
-        @click="actionClick">
-        <v-list-item-icon>
-          <v-img
-            alt="MOVE Logo"
-            src="/logo_square.png"></v-img>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>{{frontendEnv.appTitle}}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </template>
-    <span>{{frontendEnv.appTitle}}</span>
-  </v-tooltip>
+  <header role="banner">
+    <v-tooltip
+      right
+      :z-index="100">
+      <template v-slot:activator="{ on }">
+        <v-list-item
+          v-on="on"
+          class="fc-nav-brand"
+          link
+          :to="{ name: 'viewData' }"
+          @click="actionClick">
+          <v-list-item-icon>
+            <v-img
+              alt="MOVE Logo"
+              src="/logo_square.png"></v-img>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>{{frontendEnv.appTitle}}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </template>
+      <span>{{frontendEnv.appTitle}}</span>
+    </v-tooltip>
+  </header>
 </template>
 
 <script>
