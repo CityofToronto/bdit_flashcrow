@@ -4,8 +4,7 @@
     class="fc-appbar"
     color="white"
     clipped-left
-    dense
-    role="banner">
+    dense>
     <FcDashboardNavBrand />
     <h1 class="headline ml-2">{{textH1}}</h1>
     <v-chip
