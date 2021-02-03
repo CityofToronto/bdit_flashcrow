@@ -300,14 +300,11 @@ router.beforeEach(async (to, from, next) => {
 function afterEachSetTitle(to) {
   let title = routeMetaKey(to, 'title', undefined);
   if (title === undefined) {
-    document.title = store.state.frontendEnv.appTitle;
-    return;
-  }
-  if (title instanceof Function) {
+    title = '';
+  } else if (title instanceof Function) {
     title = title(to);
   }
-  title = `${store.state.frontendEnv.appTitle} \u00b7 ${title}`;
-  document.title = title;
+  store.commit('setTitle', title);
 }
 
 function afterEachAppRouteEvent() {

@@ -21,6 +21,7 @@
         <FcEnvBanner
           v-if="frontendEnv !== FrontendEnv.PROD" />
         <main class="flex-grow-1" style="width: 100%;">
+          <h1 class="sr-only">{{textH1}}</h1>
           <router-view></router-view>
         </main>
       </v-container>
@@ -89,15 +90,37 @@ export default {
         }
       },
     },
+    textH1() {
+      if (this.title === '') {
+        return this.frontendEnv.appTitle;
+      }
+      return this.title;
+    },
     ...mapState([
       'auth',
       'dialog',
       'dialogData',
       'frontendEnv',
+      'title',
       'toast',
       'toastData',
       'toastKey',
     ]),
+  },
+  watch: {
+    title: {
+      handler() {
+        let pageTitle = this.frontendEnv.appTitle;
+        if (this.title !== '') {
+          pageTitle = `${pageTitle} \u00b7 ${this.title}`;
+        }
+
+        const $title = document.querySelector('title');
+        $title.innerText = pageTitle;
+        document.title = pageTitle;
+      },
+      immediate: true,
+    },
   },
   methods: {
     ...mapMutations(['clearDialog', 'clearToast']),

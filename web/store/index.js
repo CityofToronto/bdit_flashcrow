@@ -43,6 +43,7 @@ export default new Vuex.Store({
     },
     frontendEnv: FrontendEnv.get(),
     now: DateTime.local(),
+    title: '',
     // TOP-LEVEL UI
     dialog: null,
     dialogData: {},
@@ -186,6 +187,9 @@ export default new Vuex.Store({
     // AUTH / HELPERS STATE
     setAuth(state, auth) {
       Vue.set(state, 'auth', auth);
+    },
+    setTitle(state, title) {
+      Vue.set(state, 'title', title);
     },
     // TOP-LEVEL UI
     clearDialog(state) {
