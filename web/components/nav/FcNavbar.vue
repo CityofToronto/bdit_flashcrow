@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     app
+    aria-label="Main MOVE navigation"
     class="fc-navigation-drawer"
     clipped
     mini-variant

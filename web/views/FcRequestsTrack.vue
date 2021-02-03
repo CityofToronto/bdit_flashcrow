@@ -3,8 +3,6 @@
     <header class="flex-grow-0 flex-shrink-0">
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-8">Track Requests</h1>
-
         <div class="align-center d-flex mt-6">
           <FcStudyRequestFilterShortcuts
             v-model="filters" />
@@ -20,59 +18,64 @@
 
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
       <v-card class="fc-requests-track-card">
-        <v-card-title class="align-center d-flex py-2">
-          <v-tooltip right>
-            <template v-slot:activator="{ on }">
-              <div v-on="on">
-                <v-checkbox
-                  v-model="selectAll"
-                  aria-label="Select all"
-                  class="mt-0 mr-3 pt-0"
-                  hide-details
-                  :indeterminate="selectAll === null"/>
-              </div>
+        <v-card-title class="py-2">
+          <nav
+            aria-label="Filtering and selection tools for requests"
+            class="fc-requests-track-table-title align-center d-flex">
+
+            <v-tooltip right>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-checkbox
+                    v-model="selectAll"
+                    aria-label="Select all"
+                    class="mt-0 mr-3 pt-0"
+                    hide-details
+                    :indeterminate="selectAll === null"/>
+                </div>
+              </template>
+              <span>Select all</span>
+            </v-tooltip>
+
+            <FcButton
+              class="mr-2"
+              :disabled="selectAll === false"
+              type="secondary"
+              @click="actionDownload(selectedItems)">
+              <v-icon color="primary" left>mdi-cloud-download</v-icon>
+              Download
+            </FcButton>
+            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
+              <FcMenuStudyRequestsStatus
+                button-class="mr-2"
+                :disabled="selectAll === false"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
+
+              <FcMenuStudyRequestsAssignTo
+                button-class="mr-2"
+                :disabled="selectAll === false"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
             </template>
-            <span>Select all</span>
-          </v-tooltip>
 
-          <FcButton
-            class="mr-2"
-            :disabled="selectAll === false"
-            type="secondary"
-            @click="actionDownload(selectedItems)">
-            <v-icon color="primary" left>mdi-cloud-download</v-icon>
-            Download
-          </FcButton>
-          <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
-            <FcMenuStudyRequestsStatus
-              button-class="mr-2"
-              :disabled="selectAll === false"
-              :study-requests="selectedStudyRequests"
-              @update="onUpdateStudyRequests" />
+            <FcStudyRequestFilters
+              v-model="filters"
+              :items="items" />
 
-            <FcMenuStudyRequestsAssignTo
-              button-class="mr-2"
-              :disabled="selectAll === false"
-              :study-requests="selectedStudyRequests"
-              @update="onUpdateStudyRequests" />
-          </template>
+            <v-spacer></v-spacer>
 
-          <FcStudyRequestFilters
-            v-model="filters"
-            :items="items" />
-
-          <v-spacer></v-spacer>
-
-          <FcButton
-            class="mr-2"
-            :loading="loading"
-            type="secondary"
-            @click="actionRefresh()">
-            <v-icon
-              color="primary"
-              left>mdi-refresh</v-icon>
-            Refresh
-          </FcButton>
+            <FcButton
+              class="mr-2"
+              :loading="loading"
+              type="secondary"
+              @click="actionRefresh()">
+              <v-icon
+                color="primary"
+                left>mdi-refresh</v-icon>
+              Refresh
+            </FcButton>
+          </nav>
         </v-card-title>
 
         <v-divider></v-divider>
@@ -287,6 +290,10 @@ export default {
 
   & .fc-requests-track-card {
     height: calc(100% - 4px);
+  }
+
+  & .fc-requests-track-table-title {
+    width: 100%;
   }
 
   & .fc-data-table-requests-wrapper {

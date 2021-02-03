@@ -1,15 +1,17 @@
 <template>
-  <v-chip-group
-    v-model="activeShortcutChip"
-    active-class="fc-shortcut-chip-active"
-    class="fc-shortcut-chips"
-    color="primary"
-    :mandatory="activeShortcutChip !== null">
-    <v-chip
-      v-for="({ text }, i) in SHORTCUT_CHIPS"
-      :key="i"
-      outlined>{{text}}</v-chip>
-  </v-chip-group>
+  <nav aria-label="Quick filters for requests">
+    <v-chip-group
+      v-model="activeShortcutChip"
+      active-class="fc-shortcut-chip-active"
+      class="fc-shortcut-chips"
+      color="primary"
+      :mandatory="activeShortcutChip !== null">
+      <v-chip
+        v-for="({ text }, i) in SHORTCUT_CHIPS"
+        :key="i"
+        outlined>{{text}}</v-chip>
+    </v-chip-group>
+  </nav>
 </template>
 
 <script>

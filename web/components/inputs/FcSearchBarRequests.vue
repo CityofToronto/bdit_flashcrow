@@ -1,23 +1,27 @@
 <template>
-  <v-text-field
-    v-model="internalValue.query"
-    append-icon="mdi-magnify"
-    class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
-    dense
-    hide-details
-    label="Search"
-    outlined>
-    <template v-slot:prepend>
-      <v-select
-        v-model="internalValue.column"
-        class="fc-search-bar-requests-column font-weight-regular mt-0 pt-0 title"
-        dense
-        hide-details
-        :items="itemsColumn"
-        label="Search by"
-        outlined />
-    </template>
-  </v-text-field>
+  <div
+    aria-label="Search for requests in table"
+    role="search">
+    <v-text-field
+      v-model="internalValue.query"
+      append-icon="mdi-magnify"
+      class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
+      dense
+      hide-details
+      label="Search"
+      outlined>
+      <template v-slot:prepend>
+        <v-select
+          v-model="internalValue.column"
+          class="fc-search-bar-requests-column font-weight-regular mt-0 pt-0 title"
+          dense
+          hide-details
+          :items="itemsColumn"
+          label="Search by"
+          outlined />
+      </template>
+    </v-text-field>
+  </div>
 </template>
 
 <script>

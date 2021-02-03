@@ -1,5 +1,8 @@
 <template>
-  <div class="fc-selector-single-location">
+  <div
+    aria-label="Search for a location in the map"
+    class="fc-selector-single-location"
+    role="search">
     <FcInputLocationSearch
       ref="autofocus"
       v-model="internalLocation"

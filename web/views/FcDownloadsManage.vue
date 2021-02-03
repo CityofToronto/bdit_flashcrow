@@ -3,8 +3,6 @@
     <header class="flex-grow-0 flex-shrink-0">
       <v-divider></v-divider>
       <div class="align-center d-flex mt-8 px-5">
-        <h1 class="display-3">Manage Downloads</h1>
-
         <v-spacer></v-spacer>
 
         <FcButton
