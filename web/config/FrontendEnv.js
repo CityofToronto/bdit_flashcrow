@@ -22,18 +22,22 @@ FrontendEnv.init({
   LOCAL: {
     appClass: 'is-local',
     appTitle: 'MOVE (local)',
+    colorClass: 'light-green',
   },
   DEV: {
     appClass: 'is-dev',
     appTitle: 'MOVE (dev)',
+    colorClass: 'amber',
   },
   QA: {
     appClass: 'is-qa',
     appTitle: 'MOVE (QA)',
+    colorClass: 'light-blue',
   },
   PROD: {
     appClass: 'is-prod',
     appTitle: 'MOVE',
+    colorClass: null,
   },
 });
 

@@ -113,6 +113,12 @@ export default new Vuex.Store({
       };
     },
     // AUTH / HELPERS STATE
+    pageTitle(state) {
+      if (state.title === '') {
+        return state.frontendEnv.appTitle;
+      }
+      return `${state.frontendEnv.appTitle} \u00b7 ${state.title}`;
+    },
     username(state) {
       if (!state.auth.loggedIn) {
         return null;

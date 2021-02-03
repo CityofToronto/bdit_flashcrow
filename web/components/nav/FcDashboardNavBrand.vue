@@ -1,42 +1,37 @@
 <template>
-  <header role="banner">
-    <v-tooltip
-      right
-      :z-index="100">
-      <template v-slot:activator="{ on }">
-        <v-list-item
-          v-on="on"
-          class="fc-nav-brand"
-          link
-          :to="{ name: 'viewData' }"
-          @click="actionClick">
-          <v-list-item-icon>
-            <v-img
-              alt="MOVE Logo"
-              src="/logo_square.png"></v-img>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{frontendEnv.appTitle}}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-      <span>{{frontendEnv.appTitle}}</span>
-    </v-tooltip>
-  </header>
+  <v-tooltip
+    bottom
+    :z-index="100">
+    <template v-slot:activator="{ on }">
+      <v-app-bar-nav-icon
+        @click="actionClick"
+        v-on="on">
+        <v-img
+          alt="MOVE Logo"
+          contain
+          :max-height="32"
+          :max-width="32"
+          src="/logo_square.png"></v-img>
+      </v-app-bar-nav-icon>
+    </template>
+    <span>{{textIcon}}</span>
+  </v-tooltip>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import FrontendEnv from '@/web/config/FrontendEnv';
 
 export default {
   name: 'FcDashboardNavBrand',
-  computed: {
-    ...mapState(['frontendEnv']),
+  data() {
+    const textIcon = `${FrontendEnv.PROD.appTitle}: Home`;
+    return { textIcon };
   },
   methods: {
     actionClick() {
       const event = this.$analytics.buttonEvent('MOVE', this.$el);
       this.$analytics.send([event]);
+      this.$router.push({ name: 'viewData' });
     },
   },
 };
