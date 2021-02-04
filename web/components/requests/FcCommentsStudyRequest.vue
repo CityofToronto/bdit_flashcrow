@@ -1,68 +1,68 @@
 <template>
-  <section
-    aria-labelledby="heading_request_comments"
-    class="fc-comments-study-request">
-    <v-row no-gutters>
-      <v-col class="px-5" cols="6">
-        <h3 class="display-2" id="heading_request_comments">
-          <span>Comments</span>
-          <v-chip class="ml-2" small>{{studyRequestComments.length}}</v-chip>
-        </h3>
-        <div class="fc-comment-new">
-          <v-textarea
-            v-model="commentText"
-            class="mt-4"
-            label="Compose message"
-            :loading="loadingAddComment"
-            no-resize
-            outlined
-            rows="4"></v-textarea>
-          <div class="text-right">
-            <FcButton
-              :disabled="commentText.length === 0"
+  <aside class="fc-comments-study-request">
+    <section aria-labelledby="heading_request_comments">
+      <v-row no-gutters>
+        <v-col class="px-5" cols="6">
+          <h3 class="display-2" id="heading_request_comments">
+            <span>Comments</span>
+            <v-chip class="ml-2" small>{{studyRequestComments.length}}</v-chip>
+          </h3>
+          <div class="fc-comment-new">
+            <v-textarea
+              v-model="commentText"
+              class="mt-4"
+              label="Compose new comment"
               :loading="loadingAddComment"
-              type="primary"
-              @click="actionAddComment">
-              Submit
-            </FcButton>
-          </div>
-        </div>
-      </v-col>
-      <v-col class="px-5" cols="6">
-        <section
-          v-for="(comment, i) in studyRequestComments"
-          :key="comment.id"
-          class="mt-4">
-          <header class="align-top d-flex">
-            <div>
-              <div class="default--text font-weight-medium subtitle-2">
-                <span
-                  v-if="studyRequestUsers.has(comment.userId)">
-                  {{studyRequestUsers.get(comment.userId) | username}}
-                </span>
-              </div>
-              <div class="subtitle-1 mt-1">
-                {{comment.createdAt | dateTime}}
-              </div>
+              no-resize
+              outlined
+              rows="4"></v-textarea>
+            <div class="text-right mb-4">
+              <FcButton
+                :disabled="commentText.length === 0"
+                :loading="loadingAddComment"
+                type="primary"
+                @click="actionAddComment">
+                Submit
+              </FcButton>
             </div>
-            <v-spacer></v-spacer>
-            <FcButtonAria
-              v-if="auth.user.id === comment.userId"
-              aria-label="Delete comment"
-              left
-              type="icon"
-              @click="actionDeleteComment(i)">
-              <v-icon>mdi-delete</v-icon>
-            </FcButtonAria>
-          </header>
-          <div class="mt-2 mb-4">
-            {{ comment.comment }}
           </div>
-          <v-divider></v-divider>
-        </section>
-      </v-col>
-    </v-row>
-  </section>
+        </v-col>
+        <v-col class="px-5" cols="6">
+          <dl
+            v-for="(comment) in studyRequestComments"
+            :key="comment.id">
+            <dt class="align-center d-flex mt-2">
+              <span
+                v-if="studyRequestUsers.has(comment.userId)"
+                class="body-1 default--text font-weight-medium">
+                <span class="sr-only">Author: </span>
+                {{studyRequestUsers.get(comment.userId) | username}}
+              </span>
+
+              <v-spacer></v-spacer>
+
+              <FcButtonAria
+                v-if="auth.user.id === comment.userId"
+                aria-label="Delete comment"
+                left
+                type="icon"
+                @click="actionDeleteComment(i)">
+                <v-icon>mdi-delete</v-icon>
+              </FcButtonAria>
+            </dt>
+            <dt class="subtitle-2 mt-n2">
+              <span class="sr-only">Date: </span>
+              {{comment.createdAt | dateTime}}
+            </dt>
+            <dd class="body-2 mt-3 mb-2">
+              {{ comment.comment }}
+            </dd>
+            <v-divider></v-divider>
+          </dl>
+        </v-col>
+      </v-row>
+    </section>
+  </aside>
 </template>
 
 <script>
