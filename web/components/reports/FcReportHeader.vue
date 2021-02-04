@@ -8,7 +8,11 @@
     </div>
     <div class="ml-3">
       <div class="title">{{ORG_NAME}}</div>
-      <div class="display-1">{{type.label}}</div>
+      <h3 class="display-1">
+        <span>{{type.label}}</span>
+        <span class="sr-only">{{info}}</span>
+        <span class="sr-only">{{subinfo}}</span>
+      </h3>
     </div>
 
     <v-spacer></v-spacer>
