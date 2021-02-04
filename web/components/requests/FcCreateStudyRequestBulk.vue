@@ -3,19 +3,15 @@
     <header
       v-if="step !== null"
       class="flex-grow-0 flex-shrink-0">
+
       <FcStepperStudyRequestBulk
         v-if="step !== null"
         v-model="step"
+        class="pb-2 shading"
         :indices-intersections="indicesIntersections"
-        :indices-midblocks="indicesMidblocks"
-        class="mb-2" />
+        :indices-midblocks="indicesMidblocks" />
 
-      <div class="px-5">
-        <h2 class="display-3">Requesting New Counts</h2>
-        <v-messages
-          class="mt-2"
-          :value="messagesTop"></v-messages>
-      </div>
+      <v-divider></v-divider>
 
       <FcHeaderStudyRequestBulkLocations
         v-if="step === 1"

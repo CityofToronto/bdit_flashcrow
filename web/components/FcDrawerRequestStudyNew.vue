@@ -10,7 +10,7 @@
       :is-create="true"
       :study-request="isBulk ? studyRequestBulk : studyRequest" />
 
-    <v-divider></v-divider>
+    <v-divider v-if="!isBulk"></v-divider>
 
     <v-progress-linear
       v-if="loading"

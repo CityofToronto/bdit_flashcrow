@@ -7,7 +7,8 @@
 
     <FcNavStudyRequest
       ref="nav"
-      :study-request="studyRequest" />
+      :study-request="studyRequest"
+      :study-request-bulk-name="studyRequestBulkName" />
 
     <v-divider></v-divider>
 
@@ -30,7 +31,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
-import { getStudyRequest } from '@/lib/api/WebApi';
+import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
@@ -49,6 +50,7 @@ export default {
   data() {
     return {
       studyRequest: null,
+      studyRequestBulkName: null,
     };
   },
   computed: {
@@ -62,7 +64,13 @@ export default {
       const selectionType = LocationSelectionType.POINTS;
       await this.initLocations({ features, selectionType });
 
+      let studyRequestBulkName = null;
+      if (studyRequest.studyRequestBulkId !== null) {
+        studyRequestBulkName = await getStudyRequestBulkName(studyRequest.studyRequestBulkId);
+      }
+
       this.studyRequest = studyRequest;
+      this.studyRequestBulkName = studyRequestBulkName;
     },
     ...mapActions(['initLocations']),
   },

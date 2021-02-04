@@ -5,6 +5,7 @@
         class="mb-4"
         :study-request="studyRequest" />
       <FcBreadcrumbsStudyRequest
+        v-if="showBreadcrumbs"
         class="mb-6"
         :study-request="studyRequest"
         :study-request-bulk-name="studyRequestBulkName" />
@@ -64,38 +65,6 @@ export default {
       }
       return false;
     },
-    labelNavigateBack() {
-      const { name } = this.$route;
-      if (name === 'requestStudyBulkView' || name === 'requestStudyNew') {
-        return this.labelNavigateBackViewRequest;
-      }
-      if (name === 'requestStudyView') {
-        if (this.studyRequest === null || this.studyRequest.studyRequestBulkId === null) {
-          return this.labelNavigateBackViewRequest;
-        }
-        return this.studyRequestBulkName;
-      }
-      if (name === 'requestStudyBulkEdit') {
-        if (this.studyRequest === null) {
-          return null;
-        }
-        return this.studyRequestBulkName;
-      }
-      if (name === 'requestStudyEdit') {
-        return 'View Request';
-      }
-      return this.labelNavigateBackViewRequest;
-    },
-    labelNavigateBackViewRequest() {
-      const { name: backViewRequestName } = this.backViewRequest;
-      if (backViewRequestName === 'requestsTrack') {
-        return 'Track Requests';
-      }
-      if (this.locationsEmpty) {
-        return 'View Map';
-      }
-      return 'View Data';
-    },
     routeNavigateBack() {
       const { name } = this.$route;
       if (name === 'requestStudyBulkView' || name === 'requestStudyNew') {
@@ -111,20 +80,22 @@ export default {
         };
       }
       if (name === 'requestStudyBulkEdit') {
-        const { id } = this.$route.params;
         return {
           name: 'requestStudyBulkView',
-          params: { id },
+          params: { id: this.studyRequest.id },
         };
       }
       if (name === 'requestStudyEdit') {
-        const { id } = this.$route.params;
         return {
           name: 'requestStudyView',
-          params: { id },
+          params: { id: this.studyRequest.id },
         };
       }
       return this.routeBackViewRequest;
+    },
+    showBreadcrumbs() {
+      const { name } = this.$route;
+      return name !== 'requestStudyNew';
     },
     showEdit() {
       const { name } = this.$route;
@@ -164,9 +135,6 @@ export default {
       const { id } = this.studyRequest;
       const route = { name, params: { id } };
       this.$router.push(route);
-    },
-    actionNavigateBack() {
-      this.$router.push(this.routeNavigateBack);
     },
   },
 };
