@@ -5,23 +5,24 @@
 
     <v-divider></v-divider>
 
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+    <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
         indeterminate />
-      <div v-else>
+      <section
+        v-else
+        aria-labelledby="heading_bulk_request_details">
         <v-row
           class="mb-6"
           no-gutters>
           <v-col class="mt-6 px-5" cols="12">
-            <h2 class="display-3 mb-4">
-              {{studyRequestBulk.name}}
-            </h2>
-            <FcBreadcrumbsStudyRequest
-              class="mb-6"
-              :study-request="studyRequestBulk" />
+            <h3 class="display-2 mb-4" id="heading_bulk_request_details">
+              Details
+            </h3>
+
+            <div class="subtitle-1 pb-2">Status</div>
             <FcStatusStudyRequests
-              class="mt-2"
+              class="my-2"
               :created-at="studyRequestBulk.createdAt"
               :study-requests="studyRequestBulk.studyRequests"
               :study-request-changes="studyRequestChanges" />
@@ -42,12 +43,30 @@
           </v-col>
         </v-row>
 
-        <div class="mb-6 mx-5">
+        <v-divider></v-divider>
+
+        <section
+          aria-labelledby="heading_bulk_request_requests"
+          class="mb-6 mx-5">
           <div class="align-center d-flex px-4 py-2">
-            <v-simple-checkbox
-              v-model="selectAll"
-              class="mr-6"
-              :indeterminate="selectAll === null"></v-simple-checkbox>
+            <h3 class="display-2" id="heading_bulk_request_requests">
+              <span>Requests</span>
+              <v-chip class="ml-2" small>{{items.length}}</v-chip>
+            </h3>
+
+            <v-tooltip right>
+              <template v-slot:activator="{ on }">
+                <div class="order-first" v-on="on">
+                  <v-simple-checkbox
+                    v-model="selectAll"
+                    class="mr-6"
+                    :indeterminate="selectAll === null"></v-simple-checkbox>
+                </div>
+              </template>
+              <span>Select all</span>
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
 
             <template v-if="canEdit">
               <FcMenuStudyRequestsStatus
@@ -75,9 +94,9 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             @update-item="actionUpdateItem" />
-        </div>
-      </div>
-    </section>
+        </section>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -92,8 +111,6 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkIndicesDeselected, bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
-import FcBreadcrumbsStudyRequest
-  from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
@@ -115,7 +132,6 @@ export default {
     Ripple,
   },
   components: {
-    FcBreadcrumbsStudyRequest,
     FcDataTableRequests,
     FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,

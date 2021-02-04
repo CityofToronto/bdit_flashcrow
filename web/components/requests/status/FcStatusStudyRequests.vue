@@ -25,7 +25,7 @@
         }"
         :cols="i === 2 ? 4 : 2">
         <template v-if="detail !== null">
-          <div class="headline font-weight-regular">
+          <div class="display-1">
             <span>{{detail.status.text}}</span>
             <span v-if="detail.n > 0 && detail.n < studyRequests.length">
               ({{detail.n}} / {{studyRequests.length}})

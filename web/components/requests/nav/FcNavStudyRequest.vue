@@ -1,59 +1,38 @@
 <template>
-  <div class="fc-nav-study-request flex-grow-0 flex-shrink-0">
-    <v-row
-      class="align-center px-3 py-2 shading"
-      no-gutters>
-      <v-col cols="3">
-        <FcButton
-          :loading="labelNavigateBack === null"
-          type="secondary"
-          @click="actionNavigateBack">
-          <v-icon left>mdi-chevron-left</v-icon>
-          {{labelNavigateBack}}
-        </FcButton>
-      </v-col>
-      <v-col class="text-center" cols="6">
-        <h2
-          class="headline text-truncate"
-          :title="subtitle === null ? title : (title + ': ' + subtitle)">
-          <span>
-            {{title}}:
-          </span>
-          <v-progress-circular
-            v-if="subtitle === null"
-            color="primary"
-            indeterminate
-            :size="20"
-            :width="2" />
-          <span
-            v-else
-            class="font-weight-regular">
-            {{subtitle}}
-          </span>
-        </h2>
-      </v-col>
-      <v-col class="text-right" cols="3">
-        <FcButton
-          v-if="showEdit"
-          :disabled="!canEdit || status === null || !status.editable"
-          type="secondary"
-          @click="actionEdit">
-          <v-icon color="primary" left>mdi-pencil</v-icon> Edit
-        </FcButton>
+  <div class="fc-nav-study-request d-flex flex-grow-0 flex-shrink-0 pt-6 px-5 shading">
+    <div>
+      <FcHeadingStudyRequest
+        class="mb-4"
+        :study-request="studyRequest" />
+      <FcBreadcrumbsStudyRequest
+        class="mb-6"
+        :study-request="studyRequest"
+        :study-request-bulk-name="studyRequestBulkName" />
+    </div>
 
-        <slot></slot>
-      </v-col>
-    </v-row>
+    <v-spacer></v-spacer>
+
+    <FcButton
+      v-if="showEdit"
+      :disabled="!canEdit || status === null || !status.editable"
+      type="secondary"
+      @click="actionEdit">
+      <v-icon color="primary" left>mdi-pencil</v-icon> Edit
+    </FcButton>
+
+    <slot></slot>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import { AuthScope, LocationMode } from '@/lib/Constants';
-import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
+import { AuthScope } from '@/lib/Constants';
+
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
+import FcHeadingStudyRequest from '@/web/components/requests/nav/FcHeadingStudyRequest.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
@@ -61,6 +40,8 @@ export default {
   mixins: [FcMixinAuthScope],
   components: {
     FcButton,
+    FcBreadcrumbsStudyRequest,
+    FcHeadingStudyRequest,
   },
   props: {
     isCreate: {
@@ -162,43 +143,7 @@ export default {
       }
       return null;
     },
-    subtitle() {
-      if (this.studyRequest === null) {
-        return null;
-      }
-      const { name } = this.$route;
-      if (name === 'requestStudyBulkView') {
-        return this.studyRequest.name;
-      }
-      if (name === 'requestStudyNew' || name === 'requestStudyView') {
-        return getLocationsSelectionDescription(this.locationsSelection);
-      }
-      if (name === 'requestStudyBulkEdit') {
-        return this.studyRequest.name;
-      }
-      if (name === 'requestStudyEdit') {
-        return getLocationsSelectionDescription(this.locationsSelection);
-      }
-      return null;
-    },
-    title() {
-      const { name, params: { id } } = this.$route;
-      if (name === 'requestStudyNew') {
-        if (this.locationMode === LocationMode.SINGLE || this.detailView) {
-          return 'New Request';
-        }
-        return 'New Bulk Request';
-      }
-      if (name === 'requestStudyView' || name === 'requestStudyEdit') {
-        return `Request #${id}`;
-      }
-      if (name === 'requestStudyBulkView' || name === 'requestStudyBulkEdit') {
-        return `Bulk Request #${id}`;
-      }
-      return 'Loading\u2026';
-    },
-    ...mapState(['backViewRequest', 'locationMode', 'locationsSelection']),
-    ...mapState('viewData', ['detailView']),
+    ...mapState(['backViewRequest']),
     ...mapGetters([
       'locationActive',
       'locationsEmpty',

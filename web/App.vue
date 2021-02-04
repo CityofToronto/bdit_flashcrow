@@ -131,5 +131,9 @@ export default {
     background: rgba(33, 33, 33, 0.9);
     font-size: 1rem;
   }
+
+  & .v-breadcrumbs .v-breadcrumbs__item--disabled {
+    color: var(--v-secondary-base);
+  }
 }
 </style>

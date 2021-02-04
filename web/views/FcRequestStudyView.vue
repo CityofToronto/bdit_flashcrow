@@ -13,24 +13,24 @@
 
     <v-divider></v-divider>
 
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+    <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
         indeterminate />
-      <div v-else>
+      <section
+        v-else
+        aria-labelledby="heading_request_details">
         <v-row
           class="mb-6"
           no-gutters>
           <v-col class="mt-6 px-5" cols="12">
-            <h2 class="display-3 mb-4">
-              {{studyRequestLocation.description}}
-            </h2>
-            <FcBreadcrumbsStudyRequest
-              class="mb-6"
-              :study-request="studyRequest"
-              :study-request-bulk-name="studyRequestBulkName" />
+            <h3 class="display-2 mb-4" id="heading_request_details">
+              Details
+            </h3>
+
+            <div class="subtitle-1 pb-2">Status</div>
             <FcStatusStudyRequests
-              class="mt-2"
+              class="my-2"
               :created-at="studyRequest.createdAt"
               :study-requests="[studyRequest]"
               :study-request-changes="studyRequestChanges" />
@@ -64,8 +64,8 @@
           :study-request-users="studyRequestUsers"
           @add-comment="onAddComment"
           @delete-comment="onDeleteComment" />
-      </div>
-    </section>
+      </section>
+    </div>
   </section>
 </template>
 
@@ -76,8 +76,6 @@ import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
-import FcBreadcrumbsStudyRequest
-  from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
@@ -94,7 +92,6 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
-    FcBreadcrumbsStudyRequest,
     FcCommentsStudyRequest,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
