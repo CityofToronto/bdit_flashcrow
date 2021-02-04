@@ -64,9 +64,7 @@ const router = new Router({
         auth: {
           scope: [AuthScope.STUDY_REQUESTS],
         },
-        title({ params: { id } }) {
-          return `View Request #${id}`;
-        },
+        title: 'View Request',
       },
       component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyView.vue'),
     },
@@ -77,9 +75,7 @@ const router = new Router({
         auth: {
           scope: [AuthScope.STUDY_REQUESTS],
         },
-        title({ params: { id } }) {
-          return `View Bulk Request #${id}`;
-        },
+        title: 'View Bulk Request',
       },
       component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyBulkView.vue'),
     },
@@ -175,9 +171,7 @@ const router = new Router({
           auth: {
             scope: [AuthScope.STUDY_REQUESTS],
           },
-          title({ params: { id } }) {
-            return `Edit Request #${id}`;
-          },
+          title: 'Edit Request',
         },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
         beforeEnter(to, from, next) {
@@ -191,9 +185,7 @@ const router = new Router({
           auth: {
             scope: [AuthScope.STUDY_REQUESTS],
           },
-          title({ params: { id } }) {
-            return `Edit Bulk Request #${id}`;
-          },
+          title: 'Edit Bulk Request',
         },
         component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
         beforeEnter(to, from, next) {

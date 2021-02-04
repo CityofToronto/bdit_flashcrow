@@ -1,5 +1,5 @@
 <template>
-  <section class="fc-request-study-bulk-view d-flex flex-column fill-height">
+  <div class="fc-request-study-bulk-view d-flex flex-column fill-height">
     <FcNavStudyRequest
       :study-request="studyRequestBulk" />
 
@@ -78,7 +78,7 @@
         </div>
       </div>
     </section>
-  </section>
+  </div>
 </template>
 
 <script>

@@ -13,7 +13,7 @@
         </FcButton>
       </v-col>
       <v-col class="text-center" cols="6">
-        <h1
+        <h2
           class="headline text-truncate"
           :title="subtitle === null ? title : (title + ': ' + subtitle)">
           <span>
@@ -30,7 +30,7 @@
             class="font-weight-regular">
             {{subtitle}}
           </span>
-        </h1>
+        </h2>
       </v-col>
       <v-col class="text-right" cols="3">
         <FcButton
@@ -98,19 +98,17 @@ export default {
         if (this.studyRequest === null) {
           return null;
         }
-        const { id } = this.$route.params;
-        return `Bulk Request #${id}`;
+        return this.studyRequestBulkName;
       }
       if (name === 'requestStudyEdit') {
-        const { id } = this.$route.params;
-        return `Request #${id}`;
+        return 'View Request';
       }
       return this.labelNavigateBackViewRequest;
     },
     labelNavigateBackViewRequest() {
       const { name: backViewRequestName } = this.backViewRequest;
       if (backViewRequestName === 'requestsTrack') {
-        return 'Requests';
+        return 'Track Requests';
       }
       if (this.locationsEmpty) {
         return 'View Map';
@@ -185,23 +183,17 @@ export default {
     },
     title() {
       const { name, params: { id } } = this.$route;
-      if (name === 'requestStudyBulkView') {
-        return `Bulk Request #${id}`;
-      }
       if (name === 'requestStudyNew') {
         if (this.locationMode === LocationMode.SINGLE || this.detailView) {
           return 'New Request';
         }
         return 'New Bulk Request';
       }
-      if (name === 'requestStudyView') {
+      if (name === 'requestStudyView' || name === 'requestStudyEdit') {
         return `Request #${id}`;
       }
-      if (name === 'requestStudyBulkEdit') {
-        return `Edit Bulk Request #${id}`;
-      }
-      if (name === 'requestStudyEdit') {
-        return `Edit Request #${id}`;
+      if (name === 'requestStudyBulkView' || name === 'requestStudyBulkEdit') {
+        return `Bulk Request #${id}`;
       }
       return 'Loading\u2026';
     },

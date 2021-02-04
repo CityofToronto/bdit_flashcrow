@@ -7,7 +7,8 @@
 
     <FcNavStudyRequest
       ref="nav"
-      :study-request="studyRequestBulk" />
+      :study-request="studyRequestBulk"
+      :study-request-bulk-name="studyRequestBulkName" />
 
     <v-divider></v-divider>
 
@@ -52,6 +53,12 @@ export default {
     };
   },
   computed: {
+    studyRequestBulkName() {
+      if (this.studyRequestBulk === null) {
+        return null;
+      }
+      return this.studyRequestBulk.name;
+    },
     ...mapState(['locations']),
   },
   created() {
