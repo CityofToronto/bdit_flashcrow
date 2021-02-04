@@ -1,6 +1,6 @@
 <template>
   <div class="fc-report-parameters">
-    <h2 class="headline mt-4">Set Parameters</h2>
+    <h2 class="display-1 mt-4">Set Parameters</h2>
     <div class="d-flex mt-2 mb-6">
       <FcButton
         class="ml-2"
