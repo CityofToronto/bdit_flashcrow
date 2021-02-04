@@ -9,7 +9,7 @@
     :outlined="internalJob.state === 'cancelled' || internalJob.state === 'failed'">
     <v-card-title>
       <div>
-        <h3>{{job.description}}</h3>
+        <div class="headline">{{job.description}}</div>
         <div class="body-1 mt-1">
           {{text}} &#x2022; {{textUpdatedAt}}
         </div>

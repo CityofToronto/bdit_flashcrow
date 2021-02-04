@@ -1,22 +1,5 @@
 <template>
-  <section class="fc-downloads-manage d-flex flex-column fill-height">
-    <header class="flex-grow-0 flex-shrink-0">
-      <v-divider></v-divider>
-      <div class="align-center d-flex mt-8 px-5">
-        <v-spacer></v-spacer>
-
-        <FcButton
-          :loading="loading"
-          type="secondary"
-          @click="actionRefresh()">
-          <v-icon
-            color="primary"
-            left>mdi-refresh</v-icon>
-          Refresh
-        </FcButton>
-      </div>
-    </header>
-
+  <div class="fc-downloads-manage d-flex flex-column fill-height">
     <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
       <div
         v-if="loading"
@@ -35,7 +18,7 @@
         outlined>
         <v-card-title>
           <div>
-            <h2>No downloads available</h2>
+            <div class="display-1 font-weight-bold">No downloads available</div>
             <div class="body-1 mt-1">
               Downloads requested when viewing data on the map will show up here.
             </div>
@@ -52,30 +35,23 @@
         </v-card-title>
       </v-card>
       <template v-else>
-        <section v-if="jobsSections.inProgress.length > 0">
-          <h2 class="my-6">In Progress</h2>
-          <FcCardJob
-            v-for="job in jobsSections.inProgress"
-            :key="job.jobId"
-            :job="job" />
-        </section>
-        <section v-if="jobsSections.newlyCompleted.length > 0">
-          <h2 class="my-6">Completed</h2>
-          <FcCardJob
-            v-for="job in jobsSections.newlyCompleted"
-            :key="job.jobId"
-            :job="job" />
-        </section>
-        <section v-if="jobsSections.old.length > 0">
-          <h2 class="my-6">History</h2>
-          <FcCardJob
-            v-for="job in jobsSections.old"
-            :key="job.jobId"
-            :job="job" />
-        </section>
+        <FcSectionJobs
+          v-if="jobsSections.newlyCompleted.length > 0"
+          :jobs="jobsSections.newlyCompleted"
+          title="Completed Downloads" />
+
+        <FcSectionJobs
+          v-if="jobsSections.inProgress.length > 0"
+          :jobs="jobsSections.inProgress"
+          title="Downloads in Progress" />
+
+        <FcSectionJobs
+          v-if="jobsSections.old.length > 0"
+          :jobs="jobsSections.old"
+          title="Download History" />
       </template>
     </section>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -83,7 +59,7 @@ import { mapGetters } from 'vuex';
 
 import { getJobs } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcCardJob from '@/web/components/jobs/FcCardJob.vue';
+import FcSectionJobs from '@/web/components/jobs/FcSectionJobs.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -93,7 +69,7 @@ export default {
   ],
   components: {
     FcButton,
-    FcCardJob,
+    FcSectionJobs,
   },
   data() {
     return {
