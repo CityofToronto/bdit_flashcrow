@@ -23,38 +23,14 @@
             <v-icon left>mdi-chevron-left</v-icon>
             View Data
           </FcButton>
-          <h2 class="headline ml-4">{{studyType.label}}</h2>
-          <div
-            class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022;</span>
-            <span v-if="locationMode === LocationMode.SINGLE">
-              {{locationActive.description}}
+          <h2 class="ml-4">
+            <span class="headline">{{studyType.label}}</span>
+            <span class="font-weight-regular headline secondary--text">
+              &#x2022; {{locationActive.description}}
             </span>
-            <v-menu
-              v-else
-              :max-height="320">
-              <template v-slot:activator="{ on, attrs }">
-                <FcButton
-                  v-bind="attrs"
-                  v-on="on"
-                  class="flex-grow-0 mt-0 ml-2"
-                  type="secondary">
-                  <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                  <span class="pl-2">{{locationActive.description}}</span>
-                  <v-icon right>mdi-menu-down</v-icon>
-                </FcButton>
-              </template>
-              <FcListLocationMulti
-                :disabled="disabledPerLocation"
-                icon-classes="mr-2"
-                :locations="locations"
-                :locations-selection="locationsSelection"
-                @click-location="setLocationsIndex" />
-            </v-menu>
-            <span v-if="filterChipsStudyNoStudyTypes.length > 0"> &#x2022;</span>
-          </div>
-          <div
-            v-if="filterChipsStudyNoStudyTypes.length > 0">
+          </h2>
+          <template v-if="filterChipsStudyNoStudyTypes.length > 0">
+            <span class="ml-1 font-weight-regular headline secondary--text">&#x2022;</span>
             <v-chip
               v-for="(filterChip, i) in filterChipsStudyNoStudyTypes"
               :key="i"
@@ -63,8 +39,31 @@
               :input-value="true">
               {{filterChip.label}}
             </v-chip>
-          </div>
+          </template>
+
           <v-spacer></v-spacer>
+
+          <v-menu
+            v-if="locationMode !== LocationMode.SINGLE"
+            :max-height="320">
+            <template v-slot:activator="{ on, attrs }">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0 mr-2"
+                type="secondary">
+                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
+                <span class="pl-2">{{locationActive.description}}</span>
+                <v-icon right>mdi-menu-down</v-icon>
+              </FcButton>
+            </template>
+            <FcListLocationMulti
+              :disabled="disabledPerLocation"
+              icon-classes="mr-2"
+              :locations="locations"
+              :locations-selection="locationsSelection"
+              @click-location="setLocationsIndex" />
+          </v-menu>
           <v-menu
             v-if="studies.length > 0"
             :max-height="320">

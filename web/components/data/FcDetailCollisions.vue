@@ -38,7 +38,7 @@
         class="flex-grow-0 flex-shrink-0"
         type="tertiary"
         :disabled="collisionSummary.amount === 0"
-        @click="$emit('show-reports', item)">
+        @click="$emit('show-reports')">
         <span>View Reports</span>
       </FcButton>
     </template>

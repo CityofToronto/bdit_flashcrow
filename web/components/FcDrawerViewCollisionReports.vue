@@ -23,41 +23,20 @@
             <v-icon left>mdi-chevron-left</v-icon>
             View Data
           </FcButton>
-          <h2 class="headline ml-4">Collisions</h2>
-          <div
-            class="ml-1 font-weight-regular headline secondary--text">
-            <span>&#x2022;</span>
-            <span v-if="locationMode === LocationMode.SINGLE">
-              {{locationActive.description}}
+          <h2 class="ml-4">
+            <span class="headline">Collisions</span>
+            <span class="font-weight-regular headline secondary--text">
+              &#x2022;
+              <span v-if="locationMode === LocationMode.SINGLE || detailView">
+                {{locationActive.description}}
+              </span>
+              <span v-else>
+                {{locationsDescription}}
+              </span>
             </span>
-            <span v-else-if="!detailView">
-              {{locationsDescription}}
-            </span>
-            <v-menu
-              v-else
-              max-height="320">
-              <template v-slot:activator="{ on, attrs }">
-                <FcButton
-                  v-bind="attrs"
-                  v-on="on"
-                  class="flex-grow-0 mt-0 ml-2"
-                  type="secondary">
-                  <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                  <span class="pl-2">{{locationActive.description}}</span>
-                  <v-icon right>mdi-menu-down</v-icon>
-                </FcButton>
-              </template>
-              <FcListLocationMulti
-                :disabled="disabledPerLocation"
-                icon-classes="mr-2"
-                :locations="locations"
-                :locations-selection="locationsSelection"
-                @click-location="setLocationsIndex" />
-            </v-menu>
-            <span v-if="filterChipsCollision.length > 0"> &#x2022;</span>
-          </div>
-          <div
-            v-if="filterChipsCollision.length > 0">
+          </h2>
+          <template v-if="filterChipsCollision.length > 0">
+            <span class="ml-1 font-weight-regular headline secondary--text">&#x2022;</span>
             <v-chip
               v-for="(filterChip, i) in filterChipsCollision"
               :key="i"
@@ -66,7 +45,31 @@
               :input-value="true">
               {{filterChip.label}}
             </v-chip>
-          </div>
+          </template>
+
+          <v-spacer></v-spacer>
+
+          <v-menu
+            v-if="locationMode !== LocationMode.SINGLE && detailView"
+            max-height="320">
+            <template v-slot:activator="{ on, attrs }">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0 ml-2"
+                type="secondary">
+                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
+                <span class="pl-2">{{locationActive.description}}</span>
+                <v-icon right>mdi-menu-down</v-icon>
+              </FcButton>
+            </template>
+            <FcListLocationMulti
+              :disabled="disabledPerLocation"
+              icon-classes="mr-2"
+              :locations="locations"
+              :locations-selection="locationsSelection"
+              @click-location="setLocationsIndex" />
+          </v-menu>
         </div>
 
         <div class="align-center d-flex">
@@ -174,6 +177,11 @@ export default {
   },
   computed: {
     activeReportId() {
+      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
+        const s1 = CompositeId.encode(this.locationsActive);
+        const selectionType = LocationSelectionType.POINTS;
+        return `${s1}/${selectionType.name}`;
+      }
       const { locations, selectionType } = this.locationsSelection;
       const s1 = CompositeId.encode(locations);
       return `${s1}/${selectionType.name}`;
