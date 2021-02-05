@@ -1,18 +1,15 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
-    <header class="flex-grow-0 flex-shrink-0">
-      <v-divider></v-divider>
-      <div class="px-5">
-        <div class="align-center d-flex mt-6">
-          <FcStudyRequestFilterShortcuts
-            v-model="filters" />
+    <header class="flex-grow-0 flex-shrink-0 px-5">
+      <div class="align-center d-flex mt-6">
+        <FcStudyRequestFilterShortcuts
+          v-model="filters" />
 
-          <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-          <FcSearchBarRequests
-            v-model="search"
-            :columns="columns" />
-        </div>
+        <FcSearchBarRequests
+          v-model="search"
+          :columns="columns" />
       </div>
     </header>
 

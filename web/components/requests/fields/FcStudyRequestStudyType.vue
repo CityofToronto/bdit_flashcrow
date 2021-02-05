@@ -2,7 +2,6 @@
   <FcSelectEnum
     v-model="v.studyType.$model"
     :error-messages="errorMessagesStudyType"
-    hide-details="auto"
     :items="items"
     item-text="label"
     label="Study Type"

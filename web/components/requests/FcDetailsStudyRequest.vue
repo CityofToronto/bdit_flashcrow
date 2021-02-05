@@ -1,12 +1,12 @@
 <template>
   <section class="d-flex flex-column min-height-fill max-height-fill">
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <section class="pa-5">
-        <v-messages
-          :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]"></v-messages>
+
+    <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+      <fieldset class="pa-5">
+        <legend class="display-2 pt-4">Study Type for Request</legend>
+        <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]" />
 
         <div class="mt-4">
-          <h2 class="headline">Study Type</h2>
           <v-row>
             <v-col cols="8">
               <FcStudyRequestStudyType
@@ -17,68 +17,40 @@
           </v-row>
         </div>
 
-        <div class="mt-4">
-          <h2 class="headline">Reason for Request</h2>
-          <v-row>
-            <v-col cols="8">
-              <FcStudyRequestReason :v="$v.internalValue" />
-            </v-col>
-          </v-row>
-        </div>
-      </section>
-      <template v-if="internalValue.studyType">
-        <v-divider></v-divider>
-
-        <section class="pa-5 shading">
-          <h2 class="display-1">{{internalValue.studyType.label}}</h2>
-
+        <template v-if="internalValue.studyType">
           <div class="mt-4">
-            <h3 class="headline">Study Days</h3>
             <v-row>
-              <v-col cols="8">
+              <v-col cols="6">
                 <FcStudyRequestDaysOfWeek :v="$v.internalValue" />
               </v-col>
+              <v-col cols="6">
+                <FcStudyRequestDuration
+                  v-if="internalValue.studyType.automatic"
+                  :v="$v.internalValue" />
+                <FcStudyRequestHours
+                  v-else
+                  :v="$v.internalValue" />
+              </v-col>
             </v-row>
-          </div>
-
-          <div class="mt-4">
-            <template v-if="internalValue.studyType.automatic">
-              <h3 class="headline">Study Duration</h3>
-              <v-row>
-                <v-col cols="8">
-                  <FcStudyRequestDuration :v="$v.internalValue" />
-                </v-col>
-              </v-row>
-            </template>
-            <template v-else>
-              <h3 class="headline">Study Hours</h3>
-              <v-row>
-                <v-col cols="8">
-                  <FcStudyRequestHours :v="$v.internalValue" />
-                </v-col>
-              </v-row>
-            </template>
           </div>
 
           <FcStudyRequestNotes
             class="mt-4"
             :v="$v.internalValue" />
-        </section>
-      </template>
+        </template>
+      </fieldset>
 
       <v-divider></v-divider>
 
-      <section class="pa-5">
-        <FcStudyRequestUrgent
-          class="mt-4"
-          :is-create="isCreate"
-          :v="$v.internalValue" />
-      </section>
-    </section>
+      <FcStudyRequestUrgent
+        class="pa-5"
+        :is-create="isCreate"
+        :v="$v.internalValue" />
+    </div>
 
     <v-divider></v-divider>
 
-    <footer class="flex-grow-0 flex-shrink-0">
+    <footer class="flex-grow-0 flex-shrink-0 shading">
       <div class="align-center d-flex px-3 py-2">
         <v-spacer></v-spacer>
         <FcButton
@@ -119,7 +91,6 @@ import FcStudyRequestDaysOfWeek
 import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
-import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
@@ -137,7 +108,6 @@ export default {
     FcStudyRequestDuration,
     FcStudyRequestHours,
     FcStudyRequestNotes,
-    FcStudyRequestReason,
     FcStudyRequestStudyType,
     FcStudyRequestUrgent,
   },

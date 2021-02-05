@@ -1,5 +1,5 @@
 <template>
-  <section class="min-height-fill shading py-1">
+  <section class="min-height-fill py-1">
     <div
       v-for="i in indices"
       :key="i"

@@ -3,7 +3,7 @@
     v-model="v.duration.$model"
     hide-details="auto"
     :items="itemsDuration"
-    label="Duration"
+    label="Study Duration"
     :messages="messagesDuration"
     outlined
     v-bind="$attrs" />

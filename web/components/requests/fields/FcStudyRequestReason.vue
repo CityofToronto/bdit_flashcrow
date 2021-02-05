@@ -4,7 +4,7 @@
       v-model="v.reason.$model"
       :error-messages="errorMessagesReason"
       hide-details="auto"
-      label="Reason"
+      label="Reason for Request"
       :of-type="StudyRequestReason"
       outlined />
 

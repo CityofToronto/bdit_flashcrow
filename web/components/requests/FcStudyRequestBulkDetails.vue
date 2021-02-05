@@ -1,7 +1,6 @@
 <template>
-  <section class="pa-5">
-    <div class="mt-1">
-      <h3 class="headline">Create Request Name</h3>
+  <section>
+    <div class="pa-5">
       <v-row>
         <v-col cols="8">
           <v-text-field
@@ -16,26 +15,18 @@
       </v-row>
     </div>
 
-    <div class="mt-1">
-      <h3 class="headline">Reason for Request</h3>
-      <v-row>
-        <v-col cols="8">
-          <FcStudyRequestReason :v="v" />
-        </v-col>
-      </v-row>
-    </div>
+    <v-divider></v-divider>
 
     <FcStudyRequestUrgent
-      class="mt-4"
+      class="pa-5"
       :is-create="true"
-      :v="v" />
+        :v="v" />
   </section>
 </template>
 
 <script>
 import { StudyRequestReason } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
-import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -64,7 +55,6 @@ export default {
     FcMixinVModelProxy(Object),
   ],
   components: {
-    FcStudyRequestReason,
     FcStudyRequestUrgent,
   },
   props: {

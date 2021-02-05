@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <h3 class="headline">Escalate Priority</h3>
+  <fieldset>
+    <legend class="display-2 pt-4">Request Priority and Details</legend>
+
+    <v-row>
+      <v-col cols="8">
+        <FcStudyRequestReason :v="v" />
+      </v-col>
+    </v-row>
+
     <v-checkbox
       v-model="v.urgent.$model"
       class="mt-1"
@@ -25,13 +32,12 @@
     </template>
 
     <div class="mt-4">
-      <h3 class="headline">Inform Other Staff</h3>
       <v-row>
         <v-col cols="8">
           <FcInputTextArray
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
-            label="Staff Email"
+            label="Inform Other Staff"
             :messages="messagesCcEmails"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
@@ -51,7 +57,7 @@
         :success="v.urgent.$model && !v.urgentReason.$invalid"
         @blur="v.urgentReason.$touch()"></v-textarea>
     </div>
-  </div>
+  </fieldset>
 </template>
 
 <script>
@@ -65,12 +71,14 @@ import {
 import DateTime from '@/lib/time/DateTime';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
+import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 
 export default {
   name: 'FcStudyRequestUrgent',
   components: {
     FcDatePicker,
     FcInputTextArray,
+    FcStudyRequestReason,
   },
   props: {
     isCreate: Boolean,

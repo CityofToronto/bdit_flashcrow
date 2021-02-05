@@ -6,7 +6,8 @@
       'fc-card-job-dismissed': internalJob.dismissed,
       'fc-card-job-failed': internalJob.state === 'failed',
     }"
-    :outlined="internalJob.state === 'cancelled' || internalJob.state === 'failed'">
+    flat
+    outlined>
     <v-card-title>
       <div>
         <div class="headline">{{job.description}}</div>
@@ -152,7 +153,7 @@ export default {
     opacity: 0.5;
   }
   &.fc-card-job-dismissed {
-    border-left: 0;
+    border-left: 1px solid var(--v-border-base);
   }
 }
 </style>

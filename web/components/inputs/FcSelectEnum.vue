@@ -1,6 +1,7 @@
 <template>
   <v-select
     v-model="internalValue"
+    hide-details="auto"
     :items="itemsNormalized"
     :item-text="itemText"
     item-value="name"

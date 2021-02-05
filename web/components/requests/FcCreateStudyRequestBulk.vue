@@ -82,7 +82,7 @@
 
     <v-divider></v-divider>
 
-    <footer class="flex-grow-0 flex-shrink-0">
+    <footer class="flex-grow-0 flex-shrink-0 shading">
       <div class="align-center d-flex px-3 py-2">
         <FcButton
           v-if="step !== null && step > 1"

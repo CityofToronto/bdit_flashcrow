@@ -4,7 +4,7 @@
     :error-messages="errorMessagesDaysOfWeek"
     hide-details="auto"
     :items="itemsDaysOfWeek"
-    label="Days"
+    label="Study Days"
     :messages="messagesDaysOfWeek"
     multiple
     outlined

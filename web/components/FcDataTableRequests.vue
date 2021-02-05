@@ -100,10 +100,12 @@
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
           Multiple Locations
-          <span v-if="hasFilters">
-            ({{item.studyRequestBulk.studyRequests.length}} / {{item.studyRequestsTotal}})
-          </span>
-          <span v-else>({{item.studyRequestBulk.studyRequests.length}})</span>
+          <v-chip class="ml-2" small>
+            <span v-if="hasFilters">
+              {{item.studyRequestBulk.studyRequests.length}} / {{item.studyRequestsTotal}}
+            </span>
+            <span v-else>{{item.studyRequestBulk.studyRequests.length}}</span>
+          </v-chip>
         </span>
         <span v-else>
           {{item.studyRequest.studyType.label}}
