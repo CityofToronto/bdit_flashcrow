@@ -4,7 +4,7 @@
     max-width="336"
     scrollable>
     <v-card role="dialog">
-      <v-card-title>
+      <v-card-title class="shading">
         <h2 class="headline">Filter Studies</h2>
         <v-spacer></v-spacer>
         <FcButton
@@ -71,7 +71,7 @@
           :value="studyHours"></v-checkbox>
       </v-card-text>
       <v-divider></v-divider>
-      <v-card-actions>
+      <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"

@@ -4,9 +4,10 @@
     max-width="336"
     scrollable>
     <v-card role="dialog">
-      <v-card-title>
+      <v-card-title class="shading">
         <h2 class="headline">Filter Requests</h2>
       </v-card-title>
+      <v-divider></v-divider>
       <v-card-text>
         <h2 class="body-1 mt-4">Study Types</h2>
         <v-checkbox
@@ -93,7 +94,7 @@
         </FcRadioGroup>
       </v-card-text>
       <v-divider></v-divider>
-      <v-card-actions>
+      <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"

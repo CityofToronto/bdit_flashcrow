@@ -3,13 +3,13 @@
     v-model="internalValue"
     max-width="560">
     <v-card role="dialog">
-      <v-card-title>
+      <v-card-title class="shading">
         <h2 class="display-1">{{title}}</h2>
       </v-card-title>
       <v-card-text>
         <slot></slot>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"

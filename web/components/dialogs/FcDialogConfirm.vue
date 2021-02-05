@@ -1,6 +1,7 @@
 <template>
   <v-dialog
     v-model="internalValue"
+    class="shading"
     max-width="560">
     <v-card role="dialog">
       <v-card-title>
@@ -9,7 +10,7 @@
       <v-card-text>
         <slot></slot>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"
