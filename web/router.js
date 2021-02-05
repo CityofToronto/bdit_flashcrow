@@ -30,14 +30,14 @@ const router = new Router({
         path: '/admin/metrics',
         name: 'adminMetrics',
         meta: {
-          title: 'Admin Console: Metrics',
+          title: 'Admin Console',
         },
         component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminMetrics.vue'),
       }, {
         path: '/admin/permissions',
         name: 'adminPermissions',
         meta: {
-          title: 'Admin Console: Permissions',
+          title: 'Admin Console',
         },
         component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminPermissions.vue'),
       }],

@@ -7,7 +7,7 @@
       :size="20"
       :width="2" />
     <template v-else>
-      <h1 class="display-3">{{location.description}}</h1>
+      <h2 class="display-3">{{location.description}}</h2>
       <div class="label mt-2">
         {{textLocationFeatureType}} &#x2022; {{textMostRecentStudy}}
       </div>

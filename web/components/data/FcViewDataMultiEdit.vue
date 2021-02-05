@@ -4,23 +4,30 @@
       v-if="loading || locations.length === 0"
       indeterminate />
     <template v-else>
-      <div class="fc-multi-edit-inset">
+      <section
+        aria-labelledby="heading_multi_edit_totals"
+        class="fc-multi-edit-inset mt-5">
+        <h3
+          class="display-2 pb-1"
+          id="heading_multi_edit_totals">
+          Totals over Selection
+        </h3>
         <v-row
           class="my-6"
           no-gutters>
           <v-col cols="4">
             <div class="body-1">
-              Total Collisions
+              Collisions
             </div>
-            <div class="display-2 mt-2">
+            <div class="display-2 mt-1">
               {{collisionTotal}}
             </div>
           </v-col>
           <v-col cols="4">
             <div class="body-1">
-              Total Studies
+              Studies
             </div>
-            <div class="display-2 mt-2">
+            <div class="display-2 mt-1">
               {{studyTotal}}
             </div>
             <div class="font-weight-regular mt-2 title">
@@ -29,15 +36,22 @@
           </v-col>
         </v-row>
         <v-divider></v-divider>
-      </div>
-      <div class="mt-5">
-        <h2 class="fc-multi-edit-inset headline pb-1">Selected Locations</h2>
+      </section>
+      <section
+        aria-labelledby="heading_multi_edit_selected"
+        class="mt-5">
+        <h3
+          class="fc-multi-edit-inset display-2 pb-1"
+          id="heading_multi_edit_selected">
+          Selected Locations
+          <v-chip class="ml-2" small>{{locations.length}}</v-chip>
+        </h3>
         <FcListLocationMulti
           class="ml-6"
           icon-classes="mr-5"
           :locations="locations"
           :locations-selection="locationsSelection" />
-      </div>
+      </section>
     </template>
   </div>
 </template>

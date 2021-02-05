@@ -60,7 +60,7 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <h1 class="display-3 mb-4">{{locationsEditDescription}}</h1>
+          <h2 class="display-3 mb-4">{{locationsEditDescription}}</h2>
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
@@ -100,7 +100,7 @@
           </v-tooltip>
         </template>
         <template v-else>
-          <h1 class="display-3 mb-4">{{locationsDescription}}</h1>
+          <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
       <div class="d-flex align-center mt-4">

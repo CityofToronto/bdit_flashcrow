@@ -11,7 +11,7 @@
       </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
-        <h1 class="display-3 mt-5">{{title}}</h1>
+        <h2 class="display-3 mt-5">{{title}}</h2>
       </div>
     </header>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
@@ -27,10 +27,10 @@ export default {
     title() {
       const { name } = this.$route;
       if (name === 'adminMetrics') {
-        return 'MOVE Metrics';
+        return 'Metrics';
       }
       if (name === 'adminPermissions') {
-        return 'MOVE Permissions';
+        return 'User Permissions';
       }
       return 'MOVE Admin Console';
     },

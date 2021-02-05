@@ -4,7 +4,7 @@
     max-width="560">
     <v-card role="dialog">
       <v-card-title>
-        <h1 class="display-1">{{title}}</h1>
+        <h2 class="display-1">{{title}}</h2>
       </v-card-title>
       <v-card-text>
         <slot></slot>

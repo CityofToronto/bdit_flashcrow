@@ -5,7 +5,7 @@
     scrollable>
     <v-card role="dialog">
       <v-card-title>
-        <h1 class="headline">Filter</h1>
+        <h2 class="headline">Filter Collisions</h2>
         <v-spacer></v-spacer>
         <FcButton
           type="secondary"

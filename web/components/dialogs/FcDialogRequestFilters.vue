@@ -5,7 +5,7 @@
     scrollable>
     <v-card role="dialog">
       <v-card-title>
-        <h1 class="headline">Filter</h1>
+        <h2 class="headline">Filter Requests</h2>
       </v-card-title>
       <v-card-text>
         <h2 class="body-1 mt-4">Study Types</h2>

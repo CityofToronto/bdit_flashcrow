@@ -1,10 +1,10 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <div>
-        <h2 class="headline">Collisions</h2>
-        <div class="pt-1 subtitle-1">{{collisionTotal}} total</div>
-      </div>
+      <h3 class="display-2">
+        <span>Collisions</span>
+        <v-chip class="ml-2" small>{{collisionTotal}}</v-chip>
+      </h3>
       <v-spacer></v-spacer>
       <FcDialogCollisionFilters
         v-if="showFiltersCollision"

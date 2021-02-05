@@ -1,10 +1,10 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <div>
-        <h2 class="headline">Studies</h2>
-        <div class="pt-1 subtitle-1">{{studyTotal}} total</div>
-      </div>
+      <h3 class="display-2">
+        <span>Studies</span>
+        <v-chip class="ml-2" small>{{studyTotal}}</v-chip>
+      </h3>
       <v-spacer></v-spacer>
       <FcDialogStudyFilters
         v-if="showFiltersStudy"
