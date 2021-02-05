@@ -9,46 +9,43 @@
         :deselected="!selected"
         v-bind="iconProps" />
       <div class="fc-card-study-request-title">
-        <div>{{location.description}}</div>
+        <h3 class="headline mb-1">{{location.description}}</h3>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
-          class="font-weight-regular"
           :study="mostRecentByStudyType.get(studyRequest.studyType)" />
       </div>
     </v-card-title>
     <v-card-text class="pb-0">
       <div class="mx-9">
-        <v-row>
-          <v-col class="py-2" cols="6">
+        <v-row class="mt-1">
+          <v-col class="my-0 py-2" cols="8">
             <FcStudyRequestStudyType
               dense
               :disabled="!selected"
               :location="location"
               :v="v" />
           </v-col>
-          <v-col class="py-2" cols="6">
-            <FcStudyRequestDaysOfWeek
-              dense
-              :disabled="!selected"
-              :v="v" />
-          </v-col>
-        </v-row>
-        <v-row v-if="studyRequest.studyType !== null">
-          <v-col class="py-2" cols="6">
-            <FcStudyRequestDuration
-              v-if="studyRequest.studyType.automatic"
-              dense
-              :disabled="!selected"
-              :v="v" />
-            <FcStudyRequestHours
-              v-else
-              dense
-              :disabled="!selected"
-              :v="v" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="py-2" cols="12">
+          <template v-if="studyRequest.studyType !== null">
+            <v-col class="my-0 py-2" cols="6">
+              <FcStudyRequestDaysOfWeek
+                dense
+                :disabled="!selected"
+                :v="v" />
+            </v-col>
+            <v-col class="my-0 py-2" cols="6">
+              <FcStudyRequestDuration
+                v-if="studyRequest.studyType.automatic"
+                dense
+                :disabled="!selected"
+                :v="v" />
+              <FcStudyRequestHours
+                v-else
+                dense
+                :disabled="!selected"
+                :v="v" />
+            </v-col>
+          </template>
+          <v-col class="my-0 pt-0" cols="12">
             <FcStudyRequestNotes
               :disabled="!selected"
               :v="v" />

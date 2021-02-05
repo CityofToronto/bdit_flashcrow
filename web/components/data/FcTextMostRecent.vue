@@ -1,5 +1,5 @@
 <template>
-  <div class="secondary--text">
+  <span class="fc-text-most-recent font-weight-regular secondary--text">
     <span v-if="study === null">
       No Previous Study
     </span>
@@ -16,7 +16,7 @@
         {{study.hours.description}}
       </span>
     </template>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -27,3 +27,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-text-most-recent {
+  background-color: rgba(117, 117, 117, 0.1);
+  padding: 2px;
+}
+</style>

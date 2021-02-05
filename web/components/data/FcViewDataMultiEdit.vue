@@ -31,7 +31,7 @@
               {{studyTotal}}
             </div>
             <div class="font-weight-regular mt-2 title">
-              <span class="fc-multi-edit-most-recent">{{textMostRecentStudy}}</span>
+              <FcTextMostRecent :study="mostRecent" />
             </div>
           </v-col>
         </v-row>
@@ -57,20 +57,21 @@
 </template>
 
 <script>
+import ArrayUtils from '@/lib/ArrayUtils';
 import {
   getCollisionsByCentrelineTotal,
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineTotal,
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import DateTime from '@/lib/time/DateTime';
-import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcViewDataMultiEdit',
   components: {
     FcListLocationMulti,
+    FcTextMostRecent,
   },
   props: {
     locations: Array,
@@ -88,16 +89,16 @@ export default {
     locationsIconProps() {
       return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
-    textMostRecentStudy() {
+    mostRecent() {
       const n = this.studySummary.length;
       if (n === 0) {
-        return 'No Studies';
+        return null;
       }
-      const mostRecentDate = DateTime.max(
-        ...this.studySummary.map(({ mostRecent: { startDate } }) => startDate),
+      const maxEntry = ArrayUtils.getMaxBy(
+        this.studySummary,
+        ({ mostRecent: { startDate } }) => startDate.valueOf(),
       );
-      const mostRecentDateStr = TimeFormatters.formatDefault(mostRecentDate);
-      return `Most Recent ${mostRecentDateStr}`;
+      return maxEntry.mostRecent;
     },
   },
   watch: {
@@ -140,10 +141,6 @@ export default {
 .fc-view-data-multi-edit {
   & .fc-multi-edit-inset {
     margin-left: 75px;
-  }
-  & .fc-multi-edit-most-recent {
-    background-color: rgba(117, 117, 117, 0.1);
-    padding: 2px;
   }
 }
 </style>
