@@ -3,12 +3,12 @@
     <v-progress-linear
       v-if="loading"
       indeterminate />
-    <div
+    <p
       v-else-if="studySummaryUnfiltered.length === 0"
       class="my-8 py-12 secondary--text text-center">
       There are no studies for these locations,<br>
       please request studies if necessary
-    </div>
+    </p>
     <template v-else>
       <v-expansion-panels
         v-model="indexOpen"

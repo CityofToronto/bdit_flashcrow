@@ -1,26 +1,33 @@
 <template>
   <div class="d-none">
     <v-card ref="content" min-width="220">
-      <v-card-title>
-        <div class="display-1">{{title}}</div>
+      <v-card-title class="shading">
+        <h2 class="display-1">{{title}}</h2>
         <v-spacer></v-spacer>
         <v-icon v-if="icon">{{icon}}</v-icon>
       </v-card-title>
+
+      <v-divider></v-divider>
+
       <v-card-text>
         <v-progress-linear
           v-if="loading"
           indeterminate />
         <template v-else>
-          <div
+          <p
             v-for="(line, i) in description"
             :key="i"
             class="body-1 mb-1">
             {{line}}
-          </div>
+          </p>
         </template>
       </v-card-text>
+
+      <v-divider></v-divider>
+
       <v-card-actions
-        v-if="!loading && featureSelectable && showAction">
+        v-if="!loading && featureSelectable && showAction"
+        class="shading">
         <FcButton
           type="tertiary"
           :disabled="disabledActionSelected"
