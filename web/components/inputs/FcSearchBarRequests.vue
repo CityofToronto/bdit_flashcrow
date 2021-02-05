@@ -55,7 +55,7 @@ export default {
   & > .v-input__control {
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
-    width: 220px;
+    width: 300px;
   }
 
   & > .v-input__prepend-outer {

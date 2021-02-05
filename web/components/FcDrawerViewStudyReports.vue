@@ -92,14 +92,16 @@
         </div>
 
         <div class="align-center d-flex">
-          <v-tabs v-model="indexActiveReportType">
-            <v-tab
-              v-for="reportType in reportTypes"
-              :key="reportType.name"
-              :disabled="studies.length === 0">
-              {{reportType.label}}
-            </v-tab>
-          </v-tabs>
+          <nav>
+            <v-tabs v-model="indexActiveReportType">
+              <v-tab
+                v-for="reportType in reportTypes"
+                :key="reportType.name"
+                :disabled="studies.length === 0">
+                {{reportType.label}}
+              </v-tab>
+            </v-tabs>
+          </nav>
 
           <v-spacer></v-spacer>
 

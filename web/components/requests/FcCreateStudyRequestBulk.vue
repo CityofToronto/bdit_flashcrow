@@ -1,6 +1,6 @@
 <template>
   <section class="d-flex fill-height flex-column max-height-fill">
-    <header
+    <div
       v-if="step !== null"
       class="flex-grow-0 flex-shrink-0">
 
@@ -27,7 +27,7 @@
         :indices="indicesMidblocks"
         :locations="locations"
         :study-requests="studyRequests" />
-    </header>
+    </div>
 
     <v-divider v-if="step === 1 || step === 2"></v-divider>
 

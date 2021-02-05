@@ -1,5 +1,5 @@
 <template>
-  <section class="fc-report">
+  <article class="fc-report">
     <FcReportHeader
       :type="type"
       v-bind="header" />
@@ -25,7 +25,7 @@
           class="pt-4" />
       </template>
     </div>
-  </section>
+  </article>
 </template>
 
 <script>

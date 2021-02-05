@@ -1,6 +1,6 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
-    <header class="flex-grow-0 flex-shrink-0 px-5">
+    <div class="flex-grow-0 flex-shrink-0 px-5">
       <div class="align-center d-flex mt-6">
         <FcStudyRequestFilterShortcuts
           v-model="filters" />
@@ -11,7 +11,7 @@
           v-model="search"
           :columns="columns" />
       </div>
-    </header>
+    </div>
 
     <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 overflow-y-auto px-5">
       <v-card

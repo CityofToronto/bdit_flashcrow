@@ -1,6 +1,6 @@
 <template>
   <section class="fc-admin d-flex flex-column fill-height">
-    <header class="flex-grow-0 flex-shrink-0">
+    <nav class="flex-grow-0 flex-shrink-0">
       <v-tabs>
         <v-tab :to="{ name: 'adminPermissions' }">
           Permissions
@@ -13,7 +13,7 @@
       <div class="px-5">
         <h2 class="display-3 mt-5">{{title}}</h2>
       </div>
-    </header>
+    </nav>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
       <router-view></router-view>
     </section>

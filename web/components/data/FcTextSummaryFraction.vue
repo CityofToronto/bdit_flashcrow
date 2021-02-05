@@ -1,5 +1,7 @@
 <template>
-  <div :class="small ? 'display-1' : 'display-2'">
+  <div
+    class="display-1"
+    :class="{ 'font-weight-medium': !small }">
     {{a}}
     <span
       v-if="showB"

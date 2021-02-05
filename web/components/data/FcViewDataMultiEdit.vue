@@ -10,7 +10,7 @@
         <h3
           class="display-2 pb-1"
           id="heading_multi_edit_totals">
-          Totals over Selection
+          Totals Over Selection
         </h3>
         <v-row
           class="my-6"
@@ -19,7 +19,7 @@
             <div class="body-1">
               Collisions
             </div>
-            <div class="display-2 mt-1">
+            <div class="display-1 font-weight-medium mt-1">
               {{collisionTotal}}
             </div>
           </v-col>
@@ -27,7 +27,7 @@
             <div class="body-1">
               Studies
             </div>
-            <div class="display-2 mt-1">
+            <div class="display-1 font-weight-medium mt-1">
               {{studyTotal}}
             </div>
             <div class="font-weight-regular mt-2 title">
