@@ -104,11 +104,6 @@ export default {
     ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
   },
   methods: {
-    async actionRefresh() {
-      this.loading = true;
-      await this.loadAsyncForRoute();
-      this.loading = false;
-    },
     actionViewData() {
       let route;
       if (this.locationsEmpty) {

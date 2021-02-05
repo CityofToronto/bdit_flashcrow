@@ -48,23 +48,17 @@
         <section
           aria-labelledby="heading_bulk_request_requests"
           class="mb-6 mx-5">
+          <h3 class="display-2 mt-6 mb-2" id="heading_bulk_request_requests">
+            <span>Requests</span>
+            <v-chip class="ml-2" small>{{items.length}}</v-chip>
+          </h3>
           <div class="align-center d-flex px-4 py-2">
-            <h3 class="display-2" id="heading_bulk_request_requests">
-              <span>Requests</span>
-              <v-chip class="ml-2" small>{{items.length}}</v-chip>
-            </h3>
-
-            <v-tooltip right>
-              <template v-slot:activator="{ on }">
-                <div class="order-first" v-on="on">
-                  <v-simple-checkbox
-                    v-model="selectAll"
-                    class="mr-6"
-                    :indeterminate="selectAll === null"></v-simple-checkbox>
-                </div>
-              </template>
-              <span>Select all</span>
-            </v-tooltip>
+            <v-checkbox
+              v-model="selectAll"
+              class="mt-0"
+              hide-details
+              :indeterminate="selectAll === null"
+              label="Select all" />
 
             <v-spacer></v-spacer>
 

@@ -16,48 +16,22 @@
       </div>
     </header>
 
-    <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
-      <v-card class="fc-requests-track-card">
+    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 overflow-y-auto px-5">
+      <v-card
+        class="fc-requests-track-card"
+        flat
+        outlined>
         <v-card-title class="py-2">
           <nav
             aria-label="Filtering and selection tools for requests"
             class="fc-requests-track-table-title align-center d-flex">
 
-            <v-tooltip right>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-checkbox
-                    v-model="selectAll"
-                    aria-label="Select all"
-                    class="mt-0 mr-3 pt-0"
-                    hide-details
-                    :indeterminate="selectAll === null"/>
-                </div>
-              </template>
-              <span>Select all</span>
-            </v-tooltip>
-
-            <FcButton
-              class="mr-2"
-              :disabled="selectAll === false"
-              type="secondary"
-              @click="actionDownload(selectedItems)">
-              <v-icon color="primary" left>mdi-cloud-download</v-icon>
-              Download
-            </FcButton>
-            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
-              <FcMenuStudyRequestsStatus
-                button-class="mr-2"
-                :disabled="selectAll === false"
-                :study-requests="selectedStudyRequests"
-                @update="onUpdateStudyRequests" />
-
-              <FcMenuStudyRequestsAssignTo
-                button-class="mr-2"
-                :disabled="selectAll === false"
-                :study-requests="selectedStudyRequests"
-                @update="onUpdateStudyRequests" />
-            </template>
+            <v-checkbox
+              v-model="selectAll"
+              class="mt-0 mr-6 pt-0"
+              hide-details
+              :indeterminate="selectAll === null"
+              label="Select all" />
 
             <FcStudyRequestFilters
               v-model="filters"
@@ -66,15 +40,26 @@
             <v-spacer></v-spacer>
 
             <FcButton
-              class="mr-2"
-              :loading="loading"
+              class="ml-2"
+              :disabled="selectAll === false"
               type="secondary"
-              @click="actionRefresh()">
-              <v-icon
-                color="primary"
-                left>mdi-refresh</v-icon>
-              Refresh
+              @click="actionDownload(selectedItems)">
+              <v-icon color="primary" left>mdi-cloud-download</v-icon>
+              Download
             </FcButton>
+            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
+              <FcMenuStudyRequestsStatus
+                button-class="ml-2"
+                :disabled="selectAll === false"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
+
+              <FcMenuStudyRequestsAssignTo
+                button-class="ml-2"
+                :disabled="selectAll === false"
+                :study-requests="selectedStudyRequests"
+                @update="onUpdateStudyRequests" />
+            </template>
           </nav>
         </v-card-title>
 
@@ -243,11 +228,6 @@ export default {
       const csvStr = RequestItemExport.get(items, this.studyRequestsBulk);
       const csvData = new Blob([csvStr], { type: 'text/csv' });
       saveAs(csvData, 'requests.csv');
-    },
-    async actionRefresh() {
-      this.loading = true;
-      await this.loadAsyncForRoute();
-      this.loading = false;
     },
     async actionUpdateItem(item) {
       this.loading = true;
