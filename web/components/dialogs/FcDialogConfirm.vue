@@ -7,9 +7,15 @@
       <v-card-title>
         <h2 class="display-1">{{title}}</h2>
       </v-card-title>
-      <v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class="pt-4">
         <slot></slot>
       </v-card-text>
+
+      <v-divider></v-divider>
+
       <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton

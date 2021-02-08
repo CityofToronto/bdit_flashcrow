@@ -45,17 +45,14 @@
     </div>
 
     <div class="mt-4">
-      <v-textarea
+      <FcTextarea
         v-model="v.urgentReason.$model"
         class="mt-3"
         :error-messages="errorMessagesUrgentReason"
         label="Additional Information"
         :messages="messagesUrgentReason"
-        no-resize
-        outlined
-        rows="4"
         :success="v.urgent.$model && !v.urgentReason.$invalid"
-        @blur="v.urgentReason.$touch()"></v-textarea>
+        @blur="v.urgentReason.$touch()" />
     </div>
   </fieldset>
 </template>
@@ -71,6 +68,7 @@ import {
 import DateTime from '@/lib/time/DateTime';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
+import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
 import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 
 export default {
@@ -79,6 +77,7 @@ export default {
     FcDatePicker,
     FcInputTextArray,
     FcStudyRequestReason,
+    FcTextarea,
   },
   props: {
     isCreate: Boolean,

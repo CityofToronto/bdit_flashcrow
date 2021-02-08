@@ -1,22 +1,23 @@
 <template>
-  <v-textarea
+  <FcTextarea
     v-model="internalNotes"
     :error-messages="errorMessagesNotes"
     label="Additional Information"
     :messages="messagesNotes"
-    no-resize
-    outlined
-    rows="4"
     v-bind="$attrs"
-    @blur="v.notes.$touch()"></v-textarea>
+    @blur="v.notes.$touch()" />
 </template>
 
 <script>
 import { StudyHours } from '@/lib/Constants';
 import { OPTIONAL, REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES } from '@/lib/i18n/Strings';
+import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
 
 export default {
   name: 'FcStudyRequestNotes',
+  components: {
+    FcTextarea,
+  },
   props: {
     v: Object,
   },

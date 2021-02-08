@@ -8,14 +8,11 @@
             <FcTextNumberTotal class="ml-2" :n="studyRequestComments.length" />
           </h3>
           <div class="fc-comment-new">
-            <v-textarea
+            <FcTextarea
               v-model="commentText"
               class="mt-4"
               label="Compose new comment"
-              :loading="loadingAddComment"
-              no-resize
-              outlined
-              rows="4"></v-textarea>
+              :loading="loadingAddComment" />
             <div class="text-right mb-4">
               <FcButton
                 :disabled="commentText.length === 0"
@@ -74,12 +71,14 @@ import {
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
 
 export default {
   name: 'FcCommentsStudyRequest',
   components: {
     FcButton,
     FcButtonAria,
+    FcTextarea,
     FcTextNumberTotal,
   },
   props: {
