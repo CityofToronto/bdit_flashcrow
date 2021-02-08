@@ -5,95 +5,105 @@
     scrollable>
     <v-card role="dialog">
       <v-card-title class="shading">
-        <h2 class="headline">Filter Requests</h2>
+        <h2 class="display-1">Filter Requests</h2>
+        <v-spacer></v-spacer>
+        <FcButton
+          type="secondary"
+          @click="actionClearAll">
+          Clear All
+        </FcButton>
       </v-card-title>
+
       <v-divider></v-divider>
-      <v-card-text>
-        <h2 class="body-1 mt-4">Study Types</h2>
-        <v-checkbox
-          v-for="studyType in StudyType.enumValues"
-          :key="studyType.name"
-          v-model="internalStudyTypes"
-          class="mt-2"
-          hide-details
-          :label="studyType.label"
-          :value="studyType"></v-checkbox>
 
-        <h2 class="body-1 mt-4">Status</h2>
-        <v-checkbox
-          v-for="status in StudyRequestStatus.enumValues"
-          :key="status.name"
-          v-model="internalStatuses"
-          class="mt-2"
-          hide-details
-          :label="status.text"
-          :value="status"></v-checkbox>
-        <v-checkbox
-          v-model="internalClosed"
-          class="mt-2"
-          hide-details
-          label="Closed"></v-checkbox>
+      <v-card-text class="default--text">
+        <fieldset class="mt-4">
+          <legend class="headline">Study Types</legend>
 
-        <h2 class="body-1 mt-4">Assigned To</h2>
-        <v-checkbox
-          v-model="internalAssignees"
-          class="mt-2"
-          hide-details
-          label="None"
-          :value="null"></v-checkbox>
-        <v-checkbox
-          v-for="assignee in StudyRequestAssignee.enumValues"
-          :key="assignee.name"
-          v-model="internalAssignees"
-          class="mt-2"
-          hide-details
-          :label="assignee.text"
-          :value="assignee"></v-checkbox>
+          <v-checkbox
+            v-for="studyType in StudyType.enumValues"
+            :key="studyType.name"
+            v-model="internalStudyTypes"
+            class="mt-2"
+            hide-details
+            :label="studyType.label"
+            :value="studyType"></v-checkbox>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Status</legend>
+
+          <v-checkbox
+            v-for="status in StudyRequestStatus.enumValues"
+            :key="status.name"
+            v-model="internalStatuses"
+            class="mt-2"
+            hide-details
+            :label="status.text"
+            :value="status"></v-checkbox>
+          <v-checkbox
+            v-model="internalClosed"
+            class="mt-2"
+            hide-details
+            label="Closed"></v-checkbox>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Assigned To</legend>
+
+          <v-checkbox
+            v-model="internalAssignees"
+            class="mt-2"
+            hide-details
+            label="None"
+            :value="null"></v-checkbox>
+          <v-checkbox
+            v-for="assignee in StudyRequestAssignee.enumValues"
+            :key="assignee.name"
+            v-model="internalAssignees"
+            class="mt-2"
+            hide-details
+            :label="assignee.text"
+            :value="assignee"></v-checkbox>
+        </fieldset>
 
         <FcRadioGroup
           v-model="internalCreatedAt"
-          class="mt-4"
+          class="mt-6"
           hide-details
           :items="[
             { label: 'Less than 1 month ago', value: -1 },
             { label: 'Less than 3 months ago', value: -3 },
             { label: 'At least 3 months ago', value: 3 },
             { label: 'All', value: 0 },
-          ]">
-          <template v-slot:legend>
-            <h2 class="body-1 secondary--text">Date Created</h2>
-          </template>
-        </FcRadioGroup>
+          ]"
+          label="Date Created" />
 
         <FcRadioGroup
           v-model="internalLastEditedAt"
-          class="mt-4"
+          class="mt-6"
           hide-details
           :items="[
             { label: 'Less than 1 month ago', value: -1 },
             { label: 'Less than 3 months ago', value: -3 },
             { label: 'At least 3 months ago', value: 3 },
             { label: 'All', value: 0 },
-          ]">
-          <template v-slot:legend>
-            <h2 class="body-1 secondary--text">Last Updated</h2>
-          </template>
-        </FcRadioGroup>
+          ]"
+          label="Last Updated" />
 
         <FcRadioGroup
           v-model="internalUserOnly"
-          class="mt-4"
+          class="mt-6"
           hide-details
           :items="[
             { label: 'All', value: false },
             { label: 'User', value: true },
-          ]">
-          <template v-slot:legend>
-            <h2 class="body-1 secondary--text">Requester</h2>
-          </template>
-        </FcRadioGroup>
+          ]"
+          label="Requester" />
       </v-card-text>
+
       <v-divider></v-divider>
+
       <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton
@@ -165,6 +175,17 @@ export default {
     },
   },
   methods: {
+    actionClearAll() {
+      this.internalFilters = {
+        assignees: [],
+        closed: false,
+        createdAt: 0,
+        lastEditedAt: 0,
+        statuses: [],
+        studyTypes: [],
+        userOnly: false,
+      };
+    },
     actionSave() {
       this.$emit('set-filters', this.internalFilters);
       this.internalValue = false;

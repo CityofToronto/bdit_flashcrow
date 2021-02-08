@@ -5,7 +5,7 @@
     scrollable>
     <v-card role="dialog">
       <v-card-title class="shading">
-        <h2 class="headline">Filter Studies</h2>
+        <h2 class="display-1">Filter Studies</h2>
         <v-spacer></v-spacer>
         <FcButton
           type="secondary"
@@ -13,64 +13,80 @@
           Clear All
         </FcButton>
       </v-card-title>
+
       <v-divider></v-divider>
-      <v-card-text>
-        <h2 class="body-1 mt-4">Study Types</h2>
-        <v-checkbox
-          v-for="studyType in StudyType.enumValues"
-          :key="studyType.name"
-          v-model="internalFilters.studyTypes"
-          class="mt-2"
-          hide-details
-          :label="studyType.label"
-          :value="studyType"></v-checkbox>
 
-        <h2 class="body-1 mt-4">Days of the Week</h2>
-        <v-checkbox
-          v-for="(label, i) in DAYS_OF_WEEK"
-          :key="i"
-          v-model="internalFilters.daysOfWeek"
-          class="mt-2"
-          hide-details
-          :label="label"
-          :value="i"></v-checkbox>
+      <v-card-text class="default--text">
+        <fieldset class="mt-4">
+          <legend class="headline">Study Types</legend>
 
-        <h2 class="body-1 mt-4">Dates</h2>
-        <v-checkbox
-          v-model="internalFilters.applyDateRange"
-          class="mt-2"
-          hide-details
-          label="Filter by date?"></v-checkbox>
-        <FcDatePicker
-          v-model="$v.internalFilters.dateRangeStart.$model"
-          class="mt-2"
-          :disabled="!internalFilters.applyDateRange"
-          :error-messages="errorMessagesDateRangeStart"
-          hide-details="auto"
-          label="From (YYYY-MM-DD)"
-          :max="now">
-        </FcDatePicker>
-        <FcDatePicker
-          v-model="$v.internalFilters.dateRangeEnd.$model"
-          class="mt-2"
-          :disabled="!internalFilters.applyDateRange"
-          :error-messages="errorMessagesDateRangeEnd"
-          hide-details="auto"
-          label="To (YYYY-MM-DD)"
-          :max="now">
-        </FcDatePicker>
+          <v-checkbox
+            v-for="studyType in StudyType.enumValues"
+            :key="studyType.name"
+            v-model="internalFilters.studyTypes"
+            class="mt-2"
+            hide-details
+            :label="studyType.label"
+            :value="studyType"></v-checkbox>
+        </fieldset>
 
-        <h2 class="body-1 mt-4">Hours</h2>
-        <v-checkbox
-          v-for="studyHours in StudyHours.enumValues"
-          :key="studyHours.name"
-          v-model="internalFilters.hours"
-          class="mt-2"
-          hide-details
-          :label="studyHours.description"
-          :value="studyHours"></v-checkbox>
+        <fieldset class="mt-6">
+          <legend class="headline">Days of the Week</legend>
+
+          <v-checkbox
+            v-for="(label, i) in DAYS_OF_WEEK"
+            :key="i"
+            v-model="internalFilters.daysOfWeek"
+            class="mt-2"
+            hide-details
+            :label="label"
+            :value="i"></v-checkbox>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Dates</legend>
+
+          <v-checkbox
+            v-model="internalFilters.applyDateRange"
+            class="mt-2"
+            hide-details
+            label="Filter by date?"></v-checkbox>
+          <FcDatePicker
+            v-model="$v.internalFilters.dateRangeStart.$model"
+            class="mt-2"
+            :disabled="!internalFilters.applyDateRange"
+            :error-messages="errorMessagesDateRangeStart"
+            hide-details="auto"
+            label="From (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+          <FcDatePicker
+            v-model="$v.internalFilters.dateRangeEnd.$model"
+            class="mt-2"
+            :disabled="!internalFilters.applyDateRange"
+            :error-messages="errorMessagesDateRangeEnd"
+            hide-details="auto"
+            label="To (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Hours</legend>
+
+          <v-checkbox
+            v-for="studyHours in StudyHours.enumValues"
+            :key="studyHours.name"
+            v-model="internalFilters.hours"
+            class="mt-2"
+            hide-details
+            :label="studyHours.description"
+            :value="studyHours"></v-checkbox>
+        </fieldset>
       </v-card-text>
+
       <v-divider></v-divider>
+
       <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton

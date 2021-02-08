@@ -5,7 +5,7 @@
     scrollable>
     <v-card role="dialog">
       <v-card-title class="shading">
-        <h2 class="headline">Filter Collisions</h2>
+        <h2 class="display-1">Filter Collisions</h2>
         <v-spacer></v-spacer>
         <FcButton
           type="secondary"
@@ -13,73 +13,92 @@
           Clear All
         </FcButton>
       </v-card-title>
+
       <v-divider></v-divider>
-      <v-card-text>
-        <h2 class="body-1 mt-4">Collision Affects</h2>
-        <v-checkbox
-          v-for="emphasisArea in CollisionEmphasisArea.enumValues"
-          :key="emphasisArea.name"
-          v-model="internalFilters.emphasisAreas"
-          class="mt-2"
-          hide-details
-          :label="emphasisArea.text"
-          :value="emphasisArea"></v-checkbox>
 
-        <h2 class="body-1 mt-4">Dates</h2>
-        <v-checkbox
-          v-model="internalFilters.applyDateRange"
-          class="mt-2"
-          hide-details
-          label="Filter by date?"></v-checkbox>
-        <FcDatePicker
-          v-model="$v.internalFilters.dateRangeStart.$model"
-          class="mt-2"
-          :disabled="!internalFilters.applyDateRange"
-          :error-messages="errorMessagesDateRangeStart"
-          hide-details="auto"
-          label="From (YYYY-MM-DD)"
-          :max="now">
-        </FcDatePicker>
-        <FcDatePicker
-          v-model="$v.internalFilters.dateRangeEnd.$model"
-          class="mt-2"
-          :disabled="!internalFilters.applyDateRange"
-          :error-messages="errorMessagesDateRangeEnd"
-          hide-details="auto"
-          label="To (YYYY-MM-DD)"
-          :max="now">
-        </FcDatePicker>
+      <v-card-text class="default--text">
+        <fieldset class="mt-4">
+          <legend class="headline">Collision Affects</legend>
 
-        <h2 class="body-1 mt-4">Days of the Week</h2>
-        <v-checkbox
-          v-for="(label, i) in DAYS_OF_WEEK"
-          :key="i"
-          v-model="internalFilters.daysOfWeek"
-          class="mt-2"
-          hide-details
-          :label="label"
-          :value="i"></v-checkbox>
+          <v-checkbox
+            v-for="emphasisArea in CollisionEmphasisArea.enumValues"
+            :key="emphasisArea.name"
+            v-model="internalFilters.emphasisAreas"
+            class="mt-2"
+            hide-details
+            :label="emphasisArea.text"
+            :value="emphasisArea"></v-checkbox>
+        </fieldset>
 
-        <h2 class="body-1 mt-4">Time of Day</h2>
-        <v-range-slider
-          v-model="internalFilters.hoursOfDay"
-          class="mt-11"
-          hide-details
-          :max="24"
-          :min="0"
-          thumb-label="always"></v-range-slider>
+        <fieldset class="mt-6">
+          <legend class="headline">Dates</legend>
 
-        <h2 class="body-1 mt-4">Weather</h2>
-        <v-checkbox
-          v-for="roadSurfaceCondition in CollisionRoadSurfaceCondition.enumValues"
-          :key="roadSurfaceCondition.name"
-          v-model="internalFilters.roadSurfaceConditions"
-          class="mt-2"
-          hide-details
-          :label="roadSurfaceCondition.text"
-          :value="roadSurfaceCondition"></v-checkbox>
+          <v-checkbox
+            v-model="internalFilters.applyDateRange"
+            class="mt-2"
+            hide-details
+            label="Filter by date?"></v-checkbox>
+          <FcDatePicker
+            v-model="$v.internalFilters.dateRangeStart.$model"
+            class="mt-2"
+            :disabled="!internalFilters.applyDateRange"
+            :error-messages="errorMessagesDateRangeStart"
+            hide-details="auto"
+            label="From (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+          <FcDatePicker
+            v-model="$v.internalFilters.dateRangeEnd.$model"
+            class="mt-2"
+            :disabled="!internalFilters.applyDateRange"
+            :error-messages="errorMessagesDateRangeEnd"
+            hide-details="auto"
+            label="To (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Days of the Week</legend>
+
+          <v-checkbox
+            v-for="(label, i) in DAYS_OF_WEEK"
+            :key="i"
+            v-model="internalFilters.daysOfWeek"
+            class="mt-2"
+            hide-details
+            :label="label"
+            :value="i"></v-checkbox>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Time of Day</legend>
+
+          <v-range-slider
+            v-model="internalFilters.hoursOfDay"
+            class="mt-11"
+            hide-details
+            :max="24"
+            :min="0"
+            thumb-label="always"></v-range-slider>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Weather</legend>
+
+          <v-checkbox
+            v-for="roadSurfaceCondition in CollisionRoadSurfaceCondition.enumValues"
+            :key="roadSurfaceCondition.name"
+            v-model="internalFilters.roadSurfaceConditions"
+            class="mt-2"
+            hide-details
+            :label="roadSurfaceCondition.text"
+            :value="roadSurfaceCondition"></v-checkbox>
+        </fieldset>
       </v-card-text>
+
       <v-divider></v-divider>
+
       <v-card-actions class="shading">
         <v-spacer></v-spacer>
         <FcButton

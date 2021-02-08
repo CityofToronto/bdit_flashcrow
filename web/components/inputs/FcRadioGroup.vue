@@ -1,11 +1,13 @@
 <template>
-  <v-radio-group
-    v-model="internalValue"
-    v-bind="$attrs">
-    <fieldset>
-      <legend class="mb-3">
-        <slot name="legend"></slot>
-      </legend>
+  <fieldset>
+    <v-radio-group
+      v-model="internalValue"
+      class="mt-0"
+      :label="label"
+      v-bind="$attrs">
+      <template v-slot:label>
+        <span class="default--text headline">{{label}}</span>
+      </template>
       <template v-for="(item, i) in items">
         <v-radio
           :key="'radio_' + item.value"
@@ -29,8 +31,8 @@
           }"
           :value="[item.hint]"></v-messages>
       </template>
-    </fieldset>
-  </v-radio-group>
+    </v-radio-group>
+  </fieldset>
 </template>
 
 <script>
@@ -44,16 +46,7 @@ export default {
       type: Array,
       default() { return []; },
     },
-  },
-  mounted() {
-    if (!this.$attrs.label) {
-      /*
-       * In this case, Vuetify still generates an `aria-labelledby` attribute, but does not
-       * generate a label to go along with it.
-       */
-      const radioGroup = this.$el.querySelector('[role=radiogroup]');
-      radioGroup.removeAttribute('aria-labelledby');
-    }
+    label: String,
   },
 };
 </script>
