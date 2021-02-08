@@ -50,7 +50,7 @@
           class="mb-6 mx-5">
           <h3 class="display-2 mt-6 mb-2" id="heading_bulk_request_requests">
             <span>Requests</span>
-            <v-chip class="ml-2" small>{{items.length}}</v-chip>
+            <FcTextNumberTotal class="ml-2" :n="items.length" />
           </h3>
           <div class="align-center d-flex px-4 py-2">
             <v-checkbox
@@ -105,6 +105,7 @@ import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkIndicesDeselected, bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
@@ -133,6 +134,7 @@ export default {
     FcPaneMap,
     FcStatusStudyRequests,
     FcSummaryStudyRequest,
+    FcTextNumberTotal,
   },
   data() {
     return {

@@ -14,25 +14,18 @@
         left>mdi-filter-variant</v-icon>
       Filter
     </FcButton>
-    <div
+    <FcListFilterChips
       v-if="filterChips.length > 0"
-      class="ml-5">
-      <v-chip
-        v-for="(filterChip, i) in filterChips"
-        :key="i"
-        class="mr-2 primary--text"
-        color="light-blue lighten-5"
-        @click="removeFilter(filterChip)">
-        <v-icon left>mdi-check</v-icon>
-        {{filterChip.text}}
-      </v-chip>
-    </div>
+      class="ml-5"
+      :filter-chips="filterChips"
+      @click-filter="removeFilter" />
   </div>
 </template>
 
 <script>
 import { getFilterChips } from '@/lib/requests/RequestFilters';
 import FcDialogRequestFilters from '@/web/components/dialogs/FcDialogRequestFilters.vue';
+import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -42,6 +35,7 @@ export default {
   components: {
     FcButton,
     FcDialogRequestFilters,
+    FcListFilterChips,
   },
   props: {
     items: Array,

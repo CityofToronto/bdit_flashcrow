@@ -1,16 +1,22 @@
 <template>
-  <nav aria-label="Quick filters for requests">
-    <v-chip-group
-      v-model="activeShortcutChip"
-      active-class="fc-shortcut-chip-active"
-      class="fc-shortcut-chips"
-      color="primary"
-      :mandatory="activeShortcutChip !== null">
+  <nav
+    aria-label="Quick filters for requests"
+    class="fc-shortcut-chips">
+    <ul class="pl-0">
       <v-chip
-        v-for="({ text }, i) in SHORTCUT_CHIPS"
+        v-for="({ label }, i) in SHORTCUT_CHIPS"
         :key="i"
-        outlined>{{text}}</v-chip>
-    </v-chip-group>
+        class="mr-1"
+        :class="{
+          'fc-shortcut-chip-active': activeShortcutChip === i,
+        }"
+        :color="activeShortcutChip === i ? 'primary' : null"
+        outlined
+        tag="li"
+        @click="activeShortcutChip = i">
+        {{label}}
+      </v-chip>
+    </ul>
   </nav>
 </template>
 
@@ -28,7 +34,7 @@ const SHORTCUT_CHIPS = [
       statuses: [],
       studyTypes: [],
     },
-    text: 'All',
+    label: 'All',
   }, {
     filters: {
       assignees: [],
@@ -38,7 +44,7 @@ const SHORTCUT_CHIPS = [
       statuses: [],
       studyTypes: [],
     },
-    text: 'New',
+    label: 'New',
   }, {
     filters: {
       assignees: [],
@@ -48,7 +54,7 @@ const SHORTCUT_CHIPS = [
       statuses: [],
       studyTypes: [],
     },
-    text: 'Recently Updated',
+    label: 'Recently Updated',
   }, {
     filters: {
       assignees: [],
@@ -58,7 +64,7 @@ const SHORTCUT_CHIPS = [
       statuses: [StudyRequestStatus.CANCELLED],
       studyTypes: [],
     },
-    text: 'Cancelled',
+    label: 'Cancelled',
   }, {
     filters: {
       assignees: [],
@@ -68,7 +74,7 @@ const SHORTCUT_CHIPS = [
       statuses: [],
       studyTypes: [],
     },
-    text: 'Closed',
+    label: 'Closed',
   },
 ];
 

@@ -44,7 +44,7 @@
           class="fc-multi-edit-inset display-2 pb-1"
           id="heading_multi_edit_selected">
           Selected Locations
-          <v-chip class="ml-2" small>{{locations.length}}</v-chip>
+          <FcTextNumberTotal class="ml-2" :n="locations.length" />
         </h3>
         <FcListLocationMulti
           class="ml-6"
@@ -65,6 +65,7 @@ import {
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
@@ -72,6 +73,7 @@ export default {
   components: {
     FcListLocationMulti,
     FcTextMostRecent,
+    FcTextNumberTotal,
   },
   props: {
     locations: Array,

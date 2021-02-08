@@ -5,7 +5,7 @@
         <v-col class="px-5" cols="6">
           <h3 class="display-2" id="heading_request_comments">
             <span>Comments</span>
-            <v-chip class="ml-2" small>{{studyRequestComments.length}}</v-chip>
+            <FcTextNumberTotal class="ml-2" :n="studyRequestComments.length" />
           </h3>
           <div class="fc-comment-new">
             <v-textarea
@@ -71,6 +71,7 @@ import {
   deleteStudyRequestComment,
   postStudyRequestComment,
 } from '@/lib/api/WebApi';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
@@ -79,6 +80,7 @@ export default {
   components: {
     FcButton,
     FcButtonAria,
+    FcTextNumberTotal,
   },
   props: {
     studyRequest: Object,

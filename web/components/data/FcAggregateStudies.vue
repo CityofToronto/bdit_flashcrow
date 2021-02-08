@@ -45,10 +45,11 @@
               :locations="locations"
               :locations-selection="locationsSelection">
               <template v-slot:subtitle="{ i: j }">
-                <FcTextMostRecent
-                  v-if="itemsPerLocation[i][j].mostRecent !== null"
-                  class="mt-2"
-                  :study="itemsPerLocation[i][j].mostRecent" />
+                <div class="mt-1">
+                  <FcTextMostRecent
+                    v-if="itemsPerLocation[i][j].mostRecent !== null"
+                    :study="itemsPerLocation[i][j].mostRecent" />
+                </div>
               </template>
               <template v-slot:action="{ i: j }">
                 <div class="mr-9">

@@ -3,7 +3,7 @@
     <div class="align-center d-flex">
       <h3 class="display-2">
         <span>Collisions</span>
-        <v-chip class="ml-2" small>{{collisionTotal}}</v-chip>
+        <FcTextNumberTotal class="ml-2" :n="collisionTotal" />
       </h3>
       <v-spacer></v-spacer>
       <FcDialogCollisionFilters
@@ -24,26 +24,20 @@
       <slot name="action" />
     </div>
 
-    <div
+    <FcListFilterChips
       v-if="filterChipsCollision.length > 0"
-      class="mt-5">
-      <v-chip
-        v-for="(filterChip, i) in filterChipsCollision"
-        :key="i"
-        class="mb-2 mr-2 primary--text"
-        color="light-blue lighten-5"
-        @click="removeFilterCollision(filterChip)">
-        {{filterChip.label}}
-        <v-icon right>mdi-close-circle</v-icon>
-      </v-chip>
-    </div>
+      class="mt-4 mb-2"
+      :filter-chips="filterChipsCollision"
+      @click-filter="removeFilterCollision" />
   </header>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollisionFilters.vue';
+import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -51,6 +45,8 @@ export default {
   components: {
     FcButton,
     FcDialogCollisionFilters,
+    FcListFilterChips,
+    FcTextNumberTotal,
   },
   props: {
     collisionTotal: Number,

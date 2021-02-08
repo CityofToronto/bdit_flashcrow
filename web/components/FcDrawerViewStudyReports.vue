@@ -31,14 +31,10 @@
           </h2>
           <template v-if="filterChipsStudyNoStudyTypes.length > 0">
             <span class="ml-1 font-weight-regular headline secondary--text">&#x2022;</span>
-            <v-chip
-              v-for="(filterChip, i) in filterChipsStudyNoStudyTypes"
-              :key="i"
+            <FcListFilterChips
               class="ml-2 my-1"
-              filter
-              :input-value="true">
-              {{filterChip.label}}
-            </v-chip>
+              :filter-chips="filterChipsStudyNoStudyTypes"
+              :readonly="true" />
           </template>
 
           <v-spacer></v-spacer>
@@ -53,7 +49,7 @@
                 class="flex-grow-0 mt-0 mr-2"
                 type="secondary">
                 <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2">{{locationActive.description}}</span>
+                <span class="pl-2 text-truncate">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -183,6 +179,7 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
@@ -198,6 +195,7 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcIconLocationMulti,
+    FcListFilterChips,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,

@@ -25,10 +25,11 @@
             <div v-else>
               {{item.category.studyType.label}}
             </div>
-            <FcTextMostRecent
-              v-if="item.mostRecent !== null"
-              class="mt-2"
-              :study="item.mostRecent" />
+            <div class="mt-1">
+              <FcTextMostRecent
+                v-if="item.mostRecent !== null"
+                :study="item.mostRecent" />
+            </div>
           </div>
           <div class="fc-studies-n flex-grow-0 flex-shrink-0 mr-8">
             <FcTextSummaryFraction

@@ -3,7 +3,7 @@
     <div class="align-center d-flex">
       <h3 class="display-2">
         <span>Studies</span>
-        <v-chip class="ml-2" small>{{studyTotal}}</v-chip>
+        <FcTextNumberTotal class="ml-2" :n="studyTotal" />
       </h3>
       <v-spacer></v-spacer>
       <FcDialogStudyFilters
@@ -24,26 +24,20 @@
       <slot name="action" />
     </div>
 
-    <div
+    <FcListFilterChips
       v-if="filterChipsStudy.length > 0"
-      class="mt-5">
-      <v-chip
-        v-for="(filterChip, i) in filterChipsStudy"
-        :key="i"
-        class="mb-2 mr-2 primary--text"
-        color="light-blue lighten-5"
-        @click="removeFilterStudy(filterChip)">
-        {{filterChip.label}}
-        <v-icon right>mdi-close-circle</v-icon>
-      </v-chip>
-    </div>
+      class="mt-4 mb-2"
+      :filter-chips="filterChipsStudy"
+      @click-filter="removeFilterStudy" />
   </header>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
+import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -51,6 +45,8 @@ export default {
   components: {
     FcButton,
     FcDialogStudyFilters,
+    FcListFilterChips,
+    FcTextNumberTotal,
   },
   props: {
     disabled: {

@@ -2,7 +2,7 @@
   <section>
     <h2 class="my-4">
       <span>{{title}}</span>
-      <v-chip class="ml-2" small>{{jobs.length}}</v-chip>
+      <FcTextNumberTotal class="ml-2" :n="jobs.length" />
     </h2>
     <FcCardJob
       v-for="job in jobs"
@@ -12,12 +12,14 @@
 </template>
 
 <script>
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcCardJob from '@/web/components/jobs/FcCardJob.vue';
 
 export default {
   name: 'FcSectionJobs',
   components: {
     FcCardJob,
+    FcTextNumberTotal,
   },
   props: {
     jobs: Array,

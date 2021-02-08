@@ -37,14 +37,10 @@
           </h2>
           <template v-if="filterChipsCollision.length > 0">
             <span class="ml-1 font-weight-regular headline secondary--text">&#x2022;</span>
-            <v-chip
-              v-for="(filterChip, i) in filterChipsCollision"
-              :key="i"
+            <FcListFilterChips
               class="ml-2 my-1"
-              filter
-              :input-value="true">
-              {{filterChip.label}}
-            </v-chip>
+              :filter-chips="filterChipsCollision"
+              :readonly="true" />
           </template>
 
           <v-spacer></v-spacer>
@@ -142,6 +138,7 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
@@ -156,6 +153,7 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcIconLocationMulti,
+    FcListFilterChips,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcReport,

@@ -100,12 +100,12 @@
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
           Multiple Locations
-          <v-chip class="ml-2" small>
-            <span v-if="hasFilters">
-              {{item.studyRequestBulk.studyRequests.length}} / {{item.studyRequestsTotal}}
-            </span>
-            <span v-else>{{item.studyRequestBulk.studyRequests.length}}</span>
-          </v-chip>
+          <FcTextNumberTotal
+            class="ml-1"
+            :k="hasFilters ? item.studyRequestBulk.studyRequests.length : null"
+            :n="hasFilters
+              ? item.studyRequestsTotal
+              : item.studyRequestBulk.studyRequests.length" />
         </span>
         <span v-else>
           {{item.studyRequest.studyType.label}}
@@ -205,6 +205,7 @@ import { formatUsername } from '@/lib/StringFormatters';
 import RequestActions from '@/lib/requests/RequestActions';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
@@ -237,6 +238,7 @@ export default {
     FcButtonAria,
     FcDataTable,
     FcMenuStudyRequestsAssignTo,
+    FcTextNumberTotal,
   },
   props: {
     columns: Array,
