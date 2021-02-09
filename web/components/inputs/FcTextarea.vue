@@ -2,7 +2,7 @@
   <v-textarea
     v-model="internalValue"
     class="fc-textarea"
-    :counter="1000"
+    counter
     :label="label"
     no-resize
     outlined

@@ -16,7 +16,9 @@
       </div>
     </v-card-title>
     <v-card-text class="pb-0">
-      <div class="mx-9">
+      <fieldset class="mx-9">
+        <legend class="sr-only">Study Type for Request</legend>
+
         <v-row class="mt-1">
           <v-col class="my-0 py-2" cols="8">
             <FcStudyRequestStudyType
@@ -51,7 +53,7 @@
               :v="v" />
           </v-col>
         </v-row>
-      </div>
+      </fieldset>
     </v-card-text>
   </v-card>
 </template>

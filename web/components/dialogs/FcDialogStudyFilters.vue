@@ -44,17 +44,11 @@
         </fieldset>
 
         <fieldset class="mt-6">
-          <legend class="headline">Dates</legend>
+          <legend class="headline">Date Range</legend>
 
-          <v-checkbox
-            v-model="internalFilters.applyDateRange"
-            class="mt-2"
-            hide-details
-            label="Filter by date?"></v-checkbox>
           <FcDatePicker
             v-model="$v.internalFilters.dateRangeStart.$model"
             class="mt-2"
-            :disabled="!internalFilters.applyDateRange"
             :error-messages="errorMessagesDateRangeStart"
             hide-details="auto"
             label="From (YYYY-MM-DD)"
@@ -63,7 +57,6 @@
           <FcDatePicker
             v-model="$v.internalFilters.dateRangeEnd.$model"
             class="mt-2"
-            :disabled="!internalFilters.applyDateRange"
             :error-messages="errorMessagesDateRangeEnd"
             hide-details="auto"
             label="To (YYYY-MM-DD)"
@@ -137,6 +130,10 @@ export default {
     };
   },
   computed: {
+    applyDateRange() {
+      const { dateRangeStart, dateRangeEnd } = this.internalFilters;
+      return dateRangeStart !== null || dateRangeEnd !== null;
+    },
     errorMessagesDateRangeStart() {
       const errors = [];
       if (!this.$v.internalFilters.dateRangeStart.requiredIfApplyDateRange) {
@@ -155,6 +152,11 @@ export default {
   },
   validations: {
     internalFilters: ValidationsFilters,
+  },
+  watch: {
+    applyDateRange() {
+      this.internalFilters.applyDateRange = this.applyDateRange;
+    },
   },
   methods: {
     actionClearAll() {
