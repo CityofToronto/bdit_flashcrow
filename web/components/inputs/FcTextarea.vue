@@ -2,7 +2,7 @@
   <v-textarea
     v-model="internalValue"
     class="fc-textarea"
-    counter
+    :counter="1000"
     :label="label"
     no-resize
     outlined
@@ -12,12 +12,24 @@
 
 <script>
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import DomIdGenerator from '@/web/ui/DomIdGenerator';
+
+const PREFIX_DOM_ID = 'textarea';
 
 export default {
   name: 'FcTextarea',
   mixins: [FcMixinVModelProxy(String)],
   props: {
     label: String,
+  },
+  mounted() {
+    const idCounter = DomIdGenerator.generateId(PREFIX_DOM_ID);
+
+    const $counter = this.$el.querySelector('.v-counter');
+    $counter.id = idCounter;
+
+    const $textarea = this.$el.querySelector('textarea');
+    $textarea.setAttribute('aria-describedby', idCounter);
   },
 };
 </script>
