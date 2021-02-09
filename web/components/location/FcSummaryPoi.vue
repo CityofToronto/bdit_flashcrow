@@ -7,18 +7,22 @@
       :size="20"
       :width="2" />
     <template v-else>
-      <FcSummaryPoiChip
-        v-if="poiSummary.hospital !== null"
-        color="pink"
-        icon="mdi-hospital-box"
-        :poi="poiSummary.hospital"
-        text="Hospital" />
-      <FcSummaryPoiChip
-        v-if="poiSummary.school !== null"
-        color="teal"
-        icon="mdi-school"
-        :poi="poiSummary.school"
-        text="School Zone" />
+      <dl>
+        <FcSummaryPoiChip
+          v-if="poiSummary.hospital !== null"
+          class="mr-2"
+          color="pink"
+          icon="mdi-hospital-box"
+          :poi="poiSummary.hospital"
+          text="Hospital" />
+        <FcSummaryPoiChip
+          v-if="poiSummary.school !== null"
+          class="mr-2"
+          color="teal"
+          icon="mdi-school"
+          :poi="poiSummary.school"
+          text="School Zone" />
+      </dl>
     </template>
   </div>
 </template>

@@ -1,52 +1,53 @@
 <template>
   <section>
-    <v-row class="mt-1 mb-2">
+    <v-row class="mt-1 mb-2" tag="dl">
       <v-col cols="6">
-        <div class="subtitle-1">Requester</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Requester</dt>
+        <dd class="mt-1 display-1">
           <span v-if="requestedBy !== null">
             {{requestedBy | username}}
           </span>
-        </div>
+        </dd>
       </v-col>
       <v-col cols="6">
         <template v-if="!isCreate">
-          <div class="subtitle-1">Submitted</div>
-          <div class="mt-1 display-1">
+          <dt class="subtitle-1">Submitted</dt>
+          <dd class="mt-1 display-1">
             {{studyRequest.createdAt | date}}
-          </div>
+          </dd>
         </template>
       </v-col>
       <v-col cols="6">
-        <div class="subtitle-1">Reason</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Reason</dt>
+        <dd class="mt-1 display-1">
           {{studyRequest.reason.text}}
-        </div>
+        </dd>
       </v-col>
       <v-col cols="6">
-        <div class="subtitle-1">Due Date</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Due Date</dt>
+        <dd class="mt-1 display-1">
           {{studyRequest.dueDate | date}}
-        </div>
-        <div
+        </dd>
+        <dd
           v-if="studyRequest.urgent"
           class="align-center d-flex">
           <v-icon color="warning" left>mdi-clipboard-alert</v-icon>
-          <v-messages :value="['This request has been marked as urgent.']"></v-messages>
-        </div>
-        <v-messages
-          v-else
-          class="mt-1"
-          :value="['Standard times to request counts are 2-3 months.']"></v-messages>
+          <v-messages :value="['This request has been marked as urgent.']" />
+        </dd>
+        <dd v-else>
+          <v-messages
+            class="mt-1"
+            :value="['Standard times to request counts are 2-3 months.']" />
+        </dd>
       </v-col>
       <v-col cols="12">
-        <div class="subtitle-1">Additional Information</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Additional Information</dt>
+        <dd class="mt-1 display-1">
           <span v-if="studyRequest.urgentReason">
             {{studyRequest.urgentReason}}
           </span>
           <span v-else>None</span>
-        </div>
+        </dd>
       </v-col>
     </v-row>
   </section>

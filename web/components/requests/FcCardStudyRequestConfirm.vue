@@ -6,62 +6,65 @@
       <FcIconLocationMulti
         class="mr-5"
         v-bind="iconProps" />
-      <div class="fc-card-study-request-title">
+      <h3 class="headline">
         {{location.description}}
-      </div>
+      </h3>
     </v-card-title>
-    <v-card-text class="pb-0">
+    <v-card-text class="default--text">
       <div class="mx-9">
-        <v-row>
+        <v-row tag="dl">
           <v-col class="py-2" cols="6">
-            <div class="subtitle-1">
+            <dt class="subtitle-1">
               Study Type
-            </div>
-            <div class="mt-1 display-1">
+            </dt>
+            <dd class="mt-1 display-1">
               {{studyRequest.studyType.label}}
-            </div>
+            </dd>
           </v-col>
           <v-col class="py-2" cols="6">
-            <div class="subtitle-1">
-              Days
-            </div>
-            <div class="mt-1 display-1">
+            <dt class="subtitle-1">
+              Study Days
+            </dt>
+            <dd class="mt-1 display-1">
               {{studyRequest.daysOfWeek | daysOfWeek}}
-            </div>
+            </dd>
           </v-col>
-        </v-row>
-        <v-row>
           <v-col class="py-2" cols="6">
             <template v-if="studyRequest.studyType.automatic">
-              <div class="subtitle-1">
-                Duration
-              </div>
-              <div class="mt-1 display-1">
+              <dt class="subtitle-1">
+                Study Duration
+              </dt>
+              <dd class="mt-1 display-1">
                 {{studyRequest.duration | durationHuman}}
-              </div>
-              <v-messages
-                class="mt-1"
-                :value="[studyRequest.duration + ' hours']"></v-messages>
+              </dd>
+              <dd>
+                <v-messages
+                  class="mt-1"
+                  :value="[studyRequest.duration + ' hours']" />
+              </dd>
             </template>
             <template v-else>
-              <div class="subtitle-1">
-                Hours
-              </div>
-              <div class="mt-1 display-1">
+              <dt class="subtitle-1">
+                Study Hours
+              </dt>
+              <dd class="mt-1 display-1">
                 {{studyRequest.hours.description}}
-              </div>
+              </dd>
+              <dd>
+                <v-messages
+                  class="mt-1"
+                  :value="[studyRequest.hours.hint]" />
+              </dd>
             </template>
           </v-col>
-        </v-row>
-        <v-row>
           <v-col class="py-2" cols="12">
-            <div class="subtitle-1">
+            <dt class="subtitle-1">
               Additional Information
-            </div>
-            <div class="mt-1 display-1">
+            </dt>
+            <dd class="mt-1 display-1">
               <span v-if="studyRequest.notes">{{studyRequest.notes}}</span>
               <span v-else>None</span>
-            </div>
+            </dd>
           </v-col>
         </v-row>
       </div>

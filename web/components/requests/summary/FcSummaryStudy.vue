@@ -1,42 +1,48 @@
 <template>
   <section>
-    <h2 class="headline mt-5">{{study.studyType.label}}</h2>
-    <v-row class="mt-2 mb-6">
+    <h4 class="headline mt-5">{{study.studyType.label}}</h4>
+    <v-row class="mt-2 mb-6" tag="dl">
       <v-col cols="6">
-        <div class="subtitle-1">Study Days</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Study Days</dt>
+        <dd class="mt-1 display-1">
           {{study.daysOfWeek | daysOfWeek}}
-        </div>
-        <v-messages
-          class="mt-1"
-          :value="messagesDaysOfWeek"></v-messages>
+        </dd>
+        <dd v-if="messagesDaysOfWeek.length > 0">
+          <v-messages
+            class="mt-1"
+            :value="messagesDaysOfWeek" />
+        </dd>
       </v-col>
       <v-col cols="6">
         <template v-if="study.studyType.automatic">
-          <div class="subtitle-1">Study Duration</div>
-          <div class="mt-1 display-1">
+          <dt class="subtitle-1">Study Duration</dt>
+          <dd class="mt-1 display-1">
             {{study.duration | durationHuman}}
-          </div>
-          <v-messages
-            class="mt-1"
-            :value="[study.duration + ' hours']"></v-messages>
+          </dd>
+          <dd>
+            <v-messages
+              class="mt-1"
+              :value="[study.duration + ' hours']" />
+          </dd>
         </template>
         <template v-else>
-          <div class="subtitle-1">Study Hours</div>
-          <div class="mt-1 display-1">
+          <dt class="subtitle-1">Study Hours</dt>
+          <dd class="mt-1 display-1">
             {{study.hours.description}}
-          </div>
-          <v-messages
-            class="mt-1"
-            :value="[study.hours.hint]"></v-messages>
+          </dd>
+          <dd>
+            <v-messages
+              class="mt-1"
+              :value="[study.hours.hint]"></v-messages>
+          </dd>
         </template>
       </v-col>
       <v-col cols="12">
-        <div class="subtitle-1">Additional Information</div>
-        <div class="mt-1 display-1">
+        <dt class="subtitle-1">Additional Information</dt>
+        <dd class="mt-1 display-1">
           <span v-if="study.notes">{{study.notes}}</span>
           <span v-else>None</span>
-        </div>
+        </dd>
       </v-col>
     </v-row>
   </section>

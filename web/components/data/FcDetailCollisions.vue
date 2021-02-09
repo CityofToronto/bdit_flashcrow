@@ -4,36 +4,44 @@
       v-if="loading"
       indeterminate />
     <template v-else>
-      <div class="flex-grow-1 flex-shrink-1">
-        <div class="body-1">
-          Amount
+      <dl class="d-flex flex-grow-1 flex-shrink-1">
+        <div class="flex-grow-1 flex-shrink-1">
+          <dt class="body-1">
+            Amount
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.amount"
+              :b="collisionSummaryUnfiltered.amount"
+              class="mt-1"
+              :show-b="hasFiltersCollision" />
+          </dd>
         </div>
-        <FcTextSummaryFraction
-          :a="collisionSummary.amount"
-          :b="collisionSummaryUnfiltered.amount"
-          class="mt-2"
-          :show-b="hasFiltersCollision" />
-      </div>
-      <div class="flex-grow-1 flex-shrink-1">
-        <div class="body-1">
-          KSI
+        <div class="flex-grow-1 flex-shrink-1">
+          <dt class="body-1">
+            KSI
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.ksi"
+              :b="collisionSummaryUnfiltered.ksi"
+              class="mt-1"
+              :show-b="hasFiltersCollision" />
+          </dd>
         </div>
-        <FcTextSummaryFraction
-          :a="collisionSummary.ksi"
-          :b="collisionSummaryUnfiltered.ksi"
-          class="mt-2"
-          :show-b="hasFiltersCollision" />
-      </div>
-      <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
-        <div class="body-1">
-          Validated
+        <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
+          <dt class="body-1">
+            Validated
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.validated"
+              :b="collisionSummaryUnfiltered.validated"
+              class="mt-1"
+              :show-b="hasFiltersCollision" />
+          </dd>
         </div>
-        <FcTextSummaryFraction
-          :a="collisionSummary.validated"
-          :b="collisionSummaryUnfiltered.validated"
-          class="mt-2"
-          :show-b="hasFiltersCollision" />
-      </div>
+      </dl>
       <FcButton
         class="flex-grow-0 flex-shrink-0"
         type="tertiary"
