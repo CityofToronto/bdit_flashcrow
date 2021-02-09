@@ -1,38 +1,46 @@
 <template>
   <v-card class="fc-pane-map-legend" width="200">
-    <v-card-text>
-      <h2 class="headline">View on map</h2>
-      <v-select
-        v-model="internalValue.datesFrom"
-        :aria-label="ariaLabelDatesFrom"
-        :items="itemsDatesFrom"
-        :messages="messagesDatesFrom" />
-      <h2 class="headline mt-6">Legend</h2>
-      <div
-        v-for="layer in layers"
-        :key="layer.value"
-        class="align-center d-flex my-3">
-        <div
-          :class="'icon-layer-' + layer.value"
-          class="mr-5"></div>
-        <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
-        <v-tooltip left>
-          <template v-slot:activator="{ on }">
-            <div v-on="on">
-              <v-checkbox
-                v-model="internalValue.layers[layer.value]"
-                :aria-label="layerLabels[layer.value]"
-                class="mt-0"
-                color="secondary"
-                hide-details
-                off-icon="mdi-eye-off"
-                on-icon="mdi-eye"
-                v-on="on"></v-checkbox>
-            </div>
-          </template>
-          <span>{{layerLabels[layer.value]}}</span>
-        </v-tooltip>
-      </div>
+    <v-card-text class="default--text">
+      <section aria-labelledby="heading_map_settings">
+        <h2 class="display-1" id="heading_map_settings">Map settings</h2>
+
+        <v-select
+          v-model="internalValue.datesFrom"
+          class="mt-4"
+          :items="itemsDatesFrom"
+          label="Show data from"
+          :messages="messagesDatesFrom" />
+
+        <fieldset class="mt-4">
+          <legend class="headline">Layers</legend>
+
+          <div
+            v-for="layer in layers"
+            :key="layer.value"
+            class="align-center d-flex my-2">
+            <div
+              :class="'icon-layer-' + layer.value"
+              class="mr-5"></div>
+            <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
+            <v-tooltip left>
+              <template v-slot:activator="{ on }">
+                <div v-on="on">
+                  <v-checkbox
+                    v-model="internalValue.layers[layer.value]"
+                    :aria-label="layerLabels[layer.value]"
+                    class="mt-0"
+                    color="secondary"
+                    hide-details
+                    off-icon="mdi-eye-off"
+                    on-icon="mdi-eye"
+                    v-on="on"></v-checkbox>
+                </div>
+              </template>
+              <span>{{layerLabels[layer.value]}}</span>
+            </v-tooltip>
+          </div>
+        </fieldset>
+      </section>
     </v-card-text>
   </v-card>
 </template>
@@ -64,14 +72,6 @@ export default {
     };
   },
   computed: {
-    ariaLabelDatesFrom() {
-      const { datesFrom } = this.internalValue;
-      const item = this.itemsDatesFrom.find(({ value }) => value === datesFrom);
-      if (item === undefined) {
-        return null;
-      }
-      return item.text;
-    },
     layerLabels() {
       const layerLabels = {};
       this.layers.forEach(({ text, value }) => {
