@@ -48,18 +48,21 @@
               @click="actionDownload(selectedItems)">
               <v-icon color="primary" left>mdi-cloud-download</v-icon>
               Download
+              <span class="sr-only">Requests</span>
             </FcButton>
             <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
               <FcMenuStudyRequestsStatus
                 button-class="ml-2"
                 :disabled="selectAll === false"
                 :study-requests="selectedStudyRequests"
+                text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
 
               <FcMenuStudyRequestsAssignTo
                 button-class="ml-2"
                 :disabled="selectAll === false"
                 :study-requests="selectedStudyRequests"
+                text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
             </template>
           </nav>

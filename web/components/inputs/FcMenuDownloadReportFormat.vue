@@ -14,6 +14,11 @@
           mdi-cloud-download
         </v-icon>
         <span>Download</span>
+        <span
+          v-if="textScreenReader !== null"
+          class="sr-only">
+          {{textScreenReader}}
+        </span>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -56,6 +61,10 @@ export default {
     requireAuth: {
       type: Boolean,
       default: false,
+    },
+    textScreenReader: {
+      type: String,
+      default: null,
     },
     type: {
       type: String,

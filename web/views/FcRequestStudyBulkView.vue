@@ -67,12 +67,14 @@
                 :disabled="selectAll === false"
                 :status="bulkStatus"
                 :study-requests="selectedStudyRequests"
+                text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
 
               <FcMenuStudyRequestsAssignTo
                 button-class="ml-2"
                 :disabled="selectAll === false"
                 :study-requests="selectedStudyRequests"
+                text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
             </template>
           </div>

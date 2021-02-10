@@ -19,11 +19,11 @@
               @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
               <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
                 <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
-                <span>Cancel Export</span>
+                <span>Cancel Export <span class="sr-only">of Collision Reports</span></span>
               </template>
               <template v-else>
                 <v-icon color="primary" left>mdi-file-export</v-icon>
-                <span>Export Reports</span>
+                <span>Export <span class="sr-only">Collision</span> Reports</span>
               </template>
             </FcButton>
             <FcButton
@@ -35,11 +35,12 @@
               type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" left>mdi-file-eye</v-icon>
-              <span>View Report</span>
+              <span>View <span class="sr-only">Collision</span> Report</span>
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
               :require-auth="true"
+              text-screen-reader="Collision Reports"
               @download-report-format="actionDownloadReportFormatCollisions" />
           </template>
         </FcHeaderCollisions>
@@ -71,11 +72,11 @@
               @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
               <template v-if="reportExportMode === ReportExportMode.STUDIES">
                 <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
-                <span>Cancel Export</span>
+                <span>Cancel Export <span class="sr-only">of Study Reports</span></span>
               </template>
               <template v-else>
                 <v-icon color="primary" left>mdi-file-export</v-icon>
-                <span>Export Reports</span>
+                <span>Export <span class="sr-only">Study</span> Reports</span>
               </template>
             </FcButton>
             <FcButton
@@ -85,11 +86,12 @@
               type="secondary"
               @click="actionRequestStudy">
               <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Request New
+              Request New <span class="sr-only">Studies</span>
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
               :require-auth="true"
+              text-screen-reader="Study Reports"
               @download-report-format="actionDownloadReportFormatStudies" />
           </template>
         </FcHeaderStudies>

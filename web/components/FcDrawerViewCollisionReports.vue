@@ -84,6 +84,7 @@
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :loading="loadingDownload"
+              text-screen-reader="Collision Report"
               type="secondary"
               @download-report-format="actionDownload" />
           </div>

@@ -111,6 +111,7 @@
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :loading="loadingDownload"
+              text-screen-reader="Study Report"
               type="secondary"
               @download-report-format="actionDownload" />
           </div>

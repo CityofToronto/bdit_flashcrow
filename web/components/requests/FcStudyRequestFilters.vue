@@ -13,6 +13,7 @@
         :color="colorIconFilter"
         left>mdi-filter-variant</v-icon>
       Filter
+      <span class="sr-only">Requests</span>
     </FcButton>
     <FcListFilterChips
       v-if="filterChips.length > 0"

@@ -18,6 +18,11 @@
           mdi-circle-medium
         </v-icon>
         <span>Set Status</span>
+        <span
+          v-if="textScreenReader !== null"
+          class="sr-only">
+          : {{textScreenReader}}
+        </span>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -91,6 +96,10 @@ export default {
       default: null,
     },
     studyRequests: Array,
+    textScreenReader: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {

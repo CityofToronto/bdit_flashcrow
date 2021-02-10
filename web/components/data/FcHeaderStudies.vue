@@ -20,6 +20,7 @@
           :color="colorIconFilterStudy"
           left>mdi-filter-variant</v-icon>
         Filter
+        <span class="sr-only">Studies</span>
       </FcButton>
       <slot name="action" />
     </div>

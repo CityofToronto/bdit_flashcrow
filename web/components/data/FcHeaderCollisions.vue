@@ -20,6 +20,7 @@
           :color="colorIconFilterCollision"
           left>mdi-filter-variant</v-icon>
         Filter
+        <span class="sr-only">Collisions</span>
       </FcButton>
       <slot name="action" />
     </div>

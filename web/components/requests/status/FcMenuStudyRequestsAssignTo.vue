@@ -13,6 +13,11 @@
         }"
         v-on="on">
         <span>{{text}}</span>
+        <span
+          v-if="textScreenReader !== null"
+          class="sr-only">
+          : {{textScreenReader}}
+        </span>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -61,6 +66,10 @@ export default {
     text: {
       type: String,
       default: 'Assign To',
+    },
+    textScreenReader: {
+      type: String,
+      default: null,
     },
     width: {
       type: [Number, String],

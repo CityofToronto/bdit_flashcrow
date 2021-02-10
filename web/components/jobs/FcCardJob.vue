@@ -26,6 +26,7 @@
           {{iconAction}}
         </v-icon>
         {{action}}
+        <span class="sr-only">{{job.description}}</span>
       </FcButton>
     </v-card-title>
   </v-card>
