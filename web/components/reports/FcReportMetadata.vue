@@ -6,19 +6,22 @@
       :cols="cols">
       <dt class="subtitle-1">{{name}}</dt>
       <dd class="mt-1 display-1 font-weight-medium">
-        <v-icon v-if="value === true">mdi-check</v-icon>
-        <v-icon v-else-if="value === false">mdi-close</v-icon>
-        <span v-else-if="value === null">None</span>
-        <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
-        <span v-else>{{value}}</span>
+        <FcTextReportValue
+          text-null="None"
+          :value="value" />
       </dd>
     </v-col>
   </v-row>
 </template>
 
 <script>
+import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+
 export default {
   name: 'FcReportMetadata',
+  components: {
+    FcTextReportValue,
+  },
   props: {
     entries: Array,
   },

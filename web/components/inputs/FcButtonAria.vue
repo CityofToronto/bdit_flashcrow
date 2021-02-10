@@ -8,6 +8,7 @@
       <FcButton
         :aria-label="ariaLabel"
         :class="buttonClass"
+        :type="type"
         v-bind="$attrs"
         v-on="{
           ...on,
@@ -50,6 +51,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    type: String,
   },
 };
 </script>

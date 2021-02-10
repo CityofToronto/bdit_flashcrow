@@ -4,14 +4,15 @@
       <FcButton
         :class="buttonClass"
         :disabled="disabled || !canAssignTo"
+        :small="small"
         type="secondary"
+        :width="width"
         v-bind="{
           ...attrs,
           ...$attrs,
         }"
         v-on="on">
         <span>{{text}}</span>
-        <v-spacer></v-spacer>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
@@ -52,10 +53,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    small: {
+      type: Boolean,
+      default: false,
+    },
     studyRequests: Array,
     text: {
       type: String,
       default: 'Assign To',
+    },
+    width: {
+      type: [Number, String],
+      default: undefined,
     },
   },
   computed: {

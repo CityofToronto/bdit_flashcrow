@@ -1,6 +1,6 @@
 <template>
   <div class="fc-report-table">
-    <h2 v-if="title">{{title}}</h2>
+    <h4 v-if="title" class="headline">{{title}}</h4>
     <table
       class="my-2"
       :class="{ 'auto-width': autoWidthTable }">
@@ -24,11 +24,7 @@
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <v-icon v-if="value === true">mdi-check</v-icon>
-            <v-icon v-else-if="value === false">mdi-close</v-icon>
-            <span v-else-if="value === null"><br /></span>
-            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
-            <span v-else>{{value}}</span>
+            <FcTextReportValue :value="value" />
           </component>
         </tr>
       </thead>
@@ -41,11 +37,7 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <v-icon v-if="value === true">mdi-check</v-icon>
-            <v-icon v-else-if="value === false">mdi-close</v-icon>
-            <span v-else-if="value === null"><br /></span>
-            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
-            <span v-else>{{value}}</span>
+            <FcTextReportValue :value="value" />
           </component>
         </tr>
       </tbody>
@@ -58,11 +50,7 @@
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <v-icon v-if="value === true">mdi-check</v-icon>
-            <v-icon v-else-if="value === false">mdi-close</v-icon>
-            <span v-else-if="value === null"><br /></span>
-            <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
-            <span v-else>{{value}}</span>
+            <FcTextReportValue :value="value" />
           </component>
         </tr>
       </tfoot>
@@ -72,6 +60,7 @@
 
 <script>
 import TableUtils from '@/lib/reports/format/TableUtils';
+import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 
 function getClassListForStyle(style) {
   const {
@@ -186,6 +175,9 @@ function getSectionRows(section, header, tableStyle) {
 
 export default {
   name: 'FcReportTable',
+  components: {
+    FcTextReportValue,
+  },
   props: {
     title: {
       type: String,
