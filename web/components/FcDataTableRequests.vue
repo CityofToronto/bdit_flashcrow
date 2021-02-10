@@ -1,5 +1,6 @@
 <template>
   <FcDataTable
+    :aria-labelledby="ariaLabelledby"
     class="fc-data-table-requests"
     :class="{
       'is-expanded-child': isExpandedChild,
@@ -241,6 +242,10 @@ export default {
     FcTextNumberTotal,
   },
   props: {
+    ariaLabelledby: {
+      type: String,
+      default: null,
+    },
     columns: Array,
     hasFilters: Boolean,
     items: Array,

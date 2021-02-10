@@ -81,6 +81,7 @@
 
           <FcDataTableRequests
             v-model="selectedItems"
+            aria-labelledby="heading_bulk_request_requests"
             :columns="columns"
             :has-filters="false"
             :items="items"

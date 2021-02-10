@@ -1,6 +1,11 @@
 <template>
-  <section class="fc-requests-track d-flex flex-column fill-height">
+  <section
+    aria-labelledby="heading_track_requests_requests"
+    class="fc-requests-track d-flex flex-column fill-height">
     <div class="flex-grow-0 flex-shrink-0 px-5">
+      <h2 class="display-3 mt-6" id="heading_track_requests_requests">
+        Requests
+      </h2>
       <div class="align-center d-flex mt-6">
         <FcStudyRequestFilterShortcuts
           v-model="filters" />
@@ -65,6 +70,7 @@
         <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
           <FcDataTableRequests
             v-model="selectedItems"
+            aria-labelledby="heading_track_requests_requests"
             :columns="columns"
             :has-filters="hasFilters"
             :items="items"

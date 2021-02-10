@@ -63,6 +63,10 @@ export default {
     Ripple,
   },
   props: {
+    ariaLabelledby: {
+      type: String,
+      default: null,
+    },
     caption: {
       type: String,
       default: null,
@@ -123,6 +127,12 @@ export default {
       }
       return this.items;
     },
+  },
+  mounted() {
+    if (this.ariaLabelledby !== null) {
+      const $table = this.$el.querySelector('table');
+      $table.setAttribute('aria-labelledby', this.ariaLabelledby);
+    }
   },
   methods: {
     customSort(items, sortBy, sortDesc) {
