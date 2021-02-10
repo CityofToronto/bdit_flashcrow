@@ -131,7 +131,7 @@ function normalizeCol(columnStyle) {
   return { attrs };
 }
 
-function getColgroup(columnStyles) {
+function getColgroup(columnStyles, numColumns) {
   let cPrev = -1;
   const colgroup = [];
   columnStyles.forEach((columnStyle) => {
@@ -145,6 +145,13 @@ function getColgroup(columnStyles) {
     colgroup.push(col);
     cPrev = c;
   });
+
+  const cDiff = numColumns - cPrev;
+  if (cDiff > 1) {
+    const span = cDiff - 1;
+    colgroup.push({ attrs: { span } });
+  }
+
   return colgroup;
 }
 
@@ -219,13 +226,16 @@ export default {
       return getSectionRows(this.body, false, this.tableStyle);
     },
     colgroup() {
-      return getColgroup(this.columnStyles);
+      return getColgroup(this.columnStyles, this.numColumns);
     },
     footerNormalized() {
       return getSectionRows(this.footer, false, this.tableStyle);
     },
     headerNormalized() {
       return getSectionRows(this.header, true, this.tableStyle);
+    },
+    numColumns() {
+      return TableUtils.getNumTableColumns(this.header, this.body, this.footer);
     },
   },
 };
