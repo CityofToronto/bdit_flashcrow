@@ -1,6 +1,8 @@
 <template>
   <v-btn
     class="fc-button"
+    :small="small"
+    :width="width"
     v-bind="{
       ...typeAttrs,
       ...$attrs,
@@ -50,7 +52,15 @@ export default {
       type: Array,
       default: null,
     },
+    small: {
+      type: Boolean,
+      default: false,
+    },
     type: String,
+    width: {
+      type: [Number, String],
+      default: undefined,
+    },
   },
   computed: {
     typeAttrs() {
