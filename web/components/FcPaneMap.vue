@@ -51,43 +51,29 @@
         </FcButton>
       </div>
       <div class="pane-map-navigate">
-        <v-tooltip
+        <FcButtonAria
           v-if="showLocationSelection"
+          :aria-label="tooltipLocationMode"
+          class="pa-0"
+          :class="{
+            primary: locationMode.multi,
+            'white--text': locationMode.multi,
+          }"
+          :disabled="locationMode === LocationMode.MULTI_EDIT"
           left
-          :z-index="100">
-          <template v-slot:activator="{ on }">
-            <FcButton
-              :aria-label="tooltipLocationMode"
-              class="pa-0"
-              :class="{
-                primary: locationMode.multi,
-                'white--text': locationMode.multi,
-              }"
-              :disabled="locationMode === LocationMode.MULTI_EDIT"
-              type="fab-text"
-              @click="actionToggleLocationMode"
-              v-on="on">
-              <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
-            </FcButton>
-          </template>
-          <span>{{tooltipLocationMode}}</span>
-        </v-tooltip>
-        <v-tooltip
+          type="fab-text"
+          @click="actionToggleLocationMode">
+          <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
+        </FcButtonAria>
+        <FcButtonAria
           v-if="locationsForMode.length > 0"
+          aria-label="Recenter location"
+          class="pa-0"
           left
-          :z-index="100">
-          <template v-slot:activator="{ on }">
-            <FcButton
-              aria-label="Recenter location"
-              class="pa-0"
-              type="fab-text"
-              @click="recenterLocation()"
-              v-on="on">
-              <v-icon class="display-2">mdi-map-marker-circle</v-icon>
-            </FcButton>
-          </template>
-          <span>Recenter location</span>
-        </v-tooltip>
+          type="fab-text"
+          @click="actionRecenterLocation">
+          <v-icon class="display-2">mdi-map-marker-circle</v-icon>
+        </FcButtonAria>
       </div>
       <FcPaneMapPopup
         v-if="showHoveredPopup"
@@ -128,6 +114,7 @@ import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
@@ -196,6 +183,7 @@ export default {
   name: 'FcPaneMap',
   components: {
     FcButton,
+    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcPaneMapLegend,
     FcPaneMapPopup,
@@ -628,6 +616,18 @@ export default {
     },
   },
   methods: {
+    actionRecenterLocation() {
+      if (this.locationsForMode.length === 0) {
+        return;
+      }
+      this.easeToLocations(this.locationsForMode, null);
+
+      if (this.locationMode === LocationMode.SINGLE) {
+        this.setToastInfo('Map recentered on selected location.');
+      } else {
+        this.setToastInfo('Map recentered on selected locations.');
+      }
+    },
     actionToggleLocationMode() {
       if (this.locationMode === LocationMode.SINGLE) {
         this.setLocationMode(LocationMode.MULTI_EDIT);
@@ -694,12 +694,6 @@ export default {
           zoom: MapZoom.LEVEL_3.minzoom,
         });
       }
-    },
-    recenterLocation() {
-      if (this.locationsForMode.length === 0) {
-        return;
-      }
-      this.easeToLocations(this.locationsForMode, null);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
@@ -810,6 +804,7 @@ export default {
       'setLegendMode',
       'setLegendOptions',
       'setLocationMode',
+      'setToastInfo',
     ]),
   },
 };
