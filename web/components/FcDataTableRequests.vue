@@ -39,16 +39,13 @@
             <v-checkbox
               v-if="item.type === ItemType.STUDY_REQUEST"
               v-model="internalValue"
-              :aria-label="'Select Request #' + item.studyRequest.id"
+              :aria-label="'Select ' + item.ariaLabel"
               class="mt-0 pt-0"
               hide-details
               :value="item" />
             <v-checkbox
               v-else
-              :aria-label="
-                'Select Bulk Request #' + item.studyRequestBulk.id
-                + ': ' + item.studyRequestBulk.name
-              "
+              :aria-label="'Select ' + item.ariaLabel"
               class="mt-0 pt-0"
               hide-details
               :indeterminate="selectAll[item.id] === null"
@@ -56,12 +53,7 @@
               @click="actionSelectAll(item)" />
           </div>
         </template>
-        <span v-if="item.type === ItemType.STUDY_REQUEST">
-          Select Request #{{item.studyRequest.id}}
-        </span>
-        <span v-else>
-          Select Bulk Request #{{item.studyRequestBulk.id}}: {{item.studyRequestBulk.name}}
-        </span>
+        <span>Select {{item.ariaLabel}}</span>
       </v-tooltip>
 
     </template>
@@ -73,29 +65,34 @@
         {{item.studyRequest.id}}
       </span>
     </template>
-    <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
+    <template v-slot:item.LOCATION="{ item }">
       <div
         v-if="item.type.name === 'STUDY_REQUEST_BULK'"
         class="align-center d-flex">
         <v-icon left>mdi-map-marker-multiple</v-icon>
         <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
-        <v-spacer></v-spacer>
-        <FcButtonAria
-          :aria-label="
-            (isExpanded ? 'Collapse' : 'Expand') + ' Bulk Request: ' + item.studyRequestBulk.name
-          "
-          right
-          type="icon"
-          @click="expand(!isExpanded)">
-          <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
-          <v-icon v-else>mdi-menu-down</v-icon>
-        </FcButtonAria>
       </div>
       <div
         v-else-if="item.location !== null"
         class="text-wrap">
         {{item.location.description}}
       </div>
+    </template>
+    <template v-slot:header.data-table-expand>
+      <span class="sr-only">Expand</span>
+    </template>
+    <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
+      <FcButtonAria
+        v-if="item.type.name === 'STUDY_REQUEST_BULK'"
+        :aria-label="
+          (isExpanded ? 'Collapse ' : 'Expand ') + item.ariaLabel
+        "
+        right
+        type="icon"
+        @click="expand(!isExpanded)">
+        <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
+        <v-icon v-else>mdi-menu-down</v-icon>
+      </FcButtonAria>
     </template>
     <template v-slot:item.STUDY_TYPE="{ item }">
       <div class="text-wrap">
@@ -167,7 +164,7 @@
           title="Urgent">mdi-clipboard-alert</v-icon>
 
         <FcButtonAria
-          :aria-label="item.ariaLabel"
+          :aria-label="'View ' + item.ariaLabel"
           button-class="btn-show-request"
           left
           type="secondary"
@@ -277,19 +274,31 @@ export default {
         return `ZZZ:${dueDate}`;
       },
       CREATED_AT: r => r.createdAt.toString(),
-      'data-table-expand': (r) => {
-        const dueDate = r.dueDate.toString();
-        if (r.type.name === 'STUDY_REQUEST') {
-          return `${r.location.description}:${dueDate}`;
-        }
-        return `${r.studyRequestBulk.name}:${dueDate}`;
-      },
       DUE_DATE: r => r.dueDate.toString(),
+      ID: (r) => {
+        /* eslint-disable-next-line no-console */
+        console.log(r);
+        if (r.type.name === 'STUDY_REQUEST') {
+          return r.studyRequest.id;
+        }
+        return Math.max(
+          ...r.studyRequestBulk.studyRequests.map(
+            ({ studyRequest }) => studyRequest.id,
+          ),
+        );
+      },
       LAST_EDITED_AT: (r) => {
         if (r.lastEditedAt === null) {
           return `A:${r.dueDate.toString()}`;
         }
         return `B:${r.lastEditedAt.toString()}`;
+      },
+      LOCATION: (r) => {
+        const dueDate = r.dueDate.toString();
+        if (r.type.name === 'STUDY_REQUEST') {
+          return `${r.location.description}:${dueDate}`;
+        }
+        return `${r.studyRequestBulk.name}:${dueDate}`;
       },
       REQUESTER: (r) => {
         const requestedBy = formatUsername(r.requestedBy);
@@ -406,46 +415,51 @@ export default {
     width: 70px;
   }
   & td:nth-child(3),
-  & th.fc-data-table-header-data-table-expand {
-    min-width: 210px !important;
-    width: auto !important;
+  & th.fc-data-table-header-LOCATION {
+    min-width: 210px;
+    width: auto;
   }
   & td:nth-child(4),
+  & th.fc-data-table-header-data-table-expand {
+    min-width: 70px !important;
+    width: 70px !important;
+  }
+  & td:nth-child(5),
   & th.fc-data-table-header-STUDY_TYPE {
     min-width: 210px;
     width: 210px;
   }
-  & td:nth-child(5),
+  & td:nth-child(6),
   & th.fc-data-table-header-REQUESTER {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(6),
+  & td:nth-child(7),
   & th.fc-data-table-header-CREATED_AT {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(7),
+  & td:nth-child(8),
   & th.fc-data-table-header-ASSIGNED_TO {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(8),
+  & td:nth-child(9),
   & th.fc-data-table-header-DUE_DATE {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(9),
+  & td:nth-child(10),
   & th.fc-data-table-header-STATUS {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(10),
+  & td:nth-child(11),
   & th.fc-data-table-header-LAST_EDITED_AT {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(11),
+  & td:nth-child(12),
   & th.fc-data-table-header-ACTIONS {
     min-width: 105px;
     width: 105px;
