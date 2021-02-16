@@ -159,9 +159,10 @@
       <div class="text-right">
         <v-icon
           v-if="item.urgent"
+          :aria-hidden="false"
+          aria-label="Urgent"
           class="mr-2"
-          color="warning"
-          title="Urgent">mdi-clipboard-alert</v-icon>
+          color="warning">mdi-clipboard-alert</v-icon>
 
         <FcButtonAria
           :aria-label="'View ' + item.ariaLabel"
@@ -276,8 +277,6 @@ export default {
       CREATED_AT: r => r.createdAt.toString(),
       DUE_DATE: r => r.dueDate.toString(),
       ID: (r) => {
-        /* eslint-disable-next-line no-console */
-        console.log(r);
         if (r.type.name === 'STUDY_REQUEST') {
           return r.studyRequest.id;
         }

@@ -41,6 +41,7 @@
 <script>
 import { Ripple } from 'vuetify/lib/directives';
 
+import { KeyCode } from '@/lib/Constants';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 function compareKeys(ka, kb, kf) {
@@ -129,10 +130,24 @@ export default {
     },
   },
   mounted() {
+    // using external header to provide ARIA label for entire table
     if (this.ariaLabelledby !== null) {
       const $table = this.$el.querySelector('table');
       $table.setAttribute('aria-labelledby', this.ariaLabelledby);
     }
+
+    // keyboard navigation of sortable header toggles
+    const $thSortable = this.$el.querySelectorAll('th.sortable');
+    $thSortable.forEach(($th) => {
+      const $sortIcon = $th.querySelector('.v-data-table-header__icon');
+      $sortIcon.setAttribute('tabindex', 0);
+      $sortIcon.addEventListener('keypress', (evt) => {
+        if (evt.keyCode === KeyCode.SPACE) {
+          evt.preventDefault();
+          $th.click();
+        }
+      });
+    });
   },
   methods: {
     customSort(items, sortBy, sortDesc) {
@@ -149,6 +164,10 @@ export default {
 
 <style lang="scss">
 .fc-data-table.v-data-table {
+  & .v-data-table-header__icon {
+    opacity: 1;
+  }
+
   &.theme--light tbody tr.v-data-table__selected {
     background: var(--v-accent-lighten2);
     & .v-data-table__checkbox .v-icon.v-icon {
