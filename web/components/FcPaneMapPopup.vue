@@ -425,7 +425,13 @@ export default {
   },
   methods: {
     actionRemoveLocationEdit() {
-      this.removeLocationEdit(this.featureLocationsEditIndex);
+      const i = this.featureLocationsEditIndex;
+
+      const { description } = this.locationsEditSelection.locations[i];
+      this.setToastInfo(`Removed ${description} from selected locations.`);
+
+      this.setLocationsEditIndex(-1);
+      this.removeLocationEdit(i);
     },
     actionSelected() {
       if (this.locationMode === LocationMode.MULTI_EDIT) {
@@ -442,6 +448,11 @@ export default {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
       const location = await getLocationByCentreline(feature);
+
+      if (this.locationsEditIndex === -1) {
+        const { description } = location;
+        this.setToastInfo(`Added ${description} to selected locations.`);
+      }
       this.setLocationEdit(location);
     },
     async actionSetStudyLocation() {
@@ -484,7 +495,9 @@ export default {
       'removeLocationEdit',
       'setDrawerOpen',
       'setLocationEdit',
+      'setLocationsEditIndex',
       'setLocations',
+      'setToastInfo',
     ]),
   },
 };

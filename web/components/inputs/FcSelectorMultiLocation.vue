@@ -33,14 +33,14 @@
       </div>
       <div class="ml-2">
         <div
-          v-for="(_, i) in locationsEditSelection.locations"
+          v-for="(location, i) in locationsEditSelection.locations"
           :key="'remove_' + i"
           class="fc-input-location-search-remove">
           <FcButtonAria
-            :aria-label="'Remove Location #' + (i + 1)"
+            :aria-label="'Remove Location #' + (i + 1) + ': ' + location.description"
             right
             type="icon"
-            @click="removeLocationEdit(i)">
+            @click="actionRemove(i)">
             <v-icon>mdi-close</v-icon>
           </FcButtonAria>
         </div>
@@ -328,6 +328,9 @@ export default {
   },
   methods: {
     actionAdd(location) {
+      const { description } = location;
+      this.setToastInfo(`Added ${description} to selected locations.`);
+
       this.addLocationEdit(location);
       Vue.nextTick(() => this.autofocus());
     },
@@ -342,6 +345,9 @@ export default {
       }
     },
     actionRemove(i) {
+      const { description } = this.locationsEditSelection.locations[i];
+      this.setToastInfo(`Removed ${description} from selected locations.`);
+
       this.setLocationsEditIndex(-1);
       this.removeLocationEdit(i);
       Vue.nextTick(() => this.autofocus());
@@ -358,6 +364,7 @@ export default {
       'setLocationsIndex',
       'setLocationMode',
       'setToastBackendError',
+      'setToastInfo',
     ]),
   },
 };
