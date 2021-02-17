@@ -10,7 +10,7 @@
         v-if="showFiltersCollision"
         v-model="showFiltersCollision"
         :filters="filtersCollision"
-        @set-filters="setFiltersCollision">
+        @set-filters="actionSetFiltersCollision">
       </FcDialogCollisionFilters>
       <FcButton
         :disabled="disabled || collisionTotal === 0"
@@ -29,7 +29,7 @@
       v-if="filterChipsCollision.length > 0"
       class="mt-4 mb-2"
       :filter-chips="filterChipsCollision"
-      @click-filter="removeFilterCollision" />
+      @click-filter="actionRemoveFilterCollision" />
   </header>
 </template>
 
@@ -72,6 +72,15 @@ export default {
     ...mapGetters('viewData', ['filterChipsCollision']),
   },
   methods: {
+    actionRemoveFilterCollision(filter) {
+      this.removeFilterCollision(filter);
+      this.setToastInfo(`Removed collision filter: ${filter.label}.`);
+    },
+    actionSetFiltersCollision(filtersCollision) {
+      this.setFiltersCollision(filtersCollision);
+      this.setToastInfo('Updated request filters.');
+    },
+    ...mapMutations(['setToastInfo']),
     ...mapMutations('viewData', [
       'removeFilterCollision',
       'setFiltersCollision',

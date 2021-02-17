@@ -4,7 +4,7 @@
       v-if="showFilters"
       v-model="showFilters"
       :filters="filtersRequest"
-      @set-filters="setFiltersRequest" />
+      @set-filters="actionSetFiltersRequest" />
     <FcButton
       v-if="items.length > 0 || filterChipsRequest.length > 0"
       type="secondary"
@@ -19,7 +19,7 @@
       v-if="filterChipsRequest.length > 0"
       class="ml-5"
       :filter-chips="filterChipsRequest"
-      @click-filter="removeFilterRequest" />
+      @click-filter="actionRemoveFilterRequest" />
   </div>
 </template>
 
@@ -58,6 +58,15 @@ export default {
     ...mapState('trackRequests', ['filtersRequest']),
   },
   methods: {
+    actionRemoveFilterRequest(filter) {
+      this.removeFilterRequest(filter);
+      this.setToastInfo(`Removed request filter: ${filter.label}.`);
+    },
+    actionSetFiltersRequest(filtersRequest) {
+      this.setFiltersRequest(filtersRequest);
+      this.setToastInfo('Updated request filters.');
+    },
+    ...mapMutations(['setToastInfo']),
     ...mapMutations('trackRequests', ['removeFilterRequest', 'setFiltersRequest']),
   },
 };

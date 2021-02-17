@@ -117,16 +117,18 @@ export default {
       },
       set(activeShortcutChip) {
         const { userOnly } = this.filtersRequest;
-        const { filters } = SHORTCUT_CHIPS[activeShortcutChip];
+        const { filters, label } = SHORTCUT_CHIPS[activeShortcutChip];
         this.setFiltersRequest({
           ...filters,
           userOnly,
         });
+        this.setToastInfo(`You're now viewing ${label} requests.`);
       },
     },
     ...mapState('trackRequests', ['filtersRequest']),
   },
   methods: {
+    ...mapMutations(['setToastInfo']),
     ...mapMutations('trackRequests', ['setFiltersRequest']),
   },
 };

@@ -10,7 +10,7 @@
         v-if="showFiltersStudy"
         v-model="showFiltersStudy"
         :filters="filtersStudy"
-        @set-filters="setFiltersStudy">
+        @set-filters="actionSetFiltersStudy">
       </FcDialogStudyFilters>
       <FcButton
         :disabled="disabled || studyTotal === 0"
@@ -29,7 +29,7 @@
       v-if="filterChipsStudy.length > 0"
       class="mt-4 mb-2"
       :filter-chips="filterChipsStudy"
-      @click-filter="removeFilterStudy" />
+      @click-filter="actionRemoveFilterStudy" />
   </header>
 </template>
 
@@ -72,6 +72,15 @@ export default {
     ...mapGetters('viewData', ['filterChipsStudy']),
   },
   methods: {
+    actionRemoveFilterStudy(filter) {
+      this.removeFilterStudy(filter);
+      this.setToastInfo(`Removed study filter: ${filter.label}.`);
+    },
+    actionSetFiltersStudy(filtersStudy) {
+      this.setFiltersStudy(filtersStudy);
+      this.setToastInfo('Updated study filters.');
+    },
+    ...mapMutations(['setToastInfo']),
     ...mapMutations('viewData', [
       'removeFilterStudy',
       'setFiltersStudy',
