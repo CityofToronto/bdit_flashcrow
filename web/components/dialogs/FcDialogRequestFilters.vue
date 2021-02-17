@@ -23,7 +23,7 @@
           <v-checkbox
             v-for="studyType in StudyType.enumValues"
             :key="studyType.name"
-            v-model="internalStudyTypes"
+            v-model="internalFilters.studyTypes"
             class="mt-2"
             hide-details
             :label="studyType.label"
@@ -36,13 +36,13 @@
           <v-checkbox
             v-for="status in StudyRequestStatus.enumValues"
             :key="status.name"
-            v-model="internalStatuses"
+            v-model="internalFilters.statuses"
             class="mt-2"
             hide-details
             :label="status.text"
             :value="status"></v-checkbox>
           <v-checkbox
-            v-model="internalClosed"
+            v-model="internalFilters.closed"
             class="mt-2"
             hide-details
             label="Closed"></v-checkbox>
@@ -52,7 +52,7 @@
           <legend class="headline">Assigned To</legend>
 
           <v-checkbox
-            v-model="internalAssignees"
+            v-model="internalFilters.assignees"
             class="mt-2"
             hide-details
             label="None"
@@ -60,7 +60,7 @@
           <v-checkbox
             v-for="assignee in StudyRequestAssignee.enumValues"
             :key="assignee.name"
-            v-model="internalAssignees"
+            v-model="internalFilters.assignees"
             class="mt-2"
             hide-details
             :label="assignee.text"
@@ -68,7 +68,7 @@
         </fieldset>
 
         <FcRadioGroup
-          v-model="internalCreatedAt"
+          v-model="internalFilters.createdAt"
           class="mt-6"
           hide-details
           :items="[
@@ -80,7 +80,7 @@
           label="Date Created" />
 
         <FcRadioGroup
-          v-model="internalLastEditedAt"
+          v-model="internalFilters.lastEditedAt"
           class="mt-6"
           hide-details
           :items="[
@@ -92,7 +92,7 @@
           label="Last Updated" />
 
         <FcRadioGroup
-          v-model="internalUserOnly"
+          v-model="internalFilters.userOnly"
           class="mt-6"
           hide-details
           :items="[
@@ -139,40 +139,15 @@ export default {
     FcRadioGroup,
   },
   props: {
-    assignees: Array,
-    closed: Boolean,
-    createdAt: Number,
-    lastEditedAt: Number,
-    statuses: Array,
-    studyTypes: Array,
-    userOnly: Boolean,
+    filters: Object,
   },
   data() {
     return {
-      internalAssignees: this.assignees,
-      internalClosed: this.closed,
-      internalCreatedAt: this.createdAt,
-      internalLastEditedAt: this.lastEditedAt,
-      internalStatuses: this.statuses,
-      internalStudyTypes: this.studyTypes,
-      internalUserOnly: this.userOnly,
+      internalFilters: { ...this.filters },
       StudyRequestAssignee,
       StudyRequestStatus,
       StudyType,
     };
-  },
-  computed: {
-    internalFilters() {
-      return {
-        assignees: this.internalAssignees,
-        closed: this.internalClosed,
-        createdAt: this.internalCreatedAt,
-        lastEditedAt: this.internalLastEditedAt,
-        statuses: this.internalStatuses,
-        studyTypes: this.internalStudyTypes,
-        userOnly: this.internalUserOnly,
-      };
-    },
   },
   methods: {
     actionClearAll() {

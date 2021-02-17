@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
+
 import { StudyRequestStatus } from '@/lib/Constants';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -107,21 +109,25 @@ export default {
     activeShortcutChip: {
       get() {
         for (let i = 0; i < SHORTCUT_CHIPS.length; i++) {
-          if (filtersMatchShortcutChip(this.internalValue, SHORTCUT_CHIPS[i])) {
+          if (filtersMatchShortcutChip(this.filtersRequest, SHORTCUT_CHIPS[i])) {
             return i;
           }
         }
         return null;
       },
       set(activeShortcutChip) {
-        const { userOnly } = this.internalValue;
+        const { userOnly } = this.filtersRequest;
         const { filters } = SHORTCUT_CHIPS[activeShortcutChip];
-        this.internalValue = {
+        this.setFiltersRequest({
           ...filters,
           userOnly,
-        };
+        });
       },
     },
+    ...mapState('trackRequests', ['filtersRequest']),
+  },
+  methods: {
+    ...mapMutations('trackRequests', ['setFiltersRequest']),
   },
 };
 </script>

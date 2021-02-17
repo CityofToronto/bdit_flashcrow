@@ -25,12 +25,14 @@ import {
 import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import FrontendEnv from '@/web/config/FrontendEnv';
+import trackRequests from '@/web/store/modules/trackRequests';
 import viewData from '@/web/store/modules/viewData';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
+    trackRequests,
     viewData,
   },
   // TODO: organize state below

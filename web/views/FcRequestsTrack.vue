@@ -7,14 +7,11 @@
         Requests
       </h2>
       <div class="align-center d-flex mt-6">
-        <FcStudyRequestFilterShortcuts
-          v-model="filters" />
+        <FcStudyRequestFilterShortcuts />
 
         <v-spacer></v-spacer>
 
-        <FcSearchBarRequests
-          v-model="search"
-          :columns="columns" />
+        <FcSearchBarRequests :columns="columns" />
       </div>
     </div>
 
@@ -35,9 +32,7 @@
               :indeterminate="selectAll === null"
               label="Select all" />
 
-            <FcStudyRequestFilters
-              v-model="filters"
-              :items="items" />
+            <FcStudyRequestFilters :items="items" />
 
             <v-spacer></v-spacer>
 
@@ -75,7 +70,7 @@
             v-model="selectedItems"
             aria-labelledby="heading_track_requests_requests"
             :columns="columns"
-            :has-filters="hasFilters"
+            :has-filters="hasFiltersRequest"
             :items="items"
             :loading="loading"
             :sort-by.sync="sortBy"
@@ -90,11 +85,16 @@
 <script>
 import { saveAs } from 'file-saver';
 import { Ripple } from 'vuetify/lib/directives';
-import { mapActions, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { getStudyRequests } from '@/lib/api/WebApi';
-import { filterItem, getFilterChips } from '@/lib/requests/RequestFilters';
+import { filterItem } from '@/lib/requests/RequestFilters';
 import {
   getStudyRequestItem,
   getStudyRequestBulkItem,
@@ -136,19 +136,6 @@ export default {
   data() {
     return {
       columns: RequestDataTableColumns,
-      filters: {
-        assignees: [],
-        closed: false,
-        createdAt: 0,
-        lastEditedAt: 0,
-        statuses: [],
-        studyTypes: [],
-        userOnly: false,
-      },
-      search: {
-        column: null,
-        query: null,
-      },
       selectedItems: [],
       sortBy: 'DUE_DATE',
       sortDesc: true,
@@ -159,13 +146,14 @@ export default {
     };
   },
   computed: {
-    hasFilters() {
-      const filterChips = getFilterChips(this.filters, this.items);
-      return filterChips.length > 0 || this.search.query !== null;
-    },
     items() {
       return this.itemsNormalized
-        .map(item => filterItem(this.filters, this.search, this.auth.user, item))
+        .map(item => filterItem(
+          this.filtersRequest,
+          this.searchRequest,
+          this.auth.user,
+          item,
+        ))
         .filter(item => item !== null);
     },
     itemsNormalized() {
@@ -223,11 +211,13 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
+    ...mapGetters('trackRequests', ['hasFiltersRequest']),
     ...mapState(['auth']),
+    ...mapState('trackRequests', ['filtersRequest', 'searchRequest']),
   },
   created() {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
-    this.filters.userOnly = userOnly;
+    this.setFiltersRequestUserOnly(userOnly);
   },
   methods: {
     actionDownload(items) {
@@ -263,6 +253,7 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.loading = false;
     },
+    ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests']),
   },
 };

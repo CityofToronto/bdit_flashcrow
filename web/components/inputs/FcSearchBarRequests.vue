@@ -3,7 +3,7 @@
     aria-label="Search for requests in table"
     role="search">
     <v-text-field
-      v-model="internalValue.query"
+      v-model="internalQuery"
       append-icon="mdi-magnify"
       class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
       dense
@@ -12,7 +12,7 @@
       outlined>
       <template v-slot:prepend>
         <v-select
-          v-model="internalValue.column"
+          v-model="internalColumn"
           class="fc-search-bar-requests-column font-weight-regular mt-0 pt-0 title"
           dense
           hide-details
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 import RequestSearchKeys from '@/lib/requests/RequestSearchKeys';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -35,6 +37,22 @@ export default {
     columns: Array,
   },
   computed: {
+    internalColumn: {
+      get() {
+        return this.searchRequest.column;
+      },
+      set(column) {
+        this.setSearchRequestColumn(column);
+      },
+    },
+    internalQuery: {
+      get() {
+        return this.searchRequest.query;
+      },
+      set(query) {
+        this.setSearchRequestQuery(query);
+      },
+    },
     itemsColumn() {
       const searchableColumns = this.columns.filter(
         column => Object.prototype.hasOwnProperty.call(RequestSearchKeys, column.value),
@@ -44,6 +62,10 @@ export default {
         ...searchableColumns,
       ];
     },
+    ...mapState('trackRequests', ['searchRequest']),
+  },
+  methods: {
+    ...mapMutations('trackRequests', ['setSearchRequestColumn', 'setSearchRequestQuery']),
   },
 };
 </script>
