@@ -46,7 +46,7 @@
         </FcButton>
         <FcButton
           type="fab-text"
-          @click="aerial = !aerial">
+          @click="actionToggleAerial">
           {{ aerial ? 'Map' : 'Aerial' }}
         </FcButton>
       </div>
@@ -626,6 +626,14 @@ export default {
         this.setToastInfo('Map recentered on selected location.');
       } else {
         this.setToastInfo('Map recentered on selected locations.');
+      }
+    },
+    actionToggleAerial() {
+      this.aerial = !this.aerial;
+      if (this.aerial) {
+        this.setToastInfo('The map is now in Aerial Mode.');
+      } else {
+        this.setToastInfo('The map is no longer in Aerial Mode.');
       }
     },
     actionToggleLocationMode() {
