@@ -157,9 +157,11 @@ export default {
       if (this.detailView) {
         this.setLocationsIndex(-1);
         this.setDetailView(false);
+        this.setToastInfo('The View Data panel is now in Aggregate View.');
       } else {
         this.setLocationsIndex(0);
         this.setDetailView(true);
+        this.setToastInfo('The View Data panel is now in Detail View.');
       }
     },
     async loadAsyncForRoute(to) {
@@ -171,6 +173,7 @@ export default {
     ...mapMutations([
       'setLocationMode',
       'setLocationsIndex',
+      'setToastInfo',
     ]),
     ...mapMutations('viewData', ['setDetailView']),
     ...mapActions(['initLocations']),

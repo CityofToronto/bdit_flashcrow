@@ -27,10 +27,10 @@
       :to="{ name: 'downloadsManage' }" />
 
     <FcDashboardNavItem
+      external
       icon="bug"
       label="Report an Issue"
-      :href="urlReportIssue"
-      target="_blank" />
+      :href="urlReportIssue" />
   </v-list>
 </template>
 

@@ -21,7 +21,12 @@
     <FcButton
       type="secondary"
       @click="actionProd">
-      <v-icon left>mdi-open-in-new</v-icon>
+      <v-icon
+        :aria-hidden="false"
+        aria-label="Opens in a new window"
+        left>
+        mdi-open-in-new
+      </v-icon>
       Open in release version
     </FcButton>
   </v-app-bar>

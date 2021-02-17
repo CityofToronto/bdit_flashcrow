@@ -11,7 +11,7 @@
         :disabled="disabled"
         link
         :to="to"
-        v-bind="$attrs"
+        v-bind="attrsListItem"
         @click="actionClick">
         <v-list-item-icon>
           <div class="fc-badge-wrapper">
@@ -23,7 +23,10 @@
           </div>
         </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>{{label}}</v-list-item-title>
+          <v-list-item-title>
+            <span v-if="external" class="sr-only">Opens in a new window</span>
+            {{label}}
+          </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </template>
@@ -54,6 +57,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    external: {
+      type: Boolean,
+      default: false,
+    },
     icon: String,
     label: String,
     to: {
@@ -62,6 +69,15 @@ export default {
     },
   },
   computed: {
+    attrsListItem() {
+      if (this.external) {
+        return {
+          target: '_blank',
+          ...this.$attrs,
+        };
+      }
+      return this.$attrs;
+    },
     isActive() {
       const { backViewRequest, to } = this;
       if (to === null) {

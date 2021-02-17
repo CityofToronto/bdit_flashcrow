@@ -42,6 +42,13 @@
           class="mr-2"
           type="fab-text"
           @click="openGoogleMaps">
+          <v-icon
+            :aria-hidden="false"
+            aria-label="Opens in a new window"
+            left>
+            mdi-open-in-new
+          </v-icon>
+          <span class="sr-only">Google</span>
           Street View
         </FcButton>
         <FcButton
