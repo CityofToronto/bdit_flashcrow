@@ -26,7 +26,7 @@
         </v-col>
         <v-col class="px-5" cols="6">
           <dl
-            v-for="(comment) in studyRequestComments"
+            v-for="(comment, i) in studyRequestComments"
             :key="comment.id">
             <dt class="align-center d-flex mt-2">
               <span

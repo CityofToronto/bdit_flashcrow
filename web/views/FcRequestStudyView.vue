@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
@@ -145,10 +145,12 @@ export default {
     onAddComment({ studyRequest, studyRequestComment }) {
       this.studyRequest = studyRequest;
       this.studyRequestComments.unshift(studyRequestComment);
+      this.setToastInfo('Your comment has been submitted.');
     },
     onDeleteComment({ studyRequest, i }) {
       this.studyRequest = studyRequest;
       this.studyRequestComments.splice(i, 1);
+      this.setToastInfo('Your comment has been deleted.');
     },
     async onUpdateStudyRequest() {
       this.loading = true;
@@ -156,6 +158,7 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.loading = false;
     },
+    ...mapMutations(['setToastInfo']),
     ...mapActions(['initLocations', 'saveStudyRequest']),
   },
 };
