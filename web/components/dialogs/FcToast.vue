@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="internalValue"
-    bottom
+    top
     class="fc-toast pb-5 pl-7"
     :color="color + ' darker-1'"
     :timeout="timeout">

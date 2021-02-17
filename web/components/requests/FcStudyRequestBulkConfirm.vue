@@ -28,19 +28,14 @@
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
                 :study-request="studyRequests[i]" />
-              <v-tooltip right>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    :aria-label="'Remove ' + locations[i].description + ' from Request'"
-                    class="mr-4"
-                    type="icon"
-                    @click="$emit('remove-study', i)"
-                    v-on="on">
-                    <v-icon>mdi-close</v-icon>
-                  </FcButton>
-                </template>
-                <span>Remove {{locations[i].description}} from Request</span>
-              </v-tooltip>
+              <FcButtonAria
+                :aria-label="'Remove ' + locations[i].description + ' from Request'"
+                class="mr-4"
+                right
+                type="icon"
+                @click="$emit('remove-study', i)">
+                <v-icon>mdi-close</v-icon>
+              </FcButtonAria>
             </div>
           </template>
         </v-expansion-panel-content>
@@ -68,19 +63,14 @@
                 :icon-props="locationsIconProps[i]"
                 :location="locations[i]"
                 :study-request="studyRequests[i]" />
-              <v-tooltip right>
-                <template v-slot:activator="{ on }">
-                  <FcButton
-                    aria-label="Remove Study from Request"
-                    class="mr-4"
-                    type="icon"
-                    @click="$emit('remove-study', i)"
-                    v-on="on">
-                    <v-icon>mdi-close</v-icon>
-                  </FcButton>
-                </template>
-                <span>Remove Study from Request</span>
-              </v-tooltip>
+              <FcButtonAria
+                :aria-label="'Remove ' + locations[i].description + ' from Request'"
+                class="mr-4"
+                right
+                type="icon"
+                @click="$emit('remove-study', i)">
+                <v-icon>mdi-close</v-icon>
+              </FcButtonAria>
             </div>
           </template>
         </v-expansion-panel-content>
@@ -97,7 +87,7 @@
 
 <script>
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcCardStudyRequestConfirm from '@/web/components/requests/FcCardStudyRequestConfirm.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
@@ -106,7 +96,7 @@ export default {
   name: 'FcStudyRequestBulkConfirm',
   mixins: [FcMixinInputAutofocus],
   components: {
-    FcButton,
+    FcButtonAria,
     FcCardStudyRequestConfirm,
     FcSummaryStudyRequest,
   },

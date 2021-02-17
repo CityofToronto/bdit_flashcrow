@@ -309,14 +309,21 @@ export default {
       }
     },
     actionRemoveStudy(i) {
+      let removed = false;
       let j = this.indicesIntersectionsSelected.indexOf(i);
       if (j !== -1) {
+        removed = true;
         this.indicesIntersectionsSelected.splice(j, 1);
       } else {
         j = this.indicesMidblocksSelected.indexOf(i);
         if (j !== -1) {
+          removed = true;
           this.indicesMidblocksSelected.splice(j, 1);
         }
+      }
+      if (removed) {
+        const { description } = this.locations[i];
+        this.setToastInfo(`Removed ${description} from request.`);
       }
     },
     async actionSubmit() {
