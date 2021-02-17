@@ -37,7 +37,7 @@
 <script>
 import { mapMutations } from 'vuex';
 
-import { StudyRequestAssignee } from '@/lib/Constants';
+import { StudyRequestAssignee, StudyRequestStatus } from '@/lib/Constants';
 import RequestActions from '@/lib/requests/RequestActions';
 import { bulkAssignedToStr } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -106,24 +106,29 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'assign',
-            actionVerbPastTense: 'assigned',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, item);
     },
     actionMenu(item) {
       this.actionAssignTo(item);
       this.$emit('update');
     },
+    displayFeedback(studyRequestsUnactionable, item) {
+      if (studyRequestsUnactionable.length > 0) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestsUnactionable',
+          dialogData: {
+            status: StudyRequestStatus.ASSIGNED,
+            studyRequests: this.studyRequests,
+            studyRequestsUnactionable,
+          },
+        });
+      } else {
+        const requestsPlural = this.studyRequests.length > 1 ? 'requests have' : 'request has';
+        this.setToastInfo(`Your ${requestsPlural} been assigned to ${item.text}.`);
+      }
+    },
     /* eslint-enable no-param-reassign */
-    ...mapMutations(['setDialog']),
+    ...mapMutations(['setDialog', 'setToastInfo']),
   },
 };
 </script>

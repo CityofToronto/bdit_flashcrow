@@ -359,18 +359,9 @@ export default new Vuex.Store({
       return auth;
     },
     // STUDY REQUESTS
-    async saveStudyRequest({ state, commit }, studyRequest) {
-      const { id, urgent } = studyRequest;
+    async saveStudyRequest({ state }, studyRequest) {
+      const { id } = studyRequest;
       const update = id !== undefined;
-      if (urgent && !update) {
-        commit('setDialog', {
-          dialog: 'AlertStudyRequestUrgent',
-          dialogData: { update },
-        });
-      } else {
-        const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
-        commit('setToastInfo', toast.text);
-      }
 
       const { csrf } = state.auth;
       if (update) {
@@ -381,14 +372,15 @@ export default new Vuex.Store({
     async saveStudyRequestBulk({ state, commit }, studyRequestBulk) {
       const { id, urgent } = studyRequestBulk;
       const update = id !== undefined;
-      if (urgent && !update) {
+      if (update) {
+        commit('setToastInfo', REQUEST_STUDY_UPDATED.text);
+      } else if (urgent) {
         commit('setDialog', {
           dialog: 'AlertStudyRequestUrgent',
           dialogData: { update },
         });
       } else {
-        const toast = update ? REQUEST_STUDY_UPDATED : REQUEST_STUDY_SUBMITTED;
-        commit('setToastInfo', toast.text);
+        commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
       }
 
       const { csrf } = state.auth;
@@ -397,9 +389,7 @@ export default new Vuex.Store({
       }
       return postStudyRequestBulk(csrf, studyRequestBulk);
     },
-    async updateStudyRequests({ state, commit }, studyRequests) {
-      commit('setToastInfo', `Updated ${studyRequests.length} study request(s).`);
-
+    async updateStudyRequests({ state }, studyRequests) {
       const { csrf } = state.auth;
       const tasks = studyRequests.map(
         studyRequest => putStudyRequest(csrf, studyRequest),

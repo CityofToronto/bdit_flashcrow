@@ -188,7 +188,6 @@ export default {
     },
   },
   methods: {
-    /* eslint-disable no-param-reassign */
     actionAssignTo(subitem) {
       const assignedTo = subitem.value;
       const studyRequestsUnactionable = [];
@@ -199,17 +198,7 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'assign',
-            actionVerbPastTense: 'assigned',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.ASSIGNED, subitem);
     },
     actionCancel() {
       const studyRequestsUnactionable = [];
@@ -220,17 +209,7 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'cancel',
-            actionVerbPastTense: 'cancelled',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.CANCELLED);
     },
     actionMarkCompleted() {
       const studyRequestsUnactionable = [];
@@ -241,17 +220,7 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'complete',
-            actionVerbPastTense: 'completed',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.COMPLETED);
     },
     actionMenu(item, subitem) {
       this.showMenu = false;
@@ -281,17 +250,7 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'reject',
-            actionVerbPastTense: 'rejected',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.REJECTED);
     },
     actionReopen() {
       const studyRequestsUnactionable = [];
@@ -302,17 +261,7 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
-      if (studyRequestsUnactionable.length > 0) {
-        this.setDialog({
-          dialog: 'AlertStudyRequestsUnactionable',
-          dialogData: {
-            actionVerb: 'reopen',
-            actionVerbPastTense: 'reopened',
-            studyRequests: this.studyRequests,
-            studyRequestsUnactionable,
-          },
-        });
-      }
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.REQUESTED);
     },
     actionRequestChanges() {
       const studyRequestsUnactionable = [];
@@ -323,20 +272,31 @@ export default {
           studyRequestsUnactionable.push(studyRequest);
         }
       });
+      this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.CHANGES_NEEDED);
+    },
+    displayFeedback(studyRequestsUnactionable, status, subitem = null) {
       if (studyRequestsUnactionable.length > 0) {
         this.setDialog({
           dialog: 'AlertStudyRequestsUnactionable',
           dialogData: {
-            actionVerb: 'request changes for',
-            actionVerbPastTense: 'returned to submitter for changes',
+            status,
             studyRequests: this.studyRequests,
             studyRequestsUnactionable,
           },
         });
+      } else {
+        const requestsPlural = this.studyRequests.length > 1 ? 'requests have' : 'request has';
+        if (status === StudyRequestStatus.ASSIGNED) {
+          this.setToastInfo(
+            `Your ${requestsPlural} been ${status.textVerbPastTense} to ${subitem.text}.`,
+          );
+        } else {
+          this.setToastInfo(`Your ${requestsPlural} been ${status.textVerbPastTense}.`);
+        }
       }
     },
     /* eslint-enable no-param-reassign */
-    ...mapMutations(['setDialog']),
+    ...mapMutations(['setDialog', 'setToastInfo']),
   },
 };
 </script>

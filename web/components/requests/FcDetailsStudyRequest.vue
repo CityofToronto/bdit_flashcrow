@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 import {
   StudyRequestReason,
@@ -82,7 +82,9 @@ import {
   OPTIONAL,
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
+  REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_TIME_TO_FULFILL,
+  REQUEST_STUDY_UPDATED,
 } from '@/lib/i18n/Strings';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -135,9 +137,23 @@ export default {
   },
   methods: {
     actionSubmit() {
+      const { id, urgent } = this.internalValue;
+      const update = id !== undefined;
+      if (update) {
+        this.setToastInfo(REQUEST_STUDY_UPDATED.text);
+      } else if (urgent) {
+        this.setDialog({
+          dialog: 'AlertStudyRequestUrgent',
+          dialogData: { update },
+        });
+      } else {
+        this.setToastInfo(REQUEST_STUDY_SUBMITTED.text);
+      }
+
       this.saveStudyRequest(this.internalValue);
       this.$emit('action-navigate-back', true);
     },
+    ...mapMutations(['setDialog', 'setToastInfo']),
     ...mapActions(['saveStudyRequest']),
   },
 };

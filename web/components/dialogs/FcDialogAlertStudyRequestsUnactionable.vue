@@ -4,7 +4,7 @@
     :title="title">
     <p class="body-1">
       {{studyRequestsUnactionable.length}} of {{studyRequests.length}}
-      requests could not be {{actionVerbPastTense}} due to their status:
+      requests could not be {{status.textVerbPastTense}} due to their status:
     </p>
     <ul class="body-1">
       <li
@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { StudyRequestStatus } from '@/lib/Constants';
 import FcDialogAlert from '@/web/components/dialogs/FcDialogAlert.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -29,15 +30,13 @@ export default {
     FcDialogAlert,
   },
   props: {
-    actionVerb: String,
-    actionVerbPastTense: String,
+    status: StudyRequestStatus,
     studyRequests: Array,
     studyRequestsUnactionable: Array,
   },
   computed: {
     title() {
-      const { actionVerb } = this;
-      return `Could not ${actionVerb} all requests`;
+      return `Could not ${this.status.textVerb} all requests`;
     },
   },
 };
