@@ -1,7 +1,7 @@
 <template>
   <v-snackbar
     v-model="internalValue"
-    top
+    bottom
     class="fc-toast pb-5 pl-7"
     :color="color + ' darker-1'"
     :timeout="timeout">
@@ -57,12 +57,20 @@ export default {
       return this.action === null ? TIMEOUT_AUTO_CLOSE : TIMEOUT_NEVER;
     },
   },
+  watch: {
+    text: {
+      handler() {
+        this.setAriaNotification(this.text);
+      },
+      immediate: true,
+    },
+  },
   methods: {
     actionCallback() {
       this.$emit('toast-action');
       this.clearToast();
     },
-    ...mapMutations(['clearToast']),
+    ...mapMutations(['clearToast', 'setAriaNotification']),
   },
 };
 </script>

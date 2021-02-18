@@ -47,6 +47,7 @@ export default new Vuex.Store({
     now: DateTime.local(),
     title: '',
     // TOP-LEVEL UI
+    ariaNotification: '',
     dialog: null,
     dialogData: {},
     drawerOpen: false,
@@ -200,6 +201,9 @@ export default new Vuex.Store({
       Vue.set(state, 'title', title);
     },
     // TOP-LEVEL UI
+    setAriaNotification(state, ariaNotification) {
+      Vue.set(state, 'ariaNotification', ariaNotification);
+    },
     clearDialog(state) {
       Vue.set(state, 'dialog', null);
       Vue.set(state, 'dialogData', {});

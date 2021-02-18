@@ -83,6 +83,7 @@ export default {
       },
     },
     ...mapState([
+      'ariaNotification',
       'auth',
       'dialog',
       'dialogData',
@@ -94,6 +95,10 @@ export default {
     ...mapGetters(['pageTitle']),
   },
   watch: {
+    ariaNotification() {
+      const $ariaNotification = document.querySelector('#aria_notification');
+      $ariaNotification.innerText = this.ariaNotification;
+    },
     pageTitle: {
       handler() {
         const $title = document.querySelector('title');
