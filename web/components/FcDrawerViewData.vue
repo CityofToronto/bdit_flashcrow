@@ -16,7 +16,7 @@
       <div v-else class="pa-5">
         <FcSelectorSingleLocation />
         <FcHeaderSingleLocation
-          class="mt-6"
+          class="mt-4"
           :location="locationActive" />
         <div class="d-flex mt-4">
           <FcSummaryPoi :location="locationActive" />

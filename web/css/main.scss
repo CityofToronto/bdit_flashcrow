@@ -157,6 +157,11 @@ body {
   color: var(--v-secondary-base);
 }
 
+.v-application .display-3 {
+  font-size: 1.75rem !important;
+  line-height: 2rem;
+}
+
 /* see https://webaim.org/techniques/css/invisiblecontent/ */
 .sr-only {
   height: 1px;

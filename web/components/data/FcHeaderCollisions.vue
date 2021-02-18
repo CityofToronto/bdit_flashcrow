@@ -1,10 +1,7 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <h3 class="display-2">
-        <span>Collisions</span>
-        <FcTextNumberTotal class="ml-2" :n="collisionTotal" />
-      </h3>
+      <h3 class="display-2">Collisions</h3>
       <v-spacer></v-spacer>
       <FcDialogCollisionFilters
         v-if="showFiltersCollision"
@@ -36,7 +33,6 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollisionFilters.vue';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -47,7 +43,6 @@ export default {
     FcButton,
     FcDialogCollisionFilters,
     FcListFilterChips,
-    FcTextNumberTotal,
   },
   props: {
     collisionTotal: Number,

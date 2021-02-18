@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
     app
-    class="fc-appbar"
+    class="fc-appbar elevation-0"
     color="white"
     clipped-left
     dense>
@@ -19,6 +19,7 @@
     <v-spacer></v-spacer>
 
     <FcButton
+      v-if="frontendEnv !== FrontendEnv.PROD"
       type="secondary"
       @click="actionProd">
       <v-icon
@@ -79,3 +80,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-appbar {
+  & > .v-toolbar__content {
+    border-bottom: 1px solid var(--v-border-base);
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-nav-study-request d-flex flex-grow-0 flex-shrink-0 pt-6 px-5 shading">
+  <div class="fc-nav-study-request d-flex flex-grow-0 flex-shrink-0 pt-4 px-5 shading">
     <div>
       <FcHeadingStudyRequest
         class="mb-4"
@@ -15,6 +15,7 @@
 
     <FcButton
       v-if="showEdit"
+      class="ml-8"
       :disabled="!canEdit || status === null || !status.editable"
       type="secondary"
       @click="actionEdit">

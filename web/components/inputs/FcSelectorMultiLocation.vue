@@ -64,7 +64,7 @@
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
-            class="mt-6"
+            class="mt-4"
             :location="locationActive" />
           <v-spacer></v-spacer>
           <v-tooltip

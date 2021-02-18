@@ -1,10 +1,7 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <h3 class="display-2">
-        <span>Studies</span>
-        <FcTextNumberTotal class="ml-2" :n="studyTotal" />
-      </h3>
+      <h3 class="display-2">Studies</h3>
       <v-spacer></v-spacer>
       <FcDialogStudyFilters
         v-if="showFiltersStudy"
@@ -36,7 +33,6 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -47,7 +43,6 @@ export default {
     FcButton,
     FcDialogStudyFilters,
     FcListFilterChips,
-    FcTextNumberTotal,
   },
   props: {
     disabled: {

@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2 class="my-4">
+    <h2 class="display-3 my-4">
       <span>{{title}}</span>
       <FcTextNumberTotal class="ml-2" :n="jobs.length" />
     </h2>

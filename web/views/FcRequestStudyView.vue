@@ -25,7 +25,7 @@
           no-gutters>
           <v-col class="mt-6 px-5" cols="12">
             <h3 class="display-2 mb-4" id="heading_request_details">
-              Details
+              Request Details
             </h3>
 
             <div class="subtitle-1 pb-2">Status</div>

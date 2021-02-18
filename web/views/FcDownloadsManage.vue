@@ -1,9 +1,9 @@
 <template>
   <div class="fc-downloads-manage d-flex flex-column fill-height">
-    <section class="flex-grow-1 flex-shrink-1 mt-6 mb-8 overflow-y-auto px-5">
+    <section class="flex-grow-1 flex-shrink-1 mb-8 overflow-y-auto px-5">
       <div
         v-if="loading"
-        class="ma-3 text-center">
+        class="ma-3 mt-9 text-center">
         <v-progress-circular
           class="ma-3"
           color="primary"
@@ -15,6 +15,7 @@
       </div>
       <v-card
         v-else-if="jobs.length === 0"
+        class="mt-6"
         outlined>
         <v-card-title>
           <div>
