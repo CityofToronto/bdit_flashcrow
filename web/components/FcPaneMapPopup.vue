@@ -147,15 +147,7 @@ function getCentrelineDescription(feature, { location }) {
   const locationStr = getLocationDescription(location);
   description.push(locationStr);
 
-  const { centrelineType } = feature.properties;
-  if (centrelineType === CentrelineType.SEGMENT) {
-    let { aadt = null } = feature.properties;
-    if (aadt !== null) {
-      aadt = 100 * Math.round(aadt / 100);
-      aadt = `AADT (est. 2018): ${aadt}`;
-      description.push(aadt);
-    }
-  }
+  // TODO: add AADT back here once model accuracy improves
 
   return description;
 }

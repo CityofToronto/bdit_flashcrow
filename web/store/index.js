@@ -63,7 +63,7 @@ export default new Vuex.Store({
       layers: {
         collisions: true,
         studies: true,
-        volume: true,
+        volume: false,
       },
     },
     legendOptionsFocusLocations: {
@@ -71,7 +71,7 @@ export default new Vuex.Store({
       layers: {
         collisions: false,
         studies: true,
-        volume: true,
+        volume: false,
       },
     },
     locations: [],

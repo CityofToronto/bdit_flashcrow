@@ -64,7 +64,6 @@ export default {
     const layers = [
       { text: 'Studies', value: 'studies' },
       { text: 'Collisions', value: 'collisions' },
-      { text: 'Volume', value: 'volume' },
     ];
     return {
       itemsDatesFrom,
