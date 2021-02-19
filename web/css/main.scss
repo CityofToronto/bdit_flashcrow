@@ -219,3 +219,16 @@ fieldset {
 .font-size-2xl {
   font-size: var(--font-size-2xl);
 }
+
+/* WIDTHS */
+.w-2xl {
+  width: var(--space-2xl);
+}
+
+.w-3xl {
+  width: var(--space-3xl);
+}
+
+.w-4xl {
+  width: var(--space-4xl);
+}
