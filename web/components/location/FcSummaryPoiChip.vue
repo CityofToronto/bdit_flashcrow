@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <span>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-chip
@@ -16,7 +16,7 @@
       <span>{{poiDistance}} m</span>
     </v-tooltip>
     <dd class="sr-only">{{poiDistance}} m</dd>
-  </div>
+  </span>
 </template>
 
 <script>
