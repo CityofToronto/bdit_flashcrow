@@ -2,7 +2,6 @@ import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import EmailBase from '@/lib/email/EmailBase';
 import EmailStudyRequestBulkRequestedAdmin from '@/lib/email/EmailStudyRequestBulkRequestedAdmin';
-import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequestBulk } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
@@ -32,11 +31,12 @@ test('EmailStudyRequestBulkRequestedAdmin', async () => {
   expect(subject).toEqual(`[MOVE] New requests for ${studyRequestBulk.name}`);
 
   const params = email.getBodyParams();
-  const s1 = CompositeId.encode(locations);
-  expect(params.hrefLocation).toEqual(`https://localhost:8080/view/location/${s1}/POINTS`);
   expect(params.hrefStudyRequestBulk).toEqual('https://localhost:8080/requests/study/bulk/17');
   expect(params.location).toMatch(/^Test location #1/);
   expect(params.studyRequests).toHaveLength(studyRequestBulk.studyRequests.length);
+  params.studyRequests.forEach((studyRequest, i) => {
+    expect(studyRequest.location).toEqual(`Test location #${i + 1}`);
+  });
 
   expect(() => {
     email.render();

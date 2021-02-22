@@ -1,7 +1,6 @@
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import EmailStudyRequestCancelled from '@/lib/email/EmailStudyRequestCancelled';
-import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
@@ -31,8 +30,6 @@ test('EmailStudyRequestCancelled', async () => {
   expect(subject).toEqual('[MOVE] Request cancelled: #42 - Test location');
 
   const params = email.getBodyParams();
-  const s1 = CompositeId.encode([studyRequest]);
-  expect(params.hrefLocation).toEqual(`https://localhost:8080/view/location/${s1}/POINTS`);
   expect(params.hrefStudyRequest).toEqual('https://localhost:8080/requests/study/42');
   expect(params.location).toEqual('Test location');
 

@@ -1,7 +1,7 @@
+import Random from '@/lib/Random';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import EmailStudyRequestBulkCancelled from '@/lib/email/EmailStudyRequestBulkCancelled';
-import CompositeId from '@/lib/io/CompositeId';
 import { generateStudyRequestBulk } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 
@@ -12,6 +12,10 @@ test('EmailStudyRequestBulkCancelled', async () => {
   const requester = generateUser();
   const studyRequestBulk = generateStudyRequestBulk();
   studyRequestBulk.id = 17;
+  studyRequestBulk.studyRequests = studyRequestBulk.studyRequests.map(studyRequest => ({
+    ...studyRequest,
+    id: Random.range(100, 1000),
+  }));
   const email = new EmailStudyRequestBulkCancelled(studyRequestBulk);
 
   const locations = studyRequestBulk.studyRequests.map(({ centrelineId, centrelineType }, i) => ({
@@ -31,11 +35,12 @@ test('EmailStudyRequestBulkCancelled', async () => {
   expect(subject).toEqual(`[MOVE] Requests cancelled: ${studyRequestBulk.name}`);
 
   const params = email.getBodyParams();
-  const s1 = CompositeId.encode(locations);
-  expect(params.hrefLocation).toEqual(`https://localhost:8080/view/location/${s1}/POINTS`);
   expect(params.hrefStudyRequestBulk).toEqual('https://localhost:8080/requests/study/bulk/17');
   expect(params.location).toMatch(/^Test location #1/);
   expect(params.studyRequests).toHaveLength(studyRequestBulk.studyRequests.length);
+  params.studyRequests.forEach((studyRequest, i) => {
+    expect(studyRequest.location).toEqual(`Test location #${i + 1}`);
+  });
 
   expect(() => {
     email.render();
