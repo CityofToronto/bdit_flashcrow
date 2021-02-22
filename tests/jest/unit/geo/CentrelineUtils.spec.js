@@ -51,7 +51,10 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
       centrelineType: CentrelineType.INTERSECTION,
       featureCode,
     };
-    expect(getLocationStudyTypes(location)).toEqual([StudyType.TMC]);
+    expect(getLocationStudyTypes(location)).toEqual([
+      StudyType.PED_DELAY,
+      StudyType.TMC,
+    ]);
   });
   RoadSegmentType.enumValues.forEach(({ featureCode }) => {
     const location = {

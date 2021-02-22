@@ -450,17 +450,6 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   persistedStudyRequest = response.result;
   expect(Mailer.send).toHaveBeenCalledTimes(0);
 
-  // supervisor cannot make invalid transition
-  client.setUser(supervisor);
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequest,
-      status: StudyRequestStatus.CHANGES_NEEDED,
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
   // requester cannot complete
   client.setUser(requester);
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
