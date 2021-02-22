@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="fc-card-study-request-confirm"
-    flat>
+    outlined>
     <v-card-title class="align-start pb-2">
       <FcIconLocationMulti
         class="mr-5"
@@ -10,9 +10,10 @@
         {{location.description}}
       </h3>
     </v-card-title>
+
     <v-card-text class="default--text">
       <div class="mx-9">
-        <v-row tag="dl">
+        <v-row class="mt-1" tag="dl">
           <v-col class="py-2" cols="6">
             <dt class="subtitle-1">
               Study Type

@@ -30,20 +30,19 @@
 
             <div class="subtitle-1 pb-2">Status</div>
             <FcStatusStudyRequests
-              class="my-2"
+              class="mt-2 mb-4"
               :created-at="studyRequest.createdAt"
               :study-requests="[studyRequest]"
               :study-request-changes="studyRequestChanges" />
           </v-col>
           <v-col class="px-5" cols="6">
-            <FcSummaryStudyRequest
-              :study-request="studyRequest"
-              :study-request-users="studyRequestUsers" />
-
-            <v-divider></v-divider>
-
             <FcSummaryStudy
               :study="studyRequest" />
+
+            <FcSummaryStudyRequest
+              class="mt-2"
+              :study-request="studyRequest"
+              :study-request-users="studyRequestUsers" />
           </v-col>
           <v-col cols="6">
             <FcPaneMap

@@ -2,7 +2,7 @@
   <v-card
     class="fc-card-study-request"
     :class="{ selected }"
-    flat>
+    outlined>
     <v-card-title class="align-start pb-2">
       <FcIconLocationMulti
         class="mr-5"
@@ -15,6 +15,7 @@
           :study="mostRecentByStudyType.get(studyRequest.studyType)" />
       </div>
     </v-card-title>
+
     <v-card-text class="pb-0">
       <fieldset class="mx-9">
         <legend class="sr-only">Study Type for Request</legend>

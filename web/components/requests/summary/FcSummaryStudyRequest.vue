@@ -17,10 +17,14 @@
           </dd>
         </template>
       </v-col>
+
       <v-col cols="6">
         <dt class="subtitle-1">Reason</dt>
         <dd class="mt-1 display-1">
-          {{studyRequest.reason.text}}
+          <span>{{studyRequest.reason.text}}</span>
+          <span v-if="studyRequest.reason === StudyRequestReason.OTHER">
+            ({{studyRequest.reasonOther}})
+          </span>
         </dd>
       </v-col>
       <v-col cols="6">
@@ -40,6 +44,32 @@
             :value="['Standard times to request counts are 2-3 months.']" />
         </dd>
       </v-col>
+
+      <v-col cols="6">
+        <template v-if="!isCreate">
+          <dt class="subtitle-1">Assigned To</dt>
+          <dd class="mt-1 display-1">
+            {{assignedToStr}}
+          </dd>
+        </template>
+      </v-col>
+      <v-col cols="6">
+        <template v-if="!isCreate">
+          <dt class="subtitle-1">Staff Informed</dt>
+          <dd class="mt-1 display-1">
+            <v-chip
+              v-for="(ccEmail, i) in studyRequest.ccEmails"
+              :key="i"
+              class="mr-2"
+              color="secondary"
+              label
+              small>
+              <span>{{ccEmail}}</span>
+            </v-chip>
+          </dd>
+        </template>
+      </v-col>
+
       <v-col cols="12">
         <dt class="subtitle-1">Additional Information</dt>
         <dd class="mt-1 display-1">
@@ -56,6 +86,9 @@
 <script>
 import { mapState } from 'vuex';
 
+import { StudyRequestReason } from '@/lib/Constants';
+import { bulkAssignedToStr } from '@/lib/requests/RequestStudyBulkUtils';
+
 export default {
   name: 'FcSummaryStudyRequest',
   props: {
@@ -69,7 +102,20 @@ export default {
       default() { return new Map(); },
     },
   },
+  data() {
+    return {
+      StudyRequestReason,
+    };
+  },
   computed: {
+    assignedToStr() {
+      if (Object.prototype.hasOwnProperty.call(this.studyRequest, 'assignedTo')) {
+        const { assignedTo } = this.studyRequest;
+        return assignedTo === null ? 'Unassigned' : assignedTo.text;
+      }
+      const { studyRequests } = this.studyRequest;
+      return bulkAssignedToStr(studyRequests);
+    },
     requestedBy() {
       if (this.isCreate) {
         return this.auth.user;
