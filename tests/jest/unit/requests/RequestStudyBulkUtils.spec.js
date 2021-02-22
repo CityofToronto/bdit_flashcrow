@@ -40,13 +40,13 @@ test('RequestStudyBulkUtils.bulkStatus', () => {
     StudyRequestStatus.ASSIGNED,
   ], StudyRequestStatus.ASSIGNED);
 
-  // unless all requests are cancelled or rejected, ignore them for bulk status
+  // unless all requests are cancelled, ignore them for bulk status
   expectBulkStatus([
     StudyRequestStatus.COMPLETED,
     StudyRequestStatus.REJECTED,
     StudyRequestStatus.COMPLETED,
     StudyRequestStatus.CANCELLED,
-  ], StudyRequestStatus.COMPLETED);
+  ], StudyRequestStatus.REJECTED);
 
   // if all requests are cancelled, bulk status is cancelled
   expectBulkStatus([
