@@ -18,6 +18,7 @@ export default {
       studyTypes: [],
       userOnly: false,
     },
+    filtersRequestUserOnlyInited: false,
     searchRequest: {
       column: null,
       query: null,
@@ -96,7 +97,10 @@ export default {
       state.filtersRequest = filtersRequest;
     },
     setFiltersRequestUserOnly(state, userOnly) {
-      state.filtersRequest.userOnly = userOnly;
+      if (!state.filtersRequestUserOnlyInited) {
+        state.filtersRequest.userOnly = userOnly;
+        state.filtersRequestUserOnlyInited = true;
+      }
     },
     setSearchRequestColumn(state, column) {
       state.searchRequest.column = column;
