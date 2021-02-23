@@ -5,6 +5,7 @@
     </span>
     <v-progress-circular
       v-if="subtitle === null"
+      aria-label="Loading study request subtitle"
       color="primary"
       indeterminate
       :size="20"

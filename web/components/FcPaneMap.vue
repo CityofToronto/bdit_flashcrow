@@ -9,6 +9,7 @@
       <div class="pane-map-progress">
         <v-progress-linear
           :active="loading"
+          aria-label="Loading map layers and data"
           indeterminate />
       </div>
       <div
@@ -490,8 +491,8 @@ export default {
       this.map.addControl(
         new mapboxgl.AttributionControl({
           customAttribution: [
-            '<a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a>',
-            'Powered by <a href="https://www.esri.com/">Esri</a>',
+            '<span role="listitem"><a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a></span>',
+            '<span role="listitem">Powered by <a href="https://www.esri.com/">Esri</a></span>',
           ],
         }),
         'bottom-left',

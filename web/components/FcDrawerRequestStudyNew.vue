@@ -14,6 +14,7 @@
 
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading Request New Study form"
       indeterminate />
     <div
       v-else

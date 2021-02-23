@@ -2,6 +2,7 @@
   <div class="fc-view-data-aggregate">
     <v-progress-linear
       v-if="loading || locations.length === 0"
+      aria-label="Loading Aggregate View for View Data"
       indeterminate />
     <template v-else>
       <section>

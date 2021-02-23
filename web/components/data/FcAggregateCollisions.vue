@@ -2,6 +2,7 @@
   <div class="fc-aggregate-collisions mb-5 ml-5">
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading Aggregate View collisions data"
       indeterminate />
     <template v-else>
       <v-expansion-panels

@@ -4,6 +4,7 @@
     class="fc-breadcrumbs-study-request">
     <v-progress-circular
       v-if="this.itemCurrent === null"
+      aria-label="Loading breadcrumbs"
       color="primary"
       indeterminate
       :size="20"

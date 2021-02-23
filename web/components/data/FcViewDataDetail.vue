@@ -2,6 +2,7 @@
   <div class="fc-view-data-detail">
     <v-progress-linear
       v-if="loading || location === null"
+      aria-label="Loading Detail View for View Data"
       indeterminate />
     <template v-else>
       <section>

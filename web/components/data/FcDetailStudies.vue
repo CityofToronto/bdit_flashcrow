@@ -2,6 +2,7 @@
   <div class="fc-detail-studies">
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading Detail View studies data"
       indeterminate />
     <p
       v-else-if="studySummaryUnfiltered.length === 0"

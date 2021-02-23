@@ -5,6 +5,7 @@
         v-if="loading"
         class="ma-3 mt-9 text-center">
         <v-progress-circular
+          aria-label="Loading your download history"
           class="ma-3"
           color="primary"
           indeterminate

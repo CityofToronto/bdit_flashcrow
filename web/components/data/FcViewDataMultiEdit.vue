@@ -2,6 +2,7 @@
   <div class="fc-view-data-multi-edit">
     <v-progress-linear
       v-if="loading || locations.length === 0"
+      aria-label="Loading multi-location edit mode for View Data"
       indeterminate />
     <template v-else>
       <section

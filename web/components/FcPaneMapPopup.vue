@@ -12,6 +12,7 @@
       <v-card-text>
         <v-progress-linear
           v-if="loading"
+          aria-label="Loading feature details"
           indeterminate />
         <template v-else>
           <p

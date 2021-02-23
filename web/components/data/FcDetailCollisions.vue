@@ -2,6 +2,7 @@
   <div class="fc-detail-collisions align-end d-flex mb-5 mx-5">
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading Detail View collisions data"
       indeterminate />
     <template v-else>
       <dl class="d-flex flex-grow-1 flex-shrink-1">

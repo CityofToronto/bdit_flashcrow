@@ -2,6 +2,7 @@
   <div class="fc-header-single-location">
     <v-progress-circular
       v-if="loading || location === null"
+      aria-label="Loading location details"
       color="primary"
       indeterminate
       :size="20"

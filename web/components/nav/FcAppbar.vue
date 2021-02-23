@@ -10,7 +10,7 @@
     <v-chip
       v-if="frontendEnv !== FrontendEnv.PROD"
       class="ml-2"
-      :color="frontendEnv.colorClass + ' darken-3'"
+      :color="frontendEnv.colorClass + ' darken-4'"
       dark
       small>
       {{frontendEnv.name.toLowerCase()}}

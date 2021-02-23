@@ -13,6 +13,7 @@
     </FcDialogConfirm>
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading collision reports viewer"
       indeterminate />
     <template v-else>
       <div>
@@ -99,6 +100,7 @@
           class="ma-3 text-center">
           <v-progress-circular
             v-if="loadingReportLayout"
+            aria-label="Loading selected report"
             class="ma-3"
             color="primary"
             indeterminate

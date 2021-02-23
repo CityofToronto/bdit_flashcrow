@@ -8,6 +8,7 @@
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-progress-linear
         v-if="loading"
+        aria-label="Loading bulk study request"
         indeterminate />
       <section
         v-else

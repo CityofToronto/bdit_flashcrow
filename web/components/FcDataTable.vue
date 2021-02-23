@@ -139,7 +139,12 @@ export default {
     // keyboard navigation of sortable header toggles
     const $thSortable = this.$el.querySelectorAll('th.sortable');
     $thSortable.forEach(($th) => {
+      const ariaLabel = $th.getAttribute('aria-label');
+      $th.removeAttribute('aria-label');
+
       const $sortIcon = $th.querySelector('.v-data-table-header__icon');
+      $sortIcon.removeAttribute('aria-hidden');
+      $sortIcon.setAttribute('aria-label', ariaLabel);
       $sortIcon.setAttribute('tabindex', 0);
       $sortIcon.addEventListener('keypress', (evt) => {
         if (evt.keyCode === KeyCode.SPACE) {

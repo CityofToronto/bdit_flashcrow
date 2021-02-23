@@ -2,6 +2,7 @@
   <div class="fc-summary-poi">
     <v-progress-circular
       v-if="loading || location === null"
+      aria-label="Loading points of interest near this location"
       color="primary"
       indeterminate
       :size="20"

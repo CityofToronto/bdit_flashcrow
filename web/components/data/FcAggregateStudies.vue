@@ -2,6 +2,7 @@
   <div class="fc-aggregate-studies mb-5 ml-5">
     <v-progress-linear
       v-if="loading"
+      aria-label="Loading Aggregate View studies data"
       indeterminate />
     <p
       v-else-if="studySummaryUnfiltered.length === 0"

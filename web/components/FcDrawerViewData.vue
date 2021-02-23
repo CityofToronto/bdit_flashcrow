@@ -34,6 +34,7 @@
       <v-divider></v-divider>
       <v-progress-linear
         v-if="loading"
+        aria-label="Loading View Data drawer"
         indeterminate />
       <template v-else>
         <FcViewDataMultiEdit
