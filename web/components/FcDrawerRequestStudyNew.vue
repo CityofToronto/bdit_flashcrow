@@ -12,10 +12,9 @@
 
     <v-divider v-if="!isBulk"></v-divider>
 
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading Request New Study form"
-      indeterminate />
+      aria-label="Loading Request New Study form" />
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 min-height-0">
@@ -49,6 +48,7 @@ import {
 } from '@/lib/Constants';
 import { getStudiesByCentrelineSummaryPerLocation } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
@@ -126,6 +126,7 @@ export default {
     FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
     FcNavStudyRequest,
+    FcProgressLinear,
   },
   data() {
     return {

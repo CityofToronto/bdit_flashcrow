@@ -1,9 +1,8 @@
 <template>
   <div class="fc-view-data-detail">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading || location === null"
-      aria-label="Loading Detail View for View Data"
-      indeterminate />
+      aria-label="Loading Detail View for View Data" />
     <template v-else>
       <section>
         <FcHeaderCollisions :collision-total="collisionTotal" />
@@ -63,6 +62,7 @@ import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcSectionStudyRequestsPending
   from '@/web/components/data/FcSectionStudyRequestsPending.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
@@ -77,6 +77,7 @@ export default {
     FcDetailStudies,
     FcHeaderCollisions,
     FcHeaderStudies,
+    FcProgressLinear,
     FcSectionStudyRequestsPending,
   },
   props: {

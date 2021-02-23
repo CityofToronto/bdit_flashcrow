@@ -6,10 +6,9 @@
     <v-divider></v-divider>
 
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <v-progress-linear
+      <FcProgressLinear
         v-if="loading"
-        aria-label="Loading bulk study request"
-        indeterminate />
+        aria-label="Loading bulk study request" />
       <section
         v-else
         aria-labelledby="heading_bulk_request_details">
@@ -110,6 +109,7 @@ import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkIndicesDeselected, bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
@@ -136,6 +136,7 @@ export default {
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
     FcPaneMap,
+    FcProgressLinear,
     FcStatusStudyRequests,
     FcSummaryStudyRequest,
     FcTextNumberTotal,

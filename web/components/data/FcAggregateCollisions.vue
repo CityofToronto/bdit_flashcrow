@@ -1,9 +1,8 @@
 <template>
   <div class="fc-aggregate-collisions mb-5 ml-5">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading Aggregate View collisions data"
-      indeterminate />
+      aria-label="Loading Aggregate View collisions data" />
     <template v-else>
       <v-expansion-panels
         v-model="indexOpen"
@@ -53,12 +52,14 @@ import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
     FcListLocationMulti,
+    FcProgressLinear,
     FcTextSummaryFraction,
   },
   props: {

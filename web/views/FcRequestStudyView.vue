@@ -14,10 +14,9 @@
     <v-divider></v-divider>
 
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <v-progress-linear
+      <FcProgressLinear
         v-if="loading"
-        aria-label="Loading study request"
-        indeterminate />
+        aria-label="Loading study request" />
       <section
         v-else
         aria-labelledby="heading_request_details">
@@ -75,6 +74,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
@@ -96,6 +96,7 @@ export default {
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
     FcPaneMap,
+    FcProgressLinear,
     FcStatusStudyRequests,
     FcSummaryStudy,
     FcSummaryStudyRequest,

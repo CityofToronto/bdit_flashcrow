@@ -1,9 +1,8 @@
 <template>
   <div class="fc-aggregate-studies mb-5 ml-5">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading Aggregate View studies data"
-      indeterminate />
+      aria-label="Loading Aggregate View studies data" />
     <p
       v-else-if="studySummaryUnfiltered.length === 0"
       class="my-8 py-12 secondary--text text-center">
@@ -84,6 +83,7 @@ import { mapGetters } from 'vuex';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
@@ -92,6 +92,7 @@ export default {
   components: {
     FcButton,
     FcListLocationMulti,
+    FcProgressLinear,
     FcTextMostRecent,
     FcTextSummaryFraction,
   },

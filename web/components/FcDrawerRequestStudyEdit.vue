@@ -12,10 +12,9 @@
 
     <v-divider></v-divider>
 
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading study request for editing"
-      indeterminate />
+      aria-label="Loading study request for editing" />
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 min-height-0">
@@ -33,6 +32,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
@@ -47,6 +47,7 @@ export default {
   components: {
     FcDetailsStudyRequest,
     FcNavStudyRequest,
+    FcProgressLinear,
   },
   data() {
     return {

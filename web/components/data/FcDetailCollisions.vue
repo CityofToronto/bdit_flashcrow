@@ -1,9 +1,8 @@
 <template>
   <div class="fc-detail-collisions align-end d-flex mb-5 mx-5">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading Detail View collisions data"
-      indeterminate />
+      aria-label="Loading Detail View collisions data" />
     <template v-else>
       <dl class="d-flex flex-grow-1 flex-shrink-1">
         <div class="flex-grow-1 flex-shrink-1">
@@ -58,12 +57,14 @@
 import { mapGetters } from 'vuex';
 
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDetailCollisions',
   components: {
     FcButton,
+    FcProgressLinear,
     FcTextSummaryFraction,
   },
   props: {

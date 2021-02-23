@@ -32,10 +32,9 @@
     </header>
     <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <v-divider></v-divider>
-      <v-progress-linear
+      <FcProgressLinear
         v-if="loading"
-        aria-label="Loading View Data drawer"
-        indeterminate />
+        aria-label="Loading View Data drawer" />
       <template v-else>
         <FcViewDataMultiEdit
           v-if="locationMode === LocationMode.MULTI_EDIT"
@@ -69,6 +68,7 @@ import CompositeId from '@/lib/io/CompositeId';
 import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
 import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
 import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
@@ -84,6 +84,7 @@ export default {
   components: {
     FcButton,
     FcHeaderSingleLocation,
+    FcProgressLinear,
     FcSelectorMultiLocation,
     FcSelectorSingleLocation,
     FcSummaryPoi,

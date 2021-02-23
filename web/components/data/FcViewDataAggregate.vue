@@ -1,9 +1,8 @@
 <template>
   <div class="fc-view-data-aggregate">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading || locations.length === 0"
-      aria-label="Loading Aggregate View for View Data"
-      indeterminate />
+      aria-label="Loading Aggregate View for View Data" />
     <template v-else>
       <section>
         <FcHeaderCollisions
@@ -137,6 +136,7 @@ import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
 import FcSectionStudyRequestsBulkPending
   from '@/web/components/data/FcSectionStudyRequestsBulkPending.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -153,6 +153,7 @@ export default {
     FcHeaderCollisions,
     FcHeaderStudies,
     FcMenuDownloadReportFormat,
+    FcProgressLinear,
     FcSectionStudyRequestsBulkPending,
   },
   props: {

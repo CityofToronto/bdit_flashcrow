@@ -7,10 +7,10 @@
 
     <template v-if="!background">
       <div class="pane-map-progress">
-        <v-progress-linear
-          :active="loading"
+        <FcProgressLinear
+          v-if="loading"
           aria-label="Loading map layers and data"
-          indeterminate />
+          silent />
       </div>
       <div
         class="pane-map-location-search"
@@ -121,6 +121,7 @@ import CompositeId from '@/lib/io/CompositeId';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
@@ -195,6 +196,7 @@ export default {
     FcDialogConfirmMultiLocationLeave,
     FcPaneMapLegend,
     FcPaneMapPopup,
+    FcProgressLinear,
     FcSelectorCollapsedLocation,
     FcSelectorMultiLocation,
     FcSelectorSingleLocation,

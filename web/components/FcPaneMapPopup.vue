@@ -10,10 +10,9 @@
       <v-divider></v-divider>
 
       <v-card-text>
-        <v-progress-linear
+        <FcProgressLinear
           v-if="loading"
-          aria-label="Loading feature details"
-          indeterminate />
+          aria-label="Loading feature details" />
         <template v-else>
           <p
             v-for="(line, i) in description"
@@ -59,6 +58,7 @@ import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 const MSG_LOCATION_REMOVED = 'Location removed from centreline';
@@ -271,6 +271,7 @@ export default {
   name: 'PaneMapPopup',
   components: {
     FcButton,
+    FcProgressLinear,
   },
   props: {
     feature: Object,

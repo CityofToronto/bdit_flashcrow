@@ -11,10 +11,9 @@
         Are you sure you want to leave?
       </span>
     </FcDialogConfirm>
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading collision reports viewer"
-      indeterminate />
+      aria-label="Loading collision reports viewer" />
     <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
@@ -138,6 +137,7 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
@@ -157,6 +157,7 @@ export default {
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
+    FcProgressLinear,
     FcReport,
   },
   data() {

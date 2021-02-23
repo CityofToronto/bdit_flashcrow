@@ -1,9 +1,8 @@
 <template>
   <div class="fc-detail-studies">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading Detail View studies data"
-      indeterminate />
+      aria-label="Loading Detail View studies data" />
     <p
       v-else-if="studySummaryUnfiltered.length === 0"
       class="my-8 py-12 secondary--text text-center">
@@ -56,12 +55,14 @@ import { mapGetters } from 'vuex';
 
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDetailStudies',
   components: {
     FcButton,
+    FcProgressLinear,
     FcTextMostRecent,
     FcTextSummaryFraction,
   },

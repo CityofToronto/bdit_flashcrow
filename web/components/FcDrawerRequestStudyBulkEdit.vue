@@ -12,10 +12,9 @@
 
     <v-divider></v-divider>
 
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading"
-      aria-label="Loading bulk study request for editing"
-      indeterminate />
+      aria-label="Loading bulk study request for editing" />
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 min-height-0">
@@ -33,6 +32,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import { bulkIndicesDeselected } from '@/lib/requests/RequestStudyBulkUtils';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcEditStudyRequestBulk from '@/web/components/requests/FcEditStudyRequestBulk.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
@@ -47,6 +47,7 @@ export default {
   components: {
     FcEditStudyRequestBulk,
     FcNavStudyRequest,
+    FcProgressLinear,
   },
   data() {
     return {

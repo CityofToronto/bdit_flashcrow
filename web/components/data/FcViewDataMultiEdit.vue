@@ -1,9 +1,8 @@
 <template>
   <div class="fc-view-data-multi-edit">
-    <v-progress-linear
+    <FcProgressLinear
       v-if="loading || locations.length === 0"
-      aria-label="Loading multi-location edit mode for View Data"
-      indeterminate />
+      aria-label="Loading multi-location edit mode for View Data" />
     <template v-else>
       <section
         aria-labelledby="heading_multi_edit_totals"
@@ -67,12 +66,14 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcViewDataMultiEdit',
   components: {
     FcListLocationMulti,
+    FcProgressLinear,
     FcTextMostRecent,
     FcTextNumberTotal,
   },
