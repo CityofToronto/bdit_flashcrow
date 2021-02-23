@@ -9,57 +9,56 @@
       :offset-y="true"
       :open-on-click="false">
       <template v-slot:activator="{ attrs, on: onMenu }">
-        <v-text-field
-          v-model="query"
-          :aria-label="query"
-          autocomplete="off"
-          dense
-          :flat="hasLocationIndex"
-          hide-details
-          label="Choose location or click on the map"
-          :loading="loading"
-          solo
-          v-bind="{
-            ...attrs,
-            ...$attrs,
-          }"
-          @blur="actionBlur"
-          @focus="actionFocus"
-          @input="actionInput"
-          v-on="onMenu">
-          <template v-slot:append>
-            <template v-if="hasLocationIndex">
-              <FcIconLocationMulti
-                v-if="!hasLocationToAddIndex"
-                :location-index="locationIndex"
-                :selected="selected" />
-              <span v-else>&nbsp;</span>
+        <div v-bind="attrs">
+          <v-text-field
+            v-model="query"
+            :aria-label="query"
+            autocomplete="off"
+            dense
+            :flat="hasLocationIndex"
+            hide-details
+            label="Choose location or click on the map"
+            :loading="loading"
+            solo
+            v-bind="$attrs"
+            @blur="actionBlur"
+            @focus="actionFocus"
+            @input="actionInput"
+            v-on="onMenu">
+            <template v-slot:append>
+              <template v-if="hasLocationIndex">
+                <FcIconLocationMulti
+                  v-if="!hasLocationToAddIndex"
+                  :location-index="locationIndex"
+                  :selected="selected" />
+                <span v-else>&nbsp;</span>
+              </template>
+              <template v-else>
+                <FcTooltip
+                  v-if="internalValue !== null || query !== null"
+                  right>
+                  <template v-slot:activator="{ on: onTooltip }">
+                    <FcButton
+                      aria-label="Clear Location"
+                      class="mr-1"
+                      type="icon"
+                      @click="actionClear"
+                      v-on="onTooltip">
+                      <v-icon>mdi-close-circle</v-icon>
+                    </FcButton>
+                  </template>
+                  <span>Clear Location</span>
+                </FcTooltip>
+                <v-divider vertical />
+                <v-icon
+                  :color="hasFocus ? 'primary' : null"
+                  right>
+                  mdi-magnify
+                </v-icon>
+              </template>
             </template>
-            <template v-else>
-              <v-tooltip
-                v-if="internalValue !== null || query !== null"
-                right>
-                <template v-slot:activator="{ on: onTooltip }">
-                  <FcButton
-                    aria-label="Clear Location"
-                    class="mr-1"
-                    type="icon"
-                    @click="actionClear"
-                    v-on="onTooltip">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </FcButton>
-                </template>
-                <span>Clear Location</span>
-              </v-tooltip>
-              <v-divider vertical />
-              <v-icon
-                :color="hasFocus ? 'primary' : null"
-                right>
-                mdi-magnify
-              </v-icon>
-            </template>
-          </template>
-        </v-text-field>
+          </v-text-field>
+        </div>
       </template>
       <v-list
         ref="listLocationSuggestions"
@@ -83,6 +82,7 @@
 import { Enum } from '@/lib/ClassUtils';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -102,6 +102,7 @@ export default {
   components: {
     FcButton,
     FcIconLocationMulti,
+    FcTooltip,
   },
   props: {
     locationIndex: {

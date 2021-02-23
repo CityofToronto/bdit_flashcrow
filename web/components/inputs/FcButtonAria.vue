@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip
+  <FcTooltip
     :bottom="bottom"
     :left="left"
     :right="right"
@@ -18,16 +18,18 @@
       </FcButton>
     </template>
     <span>{{ariaLabel}}</span>
-  </v-tooltip>
+  </FcTooltip>
 </template>
 
 <script>
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcButtonAria',
   components: {
     FcButton,
+    FcTooltip,
   },
   props: {
     ariaLabel: String,

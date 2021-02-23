@@ -12,6 +12,7 @@
         <v-expansion-panel
           v-for="field in fields"
           :key="field.name"
+          :aria-disabled="collisionSummary[field.name] === 0"
           class="fc-collisions-summary-per-location"
           :disabled="collisionSummary[field.name] === 0">
           <v-expansion-panel-header class="pr-8">

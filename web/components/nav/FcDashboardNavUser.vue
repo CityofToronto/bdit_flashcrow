@@ -23,7 +23,7 @@
       top
       :z-index="100">
       <template v-slot:activator="{ attrs, on: onMenu }">
-        <v-tooltip right>
+        <FcTooltip right>
           <template v-slot:activator="{ on: onTooltip }">
             <FcButton
               ref="btn"
@@ -35,7 +35,7 @@
             </FcButton>
           </template>
           <span>{{username}}</span>
-        </v-tooltip>
+        </FcTooltip>
       </template>
       <v-list class="text-left" id="fc_menu_user">
         <v-list-item
@@ -49,7 +49,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-tooltip
+    <FcTooltip
       v-else
       right>
       <template v-slot:activator="{ on }">
@@ -62,7 +62,7 @@
         </FcButton>
       </template>
       <span>Sign In</span>
-    </v-tooltip>
+    </FcTooltip>
   </div>
 </template>
 
@@ -70,6 +70,7 @@
 import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { saveLoginState } from '@/web/store/LoginState';
@@ -81,6 +82,7 @@ export default {
   ],
   components: {
     FcButton,
+    FcTooltip,
   },
   computed: {
     ...mapState(['auth']),

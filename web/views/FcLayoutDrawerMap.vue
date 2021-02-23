@@ -17,10 +17,9 @@
           left>{{iconDrawerToggle}}</v-icon>
         {{labelDrawerToggle}}
       </FcButton>
-      <v-tooltip
+      <FcTooltip
         v-else
-        right
-        :z-index="100">
+        right>
         <template v-slot:activator="{ on }">
           <FcButton
             :aria-label="labelDrawerToggle"
@@ -32,7 +31,7 @@
           </FcButton>
         </template>
         <span>{{labelDrawerToggle}}</span>
-      </v-tooltip>
+      </FcTooltip>
     </template>
     <div
       class="fc-pane-wrapper d-flex fill-height"
@@ -64,6 +63,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 
@@ -77,6 +77,7 @@ export default {
   components: {
     FcButton,
     FcPaneMap,
+    FcTooltip,
   },
   computed: {
     hasDrawer() {

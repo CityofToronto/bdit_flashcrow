@@ -33,7 +33,7 @@
       <span class="sr-only">Select</span>
     </template>
     <template v-slot:item.SELECT="{ item }">
-      <v-tooltip right>
+      <FcTooltip right>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-checkbox
@@ -54,7 +54,7 @@
           </div>
         </template>
         <span>Select {{item.ariaLabel}}</span>
-      </v-tooltip>
+      </FcTooltip>
 
     </template>
     <template v-slot:item.ID="{ item }">
@@ -205,6 +205,7 @@ import RequestActions from '@/lib/requests/RequestActions';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
@@ -238,6 +239,7 @@ export default {
     FcDataTable,
     FcMenuStudyRequestsAssignTo,
     FcTextNumberTotal,
+    FcTooltip,
   },
   props: {
     ariaLabelledby: {

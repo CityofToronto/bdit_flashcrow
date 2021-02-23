@@ -1,6 +1,7 @@
 <template>
   <div class="fc-status-study-requests">
     <v-progress-linear
+      aria-hidden="true"
       background-color="border"
       class="status-progress"
       color="primary"

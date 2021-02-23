@@ -18,7 +18,7 @@
         <div
           :key="'u:' + item.id + ':' + authScope.name"
           class="d-flex">
-          <v-tooltip right>
+          <FcTooltip right>
             <template v-slot:activator="{ on }">
               <v-checkbox
                 v-model="item.scope"
@@ -37,7 +37,7 @@
                 Grant {{authScope.name}}
               </span>
             </span>
-          </v-tooltip>
+          </FcTooltip>
         </div>
       </template>
     </FcDataTable>
@@ -51,6 +51,7 @@ import { AuthScope } from '@/lib/Constants';
 import { formatUsername } from '@/lib/StringFormatters';
 import { getUsers, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
@@ -60,6 +61,7 @@ export default {
   ],
   components: {
     FcDataTable,
+    FcTooltip,
   },
   data() {
     const authScopeSlots = AuthScope.enumValues.map((authScope) => {

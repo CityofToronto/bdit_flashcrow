@@ -4,7 +4,7 @@
       v-for="i in indices"
       :key="i"
       class="align-center d-flex">
-      <v-tooltip right>
+      <FcTooltip right>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-checkbox
@@ -15,7 +15,7 @@
           </div>
         </template>
         <span>Include {{locations[i].description}} in request</span>
-      </v-tooltip>
+      </FcTooltip>
       <FcCardStudyRequest
         class="flex-grow-1 flex-shrink-1 mr-5 my-1"
         :icon-props="locationsIconProps[i]"
@@ -31,6 +31,7 @@
 <script>
 import { StudyType } from '@/lib/Constants';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -39,6 +40,7 @@ export default {
   mixins: [FcMixinVModelProxy(Array)],
   components: {
     FcCardStudyRequest,
+    FcTooltip,
   },
   props: {
     indices: Array,

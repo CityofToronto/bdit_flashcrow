@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip right>
+  <FcTooltip right>
     <template v-slot:activator="{ on }">
       <v-list-item
         v-on="on"
@@ -31,11 +31,13 @@
       </v-list-item>
     </template>
     <span>{{label}}</span>
-  </v-tooltip>
+  </FcTooltip>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 
 const ROUTES_BACK_REQUEST_VIEW = [
   'requestStudyBulkView',
@@ -44,6 +46,9 @@ const ROUTES_BACK_REQUEST_VIEW = [
 
 export default {
   name: 'FcDashboardNavItem',
+  components: {
+    FcTooltip,
+  },
   props: {
     activeRouteNames: {
       type: Array,

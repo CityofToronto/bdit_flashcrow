@@ -18,6 +18,7 @@
         <v-expansion-panel
           v-for="(item, i) in items"
           :key="i"
+          :aria-disabled="item.n === 0"
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
           <v-expansion-panel-header class="pr-8">

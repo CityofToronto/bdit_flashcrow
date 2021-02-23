@@ -1,6 +1,6 @@
 <template>
-  <span>
-    <v-tooltip bottom>
+  <div class="fc-summary-poi-chip">
+    <FcTooltip bottom>
       <template v-slot:activator="{ on }">
         <v-chip
           v-on="on"
@@ -14,14 +14,19 @@
         </v-chip>
       </template>
       <span>{{poiDistance}} m</span>
-    </v-tooltip>
+    </FcTooltip>
     <dd class="sr-only">{{poiDistance}} m</dd>
-  </span>
+  </div>
 </template>
 
 <script>
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
+
 export default {
   name: 'FcSummaryPoiChip',
+  components: {
+    FcTooltip,
+  },
   props: {
     color: String,
     icon: String,
@@ -35,3 +40,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-summary-poi-chip {
+  display: inline-block;
+}
+</style>

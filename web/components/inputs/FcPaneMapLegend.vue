@@ -22,7 +22,7 @@
               :class="'icon-layer-' + layer.value"
               class="mr-5"></div>
             <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
-            <v-tooltip left>
+            <FcTooltip left>
               <template v-slot:activator="{ on }">
                 <div v-on="on">
                   <v-checkbox
@@ -37,7 +37,7 @@
                 </div>
               </template>
               <span>{{layerLabels[layer.value]}}</span>
-            </v-tooltip>
+            </FcTooltip>
           </div>
         </fieldset>
       </section>
@@ -49,11 +49,15 @@
 import { mapState } from 'vuex';
 
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcPaneMapLegend',
   mixins: [FcMixinVModelProxy(Object)],
+  components: {
+    FcTooltip,
+  },
   data() {
     const itemsDatesFrom = [
       { text: 'Last year', value: 1 },

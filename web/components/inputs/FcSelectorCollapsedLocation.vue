@@ -1,8 +1,6 @@
 <template>
   <div class="fc-selector-collapsed-location">
-    <v-tooltip
-      right
-      :z-index="100">
+    <FcTooltip right>
       <template v-slot:activator="{ on }">
         <FcButton
           aria-label="Search for new location"
@@ -14,17 +12,19 @@
         </FcButton>
       </template>
       <span>Search for new location</span>
-    </v-tooltip>
+    </FcTooltip>
   </div>
 </template>
 
 <script>
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcSelectorCollapsedLocation',
   components: {
     FcButton,
+    FcTooltip,
   },
 };
 </script>

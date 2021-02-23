@@ -1,39 +1,46 @@
 <template>
-  <aside class="fc-comments-study-request">
-    <section aria-labelledby="heading_request_comments">
-      <v-row no-gutters>
-        <v-col class="px-5" cols="6">
-          <h3 class="display-2" id="heading_request_comments">
-            <span>Comments</span>
-            <FcTextNumberTotal class="ml-2" :n="studyRequestComments.length" />
-          </h3>
-          <div class="fc-comment-new">
-            <FcTextarea
-              v-model="commentText"
-              class="mt-4"
-              label="Compose new comment"
-              :loading="loadingAddComment" />
-            <div class="text-right mb-4">
-              <FcButton
-                :disabled="commentText.length === 0"
-                :loading="loadingAddComment"
-                type="primary"
-                @click="actionAddComment">
-                Submit
-              </FcButton>
-            </div>
+  <section
+    aria-labelledby="heading_request_comments"
+    class="fc-comments-study-request">
+    <v-row no-gutters>
+      <v-col class="px-5" cols="6">
+        <h3 class="display-2" id="heading_request_comments">
+          <span>Comments</span>
+          <FcTextNumberTotal class="ml-2" :n="studyRequestComments.length" />
+        </h3>
+        <div class="fc-comment-new">
+          <FcTextarea
+            v-model="commentText"
+            class="mt-4"
+            label="Compose new comment"
+            :loading="loadingAddComment" />
+          <div class="text-right mb-4">
+            <FcButton
+              :disabled="commentText.length === 0"
+              :loading="loadingAddComment"
+              type="primary"
+              @click="actionAddComment">
+              Submit
+            </FcButton>
           </div>
-        </v-col>
-        <v-col class="px-5" cols="6">
-          <dl
+        </div>
+      </v-col>
+      <v-col class="px-5" cols="6">
+        <dl>
+          <div
             v-for="(comment, i) in studyRequestComments"
-            :key="comment.id">
+            :key="comment.id"
+            class="fc-comment">
             <dt class="align-center d-flex mt-2">
-              <span
-                v-if="studyRequestUsers.has(comment.userId)"
-                class="body-1 default--text font-weight-medium">
+              <span class="body-1 default--text font-weight-medium">
                 <span class="sr-only">Author: </span>
-                {{studyRequestUsers.get(comment.userId) | username}}
+                <span v-if="studyRequestUsers.has(comment.userId)">
+                  {{studyRequestUsers.get(comment.userId) | username}}
+                </span>
+                <span v-else-if="comment.userId === auth.user.id">
+                  {{auth.user | username}}
+                </span>
+                <span v-else class="sr-only">Unknown</span>
               </span>
 
               <v-spacer></v-spacer>
@@ -54,12 +61,11 @@
             <dd class="body-2 mt-3 mb-2">
               {{ comment.comment }}
             </dd>
-            <v-divider></v-divider>
-          </dl>
-        </v-col>
-      </v-row>
-    </section>
-  </aside>
+          </div>
+        </dl>
+      </v-col>
+    </v-row>
+  </section>
 </template>
 
 <script>
@@ -116,3 +122,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-comments-study-request {
+  & dl > .fc-comment:not(:first-child) {
+    border-top: 1px solid var(--v-border-base);
+  }
+}
+</style>

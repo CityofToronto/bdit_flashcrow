@@ -67,9 +67,7 @@
             class="mt-4"
             :location="locationActive" />
           <v-spacer></v-spacer>
-          <v-tooltip
-            left
-            :z-index="100">
+          <FcTooltip left>
             <template v-slot:activator="{ on }">
               <FcButton
                 aria-label="Previous location"
@@ -81,10 +79,8 @@
               </FcButton>
             </template>
             <span>Previous location</span>
-          </v-tooltip>
-          <v-tooltip
-            right
-            :z-index="100">
+          </FcTooltip>
+          <FcTooltip right>
             <template v-slot:activator="{ on }">
               <FcButton
                 aria-label="Next location"
@@ -97,7 +93,7 @@
               </FcButton>
             </template>
             <span>Next location</span>
-          </v-tooltip>
+          </FcTooltip>
         </template>
         <template v-else>
           <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
@@ -184,6 +180,7 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
@@ -203,6 +200,7 @@ export default {
     FcHeaderSingleLocation,
     FcInputLocationSearch,
     FcSummaryPoi,
+    FcTooltip,
   },
   props: {
     detailView: {

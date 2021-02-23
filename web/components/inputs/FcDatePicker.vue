@@ -9,33 +9,35 @@
       offset-y
       transition="scale-transition">
       <template v-slot:activator="{ attrs, on: onMenu }">
-        <v-text-field
-          v-model="valueFormatted"
-          append-icon="mdi-calendar"
-          offset-y
-          v-bind="{ ...attrs, ...$attrs }"
-          @blur="resetValueFormatted"
-          @input="updateValueFormatted"
-          @click:append="showMenu = !showMenu"
-          v-on="onMenu">
-          <template v-slot:append>
-            <v-tooltip right>
-              <template v-slot:activator="{ on: onTooltip }">
-                <v-icon
-                  aria-label="Select date using calendar"
-                  :color="color"
-                  right
-                  v-on="{
-                    ...onMenu,
-                    ...onTooltip,
-                  }">
-                  mdi-calendar
-                </v-icon>
-              </template>
-              <span>Select date using calendar</span>
-            </v-tooltip>
-          </template>
-        </v-text-field>
+        <div v-bind="attrs">
+          <v-text-field
+            v-model="valueFormatted"
+            append-icon="mdi-calendar"
+            offset-y
+            v-bind="$attrs"
+            @blur="resetValueFormatted"
+            @input="updateValueFormatted"
+            @click:append="showMenu = !showMenu"
+            v-on="onMenu">
+            <template v-slot:append>
+              <FcTooltip right>
+                <template v-slot:activator="{ on: onTooltip }">
+                  <v-icon
+                    aria-label="Select date using calendar"
+                    :color="color"
+                    right
+                    v-on="{
+                      ...onMenu,
+                      ...onTooltip,
+                    }">
+                    mdi-calendar
+                  </v-icon>
+                </template>
+                <span>Select date using calendar</span>
+              </FcTooltip>
+            </template>
+          </v-text-field>
+        </div>
       </template>
       <v-date-picker
         v-model="internalValue"
@@ -51,6 +53,7 @@
 <script>
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 
 const REGEX_VALUE_FORMATTED = /[0-9]{4}-[0-9]{2}-[0-9]{2}/;
 
@@ -85,6 +88,9 @@ function toInternalValue(value) {
 
 export default {
   name: 'FcDatePicker',
+  components: {
+    FcTooltip,
+  },
   props: {
     max: {
       type: DateTime,

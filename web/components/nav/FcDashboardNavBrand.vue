@@ -1,7 +1,5 @@
 <template>
-  <v-tooltip
-    bottom
-    :z-index="100">
+  <FcTooltip bottom>
     <template v-slot:activator="{ on }">
       <v-app-bar-nav-icon
         @click="actionClick"
@@ -15,14 +13,18 @@
       </v-app-bar-nav-icon>
     </template>
     <span>{{textIcon}}</span>
-  </v-tooltip>
+  </FcTooltip>
 </template>
 
 <script>
 import FrontendEnv from '@/web/config/FrontendEnv';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 
 export default {
   name: 'FcDashboardNavBrand',
+  components: {
+    FcTooltip,
+  },
   data() {
     const textIcon = `${FrontendEnv.PROD.appTitle}: Home`;
     return { textIcon };
