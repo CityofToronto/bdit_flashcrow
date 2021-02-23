@@ -1,12 +1,9 @@
 <template>
   <div class="fc-header-single-location">
-    <v-progress-circular
+    <FcProgressCircular
       v-if="loading || location === null"
       aria-label="Loading location details"
-      color="primary"
-      indeterminate
-      :size="20"
-      :width="2" />
+      small />
     <template v-else>
       <h2 class="display-3">{{location.description}}</h2>
       <div class="label mt-2">
@@ -21,9 +18,13 @@ import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 
 export default {
   name: 'FcHeaderSingleLocation',
+  components: {
+    FcProgressCircular,
+  },
   props: {
     location: Object,
   },

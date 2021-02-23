@@ -2,13 +2,10 @@
   <nav
     aria-label="Breadcrumbs: Study Request"
     class="fc-breadcrumbs-study-request">
-    <v-progress-circular
+    <FcProgressCircular
       v-if="this.itemCurrent === null"
       aria-label="Loading breadcrumbs"
-      color="primary"
-      indeterminate
-      :size="20"
-      :width="2" />
+      small />
     <v-breadcrumbs
       v-else
       class="pa-0"
@@ -31,9 +28,13 @@
 import { mapGetters, mapState } from 'vuex';
 
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 
 export default {
   name: 'FcBreadcrumbsStudyRequest',
+  components: {
+    FcProgressCircular,
+  },
   props: {
     studyRequest: Object,
     studyRequestBulkName: {

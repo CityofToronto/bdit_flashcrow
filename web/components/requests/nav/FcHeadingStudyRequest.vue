@@ -3,13 +3,10 @@
     <span>
       {{title}}:
     </span>
-    <v-progress-circular
+    <FcProgressCircular
       v-if="subtitle === null"
       aria-label="Loading study request subtitle"
-      color="primary"
-      indeterminate
-      :size="20"
-      :width="2" />
+      small />
     <span
       v-else
       class="font-weight-regular">
@@ -23,9 +20,13 @@ import { mapState } from 'vuex';
 
 import { LocationMode } from '@/lib/Constants';
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 
 export default {
   name: 'FcHeadingStudyRequest',
+  components: {
+    FcProgressCircular,
+  },
   props: {
     studyRequest: Object,
   },

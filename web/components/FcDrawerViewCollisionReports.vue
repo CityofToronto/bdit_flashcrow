@@ -98,13 +98,9 @@
         <div
           v-if="loadingReportLayout"
           class="ma-3 text-center">
-          <v-progress-circular
-            v-if="loadingReportLayout"
+          <FcProgressCircular
             aria-label="Loading selected report"
-            class="ma-3"
-            color="primary"
-            indeterminate
-            size="80" />
+            class="ma-3" />
           <div class="font-weight-regular headline secondary--text">
             This page is loading, please wait.
           </div>
@@ -141,6 +137,7 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
@@ -159,6 +156,7 @@ export default {
     FcListFilterChips,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
+    FcProgressCircular,
     FcReport,
   },
   data() {

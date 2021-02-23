@@ -17,6 +17,7 @@
     <FcNavbar />
     <v-main>
       <router-view></router-view>
+      <aside id="fc_tooltips"></aside>
     </v-main>
   </v-app>
 </template>

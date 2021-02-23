@@ -4,12 +4,9 @@
       <div
         v-if="loading"
         class="ma-3 mt-9 text-center">
-        <v-progress-circular
+        <FcProgressCircular
           aria-label="Loading your download history"
-          class="ma-3"
-          color="primary"
-          indeterminate
-          size="80" />
+          class="ma-3" />
         <div class="font-weight-regular headline secondary--text">
           This page is loading, please wait.
         </div>
@@ -60,6 +57,7 @@
 import { mapGetters } from 'vuex';
 
 import { getJobs } from '@/lib/api/WebApi';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSectionJobs from '@/web/components/jobs/FcSectionJobs.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -71,6 +69,7 @@ export default {
   ],
   components: {
     FcButton,
+    FcProgressCircular,
     FcSectionJobs,
   },
   data() {
