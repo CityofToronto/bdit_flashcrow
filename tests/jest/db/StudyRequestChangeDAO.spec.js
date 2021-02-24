@@ -1,18 +1,11 @@
-import {
-  CentrelineType,
-  StudyHours,
-  StudyRequestAssignee,
-  StudyRequestReason,
-  StudyRequestStatus,
-  StudyType,
-} from '@/lib/Constants';
+import { StudyRequestStatus } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestChangeDAO from '@/lib/db/StudyRequestChangeDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequestChange from '@/lib/model/StudyRequestChange';
+import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
-import DateTime from '@/lib/time/DateTime';
 
 afterAll(() => {
   db.$pool.end();
@@ -23,28 +16,7 @@ test('StudyRequestChangeDAO', async () => {
 
   const transientUser1 = generateUser();
   const persistedUser1 = await UserDAO.create(transientUser1);
-  const now = DateTime.local();
-  const transientStudyRequest = {
-    urgent: false,
-    urgentReason: null,
-    assignedTo: StudyRequestAssignee.FIELD_STAFF,
-    dueDate: now.plus({ months: 4 }),
-    estimatedDeliveryDate: now.plus({ months: 3, weeks: 3 }),
-    reason: StudyRequestReason.PED_SAFETY,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.TMC,
-    daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: StudyHours.ROUTINE,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 42,
-    centrelineType: CentrelineType.INTERSECTION,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.333251, 43.709012],
-    },
-  };
+  const transientStudyRequest = generateStudyRequest();
   const persistedStudyRequest = await StudyRequestDAO.create(
     transientStudyRequest,
     persistedUser1,

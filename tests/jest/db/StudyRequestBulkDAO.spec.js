@@ -1,6 +1,4 @@
 import {
-  CentrelineType,
-  LocationSelectionType,
   StudyHours,
   StudyRequestReason,
   StudyType,
@@ -9,10 +7,9 @@ import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import UserDAO from '@/lib/db/UserDAO';
-import CompositeId from '@/lib/io/CompositeId';
 import StudyRequestBulk from '@/lib/model/StudyRequestBulk';
+import { generateStudyRequestBulk } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
-import DateTime from '@/lib/time/DateTime';
 
 afterAll(() => {
   db.$pool.end();
@@ -21,69 +18,8 @@ afterAll(() => {
 test('StudyRequestBulkDAO', async () => {
   const transientUser = generateUser();
   const persistedUser = await UserDAO.create(transientUser);
-  const now = DateTime.local();
 
-  const transientStudyRequest1 = {
-    urgent: false,
-    urgentReason: null,
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reason: StudyRequestReason.TSC,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.TMC,
-    daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: StudyHours.ROUTINE,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 1729,
-    centrelineType: CentrelineType.INTERSECTION,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.333251, 43.709012],
-    },
-  };
-
-  const transientStudyRequest2 = {
-    urgent: false,
-    urgentReason: null,
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reason: StudyRequestReason.TSC,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.ATR_SPEED_VOLUME,
-    daysOfWeek: [2, 3, 4],
-    duration: 72,
-    hours: null,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 5555,
-    centrelineType: CentrelineType.SEGMENT,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.343251, 43.709012],
-    },
-  };
-
-  const studyRequests = [transientStudyRequest1, transientStudyRequest2];
-  const features = studyRequests.map(
-    ({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }),
-  );
-  const s1 = CompositeId.encode(features);
-
-  const transientStudyRequestBulk = {
-    ccEmails: [],
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    name: 'best bulk request ever',
-    reason: StudyRequestReason.TSC,
-    reasonOther: null,
-    s1,
-    selectionType: LocationSelectionType.POINTS,
-    studyRequests,
-    urgent: false,
-    urgentReason: null,
-  };
+  const transientStudyRequestBulk = generateStudyRequestBulk();
 
   // generate second user for multi-user updates
   const transientUser2 = generateUser();
@@ -96,12 +32,10 @@ test('StudyRequestBulkDAO', async () => {
   );
   expect(persistedStudyRequestBulk.id).not.toBeNull();
   expect(persistedStudyRequestBulk.userId).toBe(persistedUser.id);
-  expect(persistedStudyRequestBulk.studyRequests[0].userId).toBe(persistedUser.id);
-  expect(persistedStudyRequestBulk.studyRequests[0].studyRequestBulkId)
-    .toBe(persistedStudyRequestBulk.id);
-  expect(persistedStudyRequestBulk.studyRequests[1].userId).toBe(persistedUser.id);
-  expect(persistedStudyRequestBulk.studyRequests[1].studyRequestBulkId)
-    .toBe(persistedStudyRequestBulk.id);
+  persistedStudyRequestBulk.studyRequests.forEach((studyRequest) => {
+    expect(studyRequest.userId).toBe(persistedUser.id);
+    expect(studyRequest.studyRequestBulkId).toBe(persistedStudyRequestBulk.id);
+  });
   await expect(
     StudyRequestBulk.read.validateAsync(persistedStudyRequestBulk),
   ).resolves.toEqual(persistedStudyRequestBulk);
@@ -152,11 +86,15 @@ test('StudyRequestBulkDAO', async () => {
 
   // update sub-request fields
   persistedStudyRequestBulk.studyRequests[0].studyType = StudyType.TMC;
+  persistedStudyRequestBulk.studyRequests[0].studyTypeOther = null;
   persistedStudyRequestBulk.studyRequests[0].duration = null;
   persistedStudyRequestBulk.studyRequests[0].hours = StudyHours.SCHOOL;
+
   persistedStudyRequestBulk.studyRequests[1].studyType = StudyType.ATR_VOLUME_BICYCLE;
+  persistedStudyRequestBulk.studyRequests[1].studyTypeOther = null;
   persistedStudyRequestBulk.studyRequests[1].duration = 48;
   persistedStudyRequestBulk.studyRequests[1].hours = null;
+
   persistedStudyRequestBulk = await StudyRequestBulkDAO.update(
     persistedStudyRequestBulk,
     persistedUser,
