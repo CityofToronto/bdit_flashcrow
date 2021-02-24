@@ -4,7 +4,7 @@
     max-width="336"
     scrollable>
     <v-card
-      aria-labelledby="heading_dialog_collision_filters"
+      aria-labelledby="heading_dialog_study_filters"
       role="dialog">
       <v-card-title class="shading">
         <h2 class="display-1" id="heading_dialog_study_filters">
