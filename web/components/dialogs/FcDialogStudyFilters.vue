@@ -24,14 +24,16 @@
         <fieldset class="mt-4">
           <legend class="headline">Study Types</legend>
 
-          <v-checkbox
-            v-for="studyType in StudyType.enumValues"
-            :key="studyType.name"
-            v-model="internalFilters.studyTypes"
-            class="mt-2"
-            hide-details
-            :label="studyType.label"
-            :value="studyType"></v-checkbox>
+          <template v-for="studyType in StudyType.enumValues">
+            <v-checkbox
+              v-if="studyType.dataAvailable"
+              :key="studyType.name"
+              v-model="internalFilters.studyTypes"
+              class="mt-2"
+              hide-details
+              :label="studyType.label"
+              :value="studyType"></v-checkbox>
+          </template>
         </fieldset>
 
         <fieldset class="mt-6">

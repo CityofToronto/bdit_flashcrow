@@ -20,6 +20,9 @@
             </dt>
             <dd class="mt-1 display-1">
               {{studyRequest.studyType.label}}
+              <span v-if="study.studyType.other">
+                ({{studyRequest.studyTypeOther}})
+              </span>
             </dd>
           </v-col>
           <v-col class="py-2" cols="6">

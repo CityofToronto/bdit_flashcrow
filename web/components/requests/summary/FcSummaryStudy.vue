@@ -9,7 +9,12 @@
         height="20"
         src="/icons/map/location-single.svg"
         width="16" />
-      <h4 class="headline font-weight-bold">{{study.studyType.label}}</h4>
+      <h4 class="headline font-weight-bold">
+        <span>{{study.studyType.label}}</span>
+        <span v-if="study.studyType.other">
+          ({{study.studyTypeOther}})
+        </span>
+      </h4>
     </v-card-title>
 
     <v-card-text class="default--text">
