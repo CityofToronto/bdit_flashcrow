@@ -2,9 +2,11 @@
   <v-dialog
     v-model="internalValue"
     max-width="560">
-    <v-card role="dialog">
+    <v-card
+      aria-labelledby="heading_dialog_alert"
+      role="dialog">
       <v-card-title class="shading">
-        <h2 class="display-1">{{title}}</h2>
+        <h2 class="display-1" id="heading_dialog_alert">{{title}}</h2>
       </v-card-title>
 
       <v-divider></v-divider>

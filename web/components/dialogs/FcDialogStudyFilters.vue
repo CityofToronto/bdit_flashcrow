@@ -3,9 +3,13 @@
     v-model="internalValue"
     max-width="336"
     scrollable>
-    <v-card role="dialog">
+    <v-card
+      aria-labelledby="heading_dialog_collision_filters"
+      role="dialog">
       <v-card-title class="shading">
-        <h2 class="display-1">Filter Studies</h2>
+        <h2 class="display-1" id="heading_dialog_study_filters">
+          Filter Studies
+        </h2>
         <v-spacer></v-spacer>
         <FcButton
           type="secondary"

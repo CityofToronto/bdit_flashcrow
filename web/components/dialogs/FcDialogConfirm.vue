@@ -3,9 +3,11 @@
     v-model="internalValue"
     class="shading"
     max-width="560">
-    <v-card role="dialog">
+    <v-card
+      aria-labelledby="heading_dialog_confirm"
+      role="dialog">
       <v-card-title>
-        <h2 class="display-1">{{title}}</h2>
+        <h2 class="display-1" id="heading_dialog_confirm">{{title}}</h2>
       </v-card-title>
 
       <v-divider></v-divider>
