@@ -135,7 +135,7 @@ test('StudyRequestBulkController.getStudyRequestBulk', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequestBulk);
 });
 
-test('StudyRequestController.getStudyRequestBulkName', async () => {
+test('StudyRequestBulkController.getStudyRequestBulkName', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
 
@@ -164,7 +164,7 @@ test('StudyRequestController.getStudyRequestBulkName', async () => {
   expect(response.result.name).toEqual(persistedStudyRequestBulk.name);
 });
 
-test('StudyRequestController.getStudyRequestsBulkByLocationsSelectionPending', async () => {
+test('StudyRequestBulkController.getStudyRequestsBulkByLocationsSelectionPending', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
 
