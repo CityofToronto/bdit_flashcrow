@@ -1,5 +1,4 @@
 import {
-  CentrelineType,
   StudyHours,
   StudyRequestReason,
   StudyRequestStatus,
@@ -9,8 +8,8 @@ import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequest from '@/lib/model/StudyRequest';
+import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
-import DateTime from '@/lib/time/DateTime';
 
 afterAll(() => {
   db.$pool.end();
@@ -19,29 +18,8 @@ afterAll(() => {
 test('StudyRequestDAO', async () => {
   const transientUser = generateUser();
   const persistedUser = await UserDAO.create(transientUser);
-  const now = DateTime.local();
-  const transientStudyRequest = {
-    urgent: false,
-    urgentReason: null,
-    assignedTo: null,
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reason: StudyRequestReason.TSC,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.TMC,
-    daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: StudyHours.ROUTINE,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 1729,
-    centrelineType: CentrelineType.INTERSECTION,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.333251, 43.709012],
-    },
-  };
-  const features = [{ centrelineId: 1729, centrelineType: CentrelineType.INTERSECTION }];
+
+  const transientStudyRequest = generateStudyRequest();
 
   // generate second user for multi-user updates
   const transientUser2 = generateUser();
@@ -62,11 +40,11 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // fetch by centreline
-  let fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  let fetchedStudyRequests = await StudyRequestDAO.byCentreline([transientStudyRequest]);
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([transientStudyRequest]);
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by user
@@ -82,7 +60,10 @@ test('StudyRequestDAO', async () => {
   expect(allNonBulk).toContainEqual(persistedStudyRequest);
 
   // update existing study fields
+  persistedStudyRequest.studyType = StudyType.TMC;
+  persistedStudyRequest.studyTypeOther = null;
   persistedStudyRequest.daysOfWeek = [3, 4];
+  persistedStudyRequest.duration = null;
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
@@ -105,6 +86,14 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
   expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
+  // update study type: other
+  persistedStudyRequest.studyType = StudyType.OTHER_MANUAL;
+  persistedStudyRequest.studyTypeOther = 'counting domesticated chickens crossing the road';
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
+
   // set as urgent with second user
   persistedStudyRequest.urgent = true;
   persistedStudyRequest.urgentReason = 'because I said so';
@@ -122,11 +111,11 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // fetch by centreline
-  fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline([transientStudyRequest]);
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([transientStudyRequest]);
   expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // reopen
@@ -136,11 +125,12 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // change study details
-  persistedStudyRequest.studyType = StudyType.TMC;
   persistedStudyRequest.daysOfWeek = [0, 6];
-  persistedStudyRequest.duration = null;
-  persistedStudyRequest.hours = StudyHours.OTHER;
+  persistedStudyRequest.duration = 48;
+  persistedStudyRequest.hours = null;
   persistedStudyRequest.notes = 'complete during shopping mall peak hours';
+  persistedStudyRequest.studyType = StudyType.ATR_SPEED_VOLUME;
+  persistedStudyRequest.studyTypeOther = null;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
@@ -151,11 +141,11 @@ test('StudyRequestDAO', async () => {
   expect(fetchedStudyRequest).toBeNull();
 
   // fetch by centreline
-  fetchedStudyRequests = await StudyRequestDAO.byCentreline(features);
+  fetchedStudyRequests = await StudyRequestDAO.byCentreline([transientStudyRequest]);
   expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending(features);
+  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([transientStudyRequest]);
   expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
 
   // delete: should not work again
