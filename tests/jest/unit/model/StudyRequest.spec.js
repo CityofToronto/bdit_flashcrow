@@ -19,6 +19,7 @@ test('StudyRequest', () => {
     reasonOther: null,
     ccEmails: [],
     studyType: StudyType.TMC,
+    studyTypeOther: null,
     daysOfWeek: [2, 3, 4],
     duration: null,
     hours: StudyHours.ROUTINE,
@@ -155,6 +156,18 @@ test('StudyRequest', () => {
   expect(result.error.details[0].type).toEqual('string.base');
 
   transientStudyRequest.reasonOther = 'i should not have entered this';
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.value).toEqual(transientStudyRequest);
+  expect(result.error).toBeUndefined();
+
+  // other study types should have long-form study type text!
+  transientStudyRequest.studyType = StudyType.OTHER_AUTOMATIC;
+  result = StudyRequest.create.validate(transientStudyRequest);
+  expect(result.error).not.toBeUndefined();
+  expect(result.error.details[0].path).toEqual(['studyTypeOther']);
+  expect(result.error.details[0].type).toEqual('string.base');
+
+  transientStudyRequest.studyTypeOther = 'just your regular, ordinary study type';
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.value).toEqual(transientStudyRequest);
   expect(result.error).toBeUndefined();

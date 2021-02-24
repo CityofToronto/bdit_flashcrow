@@ -54,6 +54,8 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
     expect(getLocationStudyTypes(location)).toEqual([
       StudyType.PED_DELAY,
       StudyType.TMC,
+      StudyType.OTHER_AUTOMATIC,
+      StudyType.OTHER_MANUAL,
     ]);
   });
   RoadSegmentType.enumValues.forEach(({ featureCode }) => {
@@ -63,12 +65,16 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
     };
     const studyTypes = getLocationStudyTypes(location);
     expect(studyTypes).toBeInstanceOf(Array);
+    expect(getLocationStudyTypes(location)).toContain(StudyType.OTHER_AUTOMATIC);
+    expect(getLocationStudyTypes(location)).toContain(StudyType.OTHER_MANUAL);
   });
   let location = {
     centrelineType: CentrelineType.SEGMENT,
     featureCode: null,
   };
   expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
+  expect(getLocationStudyTypes(location)).toContain(StudyType.OTHER_AUTOMATIC);
+  expect(getLocationStudyTypes(location)).toContain(StudyType.OTHER_MANUAL);
 
   location = {
     centrelineType: CentrelineType.SEGMENT,

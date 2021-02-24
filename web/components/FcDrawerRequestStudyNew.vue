@@ -85,6 +85,7 @@ function makeStudyRequest(now, location) {
     reasonOther: null,
     ccEmails: [],
     studyType,
+    studyTypeOther: null,
     daysOfWeek: [2, 3, 4],
     duration,
     hours,
