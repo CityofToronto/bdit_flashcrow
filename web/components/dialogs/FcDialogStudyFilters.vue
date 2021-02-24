@@ -106,7 +106,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import ValidationsFilters from '@/lib/validation/ValidationsFilters';
+import ValidationsStudyFilters from '@/lib/validation/ValidationsStudyFilters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -151,7 +151,7 @@ export default {
     ...mapState(['now']),
   },
   validations: {
-    internalFilters: ValidationsFilters,
+    internalFilters: ValidationsStudyFilters,
   },
   watch: {
     applyDateRange() {

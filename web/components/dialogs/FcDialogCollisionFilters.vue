@@ -64,17 +64,10 @@
             :value="i"></v-checkbox>
         </fieldset>
 
-        <fieldset class="mt-6">
-          <legend class="headline">Time of Day</legend>
-
-          <v-range-slider
-            v-model="internalFilters.hoursOfDay"
-            class="mt-11"
-            hide-details
-            :max="24"
-            :min="0"
-            thumb-label="always"></v-range-slider>
-        </fieldset>
+        <FcFilterHoursOfDay
+          v-model="internalFilters.hoursOfDay"
+          class="mt-6"
+          :error-messages="errorMessagesHoursOfDay" />
 
         <fieldset class="mt-6">
           <legend class="headline">Weather</legend>
@@ -118,7 +111,8 @@ import {
   CollisionRoadSurfaceCondition,
 } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import ValidationsFilters from '@/lib/validation/ValidationsFilters';
+import ValidationsCollisionFilters from '@/lib/validation/ValidationsCollisionFilters';
+import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -129,6 +123,7 @@ export default {
   components: {
     FcButton,
     FcDatePicker,
+    FcFilterHoursOfDay,
   },
   props: {
     filters: Object,
@@ -138,7 +133,10 @@ export default {
       CollisionEmphasisArea,
       CollisionRoadSurfaceCondition,
       DAYS_OF_WEEK: TimeFormatters.DAYS_OF_WEEK,
-      internalFilters: { ...this.filters },
+      internalFilters: {
+        ...this.filters,
+        hoursOfDay: [...this.filters.hoursOfDay],
+      },
     };
   },
   computed: {
@@ -160,10 +158,17 @@ export default {
       }
       return errors;
     },
+    errorMessagesHoursOfDay() {
+      const errors = [];
+      if (!this.$v.internalFilters.hoursOfDay.fromBeforeTo) {
+        errors.push('From hour must be before to hour');
+      }
+      return errors;
+    },
     ...mapState(['now']),
   },
   validations: {
-    internalFilters: ValidationsFilters,
+    internalFilters: ValidationsCollisionFilters,
   },
   watch: {
     applyDateRange() {
