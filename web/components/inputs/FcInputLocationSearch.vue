@@ -8,8 +8,8 @@
       :close-on-content-click="false"
       :offset-y="true"
       :open-on-click="false">
-      <template v-slot:activator="{ attrs, on: onMenu }">
-        <div v-bind="attrs">
+      <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
+        <div v-bind="attrsMenu">
           <v-text-field
             v-model="query"
             :aria-label="query"

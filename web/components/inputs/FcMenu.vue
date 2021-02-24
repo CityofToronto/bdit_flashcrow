@@ -1,15 +1,15 @@
 <template>
   <v-menu :min-width="minWidth">
-    <template v-slot:activator="{ on, attrs }">
+    <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
       <FcButton
         :class="buttonClass"
         :disabled="disabled"
         type="secondary"
         v-bind="{
-          ...attrs,
+          ...attrsMenu,
           ...$attrs,
         }"
-        v-on="on">
+        v-on="onMenu">
         <slot></slot>
         <v-icon right>mdi-menu-down</v-icon>
       </FcButton>

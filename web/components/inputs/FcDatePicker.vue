@@ -8,8 +8,8 @@
       min-width="290px"
       offset-y
       transition="scale-transition">
-      <template v-slot:activator="{ attrs, on: onMenu }">
-        <div v-bind="attrs">
+      <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
+        <div v-bind="attrsMenu">
           <v-text-field
             v-model="valueFormatted"
             append-icon="mdi-calendar"

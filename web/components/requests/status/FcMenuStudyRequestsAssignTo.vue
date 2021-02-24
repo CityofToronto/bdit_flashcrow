@@ -1,6 +1,6 @@
 <template>
   <v-menu>
-    <template v-slot:activator="{ on, attrs }">
+    <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
       <FcButton
         :class="buttonClass"
         :disabled="disabled || !canAssignTo"
@@ -8,10 +8,10 @@
         type="secondary"
         :width="width"
         v-bind="{
-          ...attrs,
+          ...attrsMenu,
           ...$attrs,
         }"
-        v-on="on">
+        v-on="onMenu">
         <span>{{text}}</span>
         <span
           v-if="textScreenReader !== null"

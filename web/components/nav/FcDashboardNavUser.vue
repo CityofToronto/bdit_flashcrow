@@ -22,14 +22,14 @@
       :min-width="140"
       top
       :z-index="100">
-      <template v-slot:activator="{ attrs, on: onMenu }">
+      <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
         <FcTooltip right>
           <template v-slot:activator="{ on: onTooltip }">
             <FcButton
               ref="btn"
               :aria-label="username"
               type="fab-icon"
-              v-bind="attrs"
+              v-bind="attrsMenu"
               v-on="{ ...onMenu, ...onTooltip }">
               <v-icon>mdi-account-circle</v-icon>
             </FcButton>
@@ -49,9 +49,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <FcTooltip
-      v-else
-      right>
+    <FcTooltip v-else right>
       <template v-slot:activator="{ on }">
         <FcButton
           aria-label="Sign In"

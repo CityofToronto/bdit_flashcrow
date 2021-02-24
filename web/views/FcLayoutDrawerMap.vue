@@ -17,9 +17,7 @@
           left>{{iconDrawerToggle}}</v-icon>
         {{labelDrawerToggle}}
       </FcButton>
-      <FcTooltip
-        v-else
-        right>
+      <FcTooltip v-else right>
         <template v-slot:activator="{ on }">
           <FcButton
             :aria-label="labelDrawerToggle"
