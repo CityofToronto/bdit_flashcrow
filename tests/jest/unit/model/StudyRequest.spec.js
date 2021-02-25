@@ -1,36 +1,13 @@
 import {
-  CentrelineType,
   StudyHours,
   StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
 import StudyRequest from '@/lib/model/StudyRequest';
-import DateTime from '@/lib/time/DateTime';
+import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 
 test('StudyRequest', () => {
-  const now = DateTime.local();
-
-  const transientStudyRequest = {
-    urgent: false,
-    urgentReason: null,
-    dueDate: now.plus({ months: 3 }),
-    estimatedDeliveryDate: now.plus({ months: 2, weeks: 3 }),
-    reason: StudyRequestReason.TSC,
-    reasonOther: null,
-    ccEmails: [],
-    studyType: StudyType.TMC,
-    studyTypeOther: null,
-    daysOfWeek: [2, 3, 4],
-    duration: null,
-    hours: StudyHours.ROUTINE,
-    notes: 'completely normal routine turning movement count',
-    centrelineId: 1729,
-    centrelineType: CentrelineType.INTERSECTION,
-    geom: {
-      type: 'Point',
-      coordinates: [-79.333251, 43.709012],
-    },
-  };
+  const transientStudyRequest = generateStudyRequest();
 
   let result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.value).toEqual(transientStudyRequest);
@@ -60,6 +37,8 @@ test('StudyRequest', () => {
   // urgent requests should have an urgent reason!
   transientStudyRequest.daysOfWeek = [2, 3, 4];
   transientStudyRequest.urgent = true;
+  transientStudyRequest.urgentReason = null;
+  transientStudyRequest.ccEmails = [];
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
   expect(result.error.details[0].path).toEqual(['urgentReason']);
@@ -91,7 +70,11 @@ test('StudyRequest', () => {
   expect(result.value).toEqual(transientStudyRequest);
   expect(result.error).toBeUndefined();
 
+  transientStudyRequest.studyType = StudyType.TMC;
+  transientStudyRequest.studyTypeOther = null;
+  transientStudyRequest.duration = null;
   transientStudyRequest.hours = StudyHours.OTHER;
+  transientStudyRequest.notes = 'do this at the eleventh hour';
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.value).toEqual(transientStudyRequest);
   expect(result.error).toBeUndefined();
@@ -141,6 +124,7 @@ test('StudyRequest', () => {
 
   // non-other reasons should not have long-form reason text!
   transientStudyRequest.duration = 72;
+  transientStudyRequest.reason = StudyRequestReason.PED_SAFETY;
   transientStudyRequest.reasonOther = 'i should not have entered this';
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();
