@@ -1,6 +1,8 @@
 {
   "errorLevel": 2,
   "reject": [
-    "mapbox-gl"
+    "@mapbox/mapbox-gl-style-spec",
+    "mapbox-gl",
+    "sass-loader"
   ]
 }

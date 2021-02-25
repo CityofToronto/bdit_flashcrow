@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2021-02-25
+
+### Added
+- Peak Hour Factor reports
+- "Other" study types, for use when requesting new studies
+
+### Changed
+- introduced topbar as potential solution to `<h1>` a11y issues, and to provide natural `<header>`
+- several small changes to email notifications, to reduce number of emails sent around bulk requests and improve copy
+- Track Requests filters now persist across route changes
+
+### Fixed
+- addressed loads of a11y issues: headings, landmarks, semantic markup, screen-reader-only text, `aria-live` notifications, various issues identified through axe
+- several small fixes to study request management: status changes are now much more flexible
+- small fix to CSV export in Track Requests, to address non-ASCII characters in locations
+
+### Removed
+- AADT volume layer is now hidden in frontend
+
 ## [1.1.0] - 2021-01-28
 
 ### Changed
