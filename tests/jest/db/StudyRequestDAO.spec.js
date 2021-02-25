@@ -73,6 +73,7 @@ test('StudyRequestDAO', async () => {
 
   // update request reason
   persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
+  persistedStudyRequest.reasonOther = null;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);

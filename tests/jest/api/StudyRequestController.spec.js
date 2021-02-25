@@ -256,6 +256,7 @@ test('StudyRequestController.putStudyRequest', async () => {
   persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
   persistedStudyRequest.daysOfWeek = [1, 3, 4, 5];
   persistedStudyRequest.studyType = StudyType.TMC;
+  persistedStudyRequest.studyTypeOther = null;
   persistedStudyRequest.duration = null;
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
