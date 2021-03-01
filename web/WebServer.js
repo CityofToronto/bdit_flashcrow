@@ -25,7 +25,8 @@ class WebServer extends MoveServer {
       .addController(StudyRequestController)
       .addController(StudyRequestBulkController)
       .addController(UserController)
-      .enableAuth();
+      .enableAuth()
+      .enableDocs('/api');
   }
 }
 
