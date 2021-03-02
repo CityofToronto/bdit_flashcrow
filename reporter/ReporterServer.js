@@ -8,7 +8,8 @@ class ReporterServer extends MoveServer {
 
     this
       .addInitModule(MovePdfGenerator)
-      .addController(ReportController);
+      .addController(ReportController)
+      .enableDocs('/reporter');
   }
 }
 

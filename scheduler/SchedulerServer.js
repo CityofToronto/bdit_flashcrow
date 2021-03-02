@@ -11,7 +11,8 @@ class SchedulerServer extends MoveServer {
       .addInitModule(JobManager)
       .addController(JobController)
       .addCleanupModule(JobManager)
-      .enableAuth({ csrf: false });
+      .enableAuth({ csrf: false })
+      .enableDocs('/scheduler');
   }
 }
 
