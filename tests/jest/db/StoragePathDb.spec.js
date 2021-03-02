@@ -71,7 +71,7 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     /* eslint-disable-next-line no-await-in-loop */
     const { namespace, key } = await StoragePath.forReport(report);
     expect(namespace).toEqual(StoragePath.NAMESPACE_REPORTS_COLLISION);
-    expect(key.length).toBeLessThanOrEqual(200);
+    expect(key.length).toBeLessThanOrEqual(220);
     expect(key).toMatch(/[A-Z0-9-]+/);
   }
 });
@@ -101,7 +101,7 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     /* eslint-disable-next-line no-await-in-loop */
     const { namespace, key } = await StoragePath.forReport(report);
     expect(namespace).toEqual(StoragePath.NAMESPACE_REPORTS_STUDY);
-    expect(key.length).toBeLessThanOrEqual(200);
+    expect(key.length).toBeLessThanOrEqual(220);
     expect(key).toMatch(/[A-Z0-9-]+/);
   }
 });
@@ -142,7 +142,7 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     expect(namespace).toEqual(StoragePath.NAMESPACE_REPORTS_COLLISION);
     expect(key).toMatch(/[A-Z0-9-]+/);
     storagePaths.forEach(({ key: reportKey }) => {
-      expect(key.length + reportKey.length).toBeLessThanOrEqual(200);
+      expect(key.length + reportKey.length).toBeLessThanOrEqual(220);
     });
   }
 });
@@ -209,7 +209,7 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     expect(namespace).toEqual(StoragePath.NAMESPACE_REPORTS_STUDY);
     expect(key).toMatch(/[A-Z0-9-]+/);
     storagePaths.forEach(({ key: reportKey }) => {
-      expect(key.length + reportKey.length).toBeLessThanOrEqual(200);
+      expect(key.length + reportKey.length).toBeLessThanOrEqual(220);
     });
   }
 });

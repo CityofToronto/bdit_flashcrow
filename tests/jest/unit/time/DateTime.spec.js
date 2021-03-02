@@ -5,6 +5,7 @@ import DateTime from '@/lib/time/DateTime';
 
 const TIME_MIN = 0;
 const TIME_MAX = 1500000000000;
+const TIME_DST_TRANSITION = 719990241967;
 
 test('DateTime.local', () => {
   const dt = DateTime.local();
@@ -45,29 +46,56 @@ test('DateTime#weekday', () => {
   }
 });
 
+test('DateTime [SQL parsing, DST transition]', () => {
+  const t = TIME_DST_TRANSITION;
+  const dt = DateTime.fromMillis(t);
+  const dtSql = dt.toSQL();
+  const dt2 = DateTime.fromSQL(dtSql);
+  expect(dt2.toSQL()).toEqual(dtSql);
+});
+
 test('DateTime [SQL parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
-    const dt2 = DateTime.fromSQL(dt.toSQL());
-    expect(dt2.toMillis()).toBe(t);
+    const dtSql = dt.toSQL();
+    const dt2 = DateTime.fromSQL(dtSql);
+    expect(dt2.toSQL()).toEqual(dtSql);
   }
+});
+
+test('DateTime [JSON parsing, DST transition]', () => {
+  const t = TIME_DST_TRANSITION;
+  const dt = DateTime.fromMillis(t);
+  const dtJson = dt.toSQL();
+  const dt2 = DateTime.fromSQL(dtJson);
+  expect(dt2.toJSON()).toEqual(dtJson);
 });
 
 test('DateTime [JSON parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
-    const dt2 = DateTime.fromJSON(dt.toJSON());
-    expect(dt2.toMillis()).toBe(t);
+    const dtJson = dt.toSQL();
+    const dt2 = DateTime.fromSQL(dtJson);
+    expect(dt2.toJSON()).toEqual(dtJson);
   }
+});
+
+test('DateTime [string parsing, DST transition]', () => {
+  const t = TIME_DST_TRANSITION;
+  const dt = DateTime.fromMillis(t);
+  const dtStr = dt.toString();
+  const dt2 = DateTime.fromString(dtStr);
+  expect(dt2.toString()).toEqual(dtStr);
 });
 
 test('DateTime [string parsing]', () => {
   for (let i = 0; i < 100; i++) {
     const t = Random.range(TIME_MIN, TIME_MAX);
     const dt = DateTime.fromMillis(t);
-    const dt2 = DateTime.fromString(dt.toString());
-    expect(dt2.toMillis()).toBe(t);
+    const dtStr = dt.toString();
+    const dt2 = DateTime.fromString(dtStr);
+    expect(dt2.toString()).toEqual(dtStr);
   }
 });
