@@ -47,7 +47,7 @@ test('CollisionDAO.byCentreline', async () => {
     roadSurfaceConditions: null,
   };
   result = await CollisionDAO.byCentreline(features, collisionQuery);
-  expect(result).toHaveLength(27);
+  expect(result).toHaveLength(26);
 });
 
 test('CollisionDAO.byCentrelineSummary', async () => {
@@ -71,14 +71,14 @@ test('CollisionDAO.byCentrelineSummary', async () => {
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
   ];
   result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
-  expect(result).toEqual({ amount: 27, ksi: 1, validated: 16 });
+  expect(result).toEqual({ amount: 26, ksi: 1, validated: 16 });
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
   ];
   result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
-  expect(result).toEqual({ amount: 58, ksi: 1, validated: 42 });
+  expect(result).toEqual({ amount: 57, ksi: 1, validated: 42 });
 });
 
 test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
@@ -102,7 +102,7 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
   ];
   result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
-  expect(result).toEqual([{ amount: 27, ksi: 1, validated: 16 }]);
+  expect(result).toEqual([{ amount: 26, ksi: 1, validated: 16 }]);
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
@@ -111,7 +111,7 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
   result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
   expect(result).toEqual([
     { amount: 31, ksi: 0, validated: 26 },
-    { amount: 27, ksi: 1, validated: 16 },
+    { amount: 26, ksi: 1, validated: 16 },
   ]);
 
   features = [
@@ -122,7 +122,7 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
   result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
   expect(result).toEqual([
     { amount: 31, ksi: 0, validated: 26 },
-    { amount: 27, ksi: 1, validated: 16 },
+    { amount: 26, ksi: 1, validated: 16 },
     { amount: 31, ksi: 0, validated: 26 },
   ]);
 });
@@ -138,7 +138,7 @@ test('CollisionDAO.byCentrelineTotal', async () => {
     { centrelineId: 13465434, centrelineType: CentrelineType.INTERSECTION },
   ];
   result = await CollisionDAO.byCentrelineTotal(features);
-  expect(result).toBeGreaterThanOrEqual(188);
+  expect(result).toBeGreaterThanOrEqual(184);
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },

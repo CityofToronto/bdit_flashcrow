@@ -64,7 +64,7 @@ test('CollisionController.getCollisionsByCentreline', async () => {
   };
   response = await client.fetch('/collisions/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toHaveLength(27);
+  expect(response.result).toHaveLength(26);
 });
 
 test('CollisionController.getCollisionsByCentrelineSummary', async () => {
@@ -101,7 +101,7 @@ test('CollisionController.getCollisionsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/collisions/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({ amount: 27, ksi: 1, validated: 16 });
+  expect(response.result).toEqual({ amount: 26, ksi: 1, validated: 16 });
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
@@ -118,7 +118,7 @@ test('CollisionController.getCollisionsByCentrelineSummary', async () => {
   };
   response = await client.fetch('/collisions/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual({ amount: 58, ksi: 1, validated: 42 });
+  expect(response.result).toEqual({ amount: 57, ksi: 1, validated: 42 });
 });
 
 test('CollisionController.getCollisionsByCentrelineSummaryPerLocation', async () => {
@@ -155,7 +155,7 @@ test('CollisionController.getCollisionsByCentrelineSummaryPerLocation', async ()
   };
   response = await client.fetch('/collisions/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result).toEqual([{ amount: 27, ksi: 1, validated: 16 }]);
+  expect(response.result).toEqual([{ amount: 26, ksi: 1, validated: 16 }]);
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
@@ -174,7 +174,7 @@ test('CollisionController.getCollisionsByCentrelineSummaryPerLocation', async ()
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result).toEqual([
     { amount: 31, ksi: 0, validated: 26 },
-    { amount: 27, ksi: 1, validated: 16 },
+    { amount: 26, ksi: 1, validated: 16 },
   ]);
 });
 
@@ -195,7 +195,7 @@ test('CollisionController.getCollisionsByCentrelineTotal', async () => {
   data = { s1 };
   response = await client.fetch('/collisions/byCentreline/total', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.total).toBeGreaterThanOrEqual(188);
+  expect(response.result.total).toBeGreaterThanOrEqual(184);
 
   features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
