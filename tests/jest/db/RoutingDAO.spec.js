@@ -161,7 +161,7 @@ test('RoutingDAO.routeFeatures', async () => {
   featureTo = { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT };
   result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
   expect(result).toEqual({
-    next: { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    next: { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
     route: [
       { centrelineId: 445623, centrelineType: CentrelineType.SEGMENT },
       { centrelineId: 13455700, centrelineType: CentrelineType.INTERSECTION },
@@ -180,8 +180,6 @@ test('RoutingDAO.routeFeatures', async () => {
   expect(result).toEqual({
     next: featureTo,
     route: [
-      { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
-      featureFrom,
       { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
       { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
       featureTo,
@@ -193,7 +191,7 @@ test('RoutingDAO.routeFeatures', async () => {
   featureTo = { centrelineId: 444912, centrelineType: CentrelineType.SEGMENT };
   result = await RoutingDAO.routeFeatures(featureFrom, featureTo);
   expect(result).toEqual({
-    next: { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
+    next: { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
     route: [
       { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
       { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
@@ -261,8 +259,6 @@ test('RoutingDAO.routeCorridor', async () => {
     { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
     { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
     features[3],
-    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
-    features[3],
     { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 444715, centrelineType: CentrelineType.SEGMENT },
     features[4],
@@ -288,8 +284,6 @@ test('RoutingDAO.routeCorridor', async () => {
     features[3],
     { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
-    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
-    features[4],
     { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
     features[4],
     { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
@@ -320,8 +314,6 @@ test('RoutingDAO.routeCorridor', async () => {
     features[3],
     { centrelineId: 13455359, centrelineType: CentrelineType.INTERSECTION },
     { centrelineId: 445100, centrelineType: CentrelineType.SEGMENT },
-    { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
-    features[4],
     { centrelineId: 13455130, centrelineType: CentrelineType.INTERSECTION },
     features[4],
     { centrelineId: 13454835, centrelineType: CentrelineType.INTERSECTION },
