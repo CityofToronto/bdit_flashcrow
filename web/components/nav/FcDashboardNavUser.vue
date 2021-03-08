@@ -1,5 +1,6 @@
 <template>
-  <div class="text-center pb-2">
+  <div
+    class="fc-dashboard-nav-user text-center pb-2">
     <div class="d-none">
       <form
         v-if="auth.loggedIn"
@@ -20,7 +21,7 @@
       v-if="auth.loggedIn"
       :attach="$el"
       :min-width="140"
-      top
+      right
       :z-index="100">
       <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
         <FcTooltip right>
@@ -110,6 +111,10 @@ export default {
 </script>
 
 <style lang="scss">
+.fc-dashboard-nav-user {
+  position: relative;
+}
+
 #fc_menu_user {
   background: white;
 }
