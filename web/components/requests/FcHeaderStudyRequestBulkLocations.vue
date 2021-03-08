@@ -116,20 +116,25 @@ export default {
       });
     },
     itemsStudyType() {
-      const itemsStudyType = this.locationsStudyTypes.map((studyType) => {
+      return this.locationsStudyTypes.map((studyType) => {
         const { label } = studyType;
         return { text: label, value: studyType };
       });
-      return ArrayUtils.sortBy(itemsStudyType, ({ label }) => label);
     },
     locationsStudyTypes() {
       let locationIndices = this.indices;
       if (this.internalValue.length > 0) {
         locationIndices = this.internalValue;
       }
-      return StudyType.enumValues.filter(studyType => locationIndices.some(
-        i => getLocationStudyTypes(this.locations[i]).includes(studyType),
-      ));
+      const locationsStudyTypes = StudyType.enumValues.filter(
+        studyType => locationIndices.some(
+          i => getLocationStudyTypes(this.locations[i]).includes(studyType),
+        ),
+      );
+      return [
+        ...locationsStudyTypes,
+        StudyType.OTHER_MANUAL,
+      ];
     },
     selectAll: {
       get() {
@@ -205,7 +210,7 @@ export default {
       const indicesUnactionable = [];
       this.internalValue.forEach((i) => {
         const studyTypes = getLocationStudyTypes(this.locations[i]);
-        if (studyTypes.includes(studyType)) {
+        if (studyType.other || studyTypes.includes(studyType)) {
           this.studyRequests[i].studyType = studyType;
         } else {
           indicesUnactionable.push(i);

@@ -161,7 +161,8 @@ function cardStudyRequestInvalid(v) {
     || v.duration.$invalid
     || v.hours.$invalid
     || v.notes.$invalid
-    || v.studyType.$invalid;
+    || v.studyType.$invalid
+    || v.studyTypeOther.$invalid;
 }
 
 export default {
