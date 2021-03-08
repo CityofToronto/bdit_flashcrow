@@ -24,14 +24,21 @@
         <fieldset class="mt-4">
           <legend class="headline">Study Types</legend>
 
+          <template v-for="studyType in StudyType.enumValues">
+            <v-checkbox
+              v-if="!studyType.other"
+              :key="studyType.name"
+              v-model="internalFilters.studyTypes"
+              class="mt-2"
+              hide-details
+              :label="studyType.label"
+              :value="studyType"></v-checkbox>
+          </template>
           <v-checkbox
-            v-for="studyType in StudyType.enumValues"
-            :key="studyType.name"
-            v-model="internalFilters.studyTypes"
+            v-model="internalFilters.studyTypeOther"
             class="mt-2"
             hide-details
-            :label="studyType.label"
-            :value="studyType"></v-checkbox>
+            label="Other"></v-checkbox>
         </fieldset>
 
         <fieldset class="mt-6">
@@ -162,6 +169,7 @@ export default {
         lastEditedAt: 0,
         statuses: [],
         studyTypes: [],
+        studyTypeOther: false,
         userOnly: false,
       };
     },

@@ -18,6 +18,16 @@
         @click="actionCallback">
         {{action}}
       </FcButton>
+      <FcButton
+        class="ml-2"
+        color="white"
+        :disabled="loading"
+        :loading="loading"
+        type="tertiary"
+        v-bind="attrs"
+        @click="clearToast">
+        Close
+      </FcButton>
     </template>
   </v-snackbar>
 </template>

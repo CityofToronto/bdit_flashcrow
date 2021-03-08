@@ -16,6 +16,7 @@ export default {
       lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
+      studyTypeOther: false,
       userOnly: false,
     },
     filtersRequestUserOnlyInited: false,
@@ -33,6 +34,7 @@ export default {
         lastEditedAt,
         statuses,
         studyTypes,
+        studyTypeOther,
         userOnly,
       } = state.filtersRequest;
       const filterChipsRequest = [];
@@ -41,6 +43,10 @@ export default {
         const filterChip = { filter: 'studyTypes', label, value: studyType };
         filterChipsRequest.push(filterChip);
       });
+      if (studyTypeOther) {
+        const filterChip = { filter: 'studyTypeOther', label: 'Other', value: true };
+        filterChipsRequest.push(filterChip);
+      }
       statuses.forEach((status) => {
         const label = status.text;
         const filterChip = { filter: 'statuses', label, value: status };
@@ -66,7 +72,7 @@ export default {
         filterChipsRequest.push(filterChip);
       }
       if (userOnly) {
-        const filterChip = { filter: 'userOnly', label: 'User', value: true };
+        const filterChip = { filter: 'userOnly', label: 'Requested by me', value: true };
         filterChipsRequest.push(filterChip);
       }
       return filterChipsRequest;
@@ -83,6 +89,8 @@ export default {
         state.filtersRequest.createdAt = 0;
       } else if (filter === 'lastEditedAt') {
         state.filtersRequest.lastEditedAt = 0;
+      } else if (filter === 'studyTypeOther') {
+        state.filtersRequest.studyTypeOther = false;
       } else if (filter === 'userOnly') {
         state.filtersRequest.userOnly = false;
       } else {

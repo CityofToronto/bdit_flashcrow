@@ -35,6 +35,7 @@ const SHORTCUT_CHIPS = [
       lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
+      studyTypeOther: false,
     },
     label: 'All',
   }, {
@@ -45,6 +46,7 @@ const SHORTCUT_CHIPS = [
       lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
+      studyTypeOther: false,
     },
     label: 'New',
   }, {
@@ -55,6 +57,7 @@ const SHORTCUT_CHIPS = [
       lastEditedAt: -1,
       statuses: [],
       studyTypes: [],
+      studyTypeOther: false,
     },
     label: 'Recently Updated',
   }, {
@@ -65,6 +68,7 @@ const SHORTCUT_CHIPS = [
       lastEditedAt: 0,
       statuses: [StudyRequestStatus.CANCELLED],
       studyTypes: [],
+      studyTypeOther: false,
     },
     label: 'Cancelled',
   }, {
@@ -75,6 +79,7 @@ const SHORTCUT_CHIPS = [
       lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
+      studyTypeOther: false,
     },
     label: 'Closed',
   },
@@ -94,7 +99,8 @@ function filtersMatchShortcutChip(filters, { filters: chipFilters }) {
     && filters.createdAt === chipFilters.createdAt
     && filters.lastEditedAt === chipFilters.lastEditedAt
     && filterArrayMatches(filters.statuses, chipFilters.statuses)
-    && filterArrayMatches(filters.studyTypes, chipFilters.studyTypes);
+    && filterArrayMatches(filters.studyTypes, chipFilters.studyTypes)
+    && filters.studyTypeOther === chipFilters.studyTypeOther;
 }
 
 export default {
