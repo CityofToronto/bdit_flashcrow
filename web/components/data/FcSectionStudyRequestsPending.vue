@@ -8,7 +8,12 @@
         color="warning"
         left>mdi-information</v-icon>
       <span>
-        <strong>{{studyRequest.studyType.label}}</strong>
+        <strong>
+          {{studyRequest.studyType.label}}
+          <span v-if="studyRequest.studyType.other">
+            ({{studyRequest.studyTypeOther}})
+          </span>
+        </strong>
         has been requested on {{studyRequest.createdAt | date}}.
         <router-link :to="{
           name: 'requestStudyView',
