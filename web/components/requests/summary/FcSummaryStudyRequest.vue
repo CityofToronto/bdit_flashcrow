@@ -11,7 +11,7 @@
       </v-col>
       <v-col cols="6">
         <template v-if="!isCreate">
-          <dt class="subtitle-1">Submitted</dt>
+          <dt class="subtitle-1">Date Requested</dt>
           <dd class="mt-1 display-1">
             {{studyRequest.createdAt | date}}
           </dd>
@@ -19,7 +19,7 @@
       </v-col>
 
       <v-col cols="6">
-        <dt class="subtitle-1">Reason</dt>
+        <dt class="subtitle-1">Reason for Request</dt>
         <dd class="mt-1 display-1">
           <span>{{studyRequest.reason.text}}</span>
           <span v-if="studyRequest.reason === StudyRequestReason.OTHER">
@@ -28,7 +28,7 @@
         </dd>
       </v-col>
       <v-col cols="6">
-        <dt class="subtitle-1">Due Date</dt>
+        <dt class="subtitle-1">Expected By</dt>
         <dd class="mt-1 display-1">
           {{studyRequest.dueDate | date}}
         </dd>
@@ -41,13 +41,13 @@
         <dd v-else>
           <v-messages
             class="mt-1"
-            :value="['Standard times to request counts are 2-3 months.']" />
+            :value="[REQUEST_STUDY_TIME_TO_FULFILL_SHORT.text]" />
         </dd>
       </v-col>
 
       <v-col cols="6">
         <template v-if="!isCreate">
-          <dt class="subtitle-1">Assigned To</dt>
+          <dt class="subtitle-1">Assignee</dt>
           <dd class="mt-1 display-1">
             {{assignedToStr}}
           </dd>
@@ -55,7 +55,7 @@
       </v-col>
       <v-col cols="6">
         <template v-if="!isCreate">
-          <dt class="subtitle-1">Staff Informed</dt>
+          <dt class="subtitle-1">Additional Emails Subscribed</dt>
           <dd class="mt-1 display-1">
             <v-chip
               v-for="(ccEmail, i) in studyRequest.ccEmails"
@@ -66,12 +66,15 @@
               small>
               <span>{{ccEmail}}</span>
             </v-chip>
+            <span v-if="studyRequest.ccEmails.length === 0">
+              None
+            </span>
           </dd>
         </template>
       </v-col>
 
       <v-col cols="12">
-        <dt class="subtitle-1">Additional Information</dt>
+        <dt class="subtitle-1">Notes</dt>
         <dd class="mt-1 display-1">
           <span v-if="studyRequest.urgentReason">
             {{studyRequest.urgentReason}}
@@ -87,6 +90,7 @@
 import { mapState } from 'vuex';
 
 import { StudyRequestReason } from '@/lib/Constants';
+import { REQUEST_STUDY_TIME_TO_FULFILL_SHORT } from '@/lib/i18n/Strings';
 import { bulkAssignedToStr } from '@/lib/requests/RequestStudyBulkUtils';
 
 export default {
@@ -104,6 +108,7 @@ export default {
   },
   data() {
     return {
+      REQUEST_STUDY_TIME_TO_FULFILL_SHORT,
       StudyRequestReason,
     };
   },

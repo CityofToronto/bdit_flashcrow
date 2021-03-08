@@ -63,7 +63,7 @@
           </v-col>
           <v-col class="py-2" cols="12">
             <dt class="subtitle-1">
-              Additional Information
+              Notes
             </dt>
             <dd class="mt-1 display-1">
               <span v-if="studyRequest.notes">{{studyRequest.notes}}</span>

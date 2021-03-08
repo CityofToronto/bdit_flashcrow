@@ -2,7 +2,7 @@
   <FcTextarea
     v-model="internalNotes"
     :error-messages="errorMessagesNotes"
-    label="Additional Information"
+    label="Notes"
     :messages="messagesNotes"
     v-bind="$attrs"
     @blur="v.notes.$touch()" />

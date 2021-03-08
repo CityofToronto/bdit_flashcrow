@@ -20,12 +20,14 @@
               Request Details
             </h3>
 
-            <div class="subtitle-1 pb-2">Status</div>
-            <FcStatusStudyRequests
-              class="my-2"
-              :created-at="studyRequestBulk.createdAt"
-              :study-requests="studyRequestBulk.studyRequests"
-              :study-request-changes="studyRequestChanges" />
+            <div class="pt-2 pb-4">
+              <div class="subtitle-1 pb-2">Status</div>
+              <FcStatusStudyRequests
+                class="mt-2 mb-4"
+                :created-at="studyRequestBulk.createdAt"
+                :study-requests="studyRequestBulk.studyRequests"
+                :study-request-changes="studyRequestChanges" />
+            </div>
           </v-col>
           <v-col cols="6">
             <FcSummaryStudyRequest

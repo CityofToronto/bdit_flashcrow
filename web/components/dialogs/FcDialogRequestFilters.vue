@@ -53,13 +53,13 @@
         </fieldset>
 
         <fieldset class="mt-6">
-          <legend class="headline">Assigned To</legend>
+          <legend class="headline">Assignee</legend>
 
           <v-checkbox
             v-model="internalFilters.assignees"
             class="mt-2"
             hide-details
-            label="None"
+            label="Unassigned"
             :value="null"></v-checkbox>
           <v-checkbox
             v-for="assignee in StudyRequestAssignee.enumValues"
@@ -81,7 +81,7 @@
             { label: 'At least 3 months ago', value: 3 },
             { label: 'All', value: 0 },
           ]"
-          label="Date Created" />
+          label="Date Requested" />
 
         <FcRadioGroup
           v-model="internalFilters.lastEditedAt"
@@ -100,8 +100,8 @@
           class="mt-6"
           hide-details
           :items="[
+            { label: 'Requested by me', value: true },
             { label: 'All', value: false },
-            { label: 'User', value: true },
           ]"
           label="Requester" />
       </v-card-text>

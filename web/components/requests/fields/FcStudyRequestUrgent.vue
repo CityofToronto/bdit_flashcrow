@@ -21,7 +21,7 @@
             class="mt-3"
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
-            label="Due Date (YYYY-MM-DD)"
+            label="Expected By (YYYY-MM-DD)"
             :max="maxDueDate"
             :min="minDueDate"
             outlined
@@ -37,7 +37,7 @@
           <FcInputTextArray
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
-            label="Inform Other Staff"
+            label="Additional Emails Subscribed"
             :messages="messagesCcEmails"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
@@ -49,7 +49,7 @@
         v-model="v.urgentReason.$model"
         class="mt-3"
         :error-messages="errorMessagesUrgentReason"
-        label="Additional Information"
+        label="Notes"
         :messages="messagesUrgentReason"
         :success="v.urgent.$model && !v.urgentReason.$invalid"
         @blur="v.urgentReason.$touch()" />
