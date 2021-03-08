@@ -5,21 +5,12 @@
       aria-label="Loading points of interest near this location"
       silent
       small />
-    <dl v-else-if="poiSummary.hospital !== null || poiSummary.school !== null">
+    <dl v-else-if="poiChips.length > 0">
       <FcSummaryPoiChip
-        v-if="poiSummary.hospital !== null"
+        v-for="(poiChip, i) in poiChips"
+        :key="i"
         class="mr-2"
-        color="pink"
-        icon="mdi-hospital-box"
-        :poi="poiSummary.hospital"
-        text="Hospital" />
-      <FcSummaryPoiChip
-        v-if="poiSummary.school !== null"
-        class="mr-2"
-        color="teal"
-        icon="mdi-school"
-        :poi="poiSummary.school"
-        text="School Zone" />
+        v-bind="poiChip" />
     </dl>
   </div>
 </template>
@@ -44,8 +35,50 @@ export default {
       poiSummary: {
         hospital: null,
         school: null,
+        trafficSignal: null,
       },
     };
+  },
+  computed: {
+    poiChips() {
+      const poiChips = [];
+
+      const { hospital, school, trafficSignal } = this.poiSummary;
+      if (hospital !== null) {
+        const poiDistance = Math.round(hospital.geom_dist);
+        const ariaLabel = `${poiDistance} m`;
+        const poiChip = {
+          ariaLabel,
+          color: 'pink',
+          icon: 'mdi-hospital-box',
+          text: 'Hospital',
+        };
+        poiChips.push(poiChip);
+      }
+      if (school !== null) {
+        const poiDistance = Math.round(school.geom_dist);
+        const ariaLabel = `${poiDistance} m`;
+        const poiChip = {
+          ariaLabel,
+          color: 'teal',
+          icon: 'mdi-school',
+          text: 'School Zone',
+        };
+        poiChips.push(poiChip);
+      }
+      if (trafficSignal !== null) {
+        const ariaLabel = `PX ${trafficSignal.px}`;
+        const poiChip = {
+          ariaLabel,
+          color: 'purple',
+          icon: 'mdi-traffic-light',
+          text: 'Traffic Signal',
+        };
+        poiChips.push(poiChip);
+      }
+
+      return poiChips;
+    },
   },
   watch: {
     location() {

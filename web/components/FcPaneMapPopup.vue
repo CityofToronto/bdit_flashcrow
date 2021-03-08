@@ -52,6 +52,7 @@ import { formatCountLocationDescription } from '@/lib/StringFormatters';
 import {
   getCollisionByCollisionId,
   getLocationByCentreline,
+  getPoiByCentrelineSummary,
   getStudiesByCentrelineSummary,
 } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
@@ -123,11 +124,16 @@ function getCollisionIcon(feature, { involved }) {
 
 async function getCentrelineDetails(feature, centrelineType) {
   const { centrelineId } = feature.properties;
-  const location = await getLocationByCentreline({ centrelineId, centrelineType });
-  return { location };
+
+  const tasks = [
+    getLocationByCentreline({ centrelineId, centrelineType }),
+    getPoiByCentrelineSummary({ centrelineId, centrelineType }),
+  ];
+  const [location, poiSummary] = await Promise.all(tasks);
+  return { location, poiSummary };
 }
 
-function getLocationDescription(location) {
+function getLocationDescription(location, poiSummary) {
   if (location === null) {
     /*
      * Fallback in case this study refers to a location that has been removed from the
@@ -136,16 +142,21 @@ function getLocationDescription(location) {
     return MSG_LOCATION_REMOVED;
   }
   const locationFeatureType = getLocationFeatureType(location);
-  if (locationFeatureType === null) {
-    return location.description;
+  let trafficSignal = '';
+  if (poiSummary.trafficSignal !== null) {
+    trafficSignal = ` (PX ${poiSummary.trafficSignal.px})`;
   }
-  return `${locationFeatureType.description} \u00b7 ${location.description}`;
+
+  if (locationFeatureType === null) {
+    return `${location.description}${trafficSignal}`;
+  }
+  return `${locationFeatureType.description} \u00b7 ${location.description}${trafficSignal}`;
 }
 
-function getCentrelineDescription(feature, { location }) {
+function getCentrelineDescription(feature, { location, poiSummary }) {
   const description = [];
 
-  const locationStr = getLocationDescription(location);
+  const locationStr = getLocationDescription(location, poiSummary);
   description.push(locationStr);
 
   // TODO: add AADT back here once model accuracy improves
@@ -181,13 +192,14 @@ async function getStudyDetails(feature) {
   const { centrelineId, centrelineType } = feature.properties;
   const tasks = [
     getLocationByCentreline({ centrelineId, centrelineType }),
+    getPoiByCentrelineSummary({ centrelineId, centrelineType }),
     getStudiesByCentrelineSummary([{ centrelineId, centrelineType }], {}),
   ];
-  const [location, studySummary] = await Promise.all(tasks);
-  return { location, studySummary };
+  const [location, poiSummary, studySummary] = await Promise.all(tasks);
+  return { location, poiSummary, studySummary };
 }
 
-function getStudyDescription(feature, { location, studySummary }) {
+function getStudyDescription(feature, { location, poiSummary, studySummary }) {
   const description = [];
 
   studySummary.forEach(({ category: { studyType }, mostRecent }) => {
@@ -202,7 +214,7 @@ function getStudyDescription(feature, { location, studySummary }) {
     description.push(studyStr);
   });
 
-  const locationStr = getLocationDescription(location);
+  const locationStr = getLocationDescription(location, poiSummary);
   description.push(locationStr);
 
   return description;

@@ -13,9 +13,9 @@
           {{text}}
         </v-chip>
       </template>
-      <span>{{poiDistance}} m</span>
+      <span>{{ariaLabel}}</span>
     </FcTooltip>
-    <dd class="sr-only">{{poiDistance}} m</dd>
+    <dd class="sr-only">{{ariaLabel}}</dd>
   </div>
 </template>
 
@@ -28,15 +28,10 @@ export default {
     FcTooltip,
   },
   props: {
+    ariaLabel: String,
     color: String,
     icon: String,
-    poi: Object,
     text: String,
-  },
-  computed: {
-    poiDistance() {
-      return Math.round(this.poi.geom_dist);
-    },
   },
 };
 </script>
