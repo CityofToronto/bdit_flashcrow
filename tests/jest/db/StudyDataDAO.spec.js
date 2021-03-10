@@ -21,7 +21,10 @@ test('StudyDataDAO [TMC]', async () => {
   // TMC
   const study = await StudyDAO.byCategoryAndCountGroup(5, 26177);
   const result = await StudyDataDAO.byStudy(study);
-  const countData = countData_5_26177.map(({ t, data }) => ({ t, data }));
+  const countData = countData_5_26177.map(({ t, data }) => ({
+    t: t.minus({ minutes: 15 }),
+    data,
+  }));
   expect(result.studyData).toEqual(new Map([
     [26177, countData],
   ]));
