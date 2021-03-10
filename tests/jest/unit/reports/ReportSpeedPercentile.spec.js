@@ -5,11 +5,8 @@ import { CardinalDirection, SPEED_CLASSES } from '@/lib/Constants';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
-import DateTime from '@/lib/time/DateTime';
+import { setup_4_2156283 } from '@/tests/jest/unit/reports/data/SetupTestData';
 
-const countData_4_2156283 = loadJsonSync(
-  path.resolve(__dirname, './data/countData_4_2156283.json'),
-);
 const transformedData_SPEED_PERCENTILE_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_SPEED_PERCENTILE_4_2156283.json'),
 );
@@ -57,21 +54,16 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
    * Replicating TraxPro's histogram calculation *exactly* is difficult, so we
    * tolerate some deviation from legacy report values.
    */
-  const countDate = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
-  const counts = [{
-    arteryCode: 42,
-    date: countDate,
-    id: 17,
-  }];
-  const arteries = new Map([[42, {
-    approachDir: CardinalDirection.NORTH,
-  }]]);
-  const studyData = new Map([[17, countData_4_2156283]]);
-
-  let transformedData = reportInstance.transformData(null, { arteries, counts, studyData });
+  const {
+    arteries,
+    counts,
+    study,
+    studyData,
+  } = setup_4_2156283();
+  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
-  expect(date.equals(countDate)).toBe(true);
+  expect(date.equals(study.date)).toBe(true);
   expect(direction).toBe(CardinalDirection.NORTH);
   transformedData = stats;
 
@@ -128,24 +120,14 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
 test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
   const reportInstance = new ReportSpeedPercentile();
 
-  const count = {
-    date: DateTime.fromSQL('2019-03-07 00:00:00'),
-    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-    type: { name: 'SPEED' },
-  };
-
-  const countDate = DateTime.fromObject({ year: 2019, month: 3, day: 7 });
-  const counts = [{
-    arteryCode: 42,
-    date: countDate,
-    id: 17,
-  }];
-  const arteries = new Map([[42, {
-    approachDir: CardinalDirection.NORTH,
-  }]]);
-  const studyData = new Map([[17, countData_4_2156283]]);
-  const transformedData = reportInstance.transformData(count, { arteries, counts, studyData });
+  const {
+    arteries,
+    counts,
+    study,
+    studyData,
+  } = setup_4_2156283();
+  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(() => {
-    reportInstance.generateCsv(count, transformedData);
+    reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
 });

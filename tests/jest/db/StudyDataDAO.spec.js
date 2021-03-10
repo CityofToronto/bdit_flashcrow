@@ -17,19 +17,21 @@ afterAll(() => {
   db.$pool.end();
 });
 
-test('StudyDataDAO', async () => {
+test('StudyDataDAO [TMC]', async () => {
   // TMC
-  let study = await StudyDAO.byCategoryAndCountGroup(5, 26177);
-  let result = await StudyDataDAO.byStudy(study);
-  let countData = countData_5_26177.map(({ t, data }) => ({ t, data }));
+  const study = await StudyDAO.byCategoryAndCountGroup(5, 26177);
+  const result = await StudyDataDAO.byStudy(study);
+  const countData = countData_5_26177.map(({ t, data }) => ({ t, data }));
   expect(result.studyData).toEqual(new Map([
     [26177, countData],
   ]));
+});
 
+test('StudyDataDAO [ATR]', async () => {
   // non-TMC, speed-related
-  study = await StudyDAO.byCategoryAndCountGroup(4, 1415698);
-  result = await StudyDataDAO.byStudy(study);
-  countData = countData_4_1415698.map(({ t, data }) => ({ t, data }));
+  const study = await StudyDAO.byCategoryAndCountGroup(4, 1415698);
+  const result = await StudyDataDAO.byStudy(study);
+  const countData = countData_4_1415698.map(({ t, data }) => ({ t, data }));
   expect(result.studyData).toEqual(new Map([
     [1415698, countData],
   ]));

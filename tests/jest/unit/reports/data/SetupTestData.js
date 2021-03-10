@@ -1,13 +1,56 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { StudyHours } from '@/lib/Constants';
+import {
+  CardinalDirection,
+  StudyHours,
+  StudyType,
+} from '@/lib/Constants';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import DateTime from '@/lib/time/DateTime';
+
+function mapTmcCountData(countData) {
+  return countData.map(({ t, ...rest }) => {
+    const start = t.minus({ minutes: 15 });
+    return { t: start, ...rest };
+  });
+}
+
+function setup_4_2156283() {
+  const countData_4_2156283 = loadJsonSync(
+    path.resolve(__dirname, 'countData_4_2156283.json'),
+  );
+
+  const artery = {
+    approachDir: CardinalDirection.NORTH,
+    arteryCode: 2946,
+    stationCode: 2946,
+    street1: 'MORNINGSIDE AVE',
+  };
+  const count = {
+    arteryCode: 2946,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    id: 17,
+    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
+    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+  };
+  const counts = [count];
+  const arteries = new Map([[2946, artery]]);
+  const studyData = new Map([[17, countData_4_2156283]]);
+
+  return {
+    arteries,
+    counts,
+    study: count,
+    studyData,
+  };
+}
 
 function setup_5_34621_directional() {
   const countData_5_34621 = loadJsonSync(
     path.join(__dirname, 'countData_5_34621.json'),
   );
+  const countData = mapTmcCountData(countData_5_34621);
 
   const count = {
     hours: StudyHours.ROUTINE,
@@ -99,9 +142,31 @@ function setup_5_34621_directional() {
 
   return {
     count,
-    countData: countData_5_34621,
+    countData,
     intersection,
     segments,
+  };
+}
+
+function setup_5_36781() {
+  const countData_5_36781 = loadJsonSync(
+    path.resolve(__dirname, 'countData_5_36781.json'),
+  );
+  const countData = mapTmcCountData(countData_5_36781);
+
+  const count = {
+    date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    hours: StudyHours.SCHOOL,
+    id: 1,
+    locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
+    type: { studyType: StudyType.TMC },
+  };
+  const studyData = new Map([[1, countData]]);
+
+  return {
+    count,
+    counts: [count],
+    studyData,
   };
 }
 
@@ -109,8 +174,10 @@ function setup_5_38661_directional() {
   const countData_5_38661 = loadJsonSync(
     path.join(__dirname, 'countData_5_38661.json'),
   );
+  const countData = mapTmcCountData(countData_5_38661);
 
   const count = {
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
     hours: StudyHours.ROUTINE,
     id: 38661,
     locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
@@ -196,7 +263,7 @@ function setup_5_38661_directional() {
 
   return {
     count,
-    countData: countData_5_38661,
+    countData,
     intersection,
     segments,
   };
@@ -206,12 +273,16 @@ function setup_5_38661_directional() {
  * @namespace
  */
 const SetupTestData = {
+  setup_4_2156283,
   setup_5_34621_directional,
+  setup_5_36781,
   setup_5_38661_directional,
 };
 
 export {
   SetupTestData as default,
+  setup_4_2156283,
   setup_5_34621_directional,
+  setup_5_36781,
   setup_5_38661_directional,
 };
