@@ -16,8 +16,8 @@ expect.extend({
 });
 
 function expectPeakHourFactorsMatch(actual, expected) {
-  expect(actual.timeRange.start.equals(expected.timeRange.start)).toBe(true);
-  expect(actual.timeRange.end.equals(expected.timeRange.end)).toBe(true);
+  expect(actual.timeRange.start.toString()).toEqual(expected.timeRange.start.toString());
+  expect(actual.timeRange.end.toString()).toEqual(expected.timeRange.end.toString());
   Object.keys(expected.movement).forEach((key) => {
     expect(actual.movement[key]).toBeWithinTolerance(expected.movement[key], 0.001);
   });
