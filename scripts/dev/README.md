@@ -165,6 +165,12 @@ You'll also need to manually load the `collision_factors` schema:
 psql -U flashcrow < ~/flashcrow/scripts/test/db/collision_factors.sql
 ```
 
+Finally, you'll need to run this command so the `pgrouting` function `pgr_astar` works properly in local development:
+
+```bash
+sudo ldconfig /usr/local/lib64
+```
+
 These steps will be included in future versions of the `vagrant` VM base box and/or provisioning script.
 
 ### Run!

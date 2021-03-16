@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2021-03-16
+
+### Added
+- automated REST API documentation with `hapi-swagger`
+
+### Changed
+- updated to version 2 of Toronto Centreline
+- several report types now include full time ranges in web, PDF, and CSV formats
+
+### Fixed
+- addressed issue with corridor routing near trailheads in parks
+- fixed bug with study type selection controls in Request Study
+- addressed several usability issues based on user feedback
+- cancellation email should now be sent when updating status via the table at bottom of View Bulk Request
+- Peak Hour Factor report now uses motorized vehicle totals, not overall totals
+
 ## [1.1.1] - 2021-02-25
 
 ### Added
