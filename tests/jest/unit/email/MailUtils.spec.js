@@ -6,6 +6,7 @@ import EmailStudyRequestCancelled from '@/lib/email/EmailStudyRequestCancelled';
 import EmailStudyRequestCompleted from '@/lib/email/EmailStudyRequestCompleted';
 import {
   getStudyRequestBulkUpdateEmails,
+  getStudyRequestBulkUpdateEmailsDeep,
   getStudyRequestUpdateEmails,
   getStudyRequestUpdateEmailsDeep,
 } from '@/lib/email/MailUtils';
@@ -173,6 +174,98 @@ test('MailUtils.getStudyRequestUpdateEmailsDeep [cancelling last request]', asyn
   };
   const studyRequestOld = studyRequestBulk.studyRequests[0];
   const emails = await getStudyRequestUpdateEmailsDeep(studyRequestNew, studyRequestOld);
+  expect(emails).toHaveLength(2);
+  expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
+});
+
+test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling single request]', async () => {
+  const studyRequestBulkOld = generateStudyRequestBulk();
+  studyRequestBulkOld.id = 42;
+  studyRequestBulkOld.studyRequests = studyRequestBulkOld.studyRequests.map((studyRequest, i) => ({
+    ...studyRequest,
+    status: StudyRequestStatus.REQUESTED,
+    id: i + 1,
+    studyRequestBulkId: studyRequestBulkOld.id,
+  }));
+
+  const studyRequestBulkNew = {
+    ...studyRequestBulkOld,
+    studyRequests: studyRequestBulkOld.studyRequests.map(studyRequest => ({ ...studyRequest })),
+  };
+  studyRequestBulkNew.studyRequests[0].status = StudyRequestStatus.CANCELLED;
+  const emails = await getStudyRequestBulkUpdateEmailsDeep(
+    studyRequestBulkNew,
+    studyRequestBulkOld,
+  );
+  expect(emails).toHaveLength(1);
+  expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
+});
+
+test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [completing single request]', async () => {
+  const studyRequestBulkOld = generateStudyRequestBulk();
+  studyRequestBulkOld.id = 42;
+  studyRequestBulkOld.studyRequests = studyRequestBulkOld.studyRequests.map((studyRequest, i) => ({
+    ...studyRequest,
+    status: StudyRequestStatus.REQUESTED,
+    id: i + 1,
+    studyRequestBulkId: studyRequestBulkOld.id,
+  }));
+
+  const studyRequestBulkNew = {
+    ...studyRequestBulkOld,
+    studyRequests: studyRequestBulkOld.studyRequests.map(studyRequest => ({ ...studyRequest })),
+  };
+  studyRequestBulkNew.studyRequests[0].status = StudyRequestStatus.COMPLETED;
+  const emails = await getStudyRequestBulkUpdateEmailsDeep(
+    studyRequestBulkNew,
+    studyRequestBulkOld,
+  );
+  expect(emails).toHaveLength(0);
+});
+
+test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [completing last request]', async () => {
+  const studyRequestBulkOld = generateStudyRequestBulk();
+  studyRequestBulkOld.id = 42;
+  studyRequestBulkOld.studyRequests = studyRequestBulkOld.studyRequests.map((studyRequest, i) => ({
+    ...studyRequest,
+    status: i === 0 ? StudyRequestStatus.REQUESTED : StudyRequestStatus.COMPLETED,
+    id: i + 1,
+    studyRequestBulkId: studyRequestBulkOld.id,
+  }));
+
+  const studyRequestBulkNew = {
+    ...studyRequestBulkOld,
+    studyRequests: studyRequestBulkOld.studyRequests.map(studyRequest => ({ ...studyRequest })),
+  };
+  studyRequestBulkNew.studyRequests[0].status = StudyRequestStatus.COMPLETED;
+  const emails = await getStudyRequestBulkUpdateEmailsDeep(
+    studyRequestBulkNew,
+    studyRequestBulkOld,
+  );
+  expect(emails).toHaveLength(1);
+  expect(emails[0]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
+});
+
+test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling last request]', async () => {
+  const studyRequestBulkOld = generateStudyRequestBulk();
+  studyRequestBulkOld.id = 42;
+  studyRequestBulkOld.studyRequests = studyRequestBulkOld.studyRequests.map((studyRequest, i) => ({
+    ...studyRequest,
+    status: i === 0 ? StudyRequestStatus.REQUESTED : StudyRequestStatus.COMPLETED,
+    id: i + 1,
+    studyRequestBulkId: studyRequestBulkOld.id,
+  }));
+
+  const studyRequestBulkNew = {
+    ...studyRequestBulkOld,
+    studyRequests: studyRequestBulkOld.studyRequests.map(studyRequest => ({ ...studyRequest })),
+  };
+  studyRequestBulkNew.studyRequests[0].status = StudyRequestStatus.CANCELLED;
+  const emails = await getStudyRequestBulkUpdateEmailsDeep(
+    studyRequestBulkNew,
+    studyRequestBulkOld,
+  );
   expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
   expect(emails[1]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
