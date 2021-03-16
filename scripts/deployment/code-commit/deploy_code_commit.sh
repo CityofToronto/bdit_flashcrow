@@ -7,6 +7,8 @@ if [ "${CI_COMMIT_REF_NAME}" = "master" ]; then
   TARGET_ENV="flashcrow-dev0"
 elif [ "${CI_COMMIT_REF_NAME}" = "deploy-qa" ]; then
   TARGET_ENV="flashcrow-qa0"
+elif [ "${CI_COMMIT_REF_NAME}" = "deploy-prod" ]; then
+  TARGET_ENV="flashcrow-prod0"
 else
   echo "Invalid branch for deployment: ${CI_COMMIT_REF_NAME}"
   exit 1

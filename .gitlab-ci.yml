@@ -56,19 +56,11 @@ deploy-qa:
   only:
     - deploy-qa
 
-# deploy staging automatically
-deploy-staging:
-  stage: deploy
-  script:
-    - echo deploy-staging
-  only:
-    - deploy-staging
-
 # deploy prod manually after approval
 deploy-prod:
   stage: deploy
   script:
-    - echo deploy-prod
+    - ./scripts/deployment/code-commit/deploy_code_commit.sh
   only:
     - deploy-prod
   when: manual
