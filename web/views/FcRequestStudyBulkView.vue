@@ -38,6 +38,7 @@
           <v-col cols="6">
             <FcPaneMap
               class="mx-5"
+              :show-filters="false"
               :show-legend="false"
               :show-location-selection="false"
               :show-modes="false"

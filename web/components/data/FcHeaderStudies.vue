@@ -1,7 +1,7 @@
 <template>
   <header class="pa-5">
     <div class="align-center d-flex">
-      <h3 class="display-2">Studies</h3>
+      <h3 class="headline">Studies</h3>
       <v-spacer></v-spacer>
       <FcDialogStudyFilters
         v-if="showFiltersStudy"

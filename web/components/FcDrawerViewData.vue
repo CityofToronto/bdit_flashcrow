@@ -40,13 +40,21 @@
           v-if="locationMode === LocationMode.MULTI_EDIT"
           :locations="locationsEdit"
           :locations-selection="locationsEditSelection" />
-        <FcViewDataDetail
-          v-else-if="locationMode === LocationMode.SINGLE || detailView"
-          :location="locationActive" />
-        <FcViewDataAggregate
-          v-else
-          :locations="locations"
-          :locations-selection="locationsSelection" />
+        <template v-else>
+          <FcGlobalFilters
+            class="pa-5"
+            header-tag="h3" />
+
+          <v-divider></v-divider>
+
+          <FcViewDataDetail
+            v-if="locationMode === LocationMode.SINGLE || detailView"
+            :location="locationActive" />
+          <FcViewDataAggregate
+            v-else
+            :locations="locations"
+            :locations-selection="locationsSelection" />
+        </template>
       </template>
     </section>
   </div>
@@ -69,6 +77,7 @@ import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
 import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
 import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcGlobalFilters from '@/web/components/filters/FcGlobalFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
@@ -83,6 +92,7 @@ export default {
   ],
   components: {
     FcButton,
+    FcGlobalFilters,
     FcHeaderSingleLocation,
     FcProgressLinear,
     FcSelectorMultiLocation,

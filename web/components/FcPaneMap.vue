@@ -34,6 +34,7 @@
           class="mt-5 ml-5" />
 
         <FcGlobalFilterBox
+          v-if="showFilters"
           class="mt-5 ml-5" />
       </div>
       <FcPaneMapLegend
@@ -218,6 +219,10 @@ export default {
     background: {
       type: Boolean,
       default: false,
+    },
+    showFilters: {
+      type: Boolean,
+      default: true,
     },
     showLegend: {
       type: Boolean,
