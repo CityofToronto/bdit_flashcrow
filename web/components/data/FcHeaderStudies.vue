@@ -21,12 +21,6 @@
       </FcButton>
       <slot name="action" />
     </div>
-
-    <FcListFilterChips
-      v-if="filterChipsStudy.length > 0"
-      class="mt-4 mb-2"
-      :filter-chips="filterChipsStudy"
-      @click-filter="actionRemoveFilterStudy" />
   </header>
 </template>
 
@@ -34,7 +28,6 @@
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcDialogStudyFilters from '@/web/components/dialogs/FcDialogStudyFilters.vue';
-import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -42,7 +35,6 @@ export default {
   components: {
     FcButton,
     FcDialogStudyFilters,
-    FcListFilterChips,
   },
   props: {
     disabled: {

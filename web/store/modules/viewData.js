@@ -161,6 +161,9 @@ export default {
       }
       return params;
     },
+    hasFilters(state, getters) {
+      return getters.hasFiltersCollision || getters.hasFiltersStudy;
+    },
     hasFiltersCollision(state, getters) {
       return getters.filterChipsCollision.length > 0;
     },

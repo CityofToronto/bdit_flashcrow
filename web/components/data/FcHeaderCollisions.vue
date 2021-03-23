@@ -21,12 +21,6 @@
       </FcButton>
       <slot name="action" />
     </div>
-
-    <FcListFilterChips
-      v-if="filterChipsCollision.length > 0"
-      class="mt-4 mb-2"
-      :filter-chips="filterChipsCollision"
-      @click-filter="actionRemoveFilterCollision" />
   </header>
 </template>
 
@@ -34,7 +28,6 @@
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import FcDialogCollisionFilters from '@/web/components/dialogs/FcDialogCollisionFilters.vue';
-import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -42,7 +35,6 @@ export default {
   components: {
     FcButton,
     FcDialogCollisionFilters,
-    FcListFilterChips,
   },
   props: {
     collisionTotal: Number,

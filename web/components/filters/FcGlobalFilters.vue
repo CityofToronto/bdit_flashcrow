@@ -16,26 +16,38 @@
         Edit
       </FcButton>
     </div>
-    <div class="align-center d-flex mt-2">
+    <div v-if="!hasFilters" class="secondary--text">
+      No active filters
+    </div>
+    <div
+      v-if="filterChipsCommon.length > 0"
+      class="align-center d-flex mt-2">
       <FcListFilterChips
+        @click-filter="actionRemoveFilterCommon"
         :filter-chips="filterChipsCommon"
         :readonly="readonly" />
     </div>
-    <div class="align-center d-flex mt-2">
+    <div
+      v-if="filterChipsCollision.length > 0"
+      class="align-center d-flex mt-2">
       <span class="font-weight-regular headline secondary--text">
         Collisions &#x2022;
       </span>
       <FcListFilterChips
         class="ml-1"
+        @click-filter="actionRemoveFilterCollision"
         :filter-chips="filterChipsCollision"
         :readonly="readonly" />
     </div>
-    <div class="align-center d-flex mt-2">
+    <div
+      v-if="filterChipsStudy.length > 0"
+      class="align-center d-flex mt-2">
       <span class="font-weight-regular headline secondary--text">
         Studies &#x2022;
       </span>
       <FcListFilterChips
         class="ml-1"
+        @click-filter="actionRemoveFilterStudy"
         :filter-chips="filterChipsStudy"
         :readonly="readonly" />
     </div>
@@ -43,11 +55,8 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
-import { StudyType } from '@/lib/Constants';
-import DateTime from '@/lib/time/DateTime';
-import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -78,40 +87,32 @@ export default {
     };
   },
   computed: {
-    // TODO: use actual chips
-    filterChipsCollision() {
-      return [
-        { filter: 'emphasisAreas', label: 'KSI', value: null },
-      ];
-    },
     filterChipsCommon() {
-      const dateRangeStart = DateTime.fromObject({
-        year: 2002,
-        month: 12,
-        day: 1,
-      });
-      const dateRangeEnd = DateTime.fromObject({
-        year: 2020,
-        month: 12,
-        day: 1,
-      });
-      const label = TimeFormatters.formatRangeDate({
-        start: dateRangeStart,
-        end: dateRangeEnd,
-      });
-      const value = { dateRangeStart, dateRangeEnd };
-      return [
-        { filter: 'dateRange', label, value },
-      ];
+      return [];
     },
-    filterChipsStudy() {
-      return [
-        { filter: 'studyTypes', label: 'TMC', value: StudyType.TMC },
-      ];
-    },
+    ...mapGetters('viewData', [
+      'filterChipsCollision',
+      'filterChipsStudy',
+      'hasFilters',
+    ]),
   },
   methods: {
+    actionRemoveFilterCollision(filter) {
+      this.removeFilterCollision(filter);
+      this.setToastInfo(`Removed collision filter: ${filter.label}.`);
+    },
+    actionRemoveFilterCommon() {
+      // TODO: implement this
+    },
+    actionRemoveFilterStudy(filter) {
+      this.removeFilterStudy(filter);
+      this.setToastInfo(`Removed study filter: ${filter.label}.`);
+    },
     ...mapMutations(['setFiltersOpen']),
+    ...mapMutations('viewData', [
+      'removeFilterCollision',
+      'removeFilterStudy',
+    ]),
   },
 };
 </script>

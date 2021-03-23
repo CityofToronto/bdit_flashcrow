@@ -35,13 +35,6 @@
               </span>
             </span>
           </h2>
-          <template v-if="filterChipsCollision.length > 0">
-            <span class="ml-1 font-weight-regular headline secondary--text">&#x2022;</span>
-            <FcListFilterChips
-              class="ml-2 my-1"
-              :filter-chips="filterChipsCollision"
-              :readonly="true" />
-          </template>
 
           <v-spacer></v-spacer>
 
@@ -139,7 +132,6 @@ import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
-import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
@@ -154,7 +146,6 @@ export default {
     FcButton,
     FcDialogConfirm,
     FcIconLocationMulti,
-    FcListFilterChips,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
