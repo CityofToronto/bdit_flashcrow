@@ -5,7 +5,7 @@
     class="fc-global-filter-drawer"
     right
     temporary
-    :width="280">
+    :width="336">
     <div
       ref="content"
       class="d-flex fill-height flex-column">
@@ -21,10 +21,13 @@
 
       <v-divider></v-divider>
 
-      <div class="flex-grow-1 flex-shrink-1">
-        <div class="fc-global-filters-panel px-6 py-4">
-          TODO: common filters
-        </div>
+      <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+        <FcCommonFilters
+          v-if="internalFiltersCommon !== null"
+          v-model="internalFiltersCommon"
+          class="px-6 py-4"
+          :v="$v.internalFiltersCommon" />
+
         <v-expansion-panels
           v-model="indexOpen"
           accordion
@@ -38,7 +41,8 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <FcCollisionFilters
-                v-model="internalFiltersCollision" />
+                v-model="internalFiltersCollision"
+                :v="$v.internalFiltersCollision" />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel
@@ -57,7 +61,7 @@
 
       <v-divider></v-divider>
 
-      <div class="d-flex flex-grow-0 flex-shrink-0 overflow-y-auto px-4 py-2 shading">
+      <div class="d-flex flex-grow-0 flex-shrink-0 px-4 py-2 shading">
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"
@@ -65,6 +69,7 @@
           Cancel
         </FcButton>
         <FcButton
+          :disabled="$v.$invalid"
           type="tertiary"
           @click="actionSave">
           Save
@@ -77,7 +82,10 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
+import ValidationsCollisionFilters from '@/lib/validation/ValidationsCollisionFilters';
+import ValidationsCommonFilters from '@/lib/validation/ValidationsCommonFilters';
 import FcCollisionFilters from '@/web/components/filters/FcCollisionFilters.vue';
+import FcCommonFilters from '@/web/components/filters/FcCommonFilters.vue';
 import FcStudyFilters from '@/web/components/filters/FcStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -90,18 +98,36 @@ export default {
   components: {
     FcButton,
     FcCollisionFilters,
+    FcCommonFilters,
     FcStudyFilters,
   },
   data() {
     return {
       indexOpen: null,
-      internalFiltersCollision: null,
-      internalFiltersStudy: null,
+      internalFiltersCollision: {
+        emphasisAreas: [],
+        hoursOfDay: [0, 24],
+        roadSurfaceConditions: [],
+      },
+      internalFiltersCommon: {
+        applyDateRange: false,
+        dateRangeStart: null,
+        dateRangeEnd: null,
+        daysOfWeek: [],
+      },
+      internalFiltersStudy: {
+        hours: [],
+        studyTypes: [],
+      },
       previousActiveElement: null,
     };
   },
   computed: {
-    ...mapState('viewData', ['filtersCollision', 'filtersStudy']),
+    ...mapState('viewData', ['filtersCollision', 'filtersCommon', 'filtersStudy']),
+  },
+  validations: {
+    internalFiltersCollision: ValidationsCollisionFilters,
+    internalFiltersCommon: ValidationsCommonFilters,
   },
   watch: {
     internalValue() {
@@ -122,25 +148,24 @@ export default {
   methods: {
     actionClearAll() {
       this.internalFiltersCollision = {
-        applyDateRange: false,
-        dateRangeStart: null,
-        dateRangeEnd: null,
-        daysOfWeek: [],
         emphasisAreas: [],
         hoursOfDay: [0, 24],
         roadSurfaceConditions: [],
       };
-      this.internalFiltersStudy = {
+      this.internalFiltersCommon = {
         applyDateRange: false,
         dateRangeStart: null,
         dateRangeEnd: null,
         daysOfWeek: [],
+      };
+      this.internalFiltersStudy = {
         hours: [],
         studyTypes: [],
       };
     },
     actionSave() {
       this.setFiltersCollision(this.internalFiltersCollision);
+      this.setFiltersCommon(this.internalFiltersCommon);
       this.setFiltersStudy(this.internalFiltersStudy);
       this.setToastInfo('Updated request filters.');
       this.internalValue = false;
@@ -181,6 +206,9 @@ export default {
         ...this.filtersCollision,
         hoursOfDay: [...this.filtersCollision.hoursOfDay],
       };
+      this.internalFiltersCommon = {
+        ...this.filtersCommon,
+      };
       this.internalFiltersStudy = {
         ...this.filtersStudy,
       };
@@ -200,6 +228,7 @@ export default {
     ...mapMutations(['setToastInfo']),
     ...mapMutations('viewData', [
       'setFiltersCollision',
+      'setFiltersCommon',
       'setFiltersStudy',
     ]),
   },

@@ -22,7 +22,7 @@
               :a="collisionSummary[field.name]"
               :b="collisionSummaryUnfiltered[field.name]"
               class="flex-grow-0 flex-shrink-0 mr-5"
-              :show-b="hasFiltersCollision"
+              :show-b="hasFiltersCollision || hasFiltersCommon"
               small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
@@ -37,7 +37,7 @@
                   :a="collisionSummaryPerLocation[i][field.name]"
                   :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
                   class="mr-9"
-                  :show-b="hasFiltersCollision"
+                  :show-b="hasFiltersCollision || hasFiltersCommon"
                   small />
               </template>
             </FcListLocationMulti>
@@ -97,7 +97,7 @@ export default {
     locationsIconProps() {
       return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
-    ...mapGetters('viewData', ['hasFiltersCollision']),
+    ...mapGetters('viewData', ['hasFiltersCollision', 'hasFiltersCommon']),
   },
 };
 </script>

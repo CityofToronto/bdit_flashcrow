@@ -35,7 +35,7 @@
             <FcTextSummaryFraction
               :a="item.n"
               :b="item.nUnfiltered"
-              :show-b="hasFiltersStudy" />
+              :show-b="hasFiltersCommon || hasFiltersStudy" />
           </div>
           <FcButton
             class="flex-grow-0 flex-shrink-0"
@@ -89,7 +89,7 @@ export default {
         };
       });
     },
-    ...mapGetters('viewData', ['hasFiltersStudy']),
+    ...mapGetters('viewData', ['hasFiltersCommon', 'hasFiltersStudy']),
   },
 };
 </script>

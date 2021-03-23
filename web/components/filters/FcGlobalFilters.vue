@@ -87,11 +87,9 @@ export default {
     };
   },
   computed: {
-    filterChipsCommon() {
-      return [];
-    },
     ...mapGetters('viewData', [
       'filterChipsCollision',
+      'filterChipsCommon',
       'filterChipsStudy',
       'hasFilters',
     ]),
@@ -101,8 +99,10 @@ export default {
       this.removeFilterCollision(filter);
       this.setToastInfo(`Removed collision filter: ${filter.label}.`);
     },
-    actionRemoveFilterCommon() {
+    actionRemoveFilterCommon(filter) {
       // TODO: implement this
+      this.removeFilterCommon(filter);
+      this.setToastInfo(`Removed filter: ${filter.label}.`);
     },
     actionRemoveFilterStudy(filter) {
       this.removeFilterStudy(filter);
@@ -111,6 +111,7 @@ export default {
     ...mapMutations(['setFiltersOpen', 'setToastInfo']),
     ...mapMutations('viewData', [
       'removeFilterCollision',
+      'removeFilterCommon',
       'removeFilterStudy',
     ]),
   },

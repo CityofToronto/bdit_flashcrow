@@ -6,30 +6,48 @@ export default {
   state: {
     detailView: false,
     filtersCollision: {
-      applyDateRange: false,
-      dateRangeStart: null,
-      dateRangeEnd: null,
-      daysOfWeek: [],
       emphasisAreas: [],
       hoursOfDay: [0, 24],
       roadSurfaceConditions: [],
     },
-    filtersStudy: {
+    filtersCommon: {
       applyDateRange: false,
       dateRangeStart: null,
       dateRangeEnd: null,
       daysOfWeek: [],
+    },
+    filtersStudy: {
       hours: [],
       studyTypes: [],
     },
   },
   getters: {
-    filterChipsCollision(state) {
+    filterChipsCommon(state) {
       const {
         applyDateRange,
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
+      } = state.filtersCommon;
+      const filterChipsCommon = [];
+      if (applyDateRange) {
+        const label = TimeFormatters.formatRangeDate({
+          start: dateRangeStart,
+          end: dateRangeEnd,
+        });
+        const value = { dateRangeStart, dateRangeEnd };
+        const filterChip = { filter: 'dateRange', label, value };
+        filterChipsCommon.push(filterChip);
+      }
+      daysOfWeek.forEach((value) => {
+        const label = TimeFormatters.DAYS_OF_WEEK[value];
+        const filterChip = { filter: 'daysOfWeek', label, value };
+        filterChipsCommon.push(filterChip);
+      });
+      return filterChipsCommon;
+    },
+    filterChipsCollision(state) {
+      const {
         emphasisAreas,
         hoursOfDay,
         roadSurfaceConditions,
@@ -39,20 +57,6 @@ export default {
       emphasisAreas.forEach((value) => {
         const { text: label } = value;
         const filterChip = { filter: 'emphasisAreas', label, value };
-        filterChipsCollision.push(filterChip);
-      });
-      if (applyDateRange) {
-        const label = TimeFormatters.formatRangeDate({
-          start: dateRangeStart,
-          end: dateRangeEnd,
-        });
-        const value = { dateRangeStart, dateRangeEnd };
-        const filterChip = { filter: 'dateRange', label, value };
-        filterChipsCollision.push(filterChip);
-      }
-      daysOfWeek.forEach((value) => {
-        const label = TimeFormatters.DAYS_OF_WEEK[value];
-        const filterChip = { filter: 'daysOfWeek', label, value };
         filterChipsCollision.push(filterChip);
       });
       if (start !== 0 || end !== 24) {
@@ -72,10 +76,6 @@ export default {
     },
     filterChipsStudy(state) {
       const {
-        applyDateRange,
-        dateRangeStart,
-        dateRangeEnd,
-        daysOfWeek,
         hours,
         studyTypes,
       } = state.filtersStudy;
@@ -85,20 +85,6 @@ export default {
         const filterChip = { filter: 'studyTypes', label, value: studyType };
         filterChipsStudy.push(filterChip);
       });
-      daysOfWeek.forEach((value) => {
-        const label = TimeFormatters.DAYS_OF_WEEK[value];
-        const filterChip = { filter: 'daysOfWeek', label, value };
-        filterChipsStudy.push(filterChip);
-      });
-      if (applyDateRange) {
-        const label = TimeFormatters.formatRangeDate({
-          start: dateRangeStart,
-          end: dateRangeEnd,
-        });
-        const value = { dateRangeStart, dateRangeEnd };
-        const filterChip = { filter: 'dateRange', label, value };
-        filterChipsStudy.push(filterChip);
-      }
       hours.forEach((studyHours) => {
         const label = studyHours.description;
         const filterChip = { filter: 'hours', label, value: studyHours };
@@ -112,6 +98,8 @@ export default {
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
+      } = state.filtersCommon;
+      const {
         emphasisAreas,
         hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
         roadSurfaceConditions,
@@ -142,6 +130,8 @@ export default {
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
+      } = state.filtersCommon;
+      const {
         hours,
         studyTypes,
       } = state.filtersStudy;
@@ -162,10 +152,13 @@ export default {
       return params;
     },
     hasFilters(state, getters) {
-      return getters.hasFiltersCollision || getters.hasFiltersStudy;
+      return getters.hasFiltersCollision || getters.hasFiltersCommon || getters.hasFiltersStudy;
     },
     hasFiltersCollision(state, getters) {
       return getters.filterChipsCollision.length > 0;
+    },
+    hasFiltersCommon(state, getters) {
+      return getters.filterChipsCommon.length > 0;
     },
     hasFiltersStudy(state, getters) {
       return getters.filterChipsStudy.length > 0;
@@ -173,11 +166,7 @@ export default {
   },
   mutations: {
     removeFilterCollision(state, { filter, value }) {
-      if (filter === 'dateRange') {
-        state.filtersCollision.applyDateRange = false;
-        state.filtersCollision.dateRangeStart = null;
-        state.filtersCollision.dateRangeEnd = null;
-      } else if (filter === 'hoursOfDay') {
+      if (filter === 'hoursOfDay') {
         state.filtersCollision.hoursOfDay = [0, 24];
       } else {
         const values = state.filtersCollision[filter];
@@ -187,17 +176,24 @@ export default {
         }
       }
     },
-    removeFilterStudy(state, { filter, value }) {
+    removeFilterCommon(state, { filter, value }) {
       if (filter === 'dateRange') {
-        state.filtersStudy.applyDateRange = false;
-        state.filtersStudy.dateRangeStart = null;
-        state.filtersStudy.dateRangeEnd = null;
+        state.filtersCollision.applyDateRange = false;
+        state.filtersCollision.dateRangeStart = null;
+        state.filtersCollision.dateRangeEnd = null;
       } else {
-        const values = state.filtersStudy[filter];
+        const values = state.filtersCollision[filter];
         const i = values.indexOf(value);
         if (i !== -1) {
           values.splice(i, 1);
         }
+      }
+    },
+    removeFilterStudy(state, { filter, value }) {
+      const values = state.filtersStudy[filter];
+      const i = values.indexOf(value);
+      if (i !== -1) {
+        values.splice(i, 1);
       }
     },
     setDetailView(state, detailView) {
@@ -205,6 +201,9 @@ export default {
     },
     setFiltersCollision(state, filtersCollision) {
       state.filtersCollision = filtersCollision;
+    },
+    setFiltersCommon(state, filtersCommon) {
+      state.filtersCommon = filtersCommon;
     },
     setFiltersStudy(state, filtersStudy) {
       state.filtersStudy = filtersStudy;

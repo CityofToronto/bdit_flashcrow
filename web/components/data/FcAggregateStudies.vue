@@ -35,7 +35,7 @@
               :a="item.n"
               :b="item.nUnfiltered"
               class="flex-grow-0 flex-shrink-0 mr-5"
-              :show-b="hasFiltersStudy"
+              :show-b="hasFiltersCommon || hasFiltersStudy"
               small />
           </v-expansion-panel-header>
           <v-expansion-panel-content class="shading pt-1">
@@ -58,7 +58,7 @@
                     :a="itemsPerLocation[i][j].n"
                     :b="itemsPerLocation[i][j].nUnfiltered"
                     class="text-right"
-                    :show-b="hasFiltersStudy"
+                    :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
                   <div v-if="itemsPerLocation[i][j].n > 0">
                     <FcButton
@@ -150,7 +150,7 @@ export default {
     locationsIconProps() {
       return getLocationsIconProps(this.locations, this.locationsSelection.locations);
     },
-    ...mapGetters('viewData', ['hasFiltersStudy']),
+    ...mapGetters('viewData', ['hasFiltersCommon', 'hasFiltersStudy']),
   },
 };
 </script>

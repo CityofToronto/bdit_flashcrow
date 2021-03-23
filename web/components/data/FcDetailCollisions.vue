@@ -14,7 +14,7 @@
               :a="collisionSummary.amount"
               :b="collisionSummaryUnfiltered.amount"
               class="mt-1"
-              :show-b="hasFiltersCollision" />
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
         <div class="flex-grow-1 flex-shrink-1">
@@ -26,7 +26,7 @@
               :a="collisionSummary.ksi"
               :b="collisionSummaryUnfiltered.ksi"
               class="mt-1"
-              :show-b="hasFiltersCollision" />
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
         <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
@@ -38,7 +38,7 @@
               :a="collisionSummary.validated"
               :b="collisionSummaryUnfiltered.validated"
               class="mt-1"
-              :show-b="hasFiltersCollision" />
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
       </dl>
@@ -73,7 +73,7 @@ export default {
     loading: Boolean,
   },
   computed: {
-    ...mapGetters('viewData', ['hasFiltersCollision']),
+    ...mapGetters('viewData', ['hasFiltersCollision', 'hasFiltersCommon']),
   },
 };
 </script>
