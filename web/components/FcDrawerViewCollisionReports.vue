@@ -225,7 +225,7 @@ export default {
       'locationsDescription',
       'locationsRouteParams',
     ]),
-    ...mapGetters('viewData', ['filterChipsCollision', 'filterParamsCollision']),
+    ...mapGetters('viewData', ['filterParamsCollision']),
   },
   watch: {
     activeReportId() {

@@ -248,10 +248,6 @@ export default {
         ({ n }) => n === 0,
       );
     },
-    filterChipsStudyNoStudyTypes() {
-      return this.filterChipsStudy
-        .filter(({ filter }) => filter !== 'studyTypes');
-    },
     filterParamsStudyReports() {
       const { filterParamsStudy, studyType } = this;
       return {
@@ -331,7 +327,7 @@ export default {
       'locationActive',
       'locationsRouteParams',
     ]),
-    ...mapGetters('viewData', ['filterChipsStudy', 'filterParamsStudy']),
+    ...mapGetters('viewData', ['filterParamsStudy']),
   },
   watch: {
     activeReportId() {
