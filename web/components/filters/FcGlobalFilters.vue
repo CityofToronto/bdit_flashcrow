@@ -12,7 +12,7 @@
       <FcButton
         v-if="!readonly"
         type="tertiary"
-        @click="actionEdit">
+        @click="setFiltersOpen(true)">
         Edit
       </FcButton>
     </div>
@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 import { StudyType } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -99,9 +101,7 @@ export default {
     },
   },
   methods: {
-    actionEdit() {
-      // TODO: implement this
-    },
+    ...mapMutations(['setFiltersOpen']),
   },
 };
 </script>

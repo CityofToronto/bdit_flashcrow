@@ -51,6 +51,7 @@ export default new Vuex.Store({
     dialog: null,
     dialogData: {},
     drawerOpen: false,
+    filtersOpen: false,
     toast: null,
     toastData: {},
     toastKey: 0,
@@ -218,6 +219,9 @@ export default new Vuex.Store({
     },
     setDrawerOpen(state, drawerOpen) {
       Vue.set(state, 'drawerOpen', drawerOpen);
+    },
+    setFiltersOpen(state, filtersOpen) {
+      Vue.set(state, 'filtersOpen', filtersOpen);
     },
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);

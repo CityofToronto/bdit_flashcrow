@@ -18,6 +18,8 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+    <FcGlobalFilterDrawer
+      v-model="internalFiltersOpen" />
   </v-app>
 </template>
 
@@ -40,6 +42,7 @@ import FcToastBackendError from '@/web/components/dialogs/FcToastBackendError.vu
 import FcToastError from '@/web/components/dialogs/FcToastError.vue';
 import FcToastInfo from '@/web/components/dialogs/FcToastInfo.vue';
 import FcToastJob from '@/web/components/dialogs/FcToastJob.vue';
+import FcGlobalFilterDrawer from '@/web/components/filters/FcGlobalFilterDrawer.vue';
 import FcAppbar from '@/web/components/nav/FcAppbar.vue';
 import FcNavbar from '@/web/components/nav/FcNavbar.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
@@ -47,11 +50,12 @@ import FrontendEnv from '@/web/config/FrontendEnv';
 export default {
   name: 'App',
   components: {
+    FcAppbar,
     FcDialogAlertStudyRequestUrgent,
     FcDialogAlertStudyRequestsUnactionable,
     FcDialogAlertStudyTypeUnactionable,
     FcDialogConfirmUnauthorized,
-    FcAppbar,
+    FcGlobalFilterDrawer,
     FcNavbar,
     FcToastBackendError,
     FcToastError,
@@ -82,11 +86,20 @@ export default {
         }
       },
     },
+    internalFiltersOpen: {
+      get() {
+        return this.filtersOpen;
+      },
+      set(filtersOpen) {
+        this.setFiltersOpen(filtersOpen);
+      },
+    },
     ...mapState([
       'ariaNotification',
       'auth',
       'dialog',
       'dialogData',
+      'filtersOpen',
       'frontendEnv',
       'toast',
       'toastData',
@@ -109,7 +122,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['clearDialog', 'clearToast']),
+    ...mapMutations(['clearDialog', 'clearToast', 'setFiltersOpen']),
   },
 };
 </script>
