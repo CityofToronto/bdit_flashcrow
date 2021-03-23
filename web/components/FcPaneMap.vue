@@ -35,7 +35,8 @@
 
         <FcGlobalFilterBox
           v-if="showFilters"
-          class="mt-5 ml-5" />
+          class="mt-5 ml-5"
+          :readonly="filtersReadonly" />
       </div>
       <FcPaneMapLegend
         v-if="showLegend"
@@ -138,6 +139,11 @@ const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
   new mapboxgl.LngLat(-79.639264937, 43.580995995),
   new mapboxgl.LngLat(-79.115243191, 43.855457183),
 );
+
+const ROUTES_EDIT_FILTERS = [
+  'viewData',
+  'viewDataAtLocation',
+];
 
 const ROUTES_FOCUS_LOCATIONS = [
   'requestStudyBulkEdit',
@@ -301,6 +307,9 @@ export default {
     },
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
+    },
+    filtersReadonly() {
+      return !ROUTES_EDIT_FILTERS.includes(this.$route.name);
     },
     focusLocations() {
       return this.locationMode === LocationMode.MULTI_EDIT

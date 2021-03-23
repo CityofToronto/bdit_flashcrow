@@ -33,7 +33,6 @@ export default {
       if (this.readonly) {
         return {
           filter: true,
-          inputValue: true,
         };
       }
       return { color: 'light-blue lighten-5' };
