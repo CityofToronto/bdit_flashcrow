@@ -1,6 +1,6 @@
 <template>
-  <v-card width="392">
-    <v-card-title>
+  <v-card width="472">
+    <v-card-title class="pb-0">
       <h2 class="headline">Filters</h2>
       <v-spacer></v-spacer>
       <FcButton
@@ -12,18 +12,26 @@
     </v-card-title>
 
     <v-card-text>
-      <div>
+      <div class="align-center d-flex mt-2">
         <FcListFilterChips
           :filter-chips="filterChipsCommon"
           :readonly="readonly" />
       </div>
-      <div class="mt-2">
+      <div class="align-center d-flex mt-2">
+        <span class="font-weight-regular headline">
+          Collisions &#x2022;
+        </span>
         <FcListFilterChips
+          class="ml-1"
           :filter-chips="filterChipsCollision"
           :readonly="readonly" />
       </div>
-      <div class="mt-2">
+      <div class="align-center d-flex mt-2">
+        <span class="font-weight-regular headline">
+          Studies &#x2022;
+        </span>
         <FcListFilterChips
+          class="ml-1"
           :filter-chips="filterChipsStudy"
           :readonly="readonly" />
       </div>

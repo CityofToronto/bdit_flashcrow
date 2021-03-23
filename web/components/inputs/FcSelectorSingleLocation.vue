@@ -51,7 +51,7 @@ export default {
 <style lang="scss">
 .fc-selector-single-location {
   & > .fc-input-location-search {
-    width: 392px;
+    width: 472px;
   }
 }
 </style>
