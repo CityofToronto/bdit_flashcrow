@@ -32,6 +32,9 @@
         <FcSelectorSingleLocation
           v-else
           class="mt-5 ml-5" />
+
+        <FcGlobalFilterBox
+          class="mt-5 ml-5" />
       </div>
       <FcPaneMapLegend
         v-if="showLegend"
@@ -122,6 +125,7 @@ import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
@@ -194,6 +198,7 @@ export default {
     FcButton,
     FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
+    FcGlobalFilterBox,
     FcPaneMapLegend,
     FcPaneMapPopup,
     FcProgressLinear,
