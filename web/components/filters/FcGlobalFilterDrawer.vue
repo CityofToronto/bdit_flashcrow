@@ -142,6 +142,7 @@ export default {
     actionSave() {
       this.setFiltersCollision(this.internalFiltersCollision);
       this.setFiltersStudy(this.internalFiltersStudy);
+      this.setToastInfo('Updated request filters.');
       this.internalValue = false;
     },
     /*
@@ -196,6 +197,7 @@ export default {
     unbind() {
       window.removeEventListener('focusin', this.onFocusin);
     },
+    ...mapMutations(['setToastInfo']),
     ...mapMutations('viewData', [
       'setFiltersCollision',
       'setFiltersStudy',

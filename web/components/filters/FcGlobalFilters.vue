@@ -30,7 +30,7 @@
     <div
       v-if="filterChipsCollision.length > 0"
       class="align-center d-flex mt-2">
-      <span class="font-weight-regular headline secondary--text">
+      <span class="body-1 secondary--text">
         Collisions &#x2022;
       </span>
       <FcListFilterChips
@@ -42,7 +42,7 @@
     <div
       v-if="filterChipsStudy.length > 0"
       class="align-center d-flex mt-2">
-      <span class="font-weight-regular headline secondary--text">
+      <span class="body-1 secondary--text">
         Studies &#x2022;
       </span>
       <FcListFilterChips
@@ -108,7 +108,7 @@ export default {
       this.removeFilterStudy(filter);
       this.setToastInfo(`Removed study filter: ${filter.label}.`);
     },
-    ...mapMutations(['setFiltersOpen']),
+    ...mapMutations(['setFiltersOpen', 'setToastInfo']),
     ...mapMutations('viewData', [
       'removeFilterCollision',
       'removeFilterStudy',
