@@ -1,11 +1,11 @@
 <template>
   <section
-    aria-labelledby="heading_global_filters"
+    :aria-labelledby="headingId"
     class="fc-global-filters default--text">
     <div class="align-center d-flex">
       <component
         :is="headerTag"
-        class="headline" id="heading_global_filters">
+        class="headline" :id="headingId">
         Filters
       </component>
       <v-spacer></v-spacer>
@@ -51,6 +51,8 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcListFilterChips from '@/web/components/filters/FcListFilterChips.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
+let HEADING_ID_SUFFIX = 0;
+
 export default {
   name: 'FcGlobalFilters',
   components: {
@@ -66,6 +68,14 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    const suffix = HEADING_ID_SUFFIX;
+    const headingId = `heading_global_filters_${suffix}`;
+    HEADING_ID_SUFFIX += 1;
+    return {
+      headingId,
+    };
   },
   computed: {
     // TODO: use actual chips
