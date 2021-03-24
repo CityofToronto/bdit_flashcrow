@@ -19,6 +19,19 @@ afterAll(async () => {
   db.$pool.end();
 }, 60000);
 
+test('CollisionController.getCollisionFactors', async () => {
+  const response = await client.fetch('/collisions/factors');
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  const collisionFactors = new Map(
+    response.result.map(([field, fieldEntries]) => [field, new Map(fieldEntries)]),
+  );
+  expect(collisionFactors.get('acclass')).toBeInstanceOf(Map);
+  expect(collisionFactors.get('acclass').get(1)).toEqual({
+    code: 'FA',
+    description: 'Fatal',
+  });
+});
+
 test('CollisionController.getCollisionByCollisionId', async () => {
   let response = await client.fetch('/collisions/999999999');
   expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
