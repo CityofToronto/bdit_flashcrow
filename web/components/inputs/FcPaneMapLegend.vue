@@ -8,9 +8,9 @@
           v-for="layerItem in layerItems"
           :key="layerItem.value"
           class="align-center d-flex my-2">
-          <div
-            :class="'icon-layer-' + layerItem.value"
-            class="mr-5"></div>
+          <component
+            :is="'FcLegendIcon' + layerItem.suffix"
+            class="mr-4" />
           <div class="body-1 flex-grow-1 mt-1">{{layerItem.text}}</div>
           <FcTooltip left>
             <template v-slot:activator="{ on }">
@@ -36,18 +36,22 @@
 
 <script>
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
+import FcLegendIconCollisions from '@/web/components/legend/FcLegendIconCollisions.vue';
+import FcLegendIconStudies from '@/web/components/legend/FcLegendIconStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcPaneMapLegend',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
+    FcLegendIconCollisions,
+    FcLegendIconStudies,
     FcTooltip,
   },
   data() {
     const layerItems = [
-      { text: 'Studies', value: 'studies' },
-      { text: 'Collisions', value: 'collisions' },
+      { suffix: 'Studies', text: 'Studies', value: 'studies' },
+      { suffix: 'Collisions', text: 'Collisions', value: 'collisions' },
     ];
     return {
       layerItems,
@@ -66,28 +70,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.fc-pane-map-legend {
-  & .icon-layer-studies {
-    background: linear-gradient(180deg, #9f92f3 0%, #5f48ef 100%);
-    border: 1px solid #fff;
-    border-radius: 12px;
-    height: 24px;
-    width: 24px;
-  }
-  & .icon-layer-collisions {
-    background: #ef4848;
-    border: 1px solid #733;
-    border-radius: 12px;
-    height: 24px;
-    width: 24px;
-  }
-  & .icon-layer-volume {
-    background-image: url('/icons/map/volume.png');
-    height: 9px;
-    margin-top: 2px;
-    width: 24px;
-  }
-}
-</style>
