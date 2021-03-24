@@ -31,7 +31,7 @@ test('CollisionDAO.byCentreline', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    roadSurfaceConditions: null,
+    rdsfcond: null,
   };
   let result = await CollisionDAO.byCentreline(features, collisionQuery);
   expect(result).toHaveLength(31);
@@ -44,7 +44,7 @@ test('CollisionDAO.byCentreline', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    roadSurfaceConditions: null,
+    rdsfcond: null,
   };
   result = await CollisionDAO.byCentreline(features, collisionQuery);
   expect(result).toHaveLength(26);
@@ -62,7 +62,7 @@ test('CollisionDAO.byCentrelineSummary', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    roadSurfaceConditions: null,
+    rdsfcond: null,
   };
   let result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
   expect(result).toEqual({ amount: 31, ksi: 0, validated: 7 });
@@ -93,7 +93,7 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
-    roadSurfaceConditions: null,
+    rdsfcond: null,
   };
   let result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
   expect(result).toEqual([{ amount: 31, ksi: 0, validated: 7 }]);

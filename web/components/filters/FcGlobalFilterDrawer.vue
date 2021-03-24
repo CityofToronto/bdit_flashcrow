@@ -114,7 +114,7 @@ export default {
       internalFiltersCollision: {
         emphasisAreas: [],
         hoursOfDay: [0, 24],
-        roadSurfaceConditions: [],
+        rdsfcond: [],
       },
       internalFiltersCommon: {
         applyDateRange: false,
@@ -163,7 +163,7 @@ export default {
       this.internalFiltersCollision = {
         emphasisAreas: [],
         hoursOfDay: [0, 24],
-        roadSurfaceConditions: [],
+        rdsfcond: [],
       };
       this.internalFiltersCommon = {
         applyDateRange: false,

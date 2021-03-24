@@ -10,7 +10,7 @@ export default {
     filtersCollision: {
       emphasisAreas: [],
       hoursOfDay: [0, 24],
-      roadSurfaceConditions: [],
+      rdsfcond: [],
     },
     filtersCommon: {
       applyDateRange: false,
@@ -52,7 +52,7 @@ export default {
       const {
         emphasisAreas,
         hoursOfDay,
-        roadSurfaceConditions,
+        rdsfcond,
       } = state.filtersCollision;
       const [start, end] = hoursOfDay;
       const filterChipsCollision = [];
@@ -69,10 +69,10 @@ export default {
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
-      roadSurfaceConditions.forEach((value) => {
+      rdsfcond.forEach((value) => {
         const fieldEntries = state.collisionFactors.get('rdsfcond');
         const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'roadSurfaceConditions', label, value };
+        const filterChip = { filter: 'rdsfcond', label, value };
         filterChipsCollision.push(filterChip);
       });
       return filterChipsCollision;
@@ -105,7 +105,7 @@ export default {
       const {
         emphasisAreas,
         hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
-        roadSurfaceConditions,
+        rdsfcond,
       } = state.filtersCollision;
       const params = {};
       if (applyDateRange) {
@@ -122,8 +122,8 @@ export default {
         params.hoursOfDayStart = hoursOfDayStart;
         params.hoursOfDayEnd = hoursOfDayEnd;
       }
-      if (roadSurfaceConditions.length > 0) {
-        params.roadSurfaceConditions = roadSurfaceConditions;
+      if (rdsfcond.length > 0) {
+        params.rdsfcond = rdsfcond;
       }
       return params;
     },

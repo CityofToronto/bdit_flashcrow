@@ -24,7 +24,7 @@
       <v-checkbox
         v-for="roadSurfaceCondition in itemsRoadSurfaceCondition"
         :key="roadSurfaceCondition.value"
-        v-model="internalValue.roadSurfaceConditions"
+        v-model="internalValue.rdsfcond"
         class="mt-2"
         hide-details
         :label="roadSurfaceCondition.text"
