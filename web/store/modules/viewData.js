@@ -1,9 +1,11 @@
+import { getCollisionFactors } from '@/lib/api/WebApi';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   namespaced: true,
   state: {
+    collisionFactors: new Map(),
     detailView: false,
     filtersCollision: {
       emphasisAreas: [],
@@ -68,7 +70,8 @@ export default {
         filterChipsCollision.push(filterChip);
       }
       roadSurfaceConditions.forEach((value) => {
-        const { text: label } = value;
+        const fieldEntries = state.collisionFactors.get('rdsfcond');
+        const { description: label } = fieldEntries.get(value);
         const filterChip = { filter: 'roadSurfaceConditions', label, value };
         filterChipsCollision.push(filterChip);
       });
@@ -178,11 +181,11 @@ export default {
     },
     removeFilterCommon(state, { filter, value }) {
       if (filter === 'dateRange') {
-        state.filtersCollision.applyDateRange = false;
-        state.filtersCollision.dateRangeStart = null;
-        state.filtersCollision.dateRangeEnd = null;
+        state.filtersCommon.applyDateRange = false;
+        state.filtersCommon.dateRangeStart = null;
+        state.filtersCommon.dateRangeEnd = null;
       } else {
-        const values = state.filtersCollision[filter];
+        const values = state.filtersCommon[filter];
         const i = values.indexOf(value);
         if (i !== -1) {
           values.splice(i, 1);
@@ -196,6 +199,9 @@ export default {
         values.splice(i, 1);
       }
     },
+    setCollisionFactors(state, collisionFactors) {
+      state.collisionFactors = collisionFactors;
+    },
     setDetailView(state, detailView) {
       state.detailView = detailView;
     },
@@ -207,6 +213,12 @@ export default {
     },
     setFiltersStudy(state, filtersStudy) {
       state.filtersStudy = filtersStudy;
+    },
+  },
+  actions: {
+    async initCollisionFactors({ commit }) {
+      const collisionFactors = await getCollisionFactors();
+      commit('setCollisionFactors', collisionFactors);
     },
   },
 };

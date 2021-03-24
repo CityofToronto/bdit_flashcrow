@@ -22,41 +22,46 @@
       <v-divider></v-divider>
 
       <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-        <FcCommonFilters
-          v-if="internalFiltersCommon !== null"
-          v-model="internalFiltersCommon"
-          class="px-6 py-4"
-          :v="$v.internalFiltersCommon" />
+        <FcProgressLinear
+          v-if="loading"
+          aria-label="Loading global filters" />
+        <template v-else>
+          <FcCommonFilters
+            v-if="internalFiltersCommon !== null"
+            v-model="internalFiltersCommon"
+            class="px-6 py-4"
+            :v="$v.internalFiltersCommon" />
 
-        <v-expansion-panels
-          v-model="indexOpen"
-          accordion
-          flat
-          focusable>
-          <v-expansion-panel
-            v-if="internalFiltersCollision !== null"
-            class="fc-global-filters-panel">
-            <v-expansion-panel-header>
-              <span class="body-1">Collisions</span>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <FcCollisionFilters
-                v-model="internalFiltersCollision"
-                :v="$v.internalFiltersCollision" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-          <v-expansion-panel
-            v-if="internalFiltersStudy !== null"
-            class="fc-global-filters-panel">
-            <v-expansion-panel-header>
-              <span class="body-1">Studies</span>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <FcStudyFilters
-                v-model="internalFiltersStudy" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+          <v-expansion-panels
+            v-model="indexOpen"
+            accordion
+            flat
+            focusable>
+            <v-expansion-panel
+              v-if="internalFiltersCollision !== null"
+              class="fc-global-filters-panel">
+              <v-expansion-panel-header>
+                <span class="body-1">Collisions</span>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <FcCollisionFilters
+                  v-model="internalFiltersCollision"
+                  :v="$v.internalFiltersCollision" />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel
+              v-if="internalFiltersStudy !== null"
+              class="fc-global-filters-panel">
+              <v-expansion-panel-header>
+                <span class="body-1">Studies</span>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <FcStudyFilters
+                  v-model="internalFiltersStudy" />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </template>
       </div>
 
       <v-divider></v-divider>
@@ -80,10 +85,11 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import ValidationsCollisionFilters from '@/lib/validation/ValidationsCollisionFilters';
 import ValidationsCommonFilters from '@/lib/validation/ValidationsCommonFilters';
+import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcCollisionFilters from '@/web/components/filters/FcCollisionFilters.vue';
 import FcCommonFilters from '@/web/components/filters/FcCommonFilters.vue';
 import FcStudyFilters from '@/web/components/filters/FcStudyFilters.vue';
@@ -99,6 +105,7 @@ export default {
     FcButton,
     FcCollisionFilters,
     FcCommonFilters,
+    FcProgressLinear,
     FcStudyFilters,
   },
   data() {
@@ -119,6 +126,7 @@ export default {
         hours: [],
         studyTypes: [],
       },
+      loading: true,
       previousActiveElement: null,
     };
   },
@@ -141,6 +149,11 @@ export default {
         }
       }
     },
+  },
+  async created() {
+    this.loading = true;
+    await this.initCollisionFactors();
+    this.loading = false;
   },
   beforeDestroy() {
     this.unbind();
@@ -231,6 +244,7 @@ export default {
       'setFiltersCommon',
       'setFiltersStudy',
     ]),
+    ...mapActions('viewData', ['initCollisionFactors']),
   },
 };
 </script>

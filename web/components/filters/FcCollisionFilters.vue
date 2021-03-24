@@ -19,25 +19,25 @@
       :error-messages="errorMessagesHoursOfDay" />
 
     <fieldset class="mt-6">
-      <legend class="headline">Weather</legend>
+      <legend class="headline">Road Surface Condition</legend>
 
       <v-checkbox
-        v-for="roadSurfaceCondition in CollisionRoadSurfaceCondition.enumValues"
-        :key="roadSurfaceCondition.name"
+        v-for="roadSurfaceCondition in itemsRoadSurfaceCondition"
+        :key="roadSurfaceCondition.value"
         v-model="internalValue.roadSurfaceConditions"
         class="mt-2"
         hide-details
         :label="roadSurfaceCondition.text"
-        :value="roadSurfaceCondition"></v-checkbox>
+        :value="roadSurfaceCondition.value"></v-checkbox>
     </fieldset>
   </div>
 </template>
 
 <script>
-import {
-  CollisionEmphasisArea,
-  CollisionRoadSurfaceCondition,
-} from '@/lib/Constants';
+import { mapState } from 'vuex';
+
+import ArrayUtils from '@/lib/ArrayUtils';
+import { CollisionEmphasisArea } from '@/lib/Constants';
 import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -53,7 +53,6 @@ export default {
   data() {
     return {
       CollisionEmphasisArea,
-      CollisionRoadSurfaceCondition,
     };
   },
   computed: {
@@ -64,6 +63,16 @@ export default {
       }
       return errors;
     },
+    itemsRoadSurfaceCondition() {
+      const fieldEntries = this.collisionFactors.get('rdsfcond');
+      const items = Array.from(fieldEntries)
+        .map(([value, { description }]) => ({
+          value,
+          text: description,
+        }));
+      return ArrayUtils.sortBy(items, ({ value }) => value);
+    },
+    ...mapState('viewData', ['collisionFactors']),
   },
 };
 </script>
