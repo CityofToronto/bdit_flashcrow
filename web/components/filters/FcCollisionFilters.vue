@@ -18,40 +18,48 @@
       class="mt-6"
       :error-messages="errorMessagesHoursOfDay" />
 
-    <fieldset class="mt-6">
-      <legend class="headline">Initial Impact Type</legend>
+    <FcMvcrFieldFilter
+      v-model="internalValue.drivact"
+      class="mt-6"
+      field-name="drivact"
+      title="Driver Action" />
 
-      <v-checkbox
-        v-for="item in itemsImpactype"
-        :key="item.value"
-        v-model="internalValue.impactype"
-        class="mt-2"
-        hide-details
-        :label="item.text"
-        :value="item.value"></v-checkbox>
-    </fieldset>
+    <FcMvcrFieldFilter
+      v-model="internalValue.drivcond"
+      class="mt-6"
+      field-name="drivcond"
+      title="Driver Condition" />
 
-    <fieldset class="mt-6">
-      <legend class="headline">Road Surface Condition</legend>
+    <FcMvcrFieldFilter
+      v-model="internalValue.initdir"
+      class="mt-6"
+      field-name="initdir"
+      title="Initial Direction of Travel" />
 
-      <v-checkbox
-        v-for="item in itemsRdsfcond"
-        :key="item.value"
-        v-model="internalValue.rdsfcond"
-        class="mt-2"
-        hide-details
-        :label="item.text"
-        :value="item.value"></v-checkbox>
-    </fieldset>
+    <FcMvcrFieldFilter
+      v-model="internalValue.impactype"
+      class="mt-6"
+      field-name="impactype"
+      title="Initial Impact Type" />
+
+    <FcMvcrFieldFilter
+      v-model="internalValue.manoeuver"
+      class="mt-6"
+      field-name="manoeuver"
+      title="Manoeuver" />
+
+    <FcMvcrFieldFilter
+      v-model="internalValue.rdsfcond"
+      class="mt-6"
+      field-name="rdsfcond"
+      title="Road Surface Condition" />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import ArrayUtils from '@/lib/ArrayUtils';
 import { CollisionEmphasisArea } from '@/lib/Constants';
 import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
+import FcMvcrFieldFilter from '@/web/components/filters/FcMvcrFieldFilter.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -59,6 +67,7 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcFilterHoursOfDay,
+    FcMvcrFieldFilter,
   },
   props: {
     v: Object,
@@ -76,25 +85,6 @@ export default {
       }
       return errors;
     },
-    itemsImpactype() {
-      const fieldEntries = this.collisionFactors.get('impactype');
-      const items = Array.from(fieldEntries)
-        .map(([value, { description }]) => ({
-          value,
-          text: description,
-        }));
-      return ArrayUtils.sortBy(items, ({ value }) => value);
-    },
-    itemsRdsfcond() {
-      const fieldEntries = this.collisionFactors.get('rdsfcond');
-      const items = Array.from(fieldEntries)
-        .map(([value, { description }]) => ({
-          value,
-          text: description,
-        }));
-      return ArrayUtils.sortBy(items, ({ value }) => value);
-    },
-    ...mapState('viewData', ['collisionFactors']),
   },
 };
 </script>

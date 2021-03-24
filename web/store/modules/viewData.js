@@ -8,9 +8,13 @@ export default {
     collisionFactors: new Map(),
     detailView: false,
     filtersCollision: {
+      drivact: [],
+      drivcond: [],
       emphasisAreas: [],
       hoursOfDay: [0, 24],
       impactype: [],
+      initdir: [],
+      manoeuver: [],
       rdsfcond: [],
     },
     filtersCommon: {
@@ -51,9 +55,13 @@ export default {
     },
     filterChipsCollision(state) {
       const {
+        drivact,
+        drivcond,
         emphasisAreas,
         hoursOfDay,
         impactype,
+        initdir,
+        manoeuver,
         rdsfcond,
       } = state.filtersCollision;
       const [start, end] = hoursOfDay;
@@ -71,10 +79,34 @@ export default {
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
+      drivact.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('drivact');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'drivact', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      drivcond.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('drivcond');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'drivcond', label, value };
+        filterChipsCollision.push(filterChip);
+      });
       impactype.forEach((value) => {
         const fieldEntries = state.collisionFactors.get('impactype');
         const { description: label } = fieldEntries.get(value);
         const filterChip = { filter: 'impactype', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      initdir.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('initdir');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'initdir', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      manoeuver.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('manoeuver');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'manoeuver', label, value };
         filterChipsCollision.push(filterChip);
       });
       rdsfcond.forEach((value) => {
@@ -111,9 +143,13 @@ export default {
         daysOfWeek,
       } = state.filtersCommon;
       const {
+        drivact,
+        drivcond,
         emphasisAreas,
         hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
         impactype,
+        initdir,
+        manoeuver,
         rdsfcond,
       } = state.filtersCollision;
       const params = {};
@@ -124,6 +160,12 @@ export default {
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
       }
+      if (drivact.length > 0) {
+        params.drivact = drivact;
+      }
+      if (drivcond.length > 0) {
+        params.drivcond = drivcond;
+      }
       if (emphasisAreas.length > 0) {
         params.emphasisAreas = emphasisAreas;
       }
@@ -133,6 +175,12 @@ export default {
       }
       if (impactype.length > 0) {
         params.impactype = impactype;
+      }
+      if (initdir.length > 0) {
+        params.initdir = initdir;
+      }
+      if (manoeuver.length > 0) {
+        params.manoeuver = manoeuver;
       }
       if (rdsfcond.length > 0) {
         params.rdsfcond = rdsfcond;

@@ -112,9 +112,13 @@ export default {
     return {
       indexOpen: null,
       internalFiltersCollision: {
+        drivact: [],
+        drivcond: [],
         emphasisAreas: [],
         hoursOfDay: [0, 24],
         impactype: [],
+        initdir: [],
+        manoeuver: [],
         rdsfcond: [],
       },
       internalFiltersCommon: {
@@ -162,9 +166,13 @@ export default {
   methods: {
     actionClearAll() {
       this.internalFiltersCollision = {
+        drivact: [],
+        drivcond: [],
         emphasisAreas: [],
         hoursOfDay: [0, 24],
         impactype: [],
+        initdir: [],
+        manoeuver: [],
         rdsfcond: [],
       };
       this.internalFiltersCommon = {
