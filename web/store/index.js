@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import {
-  LegendMode,
   LocationMode,
   LocationSelectionType,
   MAX_LOCATIONS,
@@ -25,6 +24,7 @@ import {
 import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
 import FrontendEnv from '@/web/config/FrontendEnv';
+import mapLayers from '@/web/store/modules/mapLayers';
 import trackRequests from '@/web/store/modules/trackRequests';
 import viewData from '@/web/store/modules/viewData';
 
@@ -32,6 +32,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
+    mapLayers,
     trackRequests,
     viewData,
   },
@@ -58,23 +59,6 @@ export default new Vuex.Store({
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
-    legendMode: LegendMode.NORMAL,
-    legendOptions: {
-      datesFrom: 10,
-      layers: {
-        collisions: true,
-        studies: true,
-        volume: false,
-      },
-    },
-    legendOptionsFocusLocations: {
-      datesFrom: 10,
-      layers: {
-        collisions: false,
-        studies: true,
-        volume: false,
-      },
-    },
     locations: [],
     locationsIndex: -1,
     locationsIndicesDeselected: [],
@@ -137,12 +121,6 @@ export default new Vuex.Store({
       return scope;
     },
     // LOCATION
-    legendOptionsForMode(state) {
-      if (state.legendMode === LegendMode.FOCUS_LOCATIONS) {
-        return state.legendOptionsFocusLocations;
-      }
-      return state.legendOptions;
-    },
     locationActive(state, getters) {
       if (state.locationMode === LocationMode.SINGLE) {
         if (getters.locationsEmpty) {
@@ -280,27 +258,6 @@ export default new Vuex.Store({
         Vue.set(state, 'locationMode', LocationMode.MULTI);
       } else {
         Vue.set(state, 'locationMode', LocationMode.SINGLE);
-      }
-    },
-    setLegendMode(state, legendMode) {
-      Vue.set(state, 'legendMode', legendMode);
-      if (legendMode === LegendMode.FOCUS_LOCATIONS) {
-        const { datesFrom, layers } = state.legendOptions;
-        const legendOptionsFocusLocations = {
-          datesFrom,
-          layers: {
-            ...layers,
-            collisions: false,
-          },
-        };
-        Vue.set(state, 'legendOptionsFocusLocations', legendOptionsFocusLocations);
-      }
-    },
-    setLegendOptions(state, legendOptions) {
-      if (state.legendMode === LegendMode.FOCUS_LOCATIONS) {
-        Vue.set(state, 'legendOptionsFocusLocations', legendOptions);
-      } else {
-        Vue.set(state, 'legendOptions', legendOptions);
       }
     },
     setLocationEdit(state, location) {

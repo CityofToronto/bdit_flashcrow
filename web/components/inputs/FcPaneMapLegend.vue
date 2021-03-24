@@ -1,54 +1,40 @@
 <template>
   <v-card class="fc-pane-map-legend" width="200">
     <v-card-text class="default--text">
-      <section aria-labelledby="heading_map_settings">
-        <h2 class="display-1" id="heading_map_settings">Map settings</h2>
+      <fieldset>
+        <legend class="headline">Legend</legend>
 
-        <v-select
-          v-model="internalValue.datesFrom"
-          class="mt-4"
-          :items="itemsDatesFrom"
-          label="Show data from"
-          :messages="messagesDatesFrom" />
-
-        <fieldset class="mt-4">
-          <legend class="headline">Layers</legend>
-
+        <div
+          v-for="layerItem in layerItems"
+          :key="layerItem.value"
+          class="align-center d-flex my-2">
           <div
-            v-for="layer in layers"
-            :key="layer.value"
-            class="align-center d-flex my-2">
-            <div
-              :class="'icon-layer-' + layer.value"
-              class="mr-5"></div>
-            <div class="body-1 flex-grow-1 mt-1">{{layer.text}}</div>
-            <FcTooltip left>
-              <template v-slot:activator="{ on }">
-                <div v-on="on">
-                  <v-checkbox
-                    v-model="internalValue.layers[layer.value]"
-                    :aria-label="layerLabels[layer.value]"
-                    class="mt-0"
-                    color="secondary"
-                    hide-details
-                    off-icon="mdi-eye-off"
-                    on-icon="mdi-eye"
-                    v-on="on"></v-checkbox>
-                </div>
-              </template>
-              <span>{{layerLabels[layer.value]}}</span>
-            </FcTooltip>
-          </div>
-        </fieldset>
-      </section>
+            :class="'icon-layer-' + layerItem.value"
+            class="mr-5"></div>
+          <div class="body-1 flex-grow-1 mt-1">{{layerItem.text}}</div>
+          <FcTooltip left>
+            <template v-slot:activator="{ on }">
+              <div v-on="on">
+                <v-checkbox
+                  v-model="internalValue[layerItem.value]"
+                  :aria-label="layerLabels[layerItem.value]"
+                  class="mt-0"
+                  color="secondary"
+                  hide-details
+                  off-icon="mdi-eye-off"
+                  on-icon="mdi-eye"
+                  v-on="on"></v-checkbox>
+              </div>
+            </template>
+            <span>{{layerLabels[layerItem.value]}}</span>
+          </FcTooltip>
+        </div>
+      </fieldset>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -59,38 +45,24 @@ export default {
     FcTooltip,
   },
   data() {
-    const itemsDatesFrom = [
-      { text: 'Last year', value: 1 },
-      { text: 'Last 3 years', value: 3 },
-      { text: 'Last 5 years', value: 5 },
-      { text: 'Last 10 years', value: 10 },
-    ];
-    const layers = [
+    const layerItems = [
       { text: 'Studies', value: 'studies' },
       { text: 'Collisions', value: 'collisions' },
     ];
     return {
-      itemsDatesFrom,
-      layers,
+      layerItems,
     };
   },
   computed: {
     layerLabels() {
       const layerLabels = {};
-      this.layers.forEach(({ text, value }) => {
-        const layerActive = this.internalValue.layers[value];
+      this.layerItems.forEach(({ text, value }) => {
+        const layerActive = this.internalValue[value];
         const prefix = layerActive ? 'Hide' : 'Show';
         layerLabels[value] = `${prefix} ${text}`;
       });
       return layerLabels;
     },
-    messagesDatesFrom() {
-      const { datesFrom } = this.internalValue;
-      const start = this.now.minus({ years: datesFrom });
-      const end = this.now;
-      return TimeFormatters.formatRangeDate({ start, end });
-    },
-    ...mapState(['now']),
   },
 };
 </script>

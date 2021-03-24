@@ -40,7 +40,7 @@
       </div>
       <FcPaneMapLegend
         v-if="showLegend"
-        v-model="internalLegendOptions" />
+        v-model="internalLayers" />
       <div
         v-if="showModes"
         class="pane-map-mode">
@@ -315,12 +315,12 @@ export default {
       return this.locationMode === LocationMode.MULTI_EDIT
         || ROUTES_FOCUS_LOCATIONS.includes(this.$route.name);
     },
-    internalLegendOptions: {
+    internalLayers: {
       get() {
-        return this.legendOptionsForMode;
+        return this.layersForMode;
       },
-      set(legendOptions) {
-        this.setLegendOptions(legendOptions);
+      set(layers) {
+        this.setLayers(layers);
       },
     },
     locationsGeoJson() {
@@ -434,12 +434,12 @@ export default {
       };
     },
     mapOptions() {
-      const { aerial, internalLegendOptions } = this;
+      const { aerial, internalLayers } = this;
       const { dark } = this.$vuetify.theme;
       return {
         aerial,
         dark,
-        ...internalLegendOptions,
+        layers: { ...internalLayers },
       };
     },
     mapStyle() {
@@ -480,11 +480,13 @@ export default {
       'locationMode',
     ]),
     ...mapGetters([
-      'legendOptionsForMode',
       'locationActive',
       'locationsForMode',
       'locationsRouteParams',
       'locationsSelectionForMode',
+    ]),
+    ...mapGetters('mapLayers', [
+      'layersForMode',
     ]),
   },
   created() {
@@ -838,10 +840,12 @@ export default {
     },
     ...mapMutations([
       'setDrawerOpen',
-      'setLegendMode',
-      'setLegendOptions',
       'setLocationMode',
       'setToastInfo',
+    ]),
+    ...mapMutations('mapLayers', [
+      'setLayers',
+      'setLegendMode',
     ]),
   },
 };
