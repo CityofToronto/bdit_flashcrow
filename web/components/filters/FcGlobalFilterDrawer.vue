@@ -114,6 +114,7 @@ export default {
       internalFiltersCollision: {
         emphasisAreas: [],
         hoursOfDay: [0, 24],
+        impactype: [],
         rdsfcond: [],
       },
       internalFiltersCommon: {
@@ -163,6 +164,7 @@ export default {
       this.internalFiltersCollision = {
         emphasisAreas: [],
         hoursOfDay: [0, 24],
+        impactype: [],
         rdsfcond: [],
       };
       this.internalFiltersCommon = {

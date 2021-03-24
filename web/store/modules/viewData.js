@@ -10,6 +10,7 @@ export default {
     filtersCollision: {
       emphasisAreas: [],
       hoursOfDay: [0, 24],
+      impactype: [],
       rdsfcond: [],
     },
     filtersCommon: {
@@ -52,6 +53,7 @@ export default {
       const {
         emphasisAreas,
         hoursOfDay,
+        impactype,
         rdsfcond,
       } = state.filtersCollision;
       const [start, end] = hoursOfDay;
@@ -69,6 +71,12 @@ export default {
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
+      impactype.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('impactype');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'impactype', label, value };
+        filterChipsCollision.push(filterChip);
+      });
       rdsfcond.forEach((value) => {
         const fieldEntries = state.collisionFactors.get('rdsfcond');
         const { description: label } = fieldEntries.get(value);
@@ -105,6 +113,7 @@ export default {
       const {
         emphasisAreas,
         hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
+        impactype,
         rdsfcond,
       } = state.filtersCollision;
       const params = {};
@@ -121,6 +130,9 @@ export default {
       if (hoursOfDayStart !== 0 || hoursOfDayEnd !== 24) {
         params.hoursOfDayStart = hoursOfDayStart;
         params.hoursOfDayEnd = hoursOfDayEnd;
+      }
+      if (impactype.length > 0) {
+        params.impactype = impactype;
       }
       if (rdsfcond.length > 0) {
         params.rdsfcond = rdsfcond;

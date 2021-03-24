@@ -19,16 +19,29 @@
       :error-messages="errorMessagesHoursOfDay" />
 
     <fieldset class="mt-6">
+      <legend class="headline">Initial Impact Type</legend>
+
+      <v-checkbox
+        v-for="item in itemsImpactype"
+        :key="item.value"
+        v-model="internalValue.impactype"
+        class="mt-2"
+        hide-details
+        :label="item.text"
+        :value="item.value"></v-checkbox>
+    </fieldset>
+
+    <fieldset class="mt-6">
       <legend class="headline">Road Surface Condition</legend>
 
       <v-checkbox
-        v-for="roadSurfaceCondition in itemsRoadSurfaceCondition"
-        :key="roadSurfaceCondition.value"
+        v-for="item in itemsRdsfcond"
+        :key="item.value"
         v-model="internalValue.rdsfcond"
         class="mt-2"
         hide-details
-        :label="roadSurfaceCondition.text"
-        :value="roadSurfaceCondition.value"></v-checkbox>
+        :label="item.text"
+        :value="item.value"></v-checkbox>
     </fieldset>
   </div>
 </template>
@@ -63,7 +76,16 @@ export default {
       }
       return errors;
     },
-    itemsRoadSurfaceCondition() {
+    itemsImpactype() {
+      const fieldEntries = this.collisionFactors.get('impactype');
+      const items = Array.from(fieldEntries)
+        .map(([value, { description }]) => ({
+          value,
+          text: description,
+        }));
+      return ArrayUtils.sortBy(items, ({ value }) => value);
+    },
+    itemsRdsfcond() {
       const fieldEntries = this.collisionFactors.get('rdsfcond');
       const items = Array.from(fieldEntries)
         .map(([value, { description }]) => ({

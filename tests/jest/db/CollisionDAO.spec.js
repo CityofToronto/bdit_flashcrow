@@ -31,6 +31,7 @@ test('CollisionDAO.byCentreline', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
+    impactype: null,
     rdsfcond: null,
   };
   let result = await CollisionDAO.byCentreline(features, collisionQuery);
@@ -44,6 +45,7 @@ test('CollisionDAO.byCentreline', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
+    impactype: null,
     rdsfcond: null,
   };
   result = await CollisionDAO.byCentreline(features, collisionQuery);
@@ -62,6 +64,7 @@ test('CollisionDAO.byCentrelineSummary', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
+    impactype: null,
     rdsfcond: null,
   };
   let result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
@@ -93,6 +96,7 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
     dateRangeStart,
     daysOfWeek: null,
     emphasisAreas: null,
+    impactype: null,
     rdsfcond: null,
   };
   let result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
