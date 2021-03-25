@@ -434,11 +434,20 @@ export default {
       };
     },
     mapOptions() {
-      const { aerial, internalLayers } = this;
+      const {
+        aerial,
+        filtersCollision,
+        filtersCommon,
+        filtersStudy,
+        internalLayers,
+      } = this;
       const { dark } = this.$vuetify.theme;
       return {
         aerial,
         dark,
+        filtersCollision,
+        filtersCommon,
+        filtersStudy,
         layers: { ...internalLayers },
       };
     },
@@ -478,6 +487,11 @@ export default {
       'locationsIndex',
       'locationsIndicesDeselected',
       'locationMode',
+    ]),
+    ...mapState('viewData', [
+      'filtersCollision',
+      'filtersCommon',
+      'filtersStudy',
     ]),
     ...mapGetters([
       'locationActive',

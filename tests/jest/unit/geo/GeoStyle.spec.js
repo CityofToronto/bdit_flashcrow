@@ -2,15 +2,15 @@ import { validate } from '@mapbox/mapbox-gl-style-spec';
 
 import Random from '@/lib/Random';
 import GeoStyle from '@/lib/geo/GeoStyle';
+import { generateFilters } from '@/lib/test/random/FilterGenerator';
 
 const CHOICES_BOOL = [true, false];
-const CHOICES_DATES_FROM = [1, 3, 5, 10];
 
 test('GeoStyle#get [fuzz test]', () => {
   for (let i = 0; i < 10; i++) {
     const aerial = Random.choice(CHOICES_BOOL);
     const dark = Random.choice(CHOICES_BOOL);
-    const datesFrom = Random.choice(CHOICES_DATES_FROM);
+    const filters = generateFilters();
     const layers = {
       counts: Random.choice(CHOICES_BOOL),
       collisions: Random.choice(CHOICES_BOOL),
@@ -20,7 +20,7 @@ test('GeoStyle#get [fuzz test]', () => {
     const options = {
       aerial,
       dark,
-      datesFrom,
+      ...filters,
       layers,
     };
 
