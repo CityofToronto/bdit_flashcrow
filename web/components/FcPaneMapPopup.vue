@@ -82,7 +82,8 @@ function getCollisionDescription(feature, collision) {
   }
 
   collision.involved.forEach(({ invtype, invage }) => {
-    const invageRange = `${invage} to ${invage + 4}`;
+    const invageQuantized = Math.floor(invage / 5) * 5;
+    const invageRange = `${invageQuantized} to ${invageQuantized + 5}`;
     if (invtype === 3) {
       description.push(`Pedestrian \u00b7 ${invageRange}`);
     } else if (invtype === 4) {
@@ -92,7 +93,8 @@ function getCollisionDescription(feature, collision) {
 
   const { accdate } = collision;
   const accdateStr = TimeFormatters.formatDateTime(accdate);
-  description.push(accdateStr);
+  const dayOfWeekStr = TimeFormatters.formatDayOfWeek(accdate);
+  description.push(`${accdateStr} (${dayOfWeekStr})`);
 
   let { street1, street2 } = collision;
   if (street1 !== null) {
