@@ -392,11 +392,7 @@ export default {
         return 'School';
       }
       if (this.layerId === 'studies') {
-        const { numArteryCodes } = this.feature.properties;
-        if (numArteryCodes === 1) {
-          return '1 Study Location';
-        }
-        return `${numArteryCodes} Study Locations`;
+        return 'Study Location';
       }
       return null;
     },
