@@ -38,6 +38,17 @@
           class="mt-5 ml-5"
           :readonly="filtersReadonly" />
       </div>
+
+      <v-alert
+        v-if="filtersIncludeOlderData"
+        border="left"
+        class="fc-pane-map-warning-older-data elevation-2"
+        colored-border
+        dense
+        type="warning">
+        Collisions on map limited to last 10 years
+      </v-alert>
+
       <FcPaneMapLegend
         v-if="showLegend"
         v-model="internalLayers" />
@@ -502,6 +513,9 @@ export default {
     ...mapGetters('mapLayers', [
       'layersForMode',
     ]),
+    ...mapGetters('viewData', [
+      'filtersIncludeOlderData',
+    ]),
   },
   created() {
     this.map = null;
@@ -889,10 +903,16 @@ export default {
       width: 664px;
     }
   }
-  & > .fc-pane-map-legend {
+  & > .fc-pane-map-warning-older-data {
+    position: absolute;
+    right: 240px;
     top: 20px;
+    z-index: var(--z-index-controls);
+  }
+  & > .fc-pane-map-legend {
     position: absolute;
     right: 20px;
+    top: 20px;
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {

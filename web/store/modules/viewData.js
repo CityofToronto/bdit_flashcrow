@@ -214,6 +214,14 @@ export default {
       }
       return params;
     },
+    filtersIncludeOlderData(state, getters, rootState) {
+      const { applyDateRange, dateRangeStart } = state.filtersCommon;
+      if (!applyDateRange) {
+        return true;
+      }
+      const { now } = rootState;
+      return dateRangeStart.valueOf() < now.minus({ years: 10 }).valueOf();
+    },
     hasFilters(state, getters) {
       return getters.hasFiltersCollision || getters.hasFiltersCommon || getters.hasFiltersStudy;
     },
