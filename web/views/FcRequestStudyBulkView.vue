@@ -91,8 +91,6 @@
             :has-filters="false"
             :items="items"
             :loading="loadingItems"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
             @update-item="actionUpdateItem" />
         </section>
       </section>
@@ -149,8 +147,6 @@ export default {
       columns: RequestDataTableColumns,
       loadingItems: false,
       selectedItems: [],
-      sortBy: 'DUE_DATE',
-      sortDesc: true,
       studyRequestBulk: null,
       studyRequestChanges: [],
       studyRequestLocations: new Map(),

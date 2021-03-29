@@ -24,6 +24,10 @@ export default {
       column: null,
       query: null,
     },
+    sortRequest: {
+      sortBy: 'DUE_DATE',
+      sortDesc: true,
+    },
   },
   getters: {
     filterChipsRequest(state) {
@@ -115,6 +119,12 @@ export default {
     },
     setSearchRequestQuery(state, query) {
       state.searchRequest.query = query;
+    },
+    setSortRequestSortBy(state, sortBy) {
+      state.sortRequest.sortBy = sortBy;
+    },
+    setSortRequestSortDesc(state, sortDesc) {
+      state.sortRequest.sortDesc = sortDesc;
     },
   },
 };

@@ -197,8 +197,6 @@
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
             :parent-item="item"
-            :sort-by="internalSortBy"
-            :sort-desc="internalSortDesc"
             @update-item="actionUpdateItem" />
         </td>
       </template>
@@ -207,6 +205,8 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex';
+
 import {
   StudyRequestAssignee,
   StudyRequestStatus,
@@ -268,8 +268,6 @@ export default {
       type: Object,
       default: null,
     },
-    sortBy: String,
-    sortDesc: Boolean,
   },
   data() {
     const itemsAssignedTo = [
@@ -308,6 +306,9 @@ export default {
       LOCATION: (r) => {
         const dueDate = r.dueDate.toString();
         if (r.type.name === 'STUDY_REQUEST') {
+          if (r.location === null) {
+            return `ZZZ:${dueDate}`;
+          }
           return `${r.location.description}:${dueDate}`;
         }
         return `${r.studyRequestBulk.name}:${dueDate}`;
@@ -336,18 +337,18 @@ export default {
   computed: {
     internalSortBy: {
       get() {
-        return this.sortBy;
+        return this.sortRequest.sortBy;
       },
       set(internalSortBy) {
-        this.$emit('update:sortBy', internalSortBy);
+        this.setSortRequestSortBy(internalSortBy);
       },
     },
     internalSortDesc: {
       get() {
-        return this.sortDesc;
+        return this.sortRequest.sortDesc;
       },
       set(internalSortDesc) {
-        this.$emit('update:sortDesc', internalSortDesc);
+        this.setSortRequestSortDesc(internalSortDesc);
       },
     },
     isExpandedChild() {
@@ -363,6 +364,7 @@ export default {
       });
       return selectAll;
     },
+    ...mapState('trackRequests', ['sortRequest']),
   },
   methods: {
     actionSelectAll(item) {
@@ -411,6 +413,7 @@ export default {
       }
       return RequestActions.canAssignTo(this.auth.user, item.studyRequest);
     },
+    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
   },
 };
 </script>

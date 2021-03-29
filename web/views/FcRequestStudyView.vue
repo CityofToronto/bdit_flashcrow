@@ -127,7 +127,7 @@ export default {
         studyRequestLocation,
         studyRequestUsers,
       } = await getStudyRequest(id);
-      const features = [studyRequestLocation];
+      const features = studyRequestLocation === null ? [] : [studyRequestLocation];
       const selectionType = LocationSelectionType.POINTS;
       await this.initLocations({ features, selectionType });
 

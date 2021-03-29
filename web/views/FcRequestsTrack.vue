@@ -73,8 +73,6 @@
             :has-filters="hasFiltersRequest"
             :items="items"
             :loading="loading"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
             @update-item="actionUpdateItem" />
         </v-card-text>
       </v-card>
@@ -137,8 +135,6 @@ export default {
     return {
       columns: RequestDataTableColumns,
       selectedItems: [],
-      sortBy: 'DUE_DATE',
-      sortDesc: true,
       studyRequests: [],
       studyRequestsBulk: [],
       studyRequestLocations: new Map(),
