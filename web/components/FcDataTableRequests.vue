@@ -7,7 +7,6 @@
     }"
     :columns="columns"
     fixed-header
-    height="100%"
     :hide-default-header="isExpandedChild"
     :items="items"
     :loading="loading"
@@ -16,7 +15,8 @@
     single-expand
     :sort-by.sync="internalSortBy"
     :sort-desc.sync="internalSortDesc"
-    :sort-keys="sortKeys">
+    :sort-keys="sortKeys"
+    v-bind="$attrs">
     <template v-slot:no-data>
       <div class="mt-8 pt-7 secondary--text">
         <span v-if="hasFilters">

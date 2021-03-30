@@ -5,12 +5,13 @@
     class="fc-data-table"
     :custom-sort="customSort"
     disable-filtering
-    disable-pagination
     :headers="headers"
     hide-default-footer
     item-key="id"
     :items="itemsOrLoading"
+    :items-per-page.sync="internalItemsPerPage"
     :loading="loading"
+    :page.sync="internalPage"
     :show-select="showSelect"
     :sort-by.sync="internalSortBy"
     :sort-desc.sync="internalSortDesc"
@@ -74,9 +75,17 @@ export default {
     },
     columns: Array,
     items: Array,
+    itemsPerPage: {
+      type: Number,
+      default: 10,
+    },
     loading: {
       type: Boolean,
       default: false,
+    },
+    page: {
+      type: Number,
+      default: 1,
     },
     showSelect: {
       type: Boolean,
@@ -101,6 +110,22 @@ export default {
           ...options,
         };
       });
+    },
+    internalItemsPerPage: {
+      get() {
+        return this.itemsPerPage;
+      },
+      set(internalItemsPerPage) {
+        this.$emit('update:itemsPerPage', internalItemsPerPage);
+      },
+    },
+    internalPage: {
+      get() {
+        return this.page;
+      },
+      set(internalPage) {
+        this.$emit('update:page', internalPage);
+      },
     },
     internalSortBy: {
       get() {

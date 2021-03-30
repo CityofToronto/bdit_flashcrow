@@ -15,12 +15,12 @@
       </div>
     </div>
 
-    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 overflow-y-auto px-5">
+    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
       <v-card
-        class="fc-requests-track-card"
+        class="fc-requests-track-card d-flex flex-column fill-height"
         flat
         outlined>
-        <v-card-title class="py-2">
+        <v-card-title class="flex-grow-0 flex-shrink-0 py-2">
           <nav
             aria-label="Filtering and selection tools for requests"
             class="fc-requests-track-table-title align-center d-flex">
@@ -65,16 +65,36 @@
 
         <v-divider></v-divider>
 
-        <v-card-text class="fc-data-table-requests-wrapper overflow-y-hidden pa-0">
+        <v-card-text
+          class="fc-data-table-requests-wrapper flex-grow-1 flex-shrink-1 pa-0">
           <FcDataTableRequests
             v-model="selectedItems"
             aria-labelledby="heading_track_requests_requests"
             :columns="columns"
             :has-filters="hasFiltersRequest"
+            :height="heightTable"
             :items="items"
+            :items-per-page.sync="itemsPerPage"
             :loading="loading"
+            :page.sync="page"
+            :server-items-length="items.length"
             @update-item="actionUpdateItem" />
         </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions
+          v-if="items.length > 0"
+          class="flex-grow-0 flex-shrink-0">
+          <v-spacer></v-spacer>
+          <v-pagination
+            v-model="page"
+            :length="numPages"
+            :total-visible="7" />
+          <div>
+            {{pageFrom}}&ndash;{{pageTo}} of {{items.length}}
+          </div>
+        </v-card-actions>
       </v-card>
     </section>
   </section>
@@ -134,6 +154,9 @@ export default {
   data() {
     return {
       columns: RequestDataTableColumns,
+      heightTable: 400,
+      itemsPerPage: 5,
+      page: 1,
       selectedItems: [],
       studyRequests: [],
       studyRequestsBulk: [],
@@ -185,6 +208,15 @@ export default {
       });
       return itemsAll;
     },
+    numPages() {
+      return Math.ceil(this.items.length / this.itemsPerPage);
+    },
+    pageFrom() {
+      return (this.page - 1) * this.itemsPerPage + 1;
+    },
+    pageTo() {
+      return Math.min(this.items.length, this.page * this.itemsPerPage);
+    },
     selectAll: {
       get() {
         const k = this.selectedItems.length;
@@ -214,6 +246,10 @@ export default {
   created() {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
     this.setFiltersRequestUserOnly(userOnly);
+  },
+  mounted() {
+    const $tableWrapper = this.$el.querySelector('.fc-data-table-requests-wrapper');
+    this.heightTable = $tableWrapper.clientHeight - 48;
   },
   methods: {
     actionDownload(items) {
