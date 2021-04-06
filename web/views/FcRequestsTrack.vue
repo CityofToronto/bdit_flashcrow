@@ -249,7 +249,7 @@ export default {
   },
   mounted() {
     const $tableWrapper = this.$el.querySelector('.fc-data-table-requests-wrapper');
-    this.heightTable = $tableWrapper.clientHeight - 48;
+    this.heightTable = $tableWrapper.clientHeight - 56;
   },
   methods: {
     actionDownload(items) {
