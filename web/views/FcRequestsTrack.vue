@@ -111,8 +111,7 @@ import {
 } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
-import { getStudyRequests } from '@/lib/api/WebApi';
-import { filterItem } from '@/lib/requests/RequestFilters';
+import { getStudyRequestItems } from '@/lib/api/WebApi';
 import {
   getStudyRequestItem,
   getStudyRequestBulkItem,
@@ -155,7 +154,7 @@ export default {
     return {
       columns: RequestDataTableColumns,
       heightTable: 400,
-      itemsPerPage: 5,
+      itemsPerPage: 25,
       page: 1,
       selectedItems: [],
       studyRequests: [],
@@ -165,17 +164,16 @@ export default {
     };
   },
   computed: {
-    items() {
-      return this.itemsNormalized
-        .map(item => filterItem(
-          this.filtersRequest,
-          this.searchRequest,
-          this.auth.user,
-          item,
-        ))
-        .filter(item => item !== null);
+    filterParamsRequestWithPagination() {
+      const limit = this.itemsPerPage;
+      const offset = (this.page - 1) * this.itemsPerPage;
+      return {
+        ...this.filterParamsRequest,
+        limit,
+        offset,
+      };
     },
-    itemsNormalized() {
+    items() {
       const itemsStudyRequests = this.studyRequests.map(
         studyRequest => getStudyRequestItem(
           this.studyRequestLocations,
@@ -239,9 +237,14 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
-    ...mapGetters('trackRequests', ['hasFiltersRequest']),
+    ...mapGetters('trackRequests', ['filterParamsRequest', 'hasFiltersRequest']),
     ...mapState(['auth']),
     ...mapState('trackRequests', ['filtersRequest', 'searchRequest']),
+  },
+  watch: {
+    filterParamsRequestWithPagination() {
+      this.loadAsync();
+    },
   },
   created() {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
@@ -270,7 +273,7 @@ export default {
         studyRequestsBulk,
         studyRequestLocations,
         studyRequestUsers,
-      } = await getStudyRequests();
+      } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
 
       this.studyRequests = studyRequests;
       this.studyRequestsBulk = studyRequestsBulk;

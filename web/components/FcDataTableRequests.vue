@@ -278,13 +278,6 @@ export default {
     ];
 
     const sortKeys = {
-      ASSIGNED_TO: (r) => {
-        const dueDate = r.dueDate.toString();
-        if (r.assignedTo !== 'Unassigned') {
-          return `${r.assignedTo}:${dueDate}`;
-        }
-        return `ZZZ:${dueDate}`;
-      },
       CREATED_AT: r => r.createdAt.toString(),
       DUE_DATE: r => r.dueDate.toString(),
       ID: (r) => {
@@ -297,33 +290,9 @@ export default {
           ),
         );
       },
-      LAST_EDITED_AT: (r) => {
-        if (r.lastEditedAt === null) {
-          return `A:${r.dueDate.toString()}`;
-        }
-        return `B:${r.lastEditedAt.toString()}`;
-      },
-      LOCATION: (r) => {
-        const dueDate = r.dueDate.toString();
-        if (r.type.name === 'STUDY_REQUEST') {
-          if (r.location === null) {
-            return `ZZZ:${dueDate}`;
-          }
-          return `${r.location.description}:${dueDate}`;
-        }
-        return `${r.studyRequestBulk.name}:${dueDate}`;
-      },
       REQUESTER: (r) => {
         const requestedBy = formatUsername(r.requestedBy);
         return `${requestedBy}:${r.dueDate.toString()}`;
-      },
-      STATUS: r => `${r.status.ordinal}:${r.dueDate.toString()}`,
-      STUDY_TYPE: (r) => {
-        const dueDate = r.dueDate.toString();
-        if (r.type.name === 'STUDY_REQUEST') {
-          return `${r.studyRequest.studyType.label}:${dueDate}`;
-        }
-        return `ZZZ:${dueDate}`;
       },
     };
 

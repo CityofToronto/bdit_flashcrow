@@ -81,6 +81,50 @@ export default {
       }
       return filterChipsRequest;
     },
+    filterParamsRequest(state) {
+      const {
+        assignees,
+        closed,
+        createdAt,
+        lastEditedAt,
+        statuses,
+        studyTypes,
+        studyTypeOther,
+        userOnly,
+      } = state.filtersRequest;
+      const { column, query } = state.searchRequest;
+      const { sortBy, sortDesc } = state.sortRequest;
+      const params = { sortBy, sortDesc };
+      if (assignees.length > 0) {
+        params.assignees = assignees;
+      }
+      if (closed) {
+        params.closed = true;
+      }
+      if (createdAt !== 0) {
+        params.createdAt = createdAt;
+      }
+      if (lastEditedAt !== 0) {
+        params.lastEditedAt = lastEditedAt;
+      }
+      if (statuses.length > 0) {
+        params.statuses = statuses;
+      }
+      if (studyTypes.length > 0) {
+        params.studyTypes = studyTypes;
+      }
+      if (studyTypeOther) {
+        params.studyTypeOther = true;
+      }
+      if (userOnly) {
+        params.userOnly = true;
+      }
+      if (query !== null) {
+        params.column = column;
+        params.query = query;
+      }
+      return params;
+    },
     hasFiltersRequest(state, getters) {
       return getters.filterChipsRequest.length > 0 || state.searchRequest.query !== null;
     },
