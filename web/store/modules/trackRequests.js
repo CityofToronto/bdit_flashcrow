@@ -119,7 +119,7 @@ export default {
       if (userOnly) {
         params.userOnly = true;
       }
-      if (query !== null) {
+      if (query !== null && query !== '') {
         params.column = column;
         params.query = query;
       }

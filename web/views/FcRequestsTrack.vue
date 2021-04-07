@@ -91,7 +91,11 @@
             v-model="page"
             :length="numPages"
             :total-visible="7" />
-          <div>
+          <FcProgressCircular
+            v-if="loadingTotal"
+            aria-label="Loading total number of requests"
+            small />
+          <div v-else>
             {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
         </v-card-actions>
@@ -111,6 +115,7 @@ import {
 } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
+import { debounce } from '@/lib/FunctionUtils';
 import { getStudyRequestItems, getStudyRequestItemsTotal } from '@/lib/api/WebApi';
 import {
   getStudyRequestItem,
@@ -120,6 +125,7 @@ import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import RequestItemExport from '@/lib/requests/RequestItemExport';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcStudyRequestFilters from '@/web/components/requests/FcStudyRequestFilters.vue';
@@ -146,6 +152,7 @@ export default {
     FcDataTableRequests,
     FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,
+    FcProgressCircular,
     FcSearchBarRequests,
     FcStudyRequestFilters,
     FcStudyRequestFilterShortcuts,
@@ -155,6 +162,7 @@ export default {
       columns: RequestDataTableColumns,
       heightTable: 400,
       itemsPerPage: 25,
+      loadingTotal: false,
       page: 1,
       selectedItems: [],
       studyRequests: [],
@@ -243,7 +251,18 @@ export default {
     ...mapState('trackRequests', ['filtersRequest', 'searchRequest']),
   },
   watch: {
-    async filterParamsRequestWithPagination() {
+    filterParamsRequest: {
+      deep: true,
+      handler: debounce(async function updateTotal() {
+        this.loadingTotal = true;
+
+        const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
+        this.total = total;
+
+        this.loadingTotal = false;
+      }, 500),
+    },
+    filterParamsRequestWithPagination: debounce(async function updateItems() {
       this.loading = true;
 
       const {
@@ -259,7 +278,7 @@ export default {
       this.studyRequestUsers = studyRequestUsers;
 
       this.loading = false;
-    },
+    }, 200),
   },
   created() {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);

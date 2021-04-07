@@ -4,6 +4,10 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   WITH bulk_agg AS (
     SELECT
       srb.id,
+      concat('|', array_to_string(array_agg(DISTINCT(COALESCE(sr."assignedTo", 'Unassigned'))), '|'), '|') AS "searchAssignedTo",
+      array_agg(sr.id) AS "searchId",
+      concat('|', array_to_string(array_agg(DISTINCT(sr."status")), '|'), '|') AS "searchStatus",
+      concat('|', array_to_string(array_agg(DISTINCT(sr."studyType")), '|'), '|') AS "searchStudyType",
       srb."createdAt" AS "sortCreatedAt",
       srb."dueDate" AS "sortDueDate",
       max(sr.id) AS "sortId"
@@ -14,6 +18,11 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   SELECT
     FALSE AS bulk,
     sr.id,
+    sr."assignedTo" AS "searchAssignedTo",
+    ARRAY[sr.id] AS "searchId",
+    u."uniqueName" AS "searchRequester",
+    sr."status" AS "searchStatus",
+    sr."studyType" AS "searchStudyType",
     sr."createdAt" AS "sortCreatedAt",
     sr."dueDate" AS "sortDueDate",
     sr.id AS "sortId",
@@ -25,6 +34,11 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   SELECT
     TRUE AS bulk,
     ba.id,
+    ba."searchAssignedTo",
+    ba."searchId",
+    u."uniqueName" AS "searchRequester",
+    ba."searchStatus",
+    ba."searchStudyType",
     ba."sortCreatedAt",
     ba."sortDueDate",
     ba."sortId",
