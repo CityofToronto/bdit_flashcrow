@@ -52,11 +52,6 @@
             hide-details
             :label="status.text"
             :value="status"></v-checkbox>
-          <v-checkbox
-            v-model="internalFilters.closed"
-            class="mt-2"
-            hide-details
-            label="Closed"></v-checkbox>
         </fieldset>
 
         <fieldset class="mt-6">
@@ -77,30 +72,6 @@
             :label="assignee.text"
             :value="assignee"></v-checkbox>
         </fieldset>
-
-        <FcRadioGroup
-          v-model="internalFilters.createdAt"
-          class="mt-6"
-          hide-details
-          :items="[
-            { label: 'Less than 1 month ago', value: -1 },
-            { label: 'Less than 3 months ago', value: -3 },
-            { label: 'At least 3 months ago', value: 3 },
-            { label: 'All', value: 0 },
-          ]"
-          label="Date Requested" />
-
-        <FcRadioGroup
-          v-model="internalFilters.lastEditedAt"
-          class="mt-6"
-          hide-details
-          :items="[
-            { label: 'Less than 1 month ago', value: -1 },
-            { label: 'Less than 3 months ago', value: -3 },
-            { label: 'At least 3 months ago', value: 3 },
-            { label: 'All', value: 0 },
-          ]"
-          label="Last Updated" />
 
         <FcRadioGroup
           v-model="internalFilters.userOnly"
@@ -164,9 +135,6 @@ export default {
     actionClearAll() {
       this.internalFilters = {
         assignees: [],
-        closed: false,
-        createdAt: 0,
-        lastEditedAt: 0,
         statuses: [],
         studyTypes: [],
         studyTypeOther: false,

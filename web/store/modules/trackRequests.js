@@ -1,19 +1,8 @@
-function timeAgoFilterText(prefix, value) {
-  const monthPlural = Math.abs(value) === 1 ? 'month' : 'months';
-  if (value < 0) {
-    return `${prefix} \u003c ${-value} ${monthPlural} ago`;
-  }
-  return `${prefix} \u2265 ${value} ${monthPlural} ago`;
-}
-
 export default {
   namespaced: true,
   state: {
     filtersRequest: {
       assignees: [],
-      closed: false,
-      createdAt: 0,
-      lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
@@ -26,16 +15,13 @@ export default {
     },
     sortRequest: {
       sortBy: 'DUE_DATE',
-      sortDesc: true,
+      sortDesc: false,
     },
   },
   getters: {
     filterChipsRequest(state) {
       const {
         assignees,
-        closed,
-        createdAt,
-        lastEditedAt,
         statuses,
         studyTypes,
         studyTypeOther,
@@ -56,25 +42,11 @@ export default {
         const filterChip = { filter: 'statuses', label, value: status };
         filterChipsRequest.push(filterChip);
       });
-      if (closed) {
-        const filterChip = { filter: 'closed', label: 'Closed', value: true };
-        filterChipsRequest.push(filterChip);
-      }
       assignees.forEach((assignee) => {
         const label = assignee === null ? 'Unassigned' : assignee.text;
         const filterChip = { filter: 'assignees', label, value: assignee };
         filterChipsRequest.push(filterChip);
       });
-      if (createdAt !== 0) {
-        const label = timeAgoFilterText('Created', createdAt);
-        const filterChip = { filter: 'createdAt', label, value: createdAt };
-        filterChipsRequest.push(filterChip);
-      }
-      if (lastEditedAt !== 0) {
-        const label = timeAgoFilterText('Updated', lastEditedAt);
-        const filterChip = { filter: 'lastEditedAt', label, value: lastEditedAt };
-        filterChipsRequest.push(filterChip);
-      }
       if (userOnly) {
         const filterChip = { filter: 'userOnly', label: 'Requested by me', value: true };
         filterChipsRequest.push(filterChip);
@@ -84,9 +56,6 @@ export default {
     filterParamsRequest(state) {
       const {
         assignees,
-        closed,
-        createdAt,
-        lastEditedAt,
         statuses,
         studyTypes,
         studyTypeOther,
@@ -97,15 +66,6 @@ export default {
       const params = { sortBy, sortDesc };
       if (assignees.length > 0) {
         params.assignees = assignees;
-      }
-      if (closed) {
-        params.closed = true;
-      }
-      if (createdAt !== 0) {
-        params.createdAt = createdAt;
-      }
-      if (lastEditedAt !== 0) {
-        params.lastEditedAt = lastEditedAt;
       }
       if (statuses.length > 0) {
         params.statuses = statuses;
@@ -131,13 +91,7 @@ export default {
   },
   mutations: {
     removeFilterRequest(state, { filter, value }) {
-      if (filter === 'closed') {
-        state.filtersRequest.closed = false;
-      } else if (filter === 'createdAt') {
-        state.filtersRequest.createdAt = 0;
-      } else if (filter === 'lastEditedAt') {
-        state.filtersRequest.lastEditedAt = 0;
-      } else if (filter === 'studyTypeOther') {
+      if (filter === 'studyTypeOther') {
         state.filtersRequest.studyTypeOther = false;
       } else if (filter === 'userOnly') {
         state.filtersRequest.userOnly = false;

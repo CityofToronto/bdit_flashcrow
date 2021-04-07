@@ -30,9 +30,6 @@ const SHORTCUT_CHIPS = [
   {
     filters: {
       assignees: [],
-      closed: false,
-      createdAt: 0,
-      lastEditedAt: 0,
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
@@ -40,32 +37,15 @@ const SHORTCUT_CHIPS = [
     label: 'All',
   }, {
     filters: {
-      assignees: [],
-      closed: false,
-      createdAt: -1,
-      lastEditedAt: 0,
+      assignees: [null],
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
     },
-    label: 'New',
+    label: 'Unassigned',
   }, {
     filters: {
       assignees: [],
-      closed: false,
-      createdAt: 0,
-      lastEditedAt: -1,
-      statuses: [],
-      studyTypes: [],
-      studyTypeOther: false,
-    },
-    label: 'Recently Updated',
-  }, {
-    filters: {
-      assignees: [],
-      closed: false,
-      createdAt: 0,
-      lastEditedAt: 0,
       statuses: [StudyRequestStatus.CANCELLED],
       studyTypes: [],
       studyTypeOther: false,
@@ -74,10 +54,11 @@ const SHORTCUT_CHIPS = [
   }, {
     filters: {
       assignees: [],
-      closed: true,
-      createdAt: 0,
-      lastEditedAt: 0,
-      statuses: [],
+      statuses: [
+        StudyRequestStatus.CANCELLED,
+        StudyRequestStatus.COMPLETED,
+        StudyRequestStatus.REJECTED,
+      ],
       studyTypes: [],
       studyTypeOther: false,
     },

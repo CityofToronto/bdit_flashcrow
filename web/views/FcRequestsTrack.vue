@@ -257,6 +257,8 @@ export default {
         this.loadingTotal = true;
 
         const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
+
+        this.page = 1;
         this.total = total;
 
         this.loadingTotal = false;

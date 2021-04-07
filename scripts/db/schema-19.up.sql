@@ -4,6 +4,9 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   WITH bulk_agg AS (
     SELECT
       srb.id,
+      array_agg(DISTINCT(sr."assignedTo")) AS "filterAssignedTo",
+      array_agg(DISTINCT(sr."status")) AS "filterStatus",
+      array_agg(DISTINCT(sr."studyType")) AS "filterStudyType",
       concat('|', array_to_string(array_agg(DISTINCT(COALESCE(sr."assignedTo", 'Unassigned'))), '|'), '|') AS "searchAssignedTo",
       array_agg(sr.id) AS "searchId",
       concat('|', array_to_string(array_agg(DISTINCT(sr."status")), '|'), '|') AS "searchStatus",
@@ -18,6 +21,10 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   SELECT
     FALSE AS bulk,
     sr.id,
+    ARRAY[sr."assignedTo"] AS "filterAssignedTo",
+    ARRAY[sr."status"] AS "filterStatus",
+    ARRAY[sr."studyType"] AS "filterStudyType",
+    sr."userId" AS "filterUserId",
     sr."assignedTo" AS "searchAssignedTo",
     ARRAY[sr.id] AS "searchId",
     u."uniqueName" AS "searchRequester",
@@ -34,6 +41,10 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   SELECT
     TRUE AS bulk,
     ba.id,
+    ba."filterAssignedTo",
+    ba."filterStatus",
+    ba."filterStudyType",
+    srb."userId" AS "filterUserId",
     ba."searchAssignedTo",
     ba."searchId",
     u."uniqueName" AS "searchRequester",
