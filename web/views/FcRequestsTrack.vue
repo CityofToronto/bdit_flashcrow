@@ -92,7 +92,7 @@
             :length="numPages"
             :total-visible="7" />
           <div>
-            {{pageFrom}}&ndash;{{pageTo}} of {{items.length}}
+            {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
         </v-card-actions>
       </v-card>
@@ -111,7 +111,7 @@ import {
 } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
-import { getStudyRequestItems } from '@/lib/api/WebApi';
+import { getStudyRequestItems, getStudyRequestItemsTotal } from '@/lib/api/WebApi';
 import {
   getStudyRequestItem,
   getStudyRequestBulkItem,
@@ -161,6 +161,7 @@ export default {
       studyRequestsBulk: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
+      total: 0,
     };
   },
   computed: {
@@ -207,13 +208,13 @@ export default {
       return itemsAll;
     },
     numPages() {
-      return Math.ceil(this.items.length / this.itemsPerPage);
+      return Math.ceil(this.total / this.itemsPerPage);
     },
     pageFrom() {
       return (this.page - 1) * this.itemsPerPage + 1;
     },
     pageTo() {
-      return Math.min(this.items.length, this.page * this.itemsPerPage);
+      return Math.min(this.total, this.page * this.itemsPerPage);
     },
     selectAll: {
       get() {
@@ -242,8 +243,22 @@ export default {
     ...mapState('trackRequests', ['filtersRequest', 'searchRequest']),
   },
   watch: {
-    filterParamsRequestWithPagination() {
-      this.loadAsync();
+    async filterParamsRequestWithPagination() {
+      this.loading = true;
+
+      const {
+        studyRequests,
+        studyRequestsBulk,
+        studyRequestLocations,
+        studyRequestUsers,
+      } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
+
+      this.studyRequests = studyRequests;
+      this.studyRequestsBulk = studyRequestsBulk;
+      this.studyRequestLocations = studyRequestLocations;
+      this.studyRequestUsers = studyRequestUsers;
+
+      this.loading = false;
     },
   },
   created() {
@@ -274,11 +289,13 @@ export default {
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
+      const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
 
       this.studyRequests = studyRequests;
       this.studyRequestsBulk = studyRequestsBulk;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
+      this.total = total;
     },
     async onUpdateStudyRequests() {
       this.loading = true;
