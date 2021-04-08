@@ -7,34 +7,39 @@ CREATE MATERIALIZED VIEW study_request_items AS (
       array_agg(DISTINCT(sr."assignedTo")) AS "filterAssignedTo",
       array_agg(DISTINCT(sr."status")) AS "filterStatus",
       array_agg(DISTINCT(sr."studyType")) AS "filterStudyType",
-      concat('|', array_to_string(array_agg(DISTINCT(COALESCE(sr."assignedTo", 'Unassigned'))), '|'), '|') AS "searchAssignedTo",
+      array_to_string(array_agg(DISTINCT(COALESCE(sr."assignedTo", 'Unassigned'))), '|') AS "searchAssignedTo",
       array_agg(sr.id) AS "searchId",
-      concat('|', array_to_string(array_agg(DISTINCT(sr."status")), '|'), '|') AS "searchStatus",
-      concat('|', array_to_string(array_agg(DISTINCT(sr."studyType")), '|'), '|') AS "searchStudyType",
+      array_to_string(srb.name::text || array_agg(DISTINCT(lsc."description")), '|') AS "searchLocation",
+      array_to_string(array_agg(DISTINCT(sr."status")), '|') AS "searchStatus",
+      array_to_string(array_agg(DISTINCT(sr."studyType")), '|') AS "searchStudyType",
       srb."createdAt" AS "sortCreatedAt",
       srb."dueDate" AS "sortDueDate",
       max(sr.id) AS "sortId"
     FROM study_requests_bulk srb
     JOIN study_requests sr ON srb.id = sr."studyRequestBulkId"
+    LEFT JOIN location_search.centreline lsc USING ("centrelineType", "centrelineId")
     GROUP BY srb.id
   )
   SELECT
     FALSE AS bulk,
-    sr.id,
+    sr."id",
     ARRAY[sr."assignedTo"] AS "filterAssignedTo",
     ARRAY[sr."status"] AS "filterStatus",
     ARRAY[sr."studyType"] AS "filterStudyType",
     sr."userId" AS "filterUserId",
     sr."assignedTo" AS "searchAssignedTo",
-    ARRAY[sr.id] AS "searchId",
+    ARRAY[sr."id"] AS "searchId",
+    lsc."description" AS "searchLocation",
     u."uniqueName" AS "searchRequester",
     sr."status" AS "searchStatus",
     sr."studyType" AS "searchStudyType",
     sr."createdAt" AS "sortCreatedAt",
     sr."dueDate" AS "sortDueDate",
-    sr.id AS "sortId",
+    sr."id" AS "sortId",
+    lsc."description" AS "sortLocation",
     u."uniqueName" AS "sortRequester"
   FROM study_requests sr
+  LEFT JOIN location_search.centreline lsc USING ("centrelineType", "centrelineId")
   LEFT JOIN users u ON sr."userId" = u.id
   WHERE "studyRequestBulkId" IS NULL
   UNION ALL
@@ -47,12 +52,14 @@ CREATE MATERIALIZED VIEW study_request_items AS (
     srb."userId" AS "filterUserId",
     ba."searchAssignedTo",
     ba."searchId",
+    ba."searchLocation",
     u."uniqueName" AS "searchRequester",
     ba."searchStatus",
     ba."searchStudyType",
     ba."sortCreatedAt",
     ba."sortDueDate",
     ba."sortId",
+    srb."name" AS "sortLocation",
     u."uniqueName" AS "sortRequester"
   FROM bulk_agg ba
   JOIN study_requests_bulk srb ON ba.id = srb.id

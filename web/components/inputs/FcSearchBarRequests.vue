@@ -27,8 +27,16 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
-import RequestSearchKeys from '@/lib/requests/RequestSearchKeys';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+const COLUMNS_SEARCHABLE = [
+  'ASSIGNED_TO',
+  'ID',
+  'LOCATION',
+  'REQUESTER',
+  'STATUS',
+  'STUDY_TYPE',
+];
 
 export default {
   name: 'FcSearchBarRequests',
@@ -55,7 +63,7 @@ export default {
     },
     itemsColumn() {
       const searchableColumns = this.columns.filter(
-        column => Object.prototype.hasOwnProperty.call(RequestSearchKeys, column.value),
+        column => COLUMNS_SEARCHABLE.includes(column.value),
       );
       return [
         { text: 'All Columns', value: null },

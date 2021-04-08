@@ -1,6 +1,7 @@
 <template>
   <FcDataTable
     :aria-labelledby="ariaLabelledby"
+    backend
     class="fc-data-table-requests"
     :class="{
       'is-expanded-child': isExpandedChild,
@@ -211,7 +212,6 @@ import {
   StudyRequestAssignee,
   StudyRequestStatus,
 } from '@/lib/Constants';
-import { formatUsername } from '@/lib/StringFormatters';
 import RequestActions from '@/lib/requests/RequestActions';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
@@ -278,22 +278,11 @@ export default {
     ];
 
     const sortKeys = {
-      CREATED_AT: r => r.createdAt.toString(),
-      DUE_DATE: r => r.dueDate.toString(),
-      ID: (r) => {
-        if (r.type.name === 'STUDY_REQUEST') {
-          return r.studyRequest.id;
-        }
-        return Math.max(
-          ...r.studyRequestBulk.studyRequests.map(
-            ({ studyRequest }) => studyRequest.id,
-          ),
-        );
-      },
-      REQUESTER: (r) => {
-        const requestedBy = formatUsername(r.requestedBy);
-        return `${requestedBy}:${r.dueDate.toString()}`;
-      },
+      CREATED_AT: true,
+      DUE_DATE: true,
+      ID: true,
+      LOCATION: true,
+      REQUESTER: true,
     };
 
     return {

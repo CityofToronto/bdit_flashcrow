@@ -69,6 +69,10 @@ export default {
       type: String,
       default: null,
     },
+    backend: {
+      type: Boolean,
+      default: false,
+    },
     caption: {
       type: String,
       default: null,
@@ -181,6 +185,10 @@ export default {
   },
   methods: {
     customSort(items, sortBy, sortDesc) {
+      if (this.backend) {
+        // Let the backend take care of sorting.
+        return items;
+      }
       const kf = sortDesc.map(desc => (desc ? -1 : 1));
       return [...items].sort((a, b) => {
         const ka = sortBy.map(k => this.sortKeys[k](a));
