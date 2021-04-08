@@ -165,8 +165,7 @@ export default {
       loadingTotal: false,
       page: 1,
       selectedItems: [],
-      studyRequests: [],
-      studyRequestsBulk: [],
+      studyRequestItems: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
       total: 0,
@@ -183,24 +182,20 @@ export default {
       };
     },
     items() {
-      const itemsStudyRequests = this.studyRequests.map(
-        studyRequest => getStudyRequestItem(
+      return this.studyRequestItems.map(({ bulk, request }) => {
+        if (bulk) {
+          return getStudyRequestBulkItem(
+            this.studyRequestLocations,
+            this.studyRequestUsers,
+            request,
+          );
+        }
+        return getStudyRequestItem(
           this.studyRequestLocations,
           this.studyRequestUsers,
-          studyRequest,
-        ),
-      );
-      const itemsStudyRequestsBulk = this.studyRequestsBulk.map(
-        studyRequestBulk => getStudyRequestBulkItem(
-          this.studyRequestLocations,
-          this.studyRequestUsers,
-          studyRequestBulk,
-        ),
-      );
-      return [
-        ...itemsStudyRequests,
-        ...itemsStudyRequestsBulk,
-      ];
+          request,
+        );
+      });
     },
     itemsStudyRequest() {
       const itemsAll = [];
@@ -246,6 +241,11 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
+    studyRequestsBulk() {
+      return this.studyRequestItems
+        .filter(({ bulk }) => bulk)
+        .map(({ request }) => request);
+    },
     ...mapGetters('trackRequests', ['filterParamsRequest', 'hasFiltersRequest']),
     ...mapState(['auth']),
     ...mapState('trackRequests', ['filtersRequest', 'searchRequest']),
@@ -268,14 +268,12 @@ export default {
       this.loading = true;
 
       const {
-        studyRequests,
-        studyRequestsBulk,
+        studyRequestItems,
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
 
-      this.studyRequests = studyRequests;
-      this.studyRequestsBulk = studyRequestsBulk;
+      this.studyRequestItems = studyRequestItems;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
 
@@ -305,15 +303,13 @@ export default {
     },
     async loadAsyncForRoute() {
       const {
-        studyRequests,
-        studyRequestsBulk,
+        studyRequestItems,
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
       const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
 
-      this.studyRequests = studyRequests;
-      this.studyRequestsBulk = studyRequestsBulk;
+      this.studyRequestItems = studyRequestItems;
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
       this.total = total;
