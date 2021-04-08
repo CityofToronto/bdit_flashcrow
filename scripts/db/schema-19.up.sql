@@ -1,6 +1,26 @@
 BEGIN;
 
-CREATE MATERIALIZED VIEW study_request_items AS (
+CREATE TABLE study_request_items (
+  bulk BOOLEAN NOT NULL,
+  id BIGINT NOT NULL,
+  "filterAssignedTo" VARCHAR[] NOT NULL,
+  "filterStatus" VARCHAR[] NOT NULL,
+  "filterStudyType" VARCHAR[] NOT NULL,
+  "filterUserId" BIGINT NOT NULL,
+  "searchAssignedTo" VARCHAR,
+  "searchId" BIGINT[] NOT NULL,
+  "searchLocation" TEXT,
+  "searchRequester" VARCHAR,
+  "searchStatus" VARCHAR NOT NULL,
+  "searchStudyType" VARCHAR NOT NULL,
+  "sortCreatedAt" TIMESTAMP NOT NULL,
+  "sortDueDate" TIMESTAMP NOT NULL,
+  "sortId" BIGINT NOT NULL,
+  "sortLocation" TEXT,
+  "sortRequester" VARCHAR
+);
+
+INSERT INTO study_request_items (
   WITH bulk_agg AS (
     SELECT
       srb.id,
@@ -65,7 +85,17 @@ CREATE MATERIALIZED VIEW study_request_items AS (
   JOIN study_requests_bulk srb ON ba.id = srb.id
   JOIN users u ON srb."userId" = u.id
 );
+
 CREATE UNIQUE INDEX study_request_items_bulk_id ON study_request_items (bulk, id);
+CREATE INDEX study_request_items_filterassignedto ON study_request_items USING GIN ("filterAssignedTo");
+CREATE INDEX study_request_items_filterstatus ON study_request_items USING GIN ("filterStatus");
+CREATE INDEX study_request_items_filterstudytype ON study_request_items USING GIN ("filterStudyType");
+CREATE INDEX study_request_items_filteruserid ON study_request_items ("filterUserId");
+CREATE INDEX study_request_items_sortcreatedat ON study_request_items ("sortCreatedAt");
+CREATE INDEX study_request_items_sortduedate ON study_request_items ("sortDueDate");
+CREATE INDEX study_request_items_sortid ON study_request_items ("sortId");
+CREATE INDEX study_request_items_sortlocation ON study_request_items ("sortLocation");
+CREATE INDEX study_request_items_sortrequester ON study_request_items ("sortRequester");
 
 UPDATE "APP_META"."DB_UPDATE" SET "currentVersion" = 19;
 COMMIT;

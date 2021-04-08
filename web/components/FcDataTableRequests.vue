@@ -159,11 +159,6 @@
         <span>{{item.status.text}}</span>
       </div>
     </template>
-    <template v-slot:item.LAST_EDITED_AT="{ item }">
-      <span v-if="item.lastEditedAt !== null">
-        {{item.lastEditedAt | date}}
-      </span>
-    </template>
     <template v-slot:header.ACTIONS>
       <span class="sr-only">Actions</span>
     </template>
@@ -428,11 +423,6 @@ export default {
     width: 140px;
   }
   & td:nth-child(11),
-  & th.fc-data-table-header-LAST_EDITED_AT {
-    min-width: 140px;
-    width: 140px;
-  }
-  & td:nth-child(12),
   & th.fc-data-table-header-ACTIONS {
     min-width: 105px;
     width: 105px;
