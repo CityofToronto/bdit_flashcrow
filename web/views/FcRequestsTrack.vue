@@ -87,10 +87,7 @@
           v-if="items.length > 0"
           class="flex-grow-0 flex-shrink-0">
           <v-spacer></v-spacer>
-          <v-pagination
-            v-model="page"
-            :length="numPages"
-            :total-visible="7" />
+
           <FcProgressCircular
             v-if="loadingTotal"
             aria-label="Loading total number of requests"
@@ -98,6 +95,11 @@
           <div v-else>
             {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
+
+          <v-pagination
+            v-model="page"
+            :length="numPages"
+            :total-visible="7" />
         </v-card-actions>
       </v-card>
     </section>

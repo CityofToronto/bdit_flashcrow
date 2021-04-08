@@ -65,7 +65,9 @@ export default {
       const { sortBy, sortDesc } = state.sortRequest;
       const params = { sortBy, sortDesc };
       if (assignees.length > 0) {
-        params.assignees = assignees;
+        params.assignees = assignees.map(
+          assignee => (assignee === null ? '' : assignee),
+        );
       }
       if (statuses.length > 0) {
         params.statuses = statuses;
