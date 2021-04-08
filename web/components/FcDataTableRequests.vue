@@ -101,10 +101,7 @@
           Multiple Locations
           <FcTextNumberTotal
             class="ml-1"
-            :k="hasFilters ? item.studyRequestBulk.studyRequests.length : null"
-            :n="hasFilters
-              ? item.studyRequestsTotal
-              : item.studyRequestBulk.studyRequests.length" />
+            :n="item.studyRequestBulk.studyRequests.length" />
         </span>
         <FcTooltip
           v-else-if="item.studyRequest.studyType.other"
@@ -137,15 +134,7 @@
       </span>
     </template>
     <template v-slot:item.ASSIGNED_TO="{ item }">
-      <FcMenuStudyRequestsAssignTo
-        v-if="canAssignTo(item)"
-        button-class="body-1"
-        small
-        :study-requests="[item.studyRequest]"
-        :text="item.assignedTo"
-        width="140"
-        @update="actionUpdateItem(item)" />
-      <span v-else>{{item.assignedTo}}</span>
+      <span>{{item.assignedTo}}</span>
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
       <span
@@ -213,8 +202,6 @@ import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
-import FcMenuStudyRequestsAssignTo
-  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -243,7 +230,6 @@ export default {
   components: {
     FcButtonAria,
     FcDataTable,
-    FcMenuStudyRequestsAssignTo,
     FcTextNumberTotal,
     FcTooltip,
   },

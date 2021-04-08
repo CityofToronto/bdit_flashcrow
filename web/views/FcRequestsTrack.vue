@@ -277,6 +277,8 @@ export default {
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
 
+      this.selectedItems = [];
+
       this.loading = false;
     }, 200),
   },
