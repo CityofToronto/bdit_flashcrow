@@ -12,7 +12,6 @@ import {
   generateStudyRequest,
   generateStudyRequestBulk,
 } from '@/lib/test/random/StudyRequestGenerator';
-import { generateUser } from '@/lib/test/random/UserGenerator';
 
 const args = yargs
   .option('b', {
@@ -25,12 +24,6 @@ const args = yargs
     alias: 'requests',
     demandOption: true,
     describe: 'number of requests to generate',
-    type: 'number',
-  })
-  .option('u', {
-    alias: 'users',
-    demandOption: true,
-    describe: 'number of users to generate',
     type: 'number',
   })
   .argv;
@@ -71,21 +64,13 @@ function correctStudyRequestBulkLocation(transientStudyRequestBulk, centrelineAl
   };
 }
 
-async function generateAndLoad({ bulk, requests, users }) {
+async function generateAndLoad({ bulk, requests }) {
   const centrelineAll = await getCentrelineAll();
-
-  // generate users
-  const persistedUsers = [];
-  for (let i = 0; i < users; i++) {
-    const transientUser = generateUser();
-    /* eslint-disable-next-line no-await-in-loop */
-    const persistedUser = await UserDAO.create(transientUser);
-    persistedUsers.push(persistedUser);
-  }
+  const usersAll = await UserDAO.all();
 
   // generate requests
   for (let i = 0; i < requests; i++) {
-    const persistedUser = Random.choice(persistedUsers);
+    const persistedUser = Random.choice(usersAll);
     if (Math.random() < bulk) {
       let transientStudyRequestBulk = generateStudyRequestBulk();
       transientStudyRequestBulk = correctStudyRequestBulkLocation(
