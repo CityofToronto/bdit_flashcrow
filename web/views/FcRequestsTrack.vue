@@ -77,7 +77,6 @@
             :items-per-page.sync="itemsPerPage"
             :loading="loading"
             :page.sync="page"
-            :server-items-length="items.length"
             @update-item="actionUpdateItem" />
         </v-card-text>
 
@@ -216,6 +215,9 @@ export default {
       return Math.ceil(this.total / this.itemsPerPage);
     },
     pageFrom() {
+      if (this.total === 0) {
+        return 0;
+      }
       return (this.page - 1) * this.itemsPerPage + 1;
     },
     pageTo() {
