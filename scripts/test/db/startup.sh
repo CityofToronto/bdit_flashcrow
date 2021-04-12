@@ -90,15 +90,16 @@ echo "Generating PostgreSQL user password..."
 PG_USER_PASSWORD=$(openssl rand -base64 32)
 echo "localhost:5433:flashcrow:flashcrow:${PG_USER_PASSWORD}" >> ${RAMDISK_PGPASS}
 
-# install MOVE database: we create the database with its own user, set up PostGIS extensions,
-# and run any database migrations
+# install MOVE database: we create the database with its own user, set up PostGIS extensions...
 echo "Setting up MOVE application database..."
 psql -h localhost -p 5433 -U flashcrow_dba postgres -v pgPassword="'$PG_USER_PASSWORD'" < "${GIT_ROOT}/scripts/dev/provision-db-vagrant.sql"
 psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/test/db/collision_factors.sql"
+
+# ...load dev dataset as produced by our `dev_data` Airflow job...
+psql -h localhost -p 5433 -U flashcrow flashcrow < "${FLASHCROW_DEV_DATA}"
+
+# ...and run any database migrations.
 psql -h localhost -p 5433 -U flashcrow flashcrow < "${GIT_ROOT}/scripts/db/db-update-install.sql"
 "${GIT_ROOT}/scripts/db/db-update.sh" --psqlArgs "-h localhost -p 5433 -U flashcrow flashcrow"
-
-# load dev dataset as produced by our `dev_data` Airflow job
-psql -h localhost -p 5433 -U flashcrow flashcrow < "${FLASHCROW_DEV_DATA}"
 
 echo "Done."
