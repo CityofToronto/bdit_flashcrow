@@ -1,11 +1,5 @@
 {
   "amPeak": {
-    "indices": [
-      2,
-      3,
-      4,
-      5
-    ],
     "sum": {
       "N_CARS_EXITS": 141,
       "N_CARS_L": 15,
@@ -111,12 +105,6 @@
     }
   },
   "pmPeak": {
-    "indices": [
-      27,
-      28,
-      29,
-      30
-    ],
     "sum": {
       "N_CARS_EXITS": 120,
       "N_CARS_L": 8,
@@ -222,61 +210,43 @@
     }
   },
   "offHours": {
-    "indices": [
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23
-    ],
     "avg": {
       "N_CARS_EXITS": 81,
       "N_CARS_L": 9,
       "N_CARS_T": 8,
       "N_CARS_R": 11,
-      "N_CARS_TOTAL": 27,
+      "N_CARS_TOTAL": 28,
       "E_CARS_EXITS": 428,
       "E_CARS_L": 7,
       "E_CARS_T": 417,
       "E_CARS_R": 6,
-      "E_CARS_TOTAL": 431,
+      "E_CARS_TOTAL": 430,
       "S_CARS_EXITS": 18,
       "S_CARS_L": 0,
       "S_CARS_T": 0,
       "S_CARS_R": 0,
       "S_CARS_TOTAL": 0,
-      "W_CARS_EXITS": 401,
+      "W_CARS_EXITS": 402,
       "W_CARS_L": 12,
       "W_CARS_T": 393,
       "W_CARS_R": 66,
       "W_CARS_TOTAL": 471,
-      "N_TRUCK_EXITS": 1,
+      "N_TRUCK_EXITS": 2,
       "N_TRUCK_L": 0,
       "N_TRUCK_T": 0,
       "N_TRUCK_R": 0,
-      "N_TRUCK_TOTAL": 1,
+      "N_TRUCK_TOTAL": 0,
       "E_TRUCK_EXITS": 8,
       "E_TRUCK_L": 1,
       "E_TRUCK_T": 8,
       "E_TRUCK_R": 1,
-      "E_TRUCK_TOTAL": 9,
+      "E_TRUCK_TOTAL": 10,
       "S_TRUCK_EXITS": 1,
       "S_TRUCK_L": 0,
       "S_TRUCK_T": 0,
       "S_TRUCK_R": 0,
       "S_TRUCK_TOTAL": 0,
-      "W_TRUCK_EXITS": 9,
+      "W_TRUCK_EXITS": 8,
       "W_TRUCK_L": 0,
       "W_TRUCK_T": 8,
       "W_TRUCK_R": 1,
@@ -313,14 +283,14 @@
       "S_OTHER": 0,
       "E_OTHER": 0,
       "W_OTHER": 0,
-      "N_VEHICLE_EXITS": 82,
+      "N_VEHICLE_EXITS": 83,
       "N_VEHICLE_L": 9,
       "N_VEHICLE_T": 8,
       "N_VEHICLE_R": 11,
-      "N_VEHICLE_TOTAL": 27,
-      "E_VEHICLE_EXITS": 453,
+      "N_VEHICLE_TOTAL": 28,
+      "E_VEHICLE_EXITS": 452,
       "E_VEHICLE_L": 8,
-      "E_VEHICLE_T": 442,
+      "E_VEHICLE_T": 441,
       "E_VEHICLE_R": 7,
       "E_VEHICLE_TOTAL": 456,
       "S_VEHICLE_EXITS": 19,
@@ -337,7 +307,7 @@
       "PEDS_TOTAL": 135,
       "BIKE_TOTAL": 47,
       "OTHER_TOTAL": 0,
-      "TOTAL": 1159
+      "TOTAL": 1160
     },
     "timeRange": {
       "start": "2018-02-27 10:00:00.000",
@@ -345,16 +315,6 @@
     }
   },
   "am": {
-    "indices": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
-    ],
     "sum": {
       "N_CARS_EXITS": 251,
       "N_CARS_L": 19,
@@ -460,16 +420,6 @@
     }
   },
   "pm": {
-    "indices": [
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30,
-      31
-    ],
     "sum": {
       "N_CARS_EXITS": 205,
       "N_CARS_L": 12,
@@ -575,40 +525,6 @@
     }
   },
   "all": {
-    "indices": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30,
-      31
-    ],
     "sum": {
       "N_CARS_EXITS": 780,
       "N_CARS_L": 65,

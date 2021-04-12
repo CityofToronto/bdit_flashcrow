@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import ArrayUtils from '@/lib/ArrayUtils';
 import { StudyHours } from '@/lib/Constants';
 import Random from '@/lib/Random';
 import ArrayStats from '@/lib/math/ArrayStats';
@@ -14,18 +13,33 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781.json'),
 );
 
-test('ReportCountSummaryTurningMovement.sumIndices', () => {
+function generateIndexRange(xs) {
+  const n = xs.length;
+  const a = Random.range(0, n);
+  let b = a;
+  while (b === a) {
+    b = Random.range(0, n);
+  }
+  if (a < b) {
+    return { lo: a, hi: b };
+  }
+  return { lo: b, hi: a };
+}
+
+test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
   // fuzz test
   for (let i = 0; i < 10; i++) {
     const k = 5;
     const countData = generateTmc();
-    const indices = Random.sample(ArrayUtils.range(countData.length), k);
-    const sum = ReportCountSummaryTurningMovement.sumIndices(countData, indices);
+    const indexRange = generateIndexRange(countData);
+    const { lo, hi } = indexRange;
+    const sum = ReportCountSummaryTurningMovement.sumIndexRange(countData, indexRange);
     const keysToTest = Random.sample(Array.from(Object.keys(countData[0].data)), k);
     keysToTest.forEach((key) => {
       expect(sum[key]).toBe(
         ArrayStats.sum(
-          ArrayUtils.selectIndices(countData, indices)
+          countData
+            .slice(lo, hi)
             .map(({ data }) => data[key]),
         ),
       );

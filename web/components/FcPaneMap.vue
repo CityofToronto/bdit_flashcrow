@@ -40,7 +40,7 @@
       </div>
 
       <v-alert
-        v-if="filtersIncludeOlderData"
+        v-if="showLegend && filtersIncludeOlderData"
         border="left"
         class="fc-pane-map-warning-older-data elevation-2"
         colored-border
