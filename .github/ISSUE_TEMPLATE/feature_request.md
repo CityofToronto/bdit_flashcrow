@@ -2,7 +2,7 @@
 name: Feature request
 about: Describe a feature for this project
 title: ''
-labels: feature
+labels: feature, p2
 assignees: candu
 
 ---

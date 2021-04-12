@@ -2,7 +2,7 @@
 name: Bug report
 about: Report bugs and unexpected behaviour
 title: ''
-labels: bug
+labels: bug, p2
 assignees: candu
 
 ---
