@@ -1,0 +1,32 @@
+{
+  "date": "2016-11-02 00:00:00",
+  "hourlyTotals": [],
+  "timeRanges": [],
+  "totals": {
+    "N_R": 0,
+    "N_T": 0,
+    "N_L": 0,
+    "E_R": 0,
+    "E_T": 0,
+    "E_L": 0,
+    "S_R": 0,
+    "S_T": 0,
+    "S_L": 0,
+    "W_R": 0,
+    "W_T": 0,
+    "W_L": 0,
+    "N_BIKE": 0,
+    "N_OTHER": 0,
+    "E_BIKE": 0,
+    "E_OTHER": 0,
+    "S_BIKE": 0,
+    "S_OTHER": 0,
+    "W_BIKE": 0,
+    "W_OTHER": 0,
+    "MAJOR_CROSSING_PEDS": 0,
+    "MAJOR_CROSSING_TOTAL": 0,
+    "MAJOR_APPROACHES": 0,
+    "MINOR_APPROACHES": 0,
+    "TOTAL": 0
+  }
+}

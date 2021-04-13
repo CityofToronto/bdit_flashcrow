@@ -14,6 +14,20 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781 = loadJson
   ),
 );
 
+test('ReportCountSummaryTurningMovementDetailed#transformData [empty dataset]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovementDetailed();
+
+  const { count, counts } = setup_5_36781();
+  const studyData = new Map([[1, []]]);
+  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { hours, px, raw } = transformedData;
+  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(px).toBe(1390);
+  transformedData = raw;
+
+  expect(transformedData).toEqual([]);
+});
+
 test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 

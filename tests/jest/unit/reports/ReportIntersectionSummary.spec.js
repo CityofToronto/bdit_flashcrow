@@ -15,6 +15,35 @@ const transformedData_INTERSECTION_SUMMARY_5_34621 = loadJsonSync(
 const transformedData_INTERSECTION_SUMMARY_5_38661 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_INTERSECTION_SUMMARY_5_38661.json'),
 );
+const transformedData_INTERSECTION_SUMMARY_empty = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_INTERSECTION_SUMMARY_empty.json'),
+);
+
+// EMPTY
+
+test('ReportIntersectionSummary#transformData [empty dataset, 3-way]', () => {
+  const reportInstance = new ReportIntersectionSummary();
+
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_34621_directional();
+  const countData = [];
+
+  let transformedData = reportInstance.transformData(study, {
+    count,
+    countData,
+    intersection,
+    segments,
+  });
+  const { hours, px, ...transformedDataRest } = transformedData;
+  expect(hours).toBe(StudyHours.ROUTINE);
+  expect(px).toBe(null);
+  transformedData = transformedDataRest;
+  expect(transformedData).toEqual(transformedData_INTERSECTION_SUMMARY_empty);
+});
 
 // 3-WAY INTERSECTION
 

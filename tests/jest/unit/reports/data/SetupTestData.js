@@ -53,6 +53,7 @@ function setup_5_34621_directional() {
   const countData = mapTmcCountData(countData_5_34621);
 
   const count = {
+    date: DateTime.fromSQL('2016-11-02 00:00:00'),
     hours: StudyHours.ROUTINE,
     id: 34621,
     locationDesc: 'CHAMPAGNE DR AT CHESSWOOD DR',

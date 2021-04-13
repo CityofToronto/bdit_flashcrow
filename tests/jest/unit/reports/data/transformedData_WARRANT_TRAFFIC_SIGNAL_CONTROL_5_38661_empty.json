@@ -1,0 +1,84 @@
+{
+  "minVolume": {
+    "a": {
+      "compliance": {
+        "avg": 0,
+        "full": 0,
+        "partial": 0,
+        "rest": 0,
+        "total": 0
+      },
+      "hourly": [],
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
+    },
+    "b": {
+      "compliance": {
+        "avg": 0,
+        "full": 0,
+        "partial": 0,
+        "rest": 0,
+        "total": 0
+      },
+      "hourly": [],
+      "threshold": {
+        "full": 170,
+        "partial": 136
+      }
+    },
+    "compliance": 0
+  },
+  "delayToCross": {
+    "a": {
+      "compliance": {
+        "avg": 0,
+        "full": 0,
+        "partial": 0,
+        "rest": 0,
+        "total": 0
+      },
+      "hourly": [],
+      "threshold": {
+        "full": 900,
+        "partial": 720
+      }
+    },
+    "b": {
+      "compliance": {
+        "avg": 0,
+        "full": 0,
+        "partial": 0,
+        "rest": 0,
+        "total": 0
+      },
+      "hourly": [],
+      "threshold": {
+        "full": 75,
+        "partial": 60
+      }
+    },
+    "compliance": 0
+  },
+  "collisionHazard": {
+    "a": {
+      "annual": [
+        3,
+        5,
+        10
+      ],
+      "compliance": 100,
+      "startDate": "2012-04-01 00:00:00.000",
+      "threshold": 5,
+      "value": {
+        "avg": 6,
+        "total": 18
+      }
+    },
+    "b": true,
+    "compliance": 100
+  },
+  "combination": false,
+  "date": "2019-04-13 00:00:00.000"
+}

@@ -13,6 +13,10 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781.json'),
 );
 
+const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty.json'),
+);
+
 test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
   // fuzz test
   for (let i = 0; i < 10; i++) {
@@ -32,6 +36,20 @@ test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
       );
     });
   }
+});
+
+test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovement();
+
+  const { count, counts } = setup_5_36781();
+  const studyData = new Map([[1, []]]);
+  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { hours, px, stats } = transformedData;
+  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(px).toBe(1390);
+  transformedData = stats;
+
+  expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty);
 });
 
 test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/36781]', () => {

@@ -24,26 +24,31 @@ function dateTimeWithHour(hour) {
   });
 }
 
-test('ReportCountSummary24hGraphical#transformData', () => {
+test('ReportCountSummary24hGraphical#transformData [empty dataset]', () => {
   const reportInstance = new ReportCountSummary24hGraphical();
 
   const { arteries, counts, study } = setup_4_2156283();
-  let countData = [];
-  let studyData = new Map([[17, countData]]);
-  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
-  let expected = new Array(24).fill(0);
+  const countData = [];
+  const studyData = new Map([[17, countData]]);
+  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const expected = new Array(24).fill(0);
   expect(transformedData).toEqual([{
     date: study.date,
     direction: CardinalDirection.NORTH,
     volumeByHour: expected,
   }]);
+});
 
-  countData = [
+test('ReportCountSummary24hGraphical#transformData [simple test cases]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const { arteries, counts, study } = setup_4_2156283();
+  let countData = [
     { t: dateTimeWithHour(11), data: { COUNT: 42 } },
   ];
-  studyData = new Map([[17, countData]]);
-  transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
-  expected = new Array(24).fill(0);
+  let studyData = new Map([[17, countData]]);
+  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  let expected = new Array(24).fill(0);
   expected[11] = 42;
   expect(transformedData).toEqual([{
     date: study.date,
