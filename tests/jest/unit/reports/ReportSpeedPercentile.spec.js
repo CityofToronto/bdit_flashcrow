@@ -10,6 +10,9 @@ import { setup_4_2156283 } from '@/tests/jest/unit/reports/data/SetupTestData';
 const transformedData_SPEED_PERCENTILE_4_2156283 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_SPEED_PERCENTILE_4_2156283.json'),
 );
+const transformedData_SPEED_PERCENTILE_4_2156283_empty = loadJsonSync(
+  path.resolve(__dirname, './data/transformedData_SPEED_PERCENTILE_4_2156283_empty.json'),
+);
 
 expect.extend({
   toBeWithinTolerance,
@@ -45,6 +48,20 @@ test('ReportSpeedPercentile.getArrayStats', () => {
     pct95: 39,
     mu: 35,
   });
+});
+
+test('ReportSpeedPercentile#transformData [empty dataset]', () => {
+  const reportInstance = new ReportSpeedPercentile();
+
+  const { arteries, counts, study } = setup_4_2156283();
+  const studyData = new Map([[17, []]]);
+  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  expect(transformedData).toHaveLength(1);
+  const { date, direction, stats } = transformedData[0];
+  expect(date.equals(study.date)).toBe(true);
+  expect(direction).toBe(CardinalDirection.NORTH);
+  transformedData = stats;
+  expect(transformedData).toEqual(transformedData_SPEED_PERCENTILE_4_2156283_empty);
 });
 
 test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]', () => {

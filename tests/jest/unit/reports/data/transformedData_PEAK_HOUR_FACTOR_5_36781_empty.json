@@ -1,0 +1,53 @@
+{
+  "date": "2018-02-27 00:00:00.000",
+  "hours": "SCHOOL",
+  "px": 1390,
+  "amPeak": {
+    "timeRange": null,
+    "movement": {
+      "N_L": null,
+      "N_T": null,
+      "N_R": null,
+      "E_L": null,
+      "E_T": null,
+      "E_R": null,
+      "S_L": null,
+      "S_T": null,
+      "S_R": null,
+      "W_L": null,
+      "W_T": null,
+      "W_R": null
+    },
+    "direction": {
+      "N": null,
+      "E": null,
+      "S": null,
+      "W": null
+    },
+    "total": null
+  },
+  "pmPeak": {
+    "timeRange": null,
+    "movement": {
+      "N_L": null,
+      "N_T": null,
+      "N_R": null,
+      "E_L": null,
+      "E_T": null,
+      "E_R": null,
+      "S_L": null,
+      "S_T": null,
+      "S_R": null,
+      "W_L": null,
+      "W_T": null,
+      "W_R": null
+    },
+    "direction": {
+      "N": null,
+      "E": null,
+      "S": null,
+      "W": null
+    },
+    "total": null
+  }
+}

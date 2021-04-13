@@ -6,7 +6,12 @@ import Random from '@/lib/Random';
 import ArrayStats from '@/lib/math/ArrayStats';
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
-import { generateIndexRange, generateTmc } from '@/lib/test/random/CountDataGenerator';
+import {
+  generateIndexRange,
+  generateTmc,
+  generateTmc14Hour,
+  generateWithMissing,
+} from '@/lib/test/random/CountDataGenerator';
 import { setup_5_36781 } from '@/tests/jest/unit/reports/data/SetupTestData';
 
 const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781 = loadJsonSync(
@@ -50,6 +55,45 @@ test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
   transformedData = stats;
 
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty);
+});
+
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovement();
+
+  const { count, counts } = setup_5_36781();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc();
+    const studyData = new Map([[1, countData]]);
+    expect(() => {
+      reportInstance.transformData(count, { counts, studyData });
+    }).not.toThrow();
+  }
+});
+
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovement();
+
+  const { count, counts } = setup_5_36781();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc14Hour();
+    const studyData = new Map([[1, countData]]);
+    expect(() => {
+      reportInstance.transformData(count, { counts, studyData });
+    }).not.toThrow();
+  }
+});
+
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovement();
+
+  const { count, counts } = setup_5_36781();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateWithMissing(generateTmc());
+    const studyData = new Map([[1, countData]]);
+    expect(() => {
+      reportInstance.transformData(count, { counts, studyData });
+    }).not.toThrow();
+  }
 });
 
 test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/36781]', () => {

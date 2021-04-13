@@ -5,6 +5,11 @@ import { StudyHours } from '@/lib/Constants';
 import ReportIntersectionSummary from '@/lib/reports/ReportIntersectionSummary';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
+  generateTmc,
+  generateTmc14Hour,
+  generateWithMissing,
+} from '@/lib/test/random/CountDataGenerator';
+import {
   setup_5_34621_directional,
   setup_5_38661_directional,
 } from '@/tests/jest/unit/reports/data/SetupTestData';
@@ -43,6 +48,77 @@ test('ReportIntersectionSummary#transformData [empty dataset, 3-way]', () => {
   expect(px).toBe(null);
   transformedData = transformedDataRest;
   expect(transformedData).toEqual(transformedData_INTERSECTION_SUMMARY_empty);
+});
+
+// FUZZ TESTS
+
+test('ReportIntersectionSummary#transformData [fuzz test, TMC]', () => {
+  const reportInstance = new ReportIntersectionSummary();
+
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_34621_directional();
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc();
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      });
+    }).not.toThrow();
+  }
+});
+
+test('ReportIntersectionSummary#transformData [fuzz test, TMC 14-hour]', () => {
+  const reportInstance = new ReportIntersectionSummary();
+
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_34621_directional();
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc14Hour();
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      });
+    }).not.toThrow();
+  }
+});
+
+test('ReportIntersectionSummary#transformData [fuzz test, TMC with missing]', () => {
+  const reportInstance = new ReportIntersectionSummary();
+
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_34621_directional();
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateWithMissing(generateTmc());
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      });
+    }).not.toThrow();
+  }
 });
 
 // 3-WAY INTERSECTION

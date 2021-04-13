@@ -4,6 +4,11 @@ import path from 'path';
 import { CardinalDirection } from '@/lib/Constants';
 import ReportCountSummary24hGraphical from '@/lib/reports/ReportCountSummary24hGraphical';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import {
+  generateAtrSpeedVolume,
+  generateAtrVolume,
+  generateWithMissing,
+} from '@/lib/test/random/CountDataGenerator';
 import DateTime from '@/lib/time/DateTime';
 import { setup_4_2156283 } from '@/tests/jest/unit/reports/data/SetupTestData';
 
@@ -73,6 +78,45 @@ test('ReportCountSummary24hGraphical#transformData [simple test cases]', () => {
     direction: CardinalDirection.NORTH,
     volumeByHour: expected,
   }]);
+});
+
+test('ReportCountSummary24hGraphical#transformData [fuzz test, ATR speed / volume]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const { arteries, counts, study } = setup_4_2156283();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateAtrSpeedVolume();
+    const studyData = new Map([[17, countData]]);
+    expect(() => {
+      reportInstance.transformData(study, { arteries, counts, studyData });
+    }).not.toThrow();
+  }
+});
+
+test('ReportCountSummary24hGraphical#transformData [fuzz test, ATR volume]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const { arteries, counts, study } = setup_4_2156283();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateAtrVolume();
+    const studyData = new Map([[17, countData]]);
+    expect(() => {
+      reportInstance.transformData(study, { arteries, counts, studyData });
+    }).not.toThrow();
+  }
+});
+
+test('ReportCountSummary24hGraphical#transformData [fuzz test, ATR volume with missing]', () => {
+  const reportInstance = new ReportCountSummary24hGraphical();
+
+  const { arteries, counts, study } = setup_4_2156283();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateWithMissing(generateAtrVolume());
+    const studyData = new Map([[17, countData]]);
+    expect(() => {
+      reportInstance.transformData(study, { arteries, counts, studyData });
+    }).not.toThrow();
+  }
 });
 
 test('ReportCountSummary24hGraphical#transformData [Morningside S of Lawrence: 4/2156283]', () => {

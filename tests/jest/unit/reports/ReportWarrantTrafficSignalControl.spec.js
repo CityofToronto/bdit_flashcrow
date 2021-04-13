@@ -5,6 +5,11 @@ import { StudyHours } from '@/lib/Constants';
 import { NotImplementedError } from '@/lib/error/MoveErrors';
 import ReportWarrantTrafficSignalControl from '@/lib/reports/ReportWarrantTrafficSignalControl';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
+import {
+  generateTmc,
+  generateTmc14Hour,
+  generateWithMissing,
+} from '@/lib/test/random/CountDataGenerator';
 import DateTime from '@/lib/time/DateTime';
 import {
   setup_5_38661_directional,
@@ -56,6 +61,93 @@ test('ReportWarrantTrafficSignalControl#transformData [empty dataset]', () => {
   expect(px).toBe(679);
   transformedData = transformedDataRest;
   expect(transformedData).toEqual(transformedData_WARRANT_TRAFFIC_SIGNAL_CONTROL_5_38661_empty);
+});
+
+test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC]', () => {
+  const reportInstance = new ReportWarrantTrafficSignalControl();
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_38661_directional();
+  const options = {
+    adequateTrial: true,
+    isTwoLane: false,
+    isXIntersection: true,
+    preventablesByYear: [3, 5, 10],
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
+  };
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc();
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      }, options);
+    }).not.toThrow();
+  }
+});
+
+test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC 14-hour]', () => {
+  const reportInstance = new ReportWarrantTrafficSignalControl();
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_38661_directional();
+  const options = {
+    adequateTrial: true,
+    isTwoLane: false,
+    isXIntersection: true,
+    preventablesByYear: [3, 5, 10],
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
+  };
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateTmc14Hour();
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      }, options);
+    }).not.toThrow();
+  }
+});
+
+test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC with missing]', () => {
+  const reportInstance = new ReportWarrantTrafficSignalControl();
+  const {
+    count,
+    intersection,
+    segments,
+    study,
+  } = setup_5_38661_directional();
+  const options = {
+    adequateTrial: true,
+    isTwoLane: false,
+    isXIntersection: true,
+    preventablesByYear: [3, 5, 10],
+    startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
+  };
+
+  for (let i = 0; i < 3; i++) {
+    const countData = generateWithMissing(generateTmc());
+    expect(() => {
+      reportInstance.transformData(study, {
+        count,
+        countData,
+        intersection,
+        segments,
+      }, options);
+    }).not.toThrow();
+  }
 });
 
 test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 5/38661]', () => {
