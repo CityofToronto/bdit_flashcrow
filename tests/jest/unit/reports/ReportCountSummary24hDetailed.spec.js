@@ -22,15 +22,11 @@ test('ReportCountSummary24hDetailed#transformData [empty dataset]', () => {
   const studyData = new Map([[17, []]]);
   let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(transformedData).toHaveLength(1);
-  const { date, direction, volumeByBucket } = transformedData[0];
+  const { date, direction, totaledData } = transformedData[0];
   expect(date.equals(study.date)).toBe(true);
   expect(direction).toBe(CardinalDirection.NORTH);
-  transformedData = volumeByBucket;
-
-  const expectedData = transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283.map(
-    ({ t }) => ({ t, count: 0 }),
-  );
-  expect(transformedData).toEqual(expectedData);
+  transformedData = totaledData;
+  expect(transformedData).toEqual([]);
 });
 
 test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/2156283]', () => {
@@ -49,10 +45,10 @@ test('ReportCountSummary24hDetailed#transformData [Morningside S of Lawrence: 4/
   } = setup_4_2156283();
   let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
   expect(transformedData).toHaveLength(1);
-  const { date, direction, volumeByBucket } = transformedData[0];
+  const { date, direction, totaledData } = transformedData[0];
   expect(date.equals(study.date)).toBe(true);
   expect(direction).toBe(CardinalDirection.NORTH);
-  transformedData = volumeByBucket;
+  transformedData = totaledData;
 
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_DETAILED_4_2156283);
 });

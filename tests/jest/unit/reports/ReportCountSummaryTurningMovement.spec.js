@@ -6,25 +6,12 @@ import Random from '@/lib/Random';
 import ArrayStats from '@/lib/math/ArrayStats';
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
-import { generateTmc } from '@/lib/test/random/CountDataGenerator';
+import { generateIndexRange, generateTmc } from '@/lib/test/random/CountDataGenerator';
 import { setup_5_36781 } from '@/tests/jest/unit/reports/data/SetupTestData';
 
 const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781 = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781.json'),
 );
-
-function generateIndexRange(xs) {
-  const n = xs.length;
-  const a = Random.range(0, n);
-  let b = a;
-  while (b === a) {
-    b = Random.range(0, n);
-  }
-  if (a < b) {
-    return { lo: a, hi: b };
-  }
-  return { lo: b, hi: a };
-}
 
 test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
   // fuzz test

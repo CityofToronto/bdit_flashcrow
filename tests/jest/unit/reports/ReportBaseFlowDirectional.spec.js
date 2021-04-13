@@ -1,8 +1,10 @@
-import { CardinalDirection } from '@/lib/Constants';
+import {
+  CardinalDirection,
+  TMC_MODES_VEHICLE,
+} from '@/lib/Constants';
 import ArrayStats from '@/lib/math/ArrayStats';
 import {
   generateTmcDataPoint,
-  TMC_MODES_VEHICLE,
 } from '@/lib/test/random/CountDataGenerator';
 import ReportBaseFlowDirectional from '@/lib/reports/ReportBaseFlowDirectional';
 
