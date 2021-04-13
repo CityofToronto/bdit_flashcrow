@@ -13,7 +13,6 @@
             "date": "2019-03-07 00:00:00.000",
             "dayOfWeek": "Thu",
             "amPeak": {
-              "indices": [32, 33, 34, 35],
               "sum": 488,
               "timeRange": {
                 "start": "2019-03-07 08:00:00.000",
@@ -21,7 +20,6 @@
               }
             },
             "pmPeak": {
-              "indices": [62, 63, 64, 65],
               "sum": 481,
               "timeRange": {
                 "start": "2019-03-07 15:30:00.000",
@@ -29,11 +27,10 @@
               }
             },
             "offPeak": {
-              "indices": [59, 60, 61, 62],
-              "sum": 441,
+              "sum": 391,
               "timeRange": {
-                "start": "2019-03-07 14:45:00.000",
-                "end": "2019-03-07 15:45:00.000"
+                "start": "2019-03-07 14:30:00.000",
+                "end": "2019-03-07 15:30:00.000"
               }
             },
             "total": 6063
@@ -43,13 +40,13 @@
           "sum": {
             "amPeak": 488,
             "pmPeak": 481,
-            "offPeak": 441,
+            "offPeak": 391,
             "total": 6063
           },
           "avg": {
             "amPeak": 488,
             "pmPeak": 481,
-            "offPeak": 441,
+            "offPeak": 391,
             "total": 6063
           }
         }
@@ -59,13 +56,13 @@
       "sum": {
         "amPeak": 488,
         "pmPeak": 481,
-        "offPeak": 441,
+        "offPeak": 391,
         "total": 6063
       },
       "avg": {
         "amPeak": 488,
         "pmPeak": 481,
-        "offPeak": 441,
+        "offPeak": 391,
         "total": 6063
       }
     }

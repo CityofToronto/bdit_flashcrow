@@ -1,54 +1,23 @@
 import Random from '@/lib/Random';
+import { toBeValidCountData, toBeValidIndexRangeFor } from '@/lib/test/ExpectMatchers';
 import {
   generateAtrSpeedVolume,
   generateAtrVolume,
   generateHourOfDayRange,
   generateIndexRange,
+  generateRandomCountData,
   generateTmc,
   generateTmc14Hour,
   generateWithMissing,
 } from '@/lib/test/random/CountDataGenerator';
-import DateTime from '@/lib/time/DateTime';
 
-function expectCountDataValid(countData) {
-  let tPrev = -Infinity;
-  let dateFirst = null;
-  let keysFirst = null;
-  countData.forEach((d) => {
-    // all data points must have timestamp `t`
-    expect(d).toHaveProperty('t');
-    expect(d.t).toBeInstanceOf(DateTime);
-
-    // timestamps must be in ascending order
-    const t = d.t.valueOf();
-    expect(t).toBeGreaterThanOrEqual(tPrev);
-    tPrev = t;
-
-    // timestamps must have same date
-    const { year, month, day } = d.t;
-    const date = { year, month, day };
-    if (dateFirst === null) {
-      dateFirst = date;
-    } else {
-      expect(date).toEqual(dateFirst);
-    }
-
-    // all data points must have `data`
-    expect(d).toHaveProperty('data');
-    expect(d.data).toBeInstanceOf(Object);
-
-    // all `data` values must have same keys
-    const keys = Object.keys(d.data);
-    if (keysFirst === null) {
-      keysFirst = keys;
-    } else {
-      expect(keys).toEqual(keysFirst);
-    }
-  });
-}
+expect.extend({
+  toBeValidCountData,
+  toBeValidIndexRangeFor,
+});
 
 test('CountDataGenerator.generateAtrSpeedVolume [fuzz test]', () => {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     const countData = generateAtrSpeedVolume();
 
     // Since these are large, we only test a subrange.
@@ -56,14 +25,14 @@ test('CountDataGenerator.generateAtrSpeedVolume [fuzz test]', () => {
     const k = 50;
     const lo = Random.range(0, n - k);
     const hi = lo + k;
-    expectCountDataValid(countData.slice(lo, hi));
+    expect(countData.slice(lo, hi)).toBeValidCountData();
   }
 });
 
 test('CountDataGenerator.generateAtrVolume [fuzz test]', () => {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     const countData = generateAtrVolume();
-    expectCountDataValid(countData);
+    expect(countData).toBeValidCountData();
   }
 });
 
@@ -80,28 +49,33 @@ test('CountDataGenerator.generateHourOfDayRange [fuzz test]', () => {
 
 test('CountDataGenerator.generateIndexRange [fuzz test]', () => {
   const countData = generateWithMissing(generateTmc());
-  const n = countData.length;
   for (let i = 0; i < 10; i++) {
-    const { lo, hi } = generateIndexRange(countData);
-    expect(lo).toBeGreaterThanOrEqual(0);
-    expect(lo).toBeLessThanOrEqual(n);
-    expect(hi).toBeGreaterThanOrEqual(0);
-    expect(hi).toBeLessThanOrEqual(n);
-    expect(lo).toBeLessThanOrEqual(hi);
+    const indexRange = generateIndexRange(countData);
+    expect(indexRange).toBeValidIndexRangeFor(countData);
+  }
+});
+
+test('CountDataGenerator.generateRandomCountData [fuzz test]', () => {
+  for (let i = 0; i < 10; i++) {
+    const countData = generateRandomCountData({
+      FOO: [42, 1729],
+      BAR: [1000, 10000],
+    });
+    expect(countData).toBeValidCountData();
   }
 });
 
 test('CountDataGenerator.generateTmc [fuzz test]', () => {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     const countData = generateTmc();
-    expectCountDataValid(countData);
+    expect(countData).toBeValidCountData();
   }
 });
 
 test('CountDataGenerator.generateTmc14Hour [fuzz test]', () => {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     const countData = generateTmc14Hour();
-    expectCountDataValid(countData);
+    expect(countData).toBeValidCountData();
   }
 });
 
@@ -113,5 +87,5 @@ test('CountDataGenerator.generateWithMissing', () => {
   const countData = generateTmc();
   const countDataWithMissing = generateWithMissing(countData);
   expect(countDataWithMissing.length).toBeLessThan(countData.length);
-  expectCountDataValid(countDataWithMissing);
+  expect(countData).toBeValidCountData();
 });

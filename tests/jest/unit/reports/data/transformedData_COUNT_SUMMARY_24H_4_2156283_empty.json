@@ -14,24 +14,15 @@
             "dayOfWeek": "Thu",
             "amPeak": {
               "sum": 0,
-              "timeRange": {
-                "start": "2019-03-07 00:00:00.000",
-                "end": "2019-03-07 01:00:00.000"
-              }
+              "timeRange": null
             },
             "pmPeak": {
               "sum": 0,
-              "timeRange": {
-                "start": "2019-03-07 12:00:00.000",
-                "end": "2019-03-07 13:00:00.000"
-              }
+              "timeRange": null
             },
             "offPeak": {
               "sum": 0,
-              "timeRange": {
-                "start": "2019-03-07 01:00:00.000",
-                "end": "2019-03-07 02:00:00.000"
-              }
+              "timeRange": null
             },
             "total": 0
           }
