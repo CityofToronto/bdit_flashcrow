@@ -21,7 +21,7 @@ function generateFeatures() {
 }
 
 test('CollisionFiltersSql.getCollisionFilters [fuzz test]', () => {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 25; i++) {
     const features = generateFeatures();
     const { filtersCollision, filtersCommon } = generateFilters();
     const collisionQuery = { ...filtersCollision, ...filtersCommon };
