@@ -1,9 +1,16 @@
 import db from '@/lib/db/db';
 import { CentrelineType } from '@/lib/Constants';
 import PoiDAO from '@/lib/db/PoiDAO';
+import { InvalidCentrelineTypeError } from '@/lib/error/MoveErrors';
 
 afterAll(() => {
   db.$pool.end();
+});
+
+test('PoiDAO.byCentrelineSummary [invalid centreline]', async () => {
+  await expect(
+    PoiDAO.byCentrelineSummary(-1, -1, 1000),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
 });
 
 test('PoiDAO.byCentrelineSummary', async () => {

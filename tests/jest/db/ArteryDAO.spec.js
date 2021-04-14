@@ -34,6 +34,11 @@ test('ArteryDAO.getApproachDirection', async () => {
   expect(ArteryDAO.getApproachDirection('W')).toBe(CardinalDirection.WEST);
 });
 
+test('ArteryDAO.byArteryCode [invalid]', async () => {
+  const result = await ArteryDAO.byArteryCode(-1);
+  expect(result).toBeNull();
+});
+
 test('ArteryDAO.byArteryCode', async () => {
   // intersection
   let result = await ArteryDAO.byArteryCode(1146);

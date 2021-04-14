@@ -118,6 +118,31 @@ test('CentrelineDAO.byFeatures', async () => {
   expectFeaturesResults(results, [null, query[1]]);
 });
 
+test('CentrelineDAO.featuresIncidentTo [invalid]', async () => {
+  // invalid ID and type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(-1, -1),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // invalid ID, valid type
+  await expect(
+    CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
+  ).resolves.toEqual([]);
+
+  // invalid type, valid ID
+  await expect(
+    CentrelineDAO.featuresIncidentTo(-1, 111569),
+  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
+
+  // non-existent intersection
+  let result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 1);
+  expect(result).toHaveLength(0);
+
+  // non-existent segment
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 1);
+  expect(result).toHaveLength(0);
+});
+
 test('CentrelineDAO.featuresIncidentTo', async () => {
   // 4-way intersection
   let result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 13463436);
@@ -141,27 +166,16 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
   });
 
   // segment
-  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 111569);
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 1146279);
   expect(result).toHaveLength(2);
   result.forEach(({ centrelineType }) => {
     expect(centrelineType).toBe(CentrelineType.INTERSECTION);
   });
 
-  // invalid ID and type
-  await expect(
-    CentrelineDAO.featuresIncidentTo(-1, -1),
-  ).rejects.toBeInstanceOf(InvalidCentrelineTypeError);
-
-  // invalid ID, valid type
-  await expect(
-    CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, -1),
-  ).resolves.toEqual([]);
-
-  // non-existent intersection
-  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.INTERSECTION, 1);
-  expect(result).toHaveLength(0);
-
-  // non-existent segment
-  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 1);
-  expect(result).toHaveLength(0);
+  // cul-de-sac segment
+  result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 111569);
+  expect(result).toHaveLength(1);
+  result.forEach(({ centrelineType }) => {
+    expect(centrelineType).toBe(CentrelineType.INTERSECTION);
+  });
 });

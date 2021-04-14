@@ -8,6 +8,7 @@ afterAll(() => {
 test('CollisionFactorDAO', async () => {
   expect(CollisionFactorDAO.isInited()).toBe(false);
 
+  // pre-init
   const collisionFactors = await CollisionFactorDAO.all();
   expect(collisionFactors).toBeInstanceOf(Map);
   expect(collisionFactors.get('acclass')).toBeInstanceOf(Map);
@@ -16,4 +17,8 @@ test('CollisionFactorDAO', async () => {
     description: 'Fatal',
   });
   expect(CollisionFactorDAO.isInited()).toBe(true);
+
+  // post-init: returns cached Map
+  const collisionFactors2 = await CollisionFactorDAO.all();
+  expect(collisionFactors2).toEqual(collisionFactors);
 });

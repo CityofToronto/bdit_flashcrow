@@ -25,6 +25,10 @@ afterAll(async () => {
 
 test('JobDAO', async () => {
   const id = uuidv4();
+
+  let fetchedJob = await JobDAO.byId(id);
+  expect(fetchedJob).toBeNull();
+
   const transientJob = {
     id,
     name: JobType.GENERATE_REPORTS.jobName,
@@ -41,6 +45,6 @@ test('JobDAO', async () => {
   const persistedJob = await JobDAO.create(transientJob);
   expect(persistedJob.state).toEqual('created');
 
-  const fetchedJob = await JobDAO.byId(id);
+  fetchedJob = await JobDAO.byId(id);
   expect(fetchedJob).toEqual(persistedJob);
 });

@@ -52,4 +52,13 @@ test('CountDAO.byStudy', async () => {
     type: { id: 1, studyType: StudyType.ATR_VOLUME },
   });
   expect(result).toHaveLength(6);
+
+  // study with notes
+  result = await CountDAO.byStudy({
+    arteryGroupId: 3184,
+    endDate: DateTime.fromObject({ year: 2009, month: 5, day: 10 }),
+    startDate: DateTime.fromObject({ year: 2009, month: 5, day: 10 }),
+    type: { id: 2, studyType: StudyType.RESCU },
+  });
+  expect(result).toHaveLength(1);
 });
