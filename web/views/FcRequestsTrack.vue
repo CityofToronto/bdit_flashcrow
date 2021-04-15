@@ -161,7 +161,6 @@ export default {
   data() {
     return {
       columns: RequestDataTableColumns,
-      heightTable: 0,
       itemsPerPage: 25,
       loadingTotal: false,
       page: 1,
