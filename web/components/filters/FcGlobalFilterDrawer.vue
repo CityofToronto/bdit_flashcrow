@@ -112,6 +112,7 @@ export default {
     return {
       indexOpen: null,
       internalFiltersCollision: {
+        details: [],
         drivact: [],
         drivcond: [],
         emphasisAreas: [],
@@ -119,8 +120,12 @@ export default {
         hoursOfDayEnd: 24,
         impactype: [],
         initdir: [],
+        injury: [],
         manoeuver: [],
+        mvcr: null,
         rdsfcond: [],
+        validated: null,
+        vehtype: [],
       },
       internalFiltersCommon: {
         dateRangeStart: null,
@@ -166,6 +171,7 @@ export default {
   methods: {
     actionClearAll() {
       this.internalFiltersCollision = {
+        details: [],
         drivact: [],
         drivcond: [],
         emphasisAreas: [],
@@ -173,8 +179,12 @@ export default {
         hoursOfDayEnd: 24,
         impactype: [],
         initdir: [],
+        injury: [],
         manoeuver: [],
+        mvcr: null,
         rdsfcond: [],
+        validated: null,
+        vehtype: [],
       };
       this.internalFiltersCommon = {
         dateRangeStart: null,
