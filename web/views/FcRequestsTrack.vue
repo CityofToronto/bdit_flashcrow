@@ -72,7 +72,7 @@
             aria-labelledby="heading_track_requests_requests"
             :columns="columns"
             :has-filters="hasFiltersRequest"
-            :height="heightTable"
+            height="calc(100vh - 320px)"
             :items="items"
             :items-per-page.sync="itemsPerPage"
             :loading="loading"
@@ -161,7 +161,7 @@ export default {
   data() {
     return {
       columns: RequestDataTableColumns,
-      heightTable: 400,
+      heightTable: 0,
       itemsPerPage: 25,
       loadingTotal: false,
       page: 1,
@@ -290,10 +290,6 @@ export default {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
     this.setFiltersRequestUserOnly(userOnly);
   },
-  mounted() {
-    const $tableWrapper = this.$el.querySelector('.fc-data-table-requests-wrapper');
-    this.heightTable = $tableWrapper.clientHeight - 56;
-  },
   methods: {
     actionDownload(items) {
       const csvStr = RequestItemExport.get(items, this.studyRequestsBulk);
@@ -346,13 +342,6 @@ export default {
 
   & .fc-requests-track-table-title {
     width: 100%;
-  }
-
-  & .fc-data-table-requests-wrapper {
-    height: calc(100% - 53px);
-    & > .fc-data-table-requests {
-      height: calc(100% - 1px);
-    }
   }
 }
 </style>
