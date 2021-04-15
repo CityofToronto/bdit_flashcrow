@@ -58,30 +58,21 @@ export default {
     };
   },
   computed: {
-    applyDateRange() {
-      const { dateRangeStart, dateRangeEnd } = this.internalValue;
-      return dateRangeStart !== null || dateRangeEnd !== null;
-    },
     errorMessagesDateRangeStart() {
       const errors = [];
-      if (!this.v.dateRangeStart.requiredIfApplyDateRange) {
-        errors.push('Please provide a date in YYYY-MM-DD format.');
+      if (!this.v.dateRangeStart.startBeforeEnd) {
+        errors.push('From date must be before to date.');
       }
       return errors;
     },
     errorMessagesDateRangeEnd() {
       const errors = [];
-      if (!this.v.dateRangeEnd.requiredIfApplyDateRange) {
-        errors.push('Please provide a date in YYYY-MM-DD format.');
+      if (!this.v.dateRangeEnd.startBeforeEnd) {
+        errors.push('From date must be before to date.');
       }
       return errors;
     },
     ...mapState(['now']),
-  },
-  watch: {
-    applyDateRange() {
-      this.internalValue.applyDateRange = this.applyDateRange;
-    },
   },
 };
 </script>

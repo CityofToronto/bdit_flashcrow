@@ -1,7 +1,7 @@
 <template>
   <div>
     <fieldset class="mt-4">
-      <legend class="headline">Collision Affects</legend>
+      <legend class="headline">Vision Zero Emphasis Areas</legend>
 
       <v-checkbox
         v-for="emphasisArea in CollisionEmphasisArea.enumValues"
@@ -14,9 +14,9 @@
     </fieldset>
 
     <FcFilterHoursOfDay
-      v-model="internalValue.hoursOfDay"
+      v-model="internalValue"
       class="mt-6"
-      :error-messages="errorMessagesHoursOfDay" />
+      :v="v" />
 
     <FcMvcrFieldFilter
       v-model="internalValue.drivact"
@@ -76,15 +76,6 @@ export default {
     return {
       CollisionEmphasisArea,
     };
-  },
-  computed: {
-    errorMessagesHoursOfDay() {
-      const errors = [];
-      if (!this.v.hoursOfDay.fromBeforeTo) {
-        errors.push('From hour must be before to hour');
-      }
-      return errors;
-    },
   },
 };
 </script>

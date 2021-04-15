@@ -8,17 +8,22 @@ export default {
     collisionFactors: new Map(),
     detailView: false,
     filtersCollision: {
+      details: [],
       drivact: [],
       drivcond: [],
       emphasisAreas: [],
-      hoursOfDay: [0, 24],
+      hoursOfDayStart: 0,
+      hoursOfDayEnd: 24,
       impactype: [],
       initdir: [],
+      injury: [],
       manoeuver: [],
+      mvcr: null,
       rdsfcond: [],
+      validated: null,
+      vehtype: [],
     },
     filtersCommon: {
-      applyDateRange: false,
       dateRangeStart: null,
       dateRangeEnd: null,
       daysOfWeek: [],
@@ -31,13 +36,13 @@ export default {
   getters: {
     filterChipsCommon(state) {
       const {
-        applyDateRange,
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
       } = state.filtersCommon;
       const filterChipsCommon = [];
-      if (applyDateRange) {
+
+      if (dateRangeStart !== null || dateRangeEnd !== null) {
         const label = TimeFormatters.formatRangeDate({
           start: dateRangeStart,
           end: dateRangeEnd,
@@ -55,27 +60,47 @@ export default {
     },
     filterChipsCollision(state) {
       const {
+        details,
         drivact,
         drivcond,
         emphasisAreas,
-        hoursOfDay,
+        hoursOfDayStart,
+        hoursOfDayEnd,
         impactype,
         initdir,
+        injury,
         manoeuver,
+        mvcr,
         rdsfcond,
+        validated,
+        vehtype,
       } = state.filtersCollision;
-      const [start, end] = hoursOfDay;
       const filterChipsCollision = [];
+      details.forEach((value) => {
+        const { text: label } = value;
+        const filterChip = { filter: 'details', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      if (mvcr !== null) {
+        const label = mvcr ? 'MVCR Available' : 'MVCR Missing';
+        const filterChip = { filter: 'mvcr', label, value: mvcr };
+        filterChipsCollision.push(filterChip);
+      }
+      if (validated !== null) {
+        const label = mvcr ? 'Validated' : 'Not Validated';
+        const filterChip = { filter: 'validated', label, value: validated };
+        filterChipsCollision.push(filterChip);
+      }
       emphasisAreas.forEach((value) => {
         const { text: label } = value;
         const filterChip = { filter: 'emphasisAreas', label, value };
         filterChipsCollision.push(filterChip);
       });
-      if (start !== 0 || end !== 24) {
-        const dtStart = DateTime.fromObject({ hour: start });
-        const dtEnd = DateTime.fromObject({ hour: end });
+      if (hoursOfDayStart !== 0 || hoursOfDayEnd !== 24) {
+        const dtStart = DateTime.fromObject({ hour: hoursOfDayStart });
+        const dtEnd = DateTime.fromObject({ hour: hoursOfDayEnd });
         const label = TimeFormatters.formatRangeTimeOfDay({ start: dtStart, end: dtEnd });
-        const value = hoursOfDay;
+        const value = { hoursOfDayStart, hoursOfDayEnd };
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
@@ -103,6 +128,12 @@ export default {
         const filterChip = { filter: 'initdir', label, value };
         filterChipsCollision.push(filterChip);
       });
+      injury.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('injury');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'injury', label, value };
+        filterChipsCollision.push(filterChip);
+      });
       manoeuver.forEach((value) => {
         const fieldEntries = state.collisionFactors.get('manoeuver');
         const { description: label } = fieldEntries.get(value);
@@ -113,6 +144,12 @@ export default {
         const fieldEntries = state.collisionFactors.get('rdsfcond');
         const { description: label } = fieldEntries.get(value);
         const filterChip = { filter: 'rdsfcond', label, value };
+        filterChipsCollision.push(filterChip);
+      });
+      vehtype.forEach((value) => {
+        const fieldEntries = state.collisionFactors.get('vehtype');
+        const { description: label } = fieldEntries.get(value);
+        const filterChip = { filter: 'vehtype', label, value };
         filterChipsCollision.push(filterChip);
       });
       return filterChipsCollision;
@@ -137,28 +174,38 @@ export default {
     },
     filterParamsCollision(state) {
       const {
-        applyDateRange,
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
       } = state.filtersCommon;
       const {
+        details,
         drivact,
         drivcond,
         emphasisAreas,
-        hoursOfDay: [hoursOfDayStart, hoursOfDayEnd],
+        hoursOfDayStart,
+        hoursOfDayEnd,
         impactype,
         initdir,
+        injury,
         manoeuver,
+        mvcr,
         rdsfcond,
+        validated,
+        vehtype,
       } = state.filtersCollision;
       const params = {};
-      if (applyDateRange) {
+      if (params.dateRangeStart !== null) {
         params.dateRangeStart = dateRangeStart;
+      }
+      if (params.dateRangeEnd !== null) {
         params.dateRangeEnd = dateRangeEnd;
       }
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
+      }
+      if (details.length > 0) {
+        params.details = details;
       }
       if (drivact.length > 0) {
         params.drivact = drivact;
@@ -179,17 +226,28 @@ export default {
       if (initdir.length > 0) {
         params.initdir = initdir;
       }
+      if (injury.length > 0) {
+        params.injury = injury;
+      }
       if (manoeuver.length > 0) {
         params.manoeuver = manoeuver;
       }
+      if (mvcr !== null) {
+        params.mvcr = mvcr;
+      }
       if (rdsfcond.length > 0) {
         params.rdsfcond = rdsfcond;
+      }
+      if (validated !== null) {
+        params.validated = validated;
+      }
+      if (vehtype.length > 0) {
+        params.vehtype = vehtype;
       }
       return params;
     },
     filterParamsStudy(state) {
       const {
-        applyDateRange,
         dateRangeStart,
         dateRangeEnd,
         daysOfWeek,
@@ -199,8 +257,10 @@ export default {
         studyTypes,
       } = state.filtersStudy;
       const params = {};
-      if (applyDateRange) {
+      if (params.dateRangeStart !== null) {
         params.dateRangeStart = dateRangeStart;
+      }
+      if (params.dateRangeEnd !== null) {
         params.dateRangeEnd = dateRangeEnd;
       }
       if (daysOfWeek.length > 0) {
@@ -215,11 +275,11 @@ export default {
       return params;
     },
     filtersIncludeOlderData(state, getters, rootState) {
-      const { applyDateRange, dateRangeStart } = state.filtersCommon;
-      if (!applyDateRange) {
+      const { dateRangeStart } = state.filtersCommon;
+      const { now } = rootState;
+      if (dateRangeStart === null) {
         return true;
       }
-      const { now } = rootState;
       return dateRangeStart.valueOf() < now.minus({ years: 10 }).valueOf();
     },
     hasFilters(state, getters) {
@@ -238,7 +298,10 @@ export default {
   mutations: {
     removeFilterCollision(state, { filter, value }) {
       if (filter === 'hoursOfDay') {
-        state.filtersCollision.hoursOfDay = [0, 24];
+        state.filtersCollision.hoursOfDayStart = 0;
+        state.filtersCollision.hoursOfDayEnd = 24;
+      } else if (filter === 'mvcr' || filter === 'mvcr') {
+        state.filtersCollision[filter] = null;
       } else {
         const values = state.filtersCollision[filter];
         const i = values.indexOf(value);
@@ -249,7 +312,6 @@ export default {
     },
     removeFilterCommon(state, { filter, value }) {
       if (filter === 'dateRange') {
-        state.filtersCommon.applyDateRange = false;
         state.filtersCommon.dateRangeStart = null;
         state.filtersCommon.dateRangeEnd = null;
       } else {

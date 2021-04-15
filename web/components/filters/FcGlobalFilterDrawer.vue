@@ -115,14 +115,14 @@ export default {
         drivact: [],
         drivcond: [],
         emphasisAreas: [],
-        hoursOfDay: [0, 24],
+        hoursOfDayStart: 0,
+        hoursOfDayEnd: 24,
         impactype: [],
         initdir: [],
         manoeuver: [],
         rdsfcond: [],
       },
       internalFiltersCommon: {
-        applyDateRange: false,
         dateRangeStart: null,
         dateRangeEnd: null,
         daysOfWeek: [],
@@ -169,14 +169,14 @@ export default {
         drivact: [],
         drivcond: [],
         emphasisAreas: [],
-        hoursOfDay: [0, 24],
+        hoursOfDayStart: 0,
+        hoursOfDayEnd: 24,
         impactype: [],
         initdir: [],
         manoeuver: [],
         rdsfcond: [],
       };
       this.internalFiltersCommon = {
-        applyDateRange: false,
         dateRangeStart: null,
         dateRangeEnd: null,
         daysOfWeek: [],
@@ -227,7 +227,6 @@ export default {
     show() {
       this.internalFiltersCollision = {
         ...this.filtersCollision,
-        hoursOfDay: [...this.filtersCollision.hoursOfDay],
       };
       this.internalFiltersCommon = {
         ...this.filtersCommon,

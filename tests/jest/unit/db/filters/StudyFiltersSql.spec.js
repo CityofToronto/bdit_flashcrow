@@ -1,6 +1,6 @@
 import { CentrelineType } from '@/lib/Constants';
 import Random from '@/lib/Random';
-import { getCollisionFilters } from '@/lib/db/filters/CollisionFiltersSql';
+import { getStudyFilters } from '@/lib/db/filters/StudyFiltersSql';
 import { generateFilters } from '@/lib/test/random/FilterGenerator';
 
 function generateFeature() {
@@ -22,11 +22,12 @@ function generateFeatures() {
 test('CollisionFiltersSql.getCollisionFilters [fuzz test]', () => {
   for (let i = 0; i < 25; i++) {
     const features = generateFeatures();
-    const { filtersCollision, filtersCommon } = generateFilters();
-    const collisionQuery = { ...filtersCollision, ...filtersCommon };
+    const { filtersCommon, filtersStudy } = generateFilters();
+    const collisionQuery = { ...filtersCommon, ...filtersStudy };
 
     // ensure structure
-    const { filters, params } = getCollisionFilters(features, collisionQuery);
+    const categories = new Map();
+    const { filters, params } = getStudyFilters(features, collisionQuery, categories);
     expect(filters).toBeInstanceOf(Array);
     expect(params).toBeInstanceOf(Object);
 
