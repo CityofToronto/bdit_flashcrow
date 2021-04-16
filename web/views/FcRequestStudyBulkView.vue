@@ -88,6 +88,7 @@
             v-model="selectedItems"
             aria-labelledby="heading_bulk_request_requests"
             :columns="columns"
+            disable-pagination
             :has-filters="false"
             :items="items"
             :loading="loadingItems"

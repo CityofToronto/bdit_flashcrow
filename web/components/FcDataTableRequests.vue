@@ -178,6 +178,7 @@
           <FcDataTableRequests
             v-model="internalValue"
             :columns="columns"
+            disable-pagination
             :has-filters="hasFilters"
             :items="item.studyRequestBulk.studyRequests"
             :loading="loading"
