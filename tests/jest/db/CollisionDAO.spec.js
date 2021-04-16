@@ -1,6 +1,8 @@
 import { CentrelineType } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import CollisionDAO from '@/lib/db/CollisionDAO';
+import CollisionFilters from '@/lib/model/CollisionFilters';
+import Joi from '@/lib/model/Joi';
 import DateTime from '@/lib/time/DateTime';
 
 afterAll(() => {
@@ -29,15 +31,8 @@ test('CollisionDAO.byCentreline', async () => {
   let collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
-    daysOfWeek: null,
-    drivact: null,
-    drivcond: null,
-    emphasisAreas: null,
-    impactype: null,
-    initdir: null,
-    manoeuver: null,
-    rdsfcond: null,
   };
+  collisionQuery = await Joi.object().keys(CollisionFilters).validateAsync(collisionQuery);
   let result = await CollisionDAO.byCentreline(features, collisionQuery);
   expect(result).toHaveLength(31);
 
@@ -47,15 +42,8 @@ test('CollisionDAO.byCentreline', async () => {
   collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
-    daysOfWeek: null,
-    drivact: null,
-    drivcond: null,
-    emphasisAreas: null,
-    impactype: null,
-    initdir: null,
-    manoeuver: null,
-    rdsfcond: null,
   };
+  collisionQuery = await Joi.object().keys(CollisionFilters).validateAsync(collisionQuery);
   result = await CollisionDAO.byCentreline(features, collisionQuery);
   expect(result).toHaveLength(26);
 });
@@ -67,18 +55,11 @@ test('CollisionDAO.byCentrelineSummary', async () => {
   let features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
   ];
-  const collisionQuery = {
+  let collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
-    daysOfWeek: null,
-    drivact: null,
-    drivcond: null,
-    emphasisAreas: null,
-    impactype: null,
-    initdir: null,
-    manoeuver: null,
-    rdsfcond: null,
   };
+  collisionQuery = await Joi.object().keys(CollisionFilters).validateAsync(collisionQuery);
   let result = await CollisionDAO.byCentrelineSummary(features, collisionQuery);
   expect(result).toEqual({ amount: 31, ksi: 0, validated: 7 });
 
@@ -103,18 +84,11 @@ test('CollisionDAO.byCentrelineSummaryPerLocation', async () => {
   let features = [
     { centrelineId: 1142194, centrelineType: CentrelineType.SEGMENT },
   ];
-  const collisionQuery = {
+  let collisionQuery = {
     dateRangeEnd,
     dateRangeStart,
-    daysOfWeek: null,
-    drivact: null,
-    drivcond: null,
-    emphasisAreas: null,
-    impactype: null,
-    initdir: null,
-    manoeuver: null,
-    rdsfcond: null,
   };
+  collisionQuery = await Joi.object().keys(CollisionFilters).validateAsync(collisionQuery);
   let result = await CollisionDAO.byCentrelineSummaryPerLocation(features, collisionQuery);
   expect(result).toEqual([{ amount: 31, ksi: 0, validated: 7 }]);
 

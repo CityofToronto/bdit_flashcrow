@@ -54,7 +54,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   let response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
-  // invalid date range (start > end)
+  // empty date range (start > end): returns empty results
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   features = [
@@ -67,7 +67,8 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
     s1,
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
 
   // centreline feature with no counts
   features = [
@@ -227,7 +228,7 @@ test('StudyController.getStudiesByCentreline', async () => {
   let response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
-  // invalid date range (start > end)
+  // empty date range (start > end): returns empty results
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   features = [
@@ -242,7 +243,8 @@ test('StudyController.getStudiesByCentreline', async () => {
     s1,
   };
   response = await client.fetch('/studies/byCentreline', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.length).toBe(0);
 
   // centreline feature with no counts
   features = [
@@ -359,7 +361,7 @@ test('StudyController.getStudiesByCentreline [pagination]', async () => {
 });
 
 test('StudyController.getStudiesByCentrelineSummary', async () => {
-  // invalid date range (start > end)
+  // empty date range (start > end): returns empty results
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   let features = [
@@ -373,7 +375,8 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
     s1,
   };
   let response = await client.fetch('/studies/byCentreline/summary', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerCategoryStudy(response.result, []);
 
   // centreline feature with no counts
   features = [
@@ -462,7 +465,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation', async () => {
-  // invalid date range (start > end)
+  // empty date range (start > end): returns empty results
   let dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
   let dateRangeEnd = DateTime.fromObject({ year: 2017, month: 12, day: 31 });
   let features = [
@@ -476,7 +479,8 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation', async () => {
     s1,
   };
   let response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expectNumPerCategoryAndLocationStudy(response.result, []);
 
   // centreline feature with no counts
   features = [
