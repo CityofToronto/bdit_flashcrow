@@ -1,8 +1,14 @@
+import TimeFormatters from '@/lib/time/TimeFormatters';
+
 export default {
   namespaced: true,
   state: {
     filtersRequest: {
       assignees: [],
+      createdAtStart: null,
+      createdAtEnd: null,
+      dueDateStart: null,
+      dueDateEnd: null,
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
@@ -22,12 +28,36 @@ export default {
     filterChipsRequest(state) {
       const {
         assignees,
+        createdAtStart,
+        createdAtEnd,
+        dueDateStart,
+        dueDateEnd,
         statuses,
         studyTypes,
         studyTypeOther,
         userOnly,
       } = state.filtersRequest;
       const filterChipsRequest = [];
+      if (createdAtStart !== null || createdAtEnd !== null) {
+        const labelDateRange = TimeFormatters.formatRangeDate({
+          start: createdAtStart,
+          end: createdAtEnd,
+        });
+        const label = `Requested: ${labelDateRange}`;
+        const value = { createdAtStart, createdAtEnd };
+        const filterChip = { filter: 'createdAt', label, value };
+        filterChipsRequest.push(filterChip);
+      }
+      if (dueDateStart !== null || dueDateEnd !== null) {
+        const labelDateRange = TimeFormatters.formatRangeDate({
+          start: dueDateStart,
+          end: dueDateEnd,
+        });
+        const label = `Expected: ${labelDateRange}`;
+        const value = { dueDateStart, dueDateEnd };
+        const filterChip = { filter: 'dueDate', label, value };
+        filterChipsRequest.push(filterChip);
+      }
       studyTypes.forEach((studyType) => {
         const { label } = studyType;
         const filterChip = { filter: 'studyTypes', label, value: studyType };
@@ -56,6 +86,10 @@ export default {
     filterParamsRequest(state) {
       const {
         assignees,
+        createdAtStart,
+        createdAtEnd,
+        dueDateStart,
+        dueDateEnd,
         statuses,
         studyTypes,
         studyTypeOther,
@@ -68,6 +102,18 @@ export default {
         params.assignees = assignees.map(
           assignee => (assignee === null ? '' : assignee),
         );
+      }
+      if (createdAtStart !== null) {
+        params.createdAtStart = createdAtStart;
+      }
+      if (createdAtEnd !== null) {
+        params.createdAtEnd = createdAtEnd;
+      }
+      if (dueDateStart !== null) {
+        params.dueDateStart = dueDateStart;
+      }
+      if (dueDateEnd !== null) {
+        params.dueDateEnd = dueDateEnd;
       }
       if (statuses.length > 0) {
         params.statuses = statuses;
@@ -93,7 +139,13 @@ export default {
   },
   mutations: {
     removeFilterRequest(state, { filter, value }) {
-      if (filter === 'studyTypeOther') {
+      if (filter === 'createdAt') {
+        state.filtersRequest.createdAtStart = null;
+        state.filtersRequest.createdAtEnd = null;
+      } else if (filter === 'dueDate') {
+        state.filtersRequest.dueDateStart = null;
+        state.filtersRequest.dueDateEnd = null;
+      } else if (filter === 'studyTypeOther') {
         state.filtersRequest.studyTypeOther = false;
       } else if (filter === 'userOnly') {
         state.filtersRequest.userOnly = false;

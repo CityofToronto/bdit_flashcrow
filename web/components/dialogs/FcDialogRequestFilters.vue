@@ -82,6 +82,46 @@
             { label: 'All', value: false },
           ]"
           label="Requester" />
+
+        <fieldset class="mt-6">
+          <legend class="headline">Date Requested</legend>
+
+          <FcDatePicker
+            v-model="$v.internalFilters.createdAtStart.$model"
+            class="mt-2"
+            :error-messages="errorMessagesCreatedAtStart"
+            hide-details="auto"
+            label="From (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+          <FcDatePicker
+            v-model="$v.internalFilters.createdAtEnd.$model"
+            class="mt-2"
+            :error-messages="errorMessagesCreatedAtEnd"
+            hide-details="auto"
+            label="To (YYYY-MM-DD)"
+            :max="now">
+          </FcDatePicker>
+        </fieldset>
+
+        <fieldset class="mt-6">
+          <legend class="headline">Date Expected</legend>
+
+          <FcDatePicker
+            v-model="$v.internalFilters.dueDateStart.$model"
+            class="mt-2"
+            :error-messages="errorMessagesDueDateStart"
+            hide-details="auto"
+            label="From (YYYY-MM-DD)">
+          </FcDatePicker>
+          <FcDatePicker
+            v-model="$v.internalFilters.dueDateEnd.$model"
+            class="mt-2"
+            :error-messages="errorMessagesDueDateEnd"
+            hide-details="auto"
+            label="To (YYYY-MM-DD)">
+          </FcDatePicker>
+        </fieldset>
       </v-card-text>
 
       <v-divider></v-divider>
@@ -94,6 +134,7 @@
           Cancel
         </FcButton>
         <FcButton
+          :disabled="$v.$invalid"
           type="tertiary"
           @click="actionSave">
           Save
@@ -109,15 +150,43 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import ValidationsStudyRequestFilters from '@/lib/validation/ValidationsStudyRequestFilters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+function cloneStudyRequestFilters(filters) {
+  const {
+    assignees,
+    createdAtStart,
+    createdAtEnd,
+    dueDateStart,
+    dueDateEnd,
+    statuses,
+    studyTypes,
+    studyTypeOther,
+    userOnly,
+  } = filters;
+  return {
+    assignees: [...assignees],
+    createdAtStart,
+    createdAtEnd,
+    dueDateStart,
+    dueDateEnd,
+    statuses: [...statuses],
+    studyTypes: [...studyTypes],
+    studyTypeOther,
+    userOnly,
+  };
+}
 
 export default {
   name: 'FcDialogRequestFilters',
   mixins: [FcMixinVModelProxy(Boolean)],
   components: {
     FcButton,
+    FcDatePicker,
     FcRadioGroup,
   },
   props: {
@@ -125,16 +194,23 @@ export default {
   },
   data() {
     return {
-      internalFilters: { ...this.filters },
+      internalFilters: cloneStudyRequestFilters(this.filters),
       StudyRequestAssignee,
       StudyRequestStatus,
       StudyType,
     };
   },
+  validations: {
+    internalFilters: ValidationsStudyRequestFilters,
+  },
   methods: {
     actionClearAll() {
       this.internalFilters = {
         assignees: [],
+        createdAtStart: null,
+        createdAtEnd: null,
+        dueDateStart: null,
+        dueDateEnd: null,
         statuses: [],
         studyTypes: [],
         studyTypeOther: false,
@@ -144,6 +220,34 @@ export default {
     actionSave() {
       this.$emit('set-filters', this.internalFilters);
       this.internalValue = false;
+    },
+    errorMessagesCreatedAtStart() {
+      const errors = [];
+      if (!this.$v.internalFilters.createdAtStart.startBeforeEnd) {
+        errors.push('From date must be before to date.');
+      }
+      return errors;
+    },
+    errorMessagesCreatedAtEnd() {
+      const errors = [];
+      if (!this.$v.internalFilters.createdAtEnd.startBeforeEnd) {
+        errors.push('From date must be before to date.');
+      }
+      return errors;
+    },
+    errorMessagesDueDateStart() {
+      const errors = [];
+      if (!this.$v.internalFilters.dueDateStart.startBeforeEnd) {
+        errors.push('From date must be before to date.');
+      }
+      return errors;
+    },
+    errorMessagesDueDateEnd() {
+      const errors = [];
+      if (!this.$v.internalFilters.dueDateEnd.startBeforeEnd) {
+        errors.push('From date must be before to date.');
+      }
+      return errors;
     },
   },
 };
