@@ -30,12 +30,9 @@ import { mapState, mapMutations } from 'vuex';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 const COLUMNS_SEARCHABLE = [
-  'ASSIGNED_TO',
   'ID',
   'LOCATION',
   'REQUESTER',
-  'STATUS',
-  'STUDY_TYPE',
 ];
 
 export default {
@@ -65,8 +62,11 @@ export default {
       const searchableColumns = this.columns.filter(
         column => COLUMNS_SEARCHABLE.includes(column.value),
       );
+      const textSearchableColumnsAll = searchableColumns
+        .map(({ text }) => text)
+        .join(', ');
       return [
-        { text: 'All Columns', value: null },
+        { text: textSearchableColumnsAll, value: null },
         ...searchableColumns,
       ];
     },
