@@ -30,6 +30,10 @@ const SHORTCUT_CHIPS = [
   {
     filters: {
       assignees: [],
+      createdAtStart: null,
+      createdAtEnd: null,
+      dueDateStart: null,
+      dueDateEnd: null,
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
@@ -38,6 +42,10 @@ const SHORTCUT_CHIPS = [
   }, {
     filters: {
       assignees: [null],
+      createdAtStart: null,
+      createdAtEnd: null,
+      dueDateStart: null,
+      dueDateEnd: null,
       statuses: [],
       studyTypes: [],
       studyTypeOther: false,
@@ -46,6 +54,10 @@ const SHORTCUT_CHIPS = [
   }, {
     filters: {
       assignees: [],
+      createdAtStart: null,
+      createdAtEnd: null,
+      dueDateStart: null,
+      dueDateEnd: null,
       statuses: [StudyRequestStatus.CANCELLED],
       studyTypes: [],
       studyTypeOther: false,
@@ -54,6 +66,10 @@ const SHORTCUT_CHIPS = [
   }, {
     filters: {
       assignees: [],
+      createdAtStart: null,
+      createdAtEnd: null,
+      dueDateStart: null,
+      dueDateEnd: null,
       statuses: [
         StudyRequestStatus.CANCELLED,
         StudyRequestStatus.COMPLETED,
@@ -74,11 +90,23 @@ function filterArrayMatches(arr1, arr2) {
     && arr2.every(x2 => arr1.includes(x2));
 }
 
+function filterDateTimeMatches(dt1, dt2) {
+  if (dt1 === null) {
+    return dt2 === null;
+  }
+  if (dt2 === null) {
+    return false;
+  }
+  return dt1.valueOf() === dt2.valueOf();
+}
+
 function filtersMatchShortcutChip(filters, { filters: chipFilters }) {
   return filterArrayMatches(filters.assignees, chipFilters.assignees)
     && filters.closed === chipFilters.closed
-    && filters.createdAt === chipFilters.createdAt
-    && filters.lastEditedAt === chipFilters.lastEditedAt
+    && filterDateTimeMatches(filters.createdAtStart, chipFilters.createdAtStart)
+    && filterDateTimeMatches(filters.createdAtEnd, chipFilters.createdAtEnd)
+    && filterDateTimeMatches(filters.dueDateStart, chipFilters.dueDateStart)
+    && filterDateTimeMatches(filters.dueDateEnd, chipFilters.dueDateEnd)
     && filterArrayMatches(filters.statuses, chipFilters.statuses)
     && filterArrayMatches(filters.studyTypes, chipFilters.studyTypes)
     && filters.studyTypeOther === chipFilters.studyTypeOther;
