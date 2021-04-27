@@ -1,3 +1,4 @@
+import { StudyType } from '@/lib/Constants';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
@@ -20,7 +21,7 @@ export default {
       query: null,
     },
     sortRequest: {
-      sortBy: 'DUE_DATE',
+      sortBy: 'ID',
       sortDesc: false,
     },
   },
@@ -58,25 +59,37 @@ export default {
         const filterChip = { filter: 'dueDate', label, value };
         filterChipsRequest.push(filterChip);
       }
-      studyTypes.forEach((studyType) => {
-        const { label } = studyType;
-        const filterChip = { filter: 'studyTypes', label, value: studyType };
-        filterChipsRequest.push(filterChip);
-      });
-      if (studyTypeOther) {
-        const filterChip = { filter: 'studyTypeOther', label: 'Other', value: true };
+      if (studyTypes.length > 0 || studyTypeOther) {
+        const labelsStudyTypes = studyTypes
+          .map(({ label }) => label);
+        const value = [...studyTypes];
+        if (studyTypeOther) {
+          labelsStudyTypes.push('Other');
+          value.push(
+            ...StudyType.enumValues.filter(({ other }) => other),
+          );
+        }
+        const labelStudyType = labelsStudyTypes.join(', ');
+        const label = `Type: ${labelStudyType}`;
+        const filterChip = { filter: 'studyTypes', label, value };
         filterChipsRequest.push(filterChip);
       }
-      statuses.forEach((status) => {
-        const label = status.text;
-        const filterChip = { filter: 'statuses', label, value: status };
+      if (statuses.length > 0) {
+        const labelStatuses = statuses
+          .map(({ text }) => text)
+          .join(', ');
+        const label = `Status: ${labelStatuses}`;
+        const filterChip = { filter: 'statuses', label, value: statuses };
         filterChipsRequest.push(filterChip);
-      });
-      assignees.forEach((assignee) => {
-        const label = assignee === null ? 'Unassigned' : assignee.text;
-        const filterChip = { filter: 'assignees', label, value: assignee };
+      }
+      if (assignees.length > 0) {
+        const labelAssignees = assignees
+          .map(assignee => (assignee === null ? 'Unassigned' : assignee.text))
+          .join(', ');
+        const label = `Assignee: ${labelAssignees}`;
+        const filterChip = { filter: 'assignees', label, value: assignees };
         filterChipsRequest.push(filterChip);
-      });
+      }
       if (userOnly) {
         const filterChip = { filter: 'userOnly', label: 'Requested by me', value: true };
         filterChipsRequest.push(filterChip);
@@ -138,23 +151,20 @@ export default {
     },
   },
   mutations: {
-    removeFilterRequest(state, { filter, value }) {
+    removeFilterRequest(state, { filter }) {
       if (filter === 'createdAt') {
         state.filtersRequest.createdAtStart = null;
         state.filtersRequest.createdAtEnd = null;
       } else if (filter === 'dueDate') {
         state.filtersRequest.dueDateStart = null;
         state.filtersRequest.dueDateEnd = null;
-      } else if (filter === 'studyTypeOther') {
+      } else if (filter === 'studyTypes') {
+        state.filtersRequest.studyTypes = [];
         state.filtersRequest.studyTypeOther = false;
       } else if (filter === 'userOnly') {
         state.filtersRequest.userOnly = false;
       } else {
-        const values = state.filtersRequest[filter];
-        const i = values.indexOf(value);
-        if (i !== -1) {
-          values.splice(i, 1);
-        }
+        state.filtersRequest[filter] = [];
       }
     },
     setFiltersRequest(state, filtersRequest) {

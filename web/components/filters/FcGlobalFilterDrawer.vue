@@ -96,6 +96,65 @@ import FcStudyFilters from '@/web/components/filters/FcStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
+function cloneCollisionFilters(filtersCollision) {
+  const {
+    details,
+    drivact,
+    drivcond,
+    emphasisAreas,
+    hoursOfDayStart,
+    hoursOfDayEnd,
+    impactype,
+    initdir,
+    injury,
+    manoeuver,
+    mvcr,
+    rdsfcond,
+    validated,
+    vehtype,
+  } = filtersCollision;
+  return {
+    details: [...details],
+    drivact: [...drivact],
+    drivcond: [...drivcond],
+    emphasisAreas: [...emphasisAreas],
+    hoursOfDayStart,
+    hoursOfDayEnd,
+    impactype: [...impactype],
+    initdir: [...initdir],
+    injury: [...injury],
+    manoeuver: [...manoeuver],
+    mvcr,
+    rdsfcond: [...rdsfcond],
+    validated,
+    vehtype: [...vehtype],
+  };
+}
+
+function cloneCommonFilters(filtersCommon) {
+  const {
+    dateRangeStart,
+    dateRangeEnd,
+    daysOfWeek,
+  } = filtersCommon;
+  return {
+    dateRangeStart,
+    dateRangeEnd,
+    daysOfWeek: [...daysOfWeek],
+  };
+}
+
+function cloneStudyFilters(filtersStudy) {
+  const {
+    hours,
+    studyTypes,
+  } = filtersStudy;
+  return {
+    hours: [...hours],
+    studyTypes: [...studyTypes],
+  };
+}
+
 export default {
   name: 'FcGlobalFilterDrawer',
   mixins: [
@@ -235,15 +294,9 @@ export default {
       }
     },
     show() {
-      this.internalFiltersCollision = {
-        ...this.filtersCollision,
-      };
-      this.internalFiltersCommon = {
-        ...this.filtersCommon,
-      };
-      this.internalFiltersStudy = {
-        ...this.filtersStudy,
-      };
+      this.internalFiltersCollision = cloneCollisionFilters(this.filtersCollision);
+      this.internalFiltersCommon = cloneCommonFilters(this.filtersCommon);
+      this.internalFiltersStudy = cloneStudyFilters(this.filtersStudy);
 
       // Double nextTick to wait for lazy content to be generated
       this.$nextTick(() => {

@@ -145,6 +145,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import {
   StudyRequestAssignee,
   StudyRequestStatus,
@@ -200,27 +202,7 @@ export default {
       StudyType,
     };
   },
-  validations: {
-    internalFilters: ValidationsStudyRequestFilters,
-  },
-  methods: {
-    actionClearAll() {
-      this.internalFilters = {
-        assignees: [],
-        createdAtStart: null,
-        createdAtEnd: null,
-        dueDateStart: null,
-        dueDateEnd: null,
-        statuses: [],
-        studyTypes: [],
-        studyTypeOther: false,
-        userOnly: false,
-      };
-    },
-    actionSave() {
-      this.$emit('set-filters', this.internalFilters);
-      this.internalValue = false;
-    },
+  computed: {
     errorMessagesCreatedAtStart() {
       const errors = [];
       if (!this.$v.internalFilters.createdAtStart.startBeforeEnd) {
@@ -248,6 +230,29 @@ export default {
         errors.push('From date must be before to date.');
       }
       return errors;
+    },
+    ...mapState(['now']),
+  },
+  validations: {
+    internalFilters: ValidationsStudyRequestFilters,
+  },
+  methods: {
+    actionClearAll() {
+      this.internalFilters = {
+        assignees: [],
+        createdAtStart: null,
+        createdAtEnd: null,
+        dueDateStart: null,
+        dueDateEnd: null,
+        statuses: [],
+        studyTypes: [],
+        studyTypeOther: false,
+        userOnly: false,
+      };
+    },
+    actionSave() {
+      this.$emit('set-filters', this.internalFilters);
+      this.internalValue = false;
     },
   },
 };
