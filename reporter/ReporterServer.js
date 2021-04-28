@@ -9,6 +9,7 @@ class ReporterServer extends MoveServer {
     this
       .addInitModule(MovePdfGenerator)
       .addController(ReportController)
+      .enableAuth({ csrf: false })
       .enableDocs('/reporter');
   }
 }
