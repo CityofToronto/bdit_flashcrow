@@ -29,8 +29,15 @@
               v-model="selectAll"
               class="mt-0 mr-6 pt-0"
               hide-details
-              :indeterminate="selectAll === null"
-              :label="'Select all (' + selectedItems.length + ' selected)'" />
+              :indeterminate="selectAll === null">
+              <template v-slot:label>
+                <span>Select all</span>
+                <FcTextNumberTotal
+                  class="ml-2"
+                  :k="selectedItems.length"
+                  :n="itemsStudyRequest.length" />
+              </template>
+            </v-checkbox>
 
             <FcStudyRequestFilters :items="items" />
 
@@ -125,6 +132,7 @@ import {
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcStudyRequestFilters from '@/web/components/requests/FcStudyRequestFilters.vue';
@@ -157,6 +165,7 @@ export default {
     FcSearchBarRequests,
     FcStudyRequestFilters,
     FcStudyRequestFilterShortcuts,
+    FcTextNumberTotal,
   },
   data() {
     return {
@@ -292,30 +301,37 @@ export default {
   },
   methods: {
     async actionDownload(selectedOnly) {
-      let id;
-      let options = {};
-      if (selectedOnly) {
-        /*
-         * When downloading selected study requests only, we pass in a comma-
-         */
-        const studyRequestIdsStr = this.selectedItems
-          .map(item => item.studyRequest.id)
-          .join(',');
-        id = `ids/${studyRequestIdsStr}`;
-      } else {
-        const uuid = uuidv4();
-        id = `uuid/${uuid}`;
-        options = this.filterParamsRequestWithPagination;
-      }
-
       this.loadingDownload = true;
+      if (selectedOnly) {
+        await this.actionDownloadSelected();
+      } else {
+        await this.actionDownloadAll();
+      }
+      this.loadingDownload = false;
+    },
+    async actionDownloadAll() {
+      const id = uuidv4();
       getReportDownload(
         ReportType.TRACK_REQUESTS,
         id,
         ReportFormat.CSV,
-        options,
+        this.filterParamsRequestWithPagination,
       );
-      this.loadingDownload = false;
+    },
+    async actionDownloadSelected() {
+      /*
+       * When downloading selected study requests only, we pass in a comma-separated
+       * list of study request IDs.
+       */
+      const id = this.selectedItems
+        .map(item => item.studyRequest.id)
+        .join(',');
+      getReportDownload(
+        ReportType.TRACK_REQUESTS_SELECTED,
+        id,
+        ReportFormat.CSV,
+        {},
+      );
     },
     async actionUpdateItem(item) {
       this.loading = true;
