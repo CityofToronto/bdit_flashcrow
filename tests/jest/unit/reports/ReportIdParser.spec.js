@@ -7,7 +7,11 @@ import {
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import { InvalidReportIdError } from '@/lib/error/MoveErrors';
-import { parseCollisionReportId, parseStudyReportId } from '@/lib/reports/ReportIdParser';
+import {
+  parseCollisionReportId,
+  parseStudyReportId,
+  parseStudyRequestReportId,
+} from '@/lib/reports/ReportIdParser';
 
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/StudyDAO');
@@ -126,5 +130,32 @@ test('ReportIdParser.parseStudyReportId [neither speed- nor TMC-related]', async
     categoryId: 1,
     countGroupId: 5678,
     study: resolvedValue,
+  });
+});
+
+test('ReportIdParser.parseStudyRequestReportId [invalid]', async () => {
+  expect(parseStudyRequestReportId('')).rejects.toBeInstanceOf(InvalidReportIdError);
+  expect(parseStudyRequestReportId('/')).rejects.toBeInstanceOf(InvalidReportIdError);
+  expect(parseStudyRequestReportId('ids')).rejects.toBeInstanceOf(InvalidReportIdError);
+  expect(parseStudyRequestReportId('ids/')).rejects.toBeInstanceOf(InvalidReportIdError);
+  expect(parseStudyRequestReportId('ids/a,b,c')).rejects.toBeInstanceOf(InvalidReportIdError);
+  expect(parseStudyRequestReportId('foo/bar')).rejects.toBeInstanceOf(InvalidReportIdError);
+});
+
+test('ReportIdParser.parseStudyRequestReportId [ids]', async () => {
+  expect(parseStudyRequestReportId('ids/42')).resolves.toEqual({
+    ids: [42],
+    uuid: null,
+  });
+  expect(parseStudyRequestReportId('ids/6,17,73')).resolves.toEqual({
+    ids: [6, 17, 73],
+    uuid: null,
+  });
+});
+
+test('ReportIdParser.parseStudyRequestReportId [uuid]', async () => {
+  expect(parseStudyRequestReportId('uuid/aa73e91b-6aaf-43c7-a368-19a2c81e527e')).resolves.toEqual({
+    ids: null,
+    uuid: 'aa73e91b-6aaf-43c7-a368-19a2c81e527e',
   });
 });

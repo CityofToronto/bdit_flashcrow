@@ -30,20 +30,17 @@
               class="mt-0 mr-6 pt-0"
               hide-details
               :indeterminate="selectAll === null"
-              label="Select all" />
+              :label="'Select all (' + selectedItems.length + ' selected)'" />
 
             <FcStudyRequestFilters :items="items" />
 
             <v-spacer></v-spacer>
 
-            <FcButton
-              class="ml-2"
+            <FcMenuDownloadTrackRequests
+              :loading="loadingDownload"
+              :selected-items="selectedItems"
               type="secondary"
-              @click="actionDownload(selectedItems)">
-              <v-icon color="primary" left>mdi-cloud-download</v-icon>
-              Download
-              <span class="sr-only">Requests</span>
-            </FcButton>
+              @action-download="actionDownload" />
             <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
               <FcMenuStudyRequestsStatus
                 button-class="ml-2"
@@ -129,11 +126,12 @@ import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcStudyRequestFilters from '@/web/components/requests/FcStudyRequestFilters.vue';
 import FcStudyRequestFilterShortcuts
   from '@/web/components/requests/FcStudyRequestFilterShortcuts.vue';
+import FcMenuDownloadTrackRequests
+  from '@/web/components/requests/download/FcMenuDownloadTrackRequests.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMenuStudyRequestsStatus
@@ -151,8 +149,8 @@ export default {
     Ripple,
   },
   components: {
-    FcButton,
     FcDataTableRequests,
+    FcMenuDownloadTrackRequests,
     FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,
     FcProgressCircular,
@@ -164,6 +162,7 @@ export default {
     return {
       columns: RequestDataTableColumns,
       itemsPerPage: 25,
+      loadingDownload: false,
       loadingTotal: false,
       page: 1,
       selectedItems: [],
@@ -292,16 +291,29 @@ export default {
     this.setFiltersRequestUserOnly(userOnly);
   },
   methods: {
-    async actionDownload(/* items */) {
-      // TODO: download selected
+    async actionDownload(selectedOnly) {
+      let id;
+      let options = {};
+      if (selectedOnly) {
+        /*
+         * When downloading selected study requests only, we pass in a comma-
+         */
+        const studyRequestIdsStr = this.selectedItems
+          .map(item => item.studyRequest.id)
+          .join(',');
+        id = `ids/${studyRequestIdsStr}`;
+      } else {
+        const uuid = uuidv4();
+        id = `uuid/${uuid}`;
+        options = this.filterParamsRequestWithPagination;
+      }
 
-      const id = uuidv4();
       this.loadingDownload = true;
       getReportDownload(
         ReportType.TRACK_REQUESTS,
         id,
         ReportFormat.CSV,
-        this.filterParamsRequestWithPagination,
+        options,
       );
       this.loadingDownload = false;
     },
