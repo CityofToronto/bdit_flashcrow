@@ -38,7 +38,6 @@
 
             <FcButton
               class="ml-2"
-              :disabled="selectAll === false"
               type="secondary"
               @click="actionDownload(selectedItems)">
               <v-icon color="primary" left>mdi-cloud-download</v-icon>
@@ -106,7 +105,7 @@
 </template>
 
 <script>
-import { saveAs } from 'file-saver';
+import { v4 as uuidv4 } from 'uuid';
 import { Ripple } from 'vuetify/lib/directives';
 import {
   mapActions,
@@ -115,15 +114,18 @@ import {
   mapState,
 } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, ReportFormat, ReportType } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
-import { getStudyRequestItems, getStudyRequestItemsTotal } from '@/lib/api/WebApi';
+import {
+  getReportDownload,
+  getStudyRequestItems,
+  getStudyRequestItemsTotal,
+} from '@/lib/api/WebApi';
 import {
   getStudyRequestItem,
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import RequestItemExport from '@/lib/requests/RequestItemExport';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
@@ -290,10 +292,18 @@ export default {
     this.setFiltersRequestUserOnly(userOnly);
   },
   methods: {
-    actionDownload(items) {
-      const csvStr = RequestItemExport.get(items, this.studyRequestsBulk);
-      const csvData = new Blob([csvStr], { type: 'text/csv' });
-      saveAs(csvData, 'requests.csv');
+    async actionDownload(/* items */) {
+      // TODO: download selected
+
+      const id = uuidv4();
+      this.loadingDownload = true;
+      getReportDownload(
+        ReportType.TRACK_REQUESTS,
+        id,
+        ReportFormat.CSV,
+        this.filterParamsRequestWithPagination,
+      );
+      this.loadingDownload = false;
     },
     async actionUpdateItem(item) {
       this.loading = true;
