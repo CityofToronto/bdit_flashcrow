@@ -89,6 +89,7 @@
             aria-labelledby="heading_bulk_request_requests"
             :columns="columns"
             disable-pagination
+            disable-sort
             :has-filters="false"
             :items="items"
             :loading="loadingItems"
