@@ -359,6 +359,36 @@
       "decision": "ignore",
       "madeAt": 1597349438371,
       "expiresAt": 1597954221084
+    },
+    "565|@vue/cli-plugin-babel>webpack>terser-webpack-plugin>cacache>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
+    },
+    "565|@vue/cli-plugin-eslint>webpack>terser-webpack-plugin>cacache>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
+    },
+    "565|@vue/cli-service>webpack>terser-webpack-plugin>cacache>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
+    },
+    "565|@vue/cli-service>copy-webpack-plugin>cacache>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
+    },
+    "565|@vue/cli-service>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
+    },
+    "565|@vue/cli-service>terser-webpack-plugin>cacache>ssri": {
+      "decision": "ignore",
+      "madeAt": 1619716963083,
+      "expiresAt": 1620321754697
     }
   },
   "rules": {},

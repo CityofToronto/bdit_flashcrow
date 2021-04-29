@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2021-04-29
+
+### Added
+
+- Download selected / all for Track Requests
+- Ability to filter by date ranges in Track Requests: Date Requested, Date Expected
+
+### Changed
+
+- Several more report types now use `ReportTimeUtils`, for more flexible / reliable time handling (e.g. for peak hours)
+- Added a few more keys to `CollisionFilters`, in preparation for upcoming Global Filters work
+
+### Fixed
+
+- Track Requests table now correctly resizes with the browser window
+
+### Removed
+
+- Sorting disabled for now in View Bulk Request
+- Full-text search on Assignee, Status, Type in Track Requests
+
 ## [1.2.1] - 2021-04-12
 
 ### Added
