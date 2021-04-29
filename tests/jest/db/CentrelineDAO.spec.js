@@ -174,7 +174,8 @@ test('CentrelineDAO.featuresIncidentTo', async () => {
 
   // cul-de-sac segment
   result = await CentrelineDAO.featuresIncidentTo(CentrelineType.SEGMENT, 111569);
-  expect(result).toHaveLength(1);
+  expect(result.length).toBeGreaterThanOrEqual(1);
+  expect(result.length).toBeLessThanOrEqual(2);
   result.forEach(({ centrelineType }) => {
     expect(centrelineType).toBe(CentrelineType.INTERSECTION);
   });
