@@ -300,7 +300,7 @@ export default {
       if (filter === 'hoursOfDay') {
         state.filtersCollision.hoursOfDayStart = 0;
         state.filtersCollision.hoursOfDayEnd = 24;
-      } else if (filter === 'mvcr' || filter === 'mvcr') {
+      } else if (filter === 'mvcr' || filter === 'validated') {
         state.filtersCollision[filter] = null;
       } else {
         const values = state.filtersCollision[filter];
