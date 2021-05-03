@@ -5,7 +5,7 @@
     class="fc-global-filter-drawer"
     right
     temporary
-    :width="336">
+    :width="400">
     <div
       ref="content"
       class="d-flex fill-height flex-column">

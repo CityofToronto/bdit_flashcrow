@@ -4,7 +4,8 @@
     :left="left"
     :right="right"
     :top="top"
-    :z-index="zIndex">
+    :z-index="zIndex"
+    v-bind="$attrs">
     <template v-slot:activator="scope">
       <slot name="activator" v-bind="scope" />
     </template>
@@ -50,6 +51,16 @@ export default {
        * checked, `.v-dialog` had `z-index: 202`.)
        */
       this.zIndex = 300;
+      return;
+    }
+
+    const inNavTemporary = this.$el.closest('.v-navigation-drawer--temporary') !== null;
+    if (inNavTemporary) {
+      /*
+       * Bring this above the z-plane of the temporary navigation drawer, so that it displays
+       * properly. (When we last checked, `.v-navigation-drawer--temporary` had `z-index: 400`.)
+       */
+      this.zIndex = 500;
     }
   },
 };

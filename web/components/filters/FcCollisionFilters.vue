@@ -1,16 +1,33 @@
 <template>
   <div>
     <fieldset class="mt-4">
-      <legend class="headline">Collision Details</legend>
+      <div class="align-center d-flex">
+        <legend class="headline">Collision Details</legend>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span>
+             These are properties of the collision that are specific to Transportation Services or
+             have been calculated from the data collected by Toronto Police Services and Collision
+             Reporting Centres.
+          </span>
+        </FcTooltipCollisionFilter>
+      </div>
 
-      <v-checkbox
+      <div
         v-for="detail in CollisionDetail.enumValues"
         :key="detail.name"
-        v-model="internalValue.details"
-        class="mt-2"
-        hide-details
-        :label="detail.text"
-        :value="detail"></v-checkbox>
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue.details"
+          class="mt-0"
+          hide-details
+          :label="detail.text"
+          :value="detail"></v-checkbox>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span v-html="detail.tooltip"></span>
+        </FcTooltipCollisionFilter>
+      </div>
     </fieldset>
 
     <FcRadioGroup
@@ -22,7 +39,17 @@
         { label: 'Not Validated', value: false },
         { label: 'All', value: null },
       ]"
-      label="Validation" />
+      label="Validation">
+      <template v-slot:label-right>
+        <FcTooltipCollisionFilter>
+          <span>
+            Some collisions have been validated by Transportation Services staff, who check
+            that the descriptions and diagrams on the original collision report were entered
+            correctly.
+          </span>
+        </FcTooltipCollisionFilter>
+      </template>
+    </FcRadioGroup>
 
     <FcRadioGroup
       v-model="internalValue.mvcr"
@@ -33,19 +60,36 @@
         { label: 'MVCR Missing', value: false },
         { label: 'All', value: null },
       ]"
-      label="MVCR" />
+      label="MVCR">
+      <template v-slot:label-right>
+        <FcTooltipCollisionFilter>
+          <span>
+            Most collisions have an associated Motor Vehicle Collision Report (MVCR)
+            on record.
+          </span>
+        </FcTooltipCollisionFilter>
+      </template>
+    </FcRadioGroup>
 
     <fieldset class="mt-6">
       <legend class="headline">Vision Zero Emphasis Areas</legend>
 
-      <v-checkbox
+      <div
         v-for="emphasisArea in CollisionEmphasisArea.enumValues"
         :key="emphasisArea.name"
-        v-model="internalValue.emphasisAreas"
-        class="mt-2"
-        hide-details
-        :label="emphasisArea.text"
-        :value="emphasisArea"></v-checkbox>
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue.emphasisAreas"
+          class="mt-0"
+          hide-details
+          :label="emphasisArea.text"
+          :value="emphasisArea"></v-checkbox>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter
+          v-if="emphasisArea.tooltip !== null">
+          <span v-html="emphasisArea.tooltip"></span>
+        </FcTooltipCollisionFilter>
+      </div>
     </fieldset>
 
     <FcMvcrFieldFilter
@@ -63,7 +107,7 @@
       v-model="internalValue.manoeuver"
       class="mt-6"
       field-name="manoeuver"
-      title="Manoeuver" />
+      title="Manoeuvre" />
 
     <FcMvcrFieldFilter
       v-model="internalValue.impactype"
@@ -110,6 +154,7 @@ import {
 } from '@/lib/Constants';
 import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
 import FcMvcrFieldFilter from '@/web/components/filters/FcMvcrFieldFilter.vue';
+import FcTooltipCollisionFilter from '@/web/components/filters/FcTooltipCollisionFilter.vue';
 import FcRadioGroup from '@/web/components/inputs/FcRadioGroup.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -120,6 +165,7 @@ export default {
     FcFilterHoursOfDay,
     FcMvcrFieldFilter,
     FcRadioGroup,
+    FcTooltipCollisionFilter,
   },
   props: {
     v: Object,

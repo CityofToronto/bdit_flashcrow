@@ -1,37 +1,69 @@
 <template>
   <fieldset>
-    <legend class="headline">{{title}}</legend>
+    <legend class="headline">
+      <div class="align-center d-flex">
+        <span class="default--text headline">{{title}}</span>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter
+          v-if="tooltip !== null">
+          <span v-html="tooltip"></span>
+        </FcTooltipCollisionFilter>
+      </div>
+    </legend>
 
     <template v-for="item in items">
-      <v-checkbox
+      <div
         v-if="item.children === null"
         :key="item.key"
-        v-model="internalValue"
-        class="mt-2"
-        hide-details
-        :label="item.text"
-        :value="item.value" />
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue"
+          :class="item.tooltip === null ? 'mt-2' : 'mt-0'"
+          hide-details
+          :label="item.text"
+          :value="item.value" />
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter
+          v-if="item.tooltip !== null">
+          <span v-html="item.tooltip"></span>
+        </FcTooltipCollisionFilter>
+      </div>
       <fieldset
         v-else
         :key="item.key">
-        <v-checkbox
-          v-model="selectAll[item.key]"
-          class="mt-2"
-          hide-details
-          :indeterminate="selectAll[item.key] === null"
-          :input-value="selectAll[item.key]"
-          :label="item.text"
-          @click="actionSelectAll(item)" />
+        <div class="align-center d-flex">
+          <v-checkbox
+            v-model="selectAll[item.key]"
+            :class="item.tooltip === null ? 'mt-2' : 'mt-0'"
+            hide-details
+            :indeterminate="selectAll[item.key] === null"
+            :input-value="selectAll[item.key]"
+            :label="item.text"
+            @click="actionSelectAll(item)" />
+          <v-spacer></v-spacer>
+          <FcTooltipCollisionFilter
+            v-if="item.tooltip !== null">
+            <span v-html="item.tooltip"></span>
+          </FcTooltipCollisionFilter>
+        </div>
 
         <div class="ml-6">
-          <v-checkbox
+          <div
             v-for="subitem in item.children"
             :key="subitem.key"
-            v-model="internalValue"
-            class="mt-2"
-            hide-details
-            :label="subitem.text"
-            :value="subitem.value" />
+            class="align-center d-flex">
+            <v-checkbox
+              v-model="internalValue"
+              :class="subitem.tooltip === null ? 'mt-2' : 'mt-0'"
+              hide-details
+              :label="subitem.text"
+              :value="subitem.value" />
+            <v-spacer></v-spacer>
+            <FcTooltipCollisionFilter
+              v-if="subitem.tooltip !== null">
+              <span v-html="subitem.tooltip"></span>
+            </FcTooltipCollisionFilter>
+          </div>
         </div>
       </fieldset>
     </template>
@@ -42,7 +74,67 @@
 import { mapState } from 'vuex';
 
 import ArrayUtils from '@/lib/ArrayUtils';
+import FcTooltipCollisionFilter from '@/web/components/filters/FcTooltipCollisionFilter.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+
+const MVCR_FIELD_TOOLTIPS = {
+  injury: {
+    field: '<span>Severity of injuries sustained as a result of the collision event.</span>',
+    items: new Map([
+      [
+        'KSI',
+        `
+<span>A traffic collision where a person was killed or seriously injured. Reducing KSI collisions
+is the primary goal of the Vision Zero program.</span>`,
+      ],
+      [
+        4,
+        `
+Fatal injury (person sustains bodily injuries resulting in death) only in those cases where
+death occurs in less than 366 days as result of the collision. Does not include death
+from natural causes (heart attack, stroke, epilated seizure, etc.) or suicide.`,
+      ],
+      [
+        3,
+        `
+A non-fatal injury that is severe enough to require the injured person to be admitted to hospital,
+even if only for observation at the time of the collision. Includes: fracture, internal injury,
+severe cuts, crushing, burns, concussion, severe general shocks.`,
+      ],
+      [
+        2,
+        `
+A non-fatal injury requiring medical treatment at a hospital emergency room, but not requiring
+hospitalization of the involved person at the time of the collision.`,
+      ],
+      [
+        1,
+        `
+A non-fatal injury at the time of the collision, including minor abrasions, bruises, and
+complaints of pain which does not require the injured person going to the hospital.`,
+      ],
+      [0, 'No injuries'],
+    ]),
+  },
+};
+
+function getFieldTooltip(fieldName) {
+  if (!Object.prototype.hasOwnProperty.call(MVCR_FIELD_TOOLTIPS, fieldName)) {
+    return null;
+  }
+  return MVCR_FIELD_TOOLTIPS[fieldName].field;
+}
+
+function getItemTooltip(fieldName, key) {
+  if (!Object.prototype.hasOwnProperty.call(MVCR_FIELD_TOOLTIPS, fieldName)) {
+    return null;
+  }
+  const { items } = MVCR_FIELD_TOOLTIPS[fieldName];
+  if (!items.has(key)) {
+    return null;
+  }
+  return items.get(key);
+}
 
 function getFieldCodes(fieldName, fieldEntries) {
   if (fieldName === 'injury') {
@@ -99,16 +191,19 @@ function isLeafFieldCode(fieldCode) {
 
 function getLeafItem(fieldName, fieldEntries, fieldCode) {
   const { description: text } = fieldEntries.get(fieldCode);
+  const tooltip = getItemTooltip(fieldName, fieldCode);
   return {
     children: null,
     key: fieldCode,
     text,
+    tooltip,
     value: fieldCode,
   };
 }
 
 function getGroupItem(fieldName, fieldEntries, fieldCodeGroup) {
   const { key, text, values } = fieldCodeGroup;
+  const tooltip = getItemTooltip(fieldName, key);
   const children = values.map(
     value => getLeafItem(fieldName, fieldEntries, value),
   );
@@ -116,6 +211,7 @@ function getGroupItem(fieldName, fieldEntries, fieldCodeGroup) {
     children,
     key,
     text,
+    tooltip,
     values,
   };
 }
@@ -139,9 +235,16 @@ function getSelectAll(internalValue, item) {
 export default {
   name: 'FcMvcrFieldFilter',
   mixins: [FcMixinVModelProxy(Array)],
+  components: {
+    FcTooltipCollisionFilter,
+  },
   props: {
     fieldName: String,
     title: String,
+  },
+  data() {
+    const tooltip = getFieldTooltip(this.fieldName);
+    return { tooltip };
   },
   computed: {
     items() {

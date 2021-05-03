@@ -6,7 +6,11 @@
       :label="label"
       v-bind="$attrs">
       <template v-slot:label>
-        <span class="default--text headline">{{label}}</span>
+        <div class="align-center d-flex">
+          <span class="default--text headline">{{label}}</span>
+          <v-spacer></v-spacer>
+          <slot name="label-right"></slot>
+        </div>
       </template>
       <template v-for="(item, i) in itemsNormalized">
         <v-radio
