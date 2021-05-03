@@ -3,6 +3,7 @@
     <FcDataTable
       class="fc-data-table-users"
       :columns="columns"
+      disable-pagination
       :items="users"
       :loading="loading"
       must-sort

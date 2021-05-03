@@ -22,7 +22,7 @@
         { label: 'Not Validated', value: false },
         { label: 'All', value: null },
       ]"
-      label="Validation Status" />
+      label="Validation" />
 
     <FcRadioGroup
       v-model="internalValue.mvcr"
@@ -33,7 +33,7 @@
         { label: 'MVCR Missing', value: false },
         { label: 'All', value: null },
       ]"
-      label="MVCR Status" />
+      label="MVCR" />
 
     <fieldset class="mt-6">
       <legend class="headline">Vision Zero Emphasis Areas</legend>

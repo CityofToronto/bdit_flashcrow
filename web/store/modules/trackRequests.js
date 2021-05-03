@@ -69,24 +69,21 @@ export default {
             ...StudyType.enumValues.filter(({ other }) => other),
           );
         }
-        const labelStudyType = labelsStudyTypes.join(', ');
-        const label = `Type: ${labelStudyType}`;
+        const label = labelsStudyTypes.join(', ');
         const filterChip = { filter: 'studyTypes', label, value };
         filterChipsRequest.push(filterChip);
       }
       if (statuses.length > 0) {
-        const labelStatuses = statuses
+        const label = statuses
           .map(({ text }) => text)
           .join(', ');
-        const label = `Status: ${labelStatuses}`;
         const filterChip = { filter: 'statuses', label, value: statuses };
         filterChipsRequest.push(filterChip);
       }
       if (assignees.length > 0) {
-        const labelAssignees = assignees
+        const label = assignees
           .map(assignee => (assignee === null ? 'Unassigned' : assignee.text))
           .join(', ');
-        const label = `Assignee: ${labelAssignees}`;
         const filterChip = { filter: 'assignees', label, value: assignees };
         filterChipsRequest.push(filterChip);
       }

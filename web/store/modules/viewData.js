@@ -2,6 +2,15 @@ import { getCollisionFactors } from '@/lib/api/WebApi';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+function getCollisionFilterChip(filter, value, collisionFactors) {
+  const fieldEntries = collisionFactors.get('drivcond');
+  const label = value
+    .map(code => fieldEntries.get(code))
+    .map(({ description }) => description)
+    .join(', ');
+  return { filter, label, value };
+}
+
 export default {
   namespaced: true,
   state: {
@@ -51,11 +60,11 @@ export default {
         const filterChip = { filter: 'dateRange', label, value };
         filterChipsCommon.push(filterChip);
       }
-      daysOfWeek.forEach((value) => {
-        const label = TimeFormatters.DAYS_OF_WEEK[value];
-        const filterChip = { filter: 'daysOfWeek', label, value };
+      if (daysOfWeek.length > 0) {
+        const label = TimeFormatters.formatDaysOfWeek(daysOfWeek);
+        const filterChip = { filter: 'daysOfWeek', label, value: daysOfWeek };
         filterChipsCommon.push(filterChip);
-      });
+      }
       return filterChipsCommon;
     },
     filterChipsCollision(state) {
@@ -76,11 +85,13 @@ export default {
         vehtype,
       } = state.filtersCollision;
       const filterChipsCollision = [];
-      details.forEach((value) => {
-        const { text: label } = value;
-        const filterChip = { filter: 'details', label, value };
+      if (details.length > 0) {
+        const label = details
+          .map(({ text }) => text)
+          .join(', ');
+        const filterChip = { filter: 'details', label, value: details };
         filterChipsCollision.push(filterChip);
-      });
+      }
       if (mvcr !== null) {
         const label = mvcr ? 'MVCR Available' : 'MVCR Missing';
         const filterChip = { filter: 'mvcr', label, value: mvcr };
@@ -91,11 +102,13 @@ export default {
         const filterChip = { filter: 'validated', label, value: validated };
         filterChipsCollision.push(filterChip);
       }
-      emphasisAreas.forEach((value) => {
-        const { text: label } = value;
-        const filterChip = { filter: 'emphasisAreas', label, value };
+      if (emphasisAreas.length > 0) {
+        const label = emphasisAreas
+          .map(({ text }) => text)
+          .join(', ');
+        const filterChip = { filter: 'emphasisAreas', label, value: emphasisAreas };
         filterChipsCollision.push(filterChip);
-      });
+      }
       if (hoursOfDayStart !== 0 || hoursOfDayEnd !== 24) {
         const dtStart = DateTime.fromObject({ hour: hoursOfDayStart });
         const dtEnd = DateTime.fromObject({ hour: hoursOfDayEnd });
@@ -104,54 +117,38 @@ export default {
         const filterChip = { filter: 'hoursOfDay', label, value };
         filterChipsCollision.push(filterChip);
       }
-      drivact.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('drivact');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'drivact', label, value };
+      if (drivact.length > 0) {
+        const filterChip = getCollisionFilterChip('drivact', drivact, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      drivcond.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('drivcond');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'drivcond', label, value };
+      }
+      if (drivcond.length > 0) {
+        const filterChip = getCollisionFilterChip('drivcond', drivcond, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      impactype.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('impactype');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'impactype', label, value };
+      }
+      if (impactype.length > 0) {
+        const filterChip = getCollisionFilterChip('impactype', impactype, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      initdir.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('initdir');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'initdir', label, value };
+      }
+      if (initdir.length > 0) {
+        const filterChip = getCollisionFilterChip('initdir', initdir, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      injury.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('injury');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'injury', label, value };
+      }
+      if (injury.length > 0) {
+        const filterChip = getCollisionFilterChip('injury', injury, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      manoeuver.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('manoeuver');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'manoeuver', label, value };
+      }
+      if (manoeuver.length > 0) {
+        const filterChip = getCollisionFilterChip('manoeuver', manoeuver, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      rdsfcond.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('rdsfcond');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'rdsfcond', label, value };
+      }
+      if (rdsfcond.length > 0) {
+        const filterChip = getCollisionFilterChip('rdsfcond', rdsfcond, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
-      vehtype.forEach((value) => {
-        const fieldEntries = state.collisionFactors.get('vehtype');
-        const { description: label } = fieldEntries.get(value);
-        const filterChip = { filter: 'vehtype', label, value };
+      }
+      if (vehtype.length > 0) {
+        const filterChip = getCollisionFilterChip('vehtype', vehtype, state.collisionFactors);
         filterChipsCollision.push(filterChip);
-      });
+      }
       return filterChipsCollision;
     },
     filterChipsStudy(state) {
@@ -160,16 +157,20 @@ export default {
         studyTypes,
       } = state.filtersStudy;
       const filterChipsStudy = [];
-      studyTypes.forEach((studyType) => {
-        const { label } = studyType;
-        const filterChip = { filter: 'studyTypes', label, value: studyType };
+      if (studyTypes.length > 0) {
+        const label = studyTypes
+          .map(({ label: studyTypeLabel }) => studyTypeLabel)
+          .join(', ');
+        const filterChip = { filter: 'studyTypes', label, value: studyTypes };
         filterChipsStudy.push(filterChip);
-      });
-      hours.forEach((studyHours) => {
-        const label = studyHours.description;
-        const filterChip = { filter: 'hours', label, value: studyHours };
+      }
+      if (hours.length > 0) {
+        const label = hours
+          .map(({ description }) => description)
+          .join(', ');
+        const filterChip = { filter: 'hours', label, value: hours };
         filterChipsStudy.push(filterChip);
-      });
+      }
       return filterChipsStudy;
     },
     filterParamsCollision(state) {
@@ -296,38 +297,26 @@ export default {
     },
   },
   mutations: {
-    removeFilterCollision(state, { filter, value }) {
+    removeFilterCollision(state, { filter }) {
       if (filter === 'hoursOfDay') {
         state.filtersCollision.hoursOfDayStart = 0;
         state.filtersCollision.hoursOfDayEnd = 24;
       } else if (filter === 'mvcr' || filter === 'validated') {
         state.filtersCollision[filter] = null;
       } else {
-        const values = state.filtersCollision[filter];
-        const i = values.indexOf(value);
-        if (i !== -1) {
-          values.splice(i, 1);
-        }
+        state.filtersCollision[filter] = [];
       }
     },
-    removeFilterCommon(state, { filter, value }) {
+    removeFilterCommon(state, { filter }) {
       if (filter === 'dateRange') {
         state.filtersCommon.dateRangeStart = null;
         state.filtersCommon.dateRangeEnd = null;
       } else {
-        const values = state.filtersCommon[filter];
-        const i = values.indexOf(value);
-        if (i !== -1) {
-          values.splice(i, 1);
-        }
+        state.filtersCommon[filter] = [];
       }
     },
-    removeFilterStudy(state, { filter, value }) {
-      const values = state.filtersStudy[filter];
-      const i = values.indexOf(value);
-      if (i !== -1) {
-        values.splice(i, 1);
-      }
+    removeFilterStudy(state, { filter }) {
+      state.filtersStudy[filter] = [];
     },
     setCollisionFactors(state, collisionFactors) {
       state.collisionFactors = collisionFactors;
