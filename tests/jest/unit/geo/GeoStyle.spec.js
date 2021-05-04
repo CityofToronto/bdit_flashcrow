@@ -14,6 +14,8 @@ test('GeoStyle#get [fuzz test]', () => {
     const layers = {
       counts: Random.choice(CHOICES_BOOL),
       collisions: Random.choice(CHOICES_BOOL),
+      schools: Random.choice(CHOICES_BOOL),
+      studies: Random.choice(CHOICES_BOOL),
       volume: Random.choice(CHOICES_BOOL),
     };
 
