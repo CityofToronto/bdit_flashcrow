@@ -7,11 +7,15 @@ export default {
   state: {
     layers: {
       collisions: true,
+      hospitals: true,
+      schools: true,
       studies: true,
       volume: false,
     },
     layersFocusLocations: {
       collisions: false,
+      hospitals: true,
+      schools: true,
       studies: true,
       volume: false,
     },

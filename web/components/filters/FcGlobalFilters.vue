@@ -25,30 +25,33 @@
       <FcListFilterChips
         @click-filter="actionRemoveFilterCommon"
         :filter-chips="filterChipsCommon"
+        :max-width="320"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsCollision.length > 0"
       class="align-center d-flex mt-2">
-      <span class="body-1 secondary--text">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
         Collisions &#x2022;
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterCollision"
         :filter-chips="filterChipsCollision"
+        :max-width="320"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsStudy.length > 0"
       class="align-center d-flex mt-2">
-      <span class="body-1 secondary--text">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
         Studies &#x2022;
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterStudy"
         :filter-chips="filterChipsStudy"
+        :max-width="320"
         :readonly="readonly" />
     </div>
   </section>

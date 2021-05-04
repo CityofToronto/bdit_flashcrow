@@ -39,16 +39,6 @@
           :readonly="filtersReadonly" />
       </div>
 
-      <v-alert
-        v-if="showLegend && filtersIncludeOlderData"
-        border="left"
-        class="fc-pane-map-warning-older-data elevation-2"
-        colored-border
-        dense
-        type="warning">
-        Collisions on map limited to last 10 years
-      </v-alert>
-
       <FcPaneMapLegend
         v-if="showLegend"
         v-model="internalLayers" />
@@ -512,9 +502,6 @@ export default {
     ]),
     ...mapGetters('mapLayers', [
       'layersForMode',
-    ]),
-    ...mapGetters('viewData', [
-      'filtersIncludeOlderData',
     ]),
   },
   created() {

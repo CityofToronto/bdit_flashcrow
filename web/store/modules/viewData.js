@@ -3,7 +3,7 @@ import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 function getCollisionFilterChip(filter, value, collisionFactors) {
-  const fieldEntries = collisionFactors.get('drivcond');
+  const fieldEntries = collisionFactors.get(filter);
   const label = value
     .map(code => fieldEntries.get(code))
     .map(({ description }) => description)
@@ -274,14 +274,6 @@ export default {
         params.studyTypes = studyTypes;
       }
       return params;
-    },
-    filtersIncludeOlderData(state, getters, rootState) {
-      const { dateRangeStart } = state.filtersCommon;
-      const { now } = rootState;
-      if (dateRangeStart === null) {
-        return true;
-      }
-      return dateRangeStart.valueOf() < now.minus({ years: 10 }).valueOf();
     },
     hasFilters(state, getters) {
       return getters.hasFiltersCollision || getters.hasFiltersCommon || getters.hasFiltersStudy;

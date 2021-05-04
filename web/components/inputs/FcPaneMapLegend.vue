@@ -1,63 +1,81 @@
 <template>
-  <v-card class="fc-pane-map-legend" width="200">
-    <v-card-text class="default--text">
+  <v-card class="fc-pane-map-legend" width="250">
+    <v-card-text class="default--text pa-0">
       <fieldset>
-        <legend class="headline">Legend</legend>
+        <legend class="headline px-4 py-3">Legend</legend>
 
-        <div
-          v-for="layerItem in layerItems"
-          :key="layerItem.value"
-          class="align-center d-flex my-2">
+        <v-divider></v-divider>
+
+        <template v-for="(layerItem, i) in layerItems">
+          <v-divider
+            v-if="layerItem === null"
+            :key="i"></v-divider>
           <component
-            :is="'FcLegendIcon' + layerItem.suffix"
-            class="mr-4" />
-          <div class="body-1 flex-grow-1 mt-1">{{layerItem.text}}</div>
-          <FcTooltip left>
-            <template v-slot:activator="{ on }">
-              <div v-on="on">
-                <v-checkbox
-                  v-model="internalValue[layerItem.value]"
-                  :aria-label="layerLabels[layerItem.value]"
-                  class="mt-0"
-                  color="secondary"
-                  hide-details
-                  off-icon="mdi-eye-off"
-                  on-icon="mdi-eye"
-                  v-on="on"></v-checkbox>
-              </div>
-            </template>
-            <span>{{layerLabels[layerItem.value]}}</span>
-          </FcTooltip>
-        </div>
+            v-else
+            v-model="internalValue[layerItem.value]"
+            :key="layerItem.value"
+            :is="'FcLegendRow' + layerItem.suffix"
+            class="mx-4 my-3" />
+        </template>
       </fieldset>
+
+      <div class="text-center py-1">
+        <FcButton
+          type="tertiary"
+          @click="showMore = !showMore">
+          <span v-if="showMore">Less</span>
+          <span v-else>More</span>
+        </FcButton>
+      </div>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
-import FcLegendIconCollisions from '@/web/components/legend/FcLegendIconCollisions.vue';
-import FcLegendIconStudies from '@/web/components/legend/FcLegendIconStudies.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcLegendRowCollisions from '@/web/components/legend/FcLegendRowCollisions.vue';
+import FcLegendRowHospitals from '@/web/components/legend/FcLegendRowHospitals.vue';
+import FcLegendRowSchools from '@/web/components/legend/FcLegendRowSchools.vue';
+import FcLegendRowStudies from '@/web/components/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcPaneMapLegend',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
-    FcLegendIconCollisions,
-    FcLegendIconStudies,
+    FcButton,
+    FcLegendRowCollisions,
+    FcLegendRowHospitals,
+    FcLegendRowSchools,
+    FcLegendRowStudies,
     FcTooltip,
   },
   data() {
-    const layerItems = [
-      { suffix: 'Studies', text: 'Studies', value: 'studies' },
+    const layerItemsLess = [
       { suffix: 'Collisions', text: 'Collisions', value: 'collisions' },
+      null,
+      { suffix: 'Studies', text: 'Studies', value: 'studies' },
+      null,
+    ];
+    const layerItemsMore = [
+      { suffix: 'Schools', text: 'School Zone', value: 'schools' },
+      { suffix: 'Hospitals', text: 'Hospital Zone', value: 'hospitals' },
+      null,
     ];
     return {
-      layerItems,
+      showMore: false,
+      layerItemsLess,
+      layerItemsMore,
     };
   },
   computed: {
+    layerItems() {
+      if (this.showMore) {
+        return [...this.layerItemsLess, ...this.layerItemsMore];
+      }
+      return this.layerItemsLess;
+    },
     layerLabels() {
       const layerLabels = {};
       this.layerItems.forEach(({ text, value }) => {
@@ -70,3 +88,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-pane-map-legend {
+  & .fc-legend-icon {
+    height: 24px;
+    position: relative;
+    width: 24px;
+  }
+}
+</style>

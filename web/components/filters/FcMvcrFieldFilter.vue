@@ -1,15 +1,13 @@
 <template>
   <fieldset>
-    <legend class="headline">
-      <div class="align-center d-flex">
-        <span class="default--text headline">{{title}}</span>
-        <v-spacer></v-spacer>
-        <FcTooltipCollisionFilter
-          v-if="tooltip !== null">
-          <span v-html="tooltip"></span>
-        </FcTooltipCollisionFilter>
-      </div>
-    </legend>
+    <div class="align-center d-flex">
+      <legend class="default--text headline">{{title}}</legend>
+      <v-spacer></v-spacer>
+      <FcTooltipCollisionFilter
+        v-if="tooltip !== null">
+        <span v-html="tooltip"></span>
+      </FcTooltipCollisionFilter>
+    </div>
 
     <template v-for="item in items">
       <div
