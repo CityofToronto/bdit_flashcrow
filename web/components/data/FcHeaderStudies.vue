@@ -1,5 +1,5 @@
 <template>
-  <header class="pa-5">
+  <header class="px-5 py-3">
     <div class="align-center d-flex">
       <h3 class="headline">
         <span>Studies</span>

@@ -17,7 +17,7 @@
         v-if="!drawerOpen && showSearch">
         <FcSelectorCollapsedLocation
           v-if="!showLocationSelection"
-          class="mt-5 ml-5" />
+          class="mt-3 ml-5" />
         <FcSelectorMultiLocation
           v-else-if="locationMode.multi"
           class="elevation-2">
@@ -31,11 +31,11 @@
         </FcSelectorMultiLocation>
         <FcSelectorSingleLocation
           v-else
-          class="mt-5 ml-5" />
+          class="mt-3 ml-5" />
 
         <FcGlobalFilterBox
           v-if="showFilters"
-          class="mt-5 ml-5"
+          class="mt-3 ml-5"
           :readonly="filtersReadonly" />
       </div>
 
@@ -899,7 +899,7 @@ export default {
   & > .fc-pane-map-legend {
     position: absolute;
     right: 20px;
-    top: 20px;
+    top: 12px;
     z-index: var(--z-index-controls);
   }
   & > .pane-map-mode {

@@ -1,6 +1,6 @@
 <template>
   <v-card width="472">
-    <v-card-text>
+    <v-card-text class="px-4 pa-3">
       <FcGlobalFilters :readonly="readonly" />
     </v-card-text>
   </v-card>

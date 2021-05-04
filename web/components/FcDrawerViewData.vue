@@ -13,7 +13,7 @@
           </FcButton>
         </template>
       </FcSelectorMultiLocation>
-      <div v-else class="pa-5">
+      <div v-else class="px-5 py-3">
         <FcSelectorSingleLocation />
         <FcHeaderSingleLocation
           class="mt-4"
@@ -42,7 +42,7 @@
           :locations-selection="locationsEditSelection" />
         <template v-else>
           <FcGlobalFilters
-            class="pa-5"
+            class="px-5 py-3"
             header-tag="h3" />
 
           <v-divider></v-divider>

@@ -13,7 +13,8 @@
         v-if="!readonly"
         type="tertiary"
         @click="setFiltersOpen(true)">
-        Edit
+        <span v-if="hasFilters">Edit</span>
+        <span v-else>Add</span>
       </FcButton>
     </div>
     <div v-if="!hasFilters" class="secondary--text">
