@@ -1,13 +1,52 @@
 import { getCollisionFactors } from '@/lib/api/WebApi';
+import { getFieldCodes, isLeafFieldCode } from '@/lib/filters/CollisionFilterGroups';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
+function getCollisionLeafLabelParts(value, fieldCode, fieldEntries) {
+  const parts = [];
+  if (value.includes(fieldCode)) {
+    const { description } = fieldEntries.get(fieldCode);
+    parts.push(description);
+  }
+  return parts;
+}
+
+function getCollisionGroupLabelParts(value, fieldCode, fieldEntries) {
+  const parts = [];
+  const { text, values } = fieldCode;
+  const includesAll = values.every(code => value.includes(code));
+  if (includesAll) {
+    parts.push(text);
+  } else {
+    values.forEach((code) => {
+      if (value.includes(code)) {
+        const { description } = fieldEntries.get(code);
+        parts.push(description);
+      }
+    });
+  }
+  return parts;
+}
+
+function getCollisionFilterChipLabel(filter, value, fieldEntries) {
+  const fieldCodes = getFieldCodes(filter, fieldEntries);
+  const labelParts = [];
+  fieldCodes.forEach((fieldCode) => {
+    let parts;
+    if (isLeafFieldCode(fieldCode)) {
+      parts = getCollisionLeafLabelParts(value, fieldCode, fieldEntries);
+    } else {
+      parts = getCollisionGroupLabelParts(value, fieldCode, fieldEntries);
+    }
+    labelParts.push(...parts);
+  });
+  return labelParts.join(', ');
+}
+
 function getCollisionFilterChip(filter, value, collisionFactors) {
   const fieldEntries = collisionFactors.get(filter);
-  const label = value
-    .map(code => fieldEntries.get(code))
-    .map(({ description }) => description)
-    .join(', ');
+  const label = getCollisionFilterChipLabel(filter, value, fieldEntries);
   return { filter, label, value };
 }
 

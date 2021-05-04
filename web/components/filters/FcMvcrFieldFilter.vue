@@ -71,7 +71,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import ArrayUtils from '@/lib/ArrayUtils';
+import { getFieldCodes, isLeafFieldCode } from '@/lib/filters/CollisionFilterGroups';
 import FcTooltipCollisionFilter from '@/web/components/filters/FcTooltipCollisionFilter.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
@@ -88,16 +88,19 @@ is the primary goal of the Vision Zero program.</span>`,
       [
         4,
         `
-Fatal injury (person sustains bodily injuries resulting in death) only in those cases where
-death occurs in less than 366 days as result of the collision. Does not include death
-from natural causes (heart attack, stroke, epilated seizure, etc.) or suicide.`,
+<span>A fatal injury (person sustains bodily injuries resulting in death) where:</span>
+<ul>
+  <li>death occurs in less than 366 days as a result of the collision; and</li>
+  <li>death is not due to natural causes (heart attack, stroke, epilated seizure, etc.) or suicide.</li>
+</ul>`,
       ],
       [
         3,
         `
-A non-fatal injury that is severe enough to require the injured person to be admitted to hospital,
-even if only for observation at the time of the collision. Includes: fracture, internal injury,
-severe cuts, crushing, burns, concussion, severe general shocks.`,
+<p>A non-fatal injury that is severe enough to require the injured person to be admitted to
+hospital, even if only for observation, at the time of the collision.</p><p class="mb-0">Includes:
+fracture, internal injury, severe cuts, crushing, burns, concussion, severe general shocks,
+etc.</p>`,
       ],
       [
         2,
@@ -108,8 +111,8 @@ hospitalization of the involved person at the time of the collision.`,
       [
         1,
         `
-A non-fatal injury at the time of the collision, including minor abrasions, bruises, and
-complaints of pain which does not require the injured person going to the hospital.`,
+<p>A non-fatal injury at the time of the collision that does not require the injured person
+going to the hospital.</p><p class="mb-0">Includes: minor abrasions, bruises, pain, etc.</p>`,
       ],
       [0, 'No injuries'],
     ]),
@@ -132,59 +135,6 @@ function getItemTooltip(fieldName, key) {
     return null;
   }
   return items.get(key);
-}
-
-function getFieldCodes(fieldName, fieldEntries) {
-  if (fieldName === 'injury') {
-    return [{ key: 'KSI', text: 'KSI', values: [4, 3] }, 2, 1, 0];
-  }
-  if (fieldName === 'vehtype') {
-    return [
-      1,
-      2,
-      36,
-      3,
-      4,
-      5,
-      6,
-      { key: 'TRUCKS', text: 'Trucks', values: [7, 8, 9, 10, 11, 12, 13, 98] },
-      { key: 'BUSES', text: 'Buses', values: [14, 15, 16] },
-      { key: 'SCHOOL', text: 'School vehicles', values: [17, 18, 19] },
-      20,
-      { key: 'OFF_ROAD', text: 'Off-road vehicles', values: [21, 22, 23, 24] },
-      { key: 'SPECIAL', text: 'Specialized vehicles', values: [25, 26, 27, 28] },
-      29,
-      30,
-      31,
-      { key: 'EMS', text: 'Emergency vehicles', values: [32, 33, 34, 35] },
-      99,
-    ];
-  }
-
-  let fieldCodes = [];
-  let hasOther = false;
-  let hasUnknown = false;
-  Array.from(fieldEntries).forEach(([value]) => {
-    if (value === 99) {
-      hasOther = true;
-    } else if (value === 0) {
-      hasUnknown = true;
-    } else {
-      fieldCodes.push(value);
-    }
-  });
-  fieldCodes = ArrayUtils.sortBy(fieldCodes, value => value);
-  if (hasOther) {
-    fieldCodes.push(99);
-  }
-  if (hasUnknown) {
-    fieldCodes.push(0);
-  }
-  return fieldCodes;
-}
-
-function isLeafFieldCode(fieldCode) {
-  return Number.isInteger(fieldCode);
 }
 
 function getLeafItem(fieldName, fieldEntries, fieldCode) {
