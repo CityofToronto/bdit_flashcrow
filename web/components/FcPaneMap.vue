@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import Vue from 'vue';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
@@ -136,9 +136,9 @@ import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorColla
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
-const BOUNDS_TORONTO = new mapboxgl.LngLatBounds(
-  new mapboxgl.LngLat(-79.639264937, 43.580995995),
-  new mapboxgl.LngLat(-79.115243191, 43.855457183),
+const BOUNDS_TORONTO = new maplibregl.LngLatBounds(
+  new maplibregl.LngLat(-79.639264937, 43.580995995),
+  new maplibregl.LngLat(-79.115243191, 43.855457183),
 );
 
 const ROUTES_EDIT_FILTERS = [
@@ -512,7 +512,7 @@ export default {
 
     Vue.nextTick(() => {
       this.loading = false;
-      this.map = new mapboxgl.Map({
+      this.map = new maplibregl.Map({
         bounds,
         boxZoom: false,
         container: this.$el,
@@ -527,7 +527,7 @@ export default {
       });
       this.updateCoordinates();
       this.map.addControl(
-        new mapboxgl.AttributionControl({
+        new maplibregl.AttributionControl({
           customAttribution: [
             '<span role="listitem"><a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a></span>',
             '<span role="listitem">Powered by <a href="https://www.esri.com/">Esri</a></span>',
@@ -536,11 +536,11 @@ export default {
         'bottom-left',
       );
       this.map.addControl(
-        new mapboxgl.ScaleControl({ maxWidth: 128, unit: 'metric' }),
+        new maplibregl.ScaleControl({ maxWidth: 128, unit: 'metric' }),
         'bottom-left',
       );
       this.map.addControl(
-        new mapboxgl.NavigationControl({ showCompass: false }),
+        new maplibregl.NavigationControl({ showCompass: false }),
         'bottom-right',
       );
 
@@ -717,7 +717,7 @@ export default {
     easeToLocations(locations, locationsPrev) {
       if (locations.length > 0) {
         // build bounding box on locations
-        const bounds = new mapboxgl.LngLatBounds();
+        const bounds = new maplibregl.LngLatBounds();
         locations.forEach(({ geom }) => {
           const { coordinates, type } = geom;
           if (type === 'Point') {

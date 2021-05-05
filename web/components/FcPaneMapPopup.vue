@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
+import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import {
@@ -484,7 +484,7 @@ export default {
     createPopup() {
       const hoveredClassName = this.hovered ? ' hovered' : '';
       const offset = this.hovered ? 0 : 40;
-      this.popup = new mapboxgl.Popup({
+      this.popup = new maplibregl.Popup({
         anchor: 'bottom',
         className: `fc-pane-map-popup elevation-2${hoveredClassName}`,
         closeButton: false,

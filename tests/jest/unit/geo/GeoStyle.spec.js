@@ -1,4 +1,4 @@
-import { validate } from '@mapbox/mapbox-gl-style-spec';
+import { validate } from '@maplibre/maplibre-gl-style-spec';
 
 import Random from '@/lib/Random';
 import GeoStyle from '@/lib/geo/GeoStyle';

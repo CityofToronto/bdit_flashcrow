@@ -27,7 +27,7 @@
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import '@mdi/font/css/materialdesignicons.css';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import '@/web/css/main.scss';
 
 import FcDialogAlertStudyRequestUrgent
