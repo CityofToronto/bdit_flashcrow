@@ -137,7 +137,7 @@ export default {
         filterChipsCollision.push(filterChip);
       }
       if (validated !== null) {
-        const label = mvcr ? 'Validated' : 'Not Validated';
+        const label = validated ? 'Validated' : 'Not Validated';
         const filterChip = { filter: 'validated', label, value: validated };
         filterChipsCollision.push(filterChip);
       }
