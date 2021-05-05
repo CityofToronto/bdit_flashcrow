@@ -38,7 +38,6 @@
     "@hapi/hapi": "^20.1.2",
     "@hapi/inert": "^6.0.3",
     "@hapi/vision": "^6.0.1",
-    "@maplibre/maplibre-gl-style-spec": "^14.0.0",
     "@mdi/font": "^5.9.55",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.895.0",
@@ -77,6 +76,7 @@
   "devDependencies": {
     "@babel/core": "^7.13.16",
     "@mapbox/spritezero": "^7.0.1",
+    "@maplibre/maplibre-gl-style-spec": "^14.0.0",
     "@vue/cli": "^4.5.12",
     "@vue/cli-plugin-babel": "^4.5.12",
     "@vue/cli-plugin-eslint": "^4.5.12",
