@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2021-05-06
+
+### Added
+
+- Several new collision filters: Vehicle Type, Validated, MVCR, running red light
+
+### Changed
+
+- New layout for map legend
+- Small tweaks to padding in View Map / View Data
+- Filter chips now grouped, truncated for collisions and studies
+- Definition of school children now includes mode of transport, time of day
+- Switched to `maplibre-gl` from `mapbox-gl`
+
+### Fixed
+
+- "Property Damage" renamed to "Damage to City Property" to more accurately reflect meaning
+
 ## [1.3.0] - 2021-04-29
 
 ### Added

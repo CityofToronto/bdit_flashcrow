@@ -389,6 +389,11 @@
       "decision": "ignore",
       "madeAt": 1619716963083,
       "expiresAt": 1620321754697
+    },
+    "1666|@vue/cli>@vue/cli-ui>watch>exec-sh>merge": {
+      "decision": "ignore",
+      "madeAt": 1620309127306,
+      "expiresAt": 1620913917488
     }
   },
   "rules": {},

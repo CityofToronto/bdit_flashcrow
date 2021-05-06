@@ -45,14 +45,14 @@ test('StudyDAO.byCentreline()', async () => {
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   studies = await StudyDAO.byCentreline(features, studyQuery, { limit: 10, offset: 0 });
-  expect(studies).toHaveLength(2);
   await expect(
     Joi.array().items(Study.read).validateAsync(studies),
   ).resolves.toEqual(studies);
-  expect(studies[0].duration).toBe(72);
-  expect(studies[0].hours).toBeNull();
-  expect(studies[1].duration).toBe(72);
-  expect(studies[1].hours).toBeNull();
+  expect(studies.length).toBeGreaterThan(0);
+  studies.forEach((study) => {
+    expect(study.duration % 24).toEqual(0);
+    expect(study.hours).toBeNull();
+  });
 
   // valid feature with less than 10 counts, date range filters to empty
   features = [
@@ -168,7 +168,7 @@ test('StudyDAO.byCentrelineSummary()', async () => {
       n: Joi.number().integer().positive().required(),
     }),
   );
-  expectNumPerCategoryStudy(studySummary, [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(studySummary, [[1, 'ATR_SPEED_VOLUME']]);
   await expect(
     studySummarySchema.validateAsync(studySummary),
   ).resolves.toEqual(studySummary);
@@ -293,7 +293,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation()', async () => {
   );
   expectNumPerCategoryAndLocationStudy(
     studySummary,
-    [[[4], 'ATR_VOLUME'], [[2], 'ATR_SPEED_VOLUME']],
+    [[[1], 'ATR_SPEED_VOLUME']],
   );
   await expect(
     studySummaryPerLocationSchema.validateAsync(studySummary),
@@ -374,7 +374,7 @@ test('StudyDAO.byCentrelineTotal()', async () => {
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
   total = await StudyDAO.byCentrelineTotal(features);
-  expect(total).toBe(6);
+  expect(total).toBe(1);
 
   // centreline feature with lots of counts
   features = [

@@ -28,16 +28,16 @@ test('CountDAO.byStudy', async () => {
 
   // volume ATR: single-day, single-direction
   result = await CountDAO.byStudy({
-    arteryGroupId: 3099,
-    endDate: DateTime.fromObject({ year: 1995, month: 9, day: 25 }),
-    startDate: DateTime.fromObject({ year: 1995, month: 9, day: 25 }),
-    type: { id: 1, studyType: StudyType.ATR_VOLUME },
+    arteryGroupId: 32532,
+    endDate: DateTime.fromObject({ year: 2012, month: 12, day: 20 }),
+    startDate: DateTime.fromObject({ year: 2012, month: 12, day: 20 }),
+    type: { id: 4, studyType: StudyType.ATR_SPEED_VOLUME },
   });
   expect(result).toHaveLength(1);
 
   // volume ATR: multi-day, single-direction
   result = await CountDAO.byStudy({
-    arteryGroupId: 3099,
+    arteryGroupId: 38438,
     endDate: DateTime.fromObject({ year: 2017, month: 6, day: 15 }),
     startDate: DateTime.fromObject({ year: 2017, month: 6, day: 13 }),
     type: { id: 4, studyType: StudyType.ATR_SPEED_VOLUME },

@@ -90,7 +90,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryStudy(
     response.result,
-    [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']],
+    [[1, 'ATR_SPEED_VOLUME']],
   );
 
   // valid feature with some counts, date range filters to empty
@@ -120,7 +120,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategoryStudy(response.result, [[2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[1, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, filter by day of week
   features = [
@@ -133,7 +133,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategoryStudy(response.result, [[3, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[1, 'ATR_SPEED_VOLUME']]);
 
   // intersection with some counts
   features = [
@@ -272,7 +272,7 @@ test('StudyController.getStudiesByCentreline', async () => {
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.length).toBe(6);
+  expect(response.result.length).toBe(1);
 
   // valid feature with less than maxPerCategory counts, filter by type
   features = [
@@ -287,7 +287,7 @@ test('StudyController.getStudiesByCentreline', async () => {
   };
   response = await client.fetch('/studies/byCentreline', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.length).toBe(2);
+  expect(response.result.length).toBe(1);
 
   // valid feature with less than maxPerCategory counts, date range filters to empty
   dateRangeStart = DateTime.fromObject({ year: 2018, month: 1, day: 1 });
@@ -396,7 +396,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   data = { s1 };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategoryStudy(response.result, [[4, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[1, 'ATR_SPEED_VOLUME']]);
 
   // valid feature with some counts, date range filters to empty
   dateRangeEnd = DateTime.fromObject({ year: 2019, month: 1, day: 1 });
@@ -502,7 +502,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryAndLocationStudy(
     response.result,
-    [[[4], 'ATR_VOLUME'], [[2], 'ATR_SPEED_VOLUME']],
+    [[[1], 'ATR_SPEED_VOLUME']],
   );
 
   // valid feature with some counts, date range filters to empty
@@ -593,7 +593,7 @@ test('StudyController.getStudiesByCentrelineTotal', async () => {
   data = { s1 };
   response = await client.fetch('/studies/byCentreline/total', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.total).toBe(6);
+  expect(response.result.total).toBe(1);
 
   // centreline feature with lots of counts
   features = [
