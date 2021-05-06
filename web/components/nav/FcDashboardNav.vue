@@ -28,6 +28,11 @@
 
     <FcDashboardNavItem
       external
+      icon="help-circle-outline"
+      label="MOVE Help Centre"
+      href="https://flashcrow-etladmin.intra.dev-toronto.ca/move-help-centre/" />
+    <FcDashboardNavItem
+      external
       icon="bug"
       label="Report an Issue"
       :href="urlReportIssue" />

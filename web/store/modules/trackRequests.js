@@ -22,7 +22,7 @@ export default {
     },
     sortRequest: {
       sortBy: 'ID',
-      sortDesc: false,
+      sortDesc: true,
     },
   },
   getters: {
