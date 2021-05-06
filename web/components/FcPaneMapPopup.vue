@@ -83,13 +83,13 @@ function getCollisionDescription(feature, collision) {
     return description;
   }
 
-  collision.involved.forEach(({ invtype, invage }) => {
+  collision.involved.forEach(({ cyclist, invage, pedestrian }) => {
     const invageQuantized = Math.floor(invage / 5) * 5;
     const invageRange = `${invageQuantized} to ${invageQuantized + 5}`;
-    if (invtype === 3) {
-      description.push(`Pedestrian \u00b7 ${invageRange}`);
-    } else if (invtype === 4) {
+    if (cyclist) {
       description.push(`Cyclist \u00b7 ${invageRange}`);
+    } else if (pedestrian) {
+      description.push(`Pedestrian \u00b7 ${invageRange}`);
     }
   });
 
@@ -115,12 +115,12 @@ function getCollisionDescription(feature, collision) {
 function getCollisionIcon(feature, { involved }) {
   const n = involved.length;
   for (let i = 0; i < n; i++) {
-    const { invtype } = involved[i];
-    if (invtype === 3) {
-      return 'mdi-walk';
-    }
-    if (invtype === 4) {
+    const { cyclist, pedestrian } = involved[i];
+    if (cyclist) {
       return 'mdi-bike';
+    }
+    if (pedestrian) {
+      return 'mdi-walk';
     }
   }
   return null;
