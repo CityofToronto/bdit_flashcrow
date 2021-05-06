@@ -37,7 +37,7 @@ FrontendEnv.init({
   PROD: {
     appClass: 'is-prod',
     appTitle: 'MOVE',
-    colorClass: null,
+    colorClass: 'grey',
   },
 });
 

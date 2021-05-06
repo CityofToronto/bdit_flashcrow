@@ -3,6 +3,7 @@ const path = require('path');
 
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+const packageJson = require('./package.json');
 const { ENV, DEV } = require('./lib/config/Env');
 
 const key = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.key'));
@@ -58,6 +59,18 @@ const vueConfig = {
       ignored: /node_modules/,
       poll: 2000,
     },
+  },
+  // see https://stackoverflow.com/questions/53285704/set-viewport-meta-tag-in-vue-js-application
+  chainWebpack: (config) => {
+    config
+      .plugin('html')
+      .tap((args) => {
+        const [htmlHead, ...restArgs] = args;
+        htmlHead.templateParameters = {
+          VERSION: packageJson.version,
+        };
+        return [htmlHead, ...restArgs];
+      });
   },
   // see https://medium.com/@kenneth_chau/speeding-up-webpack-typescript-incremental-builds-by-7x-3912ba4c1d15
   // see https://cli.vuejs.org/guide/webpack.html#simple-configuration

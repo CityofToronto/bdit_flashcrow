@@ -8,12 +8,11 @@
     <FcDashboardNavBrand />
     <h1 class="headline ml-2">{{textH1}}</h1>
     <v-chip
-      v-if="frontendEnv !== FrontendEnv.PROD"
       class="ml-2"
       :color="frontendEnv.colorClass + ' darken-4'"
       dark
       small>
-      {{frontendEnv.name.toLowerCase()}}
+      {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
     </v-chip>
 
     <v-spacer></v-spacer>
@@ -39,6 +38,7 @@ import { mapState } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
+import FrontendMeta from '@/web/config/FrontendMeta';
 
 export default {
   name: 'FcAppbar',
@@ -47,21 +47,10 @@ export default {
     FcDashboardNavBrand,
   },
   data() {
-    return { FrontendEnv };
+    const frontendMeta = FrontendMeta.get();
+    return { FrontendEnv, frontendMeta };
   },
   computed: {
-    textEnv() {
-      if (this.frontendEnv === FrontendEnv.LOCAL) {
-        return 'local';
-      }
-      if (this.frontendEnv === FrontendEnv.DEV) {
-        return 'development';
-      }
-      if (this.frontendEnv === FrontendEnv.QA) {
-        return 'QA';
-      }
-      return '';
-    },
     textH1() {
       if (this.title === '') {
         return FrontendEnv.PROD.appTitle;
