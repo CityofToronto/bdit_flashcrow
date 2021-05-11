@@ -88,9 +88,19 @@ test('TimeFormatters.formatTimeOfDay()', () => {
 });
 
 test('TimeFormatters.formatRangeDate()', () => {
+  expect(TimeFormatters.formatRangeDate(null)).toBeNull();
+
   let start = DateTime.fromSQL('1986-07-31 21:16:00');
   let end = DateTime.fromSQL('1986-07-31 22:16:00');
   expect(TimeFormatters.formatRangeDate({ start, end })).toEqual('1986-07-31');
+
+  start = DateTime.fromSQL('1986-07-31 21:16:00');
+  end = null;
+  expect(TimeFormatters.formatRangeDate({ start, end })).toEqual('Since 1986-07-31');
+
+  start = null;
+  end = DateTime.fromSQL('2000-01-01 01:23:45');
+  expect(TimeFormatters.formatRangeDate({ start, end })).toEqual('Until 2000-01-01');
 
   start = DateTime.fromSQL('1986-07-31 00:00:00');
   end = DateTime.fromSQL('2000-01-01 01:23:45');
@@ -98,9 +108,19 @@ test('TimeFormatters.formatRangeDate()', () => {
 });
 
 test('TimeFormatters.formatRangeTimeOfDay()', () => {
+  expect(TimeFormatters.formatRangeTimeOfDay(null)).toBeNull();
+
   let start = DateTime.fromSQL('1986-07-31 21:16:00');
   let end = DateTime.fromSQL('1986-07-31 22:16:00');
   expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('21:16\u201322:16');
+
+  start = DateTime.fromSQL('1986-07-31 21:16:00');
+  end = null;
+  expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('After 21:16');
+
+  start = null;
+  end = DateTime.fromSQL('1986-07-31 01:23:45');
+  expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('Before 01:23');
 
   start = DateTime.fromSQL('1986-07-31 00:00:00');
   end = DateTime.fromSQL('1986-07-31 01:23:45');
