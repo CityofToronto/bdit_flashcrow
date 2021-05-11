@@ -6,9 +6,9 @@
         <v-spacer></v-spacer>
         <FcTooltipCollisionFilter>
           <span>
-             These are properties of the collision that are specific to Transportation Services or
-             have been calculated from the data collected by Toronto Police Services and Collision
-             Reporting Centres.
+             These are properties of the collision that are specific to Transportation Services,
+             or that have been calculated from the data collected by Toronto Police Services and
+             Collision Reporting Centres.
           </span>
         </FcTooltipCollisionFilter>
       </div>
@@ -71,8 +71,8 @@
       </template>
     </FcRadioGroup>
 
-    <fieldset class="mt-6">
-      <legend class="headline">Vision Zero Emphasis Areas</legend>
+    <fieldset class="mt-8">
+      <legend class="headline mb-2">Vision Zero Emphasis Areas</legend>
 
       <div
         v-for="emphasisArea in CollisionEmphasisArea.enumValues"

@@ -76,6 +76,22 @@ import FcTooltipCollisionFilter from '@/web/components/filters/FcTooltipCollisio
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 const MVCR_FIELD_TOOLTIPS = {
+  drivact: {
+    field: '<span>Applies to any driver involved in the collision.</span>',
+    items: new Map(),
+  },
+  drivcond: {
+    field: '<span>Applies to any driver involved in the collision.</span>',
+    items: new Map(),
+  },
+  impactype: {
+    field: '<span>The initial impact type recorded for the collision event as a whole.</span>',
+    items: new Map(),
+  },
+  initdir: {
+    field: '<span>Applies to any driver involved in the collision.</span>',
+    items: new Map(),
+  },
   injury: {
     field: '<span>Severity of injuries sustained as a result of the collision event.</span>',
     items: new Map([
@@ -116,6 +132,16 @@ going to the hospital.</p><p class="mb-0">Includes: minor abrasions, bruises, pa
       ],
       [0, 'No injuries'],
     ]),
+  },
+  manoeuver: {
+    field: `
+<span>The motion being performed by one or more vehicles involved in the
+collision at time of impact.</span>`,
+    items: new Map(),
+  },
+  rdsfcond: {
+    field: '<span>Road surface condition at the time of the collision event.</span>',
+    items: new Map(),
   },
 };
 
