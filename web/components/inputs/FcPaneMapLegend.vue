@@ -9,15 +9,18 @@
         <template v-for="(layerItem, i) in layerItems">
           <v-divider
             v-if="layerItem === null"
-            :key="i"></v-divider>
+            :key="i"
+            class="ml-4"></v-divider>
           <component
             v-else
             v-model="internalValue[layerItem.value]"
             :key="layerItem.value"
             :is="'FcLegendRow' + layerItem.suffix"
-            class="mx-4 my-3" />
+            class="mx-4 mt-2 mb-3" />
         </template>
       </fieldset>
+
+      <v-divider></v-divider>
 
       <div class="text-center py-1">
         <FcButton
@@ -53,15 +56,15 @@ export default {
   },
   data() {
     const layerItemsLess = [
-      { suffix: 'Collisions', text: 'Collisions', value: 'collisions' },
+      { suffix: 'Collisions', value: 'collisions' },
       null,
-      { suffix: 'Studies', text: 'Studies', value: 'studies' },
-      null,
+      { suffix: 'Studies', value: 'studies' },
     ];
     const layerItemsMore = [
-      { suffix: 'Schools', text: 'School Zone', value: 'schools' },
-      { suffix: 'Hospitals', text: 'Hospital Zone', value: 'hospitals' },
       null,
+      { suffix: 'Schools', value: 'schools' },
+      null,
+      { suffix: 'Hospitals', value: 'hospitals' },
     ];
     return {
       showMore: false,

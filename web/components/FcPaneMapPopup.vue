@@ -71,8 +71,6 @@ const SELECTABLE_LAYERS = [
 ];
 
 async function getCollisionDetails(feature) {
-  /* eslint-disable-next-line no-console */
-  console.log(feature.properties);
   const { collision_id: collisionId } = feature.properties;
   return getCollisionByCollisionId(collisionId);
 }

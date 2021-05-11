@@ -2,7 +2,7 @@
   <div>
     <div class="align-center d-flex">
       <div class="fc-legend-icon flex-grow-0 flex-shrink-0">
-        <img src="/icons/map/school.svg" width="24" height="24" />
+        <img src="/icons/map/no-shadow/school.svg" width="24" height="24" />
       </div>
       <div class="body-1 flex-grow-1 ml-4 mt-1">Schools</div>
       <FcTooltip left>
