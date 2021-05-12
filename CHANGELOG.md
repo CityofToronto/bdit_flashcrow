@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2021-05-12
+
+### Added
+
+- More contextual help for various collision filters
+- Left navbar now includes link to MOVE Help Centre
+
+### Changed
+
+- School children definition updated to remove time constraints, add active transportation requirement
+
+### Fixed
+
+- Fixed SQL query bug with "MVCR Missing" and "Not Validated" filters
+- Fixed SQL query bug with location search queries containing only stopwords (e.g. "and", "the")
+- Several small interaction / usability fixes
+
+### Removed
+
 ## [1.3.1] - 2021-05-06
 
 ### Added
