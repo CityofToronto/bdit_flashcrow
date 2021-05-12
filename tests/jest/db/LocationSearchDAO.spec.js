@@ -123,6 +123,16 @@ test('LocationSearchDAO.intersectionSuggestions', async () => {
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 });
 
+test('LocationSearchDAO.intersectionSuggestions [empty / stopwords]', async () => {
+  // empty query: returns empty result list
+  let result = await LocationSearchDAO.intersectionSuggestions('', 3);
+  expect(result).toEqual([]);
+
+  // only stopwords: returns empty result list
+  result = await LocationSearchDAO.intersectionSuggestions('and the', 3);
+  expect(result).toEqual([]);
+});
+
 test('LocationSearchDAO.trafficSignalSuggestions', async () => {
   let result = await LocationSearchDAO.trafficSignalSuggestions(-1);
   expect(result).toEqual([]);
