@@ -137,8 +137,8 @@ import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLoca
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 const BOUNDS_TORONTO = new maplibregl.LngLatBounds(
-  new maplibregl.LngLat(-79.639264937, 43.580995995),
-  new maplibregl.LngLat(-79.115243191, 43.855457183),
+  new maplibregl.LngLat(-79.649264937, 43.570995995),
+  new maplibregl.LngLat(-79.105243191, 43.865457183),
 );
 
 const ROUTES_EDIT_FILTERS = [
