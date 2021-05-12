@@ -310,16 +310,6 @@ test('StudyRequestController.putStudyRequest [read-only fields]', async () => {
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 
-  // cannot change requester ID
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequest,
-      userId: supervisor.id,
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
   // cannot change lastEditorId
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
@@ -339,6 +329,42 @@ test('StudyRequestController.putStudyRequest [read-only fields]', async () => {
     },
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
+});
+
+test('StudyRequestController.putStudyRequest [requester changes]', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  let persistedStudyRequest = response.result;
+
+  persistedStudyRequest.userId = ett1.id;
+
+  // user without STUDY_REQUESTS_ADMIN cannot change requester ID
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
+  // user with STUDY_REQUESTS_ADMIN can change requester ID
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  persistedStudyRequest = response.result;
+
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
+  const fetchedStudyRequest = response.result;
+  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
+  expect(fetchedStudyRequest.lastEditorId).toEqual(supervisor.id);
 });
 
 test('StudyRequestController.putStudyRequest [status changes]', async () => {
