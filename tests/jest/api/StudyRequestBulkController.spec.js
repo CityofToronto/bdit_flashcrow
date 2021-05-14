@@ -99,6 +99,72 @@ test('StudyRequestBulkController.postStudyRequestBulk', async () => {
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });
 
+test('StudyRequestBulkController.postStudyRequestBulkCopy', async () => {
+  const transientStudyRequestBulk = generateStudyRequestBulk();
+  mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: transientStudyRequestBulk,
+  });
+  const persistedStudyRequestBulk = response.result;
+
+  // cannot copy non-existent bulk study request
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id + 1000}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
+
+  // requester can copy their own bulk study request
+  Mailer.send.mockClear();
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  let persistedStudyRequestBulkCopy = response.result;
+  expect(persistedStudyRequestBulkCopy.id).not.toBeNull();
+  expect(persistedStudyRequestBulkCopy.userId).toBe(requester.id);
+  persistedStudyRequestBulkCopy.studyRequests.forEach((studyRequest) => {
+    expect(studyRequest.userId).toBe(requester.id);
+    expect(studyRequest.studyRequestBulkId).toBe(persistedStudyRequestBulkCopy.id);
+  });
+
+  // other ETT1s can copy this bulk study request
+  Mailer.send.mockClear();
+  client.setUser(ett1);
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  persistedStudyRequestBulkCopy = response.result;
+  expect(persistedStudyRequestBulkCopy.id).not.toBeNull();
+  expect(persistedStudyRequestBulkCopy.userId).toBe(ett1.id);
+  persistedStudyRequestBulkCopy.studyRequests.forEach((studyRequest) => {
+    expect(studyRequest.userId).toBe(ett1.id);
+    expect(studyRequest.studyRequestBulkId).toBe(persistedStudyRequestBulkCopy.id);
+  });
+
+  // supervisors can copy this bulk study request
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  persistedStudyRequestBulkCopy = response.result;
+  expect(persistedStudyRequestBulkCopy.id).not.toBeNull();
+  expect(persistedStudyRequestBulkCopy.userId).toBe(supervisor.id);
+  persistedStudyRequestBulkCopy.studyRequests.forEach((studyRequest) => {
+    expect(studyRequest.userId).toBe(supervisor.id);
+    expect(studyRequest.studyRequestBulkId).toBe(persistedStudyRequestBulkCopy.id);
+  });
+});
+
 test('StudyRequestBulkController.getStudyRequestBulk', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
@@ -309,16 +375,6 @@ test('StudyRequestBulkController.putStudyRequestBulk [read-only fields]', async 
     data: {
       ...persistedStudyRequestBulk,
       createdAt: DateTime.local().minus({ weeks: 3 }),
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // cannot change requester ID
-  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequestBulk,
-      userId: supervisor.id,
     },
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);

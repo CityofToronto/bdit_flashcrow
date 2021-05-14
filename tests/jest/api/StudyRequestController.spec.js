@@ -94,6 +94,69 @@ test('StudyRequestController.postStudyRequest', async () => {
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });
 
+test('StudyRequestController.postStudyRequestCopy', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  const persistedStudyRequest = response.result;
+
+  // cannot copy non-existent study request
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id + 1000}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.NOT_FOUND.statusCode);
+
+  // requester can copy their own study request
+  Mailer.send.mockClear();
+  client.setUser(requester);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  let persistedStudyRequestCopy = response.result;
+  expect(persistedStudyRequestCopy.id).not.toBeNull();
+  expect(persistedStudyRequestCopy.userId).toBe(requester.id);
+  expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
+  expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
+  expect(persistedStudyRequestCopy.closed).toBe(false);
+
+  // other ETT1s can copy this study request
+  Mailer.send.mockClear();
+  client.setUser(ett1);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  persistedStudyRequestCopy = response.result;
+  expect(persistedStudyRequestCopy.id).not.toBeNull();
+  expect(persistedStudyRequestCopy.userId).toBe(ett1.id);
+  expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
+  expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
+  expect(persistedStudyRequestCopy.closed).toBe(false);
+
+  // supervisors can copy this study request
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/copy`, {
+    method: 'POST',
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  persistedStudyRequestCopy = response.result;
+  expect(persistedStudyRequestCopy.id).not.toBeNull();
+  expect(persistedStudyRequestCopy.userId).toBe(supervisor.id);
+  expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
+  expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
+  expect(persistedStudyRequestCopy.closed).toBe(false);
+});
+
 test('StudyRequestController.getStudyRequest', async () => {
   const transientStudyRequest = generateStudyRequest();
   mockDAOsForStudyRequest(transientStudyRequest);
@@ -163,39 +226,6 @@ test('StudyRequestController.getStudyRequestsByCentrelinePending', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequests = response.result;
   expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
-});
-
-test('StudyRequestController.getStudyRequests', async () => {
-  const transientStudyRequest = generateStudyRequest();
-  mockDAOsForStudyRequest(transientStudyRequest);
-
-  client.setUser(requester);
-  let response = await client.fetch('/requests/study', {
-    method: 'POST',
-    data: transientStudyRequest,
-  });
-  const persistedStudyRequest = response.result;
-
-  // requester can fetch all
-  client.setUser(requester);
-  response = await client.fetch('/requests/study');
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  let fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
-
-  // other ETT1s can fetch all
-  client.setUser(ett1);
-  response = await client.fetch('/requests/study');
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
-
-  // supervisors can fetch all
-  client.setUser(supervisor);
-  response = await client.fetch('/requests/study');
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequests = response.result;
-  expect(fetchedStudyRequests.studyRequests).toContainEqual(persistedStudyRequest);
 });
 
 test('StudyRequestController.putStudyRequest', async () => {
