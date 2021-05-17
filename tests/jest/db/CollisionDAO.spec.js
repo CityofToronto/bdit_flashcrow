@@ -21,6 +21,22 @@ test('CollisionDAO.byCollisionId', async () => {
   expect(result.involved).toHaveLength(2);
 });
 
+test('CollisionDAO.byCollisionIds', async () => {
+  // empty
+  let result = await CollisionDAO.byCollisionIds([]);
+  expect(result).toEqual([]);
+
+  // invalid ID
+  result = await CollisionDAO.byCollisionIds(['-1']);
+  expect(result).toEqual([]);
+
+  result = await CollisionDAO.byCollisionIds(['2012:1288425']);
+  expect(result).toHaveLength(1);
+  expect(result[0].centrelineId).toBe(1142194);
+  expect(result[0].centrelineType).toBe(CentrelineType.SEGMENT);
+  expect(result[0].involved).toHaveLength(2);
+});
+
 test('CollisionDAO.byCentreline', async () => {
   const dateRangeStart = DateTime.fromObject({ year: 2017, month: 1, day: 1 });
   const dateRangeEnd = DateTime.fromObject({ year: 2020, month: 1, day: 1 });

@@ -84,7 +84,6 @@ test('StudyRequestController.postStudyRequest', async () => {
   expect(persistedStudyRequest.id).not.toBeNull();
   expect(persistedStudyRequest.userId).toBe(requester.id);
   expect(persistedStudyRequest.status).toBe(StudyRequestStatus.REQUESTED);
-  expect(persistedStudyRequest.closed).toBe(false);
 
   // cannot call `POST /requests/study` with a persisted study request instance
   response = await client.fetch('/requests/study', {
@@ -124,7 +123,6 @@ test('StudyRequestController.postStudyRequestCopy', async () => {
   expect(persistedStudyRequestCopy.userId).toBe(requester.id);
   expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
   expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
-  expect(persistedStudyRequestCopy.closed).toBe(false);
 
   // other ETT1s can copy this study request
   Mailer.send.mockClear();
@@ -139,7 +137,6 @@ test('StudyRequestController.postStudyRequestCopy', async () => {
   expect(persistedStudyRequestCopy.userId).toBe(ett1.id);
   expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
   expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
-  expect(persistedStudyRequestCopy.closed).toBe(false);
 
   // supervisors can copy this study request
   Mailer.send.mockClear();
@@ -154,7 +151,6 @@ test('StudyRequestController.postStudyRequestCopy', async () => {
   expect(persistedStudyRequestCopy.userId).toBe(supervisor.id);
   expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
   expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
-  expect(persistedStudyRequestCopy.closed).toBe(false);
 });
 
 test('StudyRequestController.getStudyRequest', async () => {
@@ -388,7 +384,6 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   // requester can cancel request
   Mailer.send.mockClear();
   persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
-  persistedStudyRequest.closed = true;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -401,7 +396,6 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   // requester can reopen request
   Mailer.send.mockClear();
   persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
-  persistedStudyRequest.closed = false;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -545,7 +539,6 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   expectStudyRequestChanges(response.result, []);
 
   persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
-  persistedStudyRequest.closed = true;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -565,7 +558,6 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
 
   client.setUser(requester);
   persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
-  persistedStudyRequest.closed = false;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,

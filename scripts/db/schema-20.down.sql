@@ -2,9 +2,13 @@ BEGIN;
 
 -- backward migration SQL goes here
 ALTER TABLE study_requests
+  ADD COLUMN "closed" BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN "estimatedDeliveryDate" TIMESTAMP,
   ADD COLUMN "lastEditedAt" TIMESTAMP,
   ADD COLUMN "lastEditorId" BIGINT;
+UPDATE study_requests SET
+  "closed" = TRUE
+WHERE "status" IN ('CANCELLED', 'COMPLETED', 'REJECTED');
 UPDATE study_requests SET
   "estimatedDeliveryDate" = "dueDate";
 ALTER TABLE study_requests

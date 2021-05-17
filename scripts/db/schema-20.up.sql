@@ -2,6 +2,7 @@ BEGIN;
 
 -- forward migration SQL goes here
 ALTER TABLE study_requests
+  DROP COLUMN "closed",
   DROP COLUMN "estimatedDeliveryDate",
   DROP COLUMN "lastEditedAt",
   DROP COLUMN "lastEditorId";

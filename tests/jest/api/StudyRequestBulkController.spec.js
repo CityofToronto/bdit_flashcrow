@@ -433,7 +433,6 @@ test('StudyRequestBulkController.getStudyRequestBulkChanges', async () => {
   expectStudyRequestChanges(response.result, expected);
 
   persistedStudyRequestBulk.studyRequests[0].status = StudyRequestStatus.REJECTED;
-  persistedStudyRequestBulk.studyRequests[0].closed = true;
   response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
     method: 'PUT',
     data: persistedStudyRequestBulk,
