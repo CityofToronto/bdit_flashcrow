@@ -21,10 +21,6 @@ test('StudyRequestDAO', async () => {
 
   const transientStudyRequest = generateStudyRequest();
 
-  // generate second user for multi-user updates
-  const transientUser2 = generateUser();
-  const persistedUser2 = await UserDAO.create(transientUser2);
-
   // save study request
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, persistedUser);
   expect(persistedStudyRequest.id).not.toBeNull();
@@ -66,50 +62,44 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.duration = null;
   persistedStudyRequest.hours = StudyHours.SCHOOL;
   persistedStudyRequest.notes = 'oops, this is actually a school count';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // update request reason
   persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
   persistedStudyRequest.reasonOther = null;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // update request reason: other
   persistedStudyRequest.reason = StudyRequestReason.OTHER;
   persistedStudyRequest.reasonOther = 'unicorns!';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // update study type: other
   persistedStudyRequest.studyType = StudyType.OTHER_MANUAL;
   persistedStudyRequest.studyTypeOther = 'counting domesticated chickens crossing the road';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
-  // set as urgent with second user
+  // set as urgent
   persistedStudyRequest.urgent = true;
   persistedStudyRequest.urgentReason = 'because I said so';
   persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser2);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser2.id);
 
-  // close with first user
+  // close
   persistedStudyRequest.closed = true;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(persistedUser.id);
 
   // fetch by centreline
   fetchedStudyRequests = await StudyRequestDAO.byCentreline([transientStudyRequest]);
@@ -121,7 +111,7 @@ test('StudyRequestDAO', async () => {
 
   // reopen
   persistedStudyRequest.closed = false;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
@@ -132,7 +122,7 @@ test('StudyRequestDAO', async () => {
   persistedStudyRequest.notes = 'complete during shopping mall peak hours';
   persistedStudyRequest.studyType = StudyType.ATR_SPEED_VOLUME;
   persistedStudyRequest.studyTypeOther = null;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest, persistedUser);
+  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 

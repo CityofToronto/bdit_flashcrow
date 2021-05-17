@@ -65,7 +65,6 @@ import {
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
 } from '@/lib/i18n/Strings';
-import DateTime from '@/lib/time/DateTime';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
@@ -125,21 +124,6 @@ export default {
       }
       return errors;
     },
-    estimatedDeliveryDate() {
-      const { now } = this;
-      const dueDate = this.v.dueDate.$model;
-      if (dueDate === null) {
-        return null;
-      }
-      const urgent = this.v.urgent.$model;
-      if (urgent) {
-        return dueDate;
-      }
-      return DateTime.max(
-        dueDate.minus({ weeks: 1 }),
-        now.plus({ months: 2 }),
-      );
-    },
     maxDueDate() {
       const { now } = this;
       const urgent = this.v.urgent.$model;
@@ -173,12 +157,6 @@ export default {
     ...mapState(['now']),
   },
   watch: {
-    estimatedDeliveryDate: {
-      handler() {
-        this.v.estimatedDeliveryDate.$model = this.estimatedDeliveryDate;
-      },
-      immediate: true,
-    },
     'v.urgent.$model': function watchUrgent(urgent, urgentPrev) {
       const { now } = this;
 

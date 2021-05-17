@@ -280,7 +280,6 @@ test('StudyRequestController.putStudyRequest', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   let fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(requester.id);
 
   // update more study request fields and set urgent
   persistedStudyRequest.ccEmails = ['Evan.Savage@toronto.ca'];
@@ -305,7 +304,6 @@ test('StudyRequestController.putStudyRequest', async () => {
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
   fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(supervisor.id);
 });
 
 test('StudyRequestController.putStudyRequest [read-only fields]', async () => {
@@ -336,26 +334,6 @@ test('StudyRequestController.putStudyRequest [read-only fields]', async () => {
     data: {
       ...persistedStudyRequest,
       createdAt: DateTime.local().minus({ weeks: 3 }),
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // cannot change lastEditorId
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequest,
-      lastEditorId: ett1.id,
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // cannot change lastEditedAt
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequest,
-      lastEditedAt: DateTime.local().minus({ weeks: 3 }),
     },
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
@@ -394,7 +372,6 @@ test('StudyRequestController.putStudyRequest [requester changes]', async () => {
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`);
   const fetchedStudyRequest = response.result;
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-  expect(fetchedStudyRequest.lastEditorId).toEqual(supervisor.id);
 });
 
 test('StudyRequestController.putStudyRequest [status changes]', async () => {
@@ -656,7 +633,6 @@ test('StudyRequestController [comments: post / get]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   persistedStudyRequest = response.result.studyRequest;
   const persistedComment1 = response.result.studyRequestComment;
-  expect(persistedStudyRequest.lastEditorId).toBe(requester.id);
   expect(persistedComment1.userId).toBe(requester.id);
   expect(persistedComment1.studyRequestId).toBe(persistedStudyRequest.id);
   expect(Mailer.send).toHaveBeenCalledTimes(1);
@@ -675,7 +651,6 @@ test('StudyRequestController [comments: post / get]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   persistedStudyRequest = response.result.studyRequest;
   const persistedComment2 = response.result.studyRequestComment;
-  expect(persistedStudyRequest.lastEditorId).toBe(ett1.id);
   expect(persistedComment2.userId).toBe(ett1.id);
   expect(persistedComment2.studyRequestId).toBe(persistedStudyRequest.id);
 
@@ -693,7 +668,6 @@ test('StudyRequestController [comments: post / get]', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   persistedStudyRequest = response.result.studyRequest;
   const persistedComment3 = response.result.studyRequestComment;
-  expect(persistedStudyRequest.lastEditorId).toBe(supervisor.id);
   expect(persistedComment3.userId).toBe(supervisor.id);
   expect(persistedComment3.studyRequestId).toBe(persistedStudyRequest.id);
 

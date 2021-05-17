@@ -107,9 +107,6 @@
           @show-reports="actionShowReportsStudy" />
 
         <v-divider></v-divider>
-
-        <FcSectionStudyRequestsBulkPending
-          :study-requests-bulk-pending="studyRequestsBulkPending" />
       </section>
     </template>
   </div>
@@ -118,7 +115,7 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { AuthScope, ReportExportMode } from '@/lib/Constants';
+import { ReportExportMode } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -126,7 +123,6 @@ import {
   getStudiesByCentrelineSummary,
   getStudiesByCentrelineSummaryPerLocation,
   getStudiesByCentrelineTotal,
-  getStudyRequestsBulkByLocationsSelectionPending,
   postJobGenerateCollisionReports,
   postJobGenerateStudyReports,
 } from '@/lib/api/WebApi';
@@ -134,8 +130,6 @@ import FcAggregateCollisions from '@/web/components/data/FcAggregateCollisions.v
 import FcAggregateStudies from '@/web/components/data/FcAggregateStudies.vue';
 import FcHeaderCollisions from '@/web/components/data/FcHeaderCollisions.vue';
 import FcHeaderStudies from '@/web/components/data/FcHeaderStudies.vue';
-import FcSectionStudyRequestsBulkPending
-  from '@/web/components/data/FcSectionStudyRequestsBulkPending.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
@@ -154,7 +148,6 @@ export default {
     FcHeaderStudies,
     FcMenuDownloadReportFormat,
     FcProgressLinear,
-    FcSectionStudyRequestsBulkPending,
   },
   props: {
     locations: Array,
@@ -329,9 +322,6 @@ export default {
         getStudiesByCentrelineSummaryPerLocation(this.locations, {}),
         getStudiesByCentrelineTotal(this.locations),
       ];
-      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        tasks.push(getStudyRequestsBulkByLocationsSelectionPending(this.locationsSelection));
-      }
       const [
         collisionSummary,
         collisionSummaryUnfiltered,
@@ -343,14 +333,12 @@ export default {
         studySummaryPerLocation,
         studySummaryPerLocationUnfiltered,
         studyTotal,
-        studyRequestsBulkPending = [],
       ] = await Promise.all(tasks);
       this.collisionSummary = collisionSummary;
       this.collisionSummaryUnfiltered = collisionSummaryUnfiltered;
       this.collisionSummaryPerLocation = collisionSummaryPerLocation;
       this.collisionSummaryPerLocationUnfiltered = collisionSummaryPerLocationUnfiltered;
       this.collisionTotal = collisionTotal;
-      this.studyRequestsBulkPending = studyRequestsBulkPending;
       this.studySummary = studySummary;
       this.studySummaryUnfiltered = studySummaryUnfiltered;
       this.studySummaryPerLocation = studySummaryPerLocation;

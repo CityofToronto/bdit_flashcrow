@@ -27,11 +27,10 @@ test('EmailStudyRequestBulkCompleted', async () => {
   expect(recipients).toEqual([requester.email, ...studyRequestBulk.ccEmails]);
 
   const subject = email.getSubject();
-  expect(subject).toEqual(`[MOVE] Your requests are complete! (${studyRequestBulk.name})`);
+  expect(subject).toEqual(`[MOVE] Project complete: ${studyRequestBulk.name}`);
 
   const params = email.getBodyParams();
   expect(params.hrefStudyRequestBulk).toEqual('https://localhost:8080/requests/study/bulk/17');
-  expect(params.location).toMatch(/^Test location #1/);
   expect(params.studyRequests).toHaveLength(studyRequestBulk.studyRequests.length);
   params.studyRequests.forEach((studyRequest, i) => {
     expect(studyRequest.location).toEqual(`Test location #${i + 1}`);

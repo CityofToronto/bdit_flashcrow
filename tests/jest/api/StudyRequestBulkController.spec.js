@@ -1,7 +1,6 @@
 import {
   AuthScope,
   HttpStatus,
-  LocationSelectionType,
   StudyRequestAssignee,
   StudyRequestReason,
   StudyRequestStatus,
@@ -11,7 +10,6 @@ import db from '@/lib/db/db';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import Mailer from '@/lib/email/Mailer';
-import CompositeId from '@/lib/io/CompositeId';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
 import {
   generateStudyRequest,
@@ -61,9 +59,8 @@ afterAll(async () => {
 }, 60000);
 
 function mockDAOsForStudyRequestBulk(studyRequestBulk) {
-  const { s1 } = studyRequestBulk;
-  const features = CompositeId.decode(s1);
-  const resolvedValue = features.map(({ centrelineId, centrelineType }) => ({
+  const { studyRequests } = studyRequestBulk;
+  const resolvedValue = studyRequests.map(({ centrelineId, centrelineType }) => ({
     centrelineId,
     centrelineType,
     description: 'Mocked location description',
@@ -230,40 +227,6 @@ test('StudyRequestBulkController.getStudyRequestBulkName', async () => {
   expect(response.result.name).toEqual(persistedStudyRequestBulk.name);
 });
 
-test('StudyRequestBulkController.getStudyRequestsBulkByLocationsSelectionPending', async () => {
-  const transientStudyRequestBulk = generateStudyRequestBulk();
-  mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
-
-  client.setUser(requester);
-  let response = await client.fetch('/requests/study/bulk', {
-    method: 'POST',
-    data: transientStudyRequestBulk,
-  });
-  const persistedStudyRequestBulk = response.result;
-  const s1 = CompositeId.encode(persistedStudyRequestBulk.studyRequests);
-
-  // requester can fetch by centreline pending
-  const data = { s1, selectionType: LocationSelectionType.POINTS };
-  response = await client.fetch('/requests/study/bulk/byLocationsSelection/pending', { data });
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  let fetchedStudyRequestsBulk = response.result;
-  expect(fetchedStudyRequestsBulk).toContainEqual(persistedStudyRequestBulk);
-
-  // other ETT1s can fetch by centreline pending
-  client.setUser(ett1);
-  response = await client.fetch('/requests/study/bulk/byLocationsSelection/pending', { data });
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequestsBulk = response.result;
-  expect(fetchedStudyRequestsBulk).toContainEqual(persistedStudyRequestBulk);
-
-  // supervisors can fetch by centreline pending
-  client.setUser(supervisor);
-  response = await client.fetch('/requests/study/bulk/byLocationsSelection/pending', { data });
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  fetchedStudyRequestsBulk = response.result;
-  expect(fetchedStudyRequestsBulk).toContainEqual(persistedStudyRequestBulk);
-});
-
 test('StudyRequestBulkController.putStudyRequestBulk', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
@@ -276,12 +239,10 @@ test('StudyRequestBulkController.putStudyRequestBulk', async () => {
   let persistedStudyRequestBulk = response.result;
 
   // update study request fields
-  persistedStudyRequestBulk.reason = StudyRequestReason.OTHER;
-  persistedStudyRequestBulk.reasonOther = 'not really sure, but it seemed good at the time';
   persistedStudyRequestBulk.studyRequests.forEach((studyRequest) => {
     /* eslint-disable no-param-reassign */
-    studyRequest.reason = persistedStudyRequestBulk.reason;
-    studyRequest.reasonOther = persistedStudyRequestBulk.reasonOther;
+    studyRequest.reason = StudyRequestReason.OTHER;
+    studyRequest.reasonOther = 'not really sure, but it seemed good at the time';
     /* eslint-enable no-param-reassign */
   });
 
@@ -323,14 +284,9 @@ test('StudyRequestBulkController.putStudyRequestBulk', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   let fetchedStudyRequestBulk = response.result;
   expect(fetchedStudyRequestBulk).toEqual(persistedStudyRequestBulk);
-  expect(fetchedStudyRequestBulk.lastEditorId).toEqual(requester.id);
 
-  // update more study request fields and set urgent
-  persistedStudyRequestBulk.ccEmails = ['Evan.Savage@toronto.ca'];
-  persistedStudyRequestBulk.urgent = true;
-  persistedStudyRequestBulk.urgentReason = 'because I said so';
-
-  // supervisor can update study request
+  // get rid of ccEmails: supervisor can update
+  persistedStudyRequestBulk.ccEmails = [];
   client.setUser(supervisor);
   response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
     method: 'PUT',
@@ -344,7 +300,22 @@ test('StudyRequestBulkController.putStudyRequestBulk', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   fetchedStudyRequestBulk = response.result;
   expect(fetchedStudyRequestBulk).toEqual(persistedStudyRequestBulk);
-  expect(fetchedStudyRequestBulk.lastEditorId).toEqual(supervisor.id);
+
+  // add ccEmails back: supervisor can update
+  persistedStudyRequestBulk.ccEmails = ['Evan.Savage@toronto.ca'];
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequestBulk,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequestBulk.id);
+  persistedStudyRequestBulk = response.result;
+
+  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`);
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  fetchedStudyRequestBulk = response.result;
+  expect(fetchedStudyRequestBulk).toEqual(persistedStudyRequestBulk);
 });
 
 test('StudyRequestBulkController.putStudyRequestBulk [read-only fields]', async () => {
@@ -375,26 +346,6 @@ test('StudyRequestBulkController.putStudyRequestBulk [read-only fields]', async 
     data: {
       ...persistedStudyRequestBulk,
       createdAt: DateTime.local().minus({ weeks: 3 }),
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // cannot change lastEditorId
-  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequestBulk,
-      lastEditorId: ett1.id,
-    },
-  });
-  expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
-
-  // cannot change lastEditedAt
-  response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}`, {
-    method: 'PUT',
-    data: {
-      ...persistedStudyRequestBulk,
-      lastEditedAt: DateTime.local().minus({ weeks: 3 }),
     },
   });
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);

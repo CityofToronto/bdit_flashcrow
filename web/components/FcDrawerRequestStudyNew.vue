@@ -80,7 +80,6 @@ function makeStudyRequest(now, location) {
     urgent: false,
     urgentReason: null,
     dueDate,
-    estimatedDeliveryDate: null,
     reason: null,
     reasonOther: null,
     ccEmails: [],
@@ -96,24 +95,15 @@ function makeStudyRequest(now, location) {
   };
 }
 
-function makeStudyRequestBulk(now, locations, locationsSelection) {
-  const dueDate = now.plus({ months: 3 });
-  const s1 = CompositeId.encode(locationsSelection.locations);
+function makeStudyRequestBulk(now, locations) {
   const studyRequests = locations.map(
     location => makeStudyRequest(now, location),
   );
   return {
     ccEmails: [],
-    dueDate,
-    estimatedDeliveryDate: null,
     name: null,
-    reason: null,
-    reasonOther: null,
-    s1,
-    selectionType: locationsSelection.selectionType,
+    notes: null,
     studyRequests,
-    urgent: false,
-    urgentReason: null,
   };
 }
 
@@ -195,11 +185,7 @@ export default {
         );
         this.studySummaryPerLocationUnfiltered = studySummaryPerLocationUnfiltered;
 
-        const studyRequestBulk = makeStudyRequestBulk(
-          this.now,
-          this.locations,
-          this.locationsSelection,
-        );
+        const studyRequestBulk = makeStudyRequestBulk(this.now, this.locations);
         this.studyRequest = null;
         this.studyRequestBulk = studyRequestBulk;
       } else {
