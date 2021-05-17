@@ -7,9 +7,11 @@ import {
 import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
+import StudyRequestItemDAO from '@/lib/db/StudyRequestItemDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequest from '@/lib/model/StudyRequest';
 import RequestActions from '@/lib/requests/RequestActions';
+import { generateFiltersStudyRequestForStudyRequestId } from '@/lib/test/random/FilterGenerator';
 import {
   generateStudyRequest,
   generateStudyRequestBulk,
@@ -182,6 +184,11 @@ test('StudyRequestDAO.create', async () => {
   await expect(
     StudyRequest.read.validateAsync(persistedStudyRequest),
   ).resolves.toEqual(persistedStudyRequest);
+
+  const items = await StudyRequestItemDAO.byQuery(
+    generateFiltersStudyRequestForStudyRequestId(persistedStudyRequest.id),
+  );
+  expect(items).toContainEqual({ bulk: false, id: persistedStudyRequest.id });
 });
 
 test('StudyRequestDAO.update [study details]', async () => {
@@ -281,6 +288,12 @@ test('StudyRequestDAO.delete', async () => {
   // fetch by centreline pending
   fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([transientStudyRequest]);
   expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
+
+  // fetch indexed items
+  const items = await StudyRequestItemDAO.byQuery(
+    generateFiltersStudyRequestForStudyRequestId(persistedStudyRequest.id),
+  );
+  expect(items).toEqual([]);
 
   // delete: should not work again
   await expect(StudyRequestDAO.delete(persistedStudyRequest)).resolves.toBe(false);
