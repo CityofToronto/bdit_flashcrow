@@ -162,6 +162,43 @@ test('StudyRequestBulkController.postStudyRequestBulkCopy', async () => {
   });
 });
 
+test('StudyRequestBulkController.postStudyRequestBulkFromRequests', async () => {
+  const transientStudyRequestBulk = generateStudyRequestBulk();
+  transientStudyRequestBulk.studyRequests = [];
+  mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: generateStudyRequest(),
+  });
+  const R1 = response.result;
+  client.setUser(ett1);
+  response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: generateStudyRequest(),
+  });
+  const R2 = response.result;
+
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch('/requests/study/bulk/fromRequests', {
+    method: 'POST',
+    data: {
+      studyRequestBulk: transientStudyRequestBulk,
+      studyRequestIds: [R1.id, R2.id],
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  const P = response.result;
+  R1.studyRequestBulkId = P.id;
+  R2.studyRequestBulkId = P.id;
+  expect(P.id).not.toBeNull();
+  expect(P.userId).toBe(supervisor.id);
+  expect(P.studyRequests).toEqual([R1, R2]);
+});
+
 test('StudyRequestBulkController.getStudyRequestBulk', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
