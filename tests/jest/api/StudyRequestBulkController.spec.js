@@ -162,10 +162,10 @@ test('StudyRequestBulkController.postStudyRequestBulkCopy', async () => {
   });
 });
 
-test('StudyRequestBulkController.postStudyRequestBulkFromRequests', async () => {
-  const transientStudyRequestBulk = generateStudyRequestBulk();
-  transientStudyRequestBulk.studyRequests = [];
-  mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
+test('StudyRequestBulkController.postStudyRequestBulkFromRequests [adding standalone]', async () => {
+  const TP = generateStudyRequestBulk();
+  TP.studyRequests = [];
+  mockDAOsForStudyRequestBulk(TP);
 
   client.setUser(requester);
   let response = await client.fetch('/requests/study', {
@@ -185,7 +185,7 @@ test('StudyRequestBulkController.postStudyRequestBulkFromRequests', async () => 
   response = await client.fetch('/requests/study/bulk/fromRequests', {
     method: 'POST',
     data: {
-      studyRequestBulk: transientStudyRequestBulk,
+      studyRequestBulk: TP,
       studyRequestIds: [R1.id, R2.id],
     },
   });
@@ -197,6 +197,54 @@ test('StudyRequestBulkController.postStudyRequestBulkFromRequests', async () => 
   expect(P.id).not.toBeNull();
   expect(P.userId).toBe(supervisor.id);
   expect(P.studyRequests).toEqual([R1, R2]);
+});
+
+test('StudyRequestBulkController.postStudyRequestBulkFromRequests [moving from existing project]', async () => {
+  const TP1 = generateStudyRequestBulk();
+  TP1.studyRequests = [];
+  mockDAOsForStudyRequestBulk(TP1);
+
+  const TP2 = generateStudyRequestBulk();
+  mockDAOsForStudyRequestBulk(TP2);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: TP2,
+  });
+  let P2 = response.result;
+  let Rs2 = P2.studyRequests;
+
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch('/requests/study/bulk/fromRequests', {
+    method: 'POST',
+    data: {
+      studyRequestBulk: TP1,
+      studyRequestIds: Rs2.slice(1).map(({ id }) => id),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(2);
+  const P1 = response.result;
+  Rs2 = Rs2.map((studyRequest, i) => {
+    if (i === 0) {
+      return studyRequest;
+    }
+    return {
+      ...studyRequest,
+      studyRequestBulkId: P1.id,
+    };
+  });
+  expect(P1.userId).toBe(supervisor.id);
+  expect(P1.studyRequests).toEqual(Rs2.slice(1));
+
+  response = await client.fetch(`/requests/study/bulk/${P2.id}`, {
+    method: 'GET',
+  });
+  P2 = response.result;
+  expect(P2.userId).toBe(requester.id);
+  expect(P2.studyRequests).toEqual([Rs2[0]]);
 });
 
 test('StudyRequestBulkController.getStudyRequestBulk', async () => {
@@ -425,12 +473,166 @@ test('StudyRequestBulkController.putStudyRequestBulk [no adding / removing reque
   expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.statusCode);
 });
 
+test('StudyRequestBulkController.putStudyRequestBulkRequests [adding to project]', async () => {
+  const TP = generateStudyRequestBulk();
+  mockDAOsForStudyRequestBulk(TP);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: TP,
+  });
+  let P = response.result;
+  const Rs = P.studyRequests;
+
+  client.setUser(requester);
+  response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: generateStudyRequest(),
+  });
+  const R1 = response.result;
+  client.setUser(ett1);
+  response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: generateStudyRequest(),
+  });
+  const R2 = response.result;
+
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/bulk/${P.id}/requests`, {
+    method: 'PUT',
+    data: {
+      studyRequestIds: [R1.id, R2.id],
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
+  P = response.result;
+  R1.studyRequestBulkId = P.id;
+  R2.studyRequestBulkId = P.id;
+  expect(P.userId).toBe(requester.id);
+  expect(P.studyRequests).toEqual([...Rs, R1, R2]);
+});
+
+test('StudyRequestBulkController.putStudyRequestBulkRequests [moving between projects]', async () => {
+  const TP1 = generateStudyRequestBulk();
+  mockDAOsForStudyRequestBulk(TP1);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: TP1,
+  });
+  let P1 = response.result;
+  const Rs1 = P1.studyRequests;
+
+  const TP2 = generateStudyRequestBulk();
+  mockDAOsForStudyRequestBulk(TP2);
+
+  client.setUser(requester);
+  response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: TP1,
+  });
+  let P2 = response.result;
+  let Rs2 = P2.studyRequests;
+
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch(`/requests/study/bulk/${P1.id}/requests`, {
+    method: 'PUT',
+    data: {
+      studyRequestIds: Rs2.slice(1).map(({ id }) => id),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
+  P1 = response.result;
+  Rs2 = Rs2.map((studyRequest, i) => {
+    if (i === 0) {
+      return studyRequest;
+    }
+    return {
+      ...studyRequest,
+      studyRequestBulkId: P1.id,
+    };
+  });
+  expect(P1.userId).toBe(requester.id);
+  expect(P1.studyRequests).toEqual([...Rs1, ...Rs2.slice(1)]);
+
+  response = await client.fetch(`/requests/study/bulk/${P2.id}`, {
+    method: 'GET',
+  });
+  P2 = response.result;
+  expect(P2.userId).toBe(requester.id);
+  expect(P2.studyRequests).toEqual([Rs2[0]]);
+});
+
 function expectStudyRequestChanges(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach((status, i) => {
     expect(actual[i].status).toBe(status);
   });
 }
+
+test('StudyRequestBulkController.deleteStudyRequestBulkRequests', async () => {
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: generateStudyRequestBulk(),
+  });
+  let P1 = response.result;
+  const Rs1 = P1.studyRequests;
+
+  client.setUser(ett1);
+  response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: generateStudyRequestBulk(),
+  });
+  let P2 = response.result;
+  const Rs2 = P2.studyRequests;
+
+  Mailer.send.mockClear();
+  client.setUser(supervisor);
+  response = await client.fetch('/requests/study/bulk/requests', {
+    method: 'DELETE',
+    data: {
+      studyRequestIds: [Rs1[0].id, Rs2[0].id],
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(Mailer.send).toHaveBeenCalledTimes(0);
+  expect(response.result).toEqual({ success: true });
+  Rs1[0].studyRequestBulkId = null;
+  Rs2[0].studyRequestBulkId = null;
+
+  response = await client.fetch(`/requests/study/bulk/${P1.id}`, {
+    method: 'GET',
+  });
+  P1 = response.result;
+  expect(P1.userId).toBe(requester.id);
+  expect(P1.studyRequests).toEqual(Rs1.slice(1));
+
+  response = await client.fetch(`/requests/study/bulk/${P2.id}`, {
+    method: 'GET',
+  });
+  P2 = response.result;
+  expect(P2.userId).toBe(ett1.id);
+  expect(P2.studyRequests).toEqual(Rs2.slice(1));
+
+  response = await client.fetch(`/requests/study/${Rs1[0].id}`, {
+    method: 'GET',
+  });
+  const R1 = response.result;
+  expect(R1).toEqual(Rs1[0]);
+
+  response = await client.fetch(`/requests/study/${Rs2[0].id}`, {
+    method: 'GET',
+  });
+  const R2 = response.result;
+  expect(R2).toEqual(Rs2[0]);
+});
 
 test('StudyRequestBulkController.getStudyRequestBulkChanges', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
