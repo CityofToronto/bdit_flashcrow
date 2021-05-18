@@ -1,6 +1,5 @@
 BEGIN;
 
--- backward migration SQL goes here
 ALTER TABLE study_requests
   ADD COLUMN "closed" BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN "estimatedDeliveryDate" TIMESTAMP,
@@ -43,6 +42,8 @@ ALTER TABLE study_requests_bulk
   ALTER COLUMN "s1" SET NOT NULL,
   ALTER COLUMN "selectionType" SET NOT NULL;
 
+-- SQL arrays are 1-indexed, and they return `NULL` for non-existent
+-- indices; we use both of these properties below.
 ALTER TABLE study_request_items
   ALTER COLUMN "filterUserId" TYPE BIGINT USING "filterUserId"[1];
 WITH bulk_agg AS (
