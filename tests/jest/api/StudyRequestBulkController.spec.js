@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   AuthScope,
   HttpStatus,
@@ -310,6 +312,55 @@ test('StudyRequestBulkController.getStudyRequestBulkName', async () => {
   response = await client.fetch(`/requests/study/bulk/${persistedStudyRequestBulk.id}/name`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.name).toEqual(persistedStudyRequestBulk.name);
+});
+
+test('StudyRequestBulkController.getStudyRequestsBulkSuggest', async () => {
+  const TP = generateStudyRequestBulk();
+  TP.name = uuidv4();
+  mockDAOsForStudyRequestBulk(TP);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study/bulk', {
+    method: 'POST',
+    data: TP,
+  });
+  const P = response.result;
+
+  // query not matching any projects
+  client.setUser(requester);
+  response = await client.fetch('/requests/study/bulk/suggest', {
+    method: 'GET',
+    data: {
+      limit: 10,
+      q: uuidv4(),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toEqual([]);
+
+  // query matching P
+  client.setUser(requester);
+  response = await client.fetch('/requests/study/bulk/suggest', {
+    method: 'GET',
+    data: {
+      limit: 10,
+      q: P.name,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toContainEqual(P);
+
+  // query matching P: partial match, different case
+  client.setUser(requester);
+  response = await client.fetch('/requests/study/bulk/suggest', {
+    method: 'GET',
+    data: {
+      limit: 10,
+      q: P.name.slice(9, 23).toUpperCase(),
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result).toContainEqual(P);
 });
 
 test('StudyRequestBulkController.putStudyRequestBulk', async () => {

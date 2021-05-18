@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { StudyHours, StudyType } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
@@ -96,6 +98,22 @@ test('StudyRequestBulkDAO.byIds', async () => {
     persistedStudyRequestBulk1.id,
   ]);
   expect(studyRequestsBulk).toEqual([persistedStudyRequestBulk1, persistedStudyRequestBulk2]);
+});
+
+test('StudyRequestBulkDAO.nameSuggestions', async () => {
+  const TP = generateStudyRequestBulk();
+  TP.name = uuidv4();
+  const P = await StudyRequestBulkDAO.create(TP, user);
+
+  let studyRequestsBulk = await StudyRequestBulkDAO.nameSuggestions(uuidv4(), 10);
+  expect(studyRequestsBulk).toEqual([]);
+
+  studyRequestsBulk = await StudyRequestBulkDAO.nameSuggestions(P.name, 10);
+  expect(studyRequestsBulk).toContainEqual(P);
+
+  const query = P.name.slice(9, 23).toUpperCase();
+  studyRequestsBulk = await StudyRequestBulkDAO.nameSuggestions(query, 10);
+  expect(studyRequestsBulk).toContainEqual(P);
 });
 
 test('StudyRequestBulkDAO.create', async () => {
