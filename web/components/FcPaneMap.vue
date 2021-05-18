@@ -31,6 +31,7 @@
         </FcSelectorMultiLocation>
         <FcSelectorSingleLocation
           v-else
+          v-model="internalLocationsSelection"
           class="mt-3 ml-5" />
 
         <FcGlobalFilterBox
@@ -111,7 +112,12 @@
 <script>
 import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import Vue from 'vue';
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import {
   CentrelineType,
@@ -322,6 +328,14 @@ export default {
       },
       set(layers) {
         this.setLayers(layers);
+      },
+    },
+    internalLocationsSelection: {
+      get() {
+        return this.locationsSelectionForMode;
+      },
+      set(locationsSelection) {
+        this.syncLocationsSelectionForMode(locationsSelection);
       },
     },
     locationsGeoJson() {
@@ -862,6 +876,7 @@ export default {
       'setLayers',
       'setLegendMode',
     ]),
+    ...mapActions(['syncLocationsSelectionForMode']),
   },
 };
 </script>

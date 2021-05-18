@@ -5,17 +5,32 @@
     role="search">
     <FcInputLocationSearch
       ref="autofocus"
-      v-model="internalLocation"
+      v-model="internalValue"
       class="elevation-2" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
-
 import { LocationSelectionType } from '@/lib/Constants';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
+
+function fromInternalValue(internalValue) {
+  const locations = [];
+  if (internalValue !== null) {
+    locations.push(internalValue);
+  }
+  return {
+    locations,
+    selectionType: LocationSelectionType.POINTS,
+  };
+}
+
+function toInternalValue(value) {
+  const { locations } = value;
+  const [location = null] = locations;
+  return location;
+}
 
 export default {
   name: 'FcSelectorSingleLocation',
@@ -23,27 +38,19 @@ export default {
   components: {
     FcInputLocationSearch,
   },
+  props: {
+    value: Object,
+  },
   computed: {
-    internalLocation: {
+    internalValue: {
       get() {
-        return this.locationActive;
+        return toInternalValue(this.value);
       },
-      set(internalLocation) {
-        const locations = [];
-        if (internalLocation !== null) {
-          locations.push(internalLocation);
-        }
-        this.setLocations(locations);
-        this.setLocationsSelection({
-          locations,
-          selectionType: LocationSelectionType.POINTS,
-        });
+      set(internalValue) {
+        const value = fromInternalValue(internalValue);
+        this.$emit('input', value);
       },
     },
-    ...mapGetters(['locationActive']),
-  },
-  methods: {
-    ...mapMutations(['setLocations', 'setLocationsSelection']),
   },
 };
 </script>

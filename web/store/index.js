@@ -314,6 +314,19 @@ export default new Vuex.Store({
         selectionType,
       });
     },
+    setLocationsSelectionForMode(state, locationsSelection) {
+      const { locationMode } = state;
+      const { locations, selectionType } = locationsSelection;
+      const locationsSelectionCopy = {
+        locations: [...locations],
+        selectionType,
+      };
+      if (locationMode === LocationMode.MULTI_EDIT) {
+        Vue.set(state, 'locationsEditSelection', locationsSelectionCopy);
+      } else {
+        Vue.set(state, 'locationsSelection', locationsSelectionCopy);
+      }
+    },
     setLocationsEdit(state, locationsEdit) {
       Vue.set(state, 'locationsEdit', [...locationsEdit]);
     },
@@ -407,6 +420,17 @@ export default new Vuex.Store({
         locationsEdit = await getLocationsByCorridor(locations);
       }
       commit('setLocationsEdit', locationsEdit);
+    },
+    async syncLocationsSelectionForMode({ commit, state }, locationsSelection) {
+      commit('setLocationsSelectionForMode', locationsSelection);
+      const commitName = state.locationMode === LocationMode.MULTI_EDIT
+        ? 'setLocationsEdit'
+        : 'setLocations';
+      let { locations } = locationsSelection;
+      if (locationsSelection.selectionType === LocationSelectionType.CORRIDOR) {
+        locations = await getLocationsByCorridor(locations);
+      }
+      commit(commitName, locations);
     },
   },
 });

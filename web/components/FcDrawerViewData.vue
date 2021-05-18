@@ -14,7 +14,8 @@
         </template>
       </FcSelectorMultiLocation>
       <div v-else class="px-5 py-3">
-        <FcSelectorSingleLocation />
+        <FcSelectorSingleLocation
+          v-model="internalLocationsSelection" />
         <FcHeaderSingleLocation
           class="mt-4"
           :location="locationActive" />
@@ -108,6 +109,14 @@ export default {
     };
   },
   computed: {
+    internalLocationsSelection: {
+      get() {
+        return this.locationsSelectionForMode;
+      },
+      set(locationsSelection) {
+        this.syncLocationsSelectionForMode(locationsSelection);
+      },
+    },
     ...mapState([
       'locationMode',
       'locations',
@@ -120,6 +129,7 @@ export default {
       'locationActive',
       'locationsEmpty',
       'locationsRouteParams',
+      'locationsSelectionForMode',
     ]),
   },
   watch: {
@@ -188,7 +198,7 @@ export default {
       'setToastInfo',
     ]),
     ...mapMutations('viewData', ['setDetailView']),
-    ...mapActions(['initLocations']),
+    ...mapActions(['initLocations', 'syncLocationsSelectionForMode']),
   },
 };
 </script>
