@@ -35,7 +35,17 @@
               :study-request-bulk="studyRequestBulk" />
           </v-col>
           <v-col cols="6">
-            <FcMap class="mx-5" />
+            <FcMap
+              class="mx-5"
+              :layers="{
+                collisions: false,
+                hospitals: false,
+                schools: false,
+                studies: true,
+                volume: false,
+              }"
+              :locations-state="locationsState"
+              :show-legend="false" />
           </v-col>
         </v-row>
 
@@ -97,7 +107,7 @@
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions, mapMutations, mapState } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, centrelineKey } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
@@ -172,6 +182,27 @@ export default {
           studyRequest,
         ),
       );
+    },
+    locationsState() {
+      if (this.studyRequestBulk === null) {
+        return [];
+      }
+      const locationsState = [];
+      this.studyRequestBulk.studyRequests.forEach((studyRequest) => {
+        const key = centrelineKey(studyRequest);
+        if (!this.studyRequestLocations.has(key)) {
+          return;
+        }
+        const location = this.studyRequestLocations.get(key);
+        const state = {
+          deselected: false,
+          locationIndex: -1,
+          multi: false,
+          selected: false,
+        };
+        locationsState.push({ location, state });
+      });
+      return locationsState;
     },
     selectAll: {
       get() {

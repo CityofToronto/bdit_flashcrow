@@ -1,5 +1,5 @@
 <template>
-  <v-card class="fc-pane-map-legend" width="250">
+  <v-card class="fc-map-legend" width="250">
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3">Legend</legend>
@@ -37,10 +37,10 @@
 <script>
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcLegendRowCollisions from '@/web/components/legend/FcLegendRowCollisions.vue';
-import FcLegendRowHospitals from '@/web/components/legend/FcLegendRowHospitals.vue';
-import FcLegendRowSchools from '@/web/components/legend/FcLegendRowSchools.vue';
-import FcLegendRowStudies from '@/web/components/legend/FcLegendRowStudies.vue';
+import FcLegendRowCollisions from '@/web/components/geo/legend/FcLegendRowCollisions.vue';
+import FcLegendRowHospitals from '@/web/components/geo/legend/FcLegendRowHospitals.vue';
+import FcLegendRowSchools from '@/web/components/geo/legend/FcLegendRowSchools.vue';
+import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-pane-map-legend {
+.fc-map-legend {
   & .fc-legend-icon {
     height: 24px;
     position: relative;

@@ -40,7 +40,7 @@
           :readonly="filtersReadonly" />
       </div>
 
-      <FcPaneMapLegend
+      <FcMapLegend
         v-if="showLegend"
         v-model="internalLayers" />
       <div
@@ -136,9 +136,9 @@ import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
+import FcMapLegend from '@/web/components/geo/legend/FcMapLegend.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
-import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
@@ -209,7 +209,7 @@ export default {
     FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
-    FcPaneMapLegend,
+    FcMapLegend,
     FcPaneMapPopup,
     FcProgressLinear,
     FcSelectorCollapsedLocation,
@@ -425,12 +425,10 @@ export default {
           }
         }
 
-        const midblock = propertiesRest.centrelineType === CentrelineType.SEGMENT;
         const { multi } = this.locationMode;
         const properties = {
           deselected,
           locationIndex,
-          midblock,
           multi,
           selected,
           ...propertiesRest,
@@ -874,7 +872,7 @@ export default {
     top: 20px;
     z-index: var(--z-index-controls);
   }
-  & > .fc-pane-map-legend {
+  & > .fc-map-legend {
     position: absolute;
     right: 20px;
     top: 12px;

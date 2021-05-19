@@ -27,27 +27,51 @@
         {{ aerial ? 'Map' : 'Aerial' }}
       </FcButton>
     </div>
+
+    <div class="fc-map-controls fc-map-legend-wrapper">
+      <FcMapLegend
+        v-if="showLegend"
+        v-model="internalLayers" />
+    </div>
+
+    <div class="fc-map-controls fc-map-navigate">
+      <FcButtonAria
+        v-if="locationsState.length > 0"
+        aria-label="Recenter location"
+        class="pa-0"
+        left
+        type="fab-text"
+        @click="actionRecenterLocation">
+        <v-icon class="display-2">mdi-map-marker-circle</v-icon>
+      </FcButtonAria>
+    </div>
   </div>
 </template>
 
 <script>
+import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
+import { MapZoom } from '@/lib/Constants';
 import {
   defaultCollisionFilters,
   defaultCommonFilters,
   defaultStudyFilters,
 } from '@/lib/filters/DefaultFilters';
 import GeoStyle from '@/lib/geo/GeoStyle';
-import { makeMaplibreGlMap } from '@/lib/geo/map/MaplibreGlBase';
+import { BOUNDS_TORONTO, makeMaplibreGlMap } from '@/lib/geo/map/MaplibreGlBase';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcMapLegend from '@/web/components/geo/legend/FcMapLegend.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
 export default {
   name: 'FcMap',
   components: {
     FcButton,
+    FcButtonAria,
+    FcMapLegend,
     FcProgressLinear,
   },
   provide() {
@@ -58,6 +82,40 @@ export default {
       },
     };
   },
+  props: {
+    filtersCollision: {
+      type: Object,
+      default() { return defaultCollisionFilters(); },
+    },
+    filtersCommon: {
+      type: Object,
+      default() { return defaultCommonFilters(); },
+    },
+    filtersStudy: {
+      type: Object,
+      default() { return defaultStudyFilters(); },
+    },
+    layers: {
+      type: Object,
+      default() {
+        return {
+          collisions: true,
+          hospitals: true,
+          schools: true,
+          studies: true,
+          volume: false,
+        };
+      },
+    },
+    locationsState: {
+      type: Array,
+      default() { return []; },
+    },
+    showLegend: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       aerial: false,
@@ -66,34 +124,59 @@ export default {
     };
   },
   computed: {
+    internalLayers: {
+      get() {
+        return this.layers;
+      },
+      set(layers) {
+        this.$emit('update:layers', layers);
+      },
+    },
     locationsGeoJson() {
-      // TODO: actually implement this
+      const features = this.locationsState.map(({ location, state }) => {
+        const { geom: geometry, ...propertiesRest } = location;
+        const properties = { ...propertiesRest, ...state };
+        return { type: 'Feature', geometry, properties };
+      });
       return {
         type: 'FeatureCollection',
-        features: [],
+        features,
       };
     },
     locationsMarkersGeoJson() {
-      // TODO: actually implement this
+      const features = this.locationsState.map(({ location, state }) => {
+        const {
+          geom,
+          lat,
+          lng,
+          ...propertiesRest
+        } = location;
+        const geometry = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        const properties = { ...propertiesRest, ...state };
+        return { type: 'Feature', geometry, properties };
+      });
       return {
         type: 'FeatureCollection',
-        features: [],
+        features,
       };
     },
     mapOptions() {
-      const { aerial } = this;
+      const {
+        aerial,
+        filtersCollision,
+        filtersCommon,
+        filtersStudy,
+        internalLayers,
+      } = this;
       return {
         aerial,
-        filtersCollision: defaultCollisionFilters(),
-        filtersCommon: defaultCommonFilters(),
-        filtersStudy: defaultStudyFilters(),
-        layers: {
-          collisions: false,
-          hospitals: false,
-          schools: false,
-          studies: false,
-          volume: false,
-        },
+        filtersCollision,
+        filtersCommon,
+        filtersStudy,
+        layers: internalLayers,
       };
     },
     mapStyle() {
@@ -108,13 +191,16 @@ export default {
       this.loading = false;
       this.map = makeMaplibreGlMap(this.$el, this.mapStyle);
 
-      // TODO: easeToLocations?
-
       this.map.on('dataloading', () => {
         this.loading = true;
       });
       this.map.on('idle', () => {
         this.loading = false;
+      });
+      this.map.on('load', () => {
+        this.updateLocationsSource();
+        this.updateLocationsMarkersSource();
+        this.easeToLocationsState(this.locationsState, []);
       });
     });
   },
@@ -128,17 +214,67 @@ export default {
     }
   },
   watch: {
+    locationsGeoJson() {
+      this.updateLocationsSource();
+    },
+    locationsMarkersGeoJson() {
+      this.updateLocationsMarkersSource();
+    },
+    locationsState(locationsState, locationsStatePrev) {
+      this.easeToLocationsState(locationsState, locationsStatePrev);
+    },
     mapStyle() {
       this.map.setStyle(this.mapStyle);
     },
   },
   methods: {
+    actionRecenterLocation() {
+      if (this.locationsState.length === 0) {
+        return;
+      }
+      this.easeToLocationsState(this.locationsState, []);
+    },
     actionToggleAerial() {
       this.aerial = !this.aerial;
       if (this.aerial) {
         this.setToastInfo('The map is now in Aerial Mode.');
       } else {
         this.setToastInfo('The map is no longer in Aerial Mode.');
+      }
+    },
+    easeToLocationsState(locationsState, locationsStatePrev) {
+      if (locationsState.length > 0) {
+        // build bounding box on locations
+        const bounds = new maplibregl.LngLatBounds();
+        locationsState.forEach(({ location: { geom } }) => {
+          const { coordinates, type } = geom;
+          if (type === 'Point') {
+            bounds.extend(coordinates);
+          } else if (type === 'LineString') {
+            coordinates.forEach((coordinatesPoint) => {
+              bounds.extend(coordinatesPoint);
+            });
+          }
+        });
+
+        // zoom to bounding box
+        const cameraOptions = this.map.cameraForBounds(bounds, {
+          maxZoom: MapZoom.LEVEL_1.minzoom,
+          padding: 64,
+        });
+        this.map.easeTo(cameraOptions);
+      } else if (locationsStatePrev.length === 0) {
+        /*
+         * If the user is first loading the map, we want to show all of Toronto.
+         * Otherwise, the user has just cleared the location, and we want to keep
+         * them in the same place to avoid confusion.
+         */
+        const center = BOUNDS_TORONTO.getCenter();
+        this.map.easeTo({
+          center,
+          duration: 1000,
+          zoom: MapZoom.LEVEL_3.minzoom,
+        });
       }
     },
     openGoogleMaps() {
@@ -194,6 +330,21 @@ export default {
   & > .fc-map-mode {
     bottom: 10px;
     right: 58px;
+  }
+  & > .fc-map-legend-wrapper {
+    right: 20px;
+    top: 12px;
+  }
+  & > .fc-map-navigate {
+    bottom: 77px;
+    right: 20px;
+    & > .fc-button {
+      display: block;
+      height: 32px;
+      margin-top: 8px;
+      min-width: 30px;
+      width: 30px;
+    }
   }
 
   /*
