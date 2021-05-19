@@ -1,20 +1,11 @@
 import { StudyType } from '@/lib/Constants';
+import { defaultStudyRequestFilters } from '@/lib/filters/DefaultFilters';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   namespaced: true,
   state: {
-    filtersRequest: {
-      assignees: [],
-      createdAtStart: null,
-      createdAtEnd: null,
-      dueDateStart: null,
-      dueDateEnd: null,
-      statuses: [],
-      studyTypes: [],
-      studyTypeOther: false,
-      userOnly: false,
-    },
+    filtersRequest: defaultStudyRequestFilters(),
     filtersRequestUserOnlyInited: false,
     searchRequest: {
       column: null,

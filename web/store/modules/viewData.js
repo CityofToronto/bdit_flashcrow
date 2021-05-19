@@ -1,5 +1,10 @@
 import { getCollisionFactors } from '@/lib/api/WebApi';
 import { getFieldCodes, isLeafFieldCode } from '@/lib/filters/CollisionFilterGroups';
+import {
+  defaultCollisionFilters,
+  defaultCommonFilters,
+  defaultStudyFilters,
+} from '@/lib/filters/DefaultFilters';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
@@ -55,31 +60,9 @@ export default {
   state: {
     collisionFactors: new Map(),
     detailView: false,
-    filtersCollision: {
-      details: [],
-      drivact: [],
-      drivcond: [],
-      emphasisAreas: [],
-      hoursOfDayStart: 0,
-      hoursOfDayEnd: 24,
-      impactype: [],
-      initdir: [],
-      injury: [],
-      manoeuver: [],
-      mvcr: null,
-      rdsfcond: [],
-      validated: null,
-      vehtype: [],
-    },
-    filtersCommon: {
-      dateRangeStart: null,
-      dateRangeEnd: null,
-      daysOfWeek: [],
-    },
-    filtersStudy: {
-      hours: [],
-      studyTypes: [],
-    },
+    filtersCollision: defaultCollisionFilters(),
+    filtersCommon: defaultCommonFilters(),
+    filtersStudy: defaultStudyFilters(),
   },
   getters: {
     filterChipsCommon(state) {

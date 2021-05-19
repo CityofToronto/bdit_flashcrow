@@ -87,6 +87,11 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
+import {
+  defaultCollisionFilters,
+  defaultCommonFilters,
+  defaultStudyFilters,
+} from '@/lib/filters/DefaultFilters';
 import ValidationsCollisionFilters from '@/lib/validation/ValidationsCollisionFilters';
 import ValidationsCommonFilters from '@/lib/validation/ValidationsCommonFilters';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
@@ -170,31 +175,9 @@ export default {
   data() {
     return {
       indexOpen: null,
-      internalFiltersCollision: {
-        details: [],
-        drivact: [],
-        drivcond: [],
-        emphasisAreas: [],
-        hoursOfDayStart: 0,
-        hoursOfDayEnd: 24,
-        impactype: [],
-        initdir: [],
-        injury: [],
-        manoeuver: [],
-        mvcr: null,
-        rdsfcond: [],
-        validated: null,
-        vehtype: [],
-      },
-      internalFiltersCommon: {
-        dateRangeStart: null,
-        dateRangeEnd: null,
-        daysOfWeek: [],
-      },
-      internalFiltersStudy: {
-        hours: [],
-        studyTypes: [],
-      },
+      internalFiltersCollision: defaultCollisionFilters(),
+      internalFiltersCommon: defaultCommonFilters(),
+      internalFiltersStudy: defaultStudyFilters(),
       loading: true,
       previousActiveElement: null,
     };
@@ -229,31 +212,9 @@ export default {
   },
   methods: {
     actionClearAll() {
-      this.internalFiltersCollision = {
-        details: [],
-        drivact: [],
-        drivcond: [],
-        emphasisAreas: [],
-        hoursOfDayStart: 0,
-        hoursOfDayEnd: 24,
-        impactype: [],
-        initdir: [],
-        injury: [],
-        manoeuver: [],
-        mvcr: null,
-        rdsfcond: [],
-        validated: null,
-        vehtype: [],
-      };
-      this.internalFiltersCommon = {
-        dateRangeStart: null,
-        dateRangeEnd: null,
-        daysOfWeek: [],
-      };
-      this.internalFiltersStudy = {
-        hours: [],
-        studyTypes: [],
-      };
+      this.internalFiltersCollision = defaultCollisionFilters();
+      this.internalFiltersCommon = defaultCommonFilters();
+      this.internalFiltersStudy = defaultStudyFilters();
     },
     actionSave() {
       this.setFiltersCollision(this.internalFiltersCollision);

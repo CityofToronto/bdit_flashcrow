@@ -152,6 +152,7 @@ import {
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
+import { defaultStudyRequestFilters } from '@/lib/filters/DefaultFilters';
 import ValidationsStudyRequestFilters from '@/lib/validation/ValidationsStudyRequestFilters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
@@ -238,17 +239,7 @@ export default {
   },
   methods: {
     actionClearAll() {
-      this.internalFilters = {
-        assignees: [],
-        createdAtStart: null,
-        createdAtEnd: null,
-        dueDateStart: null,
-        dueDateEnd: null,
-        statuses: [],
-        studyTypes: [],
-        studyTypeOther: false,
-        userOnly: false,
-      };
+      this.internalFilters = defaultStudyRequestFilters();
     },
     actionSave() {
       this.$emit('set-filters', this.internalFilters);
