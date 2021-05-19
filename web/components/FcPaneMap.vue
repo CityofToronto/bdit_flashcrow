@@ -456,10 +456,8 @@ export default {
         filtersStudy,
         internalLayers,
       } = this;
-      const { dark } = this.$vuetify.theme;
       return {
         aerial,
-        dark,
         filtersCollision,
         filtersCommon,
         filtersStudy,

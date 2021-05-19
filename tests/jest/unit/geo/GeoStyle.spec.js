@@ -9,7 +9,6 @@ const CHOICES_BOOL = [true, false];
 test('GeoStyle#get [fuzz test]', () => {
   for (let i = 0; i < 10; i++) {
     const aerial = Random.choice(CHOICES_BOOL);
-    const dark = Random.choice(CHOICES_BOOL);
     const filters = generateFilters();
     const layers = {
       counts: Random.choice(CHOICES_BOOL),
@@ -21,7 +20,6 @@ test('GeoStyle#get [fuzz test]', () => {
 
     const options = {
       aerial,
-      dark,
       ...filters,
       layers,
     };
