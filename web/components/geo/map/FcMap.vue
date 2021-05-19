@@ -1,5 +1,7 @@
 <template>
-  <div class="fc-map">
+  <div
+    class="fc-map"
+    @mouseleave="setHoveredFeature(null)">
     <div class="fc-map-controls fc-map-progress">
       <FcProgressLinear
         v-if="loading"
@@ -11,7 +13,7 @@
       <FcButton
         class="mr-2"
         type="fab-text"
-        @click="openGoogleMaps">
+        @click="actionOpenGoogleMaps">
         <v-icon
           :aria-hidden="false"
           aria-label="Opens in a new window"
@@ -45,6 +47,29 @@
         <v-icon class="display-2">mdi-map-marker-circle</v-icon>
       </FcButtonAria>
     </div>
+
+    <FcMapPopup
+      v-if="showHoveredPopup"
+      :key="'h:' + featureKeyHovered"
+      :feature="hoveredFeature"
+      :hovered="true">
+      <template
+        v-if="hasActionPopupSlot"
+        v-slot:action="feature">
+        <slot name="action-popup" v-bind="feature" />
+      </template>
+    </FcMapPopup>
+    <FcMapPopup
+      v-if="showSelectedPopup"
+      :key="'s:' + featureKeySelected"
+      :feature="selectedFeature"
+      :hovered="false">
+      <template
+        v-if="hasActionPopupSlot"
+        v-slot:action="feature">
+        <slot name="action-popup" v-bind="feature" />
+      </template>
+    </FcMapPopup>
   </div>
 </template>
 
@@ -53,7 +78,8 @@ import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import Vue from 'vue';
 import { mapMutations } from 'vuex';
 
-import { MapZoom } from '@/lib/Constants';
+import { CentrelineType, MapZoom } from '@/lib/Constants';
+import { debounce } from '@/lib/FunctionUtils';
 import {
   defaultCollisionFilters,
   defaultCommonFilters,
@@ -63,8 +89,29 @@ import GeoStyle from '@/lib/geo/GeoStyle';
 import { BOUNDS_TORONTO, makeMaplibreGlMap } from '@/lib/geo/map/MaplibreGlBase';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMapLegend from '@/web/components/geo/legend/FcMapLegend.vue';
+import FcMapPopup from '@/web/components/geo/map/FcMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+
+function getFeatureKey(feature) {
+  if (feature === null) {
+    return null;
+  }
+  const { layer: { id: layerId }, id } = feature;
+  if (layerId === 'intersections' || layerId === 'midblocks' || layerId === 'studies') {
+    const { centrelineType, centrelineId } = feature.properties;
+    return `c:${centrelineType}:${centrelineId}`;
+  }
+  return `${layerId}:${id}`;
+}
+
+function getFeatureKeyLocation(location) {
+  if (location === null) {
+    return null;
+  }
+  const { centrelineType, centrelineId } = location;
+  return `c:${centrelineType}:${centrelineId}`;
+}
 
 export default {
   name: 'FcMap',
@@ -72,6 +119,7 @@ export default {
     FcButton,
     FcButtonAria,
     FcMapLegend,
+    FcMapPopup,
     FcProgressLinear,
   },
   provide() {
@@ -107,6 +155,10 @@ export default {
         };
       },
     },
+    locationActive: {
+      type: Object,
+      default() { return null; },
+    },
     locationsState: {
       type: Array,
       default() { return []; },
@@ -121,9 +173,60 @@ export default {
       aerial: false,
       coordinates: null,
       loading: false,
+      // used to add slight debounce delay (200ms) to hovered popup
+      featureKeyHoveredPopup: null,
+      // keeps track of which feature we are currently hovering over
+      hoveredFeature: null,
+      // keeps track of currently selected feature
+      selectedFeature: null,
     };
   },
   computed: {
+    centrelineActiveFeatures() {
+      const features = [];
+      if (this.centrelineHovered) {
+        const { properties: { centrelineId, centrelineType } } = this.hoveredFeature;
+        features.push({ centrelineId, centrelineType });
+      }
+      if (this.centrelineSelected) {
+        const { properties: { centrelineId, centrelineType } } = this.selectedFeature;
+        features.push({ centrelineId, centrelineType });
+      }
+      return features;
+    },
+    centrelineActiveIntersections() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.INTERSECTION,
+      ).map(({ centrelineId }) => centrelineId);
+    },
+    centrelineActiveMidblocks() {
+      return this.centrelineActiveFeatures.filter(
+        ({ centrelineType }) => centrelineType === CentrelineType.SEGMENT,
+      ).map(({ centrelineId }) => centrelineId);
+    },
+    centrelineHovered() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.hoveredFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
+    centrelineSelected() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const { layer: { id: layerId } } = this.selectedFeature;
+      return layerId === 'intersections' || layerId === 'midblocks';
+    },
+    featureKeyHovered() {
+      return getFeatureKey(this.hoveredFeature);
+    },
+    featureKeySelected() {
+      return getFeatureKey(this.selectedFeature);
+    },
+    hasActionPopupSlot() {
+      return !!this.$scopedSlots['action-popup'];
+    },
     internalLayers: {
       get() {
         return this.layers;
@@ -182,6 +285,23 @@ export default {
     mapStyle() {
       return GeoStyle.get(this.mapOptions);
     },
+    showHoveredPopup() {
+      if (this.hoveredFeature === null) {
+        return false;
+      }
+      return this.featureKeyHovered !== this.featureKeySelected
+        && this.featureKeyHovered === this.featureKeyHoveredPopup;
+    },
+    showSelectedPopup() {
+      if (this.selectedFeature === null) {
+        return false;
+      }
+      const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
+      if (this.vertical) {
+        return !featureMatchesRoute;
+      }
+      return !this.drawerOpen || !featureMatchesRoute;
+    },
   },
   created() {
     this.map = null;
@@ -201,6 +321,9 @@ export default {
         this.updateLocationsSource();
         this.updateLocationsMarkersSource();
         this.easeToLocationsState(this.locationsState, []);
+
+        this.map.on('click', this.onMapClick.bind(this));
+        this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
     });
   },
@@ -214,6 +337,43 @@ export default {
     }
   },
   watch: {
+    centrelineActiveIntersections() {
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+    },
+    centrelineActiveMidblocks() {
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
+    },
+    hoveredFeature: debounce(function watchHoveredFeature() {
+      this.featureKeyHoveredPopup = this.featureKeyHovered;
+    }, 200),
+    locationActive(locationActive, locationActivePrev) {
+      if (locationActive === null) {
+        const featureKeyLocationActivePrev = getFeatureKeyLocation(locationActivePrev);
+        if (this.featureKeySelected === featureKeyLocationActivePrev) {
+          this.selectedFeature = null;
+        }
+        return;
+      }
+      const { description, geom, ...locationActiveRest } = locationActive;
+      const properties = {
+        ...locationActiveRest,
+        name: description,
+      };
+      const layerId = properties.centrelineType === CentrelineType.INTERSECTION
+        ? 'intersections'
+        : 'midblocks';
+      this.selectedFeature = {
+        geometry: geom,
+        layer: { id: layerId },
+        properties,
+      };
+    },
     locationsGeoJson() {
       this.updateLocationsSource();
     },
@@ -225,9 +385,29 @@ export default {
     },
     mapStyle() {
       this.map.setStyle(this.mapStyle);
+      this.updateLocationsSource();
+      this.updateLocationsMarkersSource();
+      this.map.setFilter(
+        'active-intersections',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveIntersections]],
+      );
+      this.map.setFilter(
+        'active-midblocksCasing',
+        ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
+      );
     },
   },
   methods: {
+    actionOpenGoogleMaps() {
+      if (this.map === null) {
+        return;
+      }
+      const { lat, lng } = this.map.getCenter();
+      const zoom = this.map.getZoom();
+      const z = Math.round(zoom);
+      const url = `https://www.google.com/maps/@${lat},${lng},${z}z`;
+      window.open(url, '_blank');
+    },
     actionRecenterLocation() {
       if (this.locationsState.length === 0) {
         return;
@@ -277,20 +457,88 @@ export default {
         });
       }
     },
-    openGoogleMaps() {
-      if (this.map === null) {
-        return;
+    getFeatureForLayerAndProperty(layer, key, value) {
+      const features = this.map.queryRenderedFeatures({
+        layers: [layer],
+        filter: ['==', ['get', key], value],
+      });
+      if (features.length === 0) {
+        return null;
       }
-      const { lat, lng } = this.map.getCenter();
-      const zoom = this.map.getZoom();
-      const z = Math.round(zoom);
-      const url = `https://www.google.com/maps/@${lat},${lng},${z}z`;
-      window.open(url, '_blank');
+      return features[0];
+    },
+    /**
+     * Fetches the vector tile feature for the given mouse location, usually from a mouse
+     * event on the map.
+     *
+     * For usability, this matching is somewhat fuzzy: it will find the highest-priority
+     * feature within a 20x20 bounding box centered on `point`.
+     *
+     * TODO: within layers, rank by closest to `point`
+     *
+     * @param {Object} point - `(x, y)` coordinates of mouse
+     * @returns {Object?} the matched feature, or `null` if no such feature
+     */
+    getFeatureForPoint(point, options) {
+      const defaultOptions = {
+        selectableOnly: false,
+      };
+      const featureOptions = {
+        ...defaultOptions,
+        ...options,
+      };
+      const { selectableOnly } = featureOptions;
+
+      const layers = [
+        'studies',
+        'intersections',
+        'midblocks',
+      ];
+      if (!selectableOnly) {
+        layers.push(
+          'collisionsLevel2',
+          'collisionsLevel1',
+          'hospitalsLevel2',
+          'hospitalsLevel1',
+          'schoolsLevel2',
+          'schoolsLevel1',
+        );
+      }
+
+      let features = this.map.queryRenderedFeatures(point, { layers });
+      if (features.length > 0) {
+        // see if a feature was clicked ... if so choose that one
+        // if a feature was not clicked then get features in a bounding box
+        return features[0];
+      }
+      const { x, y } = point;
+      const bbox = [[x - 10, y - 10], [x + 10, y + 10]];
+      features = this.map.queryRenderedFeatures(bbox, { layers });
+      if (features.length === 0) {
+        return null;
+      }
+      return features[0];
+    },
+    onMapClick(e) {
+      const feature = this.getFeatureForPoint(e.point, {
+        selectableOnly: true,
+      });
+      this.setSelectedFeature(feature);
+    },
+    onMapMousemove(e) {
+      const feature = this.getFeatureForPoint(e.point);
+      this.setHoveredFeature(feature);
     },
     resize() {
       if (this.map !== null) {
         this.map.resize();
       }
+    },
+    setHoveredFeature(feature) {
+      this.hoveredFeature = feature;
+    },
+    setSelectedFeature(feature) {
+      this.selectedFeature = feature;
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
