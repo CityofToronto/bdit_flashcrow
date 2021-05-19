@@ -30,19 +30,12 @@
             </div>
           </v-col>
           <v-col cols="6">
-            <FcSummaryStudyRequest
+            <FcSummaryStudyRequestBulk
               class="mx-5"
-              :study-request="studyRequestBulk"
-              :study-request-users="studyRequestUsers" />
+              :study-request-bulk="studyRequestBulk" />
           </v-col>
           <v-col cols="6">
-            <FcPaneMap
-              class="mx-5"
-              :show-filters="false"
-              :show-legend="false"
-              :show-location-selection="false"
-              :show-modes="false"
-              :show-search="false" />
+            <FcMap class="mx-5" />
           </v-col>
         </v-row>
 
@@ -106,21 +99,21 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
-import CompositeId from '@/lib/io/CompositeId';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkIndicesDeselected, bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsAssignTo
   from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
-import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
-import FcPaneMap from '@/web/components/FcPaneMap.vue';
+import FcSummaryStudyRequestBulk
+  from '@/web/components/requests/summary/FcSummaryStudyRequestBulk.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -135,13 +128,13 @@ export default {
   },
   components: {
     FcDataTableRequests,
+    FcMap,
     FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
-    FcPaneMap,
     FcProgressLinear,
     FcStatusStudyRequests,
-    FcSummaryStudyRequest,
+    FcSummaryStudyRequestBulk,
     FcTextNumberTotal,
   },
   data() {
@@ -234,9 +227,6 @@ export default {
         studyRequestLocations,
         studyRequestUsers,
       } = await getStudyRequestBulk(id);
-      const { s1, selectionType } = studyRequestBulk;
-      const features = CompositeId.decode(s1);
-      await this.initLocations({ features, selectionType });
 
       this.studyRequestBulk = studyRequestBulk;
       this.studyRequestChanges = studyRequestChanges;
@@ -270,7 +260,7 @@ export default {
   max-height: var(--full-height);
   width: 100%;
 
-  & .pane-map {
+  & .fc-map {
     min-height: 400px;
   }
 }
