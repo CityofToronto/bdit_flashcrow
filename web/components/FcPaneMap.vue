@@ -129,6 +129,7 @@ import { debounce } from '@/lib/FunctionUtils';
 import { InvalidCompositeIdError } from '@/lib/error/MoveErrors';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import GeoStyle from '@/lib/geo/GeoStyle';
+import { BOUNDS_TORONTO, makeMaplibreGlMap } from '@/lib/geo/map/MaplibreGlBase';
 import CompositeId from '@/lib/io/CompositeId';
 import FcPaneMapPopup from '@/web/components/FcPaneMapPopup.vue';
 import FcDialogConfirmMultiLocationLeave
@@ -141,11 +142,6 @@ import FcPaneMapLegend from '@/web/components/inputs/FcPaneMapLegend.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
-
-const BOUNDS_TORONTO = new maplibregl.LngLatBounds(
-  new maplibregl.LngLat(-79.649264937, 43.570995995),
-  new maplibregl.LngLat(-79.105243191, 43.865457183),
-);
 
 const ROUTES_EDIT_FILTERS = [
   'viewData',
@@ -520,41 +516,9 @@ export default {
     this.map = null;
   },
   mounted() {
-    const bounds = BOUNDS_TORONTO;
-
     Vue.nextTick(() => {
       this.loading = false;
-      this.map = new maplibregl.Map({
-        bounds,
-        boxZoom: false,
-        container: this.$el,
-        dragRotate: false,
-        maxBounds: bounds,
-        minZoom: MapZoom.MIN,
-        maxZoom: MapZoom.MAX,
-        pitchWithRotate: false,
-        renderWorldCopies: false,
-        style: this.mapStyle,
-        zoom: MapZoom.MIN,
-      });
-      this.updateCoordinates();
-      this.map.addControl(
-        new maplibregl.AttributionControl({
-          customAttribution: [
-            '<span role="listitem"><a href="https://docs.mapbox.com/mapbox-gl-js/overview/">Mapbox GL</a></span>',
-            '<span role="listitem">Powered by <a href="https://www.esri.com/">Esri</a></span>',
-          ],
-        }),
-        'bottom-left',
-      );
-      this.map.addControl(
-        new maplibregl.ScaleControl({ maxWidth: 128, unit: 'metric' }),
-        'bottom-left',
-      );
-      this.map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
-        'bottom-right',
-      );
+      this.map = makeMaplibreGlMap(this.$el, this.mapStyle);
 
       this.easeToLocations(this.locationsForMode, []);
 
@@ -565,6 +529,7 @@ export default {
         this.loading = false;
       });
       this.map.on('load', () => {
+        this.updateCoordinates();
         this.updateLocationsSource();
         this.updateLocationsMarkersSource();
         this.map.on('move', this.onMapMove.bind(this));
