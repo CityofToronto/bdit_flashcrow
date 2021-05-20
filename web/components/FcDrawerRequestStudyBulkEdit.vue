@@ -27,11 +27,10 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
-import { bulkIndicesDeselected } from '@/lib/requests/RequestStudyBulkUtils';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcEditStudyRequestBulk from '@/web/components/requests/FcEditStudyRequestBulk.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
@@ -63,12 +62,6 @@ export default {
     },
     ...mapState(['locations']),
   },
-  created() {
-    this.setLocationsIndicesDeselected([]);
-  },
-  beforeDestroy() {
-    this.setLocationsIndicesDeselected([]);
-  },
   methods: {
     actionSave() {
       this.saveStudyRequestBulk(this.studyRequestBulk);
@@ -82,14 +75,7 @@ export default {
       await this.initLocations({ features, selectionType });
 
       this.studyRequestBulk = studyRequestBulk;
-
-      const indicesDeselected = bulkIndicesDeselected(
-        this.locations,
-        this.studyRequestBulk.studyRequests,
-      );
-      this.setLocationsIndicesDeselected(indicesDeselected);
     },
-    ...mapMutations(['setLocationsIndicesDeselected']),
     ...mapActions(['initLocations', 'saveStudyRequestBulk']),
   },
 };

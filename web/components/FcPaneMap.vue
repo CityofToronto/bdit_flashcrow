@@ -345,22 +345,18 @@ export default {
 
         const waypointIndices = locationsWaypointIndices[i];
 
-        let deselected = false;
         let selected = false;
         if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
           selected = true;
         } else if (this.locationMode === LocationMode.MULTI) {
-          if (this.locationsIndicesDeselected.includes(i)) {
-            deselected = true;
-          }
           if (this.locationsIndex === i) {
             selected = true;
           }
         }
 
         const properties = {
-          deselected,
+          deselected: false,
           selected,
           ...propertiesRest,
         };
@@ -398,7 +394,6 @@ export default {
          * can be drawn using a corridor marker.
          */
         let locationIndex = -1;
-        let deselected = false;
         let selected = false;
         if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
@@ -417,9 +412,6 @@ export default {
         }
 
         if (this.locationMode === LocationMode.MULTI) {
-          if (this.locationsIndicesDeselected.includes(i)) {
-            deselected = true;
-          }
           if (this.locationsIndex === i) {
             selected = true;
           }
@@ -427,7 +419,7 @@ export default {
 
         const { multi } = this.locationMode;
         const properties = {
-          deselected,
+          deselected: false,
           locationIndex,
           multi,
           selected,
@@ -491,7 +483,6 @@ export default {
     ...mapState([
       'locationsEditIndex',
       'locationsIndex',
-      'locationsIndicesDeselected',
       'locationMode',
     ]),
     ...mapState('viewData', [

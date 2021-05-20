@@ -281,18 +281,9 @@ export default {
     },
   },
   watch: {
-    indicesDeselected() {
-      this.setLocationsIndicesDeselected(this.indicesDeselected);
-    },
     studyRequestsSelected() {
       this.internalValue.studyRequests = this.studyRequestsSelected;
     },
-  },
-  created() {
-    this.setLocationsIndicesDeselected([]);
-  },
-  beforeDestroy() {
-    this.setLocationsIndicesDeselected([]);
   },
   methods: {
     actionBack() {
@@ -343,7 +334,7 @@ export default {
       }
       this.$emit('action-view-details');
     },
-    ...mapMutations(['setLocationsIndicesDeselected', 'setToastInfo']),
+    ...mapMutations(['setToastInfo']),
     ...mapActions(['saveStudyRequestBulk']),
   },
 };

@@ -6,6 +6,9 @@
       horizontal: !vertical,
       vertical
     }">
+    <FcDialogConfirmMultiLocationLeave
+      v-model="showConfirmMultiLocationLeave" />
+
     <template v-if="hasDrawer">
       <FcButton
         v-if="vertical"
@@ -87,6 +90,24 @@
 
           <template
             v-if="showLocationSelection"
+            v-slot:action-navigate>
+            <FcButtonAria
+              :aria-label="tooltipLocationMode"
+              class="pa-0"
+              :class="{
+                primary: locationMode.multi,
+                'white--text': locationMode.multi,
+              }"
+              :disabled="locationMode === LocationMode.MULTI_EDIT"
+              left
+              type="fab-text"
+              @click="actionToggleLocationMode">
+              <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
+            </FcButtonAria>
+          </template>
+
+          <template
+            v-if="showLocationSelection"
             v-slot:action-popup="feature">
             <FcMapPopupActionViewData :feature="feature" />
           </template>
@@ -108,11 +129,14 @@ import {
 import { LegendMode, LocationMode } from '@/lib/Constants';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 
+import FcDialogConfirmMultiLocationLeave
+  from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
@@ -121,6 +145,8 @@ export default {
   name: 'FcLayoutViewData',
   components: {
     FcButton,
+    FcButtonAria,
+    FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
     FcMapPopupActionViewData,
@@ -128,6 +154,12 @@ export default {
     FcSelectorCollapsedLocation,
     FcSelectorMultiLocation,
     FcSelectorSingleLocation,
+  },
+  data() {
+    return {
+      LocationMode,
+      showConfirmMultiLocationLeave: false,
+    };
   },
   computed: {
     filtersReadonly() {
@@ -184,7 +216,6 @@ export default {
          * can be drawn using a corridor marker.
          */
         let locationIndex = -1;
-        let deselected = false;
         let selected = false;
         if (this.locationMode === LocationMode.MULTI_EDIT
           && waypointIndices.includes(this.locationsEditIndex)) {
@@ -203,9 +234,6 @@ export default {
         }
 
         if (this.locationMode === LocationMode.MULTI) {
-          if (this.locationsIndicesDeselected.includes(i)) {
-            deselected = true;
-          }
           if (this.locationsIndex === i) {
             selected = true;
           }
@@ -213,7 +241,7 @@ export default {
 
         const { multi } = this.locationMode;
         const state = {
-          deselected,
+          deselected: false,
           locationIndex,
           multi,
           selected,
@@ -233,6 +261,12 @@ export default {
       const { showLocationSelection } = this.$route.meta;
       return showLocationSelection;
     },
+    tooltipLocationMode() {
+      if (this.locationMode.multi) {
+        return 'Switch to single-location mode';
+      }
+      return 'Add location';
+    },
     vertical() {
       const { vertical } = this.$route.meta;
       return vertical;
@@ -249,6 +283,7 @@ export default {
     ]),
     ...mapGetters([
       'locationsForMode',
+      'locationsRouteParams',
       'locationsSelectionForMode',
     ]),
     ...mapGetters('mapLayers', ['layersForMode']),
@@ -276,6 +311,15 @@ export default {
     },
   },
   methods: {
+    actionToggleLocationMode() {
+      if (this.locationMode === LocationMode.SINGLE) {
+        this.setLocationMode(LocationMode.MULTI_EDIT);
+      } else if (this.locationsForMode.length > 1) {
+        this.showConfirmMultiLocationLeave = true;
+      } else {
+        this.setLocationMode(LocationMode.SINGLE);
+      }
+    },
     actionViewData() {
       const { name } = this.$route;
       if (name === 'viewDataAtLocation') {
@@ -287,6 +331,7 @@ export default {
         params,
       });
     },
+    ...mapMutations(['setLocationMode']),
     ...mapMutations('mapLayers', ['setLayers', 'setLegendMode']),
     ...mapMutations('viewData', ['setDrawerOpen']),
     ...mapActions(['syncLocationsSelectionForMode']),
@@ -307,6 +352,13 @@ export default {
     cursor: pointer;
     position: absolute;
     z-index: calc(var(--z-index-controls) + 1);
+  }
+
+  & .fc-map .fc-selector-multi-location {
+    background-color: var(--v-shading-base);
+    border-radius: 8px;
+    height: 387px;
+    width: 664px;
   }
 
   &.vertical {

@@ -41,6 +41,7 @@
     </div>
 
     <div class="fc-map-controls fc-map-navigate">
+      <slot name="action-navigate" />
       <FcButtonAria
         v-if="locationsState.length > 0"
         aria-label="Recenter location"
