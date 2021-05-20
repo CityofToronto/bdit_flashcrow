@@ -12,6 +12,15 @@ Vue.use(Router);
 const router = new Router({
   mode: 'history',
   routes: [
+    // HOME ROUTE
+    {
+      path: '/',
+      name: 'home',
+      meta: {
+        auth: { mode: 'try' },
+      },
+      redirect: { name: 'viewData' },
+    },
     // NON-DRAWER ROUTES
     {
       path: '/admin',
@@ -51,7 +60,7 @@ const router = new Router({
         },
         title: 'Track Requests',
       },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcRequestsTrack.vue'),
+      component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/views/FcRequestsTrack.vue'),
       beforeEnter(to, from, next) {
         store.commit('setBackViewRequest', to);
         next();
@@ -66,7 +75,7 @@ const router = new Router({
         },
         title: 'View Request',
       },
-      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyView.vue'),
+      component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/views/FcRequestStudyView.vue'),
     },
     {
       path: '/requests/study/bulk/:id',
@@ -77,7 +86,7 @@ const router = new Router({
         },
         title: 'View Bulk Request',
       },
-      component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/views/FcRequestStudyBulkView.vue'),
+      component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/views/FcRequestStudyBulkView.vue'),
     },
     {
       path: '/downloads/manage',
@@ -87,24 +96,19 @@ const router = new Router({
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcDownloadsManage.vue'),
     },
-    // DRAWER ROUTES
+    // VIEW DATA ROUTES
     {
-      path: '/',
+      path: '/view',
       meta: { title: 'View Map' },
-      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutDrawerMap.vue'),
+      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutViewData.vue'),
       children: [{
         path: '',
-        name: 'home',
-        meta: {
-          auth: { mode: 'try' },
-        },
-        redirect: { name: 'viewData' },
-      }, {
-        path: '/view',
         name: 'viewData',
         meta: {
           auth: { mode: 'try' },
+          showLocationSelection: true,
           title: 'View Map',
+          vertical: false,
         },
         component: null,
         beforeEnter(to, from, next) {
@@ -112,11 +116,13 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1/:selectionTypeName',
+        path: '/location/:s1/:selectionTypeName',
         name: 'viewDataAtLocation',
         meta: {
           auth: { mode: 'try' },
+          showLocationSelection: true,
           title: 'View Data',
+          vertical: false,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewData.vue'),
         beforeEnter(to, from, next) {
@@ -125,10 +131,11 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1/:selectionTypeName/reports/collision',
+        path: '/location/:s1/:selectionTypeName/reports/collision',
         name: 'viewCollisionReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
+          showLocationSelection: false,
           title: 'View Collision Reports',
           vertical: true,
         },
@@ -138,10 +145,11 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/view/location/:s1/:selectionTypeName/reports/:studyTypeName',
+        path: '/location/:s1/:selectionTypeName/reports/:studyTypeName',
         name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
+          showLocationSelection: false,
           title: 'View Study Reports',
           vertical: true,
         },
@@ -150,8 +158,15 @@ const router = new Router({
           store.commit('setDrawerOpen', true);
           next();
         },
-      }, {
-        path: '/requests/study/new/:s1/:selectionTypeName',
+      }],
+    },
+    // REQUEST MANAGEMENT EDITOR ROUTES
+    {
+      path: '/requests',
+      meta: { title: 'View Map' },
+      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutRequestEditor.vue'),
+      children: [{
+        path: '/study/new/:s1/:selectionTypeName',
         name: 'requestStudyNew',
         meta: {
           auth: {
@@ -159,13 +174,13 @@ const router = new Router({
           },
           title: 'New Request',
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
         },
       }, {
-        path: '/requests/study/:id/edit',
+        path: '/study/:id/edit',
         name: 'requestStudyEdit',
         meta: {
           auth: {
@@ -173,13 +188,13 @@ const router = new Router({
           },
           title: 'Edit Request',
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();
         },
       }, {
-        path: '/requests/study/bulk/:id/edit',
+        path: '/study/bulk/:id/edit',
         name: 'requestStudyBulkEdit',
         meta: {
           auth: {
@@ -187,7 +202,7 @@ const router = new Router({
           },
           title: 'Edit Bulk Request',
         },
-        component: () => import(/* webpackChunkName: "requestStudy" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
         beforeEnter(to, from, next) {
           store.commit('setDrawerOpen', true);
           next();

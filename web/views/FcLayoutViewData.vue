@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fc-layout-drawer-map fill-height"
+    class="fc-layout-view-data fill-height"
     :class="{
       'drawer-open': drawerOpen,
       horizontal: !vertical,
@@ -65,13 +65,8 @@ import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcPaneMap from '@/web/components/FcPaneMap.vue';
 
-const ROUTES_SHOW_LOCATION_SELECTION = [
-  'viewData',
-  'viewDataAtLocation',
-];
-
 export default {
-  name: 'FcLayoutDrawerMap',
+  name: 'FcLayoutViewData',
   components: {
     FcButton,
     FcPaneMap,
@@ -104,11 +99,11 @@ export default {
       return (hasDrawer && drawerOpen) || vertical;
     },
     showLocationSelection() {
-      const { name } = this.$route;
-      return ROUTES_SHOW_LOCATION_SELECTION.includes(name);
+      const { showLocationSelection } = this.$route.meta;
+      return showLocationSelection;
     },
     vertical() {
-      const { vertical = false } = this.$route.meta;
+      const { vertical } = this.$route.meta;
       return vertical;
     },
     ...mapState(['drawerOpen']),
@@ -120,7 +115,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-layout-drawer-map {
+.fc-layout-view-data {
   position: relative;
   width: 100%;
 
@@ -199,7 +194,7 @@ export default {
 }
 
 @media screen and (max-height: 900px) {
-  .fc-layout-drawer-map {
+  .fc-layout-view-data {
     &.vertical .fc-pane-map-legend {
       max-height: 218px;
       overflow: auto;
