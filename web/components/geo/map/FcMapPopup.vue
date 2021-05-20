@@ -17,7 +17,7 @@
           :feature-details="featureDetails" />
       </v-card-text>
 
-      <template v-if="hasActionSlot && !loading">
+      <template v-if="hasActionSlot && featureSelectable && !loading">
         <v-divider></v-divider>
 
         <v-card-actions class="shading">
@@ -39,6 +39,12 @@ import FcPopupDetailsHospital from '@/web/components/geo/map/FcPopupDetailsHospi
 import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocation.vue';
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
+
+const SELECTABLE_LAYERS = [
+  'studies',
+  'intersections',
+  'midblocks',
+];
 
 export default {
   name: 'FcMapPopup',
@@ -75,6 +81,9 @@ export default {
     featureKey() {
       const { layerId, feature: { id } } = this;
       return `${layerId}:${id}`;
+    },
+    featureSelectable() {
+      return SELECTABLE_LAYERS.includes(this.feature.layer.id);
     },
     hasActionSlot() {
       return !!this.$scopedSlots.action;

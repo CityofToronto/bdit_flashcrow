@@ -1,5 +1,6 @@
 <template>
   <FcButton
+    v-if="featureSelectable"
     type="tertiary"
     :disabled="disabledActionSelected"
     @click="actionSelected">
@@ -14,12 +15,6 @@ import { LocationMode, LocationSelectionType } from '@/lib/Constants';
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-
-const SELECTABLE_LAYERS = [
-  'studies',
-  'intersections',
-  'midblocks',
-];
 
 export default {
   name: 'FcMapPopupActionViewData',
@@ -40,17 +35,11 @@ export default {
       return false;
     },
     featureLocationsEditIndex() {
-      if (!this.featureSelectable) {
-        return -1;
-      }
       const { centrelineId, centrelineType } = this.feature.properties;
       return this.locationsEditSelection.locations.findIndex(
         location => location.centrelineType === centrelineType
           && location.centrelineId === centrelineId,
       );
-    },
-    featureSelectable() {
-      return SELECTABLE_LAYERS.includes(this.feature.layer.id);
     },
     textActionSelected() {
       if (this.locationMode === LocationMode.MULTI_EDIT) {

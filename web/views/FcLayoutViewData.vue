@@ -109,7 +109,8 @@
           <template
             v-if="showLocationSelection"
             v-slot:action-popup="feature">
-            <FcMapPopupActionViewData :feature="feature" />
+            <FcMapPopupActionViewData
+              :feature="feature" />
           </template>
         </FcMap>
       </div>
@@ -427,7 +428,7 @@ export default {
 
 @media screen and (max-height: 900px) {
   .fc-layout-view-data {
-    &.vertical .fc-pane-map-legend {
+    &.vertical .fc-map-legend {
       max-height: 218px;
       overflow: auto;
     }
