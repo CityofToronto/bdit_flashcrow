@@ -459,12 +459,6 @@ export default {
       }
       this.setLocationEdit(location);
     },
-    async actionSetStudyLocation() {
-      const { centrelineId, centrelineType } = this.feature.properties;
-      const feature = { centrelineId, centrelineType };
-      const location = await getLocationByCentreline(feature);
-      this.setLocations([location]);
-    },
     actionViewData() {
       if (this.$route.name === 'viewDataAtLocation') {
         this.setDrawerOpen(true);
@@ -499,7 +493,6 @@ export default {
       'removeLocationEdit',
       'setLocationEdit',
       'setLocationsEditIndex',
-      'setLocations',
       'setToastInfo',
     ]),
     ...mapMutations('viewData', ['setDrawerOpen']),

@@ -84,6 +84,12 @@
               class="mt-3 ml-5"
               :readonly="filtersReadonly" />
           </template>
+
+          <template
+            v-if="showLocationSelection"
+            v-slot:action-popup="feature">
+            <FcMapPopupActionViewData :feature="feature" />
+          </template>
         </FcMap>
       </div>
     </div>
@@ -101,9 +107,11 @@ import {
 
 import { LegendMode, LocationMode } from '@/lib/Constants';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
+
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
+import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
@@ -115,6 +123,7 @@ export default {
     FcButton,
     FcGlobalFilterBox,
     FcMap,
+    FcMapPopupActionViewData,
     FcTooltip,
     FcSelectorCollapsedLocation,
     FcSelectorMultiLocation,
@@ -228,14 +237,20 @@ export default {
       const { vertical } = this.$route.meta;
       return vertical;
     },
-    ...mapState(['locationMode']),
+    ...mapState([
+      'locationMode',
+      'locationsEditIndex',
+    ]),
     ...mapState('viewData', [
       'drawerOpen',
       'filtersCollision',
       'filtersCommon',
       'filtersStudy',
     ]),
-    ...mapGetters(['locationsForMode', 'locationsSelectionForMode']),
+    ...mapGetters([
+      'locationsForMode',
+      'locationsSelectionForMode',
+    ]),
     ...mapGetters('mapLayers', ['layersForMode']),
   },
   watch: {
