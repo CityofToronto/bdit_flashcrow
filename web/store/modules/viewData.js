@@ -58,8 +58,11 @@ function getCollisionFilterChip(filter, value, collisionFactors) {
 export default {
   namespaced: true,
   state: {
-    collisionFactors: new Map(),
+    // UI TOGGLES
     detailView: false,
+    drawerOpen: false,
+    // GLOBAL FILTERS
+    collisionFactors: new Map(),
     filtersCollision: defaultCollisionFilters(),
     filtersCommon: defaultCommonFilters(),
     filtersStudy: defaultStudyFilters(),
@@ -337,6 +340,9 @@ export default {
     },
     setDetailView(state, detailView) {
       state.detailView = detailView;
+    },
+    setDrawerOpen(state, drawerOpen) {
+      state.drawerOpen = drawerOpen;
     },
     setFiltersCollision(state, filtersCollision) {
       state.filtersCollision = filtersCollision;

@@ -9,6 +9,10 @@
         silent />
     </div>
 
+    <div class="fc-map-controls fc-map-top-left">
+      <slot name="top-left" />
+    </div>
+
     <div class="fc-map-controls fc-map-mode">
       <FcButton
         class="mr-2"
@@ -574,6 +578,10 @@ export default {
   & > .fc-map-progress {
     top: 0;
     width: 100%;
+  }
+  & > .pane-map-top-left {
+    left: 0;
+    top: 0;
   }
   & > .fc-map-mode {
     bottom: 10px;

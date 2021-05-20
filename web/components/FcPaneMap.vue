@@ -489,13 +489,13 @@ export default {
       return vertical;
     },
     ...mapState([
-      'drawerOpen',
       'locationsEditIndex',
       'locationsIndex',
       'locationsIndicesDeselected',
       'locationMode',
     ]),
     ...mapState('viewData', [
+      'drawerOpen',
       'filtersCollision',
       'filtersCommon',
       'filtersStudy',
@@ -829,13 +829,15 @@ export default {
       }
     },
     ...mapMutations([
-      'setDrawerOpen',
       'setLocationMode',
       'setToastInfo',
     ]),
     ...mapMutations('mapLayers', [
       'setLayers',
       'setLegendMode',
+    ]),
+    ...mapMutations('viewData', [
+      'setDrawerOpen',
     ]),
     ...mapActions(['syncLocationsSelectionForMode']),
   },

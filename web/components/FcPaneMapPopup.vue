@@ -497,12 +497,12 @@ export default {
     },
     ...mapMutations([
       'removeLocationEdit',
-      'setDrawerOpen',
       'setLocationEdit',
       'setLocationsEditIndex',
       'setLocations',
       'setToastInfo',
     ]),
+    ...mapMutations('viewData', ['setDrawerOpen']),
   },
 };
 </script>

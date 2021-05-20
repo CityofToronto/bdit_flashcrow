@@ -45,34 +45,89 @@
         <router-view></router-view>
       </div>
       <div
-        class="fc-map flex-shrink-0"
+        class="fc-map-wrapper flex-shrink-0"
         :class="{
           'flex-grow-1': !mapBackground,
           'order-1': vertical,
         }">
-        <FcPaneMap
-          :background="mapBackground"
-          :show-location-selection="showLocationSelection" />
+        <FcMap
+          ref="map"
+          class="fill-height"
+          :filters-collision="filtersCollision"
+          :filters-common="filtersCommon"
+          :filters-study="filtersStudy"
+          :layers.sync="internalLayers"
+          :locations-state="locationsState">
+          <template
+            v-if="!drawerOpen"
+            v-slot:top-left>
+            <FcSelectorCollapsedLocation
+              v-if="!showLocationSelection"
+              class="mt-3 ml-5" />
+            <FcSelectorMultiLocation
+              v-else-if="locationMode.multi"
+              class="elevation-2">
+              <template v-slot:action>
+                <FcButton
+                  type="secondary"
+                  @click="actionViewData">
+                  View Data
+                </FcButton>
+              </template>
+            </FcSelectorMultiLocation>
+            <FcSelectorSingleLocation
+              v-else
+              v-model="internalLocationsSelection"
+              class="mt-3 ml-5" />
+
+            <FcGlobalFilterBox
+              class="mt-3 ml-5"
+              :readonly="filtersReadonly" />
+          </template>
+        </FcMap>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
+import Vue from 'vue';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
+import { LegendMode, LocationMode } from '@/lib/Constants';
+import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
+import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
+import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcPaneMap from '@/web/components/FcPaneMap.vue';
+import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
+import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
+import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
   name: 'FcLayoutViewData',
   components: {
     FcButton,
-    FcPaneMap,
+    FcGlobalFilterBox,
+    FcMap,
     FcTooltip,
+    FcSelectorCollapsedLocation,
+    FcSelectorMultiLocation,
+    FcSelectorSingleLocation,
   },
   computed: {
+    filtersReadonly() {
+      const { filtersReadonly } = this.$route.meta;
+      return filtersReadonly;
+    },
+    focusLocations() {
+      return this.locationMode === LocationMode.MULTI_EDIT;
+    },
     hasDrawer() {
       return this.$route.name !== 'viewData';
     },
@@ -83,12 +138,79 @@ export default {
       }
       return drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right';
     },
+    internalLayers: {
+      get() {
+        return this.layersForMode;
+      },
+      set(layers) {
+        this.setLayers(layers);
+      },
+    },
+    internalLocationsSelection: {
+      get() {
+        return this.locationsSelectionForMode;
+      },
+      set(locationsSelection) {
+        this.syncLocationsSelectionForMode(locationsSelection);
+      },
+    },
     labelDrawerToggle() {
       const { drawerOpen, vertical } = this;
       if (vertical) {
         return drawerOpen ? 'Collapse page' : 'Expand page';
       }
       return drawerOpen ? 'Collapse side panel' : 'Expand side panel';
+    },
+    locationsState() {
+      const locationsWaypointIndices = getLocationsWaypointIndices(
+        this.locationsForMode,
+        this.locationsSelectionForMode.locations,
+      );
+
+      return this.locationsForMode.map((location, i) => {
+        const waypointIndices = locationsWaypointIndices[i];
+        const k = waypointIndices.length;
+        /*
+         * `locationIndex === -1` here indicates that the location is not a waypoint, and
+         * can be drawn using a corridor marker.
+         */
+        let locationIndex = -1;
+        let deselected = false;
+        let selected = false;
+        if (this.locationMode === LocationMode.MULTI_EDIT
+          && waypointIndices.includes(this.locationsEditIndex)) {
+          /*
+           * In this case, we might have several consecutive waypoints at the same location,
+           * which might cause the currently selected waypoint to be hidden - so we prioritize
+           * it.
+           */
+          locationIndex = this.locationsEditIndex;
+          selected = true;
+        } else if (k > 0) {
+          /*
+           * Here there is no selected waypoint, so we just show the last matching waypoint.
+           */
+          locationIndex = waypointIndices[k - 1];
+        }
+
+        if (this.locationMode === LocationMode.MULTI) {
+          if (this.locationsIndicesDeselected.includes(i)) {
+            deselected = true;
+          }
+          if (this.locationsIndex === i) {
+            selected = true;
+          }
+        }
+
+        const { multi } = this.locationMode;
+        const state = {
+          deselected,
+          locationIndex,
+          multi,
+          selected,
+        };
+        return { location, state };
+      });
     },
     mapBackground() {
       const { drawerOpen, vertical } = this;
@@ -106,10 +228,53 @@ export default {
       const { vertical } = this.$route.meta;
       return vertical;
     },
-    ...mapState(['drawerOpen']),
+    ...mapState(['locationMode']),
+    ...mapState('viewData', [
+      'drawerOpen',
+      'filtersCollision',
+      'filtersCommon',
+      'filtersStudy',
+    ]),
+    ...mapGetters(['locationsForMode', 'locationsSelectionForMode']),
+    ...mapGetters('mapLayers', ['layersForMode']),
+  },
+  watch: {
+    drawerOpen() {
+      Vue.nextTick(() => {
+        this.$refs.map.resize();
+      });
+    },
+    focusLocations: {
+      handler() {
+        if (this.focusLocations) {
+          this.setLegendMode(LegendMode.FOCUS_LOCATIONS);
+        } else {
+          this.setLegendMode(LegendMode.NORMAL);
+        }
+      },
+      immediate: true,
+    },
+    $route() {
+      Vue.nextTick(() => {
+        this.$refs.map.resize();
+      });
+    },
   },
   methods: {
-    ...mapMutations(['setDrawerOpen']),
+    actionViewData() {
+      const { name } = this.$route;
+      if (name === 'viewDataAtLocation') {
+        this.setDrawerOpen(true);
+      }
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'viewDataAtLocation',
+        params,
+      });
+    },
+    ...mapMutations('mapLayers', ['setLayers', 'setLegendMode']),
+    ...mapMutations('viewData', ['setDrawerOpen']),
+    ...mapActions(['syncLocationsSelectionForMode']),
   },
 };
 </script>
@@ -183,7 +348,7 @@ export default {
         left: calc(50% - 90px);
         width: 180px;
       }
-      & > .fc-pane-wrapper > .fc-map {
+      & > .fc-pane-wrapper > .fc-map-wrapper {
         height: 60px;
       }
       & > .fc-pane-wrapper > .fc-drawer {

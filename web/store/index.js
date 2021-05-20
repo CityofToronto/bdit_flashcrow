@@ -51,7 +51,6 @@ export default new Vuex.Store({
     ariaNotification: '',
     dialog: null,
     dialogData: {},
-    drawerOpen: false,
     filtersOpen: false,
     toast: null,
     toastData: {},
@@ -194,9 +193,6 @@ export default new Vuex.Store({
     setDialog(state, { dialog, dialogData = {} }) {
       Vue.set(state, 'dialog', dialog);
       Vue.set(state, 'dialogData', dialogData);
-    },
-    setDrawerOpen(state, drawerOpen) {
-      Vue.set(state, 'drawerOpen', drawerOpen);
     },
     setFiltersOpen(state, filtersOpen) {
       Vue.set(state, 'filtersOpen', filtersOpen);

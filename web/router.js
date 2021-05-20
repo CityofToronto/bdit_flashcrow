@@ -106,13 +106,14 @@ const router = new Router({
         name: 'viewData',
         meta: {
           auth: { mode: 'try' },
+          filtersReadonly: false,
           showLocationSelection: true,
           title: 'View Map',
           vertical: false,
         },
         component: null,
         beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', false);
+          store.commit('viewData/setDrawerOpen', false);
           next();
         },
       }, {
@@ -120,6 +121,7 @@ const router = new Router({
         name: 'viewDataAtLocation',
         meta: {
           auth: { mode: 'try' },
+          filtersReadonly: false,
           showLocationSelection: true,
           title: 'View Data',
           vertical: false,
@@ -127,7 +129,7 @@ const router = new Router({
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewData.vue'),
         beforeEnter(to, from, next) {
           store.commit('setBackViewRequest', to);
-          store.commit('setDrawerOpen', true);
+          store.commit('viewData/setDrawerOpen', true);
           next();
         },
       }, {
@@ -135,13 +137,14 @@ const router = new Router({
         name: 'viewCollisionReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
+          filtersReadonly: true,
           showLocationSelection: false,
           title: 'View Collision Reports',
           vertical: true,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewCollisionReports.vue'),
         beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', true);
+          store.commit('viewData/setDrawerOpen', true);
           next();
         },
       }, {
@@ -149,13 +152,14 @@ const router = new Router({
         name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
+          filtersReadonly: true,
           showLocationSelection: false,
           title: 'View Study Reports',
           vertical: true,
         },
         component: () => import(/* webpackChunkName: "home" */ '@/web/components/FcDrawerViewStudyReports.vue'),
         beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', true);
+          store.commit('viewData/setDrawerOpen', true);
           next();
         },
       }],
@@ -175,10 +179,6 @@ const router = new Router({
           title: 'New Request',
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
-        beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', true);
-          next();
-        },
       }, {
         path: '/study/:id/edit',
         name: 'requestStudyEdit',
@@ -189,10 +189,6 @@ const router = new Router({
           title: 'Edit Request',
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
-        beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', true);
-          next();
-        },
       }, {
         path: '/study/bulk/:id/edit',
         name: 'requestStudyBulkEdit',
@@ -203,10 +199,6 @@ const router = new Router({
           title: 'Edit Bulk Request',
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
-        beforeEnter(to, from, next) {
-          store.commit('setDrawerOpen', true);
-          next();
-        },
       }],
     },
     {
