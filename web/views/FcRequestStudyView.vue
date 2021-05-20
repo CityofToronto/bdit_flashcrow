@@ -47,13 +47,17 @@
               :study-request-users="studyRequestUsers" />
           </v-col>
           <v-col cols="6">
-            <FcPaneMap
+            <FcMap
               class="mx-5"
-              :show-filters="false"
-              :show-legend="false"
-              :show-location-selection="false"
-              :show-modes="false"
-              :show-search="false" />
+              :layers="{
+                collisions: false,
+                hospitals: false,
+                schools: false,
+                studies: true,
+                volume: false,
+              }"
+              :locations-state="locationsState"
+              :show-legend="false" />
           </v-col>
         </v-row>
 
@@ -72,12 +76,11 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
-import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
-import FcPaneMap from '@/web/components/FcPaneMap.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
@@ -96,9 +99,9 @@ export default {
   ],
   components: {
     FcCommentsStudyRequest,
+    FcMap,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
-    FcPaneMap,
     FcProgressLinear,
     FcStatusStudyRequests,
     FcSummaryStudy,
@@ -115,7 +118,22 @@ export default {
     };
   },
   computed: {
-    ...mapState(['locations']),
+    locationsState() {
+      if (this.studyRequest === null) {
+        return [];
+      }
+      if (this.studyRequestLocation === null) {
+        return [];
+      }
+      const location = this.studyRequestLocation;
+      const state = {
+        deselected: false,
+        locationIndex: -1,
+        multi: false,
+        selected: false,
+      };
+      return [{ location, state }];
+    },
   },
   methods: {
     async loadAsyncForRoute(to) {
@@ -127,9 +145,6 @@ export default {
         studyRequestLocation,
         studyRequestUsers,
       } = await getStudyRequest(id);
-      const features = studyRequestLocation === null ? [] : [studyRequestLocation];
-      const selectionType = LocationSelectionType.POINTS;
-      await this.initLocations({ features, selectionType });
 
       let studyRequestBulkName = null;
       if (studyRequest.studyRequestBulkId !== null) {
@@ -163,7 +178,7 @@ export default {
       this.loading = false;
     },
     ...mapMutations(['setToastInfo']),
-    ...mapActions(['initLocations', 'saveStudyRequest']),
+    ...mapActions(['saveStudyRequest']),
   },
 };
 </script>
@@ -173,7 +188,7 @@ export default {
   max-height: var(--full-height);
   width: 100%;
 
-  & .pane-map {
+  & .fc-map {
     min-height: 400px;
   }
 }

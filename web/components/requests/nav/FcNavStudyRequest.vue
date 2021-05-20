@@ -116,12 +116,7 @@ export default {
       return null;
     },
     ...mapState(['backViewRequest']),
-    ...mapGetters([
-      'locationActive',
-      'locationsEmpty',
-      'locationsRouteParams',
-      'routeBackViewRequest',
-    ]),
+    ...mapGetters(['routeBackViewRequest']),
   },
   methods: {
     actionEdit() {
