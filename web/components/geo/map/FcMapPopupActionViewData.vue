@@ -1,6 +1,5 @@
 <template>
   <FcButton
-    v-if="featureSelectable"
     type="tertiary"
     :disabled="disabledActionSelected"
     @click="actionSelected">
