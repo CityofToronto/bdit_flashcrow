@@ -117,7 +117,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/location/:s1/:selectionTypeName',
+        path: 'location/:s1/:selectionTypeName',
         name: 'viewDataAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -133,7 +133,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/location/:s1/:selectionTypeName/reports/collision',
+        path: 'location/:s1/:selectionTypeName/reports/collision',
         name: 'viewCollisionReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -148,7 +148,7 @@ const router = new Router({
           next();
         },
       }, {
-        path: '/location/:s1/:selectionTypeName/reports/:studyTypeName',
+        path: 'location/:s1/:selectionTypeName/reports/:studyTypeName',
         name: 'viewStudyReportsAtLocation',
         meta: {
           auth: { mode: 'try' },
@@ -170,8 +170,8 @@ const router = new Router({
       meta: { title: 'View Map' },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutRequestEditor.vue'),
       children: [{
-        path: '/study/new',
-        name: 'requestStudyNew2',
+        path: 'study/new/:s1/:selectionTypeName',
+        name: 'requestStudyNew',
         meta: {
           auth: {
             scope: [AuthScope.STUDY_REQUESTS],
@@ -180,17 +180,7 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew2.vue'),
       }, {
-        path: '/study/new/:s1/:selectionTypeName',
-        name: 'requestStudyNew',
-        meta: {
-          auth: {
-            scope: [AuthScope.STUDY_REQUESTS],
-          },
-          title: 'New Request',
-        },
-        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
-      }, {
-        path: '/study/:id/edit',
+        path: 'study/:id/edit',
         name: 'requestStudyEdit',
         meta: {
           auth: {
@@ -200,7 +190,7 @@ const router = new Router({
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
       }, {
-        path: '/study/bulk/:id/edit',
+        path: 'study/bulk/:id/edit',
         name: 'requestStudyBulkEdit',
         meta: {
           auth: {

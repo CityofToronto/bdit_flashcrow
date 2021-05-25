@@ -280,8 +280,11 @@ export default {
       this.reportExportMode = null;
     },
     actionRequestStudy() {
-      this.setStudyRequestsAtLocations(this.locations);
-      this.$router.push({ name: 'requestStudyNew2' });
+      const params = this.locationsRouteParams;
+      this.$router.push({
+        name: 'requestStudyNew',
+        params,
+      });
     },
     actionShowReportsCollision() {
       const params = this.locationsRouteParams;

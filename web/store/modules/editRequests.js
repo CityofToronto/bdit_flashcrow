@@ -71,7 +71,7 @@ export default {
       state.studyRequests = [];
     },
     removeStudyRequest(state, i) {
-      state.studyRequest.splice(i, 1);
+      state.studyRequests.splice(i, 1);
     },
     setIndicesSelected(state, indicesSelected) {
       state.indicesSelected = indicesSelected;
@@ -89,15 +89,15 @@ export default {
       const studyRequest = makeStudyRequest(rootState.now, location);
       commit('addStudyRequest', { location, studyRequest });
     },
+    async saveStudyRequestBulk({ commit }) {
+      commit('clearStudyRequests');
+    },
     async setStudyRequestsAtLocations({ commit, rootState }, locations) {
       commit('clearStudyRequests');
       const studyRequests = locations.map(
         location => makeStudyRequest(rootState.now, location),
       );
       commit('setStudyRequests', { locations, studyRequests });
-    },
-    async saveStudyRequestBulk({ commit }) {
-      commit('clearStudyRequests');
     },
   },
 };

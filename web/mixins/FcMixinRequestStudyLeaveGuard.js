@@ -26,7 +26,7 @@ export default {
     },
     actionNavigateBack(leaveConfirmed = false) {
       this.leaveConfirmed = leaveConfirmed;
-      this.$router.push(this.$refs.nav.routeNavigateBack);
+      this.$router.push(this.routeNavigateBack);
     },
   },
 };
