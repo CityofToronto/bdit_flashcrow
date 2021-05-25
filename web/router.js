@@ -170,6 +170,16 @@ const router = new Router({
       meta: { title: 'View Map' },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcLayoutRequestEditor.vue'),
       children: [{
+        path: '/study/new',
+        name: 'requestStudyNew2',
+        meta: {
+          auth: {
+            scope: [AuthScope.STUDY_REQUESTS],
+          },
+          title: 'New Request',
+        },
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew2.vue'),
+      }, {
         path: '/study/new/:s1/:selectionTypeName',
         name: 'requestStudyNew',
         meta: {

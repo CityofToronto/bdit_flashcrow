@@ -113,7 +113,12 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  mapActions,
+  mapGetters,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import { ReportExportMode } from '@/lib/Constants';
 import {
@@ -275,11 +280,8 @@ export default {
       this.reportExportMode = null;
     },
     actionRequestStudy() {
-      const params = this.locationsRouteParams;
-      this.$router.push({
-        name: 'requestStudyNew',
-        params,
-      });
+      this.setStudyRequestsAtLocations(this.locations);
+      this.$router.push({ name: 'requestStudyNew2' });
     },
     actionShowReportsCollision() {
       const params = this.locationsRouteParams;
@@ -361,6 +363,7 @@ export default {
       'setToast',
       'setToastInfo',
     ]),
+    ...mapActions('editRequests', ['setStudyRequestsAtLocations']),
   },
 };
 </script>

@@ -5,20 +5,46 @@
         <router-view></router-view>
       </div>
       <div class="flex-grow-1 flex-shrink-0">
-        <FcPaneMap
-          :show-location-selection="false" />
+        <FcMap
+          class="fill-height"
+          :layers="{
+            collisions: false,
+            hospitals: false,
+            schools: false,
+            studies: true,
+            volume: false,
+          }"
+          :locations-state="locationsState" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import FcPaneMap from '@/web/components/FcPaneMap.vue';
+import { mapGetters, mapState } from 'vuex';
+
+import FcMap from '@/web/components/geo/map/FcMap.vue';
 
 export default {
   name: 'FcLayoutRequestEditor',
   components: {
-    FcPaneMap,
+    FcMap,
+  },
+  computed: {
+    locationsState() {
+      return this.locations.map((location, i) => {
+        const selected = this.indicesSelected.includes(i);
+        const state = {
+          deselected: false,
+          locationIndex: i,
+          multi: true,
+          selected,
+        };
+        return { location, state };
+      });
+    },
+    ...mapState('editRequests', ['indicesSelected']),
+    ...mapGetters('editRequests', ['locations']),
   },
 };
 </script>

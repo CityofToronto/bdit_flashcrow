@@ -16,6 +16,7 @@
         'requestStudyBulkEdit',
         'requestStudyEdit',
         'requestStudyNew',
+        'requestStudyNew2',
       ]"
       icon="clipboard-list"
       label="Track Requests"

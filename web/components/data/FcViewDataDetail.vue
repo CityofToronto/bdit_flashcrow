@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import {
@@ -151,11 +151,8 @@ export default {
   },
   methods: {
     actionRequestStudy() {
-      const params = this.locationsRouteParams;
-      this.$router.push({
-        name: 'requestStudyNew',
-        params,
-      });
+      this.setStudyRequestsAtLocations(this.locations);
+      this.$router.push({ name: 'requestStudyNew2' });
     },
     actionShowReportsCollision() {
       const params = this.locationsRouteParams;
@@ -210,6 +207,7 @@ export default {
       this.studyTotal = studyTotal;
       this.loading = false;
     },
+    ...mapActions('editRequests', ['setStudyRequestsAtLocations']),
   },
 };
 </script>

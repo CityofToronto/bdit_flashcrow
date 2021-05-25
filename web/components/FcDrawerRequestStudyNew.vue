@@ -17,7 +17,7 @@
       aria-label="Loading Request New Study form" />
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1 min-height-0">
+      class="flex-grow-1 flex-shrink-1">
       <FcCreateStudyRequestBulk
         v-if="isBulk"
         v-model="studyRequestBulk"
