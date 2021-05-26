@@ -49,6 +49,7 @@ export default {
   namespaced: true,
   state: {
     indicesSelected: [],
+    locationsEditIndex: -1,
     studyRequestLocations: new Map(),
     studyRequests: [],
   },
@@ -67,16 +68,32 @@ export default {
       state.studyRequests.push(studyRequest);
     },
     clearStudyRequests(state) {
+      state.indicesSelected = [];
       state.studyRequestLocations = new Map();
       state.studyRequests = [];
     },
-    removeStudyRequest(state, i) {
-      state.studyRequests.splice(i, 1);
+    removeStudyRequest(state, i0) {
+      state.indicesSelected = state.indicesSelected
+        .filter(i => i !== i0)
+        .map(i => (i > i0 ? i - 1 : i));
+      state.studyRequests.splice(i0, 1);
     },
     setIndicesSelected(state, indicesSelected) {
       state.indicesSelected = indicesSelected;
     },
+    setStudyRequestLocation(state, { i, location }) {
+      const key = centrelineKey(location);
+      state.studyRequestLocations.set(key, location);
+
+      const { centrelineId, centrelineType } = location;
+      state.studyRequests[i] = {
+        ...state.studyRequests[i],
+        centrelineId,
+        centrelineType,
+      };
+    },
     setStudyRequests(state, { locations, studyRequests }) {
+      state.indicesSelected = [];
       locations.forEach((location) => {
         const key = centrelineKey(location);
         state.studyRequestLocations.set(key, location);

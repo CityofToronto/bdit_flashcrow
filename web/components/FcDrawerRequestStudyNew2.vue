@@ -5,20 +5,11 @@
       :is-create="true"
       @action-ok="actionLeave" />
 
-    <div class="flex-grow-0 flex-shrink-0">
-      <div class="px-5 py-3 shading">
-        <h2 class="display-3">
-          {{title}}
-        </h2>
-      </div>
-
-      <v-divider></v-divider>
-
+    <div class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderStudyRequestBulkLocations2
         v-model="internalIndicesSelected"
         :locations="locations"
         :study-requests="studyRequests" />
-
       <v-divider></v-divider>
     </div>
 
@@ -108,12 +99,6 @@ export default {
     },
     routeNavigateBack() {
       return this.routeBackViewRequest;
-    },
-    title() {
-      if (this.studyRequests.length <= 1) {
-        return 'New Request';
-      }
-      return 'New Bulk Request';
     },
     ...mapState('editRequests', ['indicesSelected', 'studyRequests']),
     ...mapGetters(['routeBackViewRequest']),

@@ -14,7 +14,18 @@
             studies: true,
             volume: false,
           }"
-          :locations-state="locationsState" />
+          :locations-state="locationsState">
+          <template v-slot:top-left>
+            <FcInputLocationSearch
+              v-model="locationToAdd"
+              class="elevation-2 mt-3 ml-5" />
+          </template>
+
+          <template v-slot:action-popup="feature">
+            <FcMapPopupActionRequestEditor
+              :feature="feature" />
+          </template>
+        </FcMap>
       </div>
     </div>
   </div>
@@ -24,11 +35,21 @@
 import { mapGetters, mapState } from 'vuex';
 
 import FcMap from '@/web/components/geo/map/FcMap.vue';
+import FcMapPopupActionRequestEditor
+  from '@/web/components/geo/map/FcMapPopupActionRequestEditor.vue';
+import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 
 export default {
   name: 'FcLayoutRequestEditor',
   components: {
+    FcInputLocationSearch,
     FcMap,
+    FcMapPopupActionRequestEditor,
+  },
+  data() {
+    return {
+      locationToAdd: null,
+    };
   },
   computed: {
     locationsState() {
@@ -52,6 +73,10 @@ export default {
 <style lang="scss">
 .fc-layout-request-editor {
   width: 100%;
+
+  & .fc-input-location-search {
+    width: 472px;
+  }
 
   & > .fc-pane-wrapper > div {
     flex-basis: 0;

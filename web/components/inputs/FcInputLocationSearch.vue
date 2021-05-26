@@ -134,10 +134,17 @@ export default {
     hasLocationToAddIndex() {
       return this.locationIndex === -1;
     },
-    showLocationSuggestions() {
-      return this.hasFocus
-        && this.locationSuggestions.length > 0
-        && this.state === LocationSearchState.SUGGESTIONS_RECEIVED;
+    showLocationSuggestions: {
+      get() {
+        return this.hasFocus
+          && this.locationSuggestions.length > 0
+          && this.state === LocationSearchState.SUGGESTIONS_RECEIVED;
+      },
+      set(showLocationSuggestions) {
+        if (!showLocationSuggestions) {
+          this.hasFocus = false;
+        }
+      },
     },
   },
   watch: {

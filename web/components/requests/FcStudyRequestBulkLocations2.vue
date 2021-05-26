@@ -1,5 +1,20 @@
 <template>
   <section class="min-height-fill py-1">
+    <v-card
+      v-if="studyRequests.length === 0"
+      class="mt-6 mx-5"
+      outlined>
+      <v-card-title>
+        <div>
+          <div class="display-1 font-weight-bold">No study requests</div>
+          <div class="body-1 mt-1">
+            Add a study request at a location by using the map, or by
+            entering the location below.
+          </div>
+        </div>
+      </v-card-title>
+    </v-card>
+
     <div
       v-for="({ location, studyRequest }, i) in items"
       :key="i"
@@ -55,6 +70,11 @@ export default {
     locations: Array,
     studyRequests: Array,
     v: Object,
+  },
+  data() {
+    return {
+      locationToAdd: null,
+    };
   },
   computed: {
     items() {
