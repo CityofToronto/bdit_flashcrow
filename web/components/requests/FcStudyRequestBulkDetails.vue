@@ -1,5 +1,5 @@
 <template>
-  <section class="pa-5">
+  <section>
     <fieldset>
       <legend class="display-2 pt-4">Project Details</legend>
 
@@ -10,7 +10,7 @@
               ref="autofocus"
               v-model="v.name.$model"
               :error-messages="errorMessagesName"
-              label="Set Name for Bulk Request"
+              label="Set Name for Project"
               :messages="['Required']"
               outlined>
             </v-text-field>
@@ -25,8 +25,7 @@
               v-model="v.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
               label="Additional Emails Subscribed"
-              :messages="messagesCcEmails"
-              :success="v.urgent.$model && !v.ccEmails.$invalid" />
+              :messages="messagesCcEmails" />
           </v-col>
         </v-row>
       </div>
@@ -91,9 +90,6 @@ export default {
   computed: {
     errorMessagesCcEmails() {
       const errors = [];
-      if (!this.v.ccEmails.requiredIfUrgent) {
-        errors.push('Please provide an additional point of contact for this urgent request.');
-      }
       this.v.ccEmails.$model.forEach((_, i) => {
         if (!this.v.ccEmails.$each[i].$dirty) {
           return;
@@ -110,9 +106,12 @@ export default {
     errorMessagesName() {
       const errors = [];
       if (!this.v.name.required) {
-        errors.push('Please enter a name for this request.');
+        errors.push('Please enter a name for this project.');
       }
       return errors;
+    },
+    messagesCcEmails() {
+      return [OPTIONAL.text];
     },
     messagesNotes() {
       return [OPTIONAL.text];

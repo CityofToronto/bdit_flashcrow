@@ -21,11 +21,63 @@
         ref="formWrapper"
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
         <FcStudyRequestBulkLocations2
+          ref="locations"
           v-model="internalIndicesSelected"
           :locations="locations"
           :study-requests="studyRequests"
           :v="$v.studyRequests"
           @remove-study="actionRemoveStudy" />
+
+        <v-divider></v-divider>
+
+        <FcStudyRequestUrgent
+          class="pt-5 px-5"
+          :is-create="true"
+          :v="$v.studyRequests.$each[0]" />
+
+        <v-divider></v-divider>
+
+        <div class="pa-5">
+          <div class="align-center d-flex">
+            <FcMenu
+              button-class="mr-2"
+              :items="[ProjectMode.CREATE_NEW, ProjectMode.ADD_TO_EXISTING]"
+              @action-menu="actionSetProjectMode">
+              <v-icon left>mdi-folder-plus</v-icon>
+              <span>Create Project</span>
+              <template v-slot:item="{ item }">
+                <span>{{item.title}}</span>
+                <v-messages :value="[item.subtitle]" />
+              </template>
+            </FcMenu>
+            <v-spacer></v-spacer>
+            <FcButton
+              v-if="projectMode !== ProjectMode.NONE"
+              type="secondary"
+              @click="projectMode = ProjectMode.NONE">
+              <v-icon left>mdi-folder-remove</v-icon>
+              Remove Project
+            </FcButton>
+          </div>
+
+          <p
+            v-if="projectMode === ProjectMode.NONE"
+            class="my-8 py-12 secondary--text text-center">
+            No project selected,<br>
+            these studies will be requested individually
+          </p>
+          <FcStudyRequestBulkDetails
+            v-if="projectMode === ProjectMode.CREATE_NEW"
+            v-model="studyRequestBulk"
+            :is-create="true"
+            :v="$v.studyRequestBulk" />
+          <div v-else-if="projectMode === ProjectMode.ADD_TO_EXISTING">
+            <FcInputProjectSearch
+              v-model="studyRequestBulk"
+              :error-messages="errorMessagesAddToProject"
+              class="mt-6" />
+          </div>
+        </div>
       </div>
 
       <footer class="flex-grow-0 flex-shrink-0 shading">
@@ -60,6 +112,7 @@ import {
   mapState,
 } from 'vuex';
 
+import { Enum } from '@/lib/ClassUtils';
 import { LocationSelectionType } from '@/lib/Constants';
 import {
   getLocationsByCentreline,
@@ -67,15 +120,43 @@ import {
 } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
+import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
+import FcInputProjectSearch from '@/web/components/inputs/FcInputProjectSearch.vue';
+import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcHeaderStudyRequestBulkLocations2
   from '@/web/components/requests/FcHeaderStudyRequestBulkLocations2.vue';
+import FcStudyRequestBulkDetails
+  from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
 import FcStudyRequestBulkLocations2
   from '@/web/components/requests/FcStudyRequestBulkLocations2.vue';
+import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
+
+class ProjectMode extends Enum {}
+ProjectMode.init({
+  NONE: {},
+  CREATE_NEW: {
+    title: 'New Project',
+    subtitle: 'Create new project with requested studies.',
+  },
+  ADD_TO_EXISTING: {
+    title: 'Existing Project',
+    subtitle: 'Add requested studies to existing project.',
+  },
+});
+
+function makeStudyRequestBulk() {
+  return {
+    ccEmails: [],
+    name: null,
+    notes: null,
+    studyRequests: [],
+  };
+}
 
 export default {
   name: 'FcDrawerRequestStudyNew2',
@@ -86,10 +167,27 @@ export default {
   components: {
     FcButton,
     FcHeaderStudyRequestBulkLocations2,
+    FcInputProjectSearch,
+    FcMenu,
     FcProgressLinear,
+    FcStudyRequestBulkDetails,
     FcStudyRequestBulkLocations2,
+    FcStudyRequestUrgent,
+  },
+  data() {
+    return {
+      projectMode: ProjectMode.NONE,
+      ProjectMode,
+      studyRequestBulk: makeStudyRequestBulk(),
+    };
   },
   computed: {
+    errorMessagesAddToProject() {
+      if (this.$v.studyRequestBulk.$invalid) {
+        return ['Please select a project to add these requests to.'];
+      }
+      return [];
+    },
     internalIndicesSelected: {
       get() {
         return this.indicesSelected;
@@ -109,16 +207,26 @@ export default {
     studyRequests: {
       $each: ValidationsStudyRequest,
     },
+    studyRequestBulk: ValidationsStudyRequestBulk,
   },
   watch: {
+    projectMode() {
+      if (this.projectMode === ProjectMode.ADD_TO_EXISTING) {
+        this.studyRequestBulk = null;
+      } else {
+        this.studyRequestBulk = makeStudyRequestBulk();
+      }
+    },
     'studyRequests.length': {
       handler(numStudyRequests, numStudyRequestsPrev) {
         const $form = this.$refs.formWrapper;
+        const $locations = this.$refs.locations;
         if (!!$form
+          && !!$locations
           && numStudyRequestsPrev > 0
           && numStudyRequests > numStudyRequestsPrev) {
           Vue.nextTick(() => {
-            $form.scrollTop = $form.scrollHeight;
+            $form.scrollTop = $locations.$el.scrollHeight - 400;
           });
         }
       },
@@ -127,6 +235,9 @@ export default {
   methods: {
     actionRemoveStudy(i) {
       this.removeStudyRequest(i);
+    },
+    actionSetProjectMode(projectMode) {
+      this.projectMode = projectMode;
     },
     async actionSubmit() {
       if (this.$v.$invalid) {
