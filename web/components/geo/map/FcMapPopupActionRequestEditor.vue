@@ -7,12 +7,7 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapGetters,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapActions, mapMutations, mapState } from 'vuex';
 
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -27,40 +22,37 @@ export default {
   },
   computed: {
     textActionSelected() {
-      if (this.locationsEditIndex === -1) {
-        return 'Add Location';
+      if (this.indicesSelected.length === 0) {
+        return 'Add Study';
       }
-      return `Set Location #${this.locationsEditIndex + 1}`;
+      return 'Set Location';
     },
-    ...mapState('editRequests', ['locationsEditIndex']),
-    ...mapGetters('editRequests', ['locations']),
+    ...mapState('editRequests', ['indicesSelected']),
   },
   methods: {
-    async actionAddLocation(location) {
-      if (this.locationsEditIndex === -1) {
-        const { description } = location;
-        this.setToastInfo(`Added ${description} to selected locations.`);
-      }
+    async actionAddStudy(location) {
+      const { description } = location;
+      this.setToastInfo(`Added study at ${description}`);
       this.addStudyRequestAtLocation(location);
     },
-    async actionSetLocation(i, location) {
+    async actionSetStudyLocation(location) {
       const { description } = location;
       this.setToastInfo(`Set study location to ${description}.`);
-      this.setStudyRequestLocation({ i, location });
-      this.setLocationsEditIndex(-1);
+      this.setSelectedStudyRequestsLocation(location);
     },
     async actionSelected() {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
       const location = await getLocationByCentreline(feature);
 
-      if (this.locationsEditIndex !== -1) {
-        await this.actionSetLocation(this.locationsEditIndex, location);
+      if (this.indicesSelected.length === 0) {
+        await this.actionAddStudy(location);
       } else {
-        await this.actionAddLocation(location);
+        await this.actionSetStudyLocation(location);
       }
     },
-    ...mapMutations('editRequests', ['setStudyRequestLocation']),
+    ...mapMutations(['setToastInfo']),
+    ...mapMutations('editRequests', ['setSelectedStudyRequestsLocation']),
     ...mapActions('editRequests', ['addStudyRequestAtLocation']),
   },
 };

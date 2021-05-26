@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 import {
   centrelineKey,
   CentrelineType,
@@ -49,7 +51,6 @@ export default {
   namespaced: true,
   state: {
     indicesSelected: [],
-    locationsEditIndex: -1,
     studyRequestLocations: new Map(),
     studyRequests: [],
   },
@@ -81,16 +82,18 @@ export default {
     setIndicesSelected(state, indicesSelected) {
       state.indicesSelected = indicesSelected;
     },
-    setStudyRequestLocation(state, { i, location }) {
+    setSelectedStudyRequestsLocation(state, location) {
       const key = centrelineKey(location);
       state.studyRequestLocations.set(key, location);
 
       const { centrelineId, centrelineType } = location;
-      state.studyRequests[i] = {
-        ...state.studyRequests[i],
-        centrelineId,
-        centrelineType,
-      };
+      state.indicesSelected.forEach((i) => {
+        Vue.set(state.studyRequests, i, {
+          ...state.studyRequests[i],
+          centrelineId,
+          centrelineType,
+        });
+      });
     },
     setStudyRequests(state, { locations, studyRequests }) {
       state.indicesSelected = [];

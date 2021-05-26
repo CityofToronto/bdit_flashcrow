@@ -14,6 +14,7 @@
             studies: true,
             volume: false,
           }"
+          :location-active="locationToAdd"
           :locations-state="locationsState">
           <template v-slot:top-left>
             <FcInputLocationSearch

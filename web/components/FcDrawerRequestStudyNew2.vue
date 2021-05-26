@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import {
   mapActions,
   mapGetters,
@@ -107,6 +108,20 @@ export default {
   validations: {
     studyRequests: {
       $each: ValidationsStudyRequest,
+    },
+  },
+  watch: {
+    'studyRequests.length': {
+      handler(numStudyRequests, numStudyRequestsPrev) {
+        const $form = this.$refs.formWrapper;
+        if (!!$form
+          && numStudyRequestsPrev > 0
+          && numStudyRequests > numStudyRequestsPrev) {
+          Vue.nextTick(() => {
+            $form.scrollTop = $form.scrollHeight;
+          });
+        }
+      },
     },
   },
   methods: {

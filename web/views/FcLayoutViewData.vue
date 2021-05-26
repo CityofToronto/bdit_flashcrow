@@ -60,6 +60,7 @@
           :filters-common="filtersCommon"
           :filters-study="filtersStudy"
           :layers.sync="internalLayers"
+          :location-active="locationActive"
           :locations-state="locationsState">
           <template
             v-if="!drawerOpen"
@@ -283,6 +284,7 @@ export default {
       'filtersStudy',
     ]),
     ...mapGetters([
+      'locationActive',
       'locationsForMode',
       'locationsRouteParams',
       'locationsSelectionForMode',
