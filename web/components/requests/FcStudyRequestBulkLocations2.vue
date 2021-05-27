@@ -1,19 +1,11 @@
 <template>
-  <section class="min-height-fill py-1">
-    <v-card
+  <section class="py-1">
+    <p
       v-if="studyRequests.length === 0"
-      class="mt-6 mx-5"
-      outlined>
-      <v-card-title>
-        <div>
-          <div class="display-1 font-weight-bold">No study requests</div>
-          <div class="body-1 mt-1">
-            Add a study request at a location by using the map, or by
-            entering the location below.
-          </div>
-        </div>
-      </v-card-title>
-    </v-card>
+      class="my-8 py-12 secondary--text text-center">
+      No studies requested,<br>
+      use the map to add a study at a location
+    </p>
 
     <div
       v-for="({ location, studyRequest }, i) in items"

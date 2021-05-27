@@ -3,12 +3,13 @@
     <v-autocomplete
       v-model="select"
       cache-items
+      clearable
       hide-no-data
       hide-details="auto"
       :items="studyRequestsBulk"
       item-text="name"
       item-value="id"
-      label="Search for a project..."
+      label="Search for an existing project..."
       :loading="loading"
       outlined
       :search-input.sync="search"

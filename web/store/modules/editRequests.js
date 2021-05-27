@@ -1,51 +1,15 @@
 import Vue from 'vue';
 
+import { centrelineKey, ProjectMode } from '@/lib/Constants';
 import {
-  centrelineKey,
-  CentrelineType,
-  StudyHours,
-  StudyType,
-} from '@/lib/Constants';
-
-function makeStudyRequest(now, location) {
-  const dueDate = now.plus({ months: 3 });
-  const {
-    centrelineId,
-    centrelineType,
-    lng,
-    lat,
-  } = location;
-  const geom = {
-    type: 'Point',
-    coordinates: [lng, lat],
-  };
-  let duration = null;
-  let hours = null;
-  let studyType = null;
-  if (centrelineType === CentrelineType.INTERSECTION) {
-    hours = StudyHours.ROUTINE;
-    studyType = StudyType.TMC;
-  } else {
-    duration = 72;
-  }
-  return {
-    urgent: false,
-    urgentReason: null,
-    dueDate,
-    reason: null,
-    reasonOther: null,
-    ccEmails: [],
-    studyType,
-    studyTypeOther: null,
-    daysOfWeek: [2, 3, 4],
-    duration,
-    hours,
-    notes: '',
-    centrelineId,
-    centrelineType,
-    geom,
-  };
-}
+  postStudyRequest,
+  postStudyRequestBulk,
+  postStudyRequestBulkRequests,
+} from '@/lib/api/WebApi';
+import {
+  REQUEST_STUDY_SUBMITTED,
+} from '@/lib/i18n/Strings';
+import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 
 export default {
   namespaced: true,
@@ -86,12 +50,13 @@ export default {
       const key = centrelineKey(location);
       state.studyRequestLocations.set(key, location);
 
-      const { centrelineId, centrelineType } = location;
+      const { centrelineId, centrelineType, geom } = location;
       state.indicesSelected.forEach((i) => {
         Vue.set(state.studyRequests, i, {
           ...state.studyRequests[i],
           centrelineId,
           centrelineType,
+          geom,
         });
       });
     },
@@ -105,12 +70,39 @@ export default {
     },
   },
   actions: {
+    async createStudyRequests({ commit, rootState, state }, { projectMode, studyRequestBulk }) {
+      const { studyRequests } = state;
+      const { csrf } = rootState.auth;
+
+      let result = null;
+      if (projectMode === ProjectMode.NONE) {
+        const n = studyRequests.length;
+        for (let i = 0; i < n; i++) {
+          const studyRequest = studyRequests[i];
+          /* eslint-disable-next-line no-await-in-loop */
+          await postStudyRequest(csrf, studyRequest);
+        }
+      } else if (projectMode === ProjectMode.CREATE_NEW) {
+        result = await postStudyRequestBulk(csrf, { ...studyRequestBulk, studyRequests });
+      } else if (projectMode === ProjectMode.ADD_TO_EXISTING) {
+        result = await postStudyRequestBulkRequests(csrf, studyRequestBulk, studyRequests);
+      }
+
+      const { urgent } = studyRequests[0];
+      if (urgent) {
+        commit('setDialog', {
+          dialog: 'AlertStudyRequestUrgent',
+          dialogData: { update: false },
+        }, { root: true });
+      } else {
+        commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
+      }
+
+      return result;
+    },
     async addStudyRequestAtLocation({ commit, rootState }, location) {
       const studyRequest = makeStudyRequest(rootState.now, location);
       commit('addStudyRequest', { location, studyRequest });
-    },
-    async saveStudyRequestBulk({ commit }) {
-      commit('clearStudyRequests');
     },
     async setStudyRequestsAtLocations({ commit, rootState }, locations) {
       commit('clearStudyRequests');

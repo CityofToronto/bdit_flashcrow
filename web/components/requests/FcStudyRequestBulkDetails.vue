@@ -1,7 +1,10 @@
 <template>
   <section>
     <fieldset>
-      <legend class="display-2 pt-4">Project Details</legend>
+      <legend class="display-2 pt-4">
+        <span v-if="isCreate">New</span>
+        Project Details
+      </legend>
 
       <div class="mt-4">
         <v-row>
