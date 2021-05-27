@@ -4,7 +4,7 @@
       {{title}}:
     </span>
     <FcProgressCircular
-      v-if="subtitle === null"
+      v-if="loading"
       aria-label="Loading study request subtitle"
       small />
     <span
@@ -16,10 +16,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
-import { LocationMode } from '@/lib/Constants';
-import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 
 export default {
@@ -28,6 +24,9 @@ export default {
     FcProgressCircular,
   },
   props: {
+    isBulk: Boolean,
+    loading: Boolean,
+    locationDescription: String,
     studyRequest: Object,
   },
   computed: {
@@ -35,29 +34,13 @@ export default {
       if (this.studyRequest === null) {
         return null;
       }
-      const { name } = this.$route;
-      if (name === 'requestStudyBulkView') {
+      if (this.isBulk) {
         return this.studyRequest.name;
       }
-      if (name === 'requestStudyNew' || name === 'requestStudyView') {
-        return getLocationsSelectionDescription(this.locationsSelection);
-      }
-      if (name === 'requestStudyBulkEdit') {
-        return this.studyRequest.name;
-      }
-      if (name === 'requestStudyEdit') {
-        return getLocationsSelectionDescription(this.locationsSelection);
-      }
-      return null;
+      return this.locationDescription;
     },
     title() {
       const { name, params: { id } } = this.$route;
-      if (name === 'requestStudyNew') {
-        if (this.locationMode === LocationMode.SINGLE || this.detailView) {
-          return 'New Request';
-        }
-        return 'New Bulk Request';
-      }
       if (name === 'requestStudyView' || name === 'requestStudyEdit') {
         return `Request #${id}`;
       }
@@ -66,8 +49,6 @@ export default {
       }
       return 'Loading\u2026';
     },
-    ...mapState(['locationMode', 'locationsSelection']),
-    ...mapState('viewData', ['detailView']),
   },
 };
 </script>

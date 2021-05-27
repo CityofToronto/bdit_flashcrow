@@ -3,7 +3,7 @@
     aria-label="Breadcrumbs: Study Request"
     class="fc-breadcrumbs-study-request">
     <FcProgressCircular
-      v-if="this.itemCurrent === null"
+      v-if="loading"
       aria-label="Loading breadcrumbs"
       small />
     <v-breadcrumbs
@@ -27,7 +27,6 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 
 export default {
@@ -36,6 +35,8 @@ export default {
     FcProgressCircular,
   },
   props: {
+    loading: Boolean,
+    locationDescription: String,
     studyRequest: Object,
     studyRequestBulkName: {
       type: String,
@@ -120,10 +121,9 @@ export default {
             },
           });
         }
-        const text = getLocationsSelectionDescription(this.locationsSelection);
         itemsNavigateBack.push({
           disabled: false,
-          text,
+          text: this.locationDescription,
           to: {
             name: 'requestStudyView',
             params: { id: this.studyRequest.id },
@@ -142,7 +142,7 @@ export default {
         return this.studyRequest.name;
       }
       if (name === 'requestStudyView') {
-        return getLocationsSelectionDescription(this.locationsSelection);
+        return this.locationDescription;
       }
       if (name === 'requestStudyBulkEdit' || name === 'requestStudyEdit') {
         return 'Edit';

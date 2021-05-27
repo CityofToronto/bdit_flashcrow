@@ -3,10 +3,14 @@
     <div>
       <FcHeadingStudyRequest
         class="mb-4"
+        :is-bulk="isBulk"
+        :loading="loading"
+        :location-description="locationDescription"
         :study-request="studyRequest" />
       <FcBreadcrumbsStudyRequest
-        v-if="showBreadcrumbs"
         class="mb-6"
+        :loading="loading"
+        :location-description="locationDescription"
         :study-request="studyRequest"
         :study-request-bulk-name="studyRequestBulkName" />
     </div>
@@ -30,7 +34,7 @@
 import { mapGetters, mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
-
+import { getLocationByCentreline } from '@/lib/api/WebApi';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
@@ -56,6 +60,12 @@ export default {
       default: null,
     },
   },
+  data() {
+    return {
+      loading: false,
+      location: null,
+    };
+  },
   computed: {
     canEdit() {
       if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
@@ -66,9 +76,19 @@ export default {
       }
       return false;
     },
+    isBulk() {
+      const { name } = this.$route;
+      return name === 'requestStudyBulkView' || name === 'requestStudyBulkEdit';
+    },
+    locationDescription() {
+      if (this.location === null) {
+        return null;
+      }
+      return this.location.description;
+    },
     routeNavigateBack() {
       const { name } = this.$route;
-      if (name === 'requestStudyBulkView' || name === 'requestStudyNew') {
+      if (name === 'requestStudyBulkView') {
         return this.routeBackViewRequest;
       }
       if (name === 'requestStudyView') {
@@ -94,10 +114,6 @@ export default {
       }
       return this.routeBackViewRequest;
     },
-    showBreadcrumbs() {
-      const { name } = this.$route;
-      return name !== 'requestStudyNew';
-    },
     showEdit() {
       const { name } = this.$route;
       return name === 'requestStudyBulkView' || name === 'requestStudyView';
@@ -118,6 +134,14 @@ export default {
     ...mapState(['backViewRequest']),
     ...mapGetters(['routeBackViewRequest']),
   },
+  watch: {
+    studyRequest: {
+      handler() {
+        this.syncStudyRequestLocation();
+      },
+      immediate: true,
+    },
+  },
   methods: {
     actionEdit() {
       let { name } = this.$route;
@@ -131,6 +155,18 @@ export default {
       const { id } = this.studyRequest;
       const route = { name, params: { id } };
       this.$router.push(route);
+    },
+    async syncStudyRequestLocation() {
+      if (this.isBulk || this.studyRequest === null) {
+        this.location = null;
+        return;
+      }
+      this.loading = true;
+      const { centrelineId, centrelineType } = this.studyRequest;
+      const feature = { centrelineId, centrelineType };
+      const location = await getLocationByCentreline(feature);
+      this.location = location;
+      this.loading = false;
     },
   },
 };

@@ -9,19 +9,10 @@
       v-if="loading"
       aria-label="Loading bulk study request for editing" />
     <template v-else>
-      <div class="flex-grow-0 flex-shrink-0 shading">
-        <div class="pt-4 px-5">
-          <h2 class="display-3 mb-4">
-            Project #{{studyRequestBulk.id}}: {{studyRequestBulk.name}}
-          </h2>
-          <FcBreadcrumbsStudyRequest
-            class="mb-6"
-            :study-request="studyRequestBulk"
-            :study-request-bulk-name="studyRequestBulk.name" />
-        </div>
+      <FcNavStudyRequest
+        :study-request="studyRequestBulk" />
 
-        <v-divider></v-divider>
-      </div>
+      <v-divider></v-divider>
 
       <div
         ref="formWrapper"
@@ -66,7 +57,7 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcStudyRequestBulkDetails
   from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
-import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
+import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
@@ -78,8 +69,8 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
-    FcBreadcrumbsStudyRequest,
     FcButton,
+    FcNavStudyRequest,
     FcProgressLinear,
     FcStudyRequestBulkDetails,
   },
