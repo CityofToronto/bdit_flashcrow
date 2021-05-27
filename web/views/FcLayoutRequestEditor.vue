@@ -58,7 +58,7 @@ export default {
     locationsState() {
       return this.locations.map((location, i) => {
         const locationIndex = this.showLocationIndices ? i : -1;
-        const selected = this.indicesSelected.includes(i);
+        const selected = this.showSelection ? this.indicesSelected.includes(i) : false;
         const state = {
           deselected: false,
           locationIndex,
@@ -69,9 +69,13 @@ export default {
       });
     },
     showActionPopup() {
-      return this.$route.name === 'requestStudyNew';
+      const { name } = this.$route;
+      return name === 'requestStudyNew' || name === 'requestStudyEdit';
     },
     showLocationIndices() {
+      return this.$route.name === 'requestStudyNew';
+    },
+    showSelection() {
       return this.$route.name === 'requestStudyNew';
     },
     ...mapState('editRequests', ['indicesSelected']),

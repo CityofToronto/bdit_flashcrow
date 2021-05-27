@@ -134,6 +134,17 @@ export default {
       );
       commit('setStudyRequests', { locations, studyRequests });
     },
+    async setStudyRequestsForStudyRequest({ commit }, studyRequest) {
+      commit('clearStudyRequests');
+
+      const { centrelineId, centrelineType } = studyRequest;
+      const feature = { centrelineId, centrelineType };
+      let locations = await getLocationsByCentreline([feature]);
+      locations = locations.filter(location => location !== null);
+
+      const studyRequests = [studyRequest];
+      commit('setStudyRequests', { locations, studyRequests });
+    },
     async setStudyRequestsForStudyRequestBulk({ commit }, studyRequestBulk) {
       commit('clearStudyRequests');
 

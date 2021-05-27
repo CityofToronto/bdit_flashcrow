@@ -5,15 +5,15 @@
       :is-create="false"
       @action-ok="actionLeave" />
 
+    <FcNavStudyRequest
+      :study-request="studyRequestBulk" />
+
+    <v-divider></v-divider>
+
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading bulk study request for editing" />
     <template v-else>
-      <FcNavStudyRequest
-        :study-request="studyRequestBulk" />
-
-      <v-divider></v-divider>
-
       <div
         ref="formWrapper"
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
