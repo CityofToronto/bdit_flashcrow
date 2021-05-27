@@ -113,12 +113,7 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapGetters,
-  mapMutations,
-  mapState,
-} from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 
 import { ReportExportMode } from '@/lib/Constants';
 import {
@@ -366,7 +361,6 @@ export default {
       'setToast',
       'setToastInfo',
     ]),
-    ...mapActions('editRequests', ['setStudyRequestsAtLocations']),
   },
 };
 </script>

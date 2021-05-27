@@ -22,7 +22,9 @@
               class="elevation-2 mt-3 ml-5" />
           </template>
 
-          <template v-slot:action-popup="feature">
+          <template
+            v-if="showActionPopup"
+            v-slot:action-popup="feature">
             <FcMapPopupActionRequestEditor
               :feature="feature" />
           </template>
@@ -55,15 +57,22 @@ export default {
   computed: {
     locationsState() {
       return this.locations.map((location, i) => {
+        const locationIndex = this.showLocationIndices ? i : -1;
         const selected = this.indicesSelected.includes(i);
         const state = {
           deselected: false,
-          locationIndex: i,
-          multi: true,
+          locationIndex,
+          multi: this.showLocationIndices,
           selected,
         };
         return { location, state };
       });
+    },
+    showActionPopup() {
+      return this.$route.name === 'requestStudyNew';
+    },
+    showLocationIndices() {
+      return this.$route.name === 'requestStudyNew';
     },
     ...mapState('editRequests', ['indicesSelected']),
     ...mapGetters('editRequests', ['locations']),

@@ -1,14 +1,23 @@
 import Vue from 'vue';
 
-import { centrelineKey, ProjectMode } from '@/lib/Constants';
 import {
+  centrelineKey,
+  LocationSelectionType,
+  ProjectMode,
+} from '@/lib/Constants';
+import {
+  getLocationsByCentreline,
+  getLocationsByCorridor,
   postStudyRequest,
   postStudyRequestBulk,
   postStudyRequestBulkRequests,
+  putStudyRequestBulk,
 } from '@/lib/api/WebApi';
 import {
   REQUEST_STUDY_SUBMITTED,
+  REQUEST_STUDY_UPDATED,
 } from '@/lib/i18n/Strings';
+import CompositeId from '@/lib/io/CompositeId';
 import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 
 export default {
@@ -70,6 +79,10 @@ export default {
     },
   },
   actions: {
+    async addStudyRequestAtLocation({ commit, rootState }, location) {
+      const studyRequest = makeStudyRequest(rootState.now, location);
+      commit('addStudyRequest', { location, studyRequest });
+    },
     async createStudyRequests({ commit, rootState, state }, { projectMode, studyRequestBulk }) {
       const { studyRequests } = state;
       const { csrf } = rootState.auth;
@@ -95,21 +108,48 @@ export default {
           dialogData: { update: false },
         }, { root: true });
       } else {
-        commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
+        commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text, { root: true });
       }
 
       return result;
     },
-    async addStudyRequestAtLocation({ commit, rootState }, location) {
-      const studyRequest = makeStudyRequest(rootState.now, location);
-      commit('addStudyRequest', { location, studyRequest });
-    },
-    async setStudyRequestsAtLocations({ commit, rootState }, locations) {
+    async setStudyRequestsForLocationsSelection({ commit, rootState }, locationsSelection) {
       commit('clearStudyRequests');
+
+      const { s1, selectionType } = locationsSelection;
+      const features = CompositeId.decode(s1);
+      let locations = await getLocationsByCentreline(features);
+      locations = locations.filter(location => location !== null);
+      if (selectionType === LocationSelectionType.CORRIDOR) {
+        try {
+          locations = await getLocationsByCorridor(locations);
+        } catch (err) {
+          commit('setToastBackendError', err, { root: true });
+          throw err;
+        }
+      }
+
       const studyRequests = locations.map(
         location => makeStudyRequest(rootState.now, location),
       );
       commit('setStudyRequests', { locations, studyRequests });
+    },
+    async setStudyRequestsForStudyRequestBulk({ commit }, studyRequestBulk) {
+      commit('clearStudyRequests');
+
+      const { studyRequests } = studyRequestBulk;
+      const features = studyRequests.map(
+        ({ centrelineId, centrelineType }) => ({ centrelineId, centrelineType }),
+      );
+      let locations = await getLocationsByCentreline(features);
+      locations = locations.filter(location => location !== null);
+
+      commit('setStudyRequests', { locations, studyRequests });
+    },
+    async updateStudyRequestBulk({ commit, rootState }, studyRequestBulk) {
+      const { csrf } = rootState.auth;
+      commit('setToastInfo', REQUEST_STUDY_UPDATED.text, { root: true });
+      return putStudyRequestBulk(csrf, studyRequestBulk);
     },
   },
 };

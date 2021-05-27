@@ -95,7 +95,7 @@
           <FcButton
             class="mr-2"
             type="tertiary"
-            @click="actionNavigateBack">
+            @click="actionNavigateBack(false)">
             Cancel
           </FcButton>
           <FcButton
@@ -121,11 +121,7 @@ import {
 } from 'vuex';
 
 import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
-import {
-  getLocationsByCentreline,
-  getLocationsByCorridor,
-} from '@/lib/api/WebApi';
-import CompositeId from '@/lib/io/CompositeId';
+
 import { makeStudyRequest, makeStudyRequestBulk } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
@@ -291,7 +287,7 @@ export default {
       }
 
       /*
-       * Allows the user to leave the flow without
+       * Allows the user to leave the flow without confirmation.
        */
       this.leaveConfirmed = true;
 
@@ -315,28 +311,15 @@ export default {
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
-      const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
-
-      let locations = await getLocationsByCentreline(features);
-      /*
-       * Since this endpoint can return `null` values, we filter those out here.  If this does
-       * change the list of features, it should trigger an update of the route parameters.
-       */
-      locations = locations.filter(location => location !== null);
-      if (selectionType === LocationSelectionType.CORRIDOR) {
-        try {
-          locations = await getLocationsByCorridor(locations);
-        } catch (err) {
-          this.setToastBackendError(err);
-          throw err;
-        }
-      }
-      this.setStudyRequestsAtLocations(locations);
+      await this.setStudyRequestsForLocationsSelection({ s1, selectionType });
     },
     ...mapMutations(['setToastBackendError', 'setToastError', 'setToastInfo']),
     ...mapMutations('editRequests', ['setIndicesSelected', 'removeStudyRequest']),
-    ...mapActions('editRequests', ['createStudyRequests', 'setStudyRequestsAtLocations']),
+    ...mapActions('editRequests', [
+      'createStudyRequests',
+      'setStudyRequestsForLocationsSelection',
+    ]),
   },
 };
 </script>

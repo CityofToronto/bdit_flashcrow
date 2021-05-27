@@ -198,7 +198,7 @@ const router = new Router({
           },
           title: 'Edit Bulk Request',
         },
-        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit2.vue'),
       }],
     },
     {

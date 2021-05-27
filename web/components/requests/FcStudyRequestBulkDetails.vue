@@ -53,23 +53,6 @@ import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
-function mapWatchers(keys) {
-  const watchers = {};
-  keys.forEach((key) => {
-    watchers[`internalValue.${key}`] = {
-      handler() {
-        const { studyRequests, [key]: value } = this.internalValue;
-        const n = studyRequests.length;
-        for (let i = 0; i < n; i++) {
-          studyRequests[i][key] = value;
-        }
-      },
-      immediate: true,
-    };
-  });
-  return watchers;
-}
-
 export default {
   name: 'FcStudyRequestBulkDetails',
   mixins: [
@@ -119,12 +102,6 @@ export default {
     messagesNotes() {
       return [OPTIONAL.text];
     },
-  },
-  watch: {
-    ...mapWatchers([
-      'ccEmails',
-      'notes',
-    ]),
   },
 };
 </script>

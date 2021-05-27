@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import {
@@ -210,7 +210,6 @@ export default {
       this.studyTotal = studyTotal;
       this.loading = false;
     },
-    ...mapActions('editRequests', ['setStudyRequestsAtLocations']),
   },
 };
 </script>
