@@ -1,8 +1,14 @@
 <template>
   <div class="fc-view-data-multi-edit">
     <FcProgressLinear
-      v-if="loading || locations.length === 0"
+      v-if="loading"
       aria-label="Loading multi-location edit mode for View Data" />
+    <p
+      v-else-if="locations.length === 0"
+      class="my-8 py-12 secondary--text text-center">
+      No locations selected,<br>
+      please select locations to view data
+    </p>
     <template v-else>
       <section
         aria-labelledby="heading_multi_edit_totals"
@@ -115,10 +121,6 @@ export default {
   },
   methods: {
     async syncLocations() {
-      if (this.locations.length === 0) {
-        return;
-      }
-
       this.loading = true;
 
       const tasks = [

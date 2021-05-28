@@ -89,7 +89,7 @@ export default {
   width: 100%;
 
   & .fc-input-location-search {
-    width: 472px;
+    width: 448px;
   }
 
   & > .fc-pane-wrapper > div {

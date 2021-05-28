@@ -361,7 +361,7 @@ export default {
     background-color: var(--v-shading-base);
     border-radius: 8px;
     height: 387px;
-    width: 664px;
+    width: 640px;
   }
 
   &.vertical {

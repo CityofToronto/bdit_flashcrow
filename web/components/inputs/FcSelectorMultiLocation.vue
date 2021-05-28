@@ -6,6 +6,15 @@
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
 
+    <FcButton
+      v-if="locationMode === LocationMode.MULTI"
+      class="btn-clear-all mr-5 mt-3"
+      type="secondary"
+      @click="actionClear">
+      <v-icon color="primary" left>mdi-map-marker-remove-variant</v-icon>
+      Clear
+    </FcButton>
+
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
@@ -115,7 +124,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || locationsEditEmpty || hasError"
+            :disabled="loading || hasError"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
@@ -302,7 +311,6 @@ export default {
       'locationActive',
       'locationsDescription',
       'locationsEditDescription',
-      'locationsEditEmpty',
       'locationsEditFull',
       'locationsForModeEmpty',
     ]),
@@ -332,6 +340,13 @@ export default {
       this.addLocationEdit(location);
       Vue.nextTick(() => this.autofocus());
     },
+    actionClear() {
+      this.setToastInfo('Cleared all selected locations.');
+      this.syncLocationsSelectionForMode({
+        locations: [],
+        selectionType: LocationSelectionType.POINTS,
+      });
+    },
     actionLocationNext() {
       if (this.locationsIndex <= this.locations.length - 1) {
         this.setLocationsIndex(this.locationsIndex + 1);
@@ -350,7 +365,7 @@ export default {
       this.removeLocationEdit(i);
       Vue.nextTick(() => this.autofocus());
     },
-    ...mapActions(['syncLocationsEdit']),
+    ...mapActions(['syncLocationsEdit', 'syncLocationsSelectionForMode']),
     ...mapMutations([
       'addLocationEdit',
       'cancelLocationsEdit',
@@ -370,8 +385,16 @@ export default {
 
 <style lang="scss">
 .fc-selector-multi-location {
+  position: relative;
+
+  & > .btn-clear-all {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
   & .fc-input-location-search-wrapper {
-    width: 472px;
+    width: 448px;
     & > .fc-input-location-search {
       &:not(:first-child) {
         border-top: 1px solid var(--v-border-base);
