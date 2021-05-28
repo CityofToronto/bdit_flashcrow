@@ -79,6 +79,7 @@
 import { mapActions, mapMutations } from 'vuex';
 
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
@@ -119,13 +120,10 @@ export default {
   },
   computed: {
     locationsState() {
-      if (this.studyRequest === null) {
+      const location = getStudyRequestLocation(this.studyRequest, this.studyRequestLocation);
+      if (location === null) {
         return [];
       }
-      if (this.studyRequestLocation === null) {
-        return [];
-      }
-      const location = this.studyRequestLocation;
       const state = {
         deselected: false,
         locationIndex: -1,

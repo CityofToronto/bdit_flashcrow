@@ -35,6 +35,7 @@ import { mapGetters, mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { getLocationByCentreline } from '@/lib/api/WebApi';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
@@ -81,10 +82,14 @@ export default {
       return name === 'requestStudyBulkView' || name === 'requestStudyBulkEdit';
     },
     locationDescription() {
-      if (this.location === null) {
+      if (this.isBulk) {
         return null;
       }
-      return this.location.description;
+      const location = getStudyRequestLocation(this.studyRequest, this.location);
+      if (location === null) {
+        return null;
+      }
+      return location.description;
     },
     routeNavigateBack() {
       const { name } = this.$route;

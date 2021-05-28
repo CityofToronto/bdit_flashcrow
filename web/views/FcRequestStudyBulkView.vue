@@ -109,6 +109,7 @@ import { mapActions } from 'vuex';
 
 import { AuthScope, centrelineKey } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
@@ -190,10 +191,11 @@ export default {
       const locationsState = [];
       this.studyRequestBulk.studyRequests.forEach((studyRequest) => {
         const key = centrelineKey(studyRequest);
-        if (!this.studyRequestLocations.has(key)) {
-          return;
+        let location = null;
+        if (this.studyRequestLocations.has(key)) {
+          location = this.studyRequestLocations.get(key);
         }
-        const location = this.studyRequestLocations.get(key);
+        location = getStudyRequestLocation(studyRequest, location);
         const state = {
           deselected: false,
           locationIndex: -1,

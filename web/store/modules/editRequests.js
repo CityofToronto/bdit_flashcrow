@@ -15,6 +15,8 @@ import {
   postStudyRequestBulkRequests,
   putStudyRequestBulk,
 } from '@/lib/api/WebApi';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
+import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
@@ -56,10 +58,11 @@ export default {
     locations(state) {
       return state.studyRequests.map((studyRequest) => {
         const key = centrelineKey(studyRequest);
-        if (!state.studyRequestLocations.has(key)) {
-          return null;
+        let location = null;
+        if (state.studyRequestLocations.has(key)) {
+          location = state.studyRequestLocations.get(key);
         }
-        return state.studyRequestLocations.get(key);
+        return getStudyRequestLocation(studyRequest, location);
       });
     },
     mostRecents(state) {
@@ -112,7 +115,9 @@ export default {
       state.mostRecentByLocation.set(key, mostRecentByStudyType);
       state.studyRequestLocations.set(key, location);
 
-      const { centrelineId, centrelineType, geom } = location;
+      const { centrelineId, centrelineType, geom: geomLocation } = location;
+      const coordinates = getGeometryMidpoint(geomLocation);
+      const geom = { type: 'Point', coordinates };
       state.indicesSelected.forEach((i) => {
         Vue.set(state.studyRequests, i, {
           ...state.studyRequests[i],
