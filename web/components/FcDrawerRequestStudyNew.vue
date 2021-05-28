@@ -1,12 +1,12 @@
 <template>
-  <div class="fc-drawer-request-study-new-2 d-flex fill-height flex-column">
+  <div class="fc-drawer-request-study-new d-flex fill-height flex-column">
     <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
       :is-create="true"
       @action-ok="actionLeave" />
 
     <div class="flex-grow-0 flex-shrink-0 shading">
-      <FcHeaderStudyRequestBulkLocations2
+      <FcHeaderStudyRequestBulkLocations
         v-model="internalIndicesSelected"
         :locations="locations"
         :study-requests="studyRequests" />
@@ -23,7 +23,7 @@
         <fieldset>
           <legend class="display-2 py-4 pl-5">Studies Requested</legend>
 
-          <FcStudyRequestBulkLocations2
+          <FcStudyRequestBulkLocations
             ref="locations"
             v-model="internalIndicesSelected"
             :locations="locations"
@@ -131,12 +131,12 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputProjectSearch from '@/web/components/inputs/FcInputProjectSearch.vue';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
-import FcHeaderStudyRequestBulkLocations2
-  from '@/web/components/requests/FcHeaderStudyRequestBulkLocations2.vue';
+import FcHeaderStudyRequestBulkLocations
+  from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
 import FcStudyRequestBulkDetails
   from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
-import FcStudyRequestBulkLocations2
-  from '@/web/components/requests/FcStudyRequestBulkLocations2.vue';
+import FcStudyRequestBulkLocations
+  from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -159,7 +159,7 @@ function mapUrgentWatchers(keys) {
 }
 
 export default {
-  name: 'FcDrawerRequestStudyNew2',
+  name: 'FcDrawerRequestStudyNew',
   mixins: [
     FcMixinLeaveGuard,
     FcMixinRouteAsync,
@@ -167,12 +167,12 @@ export default {
   components: {
     FcButton,
     FcDialogConfirmRequestStudyLeave,
-    FcHeaderStudyRequestBulkLocations2,
+    FcHeaderStudyRequestBulkLocations,
     FcInputProjectSearch,
     FcMenu,
     FcProgressLinear,
     FcStudyRequestBulkDetails,
-    FcStudyRequestBulkLocations2,
+    FcStudyRequestBulkLocations,
     FcStudyRequestUrgent,
   },
   data() {
@@ -328,7 +328,7 @@ export default {
 </script>
 
 <style lang="scss">
-.fc-drawer-request-study-new-2 {
+.fc-drawer-request-study-new {
   max-height: var(--full-height);
 }
 </style>

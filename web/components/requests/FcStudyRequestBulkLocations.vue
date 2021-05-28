@@ -24,7 +24,7 @@
         <span>Select {{location.description}} for editing</span>
       </FcTooltip>
 
-      <FcCardStudyRequest2
+      <FcCardStudyRequest
         class="flex-grow-1 flex-shrink-1 mr-3 my-1"
         :index="i"
         :location="location"
@@ -47,15 +47,15 @@
 <script>
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
-import FcCardStudyRequest2 from '@/web/components/requests/FcCardStudyRequest2.vue';
+import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcStudyRequestBulkLocations2',
+  name: 'FcStudyRequestBulkLocations',
   mixins: [FcMixinVModelProxy(Array)],
   components: {
     FcButtonAria,
-    FcCardStudyRequest2,
+    FcCardStudyRequest,
     FcTooltip,
   },
   props: {

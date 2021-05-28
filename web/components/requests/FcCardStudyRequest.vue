@@ -66,7 +66,7 @@ import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequest
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
 
 export default {
-  name: 'FcCardStudyRequest2',
+  name: 'FcCardStudyRequest',
   components: {
     FcIconLocationMulti,
     FcStudyRequestDaysOfWeek,

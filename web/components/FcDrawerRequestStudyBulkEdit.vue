@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-drawer-request-study-bulk-edit-2 d-flex fill-height flex-column">
+  <div class="fc-drawer-request-study-bulk-edit d-flex fill-height flex-column">
     <FcDialogConfirmRequestStudyLeave
       v-model="showConfirmLeave"
       :is-create="false"
@@ -65,7 +65,7 @@ import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
 export default {
-  name: 'FcDrawerRequestStudyBulkEdit2',
+  name: 'FcDrawerRequestStudyBulkEdit',
   mixins: [
     FcMixinLeaveGuard,
     FcMixinRouteAsync,
@@ -128,3 +128,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-drawer-request-study-bulk-edit {
+  max-height: var(--full-height);
+}
+</style>

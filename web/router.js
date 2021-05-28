@@ -178,7 +178,7 @@ const router = new Router({
           },
           title: 'New Request',
         },
-        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew2.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyNew.vue'),
       }, {
         path: 'study/:id/edit',
         name: 'requestStudyEdit',
@@ -188,7 +188,7 @@ const router = new Router({
           },
           title: 'Edit Request',
         },
-        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyEdit2.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyEdit.vue'),
       }, {
         path: 'study/bulk/:id/edit',
         name: 'requestStudyBulkEdit',
@@ -198,7 +198,7 @@ const router = new Router({
           },
           title: 'Edit Bulk Request',
         },
-        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit2.vue'),
+        component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
       }],
     },
     {

@@ -92,7 +92,7 @@ SelectAllType.init({
 });
 
 export default {
-  name: 'FcHeaderStudyRequestBulkLocations2',
+  name: 'FcHeaderStudyRequestBulkLocations',
   mixins: [
     FcMixinInputAutofocus,
     FcMixinVModelProxy(Array),
