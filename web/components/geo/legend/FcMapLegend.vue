@@ -44,7 +44,7 @@ import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.v
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
-  name: 'FcPaneMapLegend',
+  name: 'FcMapLegend',
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
