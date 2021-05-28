@@ -27,7 +27,7 @@
 
             <v-checkbox
               v-model="selectAll"
-              class="mt-0 mr-6 pt-0"
+              class="mt-0 mr-2 pt-0"
               hide-details
               :indeterminate="selectAll === null">
               <template v-slot:label>
@@ -39,10 +39,6 @@
               </template>
             </v-checkbox>
 
-            <FcStudyRequestFilters :items="items" />
-
-            <v-spacer></v-spacer>
-
             <FcMenuDownloadTrackRequests
               :loading="loadingDownload"
               :selected-items="selectedItems"
@@ -52,17 +48,21 @@
               <FcMenuStudyRequestsStatus
                 button-class="ml-2"
                 :disabled="selectAll === false"
-                :study-requests="selectedStudyRequests"
-                text-screen-reader="Selected Requests"
-                @update="onUpdateStudyRequests" />
-
-              <FcMenuStudyRequestsAssignTo
-                button-class="ml-2"
-                :disabled="selectAll === false"
+                :status="bulkStatus"
                 :study-requests="selectedStudyRequests"
                 text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
             </template>
+            <FcMenuStudyRequestsProjectMode
+              button-class="ml-2"
+              :disabled="selectAll === false"
+              label="Create Project"
+              text-inject="selection"
+              @action-project-mode="actionSetProjectMode" />
+
+            <FcStudyRequestFilters
+              class="ml-2"
+              :items="items" />
           </nav>
         </v-card-title>
 
@@ -130,7 +130,7 @@ import {
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
+import { bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
@@ -140,10 +140,10 @@ import FcStudyRequestFilterShortcuts
   from '@/web/components/requests/FcStudyRequestFilterShortcuts.vue';
 import FcMenuDownloadTrackRequests
   from '@/web/components/requests/download/FcMenuDownloadTrackRequests.vue';
-import FcMenuStudyRequestsAssignTo
-  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
+import FcMenuStudyRequestsProjectMode
+  from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
@@ -159,7 +159,7 @@ export default {
   components: {
     FcDataTableRequests,
     FcMenuDownloadTrackRequests,
-    FcMenuStudyRequestsAssignTo,
+    FcMenuStudyRequestsProjectMode,
     FcMenuStudyRequestsStatus,
     FcProgressCircular,
     FcSearchBarRequests,
@@ -182,6 +182,10 @@ export default {
     };
   },
   computed: {
+    bulkStatus() {
+      const studyRequests = this.selectedItems.map(({ studyRequest }) => studyRequest);
+      return bulkStatus(studyRequests);
+    },
     filterParamsRequestWithPagination() {
       const limit = this.itemsPerPage;
       const offset = (this.page - 1) * this.itemsPerPage;
@@ -332,6 +336,9 @@ export default {
         ReportFormat.CSV,
         {},
       );
+    },
+    actionSetProjectMode(/* projectMode */) {
+      // TODO: implement this
     },
     async actionUpdateItem(item) {
       this.loading = true;

@@ -75,13 +75,6 @@
                 :study-requests="selectedStudyRequests"
                 text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
-
-              <FcMenuStudyRequestsAssignTo
-                button-class="ml-2"
-                :disabled="selectAll === false"
-                :study-requests="selectedStudyRequests"
-                text-screen-reader="Selected Requests"
-                @update="onUpdateStudyRequests" />
             </template>
           </div>
 
@@ -118,8 +111,6 @@ import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMenuStudyRequestsAssignTo
-  from '@/web/components/requests/status/FcMenuStudyRequestsAssignTo.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
@@ -140,7 +131,6 @@ export default {
   components: {
     FcDataTableRequests,
     FcMap,
-    FcMenuStudyRequestsAssignTo,
     FcMenuStudyRequestsStatus,
     FcNavStudyRequest,
     FcProgressLinear,

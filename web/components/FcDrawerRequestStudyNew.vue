@@ -45,18 +45,14 @@
 
           <div class="pa-5">
             <div class="align-center d-flex">
-              <FcMenu
+              <FcMenuStudyRequestsProjectMode
                 button-class="mr-2"
-                :items="[ProjectMode.CREATE_NEW, ProjectMode.ADD_TO_EXISTING]"
-                @action-menu="actionSetProjectMode">
-                <v-icon left>mdi-folder-plus</v-icon>
-                <span>Add To Project</span>
-                <template v-slot:item="{ item }">
-                  <span>{{item.title}}</span>
-                  <v-messages :value="[item.subtitle]" />
-                </template>
-              </FcMenu>
+                label="Add to Project"
+                text-inject="requested studies"
+                @action-project-mode="actionSetProjectMode" />
+
               <v-spacer></v-spacer>
+
               <FcButton
                 v-if="projectMode !== ProjectMode.NONE"
                 type="secondary"
@@ -131,7 +127,6 @@ import FcDialogConfirmRequestStudyLeave
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputProjectSearch from '@/web/components/inputs/FcInputProjectSearch.vue';
-import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcHeaderStudyRequestBulkLocations
   from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
 import FcStudyRequestBulkDetails
@@ -139,6 +134,8 @@ import FcStudyRequestBulkDetails
 import FcStudyRequestBulkLocations
   from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
+import FcMenuStudyRequestsProjectMode
+  from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
@@ -170,7 +167,7 @@ export default {
     FcDialogConfirmRequestStudyLeave,
     FcHeaderStudyRequestBulkLocations,
     FcInputProjectSearch,
-    FcMenu,
+    FcMenuStudyRequestsProjectMode,
     FcProgressLinear,
     FcStudyRequestBulkDetails,
     FcStudyRequestBulkLocations,
