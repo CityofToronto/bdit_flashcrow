@@ -56,26 +56,40 @@
           class="mb-6 mx-5">
           <h3 class="display-2 mt-6 mb-2" id="heading_bulk_request_requests">
             <span>Requests</span>
-            <FcTextNumberTotal class="ml-2" :n="items.length" />
           </h3>
           <div class="align-center d-flex px-4 py-2">
             <v-checkbox
               v-model="selectAll"
-              class="mt-0"
+              class="mt-0 mr-2 pt-0"
               hide-details
-              :indeterminate="selectAll === null"
-              label="Select all" />
-
-            <v-spacer></v-spacer>
+              :indeterminate="selectAll === null">
+              <template v-slot:label>
+                <span class="font-weight-medium">Select all</span>
+                <FcTextNumberTotal
+                  class="ml-2"
+                  :k="selectedItems.length"
+                  :n="items.length" />
+              </template>
+            </v-checkbox>
 
             <template v-if="canEdit">
               <FcMenuStudyRequestsStatus
+                button-class="ml-2"
                 :disabled="selectAll === false"
                 :status="bulkStatus"
                 :study-requests="selectedStudyRequests"
                 text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
             </template>
+
+            <FcButton
+              class="ml-2"
+              :disabled="selectAll === false"
+              type="secondary"
+              @click="actionRemoveFromProject">
+              <v-icon left>mdi-folder-remove</v-icon>
+              Remove From Project
+            </FcButton>
           </div>
 
           <v-divider></v-divider>
@@ -100,7 +114,7 @@
 import { Ripple } from 'vuetify/lib/directives';
 import { mapActions } from 'vuex';
 
-import { AuthScope, centrelineKey } from '@/lib/Constants';
+import { AuthScope, centrelineKey, ProjectMode } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
@@ -110,6 +124,7 @@ import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMenuStudyRequestsStatus
   from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
@@ -129,6 +144,7 @@ export default {
     Ripple,
   },
   components: {
+    FcButton,
     FcDataTableRequests,
     FcMap,
     FcMenuStudyRequestsStatus,
@@ -228,6 +244,18 @@ export default {
       };
       this.$router.push(route);
     },
+    async actionRemoveFromProject() {
+      this.loading = true;
+      const studyRequests = this.selectedStudyRequests;
+      this.selectedItems = [];
+      await this.updateStudyRequestsBulkRequests({
+        projectMode: ProjectMode.NONE,
+        studyRequests,
+        studyRequestBulk: null,
+      });
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
+    },
     async actionUpdateItem(item) {
       this.loadingItems = true;
       this.selectedItems = [];
@@ -260,6 +288,7 @@ export default {
       this.loadingItems = false;
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
+    ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
   },
 };
 </script>

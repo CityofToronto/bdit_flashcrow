@@ -84,7 +84,7 @@ const router = new Router({
         auth: {
           scope: [AuthScope.STUDY_REQUESTS],
         },
-        title: 'View Bulk Request',
+        title: 'View Project',
       },
       component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/views/FcRequestStudyBulkView.vue'),
     },
@@ -196,7 +196,7 @@ const router = new Router({
           auth: {
             scope: [AuthScope.STUDY_REQUESTS],
           },
-          title: 'Edit Bulk Request',
+          title: 'Edit Project',
         },
         component: () => import(/* webpackChunkName: "trackRequests" */ '@/web/components/FcDrawerRequestStudyBulkEdit.vue'),
       }],

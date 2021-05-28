@@ -45,7 +45,7 @@ export default {
         return `Request #${id}`;
       }
       if (name === 'requestStudyBulkView' || name === 'requestStudyBulkEdit') {
-        return `Bulk Request #${id}`;
+        return `Project #${id}`;
       }
       return 'Loading\u2026';
     },
