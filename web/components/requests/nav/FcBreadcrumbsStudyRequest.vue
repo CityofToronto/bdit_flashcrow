@@ -149,7 +149,7 @@ export default {
       }
       return null;
     },
-    ...mapState(['backViewRequest', 'locationsSelection']),
+    ...mapState(['backViewRequest']),
     ...mapGetters(['labelBackViewRequest', 'routeBackViewRequest']),
   },
 };

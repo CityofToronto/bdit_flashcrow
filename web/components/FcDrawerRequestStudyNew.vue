@@ -48,11 +48,13 @@ import {
 } from '@/lib/Constants';
 import { getStudiesByCentrelineSummaryPerLocation } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcCreateStudyRequestBulk from '@/web/components/requests/FcCreateStudyRequestBulk.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
+import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 function makeStudyRequest(now, location) {
@@ -110,12 +112,13 @@ function makeStudyRequestBulk(now, locations) {
 export default {
   name: 'FcDrawerRequestStudyNew',
   mixins: [
-    FcMixinRequestStudyLeaveGuard,
+    FcMixinLeaveGuard,
     FcMixinRouteAsync,
   ],
   components: {
     FcCreateStudyRequestBulk,
     FcDetailsStudyRequest,
+    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
     FcProgressLinear,
   },

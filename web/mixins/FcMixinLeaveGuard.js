@@ -1,12 +1,7 @@
-import FcDialogConfirmRequestStudyLeave
-  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
-
 export default {
-  components: {
-    FcDialogConfirmRequestStudyLeave,
-  },
   data() {
     return {
+      leaveConfirmed: false,
       nextRoute: null,
       showConfirmLeave: false,
     };
@@ -17,6 +12,7 @@ export default {
     } else {
       this.nextRoute = to;
       this.showConfirmLeave = true;
+      next(false);
     }
   },
   methods: {

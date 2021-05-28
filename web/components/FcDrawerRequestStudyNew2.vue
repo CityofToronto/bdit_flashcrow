@@ -125,6 +125,8 @@ import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
 import { makeStudyRequest, makeStudyRequestBulk } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcInputProjectSearch from '@/web/components/inputs/FcInputProjectSearch.vue';
@@ -136,7 +138,7 @@ import FcStudyRequestBulkDetails
 import FcStudyRequestBulkLocations2
   from '@/web/components/requests/FcStudyRequestBulkLocations2.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
-import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
+import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
@@ -159,11 +161,12 @@ function mapUrgentWatchers(keys) {
 export default {
   name: 'FcDrawerRequestStudyNew2',
   mixins: [
-    FcMixinRequestStudyLeaveGuard,
+    FcMixinLeaveGuard,
     FcMixinRouteAsync,
   ],
   components: {
     FcButton,
+    FcDialogConfirmRequestStudyLeave,
     FcHeaderStudyRequestBulkLocations2,
     FcInputProjectSearch,
     FcMenu,

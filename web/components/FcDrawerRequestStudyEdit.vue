@@ -32,20 +32,23 @@ import { mapActions, mapGetters } from 'vuex';
 
 import { LocationSelectionType } from '@/lib/Constants';
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcDetailsStudyRequest from '@/web/components/requests/FcDetailsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
+import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerRequestStudyEdit',
   mixins: [
-    FcMixinRequestStudyLeaveGuard,
+    FcMixinLeaveGuard,
     FcMixinRouteAsync,
   ],
   components: {
     FcDetailsStudyRequest,
+    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
     FcProgressLinear,
   },

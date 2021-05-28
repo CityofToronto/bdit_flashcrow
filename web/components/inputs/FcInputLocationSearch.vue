@@ -141,6 +141,10 @@ export default {
           && this.state === LocationSearchState.SUGGESTIONS_RECEIVED;
       },
       set(showLocationSuggestions) {
+        /*
+         * When the suggestions box is open and the user hits the Esc key, Vuetify sets
+         * the `<v-menu>` value to `false` - so we have to provide a setter here.
+         */
         if (!showLocationSuggestions) {
           this.hasFocus = false;
         }

@@ -53,23 +53,26 @@ import { mapActions, mapMutations } from 'vuex';
 
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcStudyRequestBulkDetails
   from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
+import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit2',
   mixins: [
-    FcMixinRequestStudyLeaveGuard,
+    FcMixinLeaveGuard,
     FcMixinRouteAsync,
   ],
   components: {
     FcButton,
+    FcDialogConfirmRequestStudyLeave,
     FcNavStudyRequest,
     FcProgressLinear,
     FcStudyRequestBulkDetails,

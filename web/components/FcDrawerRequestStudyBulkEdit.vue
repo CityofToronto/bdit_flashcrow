@@ -31,19 +31,22 @@ import { mapActions, mapState } from 'vuex';
 
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import CompositeId from '@/lib/io/CompositeId';
+import FcDialogConfirmRequestStudyLeave
+  from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcEditStudyRequestBulk from '@/web/components/requests/FcEditStudyRequestBulk.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMixinRequestStudyLeaveGuard from '@/web/mixins/FcMixinRequestStudyLeaveGuard';
+import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit',
   mixins: [
-    FcMixinRequestStudyLeaveGuard,
+    FcMixinLeaveGuard,
     FcMixinRouteAsync,
   ],
   components: {
+    FcDialogConfirmRequestStudyLeave,
     FcEditStudyRequestBulk,
     FcNavStudyRequest,
     FcProgressLinear,
