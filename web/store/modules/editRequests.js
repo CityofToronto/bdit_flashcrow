@@ -7,13 +7,16 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import {
+  deleteStudyRequestBulkRequests,
   getLocationsByCentreline,
   getLocationsByCorridor,
   getStudiesByCentrelineSummaryPerLocation,
   postStudyRequest,
   postStudyRequestBulk,
+  postStudyRequestBulkFromRequests,
   postStudyRequestBulkRequests,
   putStudyRequestBulk,
+  putStudyRequestBulkRequests,
 } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
@@ -244,6 +247,28 @@ export default {
       const { csrf } = rootState.auth;
       commit('setToastInfo', REQUEST_STUDY_UPDATED.text, { root: true });
       return putStudyRequestBulk(csrf, studyRequestBulk);
+    },
+    async updateStudyRequestsBulkRequests(
+      { commit, rootState },
+      { projectMode, studyRequests, studyRequestBulk },
+    ) {
+      const { csrf } = rootState.auth;
+
+      let result = null;
+      let msg = null;
+      if (projectMode === ProjectMode.NONE) {
+        result = await deleteStudyRequestBulkRequests(csrf, studyRequests);
+        msg = 'Removed study requests from project.';
+      } else if (projectMode === ProjectMode.CREATE_NEW) {
+        result = await postStudyRequestBulkFromRequests(csrf, studyRequestBulk, studyRequests);
+        msg = `Created project: ${studyRequestBulk.name}`;
+      } else if (projectMode === ProjectMode.ADD_TO_EXISTING) {
+        result = await putStudyRequestBulkRequests(csrf, studyRequestBulk, studyRequests);
+        msg = `Adding study requests to project: ${studyRequestBulk.name}`;
+      }
+
+      commit('setToastInfo', msg, { root: true });
+      return result;
     },
   },
 };

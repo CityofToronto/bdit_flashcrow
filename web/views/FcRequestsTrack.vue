@@ -2,6 +2,12 @@
   <section
     aria-labelledby="heading_track_requests_requests"
     class="fc-requests-track d-flex flex-column fill-height">
+    <FcDialogProjectMode
+      v-model="showDialogProjectMode"
+      :project-mode="projectMode"
+      :study-requests="selectedStudyRequests"
+      @action-save="actionSaveProjectMode" />
+
     <div class="flex-grow-0 flex-shrink-0 px-5">
       <h2 class="display-3 mt-6" id="heading_track_requests_requests">
         Requests
@@ -118,7 +124,12 @@ import {
   mapState,
 } from 'vuex';
 
-import { AuthScope, ReportFormat, ReportType } from '@/lib/Constants';
+import {
+  AuthScope,
+  ProjectMode,
+  ReportFormat,
+  ReportType,
+} from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import {
   getReportDownload,
@@ -133,6 +144,7 @@ import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
+import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcSearchBarRequests from '@/web/components/inputs/FcSearchBarRequests.vue';
 import FcStudyRequestFilters from '@/web/components/requests/FcStudyRequestFilters.vue';
@@ -158,6 +170,7 @@ export default {
   },
   components: {
     FcDataTableRequests,
+    FcDialogProjectMode,
     FcMenuDownloadTrackRequests,
     FcMenuStudyRequestsProjectMode,
     FcMenuStudyRequestsStatus,
@@ -174,7 +187,9 @@ export default {
       loadingDownload: false,
       loadingTotal: false,
       page: 1,
+      projectMode: ProjectMode.NONE,
       selectedItems: [],
+      showDialogProjectMode: false,
       studyRequestItems: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
@@ -183,8 +198,7 @@ export default {
   },
   computed: {
     bulkStatus() {
-      const studyRequests = this.selectedItems.map(({ studyRequest }) => studyRequest);
-      return bulkStatus(studyRequests);
+      return bulkStatus(this.selectedStudyRequests);
     },
     filterParamsRequestWithPagination() {
       const limit = this.itemsPerPage;
@@ -337,8 +351,18 @@ export default {
         {},
       );
     },
-    actionSetProjectMode(/* projectMode */) {
-      // TODO: implement this
+    async actionSaveProjectMode(studyRequestBulk) {
+      this.loading = true;
+      const { projectMode } = this;
+      const studyRequests = this.selectedStudyRequests;
+      this.selectedItems = [];
+      await this.updateStudyRequestsBulkRequests({ projectMode, studyRequests, studyRequestBulk });
+      await this.loadAsyncForRoute(this.$route);
+      this.loading = false;
+    },
+    actionSetProjectMode(projectMode) {
+      this.projectMode = projectMode;
+      this.showDialogProjectMode = true;
     },
     async actionUpdateItem(item) {
       this.loading = true;
@@ -370,6 +394,7 @@ export default {
     },
     ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests']),
+    ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
   },
 };
 </script>
