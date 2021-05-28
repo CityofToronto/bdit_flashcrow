@@ -36,7 +36,7 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobCancel, putJobDismiss } from '@/lib/api/WebApi';
+import { getStorage, putJobDismiss } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -69,9 +69,6 @@ export default {
   computed: {
     action() {
       const { state } = this.internalJob;
-      if (state === 'created' || state === 'active') {
-        return 'Undo';
-      }
       if (state === 'completed') {
         return 'Download';
       }
@@ -79,9 +76,6 @@ export default {
     },
     iconAction() {
       const { state } = this.internalJob;
-      if (state === 'created' || state === 'active') {
-        return 'mdi-undo';
-      }
       if (state === 'completed') {
         return 'mdi-download';
       }
@@ -127,15 +121,9 @@ export default {
     },
     actionCard() {
       const { state } = this.internalJob;
-      if (state === 'created' || state === 'active') {
-        this.actionUndo();
-      } else if (state === 'completed') {
+      if (state === 'completed') {
         this.actionDownload();
       }
-    },
-    async actionUndo() {
-      const job = await putJobCancel(this.auth.csrf, this.internalJob);
-      this.internalJob = job;
     },
     onUpdateJobStatus() {
       const { job, textStatus } = this.jobPoller;

@@ -11,7 +11,7 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobCancel, putJobDismiss } from '@/lib/api/WebApi';
+import { getStorage, putJobDismiss } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
@@ -46,13 +46,10 @@ export default {
   computed: {
     action() {
       const { state } = this.internalJob;
-      if (state === 'created' || state === 'active') {
-        return 'Undo';
-      }
       if (state === 'completed') {
         return 'Download';
       }
-      return 'Close';
+      return null;
     },
     color() {
       const { state } = this.internalJob;
@@ -79,15 +76,9 @@ export default {
     },
     actionToast() {
       const { state } = this.internalJob;
-      if (state === 'created' || state === 'active') {
-        this.actionUndo();
-      } else if (state === 'completed') {
+      if (state === 'completed') {
         this.actionDownload();
       }
-    },
-    async actionUndo() {
-      const job = await putJobCancel(this.auth.csrf, this.internalJob);
-      this.internalJob = job;
     },
     onUpdateJobStatus() {
       const { job, textStatus } = this.jobPoller;
