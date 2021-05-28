@@ -38,7 +38,7 @@ export default {
     async actionSetStudyLocation(location) {
       const { description } = location;
       this.setToastInfo(`Set study location to ${description}.`);
-      this.setSelectedStudyRequestsLocation(location);
+      await this.setSelectedStudyRequestsLocation(location);
     },
     async actionSelected() {
       const { centrelineId, centrelineType } = this.feature.properties;
@@ -52,8 +52,10 @@ export default {
       }
     },
     ...mapMutations(['setToastInfo']),
-    ...mapMutations('editRequests', ['setSelectedStudyRequestsLocation']),
-    ...mapActions('editRequests', ['addStudyRequestAtLocation']),
+    ...mapActions('editRequests', [
+      'addStudyRequestAtLocation',
+      'setSelectedStudyRequestsLocation',
+    ]),
   },
 };
 </script>

@@ -8,7 +8,7 @@
     </p>
 
     <div
-      v-for="({ location, studyRequest }, i) in items"
+      v-for="({ location, mostRecent, studyRequest }, i) in items"
       :key="i"
       class="align-center d-flex">
       <FcTooltip right>
@@ -28,6 +28,7 @@
         class="flex-grow-1 flex-shrink-1 mr-3 my-1"
         :index="i"
         :location="location"
+        :most-recent="mostRecent"
         :selected="internalValue.includes(i)"
         :study-request="studyRequest"
         :v="v.$each[i]" />
@@ -60,6 +61,7 @@ export default {
   },
   props: {
     locations: Array,
+    mostRecents: Array,
     studyRequests: Array,
     v: Object,
   },
@@ -72,7 +74,8 @@ export default {
     items() {
       return this.studyRequests.map((studyRequest, i) => {
         const location = this.locations[i];
-        return { location, studyRequest };
+        const mostRecent = this.mostRecents[i];
+        return { location, mostRecent, studyRequest };
       });
     },
   },

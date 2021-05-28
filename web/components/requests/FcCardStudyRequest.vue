@@ -12,7 +12,7 @@
         <h3 class="headline mb-1">{{location.description}}</h3>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
-          :study="null" />
+          :study="mostRecent.get(studyRequest.studyType)" />
       </div>
     </v-card-title>
 
@@ -79,6 +79,7 @@ export default {
   props: {
     index: Number,
     location: Object,
+    mostRecent: Map,
     selected: Boolean,
     studyRequest: Object,
     v: Object,

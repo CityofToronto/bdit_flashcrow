@@ -4,10 +4,12 @@ import {
   centrelineKey,
   LocationSelectionType,
   ProjectMode,
+  StudyType,
 } from '@/lib/Constants';
 import {
   getLocationsByCentreline,
   getLocationsByCorridor,
+  getStudiesByCentrelineSummaryPerLocation,
   postStudyRequest,
   postStudyRequestBulk,
   postStudyRequestBulkRequests,
@@ -20,10 +22,33 @@ import {
 import CompositeId from '@/lib/io/CompositeId';
 import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 
+function getMostRecentByStudyType(studySummaryPerLocation, i) {
+  const mostRecentByStudyType = new Map(
+    StudyType.enumValues.map(studyType => [studyType, null]),
+  );
+  studySummaryPerLocation.forEach(({ category, perLocation }) => {
+    const { studyType } = category;
+    const { mostRecent } = perLocation[i];
+    mostRecentByStudyType.set(studyType, mostRecent);
+  });
+  return mostRecentByStudyType;
+}
+
+function getMostRecentByLocation(studySummaryPerLocation, locations) {
+  const mostRecentByLocation = new Map();
+  locations.forEach((location, i) => {
+    const mostRecentByStudyType = getMostRecentByStudyType(studySummaryPerLocation, i);
+    const key = centrelineKey(location);
+    mostRecentByLocation.set(key, mostRecentByStudyType);
+  });
+  return mostRecentByLocation;
+}
+
 export default {
   namespaced: true,
   state: {
     indicesSelected: [],
+    mostRecentByLocation: new Map(),
     studyRequestLocations: new Map(),
     studyRequests: [],
   },
@@ -31,13 +56,28 @@ export default {
     locations(state) {
       return state.studyRequests.map((studyRequest) => {
         const key = centrelineKey(studyRequest);
+        if (!state.studyRequestLocations.has(key)) {
+          return null;
+        }
         return state.studyRequestLocations.get(key);
+      });
+    },
+    mostRecents(state) {
+      return state.studyRequests.map((studyRequest) => {
+        const key = centrelineKey(studyRequest);
+        if (!state.mostRecentByLocation.has(key)) {
+          return new Map(
+            StudyType.enumValues.map(studyType => [studyType, null]),
+          );
+        }
+        return state.mostRecentByLocation.get(key);
       });
     },
   },
   mutations: {
-    addStudyRequest(state, { location, studyRequest }) {
+    addStudyRequest(state, { location, mostRecentByStudyType, studyRequest }) {
       const key = centrelineKey(location);
+      state.mostRecentByLocation.set(key, mostRecentByStudyType);
       state.studyRequestLocations.set(key, location);
       state.studyRequests.push(studyRequest);
     },
@@ -55,8 +95,21 @@ export default {
     setIndicesSelected(state, indicesSelected) {
       state.indicesSelected = indicesSelected;
     },
-    setSelectedStudyRequestsLocation(state, location) {
+    setMostRecentByLocation(state, mostRecentByLocation) {
+      state.mostRecentByLocation = mostRecentByLocation;
+    },
+    setStudyRequests(state, { locations, mostRecentByLocation, studyRequests }) {
+      state.indicesSelected = [];
+      state.mostRecentByLocation = mostRecentByLocation;
+      locations.forEach((location) => {
+        const key = centrelineKey(location);
+        state.studyRequestLocations.set(key, location);
+      });
+      state.studyRequests = studyRequests;
+    },
+    updateSelectedStudyRequests(state, { location, mostRecentByStudyType }) {
       const key = centrelineKey(location);
+      state.mostRecentByLocation.set(key, mostRecentByStudyType);
       state.studyRequestLocations.set(key, location);
 
       const { centrelineId, centrelineType, geom } = location;
@@ -69,19 +122,18 @@ export default {
         });
       });
     },
-    setStudyRequests(state, { locations, studyRequests }) {
-      state.indicesSelected = [];
-      locations.forEach((location) => {
-        const key = centrelineKey(location);
-        state.studyRequestLocations.set(key, location);
-      });
-      state.studyRequests = studyRequests;
-    },
   },
   actions: {
     async addStudyRequestAtLocation({ commit, rootState }, location) {
       const studyRequest = makeStudyRequest(rootState.now, location);
-      commit('addStudyRequest', { location, studyRequest });
+
+      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
+        [location],
+        {},
+      );
+      const mostRecentByStudyType = getMostRecentByStudyType(studySummaryPerLocation, 0);
+
+      commit('addStudyRequest', { location, mostRecentByStudyType, studyRequest });
     },
     async createStudyRequests({ commit, rootState, state }, { projectMode, studyRequestBulk }) {
       const { studyRequests } = state;
@@ -113,6 +165,14 @@ export default {
 
       return result;
     },
+    async setSelectedStudyRequestsLocation({ commit }, location) {
+      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
+        [location],
+        {},
+      );
+      const mostRecentByStudyType = getMostRecentByStudyType(studySummaryPerLocation, 0);
+      commit('updateSelectedStudyRequests', { location, mostRecentByStudyType });
+    },
     async setStudyRequestsForLocationsSelection({ commit, rootState }, locationsSelection) {
       commit('clearStudyRequests');
 
@@ -129,10 +189,16 @@ export default {
         }
       }
 
+      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
+        locations,
+        {},
+      );
+      const mostRecentByLocation = getMostRecentByLocation(studySummaryPerLocation, locations);
+
       const studyRequests = locations.map(
         location => makeStudyRequest(rootState.now, location),
       );
-      commit('setStudyRequests', { locations, studyRequests });
+      commit('setStudyRequests', { locations, mostRecentByLocation, studyRequests });
     },
     async setStudyRequestsForStudyRequest({ commit }, studyRequest) {
       commit('clearStudyRequests');
@@ -142,8 +208,14 @@ export default {
       let locations = await getLocationsByCentreline([feature]);
       locations = locations.filter(location => location !== null);
 
+      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
+        locations,
+        {},
+      );
+      const mostRecentByLocation = getMostRecentByLocation(studySummaryPerLocation, locations);
+
       const studyRequests = [studyRequest];
-      commit('setStudyRequests', { locations, studyRequests });
+      commit('setStudyRequests', { locations, mostRecentByLocation, studyRequests });
     },
     async setStudyRequestsForStudyRequestBulk({ commit }, studyRequestBulk) {
       commit('clearStudyRequests');
@@ -155,7 +227,13 @@ export default {
       let locations = await getLocationsByCentreline(features);
       locations = locations.filter(location => location !== null);
 
-      commit('setStudyRequests', { locations, studyRequests });
+      const studySummaryPerLocation = await getStudiesByCentrelineSummaryPerLocation(
+        locations,
+        {},
+      );
+      const mostRecentByLocation = getMostRecentByLocation(studySummaryPerLocation, locations);
+
+      commit('setStudyRequests', { locations, mostRecentByLocation, studyRequests });
     },
     async updateStudyRequestBulk({ commit, rootState }, studyRequestBulk) {
       const { csrf } = rootState.auth;

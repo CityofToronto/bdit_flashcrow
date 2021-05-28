@@ -27,6 +27,7 @@
             ref="locations"
             v-model="internalIndicesSelected"
             :locations="locations"
+            :most-recents="mostRecents"
             :study-requests="studyRequests"
             :v="$v.studyRequests"
             @remove-study="actionRemoveStudy" />
@@ -225,7 +226,7 @@ export default {
     },
     ...mapState('editRequests', ['indicesSelected', 'studyRequests']),
     ...mapGetters(['routeBackViewRequest']),
-    ...mapGetters('editRequests', ['locations']),
+    ...mapGetters('editRequests', ['locations', 'mostRecents']),
   },
   validations: {
     studyRequestBulk: ValidationsStudyRequestBulk,
