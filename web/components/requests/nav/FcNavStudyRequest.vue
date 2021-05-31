@@ -20,7 +20,7 @@
     <FcButton
       v-if="showEdit"
       class="ml-8"
-      :disabled="!canEdit || status === null || !status.editable"
+      :disabled="!canEdit || (status !== null && !status.editable)"
       type="secondary"
       @click="actionEdit">
       <v-icon color="primary" left>mdi-pencil</v-icon> Edit
@@ -33,18 +33,16 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
-import { AuthScope } from '@/lib/Constants';
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
+import RequestActions from '@/lib/requests/RequestActions';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcHeadingStudyRequest from '@/web/components/requests/nav/FcHeadingStudyRequest.vue';
-import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
   name: 'FcNavStudyRequest',
-  mixins: [FcMixinAuthScope],
   components: {
     FcButton,
     FcBreadcrumbsStudyRequest,
@@ -69,13 +67,7 @@ export default {
   },
   computed: {
     canEdit() {
-      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return true;
-      }
-      if (this.studyRequest !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        return this.auth.user.id === this.studyRequest.userId;
-      }
-      return false;
+      return RequestActions.canEdit(this.auth.user, this.studyRequest);
     },
     isBulk() {
       const { name } = this.$route;
@@ -136,7 +128,7 @@ export default {
       }
       return null;
     },
-    ...mapState(['backViewRequest']),
+    ...mapState(['auth', 'backViewRequest']),
     ...mapGetters(['routeBackViewRequest']),
   },
   watch: {

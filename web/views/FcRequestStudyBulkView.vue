@@ -112,11 +112,12 @@
 
 <script>
 import { Ripple } from 'vuetify/lib/directives';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
-import { AuthScope, centrelineKey, ProjectMode } from '@/lib/Constants';
+import { centrelineKey, ProjectMode } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
+import RequestActions from '@/lib/requests/RequestActions';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
@@ -131,15 +132,11 @@ import FcMenuStudyRequestsStatus
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequestBulk
   from '@/web/components/requests/summary/FcSummaryStudyRequestBulk.vue';
-import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcRequestStudyBulkView',
-  mixins: [
-    FcMixinAuthScope,
-    FcMixinRouteAsync,
-  ],
+  mixins: [FcMixinRouteAsync],
   directives: {
     Ripple,
   },
@@ -170,13 +167,7 @@ export default {
       return bulkStatus(this.studyRequestBulk.studyRequests);
     },
     canEdit() {
-      if (this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)) {
-        return true;
-      }
-      if (this.studyRequestBulk !== null && this.hasAuthScope(AuthScope.STUDY_REQUESTS)) {
-        return this.auth.user.id === this.studyRequestBulk.userId;
-      }
-      return false;
+      return RequestActions.canEdit(this.auth.user, this.studyRequestBulk);
     },
     items() {
       if (this.studyRequestBulk === null) {
@@ -234,6 +225,7 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
+    ...mapState(['auth']),
   },
   methods: {
     actionEdit() {
