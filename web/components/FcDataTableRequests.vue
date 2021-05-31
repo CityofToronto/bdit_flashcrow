@@ -24,7 +24,7 @@
           No requests match the active filters,<br>
           clear one or more filters to see requests
         </span>
-        <span v-else>
+        <span v-else-if="!isExpandedChild">
           No studies have been requested,<br>
           please <router-link :to="{name: 'viewData'}">view the map</router-link>
         </span>
@@ -84,7 +84,8 @@
     </template>
     <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
       <FcButtonAria
-        v-if="item.type.name === 'STUDY_REQUEST_BULK'"
+        v-if="item.type.name === 'STUDY_REQUEST_BULK'
+          && item.studyRequestBulk.studyRequests.length > 0"
         :aria-label="
           (isExpanded ? 'Collapse ' : 'Expand ') + item.ariaLabel
         "
@@ -98,7 +99,7 @@
     <template v-slot:item.STUDY_TYPE="{ item }">
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
-          Multiple Locations
+          Project
           <FcTextNumberTotal
             class="ml-1"
             :n="item.studyRequestBulk.studyRequests.length" />
@@ -122,14 +123,14 @@
     <template v-slot:item.REQUESTER="{ item }">
       <div class="text-truncate">
         <span
-          v-if="!isExpandedChild && item.requestedBy !== null"
+          v-if="item.requestedBy !== null"
           :title="item.requestedBy">
           {{item.requestedBy | username}}
         </span>
       </div>
     </template>
     <template v-slot:item.CREATED_AT="{ item }">
-      <span v-if="!isExpandedChild">
+      <span v-if="item.createdAt !== null">
         {{item.createdAt | date}}
       </span>
     </template>
@@ -138,12 +139,14 @@
     </template>
     <template v-slot:item.DUE_DATE="{ item }">
       <span
-        v-if="parentItem === null || !item.dueDate.equals(parentItem.dueDate)">
+        v-if="item.dueDate !== null">
         {{item.dueDate | date}}
       </span>
     </template>
     <template v-slot:item.STATUS="{ item }">
-      <div class="align-center d-flex">
+      <div
+        v-if="item.status !== null"
+        class="align-center d-flex">
         <v-icon :color="item.status.color" class="ml-n2">mdi-circle-medium</v-icon>
         <span>{{item.status.text}}</span>
       </div>
