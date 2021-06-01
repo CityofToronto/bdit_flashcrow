@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2021-06-01
+
+### Added
+
+- Grouping requests into a new or existing project
+- Moving requests between projects
+- Removing requests from projects
+- Several new REST API endpoints to support above operations
+
+### Changed
+
+- "Bulk Request" reworded to "Project" in several places
+- New Request now a single-page flow that supports:
+  - both removing _and_ adding studies at locations;
+  - changing locations of studies;
+  - requesting multiple studies at the same location;
+  - adding requested studies to a new or existing project.
+- Both single-location and multi-location New Request now use the same flow
+- Study request management locations no longer tied to View Data locations
+
+### Fixed
+
+- View Request, Edit Request now support viewing, editing requests with missing or invalid centreline locations
+- Usability improvement: can now clear all locations in a multi-location selection
+- Report bug: `invage` was always blank (i.e. `null`) in Collision Directory reports when exported in CSV format
+
+### Removed
+
+- Old New Request flow
+
 ## [1.4.0] - 2021-05-17
 
 No changes (except the version number!)

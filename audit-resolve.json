@@ -392,8 +392,8 @@
     },
     "1666|@vue/cli>@vue/cli-ui>watch>exec-sh>merge": {
       "decision": "ignore",
-      "madeAt": 1621262727963,
-      "expiresAt": 1621867519649
+      "madeAt": 1622550697825,
+      "expiresAt": 1623155487746
     },
     "1693|@vue/cli-service>@intervolga/optimize-cssnano-plugin>cssnano>cssnano-preset-default>css-declaration-sorter>postcss": {
       "decision": "ignore",
@@ -867,8 +867,8 @@
     },
     "1693|@vue/cli-service>cssnano>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|@vue/cli-service>@intervolga/optimize-cssnano-plugin>postcss": {
       "decision": "ignore",
@@ -877,8 +877,8 @@
     },
     "1693|@vue/cli-service>@vue/component-compiler-utils>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|@vue/cli-service>vue-loader>@vue/component-compiler-utils>postcss": {
       "decision": "ignore",
@@ -887,8 +887,8 @@
     },
     "1693|@vue/cli-service>autoprefixer>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|stylelint>autoprefixer>postcss": {
       "decision": "ignore",
@@ -912,8 +912,8 @@
     },
     "1693|@vue/cli-service>css-loader>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|@vue/cli-service>css-loader>postcss-modules-extract-imports>postcss": {
       "decision": "ignore",
@@ -937,18 +937,18 @@
     },
     "1693|@vue/cli-service>postcss-loader>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|stylelint>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|stylelint>postcss-less>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|stylelint>postcss-safe-parser>postcss": {
       "decision": "ignore",
@@ -957,8 +957,8 @@
     },
     "1693|stylelint>postcss-sass>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     },
     "1693|stylelint>postcss-scss>postcss": {
       "decision": "ignore",
@@ -967,8 +967,8 @@
     },
     "1693|stylelint>sugarss>postcss": {
       "decision": "ignore",
-      "madeAt": 1620840618368,
-      "expiresAt": 1621445396168
+      "madeAt": 1622550704720,
+      "expiresAt": 1623155487746
     }
   },
   "rules": {},
