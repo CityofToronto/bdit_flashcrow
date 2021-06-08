@@ -21,6 +21,7 @@
           <template v-slot:top-left>
             <FcInputLocationSearch
               ref="locationSearch"
+              v-if="showLocationSearch"
               v-model="locationToAdd"
               class="elevation-2 mt-3 ml-5" />
           </template>
@@ -78,6 +79,10 @@ export default {
     },
     showLocationIndices() {
       return this.$route.name === 'requestStudyNew';
+    },
+    showLocationSearch() {
+      const { name } = this.$route;
+      return name === 'requestStudyNew' || name === 'requestStudyEdit';
     },
     showSelection() {
       return this.$route.name === 'requestStudyNew';

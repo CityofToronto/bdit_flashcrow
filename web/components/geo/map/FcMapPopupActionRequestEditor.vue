@@ -9,11 +9,12 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 
+import { centrelineKey } from '@/lib/Constants';
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
-  name: 'FcMapPopupActionViewData',
+  name: 'FcMapPopupActionRequestEditor',
   components: {
     FcButton,
   },
@@ -22,12 +23,19 @@ export default {
   },
   computed: {
     textActionSelected() {
-      if (this.indicesSelected.length === 0) {
-        return 'Add Study';
+      if (this.indicesSelected.length > 0) {
+        return 'Set Location';
       }
-      return 'Set Location';
+      const keyFeature = centrelineKey(this.feature.properties);
+      const isSelected = this.studyRequests.some(
+        studyRequest => centrelineKey(studyRequest) === keyFeature,
+      );
+      if (isSelected) {
+        return 'Add Another Study';
+      }
+      return 'Add Study';
     },
-    ...mapState('editRequests', ['indicesSelected']),
+    ...mapState('editRequests', ['indicesSelected', 'studyRequests']),
   },
   methods: {
     async actionAddStudy(location) {

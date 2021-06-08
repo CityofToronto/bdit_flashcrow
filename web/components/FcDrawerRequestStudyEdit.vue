@@ -16,7 +16,7 @@
       aria-label="Loading study request for editing" />
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1 min-height-0">
+      class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <FcDetailsStudyRequest
         v-model="studyRequest"
         :is-create="false"
