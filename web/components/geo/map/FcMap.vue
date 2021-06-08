@@ -389,6 +389,9 @@ export default {
       this.easeToLocationsState(locationsState, locationsStatePrev);
     },
     mapStyle() {
+      if (this.map === null) {
+        return;
+      }
       this.map.setStyle(this.mapStyle);
       this.updateLocationsSource();
       this.updateLocationsMarkersSource();
@@ -428,6 +431,10 @@ export default {
       }
     },
     easeToLocationsState(locationsState, locationsStatePrev) {
+      if (this.map === null) {
+        return;
+      }
+
       if (locationsState.length > 0) {
         // build bounding box on locations
         const bounds = new maplibregl.LngLatBounds();

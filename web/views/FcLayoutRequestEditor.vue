@@ -12,11 +12,12 @@
             collisions: false,
             hospitals: false,
             schools: false,
-            studies: true,
+            studies: false,
             volume: false,
           }"
           :location-active="locationToAdd"
-          :locations-state="locationsState">
+          :locations-state="locationsState"
+          :show-legend="false">
           <template v-slot:top-left>
             <FcInputLocationSearch
               ref="locationSearch"

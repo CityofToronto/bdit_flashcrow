@@ -34,7 +34,7 @@
         <v-spacer></v-spacer>
         <FcButton
           type="tertiary"
-          @click="internalValue = false">
+          @click="actionCancel">
           Cancel
         </FcButton>
         <FcButton
@@ -97,8 +97,13 @@ export default {
     },
   },
   methods: {
+    actionCancel() {
+      this.$emit('action-cancel');
+      this.internalValue = false;
+    },
     actionSave() {
       this.$emit('action-save', this.studyRequestBulk);
+      this.studyRequestBulk = makeStudyRequestBulk();
       this.internalValue = false;
     },
   },

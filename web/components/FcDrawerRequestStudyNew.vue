@@ -4,6 +4,12 @@
       v-model="showConfirmLeave"
       :is-create="true"
       @action-ok="actionLeave" />
+    <FcDialogProjectMode
+      v-model="showDialogProjectMode"
+      :project-mode="projectMode"
+      :study-requests="studyRequests"
+      @action-cancel="actionCancelProjectMode"
+      @action-save="actionSaveProjectMode" />
 
     <div class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderStudyRequestBulkLocations
@@ -21,7 +27,38 @@
         ref="formWrapper"
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
         <fieldset>
-          <legend class="display-2 py-4 pl-5">Studies Requested</legend>
+          <div class="align-center d-flex">
+            <legend class="display-2 py-4 pl-5">Studies Requested</legend>
+
+            <v-spacer></v-spacer>
+
+            <FcMenuStudyRequestsProjectMode
+              button-class="mr-2"
+              :label="labelProject"
+              text-inject="requested studies"
+              @action-project-mode="actionSetProjectMode" />
+          </div>
+
+          <template v-if="studyRequestBulk !== null">
+            <v-text-field
+              class="mx-5 mt-3"
+              label="Selected Project"
+              :messages="messagesProject"
+              outlined
+              :value="studyRequestBulk.name">
+              <template v-slot:append>
+                <FcButtonAria
+                  aria-label="Remove From Project"
+                  button-class="mt-n2"
+                  right
+                  type="icon"
+                  @click="actionRemoveFromProject">
+                  <v-icon>mdi-close</v-icon>
+                </FcButtonAria>
+              </template>
+            </v-text-field>
+            <v-divider class="mb-6 mt-3"></v-divider>
+          </template>
 
           <div class="align-center d-flex">
             <div class="mx-8"></div>
@@ -30,8 +67,16 @@
               outlined>
               <v-card-text class="pb-0">
                 <p class="font-weight-regular headline">
-                  Use the map to add a study at a location.  You can add more
-                  than one study at the same location.
+                  <span v-if="internalIndicesSelected.length === 0">
+                    Use the map to add a study at a location.  You can add more
+                    than one study at the same location.
+                  </span>
+                  <span v-else-if="internalIndicesSelected.length === 1">
+                    Use the map to move the selected study to a different location.
+                  </span>
+                  <span v-else>
+                    Use the map to move all selected studies to a different location.
+                  </span>
                 </p>
               </v-card-text>
               <v-card-actions>
@@ -63,46 +108,6 @@
             class="pt-5 px-5"
             :is-create="true"
             :v="$v.studyRequests.$each[0]" />
-
-          <v-divider class="mt-5 ml-5"></v-divider>
-
-          <div class="pa-5">
-            <div class="align-center d-flex">
-              <FcMenuStudyRequestsProjectMode
-                button-class="mr-2"
-                label="Add to Project"
-                text-inject="requested studies"
-                @action-project-mode="actionSetProjectMode" />
-
-              <v-spacer></v-spacer>
-
-              <FcButton
-                v-if="projectMode !== ProjectMode.NONE"
-                type="secondary"
-                @click="projectMode = ProjectMode.NONE">
-                <v-icon left>mdi-folder-remove</v-icon>
-                Remove From Project
-              </FcButton>
-            </div>
-
-            <p
-              v-if="projectMode === ProjectMode.NONE"
-              class="my-8 py-12 secondary--text text-center">
-              No project selected,<br>
-              these studies will be requested individually
-            </p>
-            <FcStudyRequestBulkDetails
-              v-if="projectMode === ProjectMode.CREATE_NEW"
-              v-model="studyRequestBulk"
-              :is-create="true"
-              :v="$v.studyRequestBulk" />
-            <div v-else-if="projectMode === ProjectMode.ADD_TO_EXISTING">
-              <FcInputProjectSearch
-                v-model="studyRequestBulk"
-                :error-messages="errorMessagesAddToProject"
-                class="mt-6" />
-            </div>
-          </div>
         </template>
       </div>
 
@@ -142,18 +147,17 @@ import {
 
 import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
 
-import { makeStudyRequest, makeStudyRequestBulk } from '@/lib/requests/RequestEmpty';
+import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
+import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcInputProjectSearch from '@/web/components/inputs/FcInputProjectSearch.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcHeaderStudyRequestBulkLocations
   from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
-import FcStudyRequestBulkDetails
-  from '@/web/components/requests/FcStudyRequestBulkDetails.vue';
 import FcStudyRequestBulkLocations
   from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
@@ -187,12 +191,12 @@ export default {
   ],
   components: {
     FcButton,
+    FcButtonAria,
     FcDialogConfirmRequestStudyLeave,
+    FcDialogProjectMode,
     FcHeaderStudyRequestBulkLocations,
-    FcInputProjectSearch,
     FcMenuStudyRequestsProjectMode,
     FcProgressLinear,
-    FcStudyRequestBulkDetails,
     FcStudyRequestBulkLocations,
     FcStudyRequestUrgent,
   },
@@ -200,17 +204,13 @@ export default {
     return {
       loadingSubmit: false,
       projectMode: ProjectMode.NONE,
+      projectModePrev: ProjectMode.NONE,
       ProjectMode,
+      showDialogProjectMode: false,
       studyRequestBulk: null,
     };
   },
   computed: {
-    errorMessagesAddToProject() {
-      if (this.$v.studyRequestBulk.$invalid) {
-        return ['Please select an existing project to add these requests to.'];
-      }
-      return [];
-    },
     formValid() {
       if (this.studyRequests.length === 0 || this.$v.studyRequests.$invalid) {
         return false;
@@ -227,6 +227,21 @@ export default {
       set(indicesSelected) {
         this.setIndicesSelected(indicesSelected);
       },
+    },
+    labelProject() {
+      if (this.projectMode === ProjectMode.NONE) {
+        return 'Add to Project';
+      }
+      return 'Change Project';
+    },
+    messagesProject() {
+      if (this.projectMode === ProjectMode.CREATE_NEW) {
+        return ['This project will be created with the requested studies.'];
+      }
+      if (this.projectMode === ProjectMode.ADD_TO_EXISTING) {
+        return ['The requested studies will be added to this project.'];
+      }
+      return [];
     },
     routeNavigateBack() {
       return this.routeBackViewRequest;
@@ -256,13 +271,6 @@ export default {
     },
   },
   watch: {
-    projectMode() {
-      if (this.projectMode === ProjectMode.CREATE_NEW) {
-        this.studyRequestBulk = makeStudyRequestBulk();
-      } else {
-        this.studyRequestBulk = null;
-      }
-    },
     'studyRequests.length': {
       handler(numStudyRequests, numStudyRequestsPrev) {
         if (numStudyRequests === 0) {
@@ -291,11 +299,23 @@ export default {
     ]),
   },
   methods: {
+    actionCancelProjectMode() {
+      this.projectMode = this.projectModePrev;
+    },
+    actionRemoveFromProject() {
+      this.projectMode = ProjectMode.NONE;
+      this.studyRequestBulk = null;
+    },
     actionRemoveStudy(i) {
       this.removeStudyRequest(i);
     },
+    actionSaveProjectMode(studyRequestBulk) {
+      this.studyRequestBulk = studyRequestBulk;
+    },
     actionSetProjectMode(projectMode) {
+      this.projectModePrev = this.projectMode;
       this.projectMode = projectMode;
+      this.showDialogProjectMode = true;
     },
     async actionSubmit() {
       if (!this.formValid) {
