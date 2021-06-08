@@ -37,6 +37,15 @@
               :label="labelProject"
               text-inject="requested studies"
               @action-project-mode="actionSetProjectMode" />
+            <FcButton
+              v-if="projectMode !== ProjectMode.NONE"
+              class="mr-2"
+              type="secondary"
+              @click="actionRemoveFromProject">
+              <v-icon color="primary" left>mdi-folder-remove</v-icon>
+              <span>Remove</span>
+              <span class="sr-only">From Project</span>
+            </FcButton>
           </div>
 
           <template v-if="studyRequestBulk !== null">
@@ -48,7 +57,7 @@
               :value="studyRequestBulk.name">
               <template v-slot:append>
                 <FcButtonAria
-                  aria-label="Remove From Project"
+                  aria-label="Remove"
                   button-class="mt-n2"
                   right
                   type="icon"

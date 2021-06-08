@@ -37,13 +37,6 @@
           <v-col cols="6">
             <FcMap
               class="mx-5"
-              :layers="{
-                collisions: false,
-                hospitals: false,
-                schools: false,
-                studies: true,
-                volume: false,
-              }"
               :locations-state="locationsState"
               :show-legend="false" />
           </v-col>
@@ -244,6 +237,7 @@ export default {
         projectMode: ProjectMode.NONE,
         studyRequests,
         studyRequestBulk: null,
+        studyRequestLocations: this.studyRequestLocations,
       });
       await this.loadAsyncForRoute(this.$route);
       this.loading = false;

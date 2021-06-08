@@ -8,13 +8,6 @@
       <div class="flex-grow-1 flex-shrink-0">
         <FcMap
           class="fill-height"
-          :layers="{
-            collisions: false,
-            hospitals: false,
-            schools: false,
-            studies: false,
-            volume: false,
-          }"
           :location-active="locationToAdd"
           :locations-state="locationsState"
           :show-legend="false">

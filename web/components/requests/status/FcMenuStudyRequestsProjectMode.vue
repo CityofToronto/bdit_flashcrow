@@ -48,6 +48,10 @@ export default {
       default: false,
     },
     label: String,
+    loading: {
+      type: Boolean,
+      default: false,
+    },
     textInject: String,
   },
   data() {

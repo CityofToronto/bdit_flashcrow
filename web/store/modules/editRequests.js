@@ -49,6 +49,40 @@ function getMostRecentByLocation(studySummaryPerLocation, locations) {
   return mostRecentByLocation;
 }
 
+function getStudyRequestsMessage(studyRequests, studyRequestLocations) {
+  const n = studyRequests.length;
+  if (n === 0 || n > 1) {
+    return `${n} study requests`;
+  }
+  const [studyRequest] = studyRequests;
+  const key = centrelineKey(studyRequest);
+  let location = null;
+  if (studyRequestLocations.has(key)) {
+    location = studyRequestLocations.get(key);
+  }
+  location = getStudyRequestLocation(studyRequest, location);
+  return `request at ${location.description}`;
+}
+
+function getUpdateStudyRequestsBulkRequestsMessage(
+  projectMode,
+  studyRequests,
+  studyRequestBulk,
+  studyRequestLocations,
+) {
+  const studyRequestsMessage = getStudyRequestsMessage(studyRequests, studyRequestLocations);
+  if (projectMode === ProjectMode.NONE) {
+    return `Removed ${studyRequestsMessage} from project.`;
+  }
+  if (projectMode === ProjectMode.CREATE_NEW) {
+    return `Created project with ${studyRequestsMessage}: ${studyRequestBulk.name}`;
+  }
+  if (projectMode === ProjectMode.ADD_TO_EXISTING) {
+    return `Adding ${studyRequestsMessage} to project: ${studyRequestBulk.name}`;
+  }
+  throw new Error(`invalid project mode: ${projectMode}`);
+}
+
 export default {
   namespaced: true,
   state: {
@@ -250,24 +284,31 @@ export default {
     },
     async updateStudyRequestsBulkRequests(
       { commit, rootState },
-      { projectMode, studyRequests, studyRequestBulk },
+      {
+        projectMode,
+        studyRequests,
+        studyRequestBulk,
+        studyRequestLocations,
+      },
     ) {
       const { csrf } = rootState.auth;
-
       let result = null;
-      let msg = null;
       if (projectMode === ProjectMode.NONE) {
         result = await deleteStudyRequestBulkRequests(csrf, studyRequests);
-        msg = 'Removed study requests from project.';
       } else if (projectMode === ProjectMode.CREATE_NEW) {
         result = await postStudyRequestBulkFromRequests(csrf, studyRequestBulk, studyRequests);
-        msg = `Created project: ${studyRequestBulk.name}`;
       } else if (projectMode === ProjectMode.ADD_TO_EXISTING) {
         result = await putStudyRequestBulkRequests(csrf, studyRequestBulk, studyRequests);
-        msg = `Adding study requests to project: ${studyRequestBulk.name}`;
       }
 
+      const msg = getUpdateStudyRequestsBulkRequestsMessage(
+        projectMode,
+        studyRequests,
+        studyRequestBulk,
+        studyRequestLocations,
+      );
       commit('setToastInfo', msg, { root: true });
+
       return result;
     },
   },

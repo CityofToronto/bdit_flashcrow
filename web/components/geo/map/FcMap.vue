@@ -152,10 +152,10 @@ export default {
       type: Object,
       default() {
         return {
-          collisions: true,
-          hospitals: true,
-          schools: true,
-          studies: true,
+          collisions: false,
+          hospitals: false,
+          schools: false,
+          studies: false,
           volume: false,
         };
       },

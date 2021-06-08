@@ -353,10 +353,15 @@ export default {
     },
     async actionSaveProjectMode(studyRequestBulk) {
       this.loading = true;
-      const { projectMode } = this;
+      const { projectMode, studyRequestLocations } = this;
       const studyRequests = this.selectedStudyRequests;
       this.selectedItems = [];
-      await this.updateStudyRequestsBulkRequests({ projectMode, studyRequests, studyRequestBulk });
+      await this.updateStudyRequestsBulkRequests({
+        projectMode,
+        studyRequests,
+        studyRequestBulk,
+        studyRequestLocations,
+      });
       await this.loadAsyncForRoute(this.$route);
       this.loading = false;
     },

@@ -70,7 +70,7 @@
       <div
         v-if="item.type.name === 'STUDY_REQUEST_BULK'"
         class="align-center d-flex">
-        <v-icon left>mdi-map-marker-multiple</v-icon>
+        <v-icon left>mdi-folder</v-icon>
         <div class="text-wrap">{{item.studyRequestBulk.name}}</div>
       </div>
       <div
