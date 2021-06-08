@@ -157,14 +157,10 @@ import FcMenuStudyRequestsStatus
 import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 
 export default {
   name: 'FcRequestsTrack',
-  mixins: [
-    FcMixinAuthScope,
-    FcMixinRouteAsync,
-  ],
+  mixins: [FcMixinAuthScope],
   directives: {
     Ripple,
   },
@@ -184,6 +180,7 @@ export default {
     return {
       columns: RequestDataTableColumns,
       itemsPerPage: 25,
+      loading: true,
       loadingDownload: false,
       loadingTotal: false,
       page: 1,
@@ -294,24 +291,28 @@ export default {
 
         this.loadingTotal = false;
       }, 500),
+      immediate: true,
     },
-    filterParamsRequestWithPagination: debounce(async function updateItems() {
-      this.loading = true;
+    filterParamsRequestWithPagination: {
+      handler: debounce(async function updateItems() {
+        this.loading = true;
 
-      const {
-        studyRequestItems,
-        studyRequestLocations,
-        studyRequestUsers,
-      } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
+        const {
+          studyRequestItems,
+          studyRequestLocations,
+          studyRequestUsers,
+        } = await getStudyRequestItems(this.filterParamsRequestWithPagination);
 
-      this.studyRequestItems = studyRequestItems;
-      this.studyRequestLocations = studyRequestLocations;
-      this.studyRequestUsers = studyRequestUsers;
+        this.studyRequestItems = studyRequestItems;
+        this.studyRequestLocations = studyRequestLocations;
+        this.studyRequestUsers = studyRequestUsers;
 
-      this.selectedItems = [];
+        this.selectedItems = [];
 
-      this.loading = false;
-    }, 200),
+        this.loading = false;
+      }, 200),
+      immediate: true,
+    },
   },
   created() {
     const userOnly = !this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
@@ -352,7 +353,6 @@ export default {
       );
     },
     async actionSaveProjectMode(studyRequestBulk) {
-      this.loading = true;
       const { projectMode, studyRequestLocations } = this;
       const studyRequests = this.selectedStudyRequests;
       this.selectedItems = [];
@@ -362,21 +362,20 @@ export default {
         studyRequestBulk,
         studyRequestLocations,
       });
-      await this.loadAsyncForRoute(this.$route);
-      this.loading = false;
+      await this.loadAsync();
     },
     actionSetProjectMode(projectMode) {
       this.projectMode = projectMode;
       this.showDialogProjectMode = true;
     },
     async actionUpdateItem(item) {
-      this.loading = true;
       this.selectedItems = [];
       await this.saveStudyRequest(item.studyRequest);
-      await this.loadAsyncForRoute(this.$route);
-      this.loading = false;
+      await this.loadAsync();
     },
-    async loadAsyncForRoute() {
+    async loadAsync() {
+      this.loading = true;
+
       const {
         studyRequestItems,
         studyRequestLocations,
@@ -388,14 +387,14 @@ export default {
       this.studyRequestLocations = studyRequestLocations;
       this.studyRequestUsers = studyRequestUsers;
       this.total = total;
+
+      this.loading = false;
     },
     async onUpdateStudyRequests() {
-      this.loading = true;
       const studyRequests = this.selectedStudyRequests;
       this.selectedItems = [];
       await this.updateStudyRequests(studyRequests);
-      await this.loadAsyncForRoute(this.$route);
-      this.loading = false;
+      await this.loadAsync();
     },
     ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests']),
