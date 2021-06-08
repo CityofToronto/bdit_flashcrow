@@ -1,6 +1,9 @@
 {
   "errorLevel": 2,
   "reject": [
+    "d3-array",
+    "d3-scale",
+    "d3-selection",
     "sass-loader"
   ]
 }

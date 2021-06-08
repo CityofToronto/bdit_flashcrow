@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2021-06-08
+
+### Fixed
+
+- Several usability issues throughout study management flows
+- Track Requests bug: non-Data Collection users were seeing all requests on load, instead of only their own
+- New Request bug: when adding requests to a new project, "Submit" would break unless the user entered something in "Notes"
+
 ## [1.4.1] - 2021-06-01
 
 ### Added
