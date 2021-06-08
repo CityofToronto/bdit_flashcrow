@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const SELECTOR_INPUT = 'button, input';
+import { focusInput } from '@/web/ui/FormUtils';
 
 export default {
   mounted() {
@@ -12,11 +12,8 @@ export default {
       if (autofocus === undefined) {
         return;
       }
-      let $autofocus = autofocus.$el;
-      if (!$autofocus.matches(SELECTOR_INPUT)) {
-        $autofocus = $autofocus.querySelector(SELECTOR_INPUT);
-      }
-      $autofocus.focus();
+      const $autofocus = autofocus.$el;
+      focusInput($autofocus);
     },
   },
 };

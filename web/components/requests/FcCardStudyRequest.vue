@@ -7,13 +7,15 @@
       <FcIconLocationMulti
         class="mr-3"
         :location-index="index"
-        :selected="selected" />
+        :deselected="!selected" />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
           :study="mostRecent.get(studyRequest.studyType)" />
       </div>
+      <v-spacer></v-spacer>
+      <span class="font-weight-regular secondary--text">{{locationType}}</span>
     </v-card-title>
 
     <v-card-text class="pb-0">
@@ -55,7 +57,7 @@
 </template>
 
 <script>
-import { StudyHours, StudyType } from '@/lib/Constants';
+import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcStudyRequestDaysOfWeek
@@ -89,6 +91,15 @@ export default {
       StudyHours,
       StudyType,
     };
+  },
+  computed: {
+    locationType() {
+      const { centrelineType } = this.location;
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        return 'Intersection';
+      }
+      return 'Midblock';
+    },
   },
 };
 </script>

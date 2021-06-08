@@ -2,7 +2,8 @@
   <div class="fc-layout-request-editor fill-height">
     <div class="fc-pane-wrapper d-flex fill-height">
       <div class="fc-drawer flex-grow-1 flex-shrink-0">
-        <router-view></router-view>
+        <router-view
+          @action-focus-map="actionFocusMap"></router-view>
       </div>
       <div class="flex-grow-1 flex-shrink-0">
         <FcMap
@@ -18,6 +19,7 @@
           :locations-state="locationsState">
           <template v-slot:top-left>
             <FcInputLocationSearch
+              ref="locationSearch"
               v-model="locationToAdd"
               class="elevation-2 mt-3 ml-5" />
           </template>
@@ -41,6 +43,7 @@ import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionRequestEditor
   from '@/web/components/geo/map/FcMapPopupActionRequestEditor.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
+import { focusInput } from '@/web/ui/FormUtils';
 
 export default {
   name: 'FcLayoutRequestEditor',
@@ -58,12 +61,12 @@ export default {
     locationsState() {
       return this.locations.map((location, i) => {
         const locationIndex = this.showLocationIndices ? i : -1;
-        const selected = this.showSelection ? this.indicesSelected.includes(i) : false;
+        const deselected = this.showSelection ? !this.indicesSelected.includes(i) : false;
         const state = {
-          deselected: false,
+          deselected,
           locationIndex,
           multi: this.showLocationIndices,
-          selected,
+          selected: false,
         };
         return { location, state };
       });
@@ -80,6 +83,12 @@ export default {
     },
     ...mapState('editRequests', ['indicesSelected']),
     ...mapGetters('editRequests', ['locations']),
+  },
+  methods: {
+    actionFocusMap() {
+      const $locationSearch = this.$refs.locationSearch.$el;
+      focusInput($locationSearch);
+    },
   },
 };
 </script>
