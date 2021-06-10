@@ -11,7 +11,9 @@
       @action-cancel="actionCancelProjectMode"
       @action-save="actionSaveProjectMode" />
 
-    <div class="flex-grow-0 flex-shrink-0 shading">
+    <div
+      v-if="studyRequests.length > 1"
+      class="flex-grow-0 flex-shrink-0 shading">
       <FcHeaderStudyRequestBulkLocations
         v-model="internalIndicesSelected"
         :locations="locations"
@@ -29,11 +31,12 @@
         <fieldset>
           <div class="align-center d-flex">
             <legend class="display-2 py-4 pl-5">Studies Requested</legend>
+            <FcTextNumberTotal class="ml-2" :n="studyRequests.length" />
 
             <v-spacer></v-spacer>
 
             <FcMenuStudyRequestsProjectMode
-              button-class="mr-2"
+              button-class="mr-3"
               :label="labelProject"
               text-inject="requested studies"
               @action-project-mode="actionSetProjectMode" />
@@ -66,7 +69,7 @@
                 </FcButtonAria>
               </template>
             </v-text-field>
-            <v-divider class="mb-6 mt-3"></v-divider>
+            <v-divider class="mt-3 mb-6 ml-5"></v-divider>
           </template>
 
           <div class="align-center d-flex">
@@ -111,7 +114,7 @@
         </fieldset>
 
         <template v-if="studyRequests.length > 0">
-          <v-divider class="mt-5 ml-5"></v-divider>
+          <v-divider class="mt-5 mb-1 ml-5"></v-divider>
 
           <FcStudyRequestUrgent
             class="pt-5 px-5"
@@ -124,6 +127,13 @@
         <v-divider></v-divider>
 
         <div class="align-center d-flex px-3 py-2">
+          <span>
+            <span>You are requesting <strong>{{messageStudyRequests}}</strong></span>
+            <span v-if="projectMode !== ProjectMode.NONE && studyRequestBulk !== null">
+              in project <strong>{{studyRequestBulk.name}}</strong>
+            </span>
+          </span>
+
           <v-spacer></v-spacer>
 
           <FcButton
@@ -133,7 +143,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loadingSubmit"
+            :disabled="loadingSubmit || studyRequests.length === 0"
             :loading="loadingSubmit"
             type="primary"
             @click="actionSubmit">
@@ -159,6 +169,7 @@ import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
 import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
@@ -208,6 +219,7 @@ export default {
     FcProgressLinear,
     FcStudyRequestBulkLocations,
     FcStudyRequestUrgent,
+    FcTextNumberTotal,
   },
   data() {
     return {
@@ -242,6 +254,11 @@ export default {
         return 'Add to Project';
       }
       return 'Change Project';
+    },
+    messageStudyRequests() {
+      const n = this.studyRequests.length;
+      const studyRequestsPlural = n === 1 ? 'study' : 'studies';
+      return `${n} ${studyRequestsPlural}`;
     },
     messagesProject() {
       if (this.projectMode === ProjectMode.CREATE_NEW) {

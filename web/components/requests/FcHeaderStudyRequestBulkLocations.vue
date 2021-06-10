@@ -2,10 +2,17 @@
   <div class="mx-5">
     <div class="align-center d-flex">
       <v-checkbox
-        ref="autofocus"
         v-model="selectAll"
-        :indeterminate="selectAll === null"
-        label="Select All" />
+        class="mr-2"
+        :indeterminate="selectAll === null">
+        <template v-slot:label>
+          <span class="font-weight-medium">Select all</span>
+          <FcTextNumberTotal
+            class="ml-2"
+            :k="internalValue.length"
+            :n="studyRequests.length" />
+        </template>
+      </v-checkbox>
       <FcSelectEnum
         v-model="selectAllType"
         class="fc-select-all-type flex-grow-0 ml-2 mt-n1"
@@ -71,8 +78,8 @@ import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
+import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
-import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 class SelectAllType extends Enum {}
@@ -94,7 +101,6 @@ SelectAllType.init({
 export default {
   name: 'FcHeaderStudyRequestBulkLocations',
   mixins: [
-    FcMixinInputAutofocus,
     FcMixinVModelProxy(Array),
   ],
   directives: {
@@ -103,6 +109,7 @@ export default {
   components: {
     FcMenu,
     FcSelectEnum,
+    FcTextNumberTotal,
   },
   props: {
     locations: Array,

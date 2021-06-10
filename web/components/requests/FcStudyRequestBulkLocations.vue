@@ -1,17 +1,12 @@
 <template>
   <section class="py-1">
-    <p
-      v-if="studyRequests.length === 0"
-      class="my-8 py-12 secondary--text text-center">
-      No studies requested,<br>
-      use the map to add a study at a location
-    </p>
-
     <div
       v-for="({ location, mostRecent, studyRequest }, i) in items"
       :key="i"
       class="align-center d-flex">
-      <FcTooltip right>
+      <FcTooltip
+        v-if="items.length > 1"
+        right>
         <template v-slot:activator="{ on }">
           <div v-on="on">
             <v-checkbox
@@ -23,6 +18,7 @@
         </template>
         <span>Select {{location.description}} for editing</span>
       </FcTooltip>
+      <div v-else class="mx-8"></div>
 
       <FcCardStudyRequest
         class="flex-grow-1 flex-shrink-1 mr-3 my-1"

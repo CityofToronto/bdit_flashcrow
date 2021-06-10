@@ -8,6 +8,13 @@
       <div class="flex-grow-1 flex-shrink-0">
         <FcMap
           class="fill-height"
+          :layers="{
+            collisions: false,
+            hospitals: false,
+            schools: false,
+            studies: true,
+            volume: false,
+          }"
           :location-active="locationToAdd"
           :locations-state="locationsState"
           :show-legend="false">
@@ -56,12 +63,12 @@ export default {
     locationsState() {
       return this.locations.map((location, i) => {
         const locationIndex = this.showLocationIndices ? i : -1;
-        const deselected = this.showSelection ? !this.indicesSelected.includes(i) : false;
+        const selected = this.showSelection ? this.indicesSelected.includes(i) : false;
         const state = {
-          deselected,
+          deselected: false,
           locationIndex,
           multi: this.showLocationIndices,
-          selected: false,
+          selected,
         };
         return { location, state };
       });

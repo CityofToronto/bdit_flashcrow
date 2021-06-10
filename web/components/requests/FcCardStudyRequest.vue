@@ -7,7 +7,7 @@
       <FcIconLocationMulti
         class="mr-3"
         :location-index="index"
-        :deselected="!selected" />
+        :selected="selected" />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
         <FcTextMostRecent
