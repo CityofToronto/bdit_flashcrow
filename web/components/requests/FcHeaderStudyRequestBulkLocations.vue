@@ -4,7 +4,7 @@
       <v-checkbox
         v-model="selectAll"
         class="mr-2"
-        :indeterminate="selectAll === null">
+        :indeterminate="selectIndeterminate">
         <template v-slot:label>
           <span class="font-weight-medium">Select all</span>
           <FcTextNumberTotal
@@ -131,6 +131,7 @@ export default {
     return {
       itemsDuration,
       itemsSelectAllType,
+      selectAll: false,
       selectAllType: SelectAllType.LOCATIONS,
       SelectAllType,
     };
@@ -174,37 +175,6 @@ export default {
         StudyType.OTHER_MANUAL,
       ];
     },
-    selectAll: {
-      get() {
-        const selectAllIndicesSet = new Set(this.selectAllIndices);
-        let k = 0;
-        this.internalValue.forEach((i) => {
-          if (selectAllIndicesSet.has(i)) {
-            k += 1;
-          }
-        });
-        if (k === 0) {
-          return false;
-        }
-        if (k === this.selectAllIndices.length) {
-          return true;
-        }
-        return null;
-      },
-      set(selectAll) {
-        if (selectAll) {
-          const internalValueNew = [
-            ...this.internalValue,
-            ...this.selectAllIndices
-              .filter(i => !this.internalValue.includes(i)),
-          ];
-          this.internalValue = ArrayUtils.sortBy(internalValueNew, i => i);
-        } else {
-          this.internalValue = this.internalValue
-            .filter(i => !this.selectAllIndices.includes(i));
-        }
-      },
-    },
     selectAllIndices() {
       const { centrelineTypes } = this.selectAllType;
       const selectAllIndices = [];
@@ -214,6 +184,12 @@ export default {
         }
       });
       return selectAllIndices;
+    },
+    selectIndeterminate() {
+      const internalValueSet = new Set(this.internalValue);
+      const someSelected = this.selectAllIndices.some(i => internalValueSet.has(i));
+      const allSelected = this.selectAllIndices.every(i => internalValueSet.has(i));
+      return someSelected && !allSelected;
     },
     showDuration() {
       if (this.selectAll === false) {
@@ -232,6 +208,14 @@ export default {
         const { studyType } = this.studyRequests[i];
         return studyType !== null && !studyType.automatic;
       });
+    },
+  },
+  watch: {
+    selectAll() {
+      this.updateSelection();
+    },
+    selectAllType() {
+      this.updateSelection();
     },
   },
   methods: {
@@ -285,6 +269,13 @@ export default {
             studyType,
           },
         });
+      }
+    },
+    updateSelection() {
+      if (this.selectAll) {
+        this.internalValue = [...this.selectAllIndices];
+      } else {
+        this.internalValue = [];
       }
     },
     ...mapMutations(['setDialog']),
