@@ -13,14 +13,12 @@
             :n="studyRequests.length" />
         </template>
       </v-checkbox>
-      <FcSelectEnum
-        v-model="selectAllType"
-        class="fc-select-all-type flex-grow-0 ml-2 mt-n1"
-        dense
-        hide-details
-        label="Choose what to select"
-        :of-type="SelectAllType"
-        outlined />
+      <FcMenu
+        button-class="ml-2"
+        :items="itemsSelectAllType"
+        @action-menu="actionSetSelectAllType">
+        <span>{{selectAllType.text}}</span>
+      </FcMenu>
 
       <v-spacer></v-spacer>
 
@@ -79,7 +77,6 @@ import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcMenu from '@/web/components/inputs/FcMenu.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
-import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 class SelectAllType extends Enum {}
@@ -108,7 +105,6 @@ export default {
   },
   components: {
     FcMenu,
-    FcSelectEnum,
     FcTextNumberTotal,
   },
   props: {
@@ -124,16 +120,9 @@ export default {
       { text: '5 days', value: 120 },
       { text: '1 week', value: 168 },
     ];
-    const itemsSelectAllType = SelectAllType.enumValues.map((value) => {
-      const { text } = value;
-      return { text, value };
-    });
     return {
       itemsDuration,
-      itemsSelectAllType,
-      selectAll: false,
       selectAllType: SelectAllType.LOCATIONS,
-      SelectAllType,
     };
   },
   computed: {
@@ -158,6 +147,12 @@ export default {
         return { text: description, value };
       });
     },
+    itemsSelectAllType() {
+      return SelectAllType.enumValues.map((value) => {
+        const { text } = value;
+        return { text, value };
+      });
+    },
     itemsStudyType() {
       return this.locationsStudyTypes.map((studyType) => {
         const { label } = studyType;
@@ -174,6 +169,15 @@ export default {
         ...locationsStudyTypes,
         StudyType.OTHER_MANUAL,
       ];
+    },
+    selectAll: {
+      get() {
+        const internalValueSet = new Set(this.internalValue);
+        return this.selectAllIndices.every(i => internalValueSet.has(i));
+      },
+      set(selectAll) {
+        this.updateSelection(selectAll);
+      },
     },
     selectAllIndices() {
       const { centrelineTypes } = this.selectAllType;
@@ -210,14 +214,6 @@ export default {
       });
     },
   },
-  watch: {
-    selectAll() {
-      this.updateSelection();
-    },
-    selectAllType() {
-      this.updateSelection();
-    },
-  },
   methods: {
     actionSetDaysOfWeek({ selected: selectedPrev, value: dayOfWeek }) {
       const selected = selectedPrev !== true;
@@ -250,6 +246,11 @@ export default {
         this.studyRequests[i].hours = hours;
       });
     },
+    actionSetSelectAllType({ value: selectAllType }) {
+      const { selectAll } = this;
+      this.selectAllType = selectAllType;
+      this.updateSelection(selectAll);
+    },
     actionSetStudyType({ value: studyType }) {
       const indicesUnactionable = [];
       this.internalValue.forEach((i) => {
@@ -271,8 +272,8 @@ export default {
         });
       }
     },
-    updateSelection() {
-      if (this.selectAll) {
+    updateSelection(selectAll) {
+      if (selectAll) {
         this.internalValue = [...this.selectAllIndices];
       } else {
         this.internalValue = [];

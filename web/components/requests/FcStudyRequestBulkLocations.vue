@@ -27,14 +27,15 @@
         :most-recent="mostRecent"
         :selected="internalValue.includes(i)"
         :study-request="studyRequest"
-        :v="v.$each[i]" />
+        :v="v.$each[i]"
+        @action-edit-location="actionEditLocation(i)" />
 
       <FcButtonAria
         :aria-label="'Remove ' + location.description + ' from request'"
         button-class="mr-2"
         right
         type="icon"
-        @click="$emit('remove-study', i)">
+        @click="$emit('action-remove-study', i)">
         <v-icon>mdi-close</v-icon>
       </FcButtonAria>
     </div>
@@ -73,6 +74,12 @@ export default {
         const mostRecent = this.mostRecents[i];
         return { location, mostRecent, studyRequest };
       });
+    },
+  },
+  methods: {
+    actionEditLocation(i) {
+      this.internalValue = [i];
+      this.$emit('action-focus-map');
     },
   },
 };

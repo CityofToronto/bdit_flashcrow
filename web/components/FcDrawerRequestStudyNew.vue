@@ -75,6 +75,7 @@
           <div class="align-center d-flex">
             <div class="mx-8"></div>
             <v-card
+              v-if="internalIndicesSelected.length <= 1"
               class="fc-card-study-request flex-grow-1 flex-shrink-1"
               outlined>
               <v-card-text class="pb-0">
@@ -83,11 +84,8 @@
                     Use the map to add a study at a location.  You can add more
                     than one study at the same location.
                   </span>
-                  <span v-else-if="internalIndicesSelected.length === 1">
-                    Use the map to move the selected study to a different location.
-                  </span>
                   <span v-else>
-                    Use the map to move all selected studies to a different location.
+                    Use the map to set the location of the selected study.
                   </span>
                 </p>
               </v-card-text>
@@ -110,7 +108,8 @@
             :most-recents="mostRecents"
             :study-requests="studyRequests"
             :v="$v.studyRequests"
-            @remove-study="actionRemoveStudy" />
+            @action-focus-map="$emit('action-focus-map')"
+            @action-remove-study="actionRemoveStudy" />
         </fieldset>
 
         <template v-if="studyRequests.length > 0">

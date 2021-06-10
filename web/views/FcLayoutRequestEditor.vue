@@ -74,6 +74,9 @@ export default {
       });
     },
     showActionPopup() {
+      if (this.indicesSelected.length > 1) {
+        return false;
+      }
       const { name } = this.$route;
       return name === 'requestStudyNew' || name === 'requestStudyEdit';
     },

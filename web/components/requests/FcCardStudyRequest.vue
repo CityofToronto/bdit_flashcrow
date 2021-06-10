@@ -53,12 +53,21 @@
         </v-row>
       </fieldset>
     </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <FcButton
+        type="tertiary"
+        @click="$emit('action-edit-location')">
+        Edit Location
+      </FcButton>
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcStudyRequestDaysOfWeek
   from '@/web/components/requests/fields/FcStudyRequestDaysOfWeek.vue';
@@ -70,6 +79,7 @@ import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyReq
 export default {
   name: 'FcCardStudyRequest',
   components: {
+    FcButton,
     FcIconLocationMulti,
     FcStudyRequestDaysOfWeek,
     FcStudyRequestDuration,
