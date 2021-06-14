@@ -1069,6 +1069,36 @@
       "decision": "ignore",
       "madeAt": 1623183721437,
       "expiresAt": 1623788477426
+    },
+    "1755|npm-check-updates>update-notifier>latest-version>package-json>got>cacheable-request>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683755649,
+      "expiresAt": 1624288548426
+    },
+    "1755|@vue/cli>download-git-repo>download>got>cacheable-request>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683762209,
+      "expiresAt": 1624288548426
+    },
+    "1755|@vue/cli-service>@intervolga/optimize-cssnano-plugin>cssnano>cssnano-preset-default>postcss-normalize-url>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683762209,
+      "expiresAt": 1624288548426
+    },
+    "1755|@vue/cli-service>cssnano>cssnano-preset-default>postcss-normalize-url>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683762209,
+      "expiresAt": 1624288548426
+    },
+    "1755|@vue/cli-service>@intervolga/optimize-cssnano-plugin>cssnano-preset-default>postcss-normalize-url>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683762209,
+      "expiresAt": 1624288548426
+    },
+    "1755|@vue/cli-service>mini-css-extract-plugin>normalize-url": {
+      "decision": "ignore",
+      "madeAt": 1623683762209,
+      "expiresAt": 1624288548426
     }
   },
   "rules": {},
