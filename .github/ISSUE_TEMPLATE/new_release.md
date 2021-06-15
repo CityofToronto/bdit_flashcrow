@@ -9,6 +9,9 @@ assignees: candu
 
 **Release Checklist**
 
+Maintenance tasks:
+- [ ] `npx browserslist@latest --update-db`
+
 All CI checks pass:
 - [ ] `npm run ci:npm-outdated` (to fix: update `package.json`, `npm install`; if upgrading a package breaks MOVE, add it to `.ncurc.json`)
 - [ ] `npm run ci:npm-audit` (to fix: `npm audit fix`; if issues remain, `npx resolve-audit`)
