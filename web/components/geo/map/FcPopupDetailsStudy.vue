@@ -45,11 +45,8 @@ export default {
       const { location, poiSummary, studySummary } = this.featureDetails;
       const description = [];
 
-      studySummary.forEach(({ category: { studyType }, mostRecent }) => {
-        let label = 'Unknown';
-        if (studyType !== null) {
-          label = studyType.label;
-        }
+      studySummary.forEach(({ mostRecent, studyType }) => {
+        const { label } = studyType;
         const { startDate } = mostRecent;
         const startDateStr = TimeFormatters.formatDefault(startDate);
         const dayOfWeek = TimeFormatters.formatDayOfWeek(startDate);

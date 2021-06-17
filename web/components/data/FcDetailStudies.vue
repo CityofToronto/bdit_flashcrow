@@ -12,19 +12,14 @@
     <template v-else>
       <div
         v-for="(item, i) in items"
-        :key="item.category.id"
+        :key="item.studyType.name"
         class="ml-5">
         <v-divider v-if="i > 0"></v-divider>
         <div
           class="align-center d-flex pr-5"
           :class="i === 0 ? 'mb-4' : 'my-4'">
           <div class="body-1 flex-grow-1 flex-shrink-1">
-            <div v-if="item.category.studyType === null">
-              Unknown
-            </div>
-            <div v-else>
-              {{item.category.studyType.label}}
-            </div>
+            <div>{{item.studyType.label}}</div>
             <div class="mt-1">
               <FcTextMostRecent
                 v-if="item.mostRecent !== null"
@@ -39,7 +34,7 @@
           </div>
           <FcButton
             class="flex-grow-0 flex-shrink-0"
-            :disabled="item.category.studyType === null || item.n === 0"
+            :disabled="!item.studyType.dataAvailable || item.n === 0"
             type="tertiary"
             @click="$emit('show-reports', item)">
             <span>View Reports</span>
@@ -76,12 +71,12 @@ export default {
   },
   computed: {
     items() {
-      return this.studySummaryUnfiltered.map(({ category, n }) => {
+      return this.studySummaryUnfiltered.map(({ n, studyType }) => {
         let item = this.studySummary.find(
-          itemFiltered => itemFiltered.category.id === category.id,
+          itemFiltered => itemFiltered.studyType === studyType,
         );
         if (item === undefined) {
-          item = { category, mostRecent: null, n: 0 };
+          item = { mostRecent: null, n: 0, studyType };
         }
         return {
           ...item,

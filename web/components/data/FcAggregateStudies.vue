@@ -23,12 +23,7 @@
           :disabled="item.n === 0">
           <v-expansion-panel-header class="pr-8">
             <div class="body-1">
-              <div v-if="item.category.studyType === null">
-                Unknown
-              </div>
-              <div v-else>
-                {{item.category.studyType.label}}
-              </div>
+              {{item.studyType.label}}
             </div>
             <v-spacer></v-spacer>
             <FcTextSummaryFraction
@@ -118,12 +113,12 @@ export default {
       );
     },
     items() {
-      return this.studySummaryUnfiltered.map(({ category, n }) => {
+      return this.studySummaryUnfiltered.map(({ n, studyType }) => {
         let item = this.studySummary.find(
-          itemFiltered => itemFiltered.category.id === category.id,
+          itemFiltered => itemFiltered.studyType === studyType,
         );
         if (item === undefined) {
-          item = { category, mostRecent: null, n: 0 };
+          item = { mostRecent: null, n: 0, studyType };
         }
         return {
           ...item,
@@ -132,9 +127,9 @@ export default {
       });
     },
     itemsPerLocation() {
-      return this.studySummaryPerLocationUnfiltered.map(({ category, perLocation }) => {
+      return this.studySummaryPerLocationUnfiltered.map(({ perLocation, studyType }) => {
         const itemPerLocation = this.studySummaryPerLocation.find(
-          itemPerLocationFiltered => itemPerLocationFiltered.category.id === category.id,
+          itemPerLocationFiltered => itemPerLocationFiltered.studyType === studyType,
         );
         return perLocation.map(({ n }, j) => {
           if (itemPerLocation === undefined) {
