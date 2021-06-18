@@ -27,7 +27,7 @@ afterAll(async () => {
 function expectNumPerCategoryStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([n0, value0], i) => {
-    const { category: { studyType: { name: value } }, n } = actual[i];
+    const { n, studyType: { name: value } } = actual[i];
     expect(n).toBe(n0);
     expect(value).toBe(value0);
   });
@@ -36,7 +36,7 @@ function expectNumPerCategoryStudy(actual, expected) {
 function expectNumPerCategoryAndLocationStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([ns0, value0], i) => {
-    const { category: { studyType: { name: value } }, perLocation } = actual[i];
+    const { perLocation, studyType: { name: value } } = actual[i];
     perLocation.forEach(({ n }, j) => {
       expect(n).toBe(ns0[j]);
     });
@@ -461,7 +461,7 @@ test('StudyController.getStudiesByCentrelineSummary', async () => {
   data = { s1 };
   response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerCategoryStudy(response.result, [[1, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(response.result, [[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation', async () => {
@@ -570,7 +570,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectNumPerCategoryAndLocationStudy(
     response.result,
-    [[[1], 'ATR_VOLUME'], [[2], 'ATR_SPEED_VOLUME']],
+    [[[2], 'ATR_SPEED_VOLUME'], [[1], 'ATR_VOLUME']],
   );
 });
 
