@@ -10,6 +10,7 @@ import {
   StudyType,
 } from '@/lib/Constants';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
+import CountLocationDAO from '@/lib/db/CountLocationDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyDataDAO from '@/lib/db/StudyDataDAO';
 import ReportFactory from '@/lib/reports/ReportFactory';
@@ -18,6 +19,7 @@ import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import DateTime from '@/lib/time/DateTime';
 
 jest.mock('@/lib/db/CentrelineDAO');
+jest.mock('@/lib/db/CountLocationDAO');
 jest.mock('@/lib/db/StudyDAO');
 jest.mock('@/lib/db/StudyDataDAO');
 
@@ -58,6 +60,8 @@ function setup_4_2156283_single() {
     centrelineType: CentrelineType.SEGMENT,
     // TODO: geom as point location?
   };
+  CountLocationDAO.byStudy.mockResolvedValue(countLocation);
+
   const counts = [{
     id: 2156283,
     legacy: true,
@@ -70,7 +74,6 @@ function setup_4_2156283_single() {
     extraMetadata: { arteryCode: 2946, stationCode: '2946' },
   }];
   const studyData = new Map([[2156283, countData_4_2156283]]);
-
   StudyDataDAO.byStudy.mockResolvedValue({ countLocation, counts, studyData });
   CentrelineDAO.byFeature.mockResolvedValue({
     centrelineId: 108387,

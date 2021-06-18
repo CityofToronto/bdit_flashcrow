@@ -53,18 +53,18 @@ test('ReportSpeedPercentile.getArrayStats', () => {
 test('ReportSpeedPercentile#transformData [empty dataset]', () => {
   const reportInstance = new ReportSpeedPercentile();
 
-  const { arteries, counts, study } = setup_4_2156283();
-  const studyData = new Map([[17, []]]);
-  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const { countLocation, counts, study } = setup_4_2156283();
+  const studyData = new Map([[2156283, []]]);
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
-  expect(date.equals(study.date)).toBe(true);
+  expect(date.equals(study.startDate)).toBe(true);
   expect(direction).toBe(CardinalDirection.NORTH);
   transformedData = stats;
   expect(transformedData).toEqual(transformedData_SPEED_PERCENTILE_4_2156283_empty);
 });
 
-test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]', () => {
+test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: ATR_SPEED_VOLUME/2156283]', () => {
   const reportInstance = new ReportSpeedPercentile();
 
   /*
@@ -72,15 +72,15 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
    * tolerate some deviation from legacy report values.
    */
   const {
-    arteries,
+    countLocation,
     counts,
     study,
     studyData,
   } = setup_4_2156283();
-  let transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
-  expect(date.equals(study.date)).toBe(true);
+  expect(date.equals(study.startDate)).toBe(true);
   expect(direction).toBe(CardinalDirection.NORTH);
   transformedData = stats;
 
@@ -134,16 +134,16 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: 4/2156283]
   });
 });
 
-test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
+test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: ATR_SPEED_VOLUME/2156283]', () => {
   const reportInstance = new ReportSpeedPercentile();
 
   const {
-    arteries,
+    countLocation,
     counts,
     study,
     studyData,
   } = setup_4_2156283();
-  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(() => {
     reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
