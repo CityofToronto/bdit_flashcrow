@@ -127,7 +127,7 @@ test('ReportBaseFlow#parseId [other]', async () => {
 
 test('ReportCountSummary24h.timeRange', () => {
   const { studyData } = setup_4_2156283();
-  const countData = studyData.get(17);
+  const countData = studyData.get(2156283);
   const totaledData = sumByTime(countData);
 
   expect(ReportBaseFlow.timeRange(totaledData, { lo: 0, hi: 4 })).toEqual({

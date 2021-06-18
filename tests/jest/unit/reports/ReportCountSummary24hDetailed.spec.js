@@ -37,12 +37,12 @@ test('ReportCountSummary24hDetailed#transformData [empty dataset]', () => {
 test('ReportCountSummary24hDetailed#transformData [fuzz test, ATR speed / volume]', () => {
   const reportInstance = new ReportCountSummary24hDetailed();
 
-  const { arteries, counts, study } = setup_4_2156283();
+  const { countLocation, counts, study } = setup_4_2156283();
   for (let i = 0; i < 3; i++) {
     const countData = generateAtrSpeedVolume();
     const studyData = new Map([[2156283, countData]]);
     expect(() => {
-      reportInstance.transformData(study, { arteries, counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });

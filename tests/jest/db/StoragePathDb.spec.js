@@ -5,11 +5,11 @@ import {
   ReportExportMode,
   ReportFormat,
   ReportType,
+  StudyType,
 } from '@/lib/Constants';
 import { setdefault } from '@/lib/MapUtils';
 import Random from '@/lib/Random';
 import db from '@/lib/db/db';
-import CategoryDAO from '@/lib/db/CategoryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CompositeId from '@/lib/io/CompositeId';
 import StoragePath from '@/lib/io/storage/StoragePath';
@@ -49,14 +49,13 @@ function generateStudyReportType(studyType) {
 
 test('StoragePath.forReport [collision fuzz test]', async () => {
   const sql = `
-SELECT centreline_id, centreline_type
-FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
-  const rows = await db.manyOrNone(sql);
-  const features = rows.map(({ centreline_id: centrelineId, centreline_type: centrelineType }) => ({
-    centrelineId,
-    centrelineType,
-  }));
-  const locationsAll = await CentrelineDAO.byFeatures(features);
+SELECT "centrelineId", "centrelineType"
+FROM counts2.studies
+WHERE "centrelineId" IS NOT NULL AND "centrelineType" IS NOT NULL
+ORDER BY RANDOM() LIMIT 100`;
+  const features = await db.manyOrNone(sql);
+  let locationsAll = await CentrelineDAO.byFeatures(features);
+  locationsAll = locationsAll.filter(location => location !== null);
 
   const n = 25;
   for (let i = 0; i < n; i++) {
@@ -77,23 +76,19 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
 });
 
 test('StoragePath.forReport [study fuzz test]', async () => {
-  const categories = await CategoryDAO.all();
-
   const sql = `
-SELECT "CATEGORY_ID", count_group_id
-FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
+SELECT "countGroupId", "studyType"
+FROM counts2.studies
+WHERE "centrelineId" IS NOT NULL AND "centrelineType" IS NOT NULL
+ORDER BY RANDOM() LIMIT 100`;
   const rows = await db.manyOrNone(sql);
 
   const n = 25;
   for (let i = 0; i < n; i++) {
     const row = Random.choice(rows);
-    const { CATEGORY_ID: categoryId, count_group_id: countGroupId } = row;
-    const id = `${categoryId}/${countGroupId}`;
-    const { studyType } = categories.get(categoryId);
-    if (studyType === null) {
-      /* eslint-disable-next-line no-continue */
-      continue;
-    }
+    const { countGroupId, studyType: studyTypeName } = row;
+    const id = `${studyTypeName}/${countGroupId}`;
+    const studyType = StudyType.enumValueOf(studyTypeName);
     const type = generateStudyReportType(studyType);
     const format = generateReportFormat(type);
 
@@ -108,14 +103,13 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
 
 test('StoragePath.forReportZip [collision fuzz test]', async () => {
   const sql = `
-SELECT centreline_id, centreline_type
-FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
-  const rows = await db.manyOrNone(sql);
-  const features = rows.map(({ centreline_id: centrelineId, centreline_type: centrelineType }) => ({
-    centrelineId,
-    centrelineType,
-  }));
-  const locationsAll = await CentrelineDAO.byFeatures(features);
+SELECT "centrelineId", "centrelineType"
+FROM counts2.studies
+WHERE "centrelineId" IS NOT NULL AND "centrelineType" IS NOT NULL
+ORDER BY RANDOM() LIMIT 100`;
+  const features = await db.manyOrNone(sql);
+  let locationsAll = await CentrelineDAO.byFeatures(features);
+  locationsAll = locationsAll.filter(location => location !== null);
 
   const n = 25;
   for (let i = 0; i < n; i++) {
@@ -148,21 +142,21 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
 });
 
 test('StoragePath.forReportZip [study fuzz test]', async () => {
-  const categories = await CategoryDAO.all();
-
   const sql = `
-SELECT "CATEGORY_ID", count_group_id, centreline_id, centreline_type
-FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
+SELECT "centrelineId", "centrelineType", "countGroupId", "studyType"
+FROM counts2.studies
+WHERE "centrelineId" IS NOT NULL AND "centrelineType" IS NOT NULL
+ORDER BY RANDOM() LIMIT 100`;
   const rows = await db.manyOrNone(sql);
   const studiesByFeature = new Map();
   const features = new Set();
   rows.forEach(({
-    CATEGORY_ID: categoryId,
-    centreline_id: centrelineId,
-    centreline_type: centrelineType,
-    count_group_id: countGroupId,
+    centrelineId,
+    centrelineType,
+    countGroupId,
+    studyType: studyTypeName,
   }) => {
-    const study = { categoryId, countGroupId };
+    const study = { countGroupId, studyTypeName };
     const feature = { centrelineId, centrelineType };
 
     const key = centrelineKey(feature);
@@ -170,7 +164,8 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     studies.push(study);
     features.add(feature);
   });
-  const locationsAll = await CentrelineDAO.byFeatures(Array.from(features));
+  let locationsAll = await CentrelineDAO.byFeatures(Array.from(features));
+  locationsAll = locationsAll.filter(location => location !== null);
 
   const n = 10;
   for (let i = 0; i < n; i++) {
@@ -182,12 +177,9 @@ FROM counts.studies TABLESAMPLE BERNOULLI (1)`;
     locations.forEach((location) => {
       const key = centrelineKey(location);
       const studies = studiesByFeature.get(key);
-      const { categoryId, countGroupId } = Random.choice(studies);
-      const id = `${categoryId}/${countGroupId}`;
-      const { studyType } = categories.get(categoryId);
-      if (studyType === null) {
-        return;
-      }
+      const { countGroupId, studyTypeName } = Random.choice(studies);
+      const id = `${studyTypeName}/${countGroupId}`;
+      const studyType = StudyType.enumValueOf(studyTypeName);
       const types = getStudyReportTypes(studyType);
       types.forEach((type) => {
         const report = { type, id, format: ReportFormat.PDF };

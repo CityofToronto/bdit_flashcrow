@@ -7,14 +7,12 @@ import {
   ReportType,
   StudyType,
 } from '@/lib/Constants';
-import ArteryDAO from '@/lib/db/ArteryDAO';
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountDAO from '@/lib/db/CountDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StoragePath from '@/lib/io/storage/StoragePath';
 import DateTime from '@/lib/time/DateTime';
 
-jest.mock('@/lib/db/ArteryDAO');
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/CountDAO');
 jest.mock('@/lib/db/StudyDAO');
@@ -69,48 +67,45 @@ test('StoragePath.forReport [study, intersection]', async () => {
     centrelineType: CentrelineType.INTERSECTION,
     description: 'Caledonia Rd / Rogers Rd',
   });
-  StudyDAO.byCategoryAndCountGroup.mockResolvedValue({
+  StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue({
     startDate: DateTime.fromObject({ year: 2018, month: 3, day: 24 }),
-    type: { studyType: StudyType.TMC },
+    studyType: StudyType.TMC,
   });
 
   const report = {
     type: ReportType.COUNT_SUMMARY_TURNING_MOVEMENT,
-    id: '5/36853',
+    id: 'TMC/36853',
     format: ReportFormat.CSV,
   };
   await expect(StoragePath.forReport(report)).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_STUDY,
-    key: 'COUNT_SUMMARY_TURNING_MOVEMENT_CALEDONIA_RD_ROGERS_RD_2018-03-24_5_36853.csv',
+    key: 'COUNT_SUMMARY_TURNING_MOVEMENT_CALEDONIA_RD_ROGERS_RD_2018-03-24_TMC_36853.csv',
   });
 });
 
 test('StoragePath.forReport [study, midblock]', async () => {
   // /reporter/reports?type=SPEED_PERCENTILE&id=4%2F1349804&format=WEB
-  ArteryDAO.byStudy.mockResolvedValue([
-    { arteryCode: 11744, approachDir: CardinalDirection.SOUTH },
-    { arteryCode: 37691, approachDir: CardinalDirection.NORTH },
-  ]);
   CentrelineDAO.byFeature.mockResolvedValue({
     centrelineType: CentrelineType.SEGMENT,
     description: 'Silverthorn Ave: Rockwell Ave \u2013 Turnberry Ave',
   });
   CountDAO.byStudy.mockResolvedValue([
-    { arteryCode: 11744 },
+    { direction: CardinalDirection.SOUTH },
   ]);
-  StudyDAO.byCategoryAndCountGroup.mockResolvedValue({
+  StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue({
     startDate: DateTime.fromObject({ year: 2011, month: 3, day: 1 }),
-    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+    studyType: StudyType.ATR_SPEED_VOLUME,
   });
 
   const report = {
     type: ReportType.SPEED_PERCENTILE,
-    id: '4/1349804',
+    id: 'ATR_SPEED_VOLUME/1349804',
     format: ReportFormat.PDF,
   };
+  await StoragePath.forReport(report);
   await expect(StoragePath.forReport(report)).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_STUDY,
-    key: 'SPEED_PERCENTILE_SILVERTHORN_AVE_ROCKWELL_AVE-TURNBERRY_AVE_SB_2011-03-01_4_1349804.pdf',
+    key: 'SPEED_PERCENTILE_SILVERTHORN_AVE_ROCKWELL_AVE-TURNBERRY_AVE_SB_2011-03-01_ATR_SPEED_VOLUME_1349804.pdf',
   });
 });
 
