@@ -164,7 +164,7 @@ export default {
         params,
       });
     },
-    actionShowReportsStudy({ category: { studyType } }) {
+    actionShowReportsStudy({ studyType }) {
       const params = {
         ...this.locationsRouteParams,
         studyTypeName: studyType.name,

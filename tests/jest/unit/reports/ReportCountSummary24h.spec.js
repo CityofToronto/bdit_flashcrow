@@ -20,21 +20,21 @@ const transformedData_COUNT_SUMMARY_24H_4_2156283_empty = loadJsonSync(
 test('ReportCountSummary24h#transformData [empty dataset]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const { arteries, counts, study } = setup_4_2156283();
-  const studyData = new Map([[17, []]]);
-  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const { countLocation, counts, study } = setup_4_2156283();
+  const studyData = new Map([[2156283, []]]);
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_4_2156283_empty);
 });
 
 test('ReportCountSummary24h#transformData [fuzz test, ATR speed / volume]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const { arteries, counts, study } = setup_4_2156283();
+  const { countLocation, counts, study } = setup_4_2156283();
   for (let i = 0; i < 3; i++) {
     const countData = generateAtrSpeedVolume();
-    const studyData = new Map([[17, countData]]);
+    const studyData = new Map([[2156283, countData]]);
     expect(() => {
-      reportInstance.transformData(study, { arteries, counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -42,12 +42,12 @@ test('ReportCountSummary24h#transformData [fuzz test, ATR speed / volume]', () =
 test('ReportCountSummary24h#transformData [fuzz test, ATR volume]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const { arteries, counts, study } = setup_4_2156283();
+  const { countLocation, counts, study } = setup_4_2156283();
   for (let i = 0; i < 3; i++) {
     const countData = generateAtrVolume();
-    const studyData = new Map([[17, countData]]);
+    const studyData = new Map([[2156283, countData]]);
     expect(() => {
-      reportInstance.transformData(study, { arteries, counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -55,37 +55,37 @@ test('ReportCountSummary24h#transformData [fuzz test, ATR volume]', () => {
 test('ReportCountSummary24h#transformData [fuzz test, ATR volume with missing]', () => {
   const reportInstance = new ReportCountSummary24h();
 
-  const { arteries, counts, study } = setup_4_2156283();
+  const { countLocation, counts, study } = setup_4_2156283();
   for (let i = 0; i < 3; i++) {
     const countData = generateWithMissing(generateAtrVolume());
-    const studyData = new Map([[17, countData]]);
+    const studyData = new Map([[2156283, countData]]);
     expect(() => {
-      reportInstance.transformData(study, { arteries, counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
 
-test('ReportCountSummary24h#transformData [Morningside S of Lawrence: 4/2156283]', () => {
+test('ReportCountSummary24h#transformData [Morningside S of Lawrence: ATR_SPEED_VOLUME/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
   const {
-    arteries,
+    countLocation,
     counts,
     study,
     studyData,
   } = setup_4_2156283();
-  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_24H_4_2156283);
 });
 
-test('ReportCountSummary24h#generateCsv [Morningside S of Lawrence: 4/2156283]', () => {
+test('ReportCountSummary24h#generateCsv [Morningside S of Lawrence: ATR_SPEED_VOLUME/2156283]', () => {
   const reportInstance = new ReportCountSummary24h();
   const {
-    arteries,
+    countLocation,
     counts,
     study,
     studyData,
   } = setup_4_2156283();
-  const transformedData = reportInstance.transformData(study, { arteries, counts, studyData });
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(() => {
     reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();

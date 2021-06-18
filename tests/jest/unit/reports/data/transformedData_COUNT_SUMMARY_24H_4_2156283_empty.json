@@ -1,61 +1,69 @@
-[
-  {
-    "title": "MORNINGSIDE AVE",
-    "directionGroups": [
-      {
-        "title": "Northbound",
-        "counts": [
-          {
-            "location":"MORNINGSIDE AVE N/B S OF LAWRENCE AVE",
-            "category": "Speed / Volume ATR",
-            "stationCode": 2946,
-            "arteryCode": 2946,
-            "date": "2019-03-07 00:00:00.000",
-            "dayOfWeek": "Thu",
-            "amPeak": {
-              "sum": 0,
-              "timeRange": null
+{
+  "countLocation": {
+    "centrelineId": 108387,
+    "centrelineType": 1,
+    "description": "MORNINGSIDE AVE S OF LAWRENCE AVE",
+    "id": 2946,
+    "legacy": true
+  },
+  "sections": [
+    {
+      "title": "MORNINGSIDE AVE S OF LAWRENCE AVE",
+      "directionGroups": [
+        {
+          "title": "Northbound",
+          "counts": [
+            {
+              "studyType": "Speed / Volume ATR",
+              "stationCode": "2946",
+              "arteryCode": 2946,
+              "date": "2019-03-07 00:00:00.000",
+              "dayOfWeek": "Thu",
+              "amPeak": {
+                "sum": 0,
+                "timeRange": null
+              },
+              "pmPeak": {
+                "sum": 0,
+                "timeRange": null
+              },
+              "offPeak": {
+                "sum": 0,
+                "timeRange": null
+              },
+              "total": 0
+            }
+          ],
+          "totals": {
+            "sum": {
+              "amPeak": 0,
+              "pmPeak": 0,
+              "offPeak": 0,
+              "total": 0
             },
-            "pmPeak": {
-              "sum": 0,
-              "timeRange": null
-            },
-            "offPeak": {
-              "sum": 0,
-              "timeRange": null
-            },
-            "total": 0
-          }
-        ],
-        "totals": {
-          "sum": {
-            "amPeak": 0,
-            "pmPeak": 0,
-            "offPeak": 0,
-            "total": 0
-          },
-          "avg": {
-            "amPeak": 0,
-            "pmPeak": 0,
-            "offPeak": 0,
-            "total": 0
+            "avg": {
+              "amPeak": 0,
+              "pmPeak": 0,
+              "offPeak": 0,
+              "total": 0
+            }
           }
         }
-      }
-    ],
-    "totals": {
-      "sum": {
-        "amPeak": 0,
-        "pmPeak": 0,
-        "offPeak": 0,
-        "total": 0
-      },
-      "avg": {
-        "amPeak": 0,
-        "pmPeak": 0,
-        "offPeak": 0,
-        "total": 0
+      ],
+      "totals": {
+        "sum": {
+          "amPeak": 0,
+          "pmPeak": 0,
+          "offPeak": 0,
+          "total": 0
+        },
+        "avg": {
+          "amPeak": 0,
+          "pmPeak": 0,
+          "offPeak": 0,
+          "total": 0
+        }
       }
     }
-  }
-]
+  ]
+}

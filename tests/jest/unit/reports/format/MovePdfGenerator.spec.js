@@ -35,31 +35,43 @@ beforeAll(MovePdfGenerator.init);
 
 function setup_4_2156283_single() {
   const study = {
-    arteryGroupId: 2946,
+    legacy: true,
+    countLocationId: 2946,
+    studyType: StudyType.ATR_SPEED_VOLUME,
+    countGroupId: 2156281,
+    startDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    endDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    duration: 24,
+    daysOfWeek: [4],
+    hours: null,
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
-    countGroupId: 2156281,
-    endDate: DateTime.fromSQL('2019-03-07 00:00:00'),
-    startDate: DateTime.fromSQL('2019-03-07 00:00:00'),
-    type: { id: 4, studyType: StudyType.ATR_SPEED_VOLUME },
+    // TODO: geom as point location?
   };
-  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
+  StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue(study);
 
+  const countLocation = {
+    id: 2946,
+    legacy: true,
+    description: 'MORNINGSIDE AVE S OF LAWRENCE AVE',
+    centrelineId: 108387,
+    centrelineType: CentrelineType.SEGMENT,
+    // TODO: geom as point location?
+  };
   const counts = [{
-    arteryCode: 2946,
-    date: DateTime.fromSQL('2019-03-07 00:00:00'),
     id: 2156283,
-    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-    type: { studyType: StudyType.ATR_SPEED_VOLUME },
+    legacy: true,
+    studyType: StudyType.ATR_SPEED_VOLUME,
+    hours: null,
+    date: DateTime.fromSQL('2019-03-07 00:00:00'),
+    notes: null,
+    countLocationId: 2946,
+    direction: CardinalDirection.NORTH,
+    extraMetadata: { arteryCode: 2946, stationCode: '2946' },
   }];
-  const arteries = new Map([[2946, {
-    approachDir: CardinalDirection.NORTH,
-    arteryCode: 2946,
-    stationCode: 2946,
-    street1: 'MORNINGSIDE AVE',
-  }]]);
   const studyData = new Map([[2156283, countData_4_2156283]]);
-  StudyDataDAO.byStudy.mockResolvedValue({ arteries, counts, studyData });
+
+  StudyDataDAO.byStudy.mockResolvedValue({ countLocation, counts, studyData });
   CentrelineDAO.byFeature.mockResolvedValue({
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
@@ -83,23 +95,48 @@ function setup_4_2156283_single() {
 
 function setup_5_36781() {
   const study = {
+    legacy: true,
+    countLocationId: 5074,
+    studyType: StudyType.TMC,
+    countGroupId: 36781,
+    startDate: DateTime.fromSQL('2018-02-27 00:00:00'),
+    endDate: DateTime.fromSQL('2018-02-27 00:00:00'),
+    duration: null,
+    daysOfWeek: [2],
+    hours: StudyHours.SCHOOL,
     centrelineId: 13464586,
     centrelineType: CentrelineType.INTERSECTION,
-    countGroupId: 36781,
-    endDate: DateTime.fromSQL('2018-02-27 00:00:00'),
-    startDate: DateTime.fromSQL('2018-02-27 00:00:00'),
-    type: { id: 5, studyType: StudyType.TMC },
+    geom: {
+      type: 'Point',
+      coordinates: [-79.361498301, 43.663158537],
+    },
   };
-  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
+  StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue(study);
 
+  const countLocation = {
+    id: 5074,
+    legacy: true,
+    description: 'GERRARD ST AT SUMACH ST (PX 1390)',
+    centrelineId: 13464586,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.361498301, 43.663158537],
+    },
+  };
   const counts = [{
-    date: DateTime.fromSQL('2018-02-27 00:00:00'),
-    hours: StudyHours.SCHOOL,
     id: 36781,
-    locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
+    legacy: true,
+    studyType: StudyType.TMC,
+    hours: StudyHours.SCHOOL,
+    date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    notes: null,
+    countLocationId: 5074,
+    direction: null,
+    extraMetadata: { arteryCode: 5074, stationCode: '0013464586' },
   }];
   const studyData = new Map([[36781, countData_5_36781]]);
-  StudyDataDAO.byStudy.mockResolvedValue({ counts, studyData });
+  StudyDataDAO.byStudy.mockResolvedValue({ countLocation, counts, studyData });
   CentrelineDAO.byFeature.mockResolvedValue({
     centrelineId: 13464586,
     centrelineType: CentrelineType.INTERSECTION,
@@ -113,23 +150,48 @@ function setup_5_36781() {
 
 function setup_5_38661() {
   const study = {
+    legacy: true,
+    countLocationId: 4117,
+    studyType: StudyType.TMC,
+    countGroupId: 38661,
+    startDate: DateTime.fromSQL('2019-04-13 00:00:00'),
+    endDate: DateTime.fromSQL('2019-04-13 00:00:00'),
+    duration: null,
+    daysOfWeek: [6],
+    hours: StudyHours.ROUTINE,
     centrelineId: 13456854,
     centrelineType: CentrelineType.INTERSECTION,
-    countGroupId: 38661,
-    endDate: DateTime.fromSQL('2019-04-13 00:00:00'),
-    startDate: DateTime.fromSQL('2019-04-13 00:00:00'),
-    type: { id: 5, studyType: StudyType.TMC },
+    geom: {
+      type: 'Point',
+      coordinates: [-79.343625497, 43.70747321],
+    },
   };
-  StudyDAO.byCategoryAndCountGroup.mockResolvedValue(study);
+  StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue(study);
 
+  const countLocation = {
+    id: 4117,
+    legacy: true,
+    description: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
+    centrelineId: 13456854,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.343625497, 43.70747321],
+    },
+  };
   const counts = [{
-    date: DateTime.fromSQL('2019-04-13 00:00:00'),
-    hours: StudyHours.ROUTINE,
     id: 38661,
-    locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
+    legacy: true,
+    studyType: StudyType.TMC,
+    hours: StudyHours.ROUTINE,
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
+    notes: null,
+    countLocationId: 4117,
+    direction: null,
+    extraMetadata: { arteryCode: 4117, stationCode: '0013456854' },
   }];
   const studyData = new Map([[38661, countData_5_38661]]);
-  StudyDataDAO.byStudy.mockResolvedValue({ counts, studyData });
+  StudyDataDAO.byStudy.mockResolvedValue({ countLocation, counts, studyData });
   CentrelineDAO.byFeature.mockResolvedValue({
     centrelineId: 13456854,
     centrelineType: CentrelineType.INTERSECTION,
@@ -222,7 +284,7 @@ test('COUNT_SUMMARY_24H', async () => {
   setup_4_2156283_single();
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H);
-  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -230,7 +292,7 @@ test('COUNT_SUMMARY_24H_DETAILED', async () => {
   setup_4_2156283_single();
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_DETAILED);
-  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -238,7 +300,7 @@ test('COUNT_SUMMARY_24H_GRAPHICAL', async () => {
   setup_4_2156283_single();
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_GRAPHICAL);
-  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -246,7 +308,7 @@ test('COUNT_SUMMARY_TURNING_MOVEMENT', async () => {
   setup_5_36781();
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_TURNING_MOVEMENT);
-  const doc = await reportInstance.generate('5/36781', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('TMC/36781', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -256,7 +318,7 @@ test('COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED', async () => {
   const reportInstance = ReportFactory.getInstance(
     ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED,
   );
-  const doc = await reportInstance.generate('5/36781', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('TMC/36781', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(3);
 });
 
@@ -264,7 +326,7 @@ test('INTERSECTION_SUMMARY', async () => {
   setup_5_38661();
 
   const reportInstance = ReportFactory.getInstance(ReportType.INTERSECTION_SUMMARY);
-  const doc = await reportInstance.generate('5/38661', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('TMC/38661', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -272,7 +334,7 @@ test('SPEED_PERCENTILE', async () => {
   setup_4_2156283_single();
 
   const reportInstance = ReportFactory.getInstance(ReportType.SPEED_PERCENTILE);
-  const doc = await reportInstance.generate('4/2156283', ReportFormat.PDF, {});
+  const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
   expect(getNumPages(doc)).toBe(1);
 });
 
@@ -280,7 +342,7 @@ test('WARRANT_TRAFFIC_SIGNAL_CONTROL', async () => {
   setup_5_38661();
 
   const reportInstance = ReportFactory.getInstance(ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL);
-  const doc = await reportInstance.generate('5/38661', ReportFormat.PDF, {
+  const doc = await reportInstance.generate('TMC/38661', ReportFormat.PDF, {
     adequateTrial: true,
     isTwoLane: null,
     isXIntersection: null,

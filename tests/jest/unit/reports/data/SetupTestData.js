@@ -3,6 +3,7 @@ import path from 'path';
 
 import {
   CardinalDirection,
+  CentrelineType,
   StudyHours,
   StudyType,
 } from '@/lib/Constants';
@@ -21,27 +22,45 @@ function setup_4_2156283() {
     path.resolve(__dirname, 'countData_4_2156283.json'),
   );
 
-  const artery = {
-    approachDir: CardinalDirection.NORTH,
-    arteryCode: 2946,
-    stationCode: 2946,
-    street1: 'MORNINGSIDE AVE',
+  const study = {
+    legacy: true,
+    countLocationId: 2946,
+    studyType: StudyType.ATR_SPEED_VOLUME,
+    countGroupId: 2156281,
+    startDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    endDate: DateTime.fromSQL('2019-03-07 00:00:00'),
+    duration: 24,
+    daysOfWeek: [4],
+    hours: null,
+    centrelineId: 108387,
+    centrelineType: CentrelineType.SEGMENT,
+    // TODO: geom as point location?
   };
-  const count = {
-    arteryCode: 2946,
+  const countLocation = {
+    id: 2946,
+    legacy: true,
+    description: 'MORNINGSIDE AVE S OF LAWRENCE AVE',
+    centrelineId: 108387,
+    centrelineType: CentrelineType.SEGMENT,
+    // TODO: geom as point location?
+  };
+  const counts = [{
+    id: 2156283,
+    legacy: true,
+    studyType: StudyType.ATR_SPEED_VOLUME,
+    hours: null,
     date: DateTime.fromSQL('2019-03-07 00:00:00'),
-    id: 17,
-    locationDesc: 'MORNINGSIDE AVE N/B S OF LAWRENCE AVE',
-    type: { studyType: StudyType.ATR_SPEED_VOLUME },
-  };
-  const counts = [count];
-  const arteries = new Map([[2946, artery]]);
-  const studyData = new Map([[17, countData_4_2156283]]);
+    notes: null,
+    countLocationId: 2946,
+    direction: CardinalDirection.NORTH,
+    extraMetadata: { arteryCode: 2946, stationCode: '2946' },
+  }];
+  const studyData = new Map([[2156283, countData_4_2156283]]);
 
   return {
-    arteries,
+    countLocation,
     counts,
-    study: count,
+    study,
     studyData,
   };
 }

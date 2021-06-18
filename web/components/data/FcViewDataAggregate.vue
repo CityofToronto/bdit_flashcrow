@@ -289,7 +289,7 @@ export default {
       });
     },
     actionShowReportsStudy({
-      item: { category: { studyType } },
+      item: { studyType },
       locationsIndex,
     }) {
       this.setLocationsIndex(locationsIndex);

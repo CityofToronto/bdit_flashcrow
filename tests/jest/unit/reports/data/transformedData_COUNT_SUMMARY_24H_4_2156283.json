@@ -1,70 +1,78 @@
-[
-  {
-    "title": "MORNINGSIDE AVE",
-    "directionGroups": [
-      {
-        "title": "Northbound",
-        "counts": [
-          {
-            "location":"MORNINGSIDE AVE N/B S OF LAWRENCE AVE",
-            "category": "Speed / Volume ATR",
-            "stationCode": 2946,
-            "arteryCode": 2946,
-            "date": "2019-03-07 00:00:00.000",
-            "dayOfWeek": "Thu",
-            "amPeak": {
-              "sum": 488,
-              "timeRange": {
-                "start": "2019-03-07 08:00:00.000",
-                "end": "2019-03-07 09:00:00.000"
-              }
+{
+  "countLocation": {
+    "centrelineId": 108387,
+    "centrelineType": 1,
+    "description": "MORNINGSIDE AVE S OF LAWRENCE AVE",
+    "id": 2946,
+    "legacy": true
+  },
+  "sections": [
+    {
+      "title": "MORNINGSIDE AVE S OF LAWRENCE AVE",
+      "directionGroups": [
+        {
+          "title": "Northbound",
+          "counts": [
+            {
+              "studyType": "Speed / Volume ATR",
+              "stationCode": "2946",
+              "arteryCode": 2946,
+              "date": "2019-03-07 00:00:00.000",
+              "dayOfWeek": "Thu",
+              "amPeak": {
+                "sum": 488,
+                "timeRange": {
+                  "start": "2019-03-07 08:00:00.000",
+                  "end": "2019-03-07 09:00:00.000"
+                }
+              },
+              "pmPeak": {
+                "sum": 481,
+                "timeRange": {
+                  "start": "2019-03-07 15:30:00.000",
+                  "end": "2019-03-07 16:30:00.000"
+                }
+              },
+              "offPeak": {
+                "sum": 391,
+                "timeRange": {
+                  "start": "2019-03-07 14:30:00.000",
+                  "end": "2019-03-07 15:30:00.000"
+                }
+              },
+              "total": 6063
+            }
+          ],
+          "totals": {
+            "sum": {
+              "amPeak": 488,
+              "pmPeak": 481,
+              "offPeak": 391,
+              "total": 6063
             },
-            "pmPeak": {
-              "sum": 481,
-              "timeRange": {
-                "start": "2019-03-07 15:30:00.000",
-                "end": "2019-03-07 16:30:00.000"
-              }
-            },
-            "offPeak": {
-              "sum": 391,
-              "timeRange": {
-                "start": "2019-03-07 14:30:00.000",
-                "end": "2019-03-07 15:30:00.000"
-              }
-            },
-            "total": 6063
-          }
-        ],
-        "totals": {
-          "sum": {
-            "amPeak": 488,
-            "pmPeak": 481,
-            "offPeak": 391,
-            "total": 6063
-          },
-          "avg": {
-            "amPeak": 488,
-            "pmPeak": 481,
-            "offPeak": 391,
-            "total": 6063
+            "avg": {
+              "amPeak": 488,
+              "pmPeak": 481,
+              "offPeak": 391,
+              "total": 6063
+            }
           }
         }
-      }
-    ],
-    "totals": {
-      "sum": {
-        "amPeak": 488,
-        "pmPeak": 481,
-        "offPeak": 391,
-        "total": 6063
-      },
-      "avg": {
-        "amPeak": 488,
-        "pmPeak": 481,
-        "offPeak": 391,
-        "total": 6063
+      ],
+      "totals": {
+        "sum": {
+          "amPeak": 488,
+          "pmPeak": 481,
+          "offPeak": 391,
+          "total": 6063
+        },
+        "avg": {
+          "amPeak": 488,
+          "pmPeak": 481,
+          "offPeak": 391,
+          "total": 6063
+        }
       }
     }
-  }
-]
+  ]
+}

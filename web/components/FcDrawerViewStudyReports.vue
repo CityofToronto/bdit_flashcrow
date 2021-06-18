@@ -226,8 +226,8 @@ export default {
       if (this.activeStudy === null) {
         return null;
       }
-      const { countGroupId, type } = this.activeStudy;
-      return `${type.id}/${countGroupId}`;
+      const { countGroupId, studyType } = this.activeStudy;
+      return `${studyType.name}/${countGroupId}`;
     },
     activeReportType() {
       const { indexActiveReportType, reportTypes } = this;
