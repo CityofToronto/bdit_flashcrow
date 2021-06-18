@@ -80,7 +80,7 @@ test('ArteryDAO.byArteryCode', async () => {
 test('ArteryDAO.byStudy', async () => {
   // intersection
   let result = await ArteryDAO.byStudy({
-    arteryGroupId: 23945,
+    countLocationId: 23945,
   });
   expectArteriesMatch(result, [{
     approachDir: null,
@@ -100,7 +100,7 @@ test('ArteryDAO.byStudy', async () => {
 
   // segment
   result = await ArteryDAO.byStudy({
-    arteryGroupId: 32532,
+    countLocationId: 32532,
   });
   expectArteriesMatch(result, [{
     approachDir: CardinalDirection.EAST,
@@ -134,7 +134,7 @@ test('ArteryDAO.byStudy', async () => {
 
   // segment: other artery
   result = await ArteryDAO.byStudy({
-    arteryGroupId: 32533,
+    countLocationId: 32533,
   });
   expect(result).toEqual([]);
 });

@@ -1,7 +1,6 @@
 import { CentrelineType, StudyType } from '@/lib/Constants';
 import db from '@/lib/db/db';
 import StudyDAO from '@/lib/db/StudyDAO';
-import Category from '@/lib/model/Category';
 import Joi from '@/lib/model/Joi';
 import Study from '@/lib/model/Study';
 import StudyFilters from '@/lib/model/StudyFilters';
@@ -114,7 +113,7 @@ test('StudyDAO.byCentreline()', async () => {
 function expectNumPerCategoryStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([n0, value0], i) => {
-    const { category: { studyType: { name: value } }, n } = actual[i];
+    const { n, studyType: { name: value } } = actual[i];
     expect(n).toBe(n0);
     expect(value).toBe(value0);
   });
@@ -163,9 +162,9 @@ test('StudyDAO.byCentrelineSummary()', async () => {
   studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
   const studySummarySchema = Joi.array().items(
     Joi.object().keys({
-      category: Category.read,
       mostRecent: Study.read,
       n: Joi.number().integer().positive().required(),
+      studyType: Joi.enum().ofType(StudyType).required(),
     }),
   );
   expectNumPerCategoryStudy(studySummary, [[1, 'ATR_SPEED_VOLUME']]);
@@ -225,13 +224,13 @@ test('StudyDAO.byCentrelineSummary()', async () => {
   studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerCategoryStudy(studySummary, [[1, 'ATR_VOLUME'], [2, 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryStudy(studySummary, [[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
 });
 
 function expectNumPerCategoryAndLocationStudy(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach(([ns0, value0], i) => {
-    const { category: { studyType: { name: value } }, perLocation } = actual[i];
+    const { perLocation, studyType: { name: value } } = actual[i];
     perLocation.forEach(({ n }, j) => {
       expect(n).toBe(ns0[j]);
     });
@@ -282,13 +281,13 @@ test('StudyDAO.byCentrelineSummaryPerLocation()', async () => {
   studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
   const studySummaryPerLocationSchema = Joi.array().items(
     Joi.object().keys({
-      category: Category.read,
       perLocation: Joi.array().items(
         Joi.object().keys({
           mostRecent: Study.read.allow(null),
           n: Joi.number().integer().min(0).required(),
         }),
       ),
+      studyType: Joi.enum().ofType(StudyType).required(),
     }),
   );
   expectNumPerCategoryAndLocationStudy(
@@ -351,7 +350,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation()', async () => {
   studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerCategoryAndLocationStudy(studySummary, [[[1], 'ATR_VOLUME'], [[2], 'ATR_SPEED_VOLUME']]);
+  expectNumPerCategoryAndLocationStudy(studySummary, [[[2], 'ATR_SPEED_VOLUME'], [[1], 'ATR_VOLUME']]);
 });
 
 test('StudyDAO.byCentrelineTotal()', async () => {

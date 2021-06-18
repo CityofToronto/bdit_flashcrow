@@ -95,7 +95,7 @@ test('LocationSearchDAO.intersectionSuggestions', async () => {
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 
   // either term can be prefixed
-  result = await LocationSearchDAO.intersectionSuggestions('Dan and Main', 3);
+  result = await LocationSearchDAO.intersectionSuggestions('Danfo and Main', 3);
   expectSuggestionsContain(result, CentrelineType.INTERSECTION, 13460034);
 
   // full query with minor typo should match
