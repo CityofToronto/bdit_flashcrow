@@ -29,8 +29,12 @@
           <template
             v-if="showActionPopup"
             v-slot:action-popup="feature">
-            <FcMapPopupActionRequestEditor
-              :feature="feature" />
+            <v-divider></v-divider>
+
+            <v-card-actions class="shading">
+              <FcMapPopupActionRequestEditor
+                :feature="feature" />
+            </v-card-actions>
           </template>
         </FcMap>
       </div>

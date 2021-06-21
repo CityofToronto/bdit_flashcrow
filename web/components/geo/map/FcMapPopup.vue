@@ -17,12 +17,8 @@
           :feature-details="featureDetails" />
       </v-card-text>
 
-      <template v-if="hasActionSlot && featureSelectable && !loading">
-        <v-divider></v-divider>
-
-        <v-card-actions class="shading">
-          <slot name="action" v-bind="feature" />
-        </v-card-actions>
+      <template v-if="featureSelectable && !loading">
+        <slot name="action" v-bind="feature" />
       </template>
     </v-card>
   </div>
@@ -84,9 +80,6 @@ export default {
     },
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.feature.layer.id);
-    },
-    hasActionSlot() {
-      return !!this.$scopedSlots.action;
     },
     layerId() {
       return this.feature.layer.id;

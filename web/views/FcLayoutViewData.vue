@@ -110,8 +110,12 @@
           <template
             v-if="showLocationSelection"
             v-slot:action-popup="feature">
-            <FcMapPopupActionViewData
-              :feature="feature" />
+            <v-divider></v-divider>
+
+            <v-card-actions class="shading">
+              <FcMapPopupActionViewData
+                :feature="feature" />
+            </v-card-actions>
           </template>
         </FcMap>
       </div>

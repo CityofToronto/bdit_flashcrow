@@ -58,9 +58,7 @@
       :key="'h:' + featureKeyHovered"
       :feature="hoveredFeature"
       :hovered="true">
-      <template
-        v-if="hasActionPopupSlot"
-        v-slot:action="feature">
+      <template v-slot:action="feature">
         <slot name="action-popup" v-bind="feature" />
       </template>
     </FcMapPopup>
@@ -69,9 +67,7 @@
       :key="'s:' + featureKeySelected"
       :feature="selectedFeature"
       :hovered="false">
-      <template
-        v-if="hasActionPopupSlot"
-        v-slot:action="feature">
+      <template v-slot:action="feature">
         <slot name="action-popup" v-bind="feature" />
       </template>
     </FcMapPopup>
@@ -228,9 +224,6 @@ export default {
     },
     featureKeySelected() {
       return getFeatureKey(this.selectedFeature);
-    },
-    hasActionPopupSlot() {
-      return !!this.$scopedSlots['action-popup'];
     },
     internalLayers: {
       get() {
