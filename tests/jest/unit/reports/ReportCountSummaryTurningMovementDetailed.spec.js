@@ -22,11 +22,11 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED_5_36781 = loadJson
 test('ReportCountSummaryTurningMovementDetailed#transformData [empty dataset]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts } = setup_5_36781();
-  const studyData = new Map([[1, []]]);
-  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { countLocation, counts, study } = setup_5_36781();
+  const studyData = new Map([[36781, []]]);
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   const { hours, px, raw } = transformedData;
-  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(hours).toBe(StudyHours.ROUTINE);
   expect(px).toBe(1390);
   transformedData = raw;
 
@@ -36,12 +36,12 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [empty dataset]', 
 test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateTmc();
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -49,12 +49,12 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, TMC]',
 test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, 14-hour TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateTmc14Hour();
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -62,12 +62,12 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, 14-hou
 test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, TMC with missing]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateWithMissing(generateTmc());
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -75,10 +75,15 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [fuzz test, TMC wi
 test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts, studyData } = setup_5_36781();
-  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const {
+    countLocation,
+    counts,
+    study,
+    studyData,
+  } = setup_5_36781();
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   const { hours, px, raw } = transformedData;
-  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(hours).toBe(StudyHours.ROUTINE);
   expect(px).toBe(1390);
   transformedData = raw;
 
@@ -88,9 +93,14 @@ test('ReportCountSummaryTurningMovementDetailed#transformData [Gerrard and Sumac
 test('ReportCountSummaryTurningMovementDetailed#generateCsv [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovementDetailed();
 
-  const { count, counts, studyData } = setup_5_36781();
-  const transformedData = reportInstance.transformData(count, { counts, studyData });
+  const {
+    countLocation,
+    counts,
+    study,
+    studyData,
+  } = setup_5_36781();
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(() => {
-    reportInstance.generateCsv(count, transformedData);
+    reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
 });

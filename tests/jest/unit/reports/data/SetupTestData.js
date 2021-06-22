@@ -71,17 +71,44 @@ function setup_5_34621_directional() {
   );
   const countData = mapTmcCountData(countData_5_34621);
 
-  const count = {
-    date: DateTime.fromSQL('2016-11-02 00:00:00'),
+  const study = {
+    legacy: true,
+    countLocationId: 14944,
+    studyType: StudyType.TMC,
+    countGroupId: 34621,
+    startDate: DateTime.fromSQL('2016-11-02 00:00:00'),
+    endDate: DateTime.fromSQL('2016-11-02 00:00:00'),
+    duration: null,
+    daysOfWeek: [3],
     hours: StudyHours.ROUTINE,
-    id: 34621,
-    locationDesc: 'CHAMPAGNE DR AT CHESSWOOD DR',
-  };
-  const intersection = {
+    centrelineId: 13448440,
+    centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
       coordinates: [-79.4765905, 43.76431897],
     },
+  };
+  const countLocation = {
+    id: 14944,
+    legacy: true,
+    description: 'CHAMPAGNE DR AT CHESSWOOD DR',
+    centrelineId: 13448440,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.4765905, 43.76431897],
+    },
+  };
+  const count = {
+    id: 34621,
+    legacy: true,
+    studyType: StudyType.TMC,
+    hours: StudyHours.ROUTINE,
+    date: DateTime.fromSQL('2016-11-02 00:00:00'),
+    notes: null,
+    countLocationId: 14944,
+    direction: null,
+    extraMetadata: { arteryCode: 14944, stationCode: '0013448440' },
   };
   const segments = [
     {
@@ -163,8 +190,9 @@ function setup_5_34621_directional() {
   return {
     count,
     countData,
-    intersection,
+    intersection: countLocation,
     segments,
+    study,
   };
 }
 
@@ -174,18 +202,51 @@ function setup_5_36781() {
   );
   const countData = mapTmcCountData(countData_5_36781);
 
-  const count = {
-    date: DateTime.fromSQL('2018-02-27 00:00:00'),
-    hours: StudyHours.SCHOOL,
-    id: 1,
-    locationDesc: 'GERRARD ST AT SUMACH ST (PX 1390)',
-    type: { studyType: StudyType.TMC },
+  const study = {
+    legacy: true,
+    countLocationId: 5074,
+    studyType: StudyType.TMC,
+    countGroupId: 36781,
+    startDate: DateTime.fromSQL('2018-02-27 00:00:00'),
+    endDate: DateTime.fromSQL('2018-02-27 00:00:00'),
+    duration: null,
+    daysOfWeek: [2],
+    hours: StudyHours.ROUTINE,
+    centrelineId: 13464586,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.3614980028034, 43.6631579996018],
+    },
   };
-  const studyData = new Map([[1, countData]]);
+  const countLocation = {
+    id: 5074,
+    legacy: true,
+    description: 'GERRARD ST AT SUMACH ST (PX 1390)',
+    centrelineId: 13464586,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.3614980028034, 43.6631579996018],
+    },
+  };
+  const counts = [{
+    id: 36781,
+    legacy: true,
+    studyType: StudyType.TMC,
+    hours: StudyHours.ROUTINE,
+    date: DateTime.fromSQL('2018-02-27 00:00:00'),
+    notes: null,
+    countLocationId: 5074,
+    direction: null,
+    extraMetadata: { arteryCode: 5074, stationCode: '0013464586' },
+  }];
+  const studyData = new Map([[36781, countData]]);
 
   return {
-    count,
-    counts: [count],
+    countLocation,
+    counts,
+    study,
     studyData,
   };
 }
@@ -196,17 +257,44 @@ function setup_5_38661_directional() {
   );
   const countData = mapTmcCountData(countData_5_38661);
 
-  const count = {
-    date: DateTime.fromSQL('2019-04-13 00:00:00'),
+  const study = {
+    legacy: true,
+    countLocationId: 4117,
+    studyType: StudyType.TMC,
+    countGroupId: 38661,
+    startDate: DateTime.fromSQL('2019-04-13 00:00:00'),
+    endDate: DateTime.fromSQL('2019-04-13 00:00:00'),
+    duration: null,
+    daysOfWeek: [6],
     hours: StudyHours.ROUTINE,
-    id: 38661,
-    locationDesc: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
-  };
-  const intersection = {
+    centrelineId: 13456854,
+    centrelineType: CentrelineType.INTERSECTION,
     geom: {
       type: 'Point',
-      coordinates: [-79.343625497, 43.70747321],
+      coordinates: [-79.3436250025741, 43.7074729970241],
     },
+  };
+  const countLocation = {
+    id: 4117,
+    legacy: true,
+    description: 'OVERLEA BLVD AT THORNCLIFFE PARK DR & E TCS (PX 679)',
+    centrelineId: 13456854,
+    centrelineType: CentrelineType.INTERSECTION,
+    geom: {
+      type: 'Point',
+      coordinates: [-79.3436250025741, 43.7074729970241],
+    },
+  };
+  const count = {
+    id: 38661,
+    legacy: true,
+    studyType: StudyType.TMC,
+    hours: StudyHours.ROUTINE,
+    date: DateTime.fromSQL('2019-04-13 00:00:00'),
+    notes: null,
+    countLocationId: 4117,
+    direction: null,
+    extraMetadata: { arteryCode: 4117, stationCode: '0013456854' },
   };
   const segments = [
     {
@@ -284,8 +372,9 @@ function setup_5_38661_directional() {
   return {
     count,
     countData,
-    intersection,
+    intersection: countLocation,
     segments,
+    study,
   };
 }
 

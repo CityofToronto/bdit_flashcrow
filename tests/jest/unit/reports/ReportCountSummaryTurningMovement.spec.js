@@ -46,11 +46,11 @@ test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
 test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
-  const { count, counts } = setup_5_36781();
-  const studyData = new Map([[1, []]]);
-  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const { countLocation, counts, study } = setup_5_36781();
+  const studyData = new Map([[36781, []]]);
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   const { hours, px, stats } = transformedData;
-  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(hours).toBe(StudyHours.ROUTINE);
   expect(px).toBe(1390);
   transformedData = stats;
 
@@ -60,12 +60,12 @@ test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
 test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateTmc();
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -73,12 +73,12 @@ test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', () => {
 test('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateTmc14Hour();
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -86,12 +86,12 @@ test('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]',
 test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
-  const { count, counts } = setup_5_36781();
+  const { countLocation, counts, study } = setup_5_36781();
   for (let i = 0; i < 3; i++) {
     const countData = generateWithMissing(generateTmc());
-    const studyData = new Map([[1, countData]]);
+    const studyData = new Map([[36781, countData]]);
     expect(() => {
-      reportInstance.transformData(count, { counts, studyData });
+      reportInstance.transformData(study, { countLocation, counts, studyData });
     }).not.toThrow();
   }
 });
@@ -109,10 +109,15 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
    * (e.g. a "total" value is the sum of the values it includes), or c) the update is in one
    * of the base values, suggesting that it was in fact incorrect in the legacy report.
    */
-  const { count, counts, studyData } = setup_5_36781();
-  let transformedData = reportInstance.transformData(count, { counts, studyData });
+  const {
+    countLocation,
+    counts,
+    study,
+    studyData,
+  } = setup_5_36781();
+  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   const { hours, px, stats } = transformedData;
-  expect(hours).toBe(StudyHours.SCHOOL);
+  expect(hours).toBe(StudyHours.ROUTINE);
   expect(px).toBe(1390);
   transformedData = stats;
 
@@ -121,9 +126,14 @@ test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/367
 
 test('ReportCountSummaryTurningMovement#generateCsv [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
-  const { count, counts, studyData } = setup_5_36781();
-  const transformedData = reportInstance.transformData(count, { counts, studyData });
+  const {
+    countLocation,
+    counts,
+    study,
+    studyData,
+  } = setup_5_36781();
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   expect(() => {
-    reportInstance.generateCsv(count, transformedData);
+    reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
 });
