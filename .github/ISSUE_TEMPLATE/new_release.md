@@ -19,19 +19,18 @@ All CI checks pass:
 - [ ] `npm run frontend:build` (to fix: address build errors)
 - [ ] `npm run docs:build` (to fix: address build errors)
 
-Manual browser testing:
-- [ ] Chrome
-- [ ] Edge
-- [ ] Firefox
-
-Manual browser testing - feature list:
-- [ ] TODO: add features
-
 Before deployment:
 - [ ] `CHANGELOG.md` is updated to include details of new release
 - [ ] version bumped to `[TODO: NEW_VERSION]` in `package.json` using `npm version [TODO: patch|minor|major]`
 - [ ] above changes reviewed and merged to `master`
+- [ ] `master` pushed to GitLab to initiate CI / CD
 
-Deployment:
-- [ ] new version pushed pushed to CodeCommit
-- [ ] deployment to AWS succeeds
+See [GitLab CI/CD dashboard](https://gitlab.bdit.intra.prod-toronto.ca/move-team/bdit_flashcrow/pipelines) once pushed.
+
+If promoting to QA:
+- [ ] `master` merged up into `deploy-qa`
+- [ ] `deploy-qa` pushed to GitLab to initiate CI / CD
+
+If promoting to production:
+- [ ] `deploy-qa` merged up into `deploy-prod`
+- [ ] `deploy-prod` pushed to GitLab to initiate CI / CD

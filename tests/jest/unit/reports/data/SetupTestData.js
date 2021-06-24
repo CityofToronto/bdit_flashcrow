@@ -34,7 +34,6 @@ function setup_4_2156283() {
     hours: null,
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
-    // TODO: geom as point location?
   };
   const countLocation = {
     id: 2946,
@@ -42,7 +41,6 @@ function setup_4_2156283() {
     description: 'MORNINGSIDE AVE S OF LAWRENCE AVE',
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
-    // TODO: geom as point location?
   };
   const counts = [{
     id: 2156283,

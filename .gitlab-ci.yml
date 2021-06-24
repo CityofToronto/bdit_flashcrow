@@ -40,7 +40,7 @@ test-ci-rest:
   only:
     - /^gh.*-version-.*$/
 
-# deploy master to dev automatically
+# master -> AWS dev
 deploy-dev:
   stage: deploy
   script:
@@ -48,7 +48,7 @@ deploy-dev:
   only:
     - master
 
-# deploy QA branch automatically
+# deploy-qa -> AWS QA
 deploy-qa:
   stage: deploy
   script:
@@ -56,11 +56,11 @@ deploy-qa:
   only:
     - deploy-qa
 
-# deploy prod manually after approval
+# deploy-prod -> AWS prod
+# WARNING: only push here with Change Advisory Board approval
 deploy-prod:
   stage: deploy
   script:
     - ./scripts/deployment/code-commit/deploy_code_commit.sh
   only:
     - deploy-prod
-  when: manual

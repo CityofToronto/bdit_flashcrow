@@ -58,8 +58,6 @@ class AnalyticsClient {
   static getAnalyticsDomain() {
     const { domain } = window.document;
     if (domain === 'localhost') {
-      // TODO: remove this once we've tested everything, but keep the function so we have a
-      // layer of indirection in case we need to do something like this
       return 'move.intra.dev-toronto.ca';
     }
     return domain;
@@ -356,7 +354,7 @@ class AnalyticsClient {
     try {
       await window.fetch(url, options);
     } catch (err) {
-      // TODO: log this error once we have frontend logging functionality
+      // TODO: log this error once we have frontend logging functionality (#978)
     }
   }
 }

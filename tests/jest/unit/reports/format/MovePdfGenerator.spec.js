@@ -48,7 +48,6 @@ function setup_4_2156283_single() {
     hours: null,
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
-    // TODO: geom as point location?
   };
   StudyDAO.byStudyTypeAndCountGroup.mockResolvedValue(study);
 
@@ -58,7 +57,6 @@ function setup_4_2156283_single() {
     description: 'MORNINGSIDE AVE S OF LAWRENCE AVE',
     centrelineId: 108387,
     centrelineType: CentrelineType.SEGMENT,
-    // TODO: geom as point location?
   };
   CountLocationDAO.byStudy.mockResolvedValue(countLocation);
 

@@ -104,7 +104,6 @@ export default {
       this.setToastInfo(`Removed collision filter: ${filter.label}.`);
     },
     actionRemoveFilterCommon(filter) {
-      // TODO: implement this
       this.removeFilterCommon(filter);
       this.setToastInfo(`Removed filter: ${filter.label}.`);
     },

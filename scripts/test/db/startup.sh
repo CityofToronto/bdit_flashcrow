@@ -29,8 +29,6 @@ RAMDISK_PGPASS="${RAMDISK_MOUNT_POINT}/.pgpass"
 RAMDISK_DATA_DIR="${RAMDISK_MOUNT_POINT}/pg_data_dir"
 
 if [ ! -f "${FLASHCROW_DEV_DATA}" ]; then
-  # TODO: in this case, we should scp it from ETL directly!
-  # However, that requires the SSH key to be provided.
   echo "cannot find ${FLASHCROW_DEV_DATA}; did you copy it from ETL?"
   exit 1
 fi

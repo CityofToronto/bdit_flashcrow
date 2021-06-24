@@ -479,7 +479,7 @@ export default {
      * For usability, this matching is somewhat fuzzy: it will find the highest-priority
      * feature within a 20x20 bounding box centered on `point`.
      *
-     * TODO: within layers, rank by closest to `point`
+     * TODO: within layers, rank by closest to `point` (#982)
      *
      * @param {Object} point - `(x, y)` coordinates of mouse
      * @returns {Object?} the matched feature, or `null` if no such feature

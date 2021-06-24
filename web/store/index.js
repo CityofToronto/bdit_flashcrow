@@ -38,7 +38,6 @@ export default new Vuex.Store({
     trackRequests,
     viewData,
   },
-  // TODO: organize state below
   state: {
     // AUTH / HELPERS STATE
     auth: {
