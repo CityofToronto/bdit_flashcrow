@@ -13,8 +13,8 @@ Maintenance tasks:
 - [ ] `npx browserslist@latest --update-db`
 
 All CI checks pass:
-- [ ] `npm run ci:npm-outdated` (to fix: update `package.json`, `npm install`; if upgrading a package breaks MOVE, add it to `.ncurc.json`)
-- [ ] `npm run ci:npm-audit` (to fix: `npm audit fix`; if issues remain, `npx resolve-audit`)
+- [ ] `npm run ci:npm-outdated` (to fix: update `package.json`, `npm install`; if upgrading a package breaks MOVE, add it to `.ncurc.json`, and create an issue to resolve)
+- [ ] `npm run ci:npm-audit` (to fix: `npm audit fix`; if issues remain, `npx resolve-audit`, and respond `iW` (ignore for a week) to all flagged issues)
 - [ ] `npm run ci:jest-coverage` (to fix: add / improve tests, address test failures!)
 - [ ] `npm run frontend:build` (to fix: address build errors)
 - [ ] `npm run docs:build` (to fix: address build errors)
