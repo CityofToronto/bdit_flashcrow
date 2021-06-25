@@ -36,6 +36,8 @@ import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
 import FcReportHeader
   from '@/web/components/reports/FcReportHeader.vue';
+import FcReportInfo
+  from '@/web/components/reports/FcReportInfo.vue';
 import FcReportMetadata
   from '@/web/components/reports/FcReportMetadata.vue';
 import FcReportPageBreak
@@ -48,6 +50,7 @@ export default {
   components: {
     FcReportBarChart,
     FcReportHeader,
+    FcReportInfo,
     FcReportMetadata,
     FcReportPageBreak,
     FcReportTable,

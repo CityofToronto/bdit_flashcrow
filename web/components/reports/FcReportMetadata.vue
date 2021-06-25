@@ -4,7 +4,7 @@
       v-for="({ cols, name, value }, i) in entries"
       :key="i"
       :cols="cols">
-      <dt class="subtitle-1">{{name}}</dt>
+      <dt class="subtitle-1 font-weight-medium">{{name}}</dt>
       <dd class="mt-1 display-1 font-weight-medium">
         <FcTextReportValue
           text-null="None"
