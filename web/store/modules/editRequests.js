@@ -31,8 +31,7 @@ function getMostRecentByStudyType(studySummaryPerLocation, i) {
   const mostRecentByStudyType = new Map(
     StudyType.enumValues.map(studyType => [studyType, null]),
   );
-  studySummaryPerLocation.forEach(({ category, perLocation }) => {
-    const { studyType } = category;
+  studySummaryPerLocation.forEach(({ perLocation, studyType }) => {
     const { mostRecent } = perLocation[i];
     mostRecentByStudyType.set(studyType, mostRecent);
   });
