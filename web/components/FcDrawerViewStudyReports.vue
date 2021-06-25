@@ -139,7 +139,9 @@
         <div
           v-else
           class="fc-report-wrapper pa-3">
-          <FcReport v-bind="reportLayout" />
+          <FcReport
+            :study-type="studyType"
+            v-bind="reportLayout" />
         </div>
       </section>
     </template>

@@ -4,14 +4,23 @@
       <legend class="headline">Study Types</legend>
 
       <template v-for="studyType in StudyType.enumValues">
-        <v-checkbox
-          v-if="studyType.dataAvailable"
-          :key="studyType.name"
-          v-model="internalValue.studyTypes"
-          class="mt-2"
-          hide-details
-          :label="studyType.label"
-          :value="studyType"></v-checkbox>
+        <template v-if="studyType.dataAvailable">
+          <v-checkbox
+            :key="studyType.name"
+            v-model="internalValue.studyTypes"
+            class="mt-2"
+            hide-details
+            :label="studyType.label"
+            :value="studyType" />
+          <div
+            v-if="studyType.beta !== null"
+            :key="studyType.name + '_beta'"
+            class="ml-2">
+            <FcTextStudyTypeBeta
+              class="ml-12"
+              :study-type="studyType" />
+          </div>
+        </template>
       </template>
     </fieldset>
 
@@ -35,11 +44,15 @@ import {
   StudyHours,
   StudyType,
 } from '@/lib/Constants';
+import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 export default {
   name: 'FcStudyFilters',
   mixins: [FcMixinVModelProxy(Object)],
+  components: {
+    FcTextStudyTypeBeta,
+  },
   data() {
     return {
       StudyHours,

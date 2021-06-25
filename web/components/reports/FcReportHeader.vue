@@ -14,6 +14,13 @@
         <span class="sr-only">{{subinfo}}</span>
       </h3>
     </div>
+    <div
+      v-if="studyType !== null && studyType.beta !== null"
+      class="beta-wrapper ml-4">
+      <FcTextStudyTypeBeta
+        large
+        :study-type="studyType" />
+    </div>
 
     <v-spacer></v-spacer>
 
@@ -25,13 +32,21 @@
 </template>
 
 <script>
-import { ORG_NAME, ReportType } from '@/lib/Constants';
+import { ORG_NAME, ReportType, StudyType } from '@/lib/Constants';
+import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 
 export default {
   name: 'FcReportHeader',
+  components: {
+    FcTextStudyTypeBeta,
+  },
   props: {
     info: String,
     subinfo: String,
+    studyType: {
+      type: StudyType,
+      default: null,
+    },
     type: ReportType,
   },
   data() {
@@ -45,5 +60,10 @@ export default {
 <style lang="scss">
 .fc-report-header {
   color: var(--v-primary-base);
+
+  & .beta-wrapper {
+    line-height: 16px;
+    width: 363px;
+  }
 }
 </style>

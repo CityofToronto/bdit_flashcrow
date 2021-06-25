@@ -19,7 +19,13 @@
           class="align-center d-flex pr-5"
           :class="i === 0 ? 'mb-4' : 'my-4'">
           <div class="body-1 flex-grow-1 flex-shrink-1">
-            <div>{{item.studyType.label}}</div>
+            <div>
+              {{item.studyType.label}}
+              <FcTextStudyTypeBeta
+                class="ml-2"
+                small
+                :study-type="item.studyType" />
+            </div>
             <div class="mt-1">
               <FcTextMostRecent
                 v-if="item.mostRecent !== null"
@@ -49,6 +55,7 @@
 import { mapGetters } from 'vuex';
 
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -59,6 +66,7 @@ export default {
     FcButton,
     FcProgressLinear,
     FcTextMostRecent,
+    FcTextStudyTypeBeta,
     FcTextSummaryFraction,
   },
   props: {

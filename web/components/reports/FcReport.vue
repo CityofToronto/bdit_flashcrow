@@ -1,6 +1,7 @@
 <template>
   <article class="fc-report">
     <FcReportHeader
+      :study-type="studyType"
       :type="type"
       v-bind="header" />
     <div>
@@ -29,7 +30,7 @@
 </template>
 
 <script>
-import { ReportType } from '@/lib/Constants';
+import { ReportType, StudyType } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 import FcReportBarChart
   from '@/web/components/reports/FcReportBarChart.vue';
@@ -55,6 +56,10 @@ export default {
     content: Array,
     generatedAt: DateTime,
     header: Object,
+    studyType: {
+      type: StudyType,
+      default: null,
+    },
     type: ReportType,
   },
 };

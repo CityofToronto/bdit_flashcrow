@@ -24,6 +24,10 @@
           <v-expansion-panel-header class="pr-8">
             <div class="body-1">
               {{item.studyType.label}}
+              <FcTextStudyTypeBeta
+                class="ml-2"
+                small
+                :study-type="item.studyType" />
             </div>
             <v-spacer></v-spacer>
             <FcTextSummaryFraction
@@ -78,6 +82,7 @@ import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
+import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -90,6 +95,7 @@ export default {
     FcListLocationMulti,
     FcProgressLinear,
     FcTextMostRecent,
+    FcTextStudyTypeBeta,
     FcTextSummaryFraction,
   },
   props: {
