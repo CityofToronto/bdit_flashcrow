@@ -184,7 +184,12 @@ export default {
       const filterChipsStudy = [];
       if (studyTypes.length > 0) {
         const label = studyTypes
-          .map(({ label: studyTypeLabel }) => studyTypeLabel)
+          .map(({ beta, label: studyTypeLabel }) => {
+            if (beta === null) {
+              return studyTypeLabel;
+            }
+            return `${studyTypeLabel} (Beta)`;
+          })
           .join(', ');
         const filterChip = { filter: 'studyTypes', label, value: studyTypes };
         filterChipsStudy.push(filterChip);

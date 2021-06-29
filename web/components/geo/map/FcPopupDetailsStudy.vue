@@ -46,11 +46,15 @@ export default {
       const description = [];
 
       studySummary.forEach(({ mostRecent, studyType }) => {
-        const { label } = studyType;
+        const { beta, label } = studyType;
         const { startDate } = mostRecent;
+        let studyTypeStr = label;
+        if (beta !== null) {
+          studyTypeStr = `${studyTypeStr} (Beta)`;
+        }
         const startDateStr = TimeFormatters.formatDefault(startDate);
         const dayOfWeek = TimeFormatters.formatDayOfWeek(startDate);
-        const studyStr = `${label}: ${startDateStr} (${dayOfWeek})`;
+        const studyStr = `${studyTypeStr}: ${startDateStr} (${dayOfWeek})`;
         description.push(studyStr);
       });
 
