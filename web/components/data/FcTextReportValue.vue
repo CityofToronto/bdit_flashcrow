@@ -17,7 +17,14 @@
       <span v-else>{{textNull}}</span>
     </template>
     <span v-else-if="Number.isFinite(value)">{{value | number}}</span>
-    <span v-else>{{value}}</span>
+    <template v-else>
+      <span
+        v-for="(line, i) in valueLines"
+        :key="i">
+        <br v-if="i > 0" />
+        <span>{{line}}</span>
+      </span>
+    </template>
   </span>
 </template>
 
@@ -32,6 +39,17 @@ export default {
     value: {
       type: [Boolean, Number, String],
       default: null,
+    },
+  },
+  computed: {
+    valueLines() {
+      if (this.value === true
+        || this.value === false
+        || this.value === null
+        || Number.isFinite(this.value)) {
+        return [];
+      }
+      return this.value.split('\n');
     },
   },
 };
