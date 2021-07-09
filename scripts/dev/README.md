@@ -144,34 +144,12 @@ The `session` secret can be anything - e.g. the result of `uuidgen -r`.  The `op
 
 One final piece: MOVE relies on a number of database schemas, views, and tables for traffic count and collision data.
 
-In development, this is managed by a file `flashcrow-dev-data.sql`.  We have a version of this file available for City of Toronto developers, but currently we have neither an externally-available version nor any documentation on how to create one!  It's likely that this will come with efforts scheduled for Q1 / Q2 2021 to improve database documentation.
+In development, this is managed by a file `flashcrow-dev-data.sql`.  We have a version of this file available for City of Toronto developers, but currently we have neither an externally-available version nor any documentation on how to create one!  This may change in the future, but for now we have no immediate plans to fix it; given limited team resources, our priority at this time is supporting internal City of Toronto development.
 
 If you have access to such a file, though, there are two requirements:
 
 - place it at `~/flashcrow-dev-data.sql`;
 - load it into your development database using `psql -U flashcrow < ~/flashcrow-dev-data.sql`.
-
-### Additional Steps
-
-For linting bash scripts as part of our pre-commit checks, you'll need to install `ShellCheck`:
-
-```bash
-sudo yum install -y ShellCheck
-```
-
-You'll also need to manually load the `collision_factors` schema:
-
-```bash
-psql -U flashcrow < ~/flashcrow/scripts/test/db/collision_factors.sql
-```
-
-Finally, you'll need to run this command so the `pgrouting` function `pgr_astar` works properly in local development:
-
-```bash
-sudo ldconfig /usr/local/lib64
-```
-
-These steps will be included in future versions of the `vagrant` VM base box and/or provisioning script.
 
 ### Run!
 
@@ -199,7 +177,7 @@ If you encounter issues installing MOVE, document the problem and solution / wor
 
 ### Error: unknown encoding name from `vagrant up` on host machine
 
-To fix this, you can change the active codepage:
+This can happen if you're running `vagrant` from a Windows host.  To fix it, change the active codepage:
 
 ```powershell
 chcp 1252
