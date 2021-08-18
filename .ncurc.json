@@ -5,7 +5,6 @@
     "d3-axis",
     "d3-scale",
     "d3-selection",
-    "jsdom",
     "luxon",
     "sass-loader"
   ]
