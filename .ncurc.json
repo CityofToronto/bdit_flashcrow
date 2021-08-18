@@ -7,7 +7,6 @@
     "d3-selection",
     "jsdom",
     "luxon",
-    "pdfmake",
     "sass-loader"
   ]
 }

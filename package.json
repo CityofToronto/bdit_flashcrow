@@ -59,7 +59,7 @@
     "module-alias": "^2.2.2",
     "mustache": "^4.2.0",
     "openid-client": "^4.7.4",
-    "pdfmake": "^0.1.71",
+    "pdfmake": "^0.2.2",
     "pg-boss": "^6.2.1",
     "pg-promise": "^10.11.0",
     "uuid": "^8.3.2",
