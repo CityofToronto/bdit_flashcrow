@@ -1,6 +1,6 @@
 {
   "name": "bdit_flashcrow",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
   "scripts": {
