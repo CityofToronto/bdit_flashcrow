@@ -5,7 +5,6 @@ import db from '@/lib/db/db';
 import StudyRequestDAO from '@/lib/db/StudyRequestDAO';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import UserDAO from '@/lib/db/UserDAO';
-import CompositeId from '@/lib/io/CompositeId';
 import StudyRequest from '@/lib/model/StudyRequest';
 import StudyRequestBulk from '@/lib/model/StudyRequestBulk';
 import {
@@ -56,10 +55,8 @@ function correctStudyRequestBulkLocation(transientStudyRequestBulk, centrelineAl
   const studyRequests = transientStudyRequestBulk.studyRequests.map(
     transientStudyRequest => correctStudyRequestLocation(transientStudyRequest, centrelineAll),
   );
-  const s1 = CompositeId.encode(studyRequests);
   return {
     ...transientStudyRequestBulk,
-    s1,
     studyRequests,
   };
 }
