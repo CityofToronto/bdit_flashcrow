@@ -32,7 +32,7 @@
     "test:test-unit": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"unit/**\" jest --runInBand"
   },
   "dependencies": {
-    "@hapi/boom": "^9.1.3",
+    "@hapi/boom": "^9.1.4",
     "@hapi/cookie": "^11.0.2",
     "@hapi/crumb": "^8.0.1",
     "@hapi/hapi": "^20.1.5",
@@ -40,7 +40,7 @@
     "@hapi/vision": "^6.1.0",
     "@mdi/font": "^5.9.55",
     "archiver": "^5.3.0",
-    "aws-sdk": "^2.970.0",
+    "aws-sdk": "^2.973.0",
     "axios": "^0.21.1",
     "csv-stringify": "^5.6.2",
     "d3-array": "^2.12.1",
@@ -88,7 +88,7 @@
     "documentation": "^13.2.5",
     "eslint": "^7.32.0",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-import": "^2.24.1",
     "eslint-plugin-vue": "^7.16.0",
     "glob": "^7.1.7",
     "jest": "^27.0.6",
