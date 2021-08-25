@@ -30,7 +30,7 @@
       external
       icon="help-circle-outline"
       label="MOVE Help Centre"
-      href="https://flashcrow-etladmin.intra.dev-toronto.ca/move-help-centre/" />
+      href="https://bditto.notion.site/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc" />
     <FcDashboardNavItem
       external
       icon="bug"
