@@ -26,7 +26,7 @@ test('PoiController.getPoiByCentrelineSummary', async () => {
   let response = await client.fetch('/poi/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expect(response.result.hospital).toEqual(null);
-  expect(response.result.school.id).toEqual(898);
+  expect(response.result.school.id).toEqual(998);
   expect(response.result.school.geom_dist).toBeCloseTo(296.029139382713);
 
   data = {

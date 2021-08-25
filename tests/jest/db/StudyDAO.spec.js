@@ -4,7 +4,16 @@ import StudyDAO from '@/lib/db/StudyDAO';
 import Joi from '@/lib/model/Joi';
 import Study from '@/lib/model/Study';
 import StudyFilters from '@/lib/model/StudyFilters';
+import {
+  toMatchNumPerStudyType,
+  toMatchNumPerStudyTypeAndLocation,
+} from '@/lib/test/ExpectMatchers';
 import DateTime from '@/lib/time/DateTime';
+
+expect.extend({
+  toMatchNumPerStudyType,
+  toMatchNumPerStudyTypeAndLocation,
+});
 
 afterAll(() => {
   db.$pool.end();
@@ -115,15 +124,6 @@ test('StudyDAO.byCentreline [pagination]', async () => {
   }
 });
 
-function expectNumPerStudyTypeStudy(actual, expected) {
-  expect(actual).toHaveLength(expected.length);
-  expected.forEach(([n0, value0], i) => {
-    const { n, studyType: { name: value } } = actual[i];
-    expect(n).toBe(n0);
-    expect(value).toBe(value0);
-  });
-}
-
 test('StudyDAO.byCentrelineSummary [invalid feature]', async () => {
   const features = [
     { centrelineId: 0, centrelineType: CentrelineType.INTERSECTION },
@@ -133,7 +133,7 @@ test('StudyDAO.byCentrelineSummary [invalid feature]', async () => {
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyType([]);
 });
 
 test('StudyDAO.byCentrelineSummary [invalid date range]', async () => {
@@ -147,7 +147,7 @@ test('StudyDAO.byCentrelineSummary [invalid date range]', async () => {
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyType([]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, no studies]', async () => {
@@ -157,7 +157,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, no studies]', async () => {
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyType([]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, some studies]', async () => {
@@ -174,7 +174,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, some studies]', async () => {
       studyType: Joi.enum().ofType(StudyType).required(),
     }),
   );
-  expectNumPerStudyTypeStudy(studySummary, [[2, 'ATR_SPEED_VOLUME'], [4, 'ATR_VOLUME']]);
+  expect(studySummary).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME'], [4, 'ATR_VOLUME']]);
   await expect(
     studySummarySchema.validateAsync(studySummary),
   ).resolves.toEqual(studySummary);
@@ -190,7 +190,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, date range filters to empty]'
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyType([]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, lots of studies]', async () => {
@@ -200,7 +200,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, lots of studies]', async () =
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, [[3, 'ATR_VOLUME'], [3633, 'RESCU'], [2, 'TMC']]);
+  expect(studySummary).toMatchNumPerStudyType([[3, 'ATR_VOLUME'], [3633, 'RESCU'], [2, 'TMC']]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, lots of studies, date range filters to empty]', async () => {
@@ -213,7 +213,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, lots of studies, date range f
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyType([]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, lots of studies, date range filters to less]', async () => {
@@ -226,7 +226,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, lots of studies, date range f
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, [[187, 'RESCU']]);
+  expect(studySummary).toMatchNumPerStudyType([[187, 'RESCU']]);
 });
 
 test('StudyDAO.byCentrelineSummary [valid feature, multiple study types]', async () => {
@@ -236,19 +236,8 @@ test('StudyDAO.byCentrelineSummary [valid feature, multiple study types]', async
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummary(features, studyQuery);
-  expectNumPerStudyTypeStudy(studySummary, [[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
+  expect(studySummary).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
 });
-
-function expectNumPerStudyTypeAndLocationStudy(actual, expected) {
-  expect(actual).toHaveLength(expected.length);
-  expected.forEach(([ns0, value0], i) => {
-    const { perLocation, studyType: { name: value } } = actual[i];
-    perLocation.forEach(({ n }, j) => {
-      expect(n).toBe(ns0[j]);
-    });
-    expect(value).toBe(value0);
-  });
-}
 
 test('StudyDAO.byCentrelineSummaryPerLocation [invalid feature]', async () => {
   // invalid feature
@@ -260,7 +249,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [invalid feature]', async () => {
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [invalid date range]', async () => {
@@ -275,7 +264,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [invalid date range]', async () =>
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, no studies]', async () => {
@@ -285,7 +274,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, no studies]', asyn
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
@@ -306,8 +295,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, some studies]', as
       studyType: Joi.enum().ofType(StudyType).required(),
     }),
   );
-  expectNumPerStudyTypeAndLocationStudy(
-    studySummary,
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation(
     [[[2], 'ATR_SPEED_VOLUME'], [[4], 'ATR_VOLUME']],
   );
   await expect(
@@ -325,7 +313,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, some studies, date
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies]', async () => {
@@ -335,7 +323,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies]',
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, [[[3], 'ATR_VOLUME'], [[3633], 'RESCU'], [[2], 'TMC']]);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([[[3], 'ATR_VOLUME'], [[3633], 'RESCU'], [[2], 'TMC']]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies, date range filters to empty]', async () => {
@@ -348,7 +336,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies, d
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, []);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies, date range filters to less]', async () => {
@@ -361,7 +349,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, lots of studies, d
   };
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, [[[187], 'RESCU']]);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([[[187], 'RESCU']]);
 });
 
 test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, multiple study types]', async () => {
@@ -371,7 +359,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, multiple study typ
   let studyQuery = {};
   studyQuery = await Joi.object().keys(StudyFilters).validateAsync(studyQuery);
   const studySummary = await StudyDAO.byCentrelineSummaryPerLocation(features, studyQuery);
-  expectNumPerStudyTypeAndLocationStudy(studySummary, [[[2], 'ATR_SPEED_VOLUME'], [[1], 'ATR_VOLUME']]);
+  expect(studySummary).toMatchNumPerStudyTypeAndLocation([[[2], 'ATR_SPEED_VOLUME'], [[1], 'ATR_VOLUME']]);
 });
 
 test('StudyDAO.byCentrelineTotal [invalid feature]', async () => {

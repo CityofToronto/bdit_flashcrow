@@ -16,7 +16,7 @@ test('PoiDAO.byCentrelineSummary [invalid centreline]', async () => {
 test('PoiDAO.byCentrelineSummary', async () => {
   let result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT, 1000);
   expect(result.hospital).toEqual(null);
-  expect(result.school.id).toEqual(898);
+  expect(result.school.id).toEqual(998);
   expect(result.school.geom_dist).toBeCloseTo(296.029139382713);
   expect(result.trafficSignal).toEqual(null);
 
