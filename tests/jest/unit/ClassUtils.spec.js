@@ -94,6 +94,21 @@ test('Enum enumValues', () => {
   expect(() => {
     CssColor.enumValueOf(1729, 'invalidProp');
   }).toThrow();
+  expect(() => {
+    CssColor.enumValueOf(null, 'hex');
+  }).toThrow();
+});
+
+test('Enum.enumValueOfSafe', () => {
+  colorValues.forEach((name) => {
+    expect(Color.enumValueOfSafe(name)).toBe(Color[name]);
+  });
+  expect(CssColor.enumValueOfSafe('#f00', 'hex')).toBe(CssColor.RED);
+  expect(CssColor.enumValueOfSafe('#0f0', 'hex')).toBe(CssColor.GREEN);
+  expect(CssColor.enumValueOfSafe('#00f', 'hex')).toBe(CssColor.BLUE);
+  expect(CssColor.enumValueOfSafe('#caf', 'hex')).toBeNull();
+  expect(CssColor.enumValueOfSafe(1729, 'invalidProp')).toBeNull();
+  expect(CssColor.enumValueOfSafe(null, 'hex')).toBeNull();
 });
 
 test('Enum with getters', () => {
