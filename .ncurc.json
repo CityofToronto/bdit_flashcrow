@@ -5,6 +5,7 @@
     "d3-axis",
     "d3-scale",
     "d3-selection",
+    "sass",
     "sass-loader"
   ]
 }
