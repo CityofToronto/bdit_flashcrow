@@ -17,6 +17,8 @@ Most of MOVE development takes place in a Vagrant VM.  This helps ensure that al
 
 ## General Assumptions
 
+### Operating System: Windows
+
 This guide assumes you're running Windows 10.  However, MOVE development itself takes place within a Linux-based VM managed by `vagrant`.  If you're using a different operating system:
 
 - install mentioned packages and utilities using the appropriate package manager;
@@ -24,25 +26,45 @@ This guide assumes you're running Windows 10.  However, MOVE development itself 
 
 We also assume that you'll be using Visual Studio Code with remote development over SSH for development.  (You can use other tools, but our configurations are tailored to this particular IDE setup, and we don't have the resources to manage multiple IDE configurations.)
 
-## City of Toronto Developers: Read This!
+### You: City of Toronto Developer
 
-Developers at the City of Toronto have a few additional steps, as well as some configurations that are specific to the internal City environment.  See [City of Toronto Installation Specifics](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb), and refer to that guide throughout this process for further details.
+For now, these instructions assume you're a developer at the City of Toronto.  We refer to several private config files, which are available on our internal wiki.  Currently we have neither externally-available versions nor any documentation on how to create them!
+
+This may change in the future, but for now we have no immediate plans to fix it.  Given limited team resources, our priority at this time is supporting internal City of Toronto development.
+
+See [City of Toronto Installation Specifics (internal-only)](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb) for links to those files, as well as for information on configuring your system to use the corporate proxy.
 
 ## Set up System Prerequisites
 
-### Command-Line Tools: `git` and `vagrant`
+You will need the following tools and applications to set up the MOVE development VM.
 
-Install [`git`](https://git-scm.com/) and [`vagrant`](https://www.vagrantup.com/downloads) for use on the command line.
+### Command-Line Tools: `git`, `ssh`, `vagrant`
 
-[`scoop`](https://scoop.sh/) can help install these on Windows; for other operating systems, use the appropriate package manager.
+Install [`git`](https://git-scm.com/) and [`vagrant`](https://www.vagrantup.com/downloads) for use on the command line.  For Windows machines, you'll also have to install OpenSSH.
+
+[`scoop`](https://scoop.sh/) can help install these on Windows.  For instance:
+
+```powershell
+scoop install git-with-openssh vagrant
+```
 
 ### VirtualBox
 
 Install [VirtualBox](https://www.virtualbox.org/) as described on the VirtualBox site.
 
+### Visual Studio Code
+
+Install [Visual Studio Code](https://code.visualstudio.com/).
+
+It is highly recommended that you use Visual Studio Code.  The MOVE repo comes with a Visual Studio Code workspace configuration; given limited team resources, we cannot support development in other IDEs / editors.
+
+If you already have Visual Studio Code installed, make sure that you have updated to version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
+
 ## Clone the MOVE repository
 
-Although development takes place within a Vagrant VM, you'll still need the Vagrant configuration from our repository.  You can install that once you clone the repo:
+Although development takes place within a Vagrant VM, we still clone the repo to the host machine so that we can use the Vagrant configuration from our repository.
+
+To clone the repo:
 
 ```powershell
 git clone https://github.com/CityofToronto/bdit_flashcrow.git
@@ -61,17 +83,13 @@ That's it!  This should install and run the development VM.  The first time you 
 
 ## Set up IDE
 
-It is highly recommended that you use [Visual Studio Code](https://code.visualstudio.com/).  The MOVE repo comes with a Visual Studio Code workspace configuration; to work in other editors, you will have to roll your own configuration.
+This section walks you through the setup of Visual Studio Code.
 
-If you already have Visual Studio Code installed, make sure that you have updated to version 1.35 or later, as that version introduced support for [remote development over SSH](https://code.visualstudio.com/docs/remote/ssh).
-
-### Install Visual Studio Code
-
-If you already have Visual Studio Code, update it to the latest version.  Otherwise, you can download the installer from the [Visual Studio Code website](https://code.visualstudio.com/) and run it.
+### Install Extensions
 
 Open Visual Studio Code and install the [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) extension pack using the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-gallery).
 
-The list of extensions we use is documented in `bdit-flashcrow.code-workspace`; Visual Studio Code should automatically recommend these extensions and prompt you to install them.
+The list of extensions we use is documented in `bdit-flashcrow.code-workspace`; Visual Studio Code should automatically recommend these extensions and prompt you to install them.  Note that you only need to install the "Workplace Recommendations".
 
 ### SSH Configuration
 
@@ -105,51 +123,28 @@ At this point, you've set up a development environment using the `vagrant` VM!  
 
 MOVE depends on two private configuration files: `lib/config/private.js` and `ssl/extra-ca-certs.cer`.  Both files are `.gitignore`'d, to prevent them from being committed to source control.
 
-`lib/config/private.js` is used to configure session secrets.  At the very least, you will require OpenID Connect credentials (in `openId`) and a `session` secret, and you will need these for both a `development` and a `test` environment:
+`lib/config/private.js` is used to configure session secrets, while `extra-ca-certs.cer` contains any self-signed SSL certificates that you want to mark as trusted.
 
-```js
-export default {
-  development: {
-    openId: {
-      // OpenID connect credentials
-      clientMetadata: {
-        client_id:
-        token_endpoint_auth_method:
-      },
-    },
-    session: {
-      // session secret
-      password:
-    },
-  },
-  test: {
-    openId: {
-      clientMetadata: {
-        client_id:
-        token_endpoint_auth_method:
-      },
-    },
-    session: {
-      password:
-    },
-  },
-};
-```
-
-The `session` secret can be anything - e.g. the result of `uuidgen -r`.  The `openId` configuration should refer to an OpenID Connect-based authentication service.  You can use the same configuration for both environments, or you can use different configurations.
-
-`extra-ca-certs.cer` is used in case your `openId` configuration points to an OpenID Connect-based authentication service that uses self-signed SSL certificates.  If this is the case, copy-paste the full certificate chain into this file.  If not, you should still create this file, but can leave it empty.
+See [City of Toronto Installation Specifics (internal-only)](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb) for links to those files.
 
 ### Development Dataset
 
-One final piece: MOVE relies on a number of database schemas, views, and tables for traffic count and collision data.
+MOVE relies on a number of database schemas, views, and tables for traffic count and collision data.
 
-In development, this is managed by a file `flashcrow-dev-data.sql`.  We have a version of this file available for City of Toronto developers, but currently we have neither an externally-available version nor any documentation on how to create one!  This may change in the future, but for now we have no immediate plans to fix it; given limited team resources, our priority at this time is supporting internal City of Toronto development.
-
-If you have access to such a file, though, there are two requirements:
+In development, this is managed by a file `flashcrow-dev-data.sql`, which is available to internal City of Toronto developers.  You should do two things with this file:
 
 - place it at `~/flashcrow-dev-data.sql`;
 - load it into your development database using `psql -U flashcrow < ~/flashcrow-dev-data.sql`.
+
+See [City of Toronto Installation Specifics (internal-only)](https://www.notion.so/bditto/City-of-Toronto-Installation-Specifics-27f8e51998e64d4dabc47d8d74a8c4eb) for instructions on installing this file.
+
+### Database Updates
+
+One final step before we can run MOVE: we need to update the database schema to the most recent version.  To do that, run our database update script:
+
+```bash
+~/flashcrow/scripts/db/db-update.sh --psqlArgs "-h localhost -U flashcrow flashcrow"
+```
 
 ### Run!
 
