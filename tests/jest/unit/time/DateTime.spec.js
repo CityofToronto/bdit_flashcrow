@@ -9,10 +9,7 @@ const TIME_DST_TRANSITION = 719990241967;
 
 test('DateTime.local', () => {
   const dt = DateTime.local();
-  expect(dt.zone).toEqual({
-    valid: true,
-    zoneName: Settings.defaultZoneName,
-  });
+  expect(dt.zone).toEqual(Settings.defaultZone);
 });
 
 test('DateTime.fromLocaleString', () => {
@@ -27,10 +24,7 @@ test('DateTime.fromLocaleString', () => {
 
 test('DateTime.fromJSDate', () => {
   const dt = DateTime.fromJSDate(new Date());
-  expect(dt.zone).toEqual({
-    valid: true,
-    zoneName: Settings.defaultZoneName,
-  });
+  expect(dt.zone).toEqual(Settings.defaultZone);
 });
 
 test('DateTime#weekday', () => {

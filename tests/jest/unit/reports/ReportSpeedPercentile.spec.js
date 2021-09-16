@@ -18,6 +18,16 @@ expect.extend({
   toBeWithinTolerance,
 });
 
+test('ReportSpeedPercentile.getArrayPercentile', () => {
+  const xs = SPEED_CLASSES.map(() => 0);
+
+  xs[3] = 1;
+  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('30.8');
+
+  xs[4] = 1;
+  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('31.5');
+});
+
 test('ReportSpeedPercentile.getArrayStats', () => {
   const xs = SPEED_CLASSES.map(() => 0);
   expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
@@ -32,21 +42,21 @@ test('ReportSpeedPercentile.getArrayStats', () => {
   xs[3] = 1;
   expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
     total: 1,
-    pct15: 30,
-    pct50: 32,
-    pct85: 34,
-    pct95: 34,
-    mu: 32,
+    pct15: '30.8',
+    pct50: '32.5',
+    pct85: '34.3',
+    pct95: '34.8',
+    mu: '32.5',
   });
 
   xs[4] = 1;
   expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
     total: 2,
-    pct15: 31,
-    pct50: 35,
-    pct85: 38,
-    pct95: 39,
-    mu: 35,
+    pct15: '31.5',
+    pct50: '35.0',
+    pct85: '38.5',
+    pct95: '39.5',
+    mu: '35.0',
   });
 });
 
@@ -117,14 +127,14 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: ATR_SPEED_
      * The TraxPro reports only give hourly 85th and 95th percentile, so we have no
      * values to test against for the other hourly percentiles.
      */
-    expect(transformedData.countDataByHour[h].pct85).toBeWithinTolerance(pct85, 1);
-    expect(transformedData.countDataByHour[h].pct95).toBeWithinTolerance(pct95, 1);
+    expect(transformedData.countDataByHour[h].pct85).toBeWithinTolerance(pct85, 2);
+    expect(transformedData.countDataByHour[h].pct95).toBeWithinTolerance(pct95, 2);
   });
-  expect(transformedData.totalStats.pct15).toBeWithinTolerance(totalStats.pct15, 1);
-  expect(transformedData.totalStats.pct50).toBeWithinTolerance(totalStats.pct50, 1);
-  expect(transformedData.totalStats.pct85).toBeWithinTolerance(totalStats.pct85, 1);
-  expect(transformedData.totalStats.pct95).toBeWithinTolerance(totalStats.pct95, 1);
-  expect(transformedData.totalStats.mu).toBeWithinTolerance(totalStats.mu, 1);
+  expect(transformedData.totalStats.pct15).toBeWithinTolerance(totalStats.pct15, 2);
+  expect(transformedData.totalStats.pct50).toBeWithinTolerance(totalStats.pct50, 2);
+  expect(transformedData.totalStats.pct85).toBeWithinTolerance(totalStats.pct85, 2);
+  expect(transformedData.totalStats.pct95).toBeWithinTolerance(totalStats.pct95, 2);
+  expect(transformedData.totalStats.mu).toBeWithinTolerance(totalStats.mu, 2);
 
   /*
    * Speed class percentages should match to 3 decimal digits.

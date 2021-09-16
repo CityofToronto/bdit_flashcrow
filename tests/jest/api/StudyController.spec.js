@@ -8,8 +8,17 @@ import config from '@/lib/config/MoveConfig';
 import db from '@/lib/db/db';
 import CompositeId from '@/lib/io/CompositeId';
 import InjectBackendClient from '@/lib/test/api/InjectBackendClient';
+import {
+  toMatchNumPerStudyType,
+  toMatchNumPerStudyTypeAndLocation,
+} from '@/lib/test/ExpectMatchers';
 import DateTime from '@/lib/time/DateTime';
 import WebServer from '@/web/WebServer';
+
+expect.extend({
+  toMatchNumPerStudyType,
+  toMatchNumPerStudyTypeAndLocation,
+});
 
 let server;
 let client;
@@ -23,26 +32,6 @@ afterAll(async () => {
   await server.stop();
   db.$pool.end();
 }, 60000);
-
-function expectNumPerStudyTypeStudy(actual, expected) {
-  expect(actual).toHaveLength(expected.length);
-  expected.forEach(([n0, value0], i) => {
-    const { n, studyType: { name: value } } = actual[i];
-    expect(n).toBe(n0);
-    expect(value).toBe(value0);
-  });
-}
-
-function expectNumPerStudyTypeAndLocationStudy(actual, expected) {
-  expect(actual).toHaveLength(expected.length);
-  expected.forEach(([ns0, value0], i) => {
-    const { perLocation, studyType: { name: value } } = actual[i];
-    perLocation.forEach(({ n }, j) => {
-      expect(n).toBe(ns0[j]);
-    });
-    expect(value).toBe(value0);
-  });
-}
 
 test('StudyController.getStudiesByCentrelineSummary [invalid feature]', async () => {
   const features = [
@@ -90,8 +79,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(
-    response.result,
+  expect(response.result).toMatchNumPerStudyType(
     [[2, 'ATR_SPEED_VOLUME'], [4, 'ATR_VOLUME']],
   );
 });
@@ -104,7 +92,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[6, 'TMC']]);
+  expect(response.result).toMatchNumPerStudyType([[6, 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, date range filters to empty]', async () => {
@@ -135,7 +123,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by ty
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[2, 'ATR_SPEED_VOLUME']]);
+  expect(response.result).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by type: TMC]', async () => {
@@ -149,7 +137,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by ty
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[6, 'TMC']]);
+  expect(response.result).toMatchNumPerStudyType([[6, 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, filter Tue-Thu]', async () => {
@@ -163,7 +151,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter Tue-T
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[2, 'ATR_SPEED_VOLUME'], [3, 'ATR_VOLUME']]);
+  expect(response.result).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME'], [3, 'ATR_VOLUME']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, filter Fri-Mon]', async () => {
@@ -177,7 +165,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter Fri-M
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[2, 'TMC']]);
+  expect(response.result).toMatchNumPerStudyType([[2, 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by date range]', async () => {
@@ -194,7 +182,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by da
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[3, 'TMC']]);
+  expect(response.result).toMatchNumPerStudyType([[3, 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by study hours]', async () => {
@@ -208,7 +196,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by st
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyType([]);
 });
 
 test('StudyController.getStudiesByCentreline [invalid feature]', async () => {
@@ -377,7 +365,7 @@ test('StudyController.getStudiesByCentrelineSummary [invalid date range]', async
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyType([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, no studies]', async () => {
@@ -388,7 +376,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, no studies]'
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyType([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies]', async () => {
@@ -399,7 +387,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[2, 'ATR_SPEED_VOLUME'], [4, 'ATR_VOLUME']]);
+  expect(response.result).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME'], [4, 'ATR_VOLUME']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, date range filters to empty]', async () => {
@@ -416,7 +404,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, date range f
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyType([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, lots of studies]', async () => {
@@ -427,7 +415,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, lots of stud
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[3, 'ATR_VOLUME'], [3633, 'RESCU'], [2, 'TMC']]);
+  expect(response.result).toMatchNumPerStudyType([[3, 'ATR_VOLUME'], [3633, 'RESCU'], [2, 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, lots of studies, date range filters to empty]', async () => {
@@ -444,7 +432,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, lots of stud
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyType([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, date range filters to less]', async () => {
@@ -461,7 +449,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, date range f
   };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[187, 'RESCU']]);
+  expect(response.result).toMatchNumPerStudyType([[187, 'RESCU']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummary [valid feature, multiple study types]', async () => {
@@ -472,7 +460,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, multiple stu
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summary', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeStudy(response.result, [[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
+  expect(response.result).toMatchNumPerStudyType([[2, 'ATR_SPEED_VOLUME'], [1, 'ATR_VOLUME']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [invalid date range]', async () => {
@@ -490,7 +478,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [invalid date ran
   };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, no studies]', async () => {
@@ -501,7 +489,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, n
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
@@ -512,8 +500,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, s
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(
-    response.result,
+  expect(response.result).toMatchNumPerStudyTypeAndLocation(
     [[[2], 'ATR_SPEED_VOLUME'], [[4], 'ATR_VOLUME']],
   );
 });
@@ -532,7 +519,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, d
   };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, lots of studies]', async () => {
@@ -543,7 +530,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, l
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, [[[3], 'ATR_VOLUME'], [[3633], 'RESCU'], [[2], 'TMC']]);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([[[3], 'ATR_VOLUME'], [[3633], 'RESCU'], [[2], 'TMC']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, lots of studies, date range filters to empty]', async () => {
@@ -560,7 +547,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, l
   };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, []);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, date range filters to less]', async () => {
@@ -577,7 +564,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, d
   };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(response.result, [[[187], 'RESCU']]);
+  expect(response.result).toMatchNumPerStudyTypeAndLocation([[[187], 'RESCU']]);
 });
 
 test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, multiple study types]', async () => {
@@ -588,8 +575,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, m
   const data = { s1 };
   const response = await client.fetch('/studies/byCentreline/summaryPerLocation', { data });
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectNumPerStudyTypeAndLocationStudy(
-    response.result,
+  expect(response.result).toMatchNumPerStudyTypeAndLocation(
     [[[2], 'ATR_SPEED_VOLUME'], [[1], 'ATR_VOLUME']],
   );
 });
