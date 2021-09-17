@@ -138,7 +138,7 @@ For more information on configuring Vue CLI-based projects, see the [Vue CLI Con
 
 ## Config Files
 
-These files configure various tools used in MOVE:
+These files configure some of the various tools used in MOVE:
 
 - `.editorconfig`: enforces simple code conventions for all VSCode users;
 - `.eslintrc.js`: ESLint rules for style-checking JavaScript;
