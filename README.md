@@ -55,8 +55,6 @@ This repository consists of:
 
 These scripts are listed in [package.json](package.json), as per the [`npm-run-script`](https://docs.npmjs.com/cli/run-script) documentation.
 
-The `ci:` and `pre-commit:` scripts are intended to be runnable via `npx npm-run-all ci:*`, `npx npm-run-all pre-commit:*`.
-
 ### MOVE Web Backend
 
 - `backend`: runs the REST API server at `web/web.js` on port 8100;
