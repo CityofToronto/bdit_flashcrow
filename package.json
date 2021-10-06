@@ -38,7 +38,7 @@
     "@hapi/hapi": "^20.1.5",
     "@hapi/inert": "^6.0.3",
     "@hapi/vision": "^6.1.0",
-    "@mdi/font": "^5.9.55",
+    "@mdi/font": "^6.2.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.975.0",
     "axios": "^0.21.1",
