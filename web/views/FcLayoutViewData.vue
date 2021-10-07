@@ -352,7 +352,7 @@ export default {
   width: 100%;
 
   & > .fc-pane-wrapper > div {
-    flex-basis: 0;
+    flex-basis: auto;
   }
 
   & > .pane-drawer-toggle {

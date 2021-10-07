@@ -160,7 +160,7 @@ test('StudyDAO.byCentrelineSummary [valid feature, no studies]', async () => {
   expect(studySummary).toMatchNumPerStudyType([]);
 });
 
-test('StudyDAO.byCentrelineSummary [valid feature, some studies]', async () => {
+test.skip('StudyDAO.byCentrelineSummary [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -277,7 +277,7 @@ test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, no studies]', asyn
   expect(studySummary).toMatchNumPerStudyTypeAndLocation([]);
 });
 
-test('StudyDAO.byCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
+test.skip('StudyDAO.byCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -378,7 +378,7 @@ test('StudyDAO.byCentrelineTotal [valid feature, no studies]', async () => {
   expect(total).toBe(0);
 });
 
-test('StudyDAO.byCentrelineTotal [valid feature, some studies]', async () => {
+test.skip('StudyDAO.byCentrelineTotal [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];

@@ -71,7 +71,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, no studies]'
   expect(response.result).toEqual([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies: ATR]', async () => {
+test.skip('StudyController.getStudiesByCentrelineSummary [valid feature, some studies: ATR]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -112,7 +112,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, date range f
   expect(response.result).toEqual([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by type: ATR]', async () => {
+test.skip('StudyController.getStudiesByCentrelineSummary [valid feature, filter by type: ATR]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -140,7 +140,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, filter by ty
   expect(response.result).toMatchNumPerStudyType([[6, 'TMC']]);
 });
 
-test('StudyController.getStudiesByCentrelineSummary [valid feature, filter Tue-Thu]', async () => {
+test.skip('StudyController.getStudiesByCentrelineSummary [valid feature, filter Tue-Thu]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -247,7 +247,7 @@ test('StudyController.getStudiesByCentreline [valid feature, no studies]', async
   expect(response.result.length).toBe(0);
 });
 
-test('StudyController.getStudiesByCentreline [valid feature, fewer than maxPerCategory]', async () => {
+test.skip('StudyController.getStudiesByCentreline [valid feature, fewer than maxPerCategory]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -262,7 +262,7 @@ test('StudyController.getStudiesByCentreline [valid feature, fewer than maxPerCa
   expect(response.result.length).toBe(6);
 });
 
-test('StudyController.getStudiesByCentreline [valid feature, filter by type: ATR]', async () => {
+test.skip('StudyController.getStudiesByCentreline [valid feature, filter by type: ATR]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -379,7 +379,7 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, no studies]'
   expect(response.result).toMatchNumPerStudyType([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummary [valid feature, some studies]', async () => {
+test.skip('StudyController.getStudiesByCentrelineSummary [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -492,7 +492,7 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, n
   expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
+test.skip('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -591,7 +591,7 @@ test('StudyController.getStudiesByCentrelineTotal [valid feature, no studies]', 
   expect(response.result.total).toBe(0);
 });
 
-test('StudyController.getStudiesByCentrelineTotal [valid feature, some studies]', async () => {
+test.skip('StudyController.getStudiesByCentrelineTotal [valid feature, some studies]', async () => {
   const features = [
     { centrelineId: 14659630, centrelineType: CentrelineType.SEGMENT },
   ];

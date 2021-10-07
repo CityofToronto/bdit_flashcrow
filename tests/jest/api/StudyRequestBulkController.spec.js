@@ -249,7 +249,7 @@ test('StudyRequestBulkController.postStudyRequestBulkFromRequests [moving from e
   expect(P2.studyRequests).toEqual([Rs2[0]]);
 });
 
-test('StudyRequestBulkController.getStudyRequestBulk', async () => {
+test.skip('StudyRequestBulkController.getStudyRequestBulk', async () => {
   const transientStudyRequestBulk = generateStudyRequestBulk();
   mockDAOsForStudyRequestBulk(transientStudyRequestBulk);
 
