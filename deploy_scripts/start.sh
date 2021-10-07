@@ -13,6 +13,7 @@ cp -r /home/ec2-user/flashcrow.config.js /var/app/flashcrow/lib/config/private.j
 
 # make move-storage directory
 sudo mkdir -p /data/move-storage
+sudo mkdir -p /data/log/web
 sudo chown -R appsvc:appsvc /data/move-storage
 
 # install node dependencies
