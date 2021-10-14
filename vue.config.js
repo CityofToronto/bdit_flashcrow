@@ -29,7 +29,7 @@ const vueConfig = {
        * - we allow `'unsafe-inline'` as a `style-src` in development, but use a nonce in
        *   production.
        */
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io gis.toronto.ca move.intra.dev-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' basemaps.arcgis.com dc.oracleinfinity.io gis.toronto.ca move.intra.qa-toronto.ca; img-src 'self' data:; object-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:",
     },
     historyApiFallback: true,
     host: '0.0.0.0',
