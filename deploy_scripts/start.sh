@@ -19,8 +19,7 @@ INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 export INSTANCE_ID
 sudo mkdir -p /data/log/web_"$INSTANCE_ID"
 sudo chown -R appsvc:appsvc /data/log/web_"$INSTANCE_ID"
-sudo ln -s /data/log/web_"$INSTANCE_ID" /data/log/web
-
+sudo ln -s /data/log/web_"$INSTANCE_ID" /var/app/flashcrow/log
 
 # install node dependencies
 cd /var/app/flashcrow

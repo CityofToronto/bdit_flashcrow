@@ -6,10 +6,10 @@
     "command": "node -r esm -r module-alias/register",
     "script": "web/web.js",
     "sourceDir": "/var/app/flashcrow",
-    "pidFile": "/data/log/web/web.pid",
-    "logFile": "/data/log/web/web.log",
-    "outFile": "/data/log/web/web.out",
-    "errFile": "/data/log/web/web.err"
+    "pidFile": "/var/app/flashcrow/log/web.pid",
+    "logFile": "/var/app/flashcrow/log/web.log",
+    "outFile": "/var/app/flashcrow/log/web.out",
+    "errFile": "/var/app/flashcrow/log/web.err"
   },
   {
     "id": "reporter-0",
@@ -19,10 +19,10 @@
     "script": "reporter/reporter.js",
     "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8200],
-    "pidFile": "/data/log/web/reporter-0.pid",
-    "logFile": "/data/log/web/reporter.log",
-    "outFile": "/data/log/web/reporter.out",
-    "errFile": "/data/log/web/reporter.err"
+    "pidFile": "/var/app/flashcrow/log/reporter-0.pid",
+    "logFile": "/var/app/flashcrow/log/reporter.log",
+    "outFile": "/var/app/flashcrow/log/reporter.out",
+    "errFile": "/var/app/flashcrow/log/reporter.err"
   },
   {
     "id": "reporter-1",
@@ -32,10 +32,10 @@
     "script": "reporter/reporter.js",
     "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8201],
-    "pidFile": "/data/log/web/reporter-1.pid",
-    "logFile": "/data/log/web/reporter.log",
-    "outFile": "/data/log/web/reporter.out",
-    "errFile": "/data/log/web/reporter.err"
+    "pidFile": "/var/app/flashcrow/log/reporter-1.pid",
+    "logFile": "/var/app/flashcrow/log/reporter.log",
+    "outFile": "/var/app/flashcrow/log/reporter.out",
+    "errFile": "/var/app/flashcrow/log/reporter.err"
   },
   {
     "id": "reporter-2",
@@ -45,10 +45,10 @@
     "script": "reporter/reporter.js",
     "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8202],
-    "pidFile": "/data/log/web/reporter-2.pid",
-    "logFile": "/data/log/web/reporter.log",
-    "outFile": "/data/log/web/reporter.out",
-    "errFile": "/data/log/web/reporter.err"
+    "pidFile": "/var/app/flashcrow/log/reporter-2.pid",
+    "logFile": "/var/app/flashcrow/log/reporter.log",
+    "outFile": "/var/app/flashcrow/log/reporter.out",
+    "errFile": "/var/app/flashcrow/log/reporter.err"
   },
   {
     "id": "reporter-3",
@@ -58,10 +58,10 @@
     "script": "reporter/reporter.js",
     "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8203],
-    "pidFile": "/data/log/web/reporter-3.pid",
-    "logFile": "/data/log/web/reporter.log",
-    "outFile": "/data/log/web/reporter.out",
-    "errFile": "/data/log/web/reporter.err"
+    "pidFile": "/var/app/flashcrow/log/reporter-3.pid",
+    "logFile": "/var/app/flashcrow/log/reporter.log",
+    "outFile": "/var/app/flashcrow/log/reporter.out",
+    "errFile": "/var/app/flashcrow/log/reporter.err"
   },
   {
     "id": "scheduler",
@@ -71,9 +71,9 @@
     "script": "scheduler/scheduler.js",
     "sourceDir": "/var/app/flashcrow",
     "args": ["--port", 8300],
-    "pidFile": "/data/log/web/scheduler.pid",
-    "logFile": "/data/log/web/scheduler.log",
-    "outFile": "/data/log/web/scheduler.out",
-    "errFile": "/data/log/web/scheduler.err"
+    "pidFile": "/var/app/flashcrow/log/scheduler.pid",
+    "logFile": "/var/app/flashcrow/log/scheduler.log",
+    "outFile": "/var/app/flashcrow/log/scheduler.out",
+    "errFile": "/var/app/flashcrow/log/scheduler.err"
   }
 ]
