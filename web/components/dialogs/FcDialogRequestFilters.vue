@@ -107,6 +107,11 @@
         <fieldset class="mt-6">
           <legend class="headline">Date Expected</legend>
 
+          <v-checkbox
+            v-model="internalFilters.urgent"
+            class="mt-2"
+            hide-details
+            label="Urgent Request"></v-checkbox>
           <FcDatePicker
             v-model="$v.internalFilters.dueDateStart.$model"
             class="mt-2"
@@ -121,11 +126,6 @@
             hide-details="auto"
             label="To (YYYY-MM-DD)">
           </FcDatePicker>
-          <v-checkbox
-            v-model="internalFilters.urgent"
-            class="mt-2"
-            hide-details
-            label="Urgent"></v-checkbox>
         </fieldset>
       </v-card-text>
 
