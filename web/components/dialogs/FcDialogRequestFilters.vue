@@ -107,6 +107,11 @@
         <fieldset class="mt-6">
           <legend class="headline">Date Expected</legend>
 
+          <v-checkbox
+            v-model="internalFilters.urgent"
+            class="mt-2"
+            hide-details
+            label="Urgent Request"></v-checkbox>
           <FcDatePicker
             v-model="$v.internalFilters.dueDateStart.$model"
             class="mt-2"
@@ -170,6 +175,7 @@ function cloneStudyRequestFilters(filters) {
     studyTypes,
     studyTypeOther,
     userOnly,
+    urgent,
   } = filters;
   return {
     assignees: [...assignees],
@@ -181,6 +187,7 @@ function cloneStudyRequestFilters(filters) {
     studyTypes: [...studyTypes],
     studyTypeOther,
     userOnly,
+    urgent,
   };
 }
 

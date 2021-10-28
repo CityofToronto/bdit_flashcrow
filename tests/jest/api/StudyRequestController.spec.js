@@ -18,13 +18,18 @@ import { generateStudyRequest } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
 import DateTime from '@/lib/time/DateTime';
 import WebServer from '@/web/WebServer';
+import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
+import StudyRequestItemDAO from '@/lib/db/StudyRequestItemDAO';
 
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/email/Mailer');
+jest.mock('@/lib/db/StudyRequestBulkDAO');
+jest.mock('@/lib/db/StudyRequestItemDAO');
 
 let requester;
 let supervisor;
 let ett1;
+let admin;
 
 async function initUsers() {
   // requester can create requests and edit their own requests
@@ -41,6 +46,8 @@ async function initUsers() {
   // other ETT1s have edit powers, but only on their own requests
   const transientETT1 = generateUser([AuthScope.STUDY_REQUESTS]);
   ett1 = await UserDAO.create(transientETT1);
+
+  admin = await UserDAO.create(generateUser([AuthScope.ADMIN]));
 }
 
 let server;
@@ -151,6 +158,40 @@ test('StudyRequestController.postStudyRequestCopy', async () => {
   expect(persistedStudyRequestCopy.userId).toBe(supervisor.id);
   expect(persistedStudyRequestCopy.studyRequestBulkId).toBeNull();
   expect(persistedStudyRequestCopy.status).toBe(StudyRequestStatus.REQUESTED);
+});
+
+describe('putStudyRequestItems', () => {
+  let user;
+  let response;
+
+  beforeEach(async () => {
+    client.setUser(user);
+    response = await client.fetch('/requests/study/items', {
+      method: 'PUT',
+    });
+  });
+
+  describe('when the user is NOT an admin', () => {
+    beforeAll(() => { user = ett1; });
+    test('returns status code 403', async () => {
+      expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+    });
+  });
+
+  describe('when the user is an admin', () => {
+    beforeAll(() => {
+      user = admin;
+      const studyRequestProjects = [
+        { id: 1, name: 'name1', notes: 'notes1' },
+        { id: 2, name: 'name2', notes: 'notes2' },
+        { id: 3, name: 'name3', notes: 'notes3' },
+      ];
+      StudyRequestBulkDAO.all.mockResolvedValue(studyRequestProjects);
+    });
+    test('passes all project ids to the SRI DAO bulk update', () => {
+      expect(StudyRequestItemDAO.upsertByStudyRequestBulkIds).toHaveBeenCalledWith([1, 2, 3]);
+    });
+  });
 });
 
 test('StudyRequestController.getStudyRequest', async () => {

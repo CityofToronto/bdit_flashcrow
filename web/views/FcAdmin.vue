@@ -8,6 +8,9 @@
         <v-tab :to="{ name: 'adminMetrics' }">
           Metrics
         </v-tab>
+        <v-tab :to="{ name: 'adminUtilities' }">
+          Utilities
+        </v-tab>
       </v-tabs>
       <v-divider></v-divider>
       <div class="px-5">
@@ -26,13 +29,21 @@ export default {
   computed: {
     title() {
       const { name } = this.$route;
-      if (name === 'adminMetrics') {
-        return 'Metrics';
+      let title;
+      switch (name) {
+        case 'adminMetrics':
+          title = 'Metrics';
+          break;
+        case 'adminPermissions':
+          title = 'User Permissions';
+          break;
+        case 'adminUtilities':
+          title = 'Utilities';
+          break;
+        default:
+          title = 'MOVE Admin Console';
       }
-      if (name === 'adminPermissions') {
-        return 'User Permissions';
-      }
-      return 'MOVE Admin Console';
+      return title;
     },
   },
 };
