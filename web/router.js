@@ -49,6 +49,13 @@ const router = new Router({
           title: 'Admin Console',
         },
         component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminPermissions.vue'),
+      }, {
+        path: '/admin/utilities',
+        name: 'adminUtilities',
+        meta: {
+          title: 'Admin Console',
+        },
+        component: () => import(/* webpackChunkName: "admin" */ '@/web/components/admin/FcAdminUtilities.vue'),
       }],
     },
     {
