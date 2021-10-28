@@ -121,6 +121,11 @@
             hide-details="auto"
             label="To (YYYY-MM-DD)">
           </FcDatePicker>
+          <v-checkbox
+            v-model="internalFilters.urgent"
+            class="mt-2"
+            hide-details
+            label="Urgent"></v-checkbox>
         </fieldset>
       </v-card-text>
 
@@ -170,6 +175,7 @@ function cloneStudyRequestFilters(filters) {
     studyTypes,
     studyTypeOther,
     userOnly,
+    urgent,
   } = filters;
   return {
     assignees: [...assignees],
@@ -181,6 +187,7 @@ function cloneStudyRequestFilters(filters) {
     studyTypes: [...studyTypes],
     studyTypeOther,
     userOnly,
+    urgent,
   };
 }
 

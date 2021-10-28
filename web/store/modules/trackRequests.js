@@ -95,6 +95,7 @@ export default {
         studyTypes,
         studyTypeOther,
         userOnly,
+        urgent,
       } = state.filtersRequest;
       const { column, query } = state.searchRequest;
       const { sortBy, sortDesc } = state.sortRequest;
@@ -127,6 +128,9 @@ export default {
       }
       if (userOnly) {
         params.userOnly = true;
+      }
+      if (urgent) {
+        params.urgent = true;
       }
       if (query !== null && query !== '') {
         params.column = column;
