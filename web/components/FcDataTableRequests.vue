@@ -142,6 +142,12 @@
         v-if="item.dueDate !== null">
         {{item.dueDate | date}}
       </span>
+      <v-icon
+        v-if="item.urgent"
+        :aria-hidden="false"
+        aria-label="Urgent"
+        class="mr-2"
+        color="warning">mdi-clipboard-alert</v-icon>
     </template>
     <template v-slot:item.STATUS="{ item }">
       <div
@@ -156,13 +162,6 @@
     </template>
     <template v-slot:item.ACTIONS="{ item }">
       <div class="text-right">
-        <v-icon
-          v-if="item.urgent"
-          :aria-hidden="false"
-          aria-label="Urgent"
-          class="mr-2"
-          color="warning">mdi-clipboard-alert</v-icon>
-
         <FcButtonAria
           :aria-label="'View ' + item.ariaLabel"
           button-class="btn-show-request"
