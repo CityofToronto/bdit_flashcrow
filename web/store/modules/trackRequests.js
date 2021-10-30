@@ -28,6 +28,7 @@ export default {
         studyTypes,
         studyTypeOther,
         userOnly,
+        urgent,
       } = state.filtersRequest;
       const filterChipsRequest = [];
       if (createdAtStart !== null || createdAtEnd !== null) {
@@ -80,6 +81,10 @@ export default {
       }
       if (userOnly) {
         const filterChip = { filter: 'userOnly', label: 'Requested by me', value: true };
+        filterChipsRequest.push(filterChip);
+      }
+      if (urgent) {
+        const filterChip = { filter: 'urgent', label: 'Urgent requests', value: true };
         filterChipsRequest.push(filterChip);
       }
       return filterChipsRequest;
