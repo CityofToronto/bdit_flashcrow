@@ -160,6 +160,8 @@ export default {
         state.filtersRequest.studyTypeOther = false;
       } else if (filter === 'userOnly') {
         state.filtersRequest.userOnly = false;
+      } else if (filter === 'urgent') {
+        state.filtersRequest.urgent = false;
       } else {
         state.filtersRequest[filter] = [];
       }
