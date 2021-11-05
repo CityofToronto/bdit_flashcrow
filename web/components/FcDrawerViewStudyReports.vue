@@ -480,6 +480,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-study-reports {
-  max-height: calc(var(--full-height) - 4px);
+  max-height: calc(var(--full-height) - 60px);
 }
 </style>
