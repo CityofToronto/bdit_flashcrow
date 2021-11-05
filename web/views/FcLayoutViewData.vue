@@ -351,10 +351,6 @@ export default {
   position: relative;
   width: 100%;
 
-  & > .fc-pane-wrapper > div {
-    flex-basis: auto;
-  }
-
   & > .pane-drawer-toggle {
     cursor: pointer;
     position: absolute;
