@@ -96,7 +96,7 @@ test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missi
   }
 });
 
-test('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/36781]', () => {
+test.skip('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
   /*
