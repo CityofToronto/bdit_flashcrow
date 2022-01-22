@@ -22,7 +22,7 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty = loadJsonSyn
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty.json'),
 );
 
-test('ReportCountSummaryTurningMovement.sumIndexRange', () => {
+test.skip('ReportCountSummaryTurningMovement.sumIndexRange', () => {
   // fuzz test
   for (let i = 0; i < 10; i++) {
     const k = 5;
