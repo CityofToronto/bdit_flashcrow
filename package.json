@@ -74,7 +74,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@mapbox/spritezero": "^8.0.0",
-    "@maplibre/maplibre-gl-style-spec": "^14.0.2",
+    "@maplibre/maplibre-gl-style-spec": "^15.0.0",
     "@vue/cli": "^4.5.15",
     "@vue/cli-plugin-babel": "^4.5.15",
     "@vue/cli-plugin-eslint": "^4.5.15",
