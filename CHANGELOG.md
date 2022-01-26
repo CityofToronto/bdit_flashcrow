@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2022-02-07
+
+### Changed
+
+- ALL TMC Summary Reports statistics have been updated to conform with their [current definitions](https://www.notion.so/bditto/Frequently-Asked-Questions-9d6526e8d84d4abc90d43d4cdaba14e2#c2b0c8075efa42279e710b56a8c84fa1)
+
+## Fixed
+
+- Study requests can now be filtered by those flagged as urgent
+- Project / Bulk Study Request aggregate values now correctly reflect their contents after the studies they contain are updated which will resolve a nunmber of reported bugs having to do with the study request search not turning up the expected results
+- HTML Reports are no longer truncated at the bottom of the browser window (visual bug)
+- Ped delay factors have been updated to their current definitions
+
 ## [1.7.0] - 2021-10-06
 
 ## Fixed
