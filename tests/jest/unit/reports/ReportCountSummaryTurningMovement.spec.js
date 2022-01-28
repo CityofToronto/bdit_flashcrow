@@ -2,12 +2,9 @@
 import path from 'path';
 
 import { StudyHours } from '@/lib/Constants';
-import Random from '@/lib/Random';
-import ArrayStats from '@/lib/math/ArrayStats';
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
-  generateIndexRange,
   generateTmc,
   generateTmc14Hour,
   generateWithMissing,
@@ -21,27 +18,6 @@ const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781 = loadJsonSync(
 const transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty = loadJsonSync(
   path.resolve(__dirname, './data/transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty.json'),
 );
-
-test.skip('ReportCountSummaryTurningMovement.sumIndexRange', () => {
-  // fuzz test
-  for (let i = 0; i < 10; i++) {
-    const k = 5;
-    const countData = generateTmc();
-    const indexRange = generateIndexRange(countData);
-    const { lo, hi } = indexRange;
-    const sum = ReportCountSummaryTurningMovement.sumIndexRange(countData, indexRange);
-    const keysToTest = Random.sample(Array.from(Object.keys(countData[0].data)), k);
-    keysToTest.forEach((key) => {
-      expect(sum[key]).toBe(
-        ArrayStats.sum(
-          countData
-            .slice(lo, hi)
-            .map(({ data }) => data[key]),
-        ),
-      );
-    });
-  }
-});
 
 test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
