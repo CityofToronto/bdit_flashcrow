@@ -33,7 +33,7 @@ test('ReportCountSummaryTurningMovement#transformData [empty dataset]', () => {
   expect(transformedData).toEqual(transformedData_COUNT_SUMMARY_TURNING_MOVEMENT_5_36781_empty);
 });
 
-test.skip('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', () => {
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
   const { countLocation, counts, study } = setup_5_36781();
@@ -46,7 +46,7 @@ test.skip('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC]', ()
   }
 });
 
-test.skip('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]', () => {
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
   const { countLocation, counts, study } = setup_5_36781();
@@ -59,7 +59,7 @@ test.skip('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour T
   }
 });
 
-test.skip('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();
 
   const { countLocation, counts, study } = setup_5_36781();
