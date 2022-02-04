@@ -8,51 +8,59 @@ describe('ReportCountSummaryTurningMovement', () => {
   const countStartTime = DateTime.now();
   const nullSummary = ReportTMC.statSummaryForNullCount();
 
-  describe('totalsForPeriod', () => {
-    let turningMovementCounts = [
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 0 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 1 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 2 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 3 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 4 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 5 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 6 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 7 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 8 },
-      { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 9 },
-    ];
-    function formatCounts() {
-      const counts = turningMovementCounts.map((count) => {
-        const interval = {
-          data: { TOTAL_VEHICLES: count.TOTAL_VEHICLES },
-          t: countStartTime.plus({ minutes: count.minutesElapsed }),
-        };
-        return interval;
-      });
-      return counts;
-    }
-    function getNumberOfCounts() {
-      return turningMovementCounts.length;
-    }
+  let turningMovementCounts = [];
 
-    let periodStartMinute;
-    let periodEndMinute;
-    let nPeriodIntervals;
-    function getPeriod() {
-      return {
-        startTime: countStartTime.plus({ minutes: periodStartMinute }),
-        endTime: countStartTime.plus({ minutes: periodEndMinute }),
+  function getNumberOfCounts() {
+    return turningMovementCounts.length;
+  }
+
+  function getFormattedCounts() {
+    const counts = turningMovementCounts.map((count) => {
+      const interval = {
+        data: { VEHICLE_TOTAL: count.VEHICLE_TOTAL },
+        t: countStartTime.plus({ minutes: count.minutesElapsed }),
       };
+      return interval;
+    });
+    return counts;
+  }
+
+  let periodStartMinute;
+  let periodEndMinute;
+  let nPeriodIntervals;
+  let period;
+  function getPeriod() {
+    const timePeriod = {
+      startTime: countStartTime.plus({ minutes: periodStartMinute }),
+      endTime: countStartTime.plus({ minutes: periodEndMinute }),
+    };
+    period = timePeriod;
+    return timePeriod;
+  }
+
+  describe('totalsForPeriod', () => {
+    function getTotalsForPeriod() {
+      return ReportTMC.totalsForPeriod(getFormattedCounts(), period);
     }
 
-    let period;
-    function getTotalsForPeriod() {
-      return ReportTMC.totalsForPeriod(formatCounts(), period);
-    }
+    beforeAll(() => {
+      turningMovementCounts = [
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 0 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 1 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 2 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 3 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 4 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 5 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 6 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 7 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 8 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 9 },
+      ];
+    });
 
     describe('when the period is not specified', () => {
       test('returns the sum of the counts in ALL the intervals', () => {
-        expect(getTotalsForPeriod().sum.TOTAL_VEHICLES).toEqual(getNumberOfCounts());
+        expect(getTotalsForPeriod().sum.VEHICLE_TOTAL).toEqual(getNumberOfCounts());
       });
 
       test('returns the full time range covered by the set of intervals', () => {
@@ -71,7 +79,7 @@ describe('ReportCountSummaryTurningMovement', () => {
       });
 
       test('returns the sum of the counts within the period ', () => {
-        expect(getTotalsForPeriod().sum.TOTAL_VEHICLES).toEqual(nPeriodIntervals);
+        expect(getTotalsForPeriod().sum.VEHICLE_TOTAL).toEqual(nPeriodIntervals);
       });
 
       test('returns a time range that is equal to the period', () => {
@@ -83,25 +91,23 @@ describe('ReportCountSummaryTurningMovement', () => {
         expect(getTotalsForPeriod().timeRange.nIntervals).toEqual(nPeriodIntervals);
       });
 
-      describe('and there are time gaps in the subet', () => {
+      describe('and there are time gaps in the interval subset', () => {
         beforeAll(() => {
           turningMovementCounts = [
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 0 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 1 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 2 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 3 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 6 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 7 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 8 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 9 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 10 },
-            { TOTAL_VEHICLES: 1, minutesElapsed: INTERVAL_MINS * 11 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 0 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 1 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 2 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 3 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 6 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 7 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 8 },
+            { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 9 },
           ];
           nPeriodIntervals = 2;
         });
 
         test('returns the sum of the counts within the period', () => {
-          expect(getTotalsForPeriod().sum.TOTAL_VEHICLES).toEqual(nPeriodIntervals);
+          expect(getTotalsForPeriod().sum.VEHICLE_TOTAL).toEqual(nPeriodIntervals);
         });
       });
     });
@@ -116,6 +122,83 @@ describe('ReportCountSummaryTurningMovement', () => {
 
       test('returns a null count summary', () => {
         expect(getTotalsForPeriod()).toEqual(nullSummary);
+      });
+    });
+  });
+
+  describe('totalsForPeak', () => {
+    const { PEAK_DURATION } = ReportTMC;
+    let window;
+    function getTotalsForPeak() {
+      return ReportTMC.totalsForPeak(getFormattedCounts(), window);
+    }
+
+    beforeAll(() => {
+      turningMovementCounts = [
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 0 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 1 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 2 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 5 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 6 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 7 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 8 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 9 },
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 10 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 11 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 12 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 13 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 14 },
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 15 },
+      ];
+
+      periodStartMinute = INTERVAL_MINS * 1;
+      periodEndMinute = INTERVAL_MINS * 12;
+      window = getPeriod();
+    });
+
+    test('returns the earliest period with highest count', () => {
+      const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 7 });
+      const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+      expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
+      expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
+    });
+
+    test('returns the correct totals', () => {
+      expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(1);
+    });
+
+    describe('when the peak is missing interval counts at the end of the period', () => {
+      beforeAll(() => {
+        turningMovementCounts[1].VEHICLE_TOTAL = 10;
+        turningMovementCounts[2].VEHICLE_TOTAL = 10;
+      });
+
+      test('the time range returned is the duration of a peak', () => {
+        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 1 });
+        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
+        expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
+      });
+
+      test('returns the correct totals', () => {
+        expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(20);
+      });
+    });
+
+    describe('when the peak is missing interval counts in the middle of the period', () => {
+      beforeAll(() => {
+        turningMovementCounts[3].VEHICLE_TOTAL = 20;
+      });
+
+      test('the time range returned is the duration of a peak', () => {
+        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 2 });
+        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
+        expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
+      });
+
+      test('returns the correct totals', () => {
+        expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(30);
       });
     });
   });
