@@ -201,5 +201,23 @@ describe('ReportCountSummaryTurningMovement', () => {
         expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(30);
       });
     });
+
+    describe('when the peak is missing interval counts at the start of the period', () => {
+      beforeAll(() => {
+        turningMovementCounts[4].VEHICLE_TOTAL = 30;
+        turningMovementCounts[5].VEHICLE_TOTAL = 30;
+      });
+
+      test('the time range returned is the duration of a peak', () => {
+        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 4 });
+        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
+        expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
+      });
+
+      test('returns the correct totals', () => {
+        expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(80);
+      });
+    });
   });
 });
