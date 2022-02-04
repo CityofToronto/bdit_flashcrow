@@ -135,7 +135,7 @@ describe('ReportCountSummaryTurningMovement', () => {
 
     beforeAll(() => {
       turningMovementCounts = [
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 0 },
+        { VEHICLE_TOTAL: 100, minutesElapsed: INTERVAL_MINS * 0 },
         { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 1 },
         { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 2 },
         { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 5 },
@@ -156,7 +156,7 @@ describe('ReportCountSummaryTurningMovement', () => {
       window = getPeriod();
     });
 
-    test('returns the earliest period with highest count', () => {
+    test('returns the earliest peark period with highest count WITHIN the window', () => {
       const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 7 });
       const peakEndTime = peakStartTime.plus(PEAK_DURATION);
       expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
