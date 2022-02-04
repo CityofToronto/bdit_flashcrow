@@ -232,4 +232,24 @@ describe('ReportCountSummaryTurningMovement', () => {
       });
     });
   });
+
+  describe('averagesForPeriod', () => {
+    const totalVehicles = 107;
+    const numberOfIntervals = 5;
+    const periodTotals = {
+      sum: { VEHICLE_TOTAL: totalVehicles },
+      timeRange: {
+        nIntervals: numberOfIntervals,
+        start: countStartTime,
+        end: countStartTime.plus({ hours: 6 }),
+      },
+    };
+
+    test('returns an integer representing the average per hour', () => {
+      const hoursInPeriod = numberOfIntervals / 4;
+      const avgVehicleCountPerHour = Math.round(totalVehicles / hoursInPeriod);
+      const avgSummaryRecieved = ReportTMC.averagesForPeriod(periodTotals);
+      expect(avgSummaryRecieved.avg.VEHICLE_TOTAL).toEqual(avgVehicleCountPerHour);
+    });
+  });
 });
