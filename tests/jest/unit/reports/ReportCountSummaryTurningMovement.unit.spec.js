@@ -219,5 +219,17 @@ describe('ReportCountSummaryTurningMovement', () => {
         expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(80);
       });
     });
+
+    describe('when there are no intervals in the window', () => {
+      beforeAll(() => {
+        periodStartMinute = INTERVAL_MINS * 16;
+        periodEndMinute = INTERVAL_MINS * 20;
+        window = getPeriod();
+      });
+
+      test('returns a null count summary', () => {
+        expect(getTotalsForPeak()).toEqual(nullSummary);
+      });
+    });
   });
 });
