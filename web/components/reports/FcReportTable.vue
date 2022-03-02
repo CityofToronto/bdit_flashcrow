@@ -37,7 +37,8 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <FcTextReportValue :value="value" />
+            <MvcrLink v-if="mvcrColumnIndex === c" :value="value"/>
+            <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
       </tbody>
@@ -61,6 +62,7 @@
 <script>
 import TableUtils from '@/lib/reports/format/TableUtils';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+import MvcrLink from './cells/MvcrLink.vue';
 
 function getClassListForStyle(style) {
   const {
@@ -177,6 +179,7 @@ export default {
   name: 'FcReportTable',
   components: {
     FcTextReportValue,
+    MvcrLink,
   },
   props: {
     title: {
@@ -228,6 +231,11 @@ export default {
     },
     numColumns() {
       return TableUtils.getNumTableColumns(this.header, this.body, this.footer);
+    },
+    mvcrColumnIndex() {
+      let colIndex = this.header[1].findIndex(h => h.value === 'Img');
+      if (colIndex === -1) colIndex = false;
+      return colIndex;
     },
   },
 };
