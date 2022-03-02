@@ -153,3 +153,14 @@ test('StorageStrategyFilesystem [stream API, directory traversal]', async () => 
     storage.getStream(namespace, key);
   }).toThrow(Error);
 });
+
+describe('getFullPath when hashPath is false', () => {
+  const storage = new StorageStrategyFilesystem('/move-storage');
+  const subDirectoryName = 'subdirectory';
+  const filename = 'filename.txt';
+
+  test('returns a path WITHOUT additional hashed subfolders', () => {
+    const path = storage.getFullPath(subDirectoryName, filename, false);
+    expect(path).toEqual(`/move-storage/${subDirectoryName}/${filename}`);
+  });
+});
