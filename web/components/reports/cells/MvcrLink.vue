@@ -1,5 +1,9 @@
 <template>
-  <button v-on:click="view">view</button>
+  <div>
+    <a :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">view</a>
+    &nbsp;
+    <button v-on:click="download">download</button>
+  </div>
 </template>
 
 <script>
@@ -13,13 +17,14 @@ export default {
     },
   },
   methods: {
-    view() {
+    download() {
       return true;
+    },
+  },
+  computed: {
+    sampleMvcrFileName() {
+      return 'sample_mvcr_redacted.pdf';
     },
   },
 };
 </script>
-
-<style>
-
-</style>
