@@ -17,6 +17,8 @@
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { mapMutations } from 'vuex';
+import { getMVCR } from '@/lib/api/WebApi';
+import { saveAs } from 'file-saver';
 
 export default {
   name: 'MvcrLink',
@@ -31,7 +33,13 @@ export default {
   },
   methods: {
     ...mapMutations(['setDialog']),
-    download() {
+    async download() {
+      if (this.hasMvcrReadPermission) {
+        const mvcrPdf = await getMVCR(this.sampleMvcrFileName);
+        saveAs(mvcrPdf, this.sampleMvcrFileName);
+      } else {
+        this.accessDenied();
+      }
       return true;
     },
     accessDenied() {
