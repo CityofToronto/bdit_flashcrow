@@ -1,10 +1,15 @@
 <template>
   <div>
-    <a v-if="hasMvcrReadPermission"
-      :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">view</a>
-    <a v-else v-on:click="accessDenied">view</a>
-    &nbsp;
-    <button v-on:click="download">download</button>
+    <template v-if="value">
+      <a v-if="hasMvcrReadPermission"
+        :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
+      <a v-else v-on:click="accessDenied">View</a>
+      &nbsp;
+      <button v-on:click="download">Download</button>
+    </template>
+    <template v-else>
+      <p>Unavailable</p>
+    </template>
   </div>
 </template>
 
