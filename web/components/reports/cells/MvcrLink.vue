@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='get-MVCR'>
     <template v-if="value">
       <a v-if="hasMvcrReadPermission"
         :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
@@ -8,7 +8,7 @@
       <button v-on:click="download">Download</button>
     </template>
     <template v-else>
-      <p>Unavailable</p>
+      <p class="unavailable">Unavailable</p>
     </template>
   </div>
 </template>
@@ -57,3 +57,13 @@ export default {
   },
 };
 </script>
+
+<style>
+  .get-MVCR {
+    color: var(--v-anchor-base);
+  }
+
+  .get-MVCR .unavailable {
+    color: #757575;
+  }
+</style>
