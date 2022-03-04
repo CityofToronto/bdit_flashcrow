@@ -62,6 +62,11 @@ export default {
   .get-MVCR {
     color: var(--v-anchor-base);
     text-align: center;
+    font-weight: bold;
+  }
+
+  .get-MVCR a {
+    text-decoration: none;
   }
 
   .get-MVCR .unavailable {
