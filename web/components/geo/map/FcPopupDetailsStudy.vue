@@ -27,7 +27,7 @@ function getLocationDescription(location, poiSummary) {
   let trafficSignals = '';
   if (poiSummary.trafficSignals !== null && poiSummary.trafficSignals.length > 0) {
     const pxs = poiSummary.trafficSignals.map(ts => `PX ${ts.px}`);
-    trafficSignals = ` (${pxs.join('; ')})`;
+    trafficSignals = ` (${pxs.join(', ')})`;
   }
 
   if (locationFeatureType === null) {
