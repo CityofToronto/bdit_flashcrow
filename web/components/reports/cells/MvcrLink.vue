@@ -1,5 +1,15 @@
 <template>
   <div class='get-MVCR'>
+    <FcDialogConfirm
+      v-model="showMvcrAccessDialog"
+      textCancel="Dismiss"
+      textOk="Email to Request Access"
+      title="MVCR Access Request"
+      @action-ok="requestAccess">
+      <span class="body-1">
+        To access Motor Vehicle Collision Reports (MVCRs), please email...
+      </span>
+    </FcDialogConfirm>
     <template v-if="collisionHasMvcrFile">
       <template v-if="userHasMvcrReadPermission">
         <a :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
@@ -7,7 +17,7 @@
         <button v-on:click="download">Download</button>
       </template>
       <template v-else>
-        <a v-on:click="accessDenied">Request Access</a>
+        <a v-on:click="showMvcrAccessDialog = !showMvcrAccessDialog">Request Access</a>
       </template>
     </template>
     <template v-else>
@@ -18,8 +28,8 @@
 
 <script>
 import { AuthScope } from '@/lib/Constants';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { mapMutations } from 'vuex';
 import { getMVCR } from '@/lib/api/WebApi';
 import { saveAs } from 'file-saver';
 
@@ -28,6 +38,14 @@ export default {
   mixins: [
     FcMixinAuthScope,
   ],
+  components: {
+    FcDialogConfirm,
+  },
+  data() {
+    return {
+      showMvcrAccessDialog: false,
+    };
+  },
   props: {
     value: {
       type: Boolean,
@@ -35,7 +53,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['setDialog']),
     async download() {
       if (this.hasMvcrReadPermission) {
         const mvcrPdf = await getMVCR(this.sampleMvcrFileName);
@@ -45,9 +62,11 @@ export default {
       }
       return true;
     },
-    accessDenied() {
-      window.alert('You must have MVCR_READ permission to view or download MVCRs'); // eslint-disable-line no-alert
-      return false;
+    requestAccess() {
+      const subject = 'Requesting MVCR access';
+      const subjectEncoded = window.encodeURIComponent(subject);
+      const url = `mailto:move-team@toronto.ca?subject=${subjectEncoded}`;
+      window.open(url, '_blank');
     },
   },
   computed: {
