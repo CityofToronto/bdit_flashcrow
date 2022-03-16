@@ -1,11 +1,14 @@
 <template>
   <div class='get-MVCR'>
-    <template v-if="value">
-      <a v-if="hasMvcrReadPermission"
-        :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
-      <a v-else v-on:click="accessDenied">View</a>
-      &nbsp;
-      <button v-on:click="download">Download</button>
+    <template v-if="collisionHasMvcrFile">
+      <template v-if="userHasMvcrReadPermission">
+        <a :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
+        &nbsp;
+        <button v-on:click="download">Download</button>
+      </template>
+      <template v-else>
+        <a v-on:click="accessDenied">Request Access</a>
+      </template>
     </template>
     <template v-else>
       <p class="unavailable">Unavailable</p>
@@ -48,7 +51,10 @@ export default {
     },
   },
   computed: {
-    hasMvcrReadPermission() {
+    collisionHasMvcrFile() {
+      return this.value;
+    },
+    userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
     sampleMvcrFileName() {
