@@ -6,9 +6,19 @@
       textOk="Email to Request Access"
       title="MVCR Access Request"
       @action-ok="requestAccess">
-      <span class="body-1">
-        To access Motor Vehicle Collision Reports (MVCRs), please email...
-      </span>
+      <div class="body-1">
+        <p>
+          To access Motor Vehicle Collision Reports (MVCRs), please email
+          <span class='email'>move-team@toronto.ca</span>
+          with the following information, and copy your direct manager.
+        </p>
+        <ul>
+          <li>Subject: MVCR Access Request</li>
+          <li>Your team</li>
+          <li>Your role</li>
+          <li>Reason for requiring MVCR data</li>
+        </ul>
+      </div>
     </FcDialogConfirm>
     <template v-if="collisionHasMvcrFile">
       <template v-if="userHasMvcrReadPermission">
@@ -83,7 +93,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
   .get-MVCR {
     color: var(--v-anchor-base);
     text-align: center;
@@ -97,5 +107,17 @@ export default {
   .get-MVCR .unavailable {
     color: #757575;
     margin: 0;
+  }
+
+  .email {
+    font-weight: bold;
+  }
+
+  button.primary--text:last-child {
+    background-color: var(--v-anchor-base);
+
+    span {
+      color: white;
+    }
   }
 </style>
