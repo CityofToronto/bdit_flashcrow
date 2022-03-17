@@ -1,7 +1,17 @@
 <template>
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
-      <template v-if="userHasMvcrReadPermission">
+      <template v-if="!userLoggedIn">
+        <a @click="userLogin">Login to View</a>
+        <form
+          ref="formSignIn"
+          id="formSignIn"
+          method="POST"
+          action="/api/auth/adfs-init">
+          <input type="hidden" name="csrf" :value="auth.csrf" />
+        </form>
+      </template>
+      <template v-else-if="userHasMvcrReadPermission">
         <a :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
         &nbsp;
         <button v-on:click="download">Download</button>
@@ -21,6 +31,8 @@ import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { getMVCR } from '@/lib/api/WebApi';
 import { saveAs } from 'file-saver';
+import { mapState } from 'vuex';
+import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
   name: 'MvcrLink',
@@ -46,8 +58,16 @@ export default {
     showMvcrAccessDialog() {
       this.$emit('showMvcrAccessDialog');
     },
+    userLogin() {
+      saveLoginState(this.$route);
+      this.$refs.formSignIn.submit();
+    },
   },
   computed: {
+    ...mapState(['auth']),
+    userLoggedIn() {
+      return this.auth.loggedIn;
+    },
     collisionHasMvcrFile() {
       return this.value;
     },
