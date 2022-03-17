@@ -1,6 +1,10 @@
 <template>
   <div class="fc-report-table">
     <h4 v-if="title" class="headline">{{title}}</h4>
+    <MvcrAccessDialog
+      :showDialog="showMvcrAccessDialog"
+      @close="showMvcrAccessDialog = false"
+    />
     <table
       class="my-2"
       :class="{ 'auto-width': autoWidthTable }">
@@ -37,7 +41,10 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <MvcrLink v-if="mvcrColumnIndex === c" :value="value"/>
+            <MvcrLink v-if="mvcrColumnIndex === c"
+              @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
+              :value="value"
+            />
             <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
@@ -62,6 +69,7 @@
 <script>
 import TableUtils from '@/lib/reports/format/TableUtils';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
 import MvcrLink from './cells/MvcrLink.vue';
 
 function getClassListForStyle(style) {
@@ -180,6 +188,12 @@ export default {
   components: {
     FcTextReportValue,
     MvcrLink,
+    MvcrAccessDialog,
+  },
+  data() {
+    return {
+      showMvcrAccessDialog: false,
+    };
   },
   props: {
     title: {
