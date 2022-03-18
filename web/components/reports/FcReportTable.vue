@@ -70,6 +70,8 @@
 import TableUtils from '@/lib/reports/format/TableUtils';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import { AuthScope } from '@/lib/Constants';
 import MvcrLink from './cells/MvcrLink.vue';
 
 function getClassListForStyle(style) {
@@ -190,6 +192,9 @@ export default {
     MvcrLink,
     MvcrAccessDialog,
   },
+  mixins: [
+    FcMixinAuthScope,
+  ],
   data() {
     return {
       showMvcrAccessDialog: false,
@@ -251,6 +256,15 @@ export default {
       if (colIndex === -1) colIndex = false;
       return colIndex;
     },
+    userHasMvcrReadPermission() {
+      return this.hasAuthScope(AuthScope.MVCR_READ);
+    },
+  },
+  mounted() {
+    const routeParams = this.$route.params;
+    if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
+      this.showMvcrAccessDialog = true;
+    }
   },
 };
 </script>
