@@ -47,11 +47,13 @@ export default {
   },
   methods: {
     async download() {
-      if (this.hasMvcrReadPermission) {
+      if (!this.userLoggedIn) {
+        this.userLogin();
+      } else if (!this.userHasMvcrReadPermission) {
+        this.$emit('showMvcrAccessDialog');
+      } else {
         const mvcrPdf = await getMVCR(this.sampleMvcrFileName);
         saveAs(mvcrPdf, this.sampleMvcrFileName);
-      } else {
-        this.accessDenied();
       }
       return true;
     },
@@ -59,7 +61,9 @@ export default {
       this.$emit('showMvcrAccessDialog');
     },
     userLogin() {
-      saveLoginState(this.$route);
+      const route = this.$route;
+      route.params.mvcrRead = true;
+      saveLoginState(route);
       this.$refs.formSignIn.submit();
     },
   },
