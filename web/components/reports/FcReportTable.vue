@@ -42,8 +42,10 @@
             :is="tag"
             v-bind="attrs">
             <MvcrLink v-if="mvcrColumnIndex === c"
-              @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
               :value="value"
+              :collisionId="row[0].value"
+              :collisionDate="new Date(row[1].value)"
+              @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
             />
             <FcTextReportValue v-else :value="value" />
           </component>

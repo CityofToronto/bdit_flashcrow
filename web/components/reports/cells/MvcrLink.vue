@@ -12,7 +12,7 @@
         </form>
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a :href="'/api/mvcr/' + sampleMvcrFileName" target="_blank">View</a>
+        <a :href="urlPath" target="_blank">View</a>
         &nbsp;
         <button v-on:click="download">Download</button>
       </template>
@@ -44,6 +44,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    collisionId: {
+      type: String,
+      required: true,
+    },
+    collisionDate: {
+      type: Date,
+      required: true,
+    },
   },
   methods: {
     async download() {
@@ -52,8 +60,8 @@ export default {
       } else if (!this.userHasMvcrReadPermission) {
         this.$emit('showMvcrAccessDialog');
       } else {
-        const mvcrPdf = await getMVCR(this.sampleMvcrFileName);
-        saveAs(mvcrPdf, this.sampleMvcrFileName);
+        const mvcrPdf = await getMVCR(this.collisionYear, this.collisionMonth, this.collisionId);
+        saveAs(mvcrPdf, this.mvcrFilename);
       }
       return true;
     },
@@ -78,8 +86,20 @@ export default {
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
-    sampleMvcrFileName() {
-      return 'sample_mvcr_redacted.pdf';
+    collisionYear() {
+      return this.collisionDate.getFullYear();
+    },
+    collisionMonth() {
+      const month = this.collisionDate.getMonth() + 1;
+      const collisionMonth = (month < 10 ? '0' : '') + month;
+      return collisionMonth;
+    },
+    urlPath() {
+      const path = `/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`;
+      return path;
+    },
+    mvcrFilename() {
+      return `mvcr_${this.collisionYear}_${this.collisionMonth}_${this.collisionId}.pdf`;
     },
   },
 };
