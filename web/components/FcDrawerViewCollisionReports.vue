@@ -127,6 +127,7 @@ import {
   getReportDownload,
   getReportWeb,
 } from '@/lib/api/WebApi';
+import { defaultCollisionFilters, defaultCommonFilters } from '@/lib/filters/DefaultFilters';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
@@ -138,6 +139,7 @@ import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.v
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import DateTime from '@/lib/time/DateTime';
 
 export default {
   name: 'FcDrawerViewCollisionReports',
@@ -235,6 +237,9 @@ export default {
       this.updateReportLayout();
     },
   },
+  beforeMount() {
+    this.parseFiltersFromRouteParams();
+  },
   beforeRouteLeave(to, from, next) {
     if (this.leaveConfirmed) {
       /*
@@ -313,7 +318,41 @@ export default {
 
       this.loadingReportLayout = false;
     },
+    parseFiltersFromRouteParams() {
+      const routeParams = this.$route.params;
+      if ('collisionFilters' in routeParams && routeParams.collisionFilters) {
+        const defaultCommonFiltersObj = defaultCommonFilters();
+        const defaultCollisionFiltersObj = defaultCollisionFilters();
+        const setFilters = JSON.parse(routeParams.collisionFilters);
+
+        const commonFilters = this.leftMergeObjects(defaultCommonFiltersObj, setFilters);
+        const collisionFilters = this.leftMergeObjects(defaultCollisionFiltersObj, setFilters);
+
+        if (commonFilters.dateRangeStart) {
+          commonFilters.dateRangeStart = DateTime.fromString(commonFilters.dateRangeStart);
+        }
+        if (commonFilters.dateRangeEnd) {
+          commonFilters.dateRangeEnd = DateTime.fromString(commonFilters.dateRangeEnd);
+        }
+
+        this.setFiltersCommon(commonFilters);
+        this.setFiltersCollision(collisionFilters);
+      }
+      return true;
+    },
+    leftMergeObjects(obj1, obj2) {
+      const mergedObj = {};
+      Object.keys(obj1).forEach((key) => {
+        if (key in obj2) {
+          mergedObj[key] = obj2[key];
+        } else {
+          mergedObj[key] = obj1[key];
+        }
+      });
+      return mergedObj;
+    },
     ...mapMutations(['setLocationsIndex']),
+    ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
     ...mapActions(['initLocations']),
   },
 };

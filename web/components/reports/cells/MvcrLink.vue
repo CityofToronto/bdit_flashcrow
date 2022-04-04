@@ -31,7 +31,7 @@ import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { getMVCR } from '@/lib/api/WebApi';
 import { saveAs } from 'file-saver';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
@@ -71,12 +71,14 @@ export default {
     userLogin() {
       const route = this.$route;
       route.params.mvcrRead = true;
+      route.params.collisionFilters = JSON.stringify(this.filterParamsCollision);
       saveLoginState(route);
       this.$refs.formSignIn.submit();
     },
   },
   computed: {
     ...mapState(['auth']),
+    ...mapGetters('viewData', ['filterParamsCollision']),
     userLoggedIn() {
       return this.auth.loggedIn;
     },
