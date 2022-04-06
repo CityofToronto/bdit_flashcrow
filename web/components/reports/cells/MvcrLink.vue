@@ -48,8 +48,8 @@ export default {
       type: String,
       required: true,
     },
-    collisionDate: {
-      type: Date,
+    collisionIsoDateArray: {
+      type: Array,
       required: true,
     },
   },
@@ -88,17 +88,15 @@ export default {
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
-    collisionYear() {
-      return this.collisionDate.getFullYear();
-    },
-    collisionMonth() {
-      const month = this.collisionDate.getMonth() + 1;
-      const collisionMonth = (month < 10 ? '0' : '') + month;
-      return collisionMonth;
-    },
     urlPath() {
       const path = `/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`;
       return path;
+    },
+    collisionYear() {
+      return this.collisionIsoDateArray[0];
+    },
+    collisionMonth() {
+      return this.collisionIsoDateArray[1];
     },
     mvcrFilename() {
       return `mvcr_${this.collisionYear}_${this.collisionMonth}_${this.collisionId}.pdf`;

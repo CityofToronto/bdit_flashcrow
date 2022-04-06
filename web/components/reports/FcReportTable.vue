@@ -44,7 +44,7 @@
             <MvcrLink v-if="mvcrColumnIndex === c"
               :value="value"
               :collisionId="row[0].value"
-              :collisionDate="new Date(row[1].value)"
+              :collisionIsoDateArray="row[1].value.split('-')"
               @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
             />
             <FcTextReportValue v-else :value="value" />
