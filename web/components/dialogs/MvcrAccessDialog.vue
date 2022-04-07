@@ -4,7 +4,7 @@
     parentClass="mvcr-access-dialog"
     textCancel="Dismiss"
     textOk="Email to Request Access"
-    title="MVCR Access Request"
+    :title="title"
     @action-ok="requestAccess">
     <div class="body-1">
       <p>
@@ -13,7 +13,7 @@
         with the following information, and copy your direct manager.
       </p>
       <ul>
-        <li>Subject: MVCR Access Request</li>
+        <li>Subject: {{ title }}</li>
         <li>Your team</li>
         <li>Your role</li>
         <li>Reason for requiring MVCR data</li>
@@ -29,6 +29,11 @@ export default {
   name: 'MvcrAccessDialog',
   components: {
     FcDialogConfirm,
+  },
+  data() {
+    return {
+      title: 'Request MVCR Access',
+    };
   },
   props: {
     showDialog: {
@@ -52,7 +57,7 @@ export default {
       return true;
     },
     requestAccess() {
-      const subject = 'Requesting MVCR access';
+      const subject = this.title;
       const subjectEncoded = window.encodeURIComponent(subject);
       const url = `mailto:move-team@toronto.ca?subject=${subjectEncoded}`;
       window.open(url, '_blank');
