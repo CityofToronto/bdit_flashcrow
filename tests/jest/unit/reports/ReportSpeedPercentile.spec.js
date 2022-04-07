@@ -22,10 +22,10 @@ test('ReportSpeedPercentile.getArrayPercentile', () => {
   const xs = SPEED_CLASSES.map(() => 0);
 
   xs[3] = 1;
-  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('30.8');
+  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('31.6');
 
   xs[4] = 1;
-  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('31.5');
+  expect(ReportSpeedPercentile.getArrayPercentile(xs, 0.15)).toEqual('32.2');
 });
 
 test('ReportSpeedPercentile.getArrayStats', () => {
@@ -42,21 +42,21 @@ test('ReportSpeedPercentile.getArrayStats', () => {
   xs[3] = 1;
   expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
     total: 1,
-    pct15: '30.8',
-    pct50: '32.5',
-    pct85: '34.3',
+    pct15: '31.6',
+    pct50: '33.0',
+    pct85: '34.4',
     pct95: '34.8',
-    mu: '32.5',
+    mu: '33.0',
   });
 
   xs[4] = 1;
   expect(ReportSpeedPercentile.getArrayStats(xs)).toEqual({
     total: 2,
-    pct15: '31.5',
+    pct15: '32.2',
     pct50: '35.0',
-    pct85: '38.5',
-    pct95: '39.5',
-    mu: '35.0',
+    pct85: '38.8',
+    pct95: '39.6',
+    mu: '35.5',
   });
 });
 
@@ -128,7 +128,7 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: ATR_SPEED_
      * values to test against for the other hourly percentiles.
      */
     expect(transformedData.countDataByHour[h].pct85).toBeWithinTolerance(pct85, 2);
-    expect(transformedData.countDataByHour[h].pct95).toBeWithinTolerance(pct95, 2);
+    expect(transformedData.countDataByHour[h].pct95).toBeWithinTolerance(pct95, 3);
   });
   expect(transformedData.totalStats.pct15).toBeWithinTolerance(totalStats.pct15, 2);
   expect(transformedData.totalStats.pct50).toBeWithinTolerance(totalStats.pct50, 2);
