@@ -12,7 +12,7 @@
         </form>
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a :href="urlPath" target="_blank">View</a>
+        <a v-on:click="fetchPdf">View</a>
         &nbsp;
         <button v-on:click="download">Download</button>
       </template>
@@ -64,6 +64,18 @@ export default {
         saveAs(mvcrPdf, this.mvcrFilename);
       }
       return true;
+    },
+    async fetchPdf() {
+      try {
+        const mvcrPdf = await getMVCR(this.collisionYear, this.collisionMonth, this.collisionId);
+        const pdfUrl = window.URL.createObjectURL(mvcrPdf);
+        window.open(pdfUrl, '_blank');
+      } catch (err) {
+        if (err.response.status === 404) {
+          // eslint-disable-next-line no-alert
+          window.alert('file not found');
+        }
+      }
     },
     showMvcrAccessDialog() {
       this.$emit('showMvcrAccessDialog');
