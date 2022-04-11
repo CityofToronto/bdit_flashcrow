@@ -13,7 +13,7 @@
       </template>
       <template v-else-if="userHasMvcrReadPermission">
         <a v-on:click="fetchPdf">View</a>
-        &nbsp;
+        &bull;
         <button v-on:click="download">Download</button>
       </template>
       <template v-else>
@@ -125,7 +125,10 @@ export default {
     text-align: center;
     font-weight: bold;
     a {
-      text-decoration: none;
+      text-decoration: underline;
+    }
+    button {
+      text-decoration: underline;
     }
     .unavailable {
       color: #757575;
