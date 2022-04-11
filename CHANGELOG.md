@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2022-04-11
+
+### Changed
+
+- MVCRs (Motor Vehicle Collision Reports) view/download access has been to Collision Directory Reports
+
+## Fixed
+
+- The speed bucket ranges used to calculate Speed / Volume ATR report statistics are now the same as those indicated in the report itself
+- Previews of POIs and centrelines no longer fail to render when the location has multiple streetlights
+- Study requests that were linked to updated centreline nodes/segments have been relinked accordingly
 ## [1.8.0] - 2022-02-07
 
 ### Changed
