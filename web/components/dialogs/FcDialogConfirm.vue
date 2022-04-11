@@ -5,6 +5,7 @@
     max-width="560">
     <v-card
       aria-labelledby="heading_dialog_confirm"
+      :class="parentClass"
       role="dialog">
       <v-card-title>
         <h2 class="display-1" id="heading_dialog_confirm">{{title}}</h2>
@@ -57,6 +58,10 @@ export default {
     title: {
       type: String,
       default: 'Confirm',
+    },
+    parentClass: {
+      type: String,
+      default: 'confirmation-dialog',
     },
   },
   methods: {

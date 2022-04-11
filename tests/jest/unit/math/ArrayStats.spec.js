@@ -140,15 +140,14 @@ test('ArrayStats.histogramPercentile() [Trax Pro]', () => {
     [0, 0, 19, 100, 71, 84, 115, 88, 32, 7, 4, 0, 0, 0],
     0.95,
   );
-  // 58 in the report
-  expect(Math.floor(p)).toEqual(57);
+  expect(Math.floor(p)).toEqual(58);
 
   p = ArrayStats.histogramPercentile(
     SPEED_CLASSES,
     [0, 0, 0, 0, 0, 4, 6, 3, 7, 2, 2, 1, 1, 0],
     0.85,
   );
-  expect(Math.floor(p)).toEqual(65);
+  expect(Math.floor(p)).toEqual(66);
 
   p = ArrayStats.histogramPercentile(
     SPEED_CLASSES,

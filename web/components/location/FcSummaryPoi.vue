@@ -35,7 +35,7 @@ export default {
       poiSummary: {
         hospital: null,
         school: null,
-        trafficSignal: null,
+        trafficSignals: null,
       },
     };
   },
@@ -43,7 +43,7 @@ export default {
     poiChips() {
       const poiChips = [];
 
-      const { hospital, school, trafficSignal } = this.poiSummary;
+      const { hospital, school, trafficSignals } = this.poiSummary;
       if (hospital !== null) {
         const poiDistance = Math.round(hospital.geom_dist);
         const ariaLabel = `${poiDistance} m`;
@@ -66,8 +66,9 @@ export default {
         };
         poiChips.push(poiChip);
       }
-      if (trafficSignal !== null) {
-        const ariaLabel = `PX ${trafficSignal.px}`;
+      if (trafficSignals !== null) {
+        const pxs = trafficSignals.map(ts => `PX ${ts.px}`);
+        const ariaLabel = pxs.join('; ');
         const poiChip = {
           ariaLabel,
           color: 'purple',

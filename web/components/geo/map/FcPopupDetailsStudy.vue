@@ -24,15 +24,16 @@ function getLocationDescription(location, poiSummary) {
     return MSG_LOCATION_REMOVED;
   }
   const locationFeatureType = getLocationFeatureType(location);
-  let trafficSignal = '';
-  if (poiSummary.trafficSignal !== null) {
-    trafficSignal = ` (PX ${poiSummary.trafficSignal.px})`;
+  let trafficSignals = '';
+  if (poiSummary.trafficSignals !== null && poiSummary.trafficSignals.length > 0) {
+    const pxs = poiSummary.trafficSignals.map(ts => `PX ${ts.px}`);
+    trafficSignals = ` (${pxs.join(', ')})`;
   }
 
   if (locationFeatureType === null) {
-    return `${location.description}${trafficSignal}`;
+    return `${location.description}${trafficSignals}`;
   }
-  return `${locationFeatureType.description} \u00b7 ${location.description}${trafficSignal}`;
+  return `${locationFeatureType.description} \u00b7 ${location.description}${trafficSignals}`;
 }
 
 export default {

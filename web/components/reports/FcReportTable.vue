@@ -1,5 +1,15 @@
 <template>
   <div class="fc-report-table">
+    <template v-if="mvcrColumnIndex">
+      <MvcrAccessDialog
+        :showDialog="showMvcrAccessDialog"
+        @close="showMvcrAccessDialog = false"
+      />
+      <MvcrNotFoundAlert
+        :showDialog="showMvcrNotFoundAlert"
+        @close="showMvcrNotFoundAlert = false"
+      />
+    </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
     <table
       class="my-2"
@@ -24,7 +34,9 @@
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <FcTextReportValue :value="value" />
+            <FcTextReportValue v-if="value ==='MV'" value="MVCR" />
+            <FcTextReportValue v-else-if="value === 'CR'" value="Img" />
+            <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
       </thead>
@@ -37,7 +49,14 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <FcTextReportValue :value="value" />
+            <MvcrLink v-if="mvcrColumnIndex === c"
+              :value="value"
+              :collisionId="row[0].value"
+              :collisionIsoDateArray="row[1].value.split('-')"
+              @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
+              @showMvcrNotFoundAlert="showMvcrNotFoundAlert = !showMvcrNotFoundAlert"
+            />
+            <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
       </tbody>
@@ -61,6 +80,11 @@
 <script>
 import TableUtils from '@/lib/reports/format/TableUtils';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
+import MvcrNotFoundAlert from '@/web/components/dialogs/MvcrNotFoundAlert.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import { AuthScope } from '@/lib/Constants';
+import MvcrLink from './cells/MvcrLink.vue';
 
 function getClassListForStyle(style) {
   const {
@@ -177,6 +201,18 @@ export default {
   name: 'FcReportTable',
   components: {
     FcTextReportValue,
+    MvcrLink,
+    MvcrAccessDialog,
+    MvcrNotFoundAlert,
+  },
+  mixins: [
+    FcMixinAuthScope,
+  ],
+  data() {
+    return {
+      showMvcrAccessDialog: false,
+      showMvcrNotFoundAlert: false,
+    };
   },
   props: {
     title: {
@@ -229,6 +265,20 @@ export default {
     numColumns() {
       return TableUtils.getNumTableColumns(this.header, this.body, this.footer);
     },
+    mvcrColumnIndex() {
+      let colIndex = this.header[1].findIndex(h => h.value === 'CR');
+      if (colIndex === -1) colIndex = false;
+      return colIndex;
+    },
+    userHasMvcrReadPermission() {
+      return this.hasAuthScope(AuthScope.MVCR_READ);
+    },
+  },
+  mounted() {
+    const routeParams = this.$route.params;
+    if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
+      this.showMvcrAccessDialog = true;
+    }
   },
 };
 </script>

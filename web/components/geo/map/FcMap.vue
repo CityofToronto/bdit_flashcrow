@@ -443,9 +443,10 @@ export default {
         });
 
         // zoom to bounding box
+        const boundingBoxPadding = locationsState.length > 1 ? 64 : 0;
         const cameraOptions = this.map.cameraForBounds(bounds, {
           maxZoom: MapZoom.LEVEL_1.minzoom,
-          padding: 64,
+          padding: boundingBoxPadding,
         });
         this.map.easeTo(cameraOptions);
       } else if (locationsStatePrev.length === 0) {
