@@ -55,13 +55,13 @@ export default {
   },
   methods: {
     async download() {
-      if (!this.userLoggedIn) {
-        this.userLogin();
-      } else if (!this.userHasMvcrReadPermission) {
-        this.$emit('showMvcrAccessDialog');
-      } else {
+      try {
         const mvcrPdf = await getMVCR(this.collisionYear, this.collisionMonth, this.collisionId);
         saveAs(mvcrPdf, this.mvcrFilename);
+      } catch (err) {
+        if (err.response.status === 404) {
+          this.showMvcrNotFoundAlert();
+        }
       }
       return true;
     },
@@ -72,13 +72,15 @@ export default {
         window.open(pdfUrl, '_blank');
       } catch (err) {
         if (err.response.status === 404) {
-          // eslint-disable-next-line no-alert
-          window.alert('file not found');
+          this.showMvcrNotFoundAlert();
         }
       }
     },
     showMvcrAccessDialog() {
       this.$emit('showMvcrAccessDialog');
+    },
+    showMvcrNotFoundAlert() {
+      this.$emit('showMvcrNotFoundAlert');
     },
     userLogin() {
       const route = this.$route;

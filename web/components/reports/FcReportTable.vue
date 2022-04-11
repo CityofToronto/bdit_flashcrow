@@ -1,10 +1,16 @@
 <template>
   <div class="fc-report-table">
+    <template v-if="mvcrColumnIndex">
+      <MvcrAccessDialog
+        :showDialog="showMvcrAccessDialog"
+        @close="showMvcrAccessDialog = false"
+      />
+      <MvcrNotFoundAlert
+        :showDialog="showMvcrNotFoundAlert"
+        @close="showMvcrNotFoundAlert = false"
+      />
+    </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
-    <MvcrAccessDialog
-      :showDialog="showMvcrAccessDialog"
-      @close="showMvcrAccessDialog = false"
-    />
     <table
       class="my-2"
       :class="{ 'auto-width': autoWidthTable }">
@@ -48,6 +54,7 @@
               :collisionId="row[0].value"
               :collisionIsoDateArray="row[1].value.split('-')"
               @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
+              @showMvcrNotFoundAlert="showMvcrNotFoundAlert = !showMvcrNotFoundAlert"
             />
             <FcTextReportValue v-else :value="value" />
           </component>
@@ -74,6 +81,7 @@
 import TableUtils from '@/lib/reports/format/TableUtils';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
+import MvcrNotFoundAlert from '@/web/components/dialogs/MvcrNotFoundAlert.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { AuthScope } from '@/lib/Constants';
 import MvcrLink from './cells/MvcrLink.vue';
@@ -195,6 +203,7 @@ export default {
     FcTextReportValue,
     MvcrLink,
     MvcrAccessDialog,
+    MvcrNotFoundAlert,
   },
   mixins: [
     FcMixinAuthScope,
@@ -202,6 +211,7 @@ export default {
   data() {
     return {
       showMvcrAccessDialog: false,
+      showMvcrNotFoundAlert: false,
     };
   },
   props: {
