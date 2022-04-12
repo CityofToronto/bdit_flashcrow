@@ -1,7 +1,7 @@
 <template>
   <FcDialogAlert
     v-model="show"
-    title="MVCR Not Found">
+    title="MVCR Image Not Found">
     <p class="body-1">
       The MVCR (Motor Vehicle Collision Report) you've request could not be found.
       The MOVE team has been notified of the error.
