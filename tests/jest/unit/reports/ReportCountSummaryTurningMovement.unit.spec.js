@@ -135,29 +135,26 @@ describe('ReportCountSummaryTurningMovement', () => {
 
     beforeAll(() => {
       turningMovementCounts = [
-        { VEHICLE_TOTAL: 100, minutesElapsed: INTERVAL_MINS * 0 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 1 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 2 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 5 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 6 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 7 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 8 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 9 },
-        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 10 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 11 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 12 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 13 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 14 },
-        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 15 },
+        { VEHICLE_TOTAL: 100, minutesElapsed: INTERVAL_MINS * 0 }, // index 0
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 1 }, // index 1
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 2 }, // index 2
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 7 }, // index 3
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 9 }, // index 4
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 10 }, // index 5
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 11 }, // index 6
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 12 }, // index 7
+        { VEHICLE_TOTAL: 1, minutesElapsed: INTERVAL_MINS * 13 }, // index 8
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 14 }, // index 9
+        { VEHICLE_TOTAL: 0, minutesElapsed: INTERVAL_MINS * 15 }, // index 10
       ];
 
       periodStartMinute = INTERVAL_MINS * 1;
-      periodEndMinute = INTERVAL_MINS * 12;
+      periodEndMinute = INTERVAL_MINS * 14;
       window = getPeriod();
     });
 
     test('returns the earliest peark period with highest count WITHIN the window', () => {
-      const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 7 });
+      const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 10 });
       const peakEndTime = peakStartTime.plus(PEAK_DURATION);
       expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
       expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
@@ -171,6 +168,11 @@ describe('ReportCountSummaryTurningMovement', () => {
       beforeAll(() => {
         turningMovementCounts[1].VEHICLE_TOTAL = 10;
         turningMovementCounts[2].VEHICLE_TOTAL = 10;
+      });
+
+      afterAll(() => {
+        turningMovementCounts[1].VEHICLE_TOTAL = 0;
+        turningMovementCounts[2].VEHICLE_TOTAL = 0;
       });
 
       test('the time range returned is the duration of a peak', () => {
@@ -188,10 +190,41 @@ describe('ReportCountSummaryTurningMovement', () => {
     describe('when the peak is missing interval counts in the middle of the period', () => {
       beforeAll(() => {
         turningMovementCounts[3].VEHICLE_TOTAL = 20;
+        turningMovementCounts[4].VEHICLE_TOTAL = 20;
+      });
+
+      afterAll(() => {
+        turningMovementCounts[3].VEHICLE_TOTAL = 0;
+        turningMovementCounts[4].VEHICLE_TOTAL = 0;
       });
 
       test('the time range returned is the duration of a peak', () => {
-        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 2 });
+        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 6 });
+        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
+        expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
+      });
+
+      test('returns the correct totals', () => {
+        expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(40);
+      });
+    });
+
+    describe('when the peak is missing interval counts at the start of the period', () => {
+      beforeAll(() => {
+        turningMovementCounts[4].VEHICLE_TOTAL = 10;
+        turningMovementCounts[5].VEHICLE_TOTAL = 10;
+        turningMovementCounts[6].VEHICLE_TOTAL = 10;
+      });
+
+      afterAll(() => {
+        turningMovementCounts[4].VEHICLE_TOTAL = 0;
+        turningMovementCounts[5].VEHICLE_TOTAL = 0;
+        turningMovementCounts[6].VEHICLE_TOTAL = 0;
+      });
+
+      test('the time range returned is the duration of a peak', () => {
+        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 8 });
         const peakEndTime = peakStartTime.plus(PEAK_DURATION);
         expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
         expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
@@ -199,24 +232,6 @@ describe('ReportCountSummaryTurningMovement', () => {
 
       test('returns the correct totals', () => {
         expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(30);
-      });
-    });
-
-    describe('when the peak is missing interval counts at the start of the period', () => {
-      beforeAll(() => {
-        turningMovementCounts[4].VEHICLE_TOTAL = 30;
-        turningMovementCounts[5].VEHICLE_TOTAL = 30;
-      });
-
-      test('the time range returned is the duration of a peak', () => {
-        const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 4 });
-        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
-        expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
-        expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
-      });
-
-      test('returns the correct totals', () => {
-        expect(getTotalsForPeak().sum.VEHICLE_TOTAL).toEqual(80);
       });
     });
 
