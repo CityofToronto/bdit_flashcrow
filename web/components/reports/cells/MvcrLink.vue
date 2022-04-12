@@ -29,7 +29,7 @@
 <script>
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { getMVCR } from '@/lib/api/WebApi';
+import { getMvcr, hasMvcr } from '@/lib/api/WebApi';
 import { saveAs } from 'file-saver';
 import { mapState, mapGetters } from 'vuex';
 import { saveLoginState } from '@/web/store/LoginState';
@@ -56,7 +56,7 @@ export default {
   methods: {
     async download() {
       try {
-        const mvcrPdf = await getMVCR(this.collisionYear, this.collisionMonth, this.collisionId);
+        const mvcrPdf = await getMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
         saveAs(mvcrPdf, this.mvcrFilename);
       } catch (err) {
         if (err.response.status === 404) {
@@ -66,14 +66,11 @@ export default {
       return true;
     },
     async fetchPdf() {
-      try {
-        const mvcrPdf = await getMVCR(this.collisionYear, this.collisionMonth, this.collisionId);
-        const pdfUrl = window.URL.createObjectURL(mvcrPdf);
-        window.open(pdfUrl, '_blank');
-      } catch (err) {
-        if (err.response.status === 404) {
-          this.showMvcrNotFoundAlert();
-        }
+      const mvcrExists = await hasMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
+      if (mvcrExists) {
+        window.open(`/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`, '_blank');
+      } else {
+        this.showMvcrNotFoundAlert();
       }
     },
     showMvcrAccessDialog() {
