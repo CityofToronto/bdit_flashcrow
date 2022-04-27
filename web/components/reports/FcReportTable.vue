@@ -266,8 +266,12 @@ export default {
       return TableUtils.getNumTableColumns(this.header, this.body, this.footer);
     },
     mvcrColumnIndex() {
-      let colIndex = this.header[1].findIndex(h => h.value === 'CR');
-      if (colIndex === -1) colIndex = false;
+      const secondHeaderRow = this.header[1];
+      let colIndex = false;
+      if (Array.isArray(secondHeaderRow)) {
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'CR');
+        if (colIndex === -1) colIndex = false;
+      }
       return colIndex;
     },
     userHasMvcrReadPermission() {
