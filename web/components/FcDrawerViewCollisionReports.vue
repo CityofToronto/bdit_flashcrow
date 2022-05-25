@@ -74,6 +74,10 @@
 
           <v-spacer></v-spacer>
 
+          <FcButton @click="downloadAllMvcrs">
+            Download All MVCRs
+          </FcButton>
+
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :loading="loadingDownload"
@@ -126,6 +130,7 @@ import {
   getCollisionsByCentrelineSummaryPerLocation,
   getReportDownload,
   getReportWeb,
+  postJobCompressMvcrs,
 } from '@/lib/api/WebApi';
 import { defaultCollisionFilters, defaultCommonFilters } from '@/lib/filters/DefaultFilters';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
@@ -220,6 +225,7 @@ export default {
       'locations',
       'locationsIndex',
       'locationsSelection',
+      'auth',
     ]),
     ...mapState('viewData', ['detailView']),
     ...mapGetters([
@@ -284,6 +290,10 @@ export default {
         name: 'viewDataAtLocation',
         params,
       });
+    },
+    async downloadAllMvcrs() {
+      await postJobCompressMvcrs(this.auth.csrf);
+      return true;
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
