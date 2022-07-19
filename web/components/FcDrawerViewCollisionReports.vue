@@ -74,7 +74,7 @@
 
           <v-spacer></v-spacer>
 
-          <FcButton @click="downloadAllMvcrs">
+          <FcButton @click="downloadAllMvcrs" v-if="isDirectoryReport">
             Download All MVCRs
           </FcButton>
 
@@ -194,6 +194,9 @@ export default {
       }
       return reportTypes[indexActiveReportType];
     },
+    isDirectoryReport() {
+      return this.activeReportType === ReportType.COLLISION_DIRECTORY;
+    },
     disabledPerLocation() {
       return this.collisionSummaryPerLocation.map(({ amount }) => amount === 0);
     },
@@ -219,6 +222,42 @@ export default {
       );
       locationsIconProps[this.locationsIndex].selected = true;
       return locationsIconProps;
+    },
+    mvcrIds() {
+      const bodyRows = this.reportSectionRows('body');
+      const mvcrIds = bodyRows.map((row) => {
+        const collisionDateStr = row[this.dateColumnIndex].value;
+        const collisionDateArray = collisionDateStr.split('-');
+        const id = {
+          collisionId: row[this.mvcrNumberColumnIndex].value,
+          collisionYear: collisionDateArray[0],
+          collisionMonth: collisionDateArray[1],
+        };
+        return id;
+      });
+      return mvcrIds;
+    },
+    mvcrNumberColumnIndex() {
+      if (!this.isDirectoryReport) return false;
+      let colIndex = false;
+      const headerRowOne = this.headerRowByIndex(0);
+      const headerRowTwo = this.headerRowByIndex(1);
+      if (Array.isArray(headerRowOne) && Array.isArray(headerRowTwo)) {
+        const mvcrColIndex = headerRowOne.findIndex(h => h.value.toLowerCase() === 'mvcr');
+        const numberColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'number');
+        if (mvcrColIndex === numberColIndex && mvcrColIndex !== -1) colIndex = mvcrColIndex;
+      }
+      return colIndex;
+    },
+    dateColumnIndex() {
+      if (!this.isDirectoryReport) return false;
+      let colIndex = false;
+      const headerRowTwo = this.headerRowByIndex(1);
+      if (Array.isArray(headerRowTwo)) {
+        const dateColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'date');
+        if (dateColIndex !== -1) colIndex = dateColIndex;
+      }
+      return colIndex;
     },
     ...mapState([
       'locationMode',
@@ -292,7 +331,8 @@ export default {
       });
     },
     async downloadAllMvcrs() {
-      await postJobCompressMvcrs(this.auth.csrf);
+      const mvcrs = this.mvcrIds;
+      await postJobCompressMvcrs(this.auth.csrf, mvcrs);
       return true;
     },
     async loadAsyncForRoute(to) {
@@ -360,6 +400,17 @@ export default {
         }
       });
       return mergedObj;
+    },
+    reportSectionRows(section) {
+      const reportContent = this.reportLayout.content[1].options;
+      return reportContent[section];
+    },
+    headerRowByIndex(index) {
+      if (!this.isDirectoryReport) return false;
+      let row = false;
+      const headerRows = this.reportSectionRows('header');
+      if (Array.isArray(headerRows)) row = headerRows[index];
+      return row;
     },
     ...mapMutations(['setLocationsIndex']),
     ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
