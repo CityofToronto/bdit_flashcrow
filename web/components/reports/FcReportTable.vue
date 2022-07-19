@@ -1,6 +1,6 @@
 <template>
   <div class="fc-report-table">
-    <template v-if="mvcrColumnIndex">
+    <template v-if="mvcrImgColumnIndex">
       <MvcrAccessDialog
         :showDialog="showMvcrAccessDialog"
         @close="showMvcrAccessDialog = false"
@@ -49,7 +49,7 @@
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <MvcrLink v-if="mvcrColumnIndex === c"
+            <MvcrLink v-if="mvcrImgColumnIndex === c"
               :value="value"
               :collisionId="row[0].value"
               :collisionIsoDateArray="row[1].value.split('-')"
@@ -265,7 +265,7 @@ export default {
     numColumns() {
       return TableUtils.getNumTableColumns(this.header, this.body, this.footer);
     },
-    mvcrColumnIndex() {
+    mvcrImgColumnIndex() {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
