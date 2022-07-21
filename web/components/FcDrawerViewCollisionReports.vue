@@ -331,8 +331,13 @@ export default {
       });
     },
     async downloadAllMvcrs() {
-      const mvcrs = this.mvcrIds;
-      await postJobCompressMvcrs(this.auth.csrf, mvcrs);
+      const job = await postJobCompressMvcrs(this.auth.csrf, this.mvcrIds);
+
+      this.setToast({
+        toast: 'Job',
+        toastData: { job },
+      });
+
       return true;
     },
     async loadAsyncForRoute(to) {
@@ -412,7 +417,7 @@ export default {
       if (Array.isArray(headerRows)) row = headerRows[index];
       return row;
     },
-    ...mapMutations(['setLocationsIndex']),
+    ...mapMutations(['setLocationsIndex', 'setToast']),
     ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
     ...mapActions(['initLocations']),
   },
