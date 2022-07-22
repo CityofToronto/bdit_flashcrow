@@ -46,6 +46,7 @@ import FcGlobalFilterDrawer from '@/web/components/filters/FcGlobalFilterDrawer.
 import FcAppbar from '@/web/components/nav/FcAppbar.vue';
 import FcNavbar from '@/web/components/nav/FcNavbar.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
+import FcToastMvcrJob from '@/web/components/dialogs/FcToastMvcrJob.vue';
 
 export default {
   name: 'App',
@@ -61,6 +62,7 @@ export default {
     FcToastError,
     FcToastInfo,
     FcToastJob,
+    FcToastMvcrJob,
   },
   data() {
     return { FrontendEnv };

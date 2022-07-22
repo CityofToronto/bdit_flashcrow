@@ -334,7 +334,7 @@ export default {
       const job = await postJobCompressMvcrs(this.auth.csrf, this.mvcrIds);
 
       this.setToast({
-        toast: 'Job',
+        toast: 'MvcrJob',
         toastData: { job },
       });
 
