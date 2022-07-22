@@ -11,6 +11,9 @@
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 import JobPoller from '@/lib/jobs/JobPoller';
+import { getBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
+import { saveAs } from 'file-saver';
+import { mapState } from 'vuex';
 
 export default {
   name: 'FcToastMvcrJob',
@@ -24,6 +27,8 @@ export default {
   data() {
     return {
       text: 'Zipping MVCRs for download',
+      actoin: null,
+      downloadFilename: null,
     };
   },
   created() {
@@ -38,17 +43,26 @@ export default {
     this.jobPoller = null;
   },
   computed: {
-    action() {
-      return 'Download';
-    },
     color() {
       return 'black';
     },
+    ...mapState(['auth']),
   },
   methods: {
+    async downloadMvcr() {
+      const { downloadFilename: filename } = this;
+
+      const fileStream = await getBulkMvcr(filename);
+      saveAs(fileStream, filename);
+
+      await putJobDismiss(this.auth.csrf, this.job);
+      return true;
+    },
     onUpdateJobStatus() {
       if (this.jobPoller.jobStatus === 'completed') {
+        this.action = 'donwload';
         this.text = 'MVCRs ready for download';
+        this.downloadFilename = this.jobPoller.job.result.filename;
       }
     },
   },
