@@ -4,6 +4,7 @@
     :action="action"
     :color="color"
     :text="text"
+    :disableAutoClose=true
     @toast-action="downloadMvcr" />
 </template>
 
@@ -33,6 +34,7 @@ export default {
   },
   created() {
     this.jobPoller = new JobPoller(this.job);
+    this.action = null;
     this.jobPoller.addEventListener(
       JobPoller.EVENT_UPDATE_JOB_STATUS,
       this.onUpdateJobStatus.bind(this),

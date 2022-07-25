@@ -61,10 +61,21 @@ export default {
       default: false,
     },
     text: String,
+    disableAutoClose: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
+    hasAction() {
+      return this.action !== null;
+    },
     timeout() {
-      return this.action === null ? TIMEOUT_AUTO_CLOSE : TIMEOUT_NEVER;
+      let delayBeforeClose = TIMEOUT_AUTO_CLOSE;
+      if (this.disableAutoClose || this.hasAction) {
+        delayBeforeClose = TIMEOUT_NEVER;
+      }
+      return delayBeforeClose;
     },
   },
   watch: {
