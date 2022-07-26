@@ -225,7 +225,8 @@ export default {
     },
     mvcrIds() {
       const bodyRows = this.reportSectionRows('body');
-      const mvcrIds = bodyRows.map((row) => {
+      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
+      const mvcrIds = rowsWithMvcrs.map((row) => {
         const collisionDateStr = row[this.dateColumnIndex].value;
         const collisionDateArray = collisionDateStr.split('-');
         const id = {
@@ -255,6 +256,16 @@ export default {
       const headerRowTwo = this.headerRowByIndex(1);
       if (Array.isArray(headerRowTwo)) {
         const dateColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'date');
+        if (dateColIndex !== -1) colIndex = dateColIndex;
+      }
+      return colIndex;
+    },
+    mvcrImgColumnIndex() {
+      if (!this.isDirectoryReport) return false;
+      let colIndex = false;
+      const headerRowTwo = this.headerRowByIndex(1);
+      if (Array.isArray(headerRowTwo)) {
+        const dateColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'cr');
         if (dateColIndex !== -1) colIndex = dateColIndex;
       }
       return colIndex;
