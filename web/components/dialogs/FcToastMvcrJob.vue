@@ -2,7 +2,7 @@
   <FcToast
     v-model="internalValue"
     :action="action"
-    :color="color"
+    :color="'black'"
     :text="text"
     :disableAutoClose=true
     @toast-action="downloadMvcr" />
@@ -45,9 +45,6 @@ export default {
     this.jobPoller = null;
   },
   computed: {
-    color() {
-      return 'black';
-    },
     ...mapState(['auth']),
   },
   methods: {
