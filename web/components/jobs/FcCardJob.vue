@@ -12,7 +12,9 @@
       <div>
         <div class="headline">{{job.description}}</div>
         <div class="body-1 mt-1">
-          {{text}} &#x2022; {{textUpdatedAt}}
+          <span v-if="isMvcrJob">{{job.progressTotal}} MVCRs</span>
+          <span v-else>{{text}}</span>
+          &#x2022; {{textUpdatedAt}}
         </div>
       </div>
 
@@ -102,6 +104,9 @@ export default {
         return `failed ${completedAtStr}`;
       }
       return `last updated ${completedAtStr}`;
+    },
+    isMvcrJob() {
+      return this.job.type.id === 'COMPRESS_MVCRS';
     },
     ...mapState(['auth']),
   },
