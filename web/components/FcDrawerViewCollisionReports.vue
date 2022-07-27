@@ -342,7 +342,9 @@ export default {
       });
     },
     async downloadAllMvcrs() {
-      const job = await postJobCompressMvcrs(this.auth.csrf, this.mvcrIds);
+      const job = await postJobCompressMvcrs(
+        this.auth.csrf, this.mvcrIds, this.locationsDescription,
+      );
 
       this.setToast({
         toast: 'MvcrJob',
