@@ -38,7 +38,7 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobDismiss } from '@/lib/api/WebApi';
+import { getStorage, getBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
@@ -124,10 +124,27 @@ export default {
       const job = await putJobDismiss(this.auth.csrf, this.internalJob);
       this.internalJob = job;
     },
+    async mvcrDownload() {
+      const { result } = this.internalJob;
+      if (result === null) {
+        return;
+      }
+      const { filename } = result;
+
+      const fileStream = await getBulkMvcr(filename);
+      saveAs(fileStream, filename);
+
+      const job = await putJobDismiss(this.auth.csrf, this.internalJob);
+      this.internalJob = job;
+    },
     actionCard() {
       const { state } = this.internalJob;
       if (state === 'completed') {
-        this.actionDownload();
+        if (this.isMvcrJob) {
+          this.mvcrDownload();
+        } else {
+          this.actionDownload();
+        }
       }
     },
     onUpdateJobStatus() {
