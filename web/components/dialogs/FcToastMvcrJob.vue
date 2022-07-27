@@ -27,7 +27,8 @@ export default {
   },
   data() {
     return {
-      text: 'Zipping MVCRs for download',
+      jobState: this.job.state,
+      jobProgressCurrent: this.job.progressCurrent,
       actoin: null,
       downloadFilename: null,
     };
@@ -45,6 +46,23 @@ export default {
     this.jobPoller = null;
   },
   computed: {
+    text() {
+      const { jobState, jobProgressCurrent, jobProgressTotal } = this;
+      // eslint-disable-next-line no-console
+      console.log(jobState, jobProgressCurrent, jobProgressTotal);
+      let text = 'Preparing MVCR files for download';
+      if (jobState === 'created') {
+        text = 'Zipping MVCRs...';
+      } else if (jobState === 'active') {
+        text = `Zipping MVCRs (${jobProgressCurrent} of ${jobProgressTotal})`;
+      } else if (jobState === 'completed') {
+        text = 'MVCRs ready for download';
+      }
+      return text;
+    },
+    jobProgressTotal() {
+      return this.job.progressTotal;
+    },
     ...mapState(['auth']),
   },
   methods: {
@@ -58,9 +76,10 @@ export default {
       return true;
     },
     onUpdateJobStatus() {
-      if (this.jobPoller.jobStatus === 'completed') {
+      this.jobState = this.jobPoller.job.state;
+      this.jobProgressCurrent = this.jobPoller.job.progressCurrent;
+      if (this.jobState === 'completed') {
         this.action = 'donwload';
-        this.text = 'MVCRs ready for download';
         this.downloadFilename = this.jobPoller.job.result.filename;
       }
     },
