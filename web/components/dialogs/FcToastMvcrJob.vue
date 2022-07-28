@@ -4,7 +4,6 @@
     :action="action"
     :color="'black'"
     :text="text"
-    :disableAutoClose=true
     @toast-action="downloadMvcr" />
 </template>
 
@@ -28,14 +27,13 @@ export default {
   data() {
     return {
       jobState: this.job.state,
-      jobProgressCurrent: this.job.progressCurrent,
-      actoin: null,
-      downloadFilename: null,
+      action: null,
+      jobApproxDurationSecs: Math.ceil(this.jobProgressTotal / 30),
+      eta: null,
     };
   },
   created() {
     this.jobPoller = new JobPoller(this.job);
-    this.action = null;
     this.jobPoller.addEventListener(
       JobPoller.EVENT_UPDATE_JOB_STATUS,
       this.onUpdateJobStatus.bind(this),
@@ -47,14 +45,10 @@ export default {
   },
   computed: {
     text() {
-      const { jobState, jobProgressCurrent, jobProgressTotal } = this;
-      // eslint-disable-next-line no-console
-      console.log(jobState, jobProgressCurrent, jobProgressTotal);
-      let text = 'Preparing MVCR files for download';
-      if (jobState === 'created') {
-        text = 'Zipping MVCRs...';
-      } else if (jobState === 'active') {
-        text = `Zipping MVCRs (${jobProgressCurrent} of ${jobProgressTotal})`;
+      const { jobState, jobProgressTotal } = this;
+      let text = `Preparing ${jobProgressTotal} MVCRs for download`;
+      if (jobState === 'active') {
+        text = `Zipping ${jobProgressTotal} MVCRs (${this.eta}s)`;
       } else if (jobState === 'completed') {
         text = 'MVCRs ready for download';
       }
@@ -63,11 +57,17 @@ export default {
     jobProgressTotal() {
       return this.job.progressTotal;
     },
+    jobIsActive() {
+      return this.jobState === 'active';
+    },
+    jobIsComplete() {
+      return this.jobState === 'completed';
+    },
     ...mapState(['auth']),
   },
   methods: {
     async downloadMvcr() {
-      const { downloadFilename: filename } = this;
+      const { filename } = this.jobPoller.job.result;
 
       const fileStream = await getBulkMvcr(filename);
       saveAs(fileStream, filename);
@@ -75,12 +75,27 @@ export default {
       await putJobDismiss(this.auth.csrf, this.job);
       return true;
     },
+    initiateCountdown() {
+      if (this.eta === null) {
+        this.eta = this.jobApproxDurationSecs;
+        setInterval(this.etaCountdown, 1000);
+      }
+    },
+    etaCountdown() {
+      let didCountdown = false;
+      if (this.eta !== null && this.eta > 0) {
+        this.eta -= 1;
+        if (this.eta !== 0) setInterval(this.etaCountdown, 1000);
+        didCountdown = true;
+      }
+      return didCountdown;
+    },
     onUpdateJobStatus() {
       this.jobState = this.jobPoller.job.state;
-      this.jobProgressCurrent = this.jobPoller.job.progressCurrent;
-      if (this.jobState === 'completed') {
+      if (this.jobIsActive) {
+        if (this.eta === null) this.initiateCountdown();
+      } else if (this.jobIsComplete) {
         this.action = 'donwload';
-        this.downloadFilename = this.jobPoller.job.result.filename;
       }
     },
   },
