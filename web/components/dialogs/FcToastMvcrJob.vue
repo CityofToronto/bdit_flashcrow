@@ -28,7 +28,6 @@ export default {
     return {
       jobState: this.job.state,
       action: null,
-      jobApproxDurationSecs: Math.ceil(this.jobProgressTotal / 30),
       eta: null,
     };
   },
@@ -38,6 +37,7 @@ export default {
       JobPoller.EVENT_UPDATE_JOB_STATUS,
       this.onUpdateJobStatus.bind(this),
     );
+    this.jobApproxDurationSecs = Math.ceil(this.jobProgressTotal / 30);
   },
   beforeDestroy() {
     this.jobPoller.clearIntervals();
@@ -75,25 +75,24 @@ export default {
       await putJobDismiss(this.auth.csrf, this.job);
       return true;
     },
-    initiateCountdown() {
-      if (this.eta === null) {
-        this.eta = this.jobApproxDurationSecs;
-        setInterval(this.etaCountdown, 1000);
-      }
-    },
     etaCountdown() {
       let didCountdown = false;
-      if (this.eta !== null && this.eta > 0) {
+      if (this.eta === null) {
+        this.eta = this.jobApproxDurationSecs;
+        setTimeout(this.etaCountdown, 1000);
+      } else if (this.eta > 0) {
         this.eta -= 1;
-        if (this.eta !== 0) setInterval(this.etaCountdown, 1000);
+        if (this.eta !== 0) setTimeout(this.etaCountdown, 1000);
         didCountdown = true;
       }
+      // eslint-disable-next-line no-console
+      console.log(didCountdown, this.eta);
       return didCountdown;
     },
     onUpdateJobStatus() {
       this.jobState = this.jobPoller.job.state;
       if (this.jobIsActive) {
-        if (this.eta === null) this.initiateCountdown();
+        if (this.eta === null) this.etaCountdown();
       } else if (this.jobIsComplete) {
         this.action = 'donwload';
       }
