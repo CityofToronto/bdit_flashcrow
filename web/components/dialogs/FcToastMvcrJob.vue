@@ -85,8 +85,6 @@ export default {
         if (this.eta !== 0) setTimeout(this.etaCountdown, 1000);
         didCountdown = true;
       }
-      // eslint-disable-next-line no-console
-      console.log(didCountdown, this.eta);
       return didCountdown;
     },
     onUpdateJobStatus() {
