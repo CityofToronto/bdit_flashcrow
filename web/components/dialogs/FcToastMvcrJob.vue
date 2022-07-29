@@ -11,8 +11,7 @@
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 import JobPoller from '@/lib/jobs/JobPoller';
-import { getBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
-import { saveAs } from 'file-saver';
+import { downloadBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
 import { mapState } from 'vuex';
 
 export default {
@@ -68,10 +67,7 @@ export default {
   methods: {
     async downloadMvcr() {
       const { filename } = this.jobPoller.job.result;
-
-      const fileStream = await getBulkMvcr(filename);
-      saveAs(fileStream, filename);
-
+      downloadBulkMvcr(filename);
       await putJobDismiss(this.auth.csrf, this.job);
       return true;
     },
