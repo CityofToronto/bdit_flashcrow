@@ -74,9 +74,12 @@
 
           <v-spacer></v-spacer>
 
-          <div class="mr-3" v-if="isDirectoryReport && userLoggedIn && userHasMvcrReadPermission">
-            <FcButton @click="downloadAllMvcrs">
-              Download All MVCRs
+          <div v-if="isDirectoryReport && userLoggedIn && userHasMvcrReadPermission">
+            <FcButton
+              @click="downloadAllMvcrs"
+              class="ml-2"
+              :type="'secondary'">
+                <span>Download All MVCR</span>
             </FcButton>
           </div>
 
