@@ -74,9 +74,12 @@
 
           <v-spacer></v-spacer>
 
-          <FcButton @click="downloadAllMvcrs" v-if="isDirectoryReport">
-            Download All MVCRs
-          </FcButton>
+          <div class="mr-3" v-if="isDirectoryReport">
+            <FcButton @click="downloadAllMvcrs"
+              :disabled="!userLoggedIn || !userHasMvcrReadPermission">
+              Download All MVCRs
+            </FcButton>
+          </div>
 
           <div class="mr-3">
             <FcMenuDownloadReportFormat
@@ -125,7 +128,9 @@ import {
   LocationSelectionType,
   ReportFormat,
   ReportType,
+  AuthScope,
 } from '@/lib/Constants';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import {
   getCollisionsByCentrelineSummaryPerLocation,
   getReportDownload,
@@ -148,7 +153,7 @@ import DateTime from '@/lib/time/DateTime';
 
 export default {
   name: 'FcDrawerViewCollisionReports',
-  mixins: [FcMixinRouteAsync],
+  mixins: [FcMixinRouteAsync, FcMixinAuthScope],
   components: {
     FcButton,
     FcDialogConfirm,
@@ -177,6 +182,12 @@ export default {
     };
   },
   computed: {
+    userLoggedIn() {
+      return this.auth.loggedIn;
+    },
+    userHasMvcrReadPermission() {
+      return this.hasAuthScope(AuthScope.MVCR_READ);
+    },
     activeReportId() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
         const s1 = CompositeId.encode(this.locationsActive);
