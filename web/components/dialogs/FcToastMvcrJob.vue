@@ -88,7 +88,7 @@ export default {
       if (this.jobIsActive) {
         if (this.eta === null) this.etaCountdown();
       } else if (this.jobIsComplete) {
-        this.action = 'donwload';
+        this.action = 'download';
       }
     },
   },
