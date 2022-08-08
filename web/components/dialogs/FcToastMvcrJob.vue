@@ -4,6 +4,7 @@
     :action="action"
     :color="'black'"
     :text="text"
+    :disableAutoClose=true
     @toast-action="downloadMvcr" />
 </template>
 
