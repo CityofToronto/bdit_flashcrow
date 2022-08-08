@@ -79,7 +79,7 @@
               @click="downloadAllMvcrs"
               class="ml-2"
               :type="'secondary'">
-                <span>Download All MVCR</span>
+                <span>Export {{ mvcrIds.length }} MVCR</span>
             </FcButton>
           </div>
 
