@@ -79,7 +79,7 @@
               @click="downloadAllMvcrs"
               class="ml-2"
               :type="'secondary'">
-                <span>Export {{ mvcrIds.length }} MVCR</span>
+                <span>Export {{ mvcrIds().length }} MVCR</span>
             </FcButton>
           </div>
 
@@ -236,21 +236,6 @@ export default {
       locationsIconProps[this.locationsIndex].selected = true;
       return locationsIconProps;
     },
-    mvcrIds() {
-      const bodyRows = this.reportSectionRows('body');
-      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
-      const mvcrIds = rowsWithMvcrs.map((row) => {
-        const collisionDateStr = row[this.dateColumnIndex].value;
-        const collisionDateArray = collisionDateStr.split('-');
-        const id = {
-          collisionId: row[this.mvcrNumberColumnIndex].value,
-          collisionYear: collisionDateArray[0],
-          collisionMonth: collisionDateArray[1],
-        };
-        return id;
-      });
-      return mvcrIds;
-    },
     mvcrNumberColumnIndex() {
       if (!this.isDirectoryReport) return false;
       let colIndex = false;
@@ -343,6 +328,21 @@ export default {
       );
       this.loadingDownload = false;
     },
+    mvcrIds() {
+      const bodyRows = this.reportSectionRows('body');
+      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
+      const mvcrIds = rowsWithMvcrs.map((row) => {
+        const collisionDateStr = row[this.dateColumnIndex].value;
+        const collisionDateArray = collisionDateStr.split('-');
+        const id = {
+          collisionId: row[this.mvcrNumberColumnIndex].value,
+          collisionYear: collisionDateArray[0],
+          collisionMonth: collisionDateArray[1],
+        };
+        return id;
+      });
+      return mvcrIds;
+    },
     actionLeave() {
       this.leaveConfirmed = true;
       this.$router.push(this.nextRoute);
@@ -356,7 +356,7 @@ export default {
     },
     async downloadAllMvcrs() {
       const job = await postJobCompressMvcrs(
-        this.auth.csrf, this.mvcrIds, this.locationsDescription,
+        this.auth.csrf, this.mvcrIds(), this.locationsDescription,
       );
 
       this.setToast({
