@@ -35,18 +35,7 @@
       </v-card>
       <template v-else>
         <FcSectionJobs
-          v-if="jobsSections.newlyCompleted.length > 0"
-          :jobs="jobsSections.newlyCompleted"
-          title="Completed Downloads" />
-
-        <FcSectionJobs
-          v-if="jobsSections.inProgress.length > 0"
-          :jobs="jobsSections.inProgress"
-          title="Downloads in Progress" />
-
-        <FcSectionJobs
-          v-if="jobsSections.old.length > 0"
-          :jobs="jobsSections.old"
+          :jobs="jobs"
           title="Download History" />
       </template>
     </section>
