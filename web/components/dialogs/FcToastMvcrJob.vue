@@ -1,4 +1,4 @@
-<template>
+ <template>
   <FcToast
     v-model="internalValue"
     :action="action"
@@ -46,11 +46,11 @@ export default {
   computed: {
     text() {
       const { jobState, jobProgressTotal } = this;
-      let text = `Preparing ${jobProgressTotal} MVCRs for download`;
+      let text = `Preparing ${jobProgressTotal} MVCR`;
       if (jobState === 'active') {
-        text = `Zipping ${jobProgressTotal} MVCRs (${this.eta}s)`;
+        text += ` (ready in ${this.eta} seconds)`;
       } else if (jobState === 'completed') {
-        text = 'MVCRs ready for download';
+        text = `Reports ready (${jobProgressTotal} MVCR)`;
       }
       return text;
     },
