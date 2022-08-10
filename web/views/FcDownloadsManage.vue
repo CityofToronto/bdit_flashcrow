@@ -36,7 +36,7 @@
       <template v-else>
         <FcSectionJobs
           :jobs="jobs"
-          title="Download History" />
+          title="Export History" />
       </template>
     </section>
   </div>
