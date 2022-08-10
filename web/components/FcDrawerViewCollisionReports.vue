@@ -79,7 +79,9 @@
               @click="downloadAllMvcrs"
               class="ml-2"
               :type="'secondary'">
-                <span>Export {{ mvcrIds().length }} MVCR</span>
+                <span>Export
+                  <span v-if="!loadingReportLayout">{{ rowsWithMvcr.length }}</span>
+                MVCR</span>
             </FcButton>
           </div>
 
@@ -268,6 +270,24 @@ export default {
       }
       return colIndex;
     },
+    rowsWithMvcr() {
+      const bodyRows = this.reportSectionRows('body');
+      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
+      return rowsWithMvcrs;
+    },
+    mvcrIds() {
+      const mvcrIds = this.rowsWithMvcrs.map((row) => {
+        const collisionDateStr = row[this.dateColumnIndex].value;
+        const collisionDateArray = collisionDateStr.split('-');
+        const id = {
+          collisionId: row[this.mvcrNumberColumnIndex].value,
+          collisionYear: collisionDateArray[0],
+          collisionMonth: collisionDateArray[1],
+        };
+        return id;
+      });
+      return mvcrIds;
+    },
     ...mapState([
       'locationMode',
       'locations',
@@ -327,21 +347,6 @@ export default {
         this.filterParamsCollision,
       );
       this.loadingDownload = false;
-    },
-    mvcrIds() {
-      const bodyRows = this.reportSectionRows('body');
-      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
-      const mvcrIds = rowsWithMvcrs.map((row) => {
-        const collisionDateStr = row[this.dateColumnIndex].value;
-        const collisionDateArray = collisionDateStr.split('-');
-        const id = {
-          collisionId: row[this.mvcrNumberColumnIndex].value,
-          collisionYear: collisionDateArray[0],
-          collisionMonth: collisionDateArray[1],
-        };
-        return id;
-      });
-      return mvcrIds;
     },
     actionLeave() {
       this.leaveConfirmed = true;
