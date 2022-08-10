@@ -46,11 +46,11 @@ export default {
   computed: {
     text() {
       const { jobState, jobProgressTotal } = this;
-      let text = `Preparing ${jobProgressTotal} MVCR`;
+      let text = `Preparing ${jobProgressTotal} MVCRs`;
       if (jobState === 'active') {
         text += ` (ready in ${this.eta} seconds)`;
       } else if (jobState === 'completed') {
-        text = `Reports ready (${jobProgressTotal} MVCR)`;
+        text = `Reports ready (${jobProgressTotal} MVCRs)`;
       }
       return text;
     },

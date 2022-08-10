@@ -12,7 +12,7 @@
       <div>
         <div class="headline">{{job.description}}</div>
         <div class="body-1 mt-1">
-          <span v-if="isMvcrJob">Reports ready ({{job.progressTotal}} MVCR)</span>
+          <span v-if="isMvcrJob">Reports ready ({{job.progressTotal}} MVCRs)</span>
           <span v-else>{{text}}</span>
           &#x2022; {{textUpdatedAt}}
         </div>
