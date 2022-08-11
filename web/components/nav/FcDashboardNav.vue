@@ -31,6 +31,7 @@
       icon="help-circle-outline"
       label="MOVE Help Centre"
       href="https://notion.so/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc" />
+
     <FcDashboardNavItem
       external
       icon="bug"
@@ -55,6 +56,22 @@ export default {
     return {
       jobsExistsNew: false,
       loading: true,
+      reportIssueEmailBody:
+`Use this template to report an issue with MOVE. Please answer the prompts, and provide as much detail as possible. We will get back to you within 1-2 business days if we need more information.
+
+SUMMARY (A concise, 1-2 sentence description of the issue you encountered)
+
+ENVIRONMENT (Please check the version number in the header, for example: "prod v1.9.0")
+
+STEPS TO REPRODUCE (Please include detailed steps to reproduce the issue)
+
+WHAT SHOULD HAPPEN (What did you expect to happen?)
+
+WHAT HAPPENS (What actually happened?)
+
+NOTES (Any additional information you can provide about the issue)
+
+SCREENSHOT (Attach a screenshot of your issue)`,
     };
   },
   computed: {
@@ -69,10 +86,11 @@ export default {
       };
     },
     urlReportIssue() {
-      const paramUsername = encodeURIComponent(this.username);
-      const url = `${window.location.origin}${this.$route.fullPath}`;
-      const paramUrl = encodeURIComponent(url);
-      return `https://docs.google.com/forms/d/e/1FAIpQLSeENA2S8dA678ENanNFwdZ811TUjVjIYolloBlRo12idib5UQ/viewform?entry.135357596=${paramUsername}&entry.1262500898=${paramUrl}`;
+      const subject = 'MOVE Issue Report';
+      const subjectEncoded = window.encodeURIComponent(subject);
+      // const body = 'Use this template to report an issue with MOVE.';
+      const bodyEncoded = window.encodeURIComponent(this.reportIssueEmailBody);
+      return `mailto:move-team@toronto.ca?subject=${subjectEncoded}&body=${bodyEncoded}`;
     },
     username() {
       if (this.auth.loggedIn) {
