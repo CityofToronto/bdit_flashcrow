@@ -80,7 +80,7 @@
               class="ml-2"
               :type="'secondary'">
                 <span>Export
-                  <span v-if="!loadingReportLayout">{{ rowsWithMvcr.length }}</span>
+                  <span v-if="!loadingReportLayout">{{ rowsWithMvcrs.length }}</span>
                 MVCR</span>
             </FcButton>
           </div>
@@ -270,7 +270,7 @@ export default {
       }
       return colIndex;
     },
-    rowsWithMvcr() {
+    rowsWithMvcrs() {
       const bodyRows = this.reportSectionRows('body');
       const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
       return rowsWithMvcrs;
@@ -361,7 +361,7 @@ export default {
     },
     async downloadAllMvcrs() {
       const job = await postJobCompressMvcrs(
-        this.auth.csrf, this.mvcrIds(), this.locationsDescription,
+        this.auth.csrf, this.mvcrIds, this.locationsDescription,
       );
 
       this.setToast({
