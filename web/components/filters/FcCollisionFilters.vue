@@ -64,8 +64,11 @@
       <template v-slot:label-right>
         <FcTooltipCollisionFilter>
           <span>
-            Most collisions have an associated Motor Vehicle Collision Report (MVCR)
-            on record.
+            Many collisions have an associated Motor Vehicle Collision Report (MVCR) on record.
+            The MVCR was previously known as the MVA report.<br><br>
+            This report includes detailed information about a collision.
+            Toronto Police Services and Collision Reporting Centres share these reports
+            with Transportation Services for use in safety and mobility analyses.
           </span>
         </FcTooltipCollisionFilter>
       </template>
