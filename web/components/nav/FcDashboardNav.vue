@@ -33,7 +33,6 @@
       href="https://notion.so/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc" />
 
     <FcDashboardNavItem
-      external
       icon="bug"
       label="Report an Issue"
       :href="urlReportIssue" />
@@ -88,7 +87,6 @@ SCREENSHOT (Attach a screenshot of your issue)`,
     urlReportIssue() {
       const subject = 'MOVE Issue Report';
       const subjectEncoded = window.encodeURIComponent(subject);
-      // const body = 'Use this template to report an issue with MOVE.';
       const bodyEncoded = window.encodeURIComponent(this.reportIssueEmailBody);
       return `mailto:move-team@toronto.ca?subject=${subjectEncoded}&body=${bodyEncoded}`;
     },
