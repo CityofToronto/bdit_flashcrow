@@ -74,16 +74,17 @@
 
           <v-spacer></v-spacer>
 
-          <div v-if="isDirectoryReport && userLoggedIn && userHasMvcrReadPermission">
-            <FcButton
-              @click="downloadAllMvcrs"
-              class="ml-2"
-              :type="'secondary'">
-                <span>Export
-                  <span v-if="!loadingReportLayout">{{ rowsWithMvcrs.length }}</span>
-                MVCR</span>
-            </FcButton>
-          </div>
+          <template v-if="!loadingReportLayout">
+            <div v-if="isDirectoryReport && userLoggedIn
+              && userHasMvcrReadPermission && mvcrCount > 0">
+              <FcButton
+                @click="downloadAllMvcrs"
+                class="ml-2"
+                :type="'secondary'">
+                  <span>Export {{ mvcrCount }} MVCR</span>
+              </FcButton>
+            </div>
+          </template>
 
           <div class="mr-3">
             <FcMenuDownloadReportFormat
@@ -274,6 +275,9 @@ export default {
       const bodyRows = this.reportSectionRows('body');
       const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
       return rowsWithMvcrs;
+    },
+    mvcrCount() {
+      return this.rowsWithMvcrs.length;
     },
     mvcrIds() {
       const mvcrIds = this.rowsWithMvcrs.map((row) => {
