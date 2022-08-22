@@ -99,7 +99,7 @@ const router = new Router({
       path: '/downloads/manage',
       name: 'downloadsManage',
       meta: {
-        title: 'Manage Downloads',
+        title: 'Manage Exports',
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcDownloadsManage.vue'),
     },

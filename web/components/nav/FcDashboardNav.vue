@@ -23,7 +23,7 @@
     <FcDashboardNavItem
       :badge="jobsExistsNew"
       icon="download"
-      label="Manage Downloads"
+      label="Manage Exports"
       :to="{ name: 'downloadsManage' }" />
 
     <FcDashboardNavItem

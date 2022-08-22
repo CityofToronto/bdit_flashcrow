@@ -5,7 +5,7 @@
         v-if="loading"
         class="ma-3 mt-9 text-center">
         <FcProgressCircular
-          aria-label="Loading your download history"
+          aria-label="Loading your exports"
           class="ma-3" />
         <div class="font-weight-regular headline secondary--text">
           This page is loading, please wait.
@@ -17,9 +17,11 @@
         outlined>
         <v-card-title>
           <div>
-            <div class="display-1 font-weight-bold">No downloads available</div>
+            <div class="display-1 font-weight-bold">No exports available</div>
             <div class="body-1 mt-1">
-              Downloads requested when viewing data on the map will show up here.
+              Exports are collections of multiple reports that need pre-processing
+              before they can be downloaded. Exports requested in MOVE can be downloaded
+              from this page when they are ready.
             </div>
           </div>
 
@@ -34,9 +36,10 @@
         </v-card-title>
       </v-card>
       <template v-else>
-        <FcSectionJobs
-          :jobs="jobs"
-          title="Export History" />
+        <h2 class="display-3 my-4">
+          <span>Exports</span>
+        </h2>
+        <FcSectionJobs :jobs="jobs" />
       </template>
     </section>
   </div>
