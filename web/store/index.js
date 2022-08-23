@@ -56,6 +56,8 @@ export default new Vuex.Store({
     toast: null,
     toastData: {},
     toastKey: 0,
+    isPreparingExport: false,
+    newExportsCount: 0,
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
@@ -169,6 +171,12 @@ export default new Vuex.Store({
       }
       return state.locationsSelection;
     },
+    newExportsCount(state) {
+      return state.newExportsCount;
+    },
+    isPreparingExport(state) {
+      return state.isPreparingExport;
+    },
   },
   mutations: {
     // AUTH / HELPERS STATE
@@ -176,7 +184,7 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     setTitle(state, title) {
-      Vue.set(state, 'title', title);
+      Vue.set(state, 'tistle', title);
     },
     // TOP-LEVEL UI
     setAriaNotification(state, ariaNotification) {
@@ -216,6 +224,12 @@ export default new Vuex.Store({
       Vue.set(state, 'toast', 'Info');
       Vue.set(state, 'toastData', { text });
       Vue.set(state, 'toastKey', state.toastKey + 1);
+    },
+    setNewExportsCount(state, count) {
+      Vue.set(state, 'newExportsCount', count);
+    },
+    setIsPreparingExport(state, isTrue) {
+      Vue.set(state, 'isPreparingExport', isTrue);
     },
     // NAVIGATION
     setBackViewRequest(state, backViewRequest) {
@@ -367,6 +381,17 @@ export default new Vuex.Store({
         studyRequest => putStudyRequest(csrf, studyRequest),
       );
       return Promise.all(tasks);
+    },
+    async incrementNewExportsCount({ state, commit }) {
+      const currentCount = state.newExportsCount;
+      const newCount = currentCount + 1;
+      commit('setNewExportsCount', newCount);
+    },
+    async exportPreperatoinStarted({ commit }) {
+      commit('setIsPreparingExport', true);
+    },
+    async exportPreperatoinStopped({ commit }) {
+      commit('setIsPreparingExport', false);
     },
     // LOCATION
     async initLocations({ commit, state }, { features, selectionType: selectionTypeNext }) {
