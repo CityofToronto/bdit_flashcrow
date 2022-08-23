@@ -20,11 +20,17 @@
       icon="clipboard-list"
       label="Track Requests"
       :to="{ name: 'requestsTrack' }" />
+
     <FcDashboardNavItem
-      :badge="jobsExistsNew"
       icon="download"
       label="Manage Exports"
-      :to="{ name: 'downloadsManage' }" />
+      :to="{ name: 'downloadsManage' }">
+      <div class="fc-badge-wrapper">
+        <v-badge v-if="newExportsCount > 0"
+          :content="manageExportsBadgeContent"
+          :dot=false></v-badge>
+      </div>
+    </FcDashboardNavItem>
 
     <FcDashboardNavItem
       external
@@ -96,8 +102,13 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       }
       return '';
     },
+    manageExportsBadgeContent() {
+      let content = this.newExportsCount;
+      if (this.newExportsCount > 9) content = '+';
+      return content;
+    },
     ...mapState(['auth']),
-    ...mapGetters(['locationsEmpty', 'locationsRouteParams']),
+    ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount']),
   },
   watch: {
     'auth.loggedIn': function watchAuthLoggedIn() {
@@ -122,3 +133,11 @@ SCREENSHOT (Attach a screenshot of your issue)`,
   },
 };
 </script>
+
+<style lang="scss">
+  .fc-badge-wrapper .v-badge {
+    position: relative;
+    right: 3px;
+    bottom: 6px;
+  }
+</style>

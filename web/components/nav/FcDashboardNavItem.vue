@@ -14,13 +14,8 @@
         v-bind="attrsListItem"
         @click="actionClick">
         <v-list-item-icon>
-          <div class="fc-badge-wrapper">
-            <v-icon>mdi-{{icon}}</v-icon>
-            <div
-              v-if="badge"
-              class="fc-badge primary">
-            </div>
-          </div>
+          <v-icon>mdi-{{icon}}</v-icon>
+          <slot></slot>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>
@@ -53,10 +48,6 @@ export default {
     activeRouteNames: {
       type: Array,
       default() { return []; },
-    },
-    badge: {
-      type: Boolean,
-      default: false,
     },
     disabled: {
       type: Boolean,
@@ -123,18 +114,5 @@ export default {
       color: var(--v-primary-base);
     }
   }
-
-  & .fc-badge-wrapper {
-    position: relative;
-    & > .fc-badge {
-      border-radius: 2.5px;
-      height: 5px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 5px;
-    }
-  }
 }
-
 </style>
