@@ -27,7 +27,7 @@
       :to="{ name: 'downloadsManage' }">
       <div class="fc-badge-wrapper">
         <v-badge v-if="newExportsCount > 0"
-          :content="newExportsCount"
+          :content="manageExportsBadgeContent"
           :dot=false></v-badge>
       </div>
     </FcDashboardNavItem>
