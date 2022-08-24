@@ -27,7 +27,7 @@
       :to="{ name: 'downloadsManage' }">
       <div class="fc-badge-wrapper">
         <v-badge v-if="newExportsCount > 0"
-          :content="manageExportsBadgeContent"
+          :content="newExportsCount"
           :dot=false></v-badge>
       </div>
     </FcDashboardNavItem>
@@ -46,10 +46,10 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 
 import { formatUsername } from '@/lib/StringFormatters';
-import { getJobsExistsNew } from '@/lib/api/WebApi';
+import { getJobs } from '@/lib/api/WebApi';
 import FcDashboardNavItem from '@/web/components/nav/FcDashboardNavItem.vue';
 
 export default {
@@ -59,7 +59,6 @@ export default {
   },
   data() {
     return {
-      jobsExistsNew: false,
       loading: true,
       reportIssueEmailBody:
 `Use this template to report an issue with MOVE. Please answer the prompts, and provide as much detail as possible. We will get back to you within 1-2 business days if we need more information.
@@ -126,10 +125,12 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       }
 
       this.loading = true;
-      const jobsExistsNew = await getJobsExistsNew();
-      this.jobsExistsNew = jobsExistsNew;
+      const jobs = await getJobs();
+      const newExports = jobs.filter(j => !j.dismissed);
+      this.setNewExportsCount(newExports.length);
       this.loading = false;
     },
+    ...mapMutations(['setNewExportsCount']),
   },
 };
 </script>
@@ -139,5 +140,10 @@ SCREENSHOT (Attach a screenshot of your issue)`,
     position: relative;
     right: 3px;
     bottom: 6px;
+    .v-badge__badge {
+      font-size: 10px;
+      height: 18px;
+      min-width: 18px;
+    }
   }
 </style>
