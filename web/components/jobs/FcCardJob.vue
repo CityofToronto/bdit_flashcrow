@@ -38,7 +38,8 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, downloadBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
+import { getStorage, downloadBulkMvcr } from '@/lib/api/WebApi';
+import { putJobDismiss } from '@/lib/api/SchedulerApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 

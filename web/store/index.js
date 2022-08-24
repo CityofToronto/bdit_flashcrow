@@ -387,6 +387,10 @@ export default new Vuex.Store({
       const newCount = currentCount + 1;
       commit('setNewExportsCount', newCount);
     },
+    async decrementNewExportsCount({ state, commit }) {
+      const currentCount = state.newExportsCount;
+      if (currentCount > 0) commit('setNewExportsCount', currentCount - 1);
+    },
     async exportPreperatoinStarted({ commit }) {
       commit('setIsPreparingExport', true);
     },

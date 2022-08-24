@@ -12,7 +12,8 @@
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 import JobPoller from '@/lib/jobs/JobPoller';
-import { downloadBulkMvcr, putJobDismiss } from '@/lib/api/WebApi';
+import { downloadBulkMvcr } from '@/lib/api/WebApi';
+import { putJobDismiss } from '@/lib/api/SchedulerApi';
 import { mapState } from 'vuex';
 
 export default {

@@ -11,7 +11,8 @@
 import { saveAs } from 'file-saver';
 import { mapState } from 'vuex';
 
-import { getStorage, putJobDismiss } from '@/lib/api/WebApi';
+import { getStorage } from '@/lib/api/WebApi';
+import { putJobDismiss } from '@/lib/api/SchedulerApi';
 import JobPoller from '@/lib/jobs/JobPoller';
 import FcToast from '@/web/components/dialogs/FcToast.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
