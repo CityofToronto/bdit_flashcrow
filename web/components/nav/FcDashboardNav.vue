@@ -25,10 +25,10 @@
       icon="download"
       label="Manage Exports"
       :to="{ name: 'downloadsManage' }">
-      <div class="fc-badge-wrapper">
+      <div v-if="isPreparingExport" class="pulsar"></div>
+      <div v-else class="fc-badge-wrapper">
         <v-badge v-if="newExportsCount > 0"
-          :content="manageExportsBadgeContent"
-          :dot=false></v-badge>
+          :content="manageExportsBadgeContent"></v-badge>
       </div>
     </FcDashboardNavItem>
 
@@ -107,7 +107,7 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       return content;
     },
     ...mapState(['auth']),
-    ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount']),
+    ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount', 'isPreparingExport']),
   },
   watch: {
     'auth.loggedIn': function watchAuthLoggedIn() {
@@ -144,6 +144,32 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       font-size: 10px;
       height: 18px;
       min-width: 18px;
+    }
+  }
+
+  .pulsar::before {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    right: 5px;
+    animation: pulse 1s ease infinite;
+    border-radius: 50%;
+    border: 7px double lighten(#005695, 20%);
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    60% {
+      transform: scale(1.3);
+      opacity: 0.4;
+    }
+    100% {
+      transform: scale(1.4);
+      opacity: 0;
     }
   }
 </style>
