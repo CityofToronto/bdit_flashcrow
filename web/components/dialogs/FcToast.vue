@@ -94,5 +94,10 @@ export default {
     },
     ...mapMutations(['clearToast', 'setAriaNotification']),
   },
+  mounted() {
+    if (this.timeout === TIMEOUT_AUTO_CLOSE) {
+      setTimeout(this.clearToast, TIMEOUT_AUTO_CLOSE);
+    }
+  },
 };
 </script>
