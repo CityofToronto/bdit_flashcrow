@@ -25,9 +25,9 @@
       icon="download"
       label="Manage Exports"
       :to="{ name: 'downloadsManage' }">
-      <div v-if="isPreparingExport" class="pulsar"></div>
-      <div v-else class="fc-badge-wrapper">
+      <div class="fc-badge-wrapper">
         <v-badge v-if="newExportsCount > 0"
+          :dot="isPreparingExport"
           :content="manageExportsBadgeContent"></v-badge>
       </div>
     </FcDashboardNavItem>
@@ -123,7 +123,8 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       this.loadAsync();
     },
     newExportsCount: function watchNewExportsCount(newCount, oldCount) {
-      if (newCount > oldCount && this.toast === null) this.showDownloadReadyToastTip();
+      if (oldCount !== null && newCount > oldCount
+        && this.toast === null) this.showDownloadReadyToastTip();
     },
   },
   created() {
@@ -154,7 +155,16 @@ SCREENSHOT (Attach a screenshot of your issue)`,
 </script>
 
 <style lang="scss">
-  .fc-badge-wrapper .v-badge {
+  .v-badge--dot {
+    position: relative;
+    bottom: 8px;
+    right: 1px;
+    .v-badge__badge {
+      animation: pulsar 1s ease infinite;
+    }
+  }
+
+  .fc-badge-wrapper .v-badge:not(.v-badge--dot) {
     position: relative;
     right: 3px;
     bottom: 6px;
@@ -165,29 +175,15 @@ SCREENSHOT (Attach a screenshot of your issue)`,
     }
   }
 
-  .pulsar::before {
-    content: '';
-    display: block;
-    position: absolute;
-    bottom: 20px;
-    right: 5px;
-    animation: pulse 1s ease infinite;
-    border-radius: 50%;
-    border: 7px double lighten(#005695, 20%);
-  }
-
-  @keyframes pulse {
+  @keyframes pulsar {
     0% {
-      transform: scale(1);
       opacity: 1;
     }
-    60% {
-      transform: scale(1.3);
-      opacity: 0.4;
+    50% {
+      opacity: 0.3;
     }
     100% {
-      transform: scale(1.4);
-      opacity: 0;
+      opacity: 1;
     }
   }
 

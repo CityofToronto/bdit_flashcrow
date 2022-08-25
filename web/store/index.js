@@ -57,7 +57,7 @@ export default new Vuex.Store({
     toastData: {},
     toastKey: 0,
     isPreparingExport: false,
-    newExportsCount: 0,
+    newExportsCount: null,
     // NAVIGATION
     backViewRequest: { name: 'requestsTrack' },
     // LOCATION
