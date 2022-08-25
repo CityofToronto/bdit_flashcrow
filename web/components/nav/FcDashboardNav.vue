@@ -31,6 +31,15 @@
           :content="manageExportsBadgeContent"></v-badge>
       </div>
     </FcDashboardNavItem>
+    <v-tooltip right :open-on-hover="false" :open-on-focus="false">
+      <template v-slot:activator="{ on, attrs }">
+        <span class='download-ready'
+          ref='downloadReady'
+          v-bind="attrs"
+          v-on="on"></span>
+      </template>
+      <span>Download Ready</span>
+    </v-tooltip>
 
     <FcDashboardNavItem
       external
@@ -106,18 +115,27 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       if (this.newExportsCount > 9) content = '+';
       return content;
     },
-    ...mapState(['auth']),
-    ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount', 'isPreparingExport']),
+    ...mapState(['auth', 'newExportsCount']),
+    ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount', 'isPreparingExport', 'toast']),
   },
   watch: {
     'auth.loggedIn': function watchAuthLoggedIn() {
       this.loadAsync();
+    },
+    newExportsCount: function watchNewExportsCount(newCount, oldCount) {
+      if (newCount > oldCount && this.toast === null) this.showDownloadReadyToastTip();
     },
   },
   created() {
     this.loadAsync();
   },
   methods: {
+    showDownloadReadyToastTip(delay = 5000) {
+      this.$refs.downloadReady.click();
+      setTimeout(() => {
+        this.$refs.downloadReady.click();
+      }, delay);
+    },
     async loadAsync() {
       if (!this.auth.loggedIn) {
         this.jobsExistsNew = false;
@@ -171,5 +189,12 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       transform: scale(1.4);
       opacity: 0;
     }
+  }
+
+  .download-ready {
+    height: 0;
+    width: 100%;
+    position: absolute;
+    visibility: hidden;
   }
 </style>

@@ -177,6 +177,9 @@ export default new Vuex.Store({
     isPreparingExport(state) {
       return state.isPreparingExport;
     },
+    toast(state) {
+      return state.toast;
+    },
   },
   mutations: {
     // AUTH / HELPERS STATE
