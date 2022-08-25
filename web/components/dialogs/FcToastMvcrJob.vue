@@ -40,10 +40,6 @@ export default {
     );
     this.jobApproxDurationSecs = Math.ceil(this.jobProgressTotal / 30);
   },
-  beforeDestroy() {
-    this.jobPoller.clearIntervals();
-    this.jobPoller = null;
-  },
   computed: {
     text() {
       const { jobState, jobProgressTotal } = this;

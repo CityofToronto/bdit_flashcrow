@@ -40,10 +40,6 @@ export default {
       this.onUpdateJobStatus.bind(this),
     );
   },
-  beforeDestroy() {
-    this.jobPoller.clearIntervals();
-    this.jobPoller = null;
-  },
   computed: {
     action() {
       const { state } = this.internalJob;
