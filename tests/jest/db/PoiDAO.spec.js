@@ -18,12 +18,12 @@ test('PoiDAO.byCentrelineSummary', async () => {
   expect(result.hospital).toEqual(null);
   expect(result.school.id).toEqual(998);
   expect(result.school.geom_dist).toBeCloseTo(296.029139382713);
-  expect(result.trafficSignals).toEqual([]);
+  expect(result.trafficSignals).toEqual(null);
 
   result = await PoiDAO.byCentrelineSummary(1142194, CentrelineType.SEGMENT, 250);
   expect(result.hospital).toEqual(null);
   expect(result.school).toEqual(null);
-  expect(result.trafficSignals).toEqual([]);
+  expect(result.trafficSignals).toEqual(null);
 
   result = await PoiDAO.byCentrelineSummary(13465434, CentrelineType.INTERSECTION, 1000);
   expect(result.hospital.id).toEqual(1497390);
