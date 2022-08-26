@@ -38,7 +38,7 @@
           v-bind="attrs"
           v-on="on"></span>
       </template>
-      <span>Download Ready</span>
+      <span>Export ready for download</span>
     </v-tooltip>
 
     <FcDashboardNavItem
