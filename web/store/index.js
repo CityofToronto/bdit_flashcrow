@@ -187,7 +187,7 @@ export default new Vuex.Store({
       Vue.set(state, 'auth', auth);
     },
     setTitle(state, title) {
-      Vue.set(state, 'tistle', title);
+      Vue.set(state, 'title', title);
     },
     // TOP-LEVEL UI
     setAriaNotification(state, ariaNotification) {
