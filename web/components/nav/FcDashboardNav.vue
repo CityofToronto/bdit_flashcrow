@@ -26,7 +26,7 @@
       label="Manage Exports"
       :to="{ name: 'downloadsManage' }">
       <div class="fc-badge-wrapper">
-        <v-badge v-if="newExportsCount > 0"
+        <v-badge v-if="showBadge"
           :dot="isPreparingExport"
           :content="manageExportsBadgeContent"></v-badge>
       </div>
@@ -114,6 +114,9 @@ SCREENSHOT (Attach a screenshot of your issue)`,
       let content = this.newExportsCount;
       if (this.newExportsCount > 9) content = '+';
       return content;
+    },
+    showBadge() {
+      return this.isPreparingExport || this.newExportsCount > 0;
     },
     ...mapState(['auth', 'newExportsCount']),
     ...mapGetters(['locationsEmpty', 'locationsRouteParams', 'newExportsCount', 'isPreparingExport', 'toast']),
