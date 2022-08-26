@@ -112,7 +112,7 @@ SCREENSHOT (Attach a screenshot of your issue)`,
     },
     manageExportsBadgeContent() {
       let content = this.newExportsCount;
-      if (this.newExportsCount > 9) content = '+';
+      if (this.newExportsCount > 99) content = '+';
       return content;
     },
     showBadge() {
@@ -160,8 +160,7 @@ SCREENSHOT (Attach a screenshot of your issue)`,
 <style lang="scss">
   .v-badge--dot {
     position: relative;
-    bottom: 8px;
-    right: 1px;
+    bottom: 10px;
     .v-badge__badge {
       animation: pulsar 1s ease infinite;
     }
@@ -169,11 +168,12 @@ SCREENSHOT (Attach a screenshot of your issue)`,
 
   .fc-badge-wrapper .v-badge:not(.v-badge--dot) {
     position: relative;
-    right: 3px;
+    right: 2px;
     bottom: 6px;
     .v-badge__badge {
       font-size: 10px;
       height: 18px;
+      padding: 4px 0;
       min-width: 18px;
     }
   }
