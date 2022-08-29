@@ -4,11 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2022-08-29
+
+### Changed
+
+- Bulk MVCR (Motor Vehicle Collision Report) download has been added to the MOVE app
+- Formal distinction drawn between exports and downloads
+  - Manage Downloads page renamed and restructured as Manage Exports
+  - UX elements added to clarify export progress and where they can be downloaded from after they are prepared
+
+## Fixed
+
+- Bug report link updated to open an email with a bug report form
+- Study Request automated emails updated to reflect accurate request ETAs
+
 ## [1.9.0] - 2022-04-11
 
 ### Changed
 
-- MVCRs (Motor Vehicle Collision Reports) view/download access has been to Collision Directory Reports
+- MVCRs (Motor Vehicle Collision Reports) view/download access has been added to Collision Directory Reports
 
 ## Fixed
 
