@@ -123,5 +123,8 @@ export default {
   background-color: var(--v-shading-base);
   max-height: var(--full-height);
   width: 100%;
+  .v-card__title .body-1 {
+    word-break: normal;
+  }
 }
 </style>
