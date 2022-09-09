@@ -3,14 +3,14 @@
     class="fc-icon-location-multi">
     <img
       :alt="alt"
-      height="20"
+      height="30"
       :src="src"
-      :width="16" />
-    <div
-      v-if="locationIndex !== -1"
-      aria-hidden="true"
-      class="subtitle-2"
-      :class="textClass">{{locationIndex + 1}}</div>
+      :width="24" />
+      <div
+        v-if="locationIndex !== -1"
+        aria-hidden="true"
+        class="subtitle-2"
+        :class="textClass">{{locationIndex + 1}}</div>
   </div>
 </template>
 
@@ -90,7 +90,10 @@ export default {
   & > div {
     left: 4.5px;
     position: absolute;
-    top: 1.5px;
+    top: 4.5px;
+    width: 15px;
+    white-space: nowrap;
+    text-align: center;
   }
 }
 </style>
