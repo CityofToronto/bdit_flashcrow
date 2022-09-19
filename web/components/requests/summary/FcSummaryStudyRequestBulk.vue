@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import { StudyRequestReason } from '@/lib/Constants';
 import { REQUEST_STUDY_TIME_TO_FULFILL_SHORT } from '@/lib/i18n/Strings';
 
 export default {
@@ -50,7 +49,6 @@ export default {
   data() {
     return {
       REQUEST_STUDY_TIME_TO_FULFILL_SHORT,
-      StudyRequestReason,
     };
   },
 };
