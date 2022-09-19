@@ -19,13 +19,12 @@
       </v-col>
 
       <v-col cols="6">
-        <dt class="subtitle-1">Reason for Request</dt>
-        <dd class="mt-1 display-1">
-          <span>{{studyRequest.reason.text}}</span>
-          <span v-if="studyRequest.reason === StudyRequestReason.OTHER">
-            ({{studyRequest.reasonOther}})
-          </span>
-        </dd>
+        <template v-if="!isCreate">
+          <dt class="subtitle-1">Assignee</dt>
+          <dd class="mt-1 display-1">
+            {{assignedToStr}}
+          </dd>
+        </template>
       </v-col>
       <v-col cols="6">
         <dt class="subtitle-1">Expected By</dt>
@@ -46,12 +45,13 @@
       </v-col>
 
       <v-col cols="6">
-        <template v-if="!isCreate">
-          <dt class="subtitle-1">Assignee</dt>
-          <dd class="mt-1 display-1">
-            {{assignedToStr}}
-          </dd>
-        </template>
+        <dt class="subtitle-1">Notes</dt>
+        <dd class="mt-1 display-1">
+          <span v-if="studyRequest.urgentReason">
+            {{studyRequest.urgentReason}}
+          </span>
+          <span v-else>None</span>
+        </dd>
       </v-col>
       <v-col cols="6">
         <template v-if="!isCreate">
@@ -72,24 +72,12 @@
           </dd>
         </template>
       </v-col>
-
-      <v-col cols="12">
-        <dt class="subtitle-1">Notes</dt>
-        <dd class="mt-1 display-1">
-          <span v-if="studyRequest.urgentReason">
-            {{studyRequest.urgentReason}}
-          </span>
-          <span v-else>None</span>
-        </dd>
-      </v-col>
     </v-row>
   </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-
-import { StudyRequestReason } from '@/lib/Constants';
 import { REQUEST_STUDY_TIME_TO_FULFILL_SHORT } from '@/lib/i18n/Strings';
 import { bulkAssignedToStr } from '@/lib/requests/RequestStudyBulkUtils';
 
@@ -109,7 +97,6 @@ export default {
   data() {
     return {
       REQUEST_STUDY_TIME_TO_FULFILL_SHORT,
-      StudyRequestReason,
     };
   },
   computed: {
