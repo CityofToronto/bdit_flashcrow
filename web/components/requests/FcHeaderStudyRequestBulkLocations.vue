@@ -119,6 +119,7 @@ export default {
       { text: '4 days', value: 96 },
       { text: '5 days', value: 120 },
       { text: '1 week', value: 168 },
+      { text: '2 week', value: 336 },
     ];
     return {
       itemsDuration,
