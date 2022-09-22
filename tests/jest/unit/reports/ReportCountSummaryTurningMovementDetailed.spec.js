@@ -3,7 +3,7 @@ import path from 'path';
 
 import { StudyHours } from '@/lib/Constants';
 import ReportCountSummaryTurningMovementDetailed
-  from '@/lib/reports/ReportCountSummaryTurningMovementDetailed';
+from '@/lib/reports/ReportCountSummaryTurningMovementDetailed';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateTmc,
