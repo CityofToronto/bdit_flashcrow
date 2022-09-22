@@ -85,7 +85,7 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.5.1",
     "core-js": "^3.25.0",
-    "documentation": "^13.2.5",
+    "documentation": "^14.0.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.26.0",
