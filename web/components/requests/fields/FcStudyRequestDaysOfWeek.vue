@@ -36,12 +36,10 @@ export default {
       }
       if (!this.v.duration.needsValidDaysOfWeek) {
         const duration = this.v.duration.$model;
-        const n = duration / 24;
-        if (n < 7) {
-          errors.push(`Please select ${n} consecutive days or reduce study duration.`);
-        } else {
-          errors.push('Please select 7 consecutive days or reduce study duration.');
-        }
+        let numberDaysRequired = duration / 24;
+        if (duration === 336) numberDaysRequired = 7;
+        const msg = `Please select ${numberDaysRequired} consecutive days or reduce study duration.`;
+        errors.push(msg);
       }
       return errors;
     },
