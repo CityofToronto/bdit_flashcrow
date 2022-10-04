@@ -12,7 +12,7 @@
       :color="frontendEnv.colorClass + ' darken-4'"
       dark
       small>
-      {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
+      {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}} test
     </v-chip>
 
     <v-spacer></v-spacer>
