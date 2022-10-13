@@ -112,6 +112,7 @@
   --space-l: 1rem;
   --space-xl: 2rem;
   --space-2xl: 4rem;
+  --space-2xxl: 6rem;
   --space-3xl: 8rem;
   --space-3xxl: 12rem;
   --space-4xl: 16rem;
@@ -220,6 +221,10 @@ fieldset {
 /* WIDTHS */
 .w-2xl {
   width: var(--space-2xl);
+}
+
+.w-2xxl {
+  width: var(--space-2xxl);
 }
 
 .w-3xl {
