@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import { StudyRequestReason } from '@/lib/Constants';
 import { OPTIONAL } from '@/lib/i18n/Strings';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
@@ -70,7 +69,6 @@ export default {
   data() {
     return {
       OPTIONAL,
-      StudyRequestReason,
     };
   },
   computed: {

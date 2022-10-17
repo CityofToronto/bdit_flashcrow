@@ -75,7 +75,6 @@
 import { mapActions, mapMutations } from 'vuex';
 
 import {
-  StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
 import {
@@ -128,7 +127,6 @@ export default {
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
       REQUEST_STUDY_TIME_TO_FULFILL,
-      StudyRequestReason,
       StudyType,
     };
   },
