@@ -4,7 +4,6 @@ import {
   AuthScope,
   HttpStatus,
   StudyRequestAssignee,
-  StudyRequestReason,
   StudyRequestStatus,
 } from '@/lib/Constants';
 import config from '@/lib/config/MoveConfig';
@@ -307,14 +306,6 @@ test('StudyRequestBulkController.putStudyRequestBulk', async () => {
     data: transientStudyRequestBulk,
   });
   let persistedStudyRequestBulk = response.result;
-
-  // update study request fields
-  persistedStudyRequestBulk.studyRequests.forEach((studyRequest) => {
-    /* eslint-disable no-param-reassign */
-    studyRequest.reason = StudyRequestReason.OTHER;
-    studyRequest.reasonOther = 'not really sure, but it seemed good at the time';
-    /* eslint-enable no-param-reassign */
-  });
 
   // cannot update non-existent bulk study request
   client.setUser(requester);

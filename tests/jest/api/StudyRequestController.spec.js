@@ -3,7 +3,6 @@ import {
   HttpStatus,
   StudyHours,
   StudyRequestAssignee,
-  StudyRequestReason,
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
@@ -215,10 +214,6 @@ test('StudyRequestController.putStudyRequest', async () => {
     data: transientStudyRequest,
   });
   let persistedStudyRequest = response.result;
-
-  // update study request fields
-  persistedStudyRequest.reason = StudyRequestReason.OTHER;
-  persistedStudyRequest.reasonOther = 'not really sure, but it seemed good at the time';
 
   // cannot update non-existent study request
   client.setUser(requester);
