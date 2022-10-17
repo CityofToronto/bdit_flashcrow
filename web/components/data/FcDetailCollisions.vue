@@ -7,7 +7,7 @@
       <dl class="d-flex flex-grow-1 flex-shrink-1">
         <div class="flex-grow-1 flex-shrink-1">
           <dt class="body-1">
-            Amount
+            Total
           </dt>
           <dd>
             <FcTextSummaryFraction
