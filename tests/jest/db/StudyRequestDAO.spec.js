@@ -1,6 +1,5 @@
 import {
   StudyHours,
-  StudyRequestReason,
   StudyRequestStatus,
   StudyType,
 } from '@/lib/Constants';
@@ -204,20 +203,6 @@ test('StudyRequestDAO.update [study details]', async () => {
   persistedStudyRequest.notes = 'oops, this is actually a school count';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-
-  // update request reason
-  persistedStudyRequest.reason = StudyRequestReason.PED_SAFETY;
-  persistedStudyRequest.reasonOther = null;
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
-  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-
-  // update request reason: other
-  persistedStudyRequest.reason = StudyRequestReason.OTHER;
-  persistedStudyRequest.reasonOther = 'unicorns!';
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
-  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // update study type: other

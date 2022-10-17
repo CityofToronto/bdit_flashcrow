@@ -317,8 +317,6 @@ export default {
     ...mapUrgentWatchers([
       'ccEmails',
       'dueDate',
-      'reason',
-      'reasonOther',
       'urgent',
       'urgentReason',
     ]),

@@ -1,6 +1,5 @@
 import {
   StudyHours,
-  StudyRequestReason,
   StudyType,
 } from '@/lib/Constants';
 import StudyRequest from '@/lib/model/StudyRequest';
@@ -122,29 +121,8 @@ test('StudyRequest', () => {
   expect(result.error.details[0].path).toEqual(['duration']);
   expect(result.error.details[0].type).toEqual('any.custom');
 
-  // non-other reasons should not have long-form reason text!
-  transientStudyRequest.duration = 72;
-  transientStudyRequest.reason = StudyRequestReason.PED_SAFETY;
-  transientStudyRequest.reasonOther = 'i should not have entered this';
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.error).not.toBeUndefined();
-  expect(result.error.details[0].path).toEqual(['reasonOther']);
-  expect(result.error.details[0].type).toEqual('any.only');
-
-  // other reasons should have long-form reason text!
-  transientStudyRequest.reason = StudyRequestReason.OTHER;
-  transientStudyRequest.reasonOther = null;
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.error).not.toBeUndefined();
-  expect(result.error.details[0].path).toEqual(['reasonOther']);
-  expect(result.error.details[0].type).toEqual('string.base');
-
-  transientStudyRequest.reasonOther = 'i should not have entered this';
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.value).toEqual(transientStudyRequest);
-  expect(result.error).toBeUndefined();
-
   // other study types should have long-form study type text!
+  transientStudyRequest.duration = 72;
   transientStudyRequest.studyType = StudyType.OTHER_AUTOMATIC;
   result = StudyRequest.create.validate(transientStudyRequest);
   expect(result.error).not.toBeUndefined();

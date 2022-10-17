@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE study_requests ALTER COLUMN "reason" DROP NOT NULL;
+
+UPDATE "APP_META"."DB_UPDATE" SET "currentVersion" = 23;
+COMMIT;
