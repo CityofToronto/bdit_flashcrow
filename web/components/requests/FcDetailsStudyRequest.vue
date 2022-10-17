@@ -123,7 +123,6 @@ export default {
       dueDateUrgent: null,
       // MESSAGES
       OPTIONAL,
-      reasonOther: null,
       REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
       REQUEST_STUDY_PROVIDE_URGENT_REASON,
       REQUEST_STUDY_TIME_TO_FULFILL,
