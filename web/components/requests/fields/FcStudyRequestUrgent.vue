@@ -2,12 +2,6 @@
   <fieldset>
     <legend class="display-2 pt-4">Request Priority and Details</legend>
 
-    <v-row>
-      <v-col cols="8">
-        <FcStudyRequestReason :v="v" />
-      </v-col>
-    </v-row>
-
     <v-checkbox
       v-model="v.urgent.$model"
       class="mt-1"
@@ -68,14 +62,12 @@ import {
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
-import FcStudyRequestReason from '@/web/components/requests/fields/FcStudyRequestReason.vue';
 
 export default {
   name: 'FcStudyRequestUrgent',
   components: {
     FcDatePicker,
     FcInputTextArray,
-    FcStudyRequestReason,
     FcTextarea,
   },
   props: {
