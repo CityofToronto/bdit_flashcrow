@@ -52,8 +52,12 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
       featureCode,
     };
     expect(getLocationStudyTypes(location)).toEqual([
-      StudyType.PED_DELAY,
       StudyType.TMC,
+      StudyType.PED_DELAY,
+      StudyType.PXO_OBSERVE,
+      StudyType.VID_OBSERVE,
+      StudyType.SCHOOL_CROSS,
+      StudyType.GAP_STUDY,
     ]);
   });
   RoadSegmentType.enumValues.forEach(({ featureCode }) => {
@@ -66,25 +70,13 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
     expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_AUTOMATIC);
     expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_MANUAL);
   });
-  let location = {
+  const location = {
     centrelineType: CentrelineType.SEGMENT,
     featureCode: null,
   };
   expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
   expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_AUTOMATIC);
   expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_MANUAL);
-
-  location = {
-    centrelineType: CentrelineType.SEGMENT,
-    featureCode: RoadSegmentType.MAJOR_ARTERIAL.featureCode,
-  };
-  expect(getLocationStudyTypes(location)).toContain(StudyType.RESCU);
-
-  location = {
-    centrelineType: CentrelineType.SEGMENT,
-    featureCode: RoadSegmentType.MINOR_ARTERIAL.featureCode,
-  };
-  expect(getLocationStudyTypes(location)).not.toContain(StudyType.RESCU);
 });
 
 test('CentrelineUtils.getLocationsCorridorDescription', () => {
