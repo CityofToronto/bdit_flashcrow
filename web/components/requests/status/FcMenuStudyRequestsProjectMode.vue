@@ -1,5 +1,6 @@
 <template>
-  <v-menu :disabled="disabled">
+  <v-menu :disabled="disabled"
+  z-index="100">
     <template v-slot:activator="{ on, attrs }">
       <FcButton
         v-bind="attrs"
