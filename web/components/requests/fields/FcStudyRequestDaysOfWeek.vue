@@ -4,6 +4,7 @@
     :error-messages="errorMessagesDaysOfWeek"
     hide-details="auto"
     :items="itemsDaysOfWeek"
+    :disabled="isDurationInWeeks"
     label="Study Days"
     :messages="messagesDaysOfWeek"
     multiple
@@ -53,15 +54,27 @@ export default {
     },
     messagesDaysOfWeek() {
       const studyType = this.v.studyType.$model;
-      if (studyType !== null && studyType.automatic) {
-        const duration = this.v.duration.$model;
-        const n = duration / 24;
-        if (n === 1) {
-          return ['The study will be performed on one of these days.'];
-        }
-        return [`The study will be performed across ${n} consecutive days.`];
+      const durationInDays = this.v.duration.$model / 24;
+      let message = 'The study will be performed on one of these days.';
+      if (studyType !== null && studyType.automatic && durationInDays !== 1) {
+        const auxiliaryVerb = (durationInDays % 7 === 0) ? 'MUST' : 'will';
+        message = `The study ${auxiliaryVerb} be performed across ${durationInDays} consecutive days.`;
       }
-      return ['The study will be performed on one of these days.'];
+      return [message];
+    },
+    isDurationInWeeks() {
+      const studyDuration = this.v.duration.$model;
+      const weekInHours = 168;
+      let isDurationInWeeks = false;
+      if (Number.isInteger(studyDuration)
+        && studyDuration !== 0
+        && studyDuration % weekInHours === 0) isDurationInWeeks = true;
+      return isDurationInWeeks;
+    },
+  },
+  watch: {
+    isDurationInWeeks(newValue) {
+      if (newValue) this.v.daysOfWeek.$model = [0, 1, 2, 3, 4, 5, 6];
     },
   },
 };
