@@ -86,22 +86,17 @@ export default {
       return `Study Location: ${description}`;
     },
     messagesDaysOfWeek() {
+      let message = '';
       const { daysOfWeek, duration, studyType } = this.study;
-      if (studyType.automatic) {
-        const k = numConsecutiveDaysOfWeek(daysOfWeek);
-        const n = duration / 24;
-        if (k === n) {
-          return [];
+      const consecutiveStudyDays = numConsecutiveDaysOfWeek(daysOfWeek);
+      const durationInDays = duration / 24;
+      if (daysOfWeek.length !== 1 || consecutiveStudyDays !== durationInDays) {
+        message = 'The study will be performed on one of these days.';
+        if (studyType.automatic && durationInDays !== 1) {
+          message = `The study will be performed across ${durationInDays} consecutive days.`;
         }
-        if (n === 1) {
-          return ['The study will be performed on one of these days.'];
-        }
-        return [`The study will be performed across ${n} consecutive days.`];
       }
-      if (daysOfWeek.length === 1) {
-        return [];
-      }
-      return ['The study will be performed on one of these days.'];
+      return [message];
     },
     ...mapState(['locationsSelection']),
   },
