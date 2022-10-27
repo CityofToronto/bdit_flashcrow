@@ -96,12 +96,15 @@ import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyReq
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
 import FcMixinInputAutofocus from '@/web/mixins/FcMixinInputAutofocus';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+// eslint-disable-next-line import/extensions
+import StudyRequestFormMixin from '@/web/components/requests/StudyRequestFormMixin.js';
 
 export default {
   name: 'FcDetailsStudyRequest',
   mixins: [
     FcMixinInputAutofocus,
     FcMixinVModelProxy(Object),
+    StudyRequestFormMixin,
   ],
   components: {
     FcButton,
@@ -133,7 +136,7 @@ export default {
     internalValue: ValidationsStudyRequest,
   },
   methods: {
-    actionSubmit() {
+    async actionSubmit() {
       const { id, urgent } = this.internalValue;
       const update = id !== undefined;
       if (update) {
@@ -147,6 +150,7 @@ export default {
         this.setToastInfo(REQUEST_STUDY_SUBMITTED.text);
       }
 
+      await this.sleep(500); // delay form submit so *urgent* input vals are added to store
       this.saveStudyRequest(this.internalValue);
       this.$emit('action-navigate-back', true);
     },

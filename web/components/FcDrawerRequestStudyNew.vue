@@ -184,6 +184,8 @@ import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+// eslint-disable-next-line import/extensions
+import StudyRequestFormMixin from '@/web/components/requests/StudyRequestFormMixin.js';
 import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
 function mapUrgentWatchers(keys) {
@@ -207,6 +209,7 @@ export default {
   mixins: [
     FcMixinLeaveGuard,
     FcMixinRouteAsync,
+    StudyRequestFormMixin,
   ],
   components: {
     FcButton,
@@ -359,6 +362,7 @@ export default {
       this.leaveConfirmed = true;
 
       this.loadingSubmit = true;
+      await this.sleep(500); // delay form submit so *urgent* input vals are added to store
       const { projectMode, studyRequestBulk } = this;
       const result = await this.createStudyRequests({ projectMode, studyRequestBulk });
       this.setToastInfo('Your request has been submitted.');
