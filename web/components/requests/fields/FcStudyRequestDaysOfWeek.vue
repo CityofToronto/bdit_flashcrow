@@ -9,7 +9,11 @@
     :messages="messagesDaysOfWeek"
     multiple
     outlined
-    v-bind="$attrs" />
+    v-bind="$attrs" >
+    <template v-if="isDurationInWeeks" v-slot:selection="{ index }">
+      <span v-if="index === 0">Sun - Sat</span>
+    </template>
+    </v-select>
 </template>
 
 <script>
@@ -57,8 +61,7 @@ export default {
       const durationInDays = this.v.duration.$model / 24;
       let message = 'The study will be performed on one of these days.';
       if (studyType !== null && studyType.automatic && durationInDays !== 1) {
-        const auxiliaryVerb = (durationInDays % 7 === 0) ? 'MUST' : 'will';
-        message = `The study ${auxiliaryVerb} be performed across ${durationInDays} consecutive days.`;
+        message = `The study will be performed across ${durationInDays} consecutive days.`;
       }
       return [message];
     },
