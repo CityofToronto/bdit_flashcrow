@@ -201,6 +201,11 @@ export default {
         }
       }
     },
+    value(newSearchString) {
+      if (newSearchString === null) {
+        this.actionClear();
+      }
+    },
   },
   methods: {
     actionClear() {

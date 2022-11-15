@@ -168,6 +168,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    easeToLocationMode: {
+      type: String,
+      validator: value => ['all', 'single', 'none'].includes(value),
+      default: 'all',
+    },
   },
   data() {
     return {
@@ -180,6 +185,11 @@ export default {
       hoveredFeature: null,
       // keeps track of currently selected feature
       selectedFeature: null,
+      defaultEaseOpts: {
+        center: BOUNDS_TORONTO.getCenter(),
+        duration: 1000,
+        zoom: MapZoom.LEVEL_3.minzoom,
+      },
     };
   },
   computed: {
@@ -318,7 +328,7 @@ export default {
       this.map.on('load', () => {
         this.updateLocationsSource();
         this.updateLocationsMarkersSource();
-        this.easeToLocationsState(this.locationsState, []);
+        if (this.locationsState === 0) this.map.easeTo(this.defaultEaseOpts);
 
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
@@ -378,8 +388,12 @@ export default {
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
     },
-    locationsState(locationsState, locationsStatePrev) {
-      this.easeToLocationsState(locationsState, locationsStatePrev);
+    locationsState(locationsState) {
+      if (this.easeToLocationMode === 'all') {
+        this.easeToLocationsState(locationsState);
+      } else if (this.easeToLocationMode === 'single') {
+        this.easeToLocationsState([locationsState[locationsState.length - 1]]);
+      }
     },
     mapStyle() {
       if (this.map === null) {
@@ -413,7 +427,7 @@ export default {
       if (this.locationsState.length === 0) {
         return;
       }
-      this.easeToLocationsState(this.locationsState, []);
+      this.easeToLocationsState(this.locationsState);
     },
     actionToggleAerial() {
       this.aerial = !this.aerial;
@@ -423,45 +437,31 @@ export default {
         this.setToastInfo('The map is no longer in Aerial Mode.');
       }
     },
-    easeToLocationsState(locationsState, locationsStatePrev) {
-      if (this.map === null) {
+    easeToLocationsState(locationsState) {
+      if (this.map === null || locationsState.length === 0) {
         return;
       }
 
-      if (locationsState.length > 0) {
-        // build bounding box on locations
-        const bounds = new maplibregl.LngLatBounds();
-        locationsState.forEach(({ location: { geom } }) => {
-          const { coordinates, type } = geom;
-          if (type === 'Point') {
-            bounds.extend(coordinates);
-          } else if (type === 'LineString') {
-            coordinates.forEach((coordinatesPoint) => {
-              bounds.extend(coordinatesPoint);
-            });
-          }
-        });
+      // build bounding box on locations
+      const bounds = new maplibregl.LngLatBounds();
+      locationsState.forEach(({ location: { geom } }) => {
+        const { coordinates, type } = geom;
+        if (type === 'Point') {
+          bounds.extend(coordinates);
+        } else if (type === 'LineString') {
+          coordinates.forEach((coordinatesPoint) => {
+            bounds.extend(coordinatesPoint);
+          });
+        }
+      });
 
-        // zoom to bounding box
-        const boundingBoxPadding = locationsState.length > 1 ? 64 : 0;
-        const cameraOptions = this.map.cameraForBounds(bounds, {
-          maxZoom: MapZoom.LEVEL_1.minzoom,
-          padding: boundingBoxPadding,
-        });
-        this.map.easeTo(cameraOptions);
-      } else if (locationsStatePrev.length === 0) {
-        /*
-         * If the user is first loading the map, we want to show all of Toronto.
-         * Otherwise, the user has just cleared the location, and we want to keep
-         * them in the same place to avoid confusion.
-         */
-        const center = BOUNDS_TORONTO.getCenter();
-        this.map.easeTo({
-          center,
-          duration: 1000,
-          zoom: MapZoom.LEVEL_3.minzoom,
-        });
-      }
+      // zoom to bounding box
+      const boundingBoxPadding = locationsState.length > 1 ? 64 : 0;
+      const cameraOptions = this.map.cameraForBounds(bounds, {
+        maxZoom: MapZoom.LEVEL_1.minzoom,
+        padding: boundingBoxPadding,
+      });
+      this.map.easeTo(cameraOptions);
     },
     getFeatureForLayerAndProperty(layer, key, value) {
       const features = this.map.queryRenderedFeatures({
