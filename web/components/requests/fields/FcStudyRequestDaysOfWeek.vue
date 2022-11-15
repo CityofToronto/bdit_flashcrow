@@ -9,11 +9,11 @@
     :messages="messagesDaysOfWeek"
     multiple
     outlined
-    v-bind="$attrs" >
+    v-bind="$attrs">
     <template v-if="isDurationInWeeks" v-slot:selection="{ index }">
       <span v-if="index === 0">Sun - Sat</span>
     </template>
-    </v-select>
+  </v-select>
 </template>
 
 <script>
