@@ -168,6 +168,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    easeToLocationMode: {
+      type: String,
+      validator: value => ['all', 'single', 'none'].includes(value),
+      default: 'all',
+    },
   },
   data() {
     return {
@@ -383,8 +388,12 @@ export default {
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
     },
-    locationsState(locationsState, locationsStatePrev) {
-      this.easeToLocationsState(locationsState, locationsStatePrev);
+    locationsState(locationsState) {
+      if (this.easeToLocationMode === 'all') {
+        this.easeToLocationsState(locationsState);
+      } else if (this.easeToLocationMode === 'single') {
+        this.easeToLocationsState([locationsState[locationsState.length - 1]]);
+      }
     },
     mapStyle() {
       if (this.map === null) {
