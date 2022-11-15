@@ -17,6 +17,7 @@
           }"
           :location-active="locationToAdd"
           :locations-state="mapMarkers"
+          :easeToLocationMode="mapEaseMode"
           :show-legend="false">
           <template v-slot:top-left>
             <FcInputLocationSearch
@@ -61,6 +62,7 @@ export default {
   data() {
     return {
       locationToAdd: null,
+      mapEaseMode: 'all',
       searchLocationMarkerOpts: {
         multi: true,
         locationIndex: false,
@@ -122,6 +124,24 @@ export default {
     actionFocusMap() {
       const $locationSearch = this.$refs.locationSearch.$el;
       focusInput($locationSearch);
+    },
+    clearSearch() {
+      this.locationToAdd = null;
+    },
+  },
+  watch: {
+    locationToAdd(newLocation) {
+      if (newLocation !== null) {
+        this.mapEaseMode = 'single';
+      }
+    },
+    locations(newLocations, prevLocations) {
+      const nNewLocations = newLocations.length;
+      const nPrevLocations = prevLocations.length;
+      if (nPrevLocations !== 0 && nNewLocations > nPrevLocations) {
+        this.mapEaseMode = 'none';
+      }
+      if (this.isSearchActive) this.clearSearch();
     },
   },
 };
