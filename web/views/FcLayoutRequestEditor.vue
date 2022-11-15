@@ -16,7 +16,7 @@
             volume: false,
           }"
           :location-active="locationToAdd"
-          :locations-state="locationsState"
+          :locations-state="mapMarkers"
           :show-legend="false">
           <template v-slot:top-left>
             <FcInputLocationSearch
@@ -61,11 +61,28 @@ export default {
   data() {
     return {
       locationToAdd: null,
+      searchLocationMarkerOpts: {
+        multi: true,
+        locationIndex: false,
+        selected: false,
+        deselected: false,
+      },
     };
   },
   computed: {
-    locationsState() {
-      return this.locations.map((location, i) => {
+    mapMarkers() {
+      const mapMarkers = [...this.studyRequestMarkers];
+      if (this.isSearchActive) {
+        const searchMarker = {
+          location: this.locationToAdd,
+          state: this.searchLocationMarkerOpts,
+        };
+        mapMarkers.push(searchMarker);
+      }
+      return mapMarkers;
+    },
+    studyRequestMarkers() {
+      const studyRequestMarkers = this.locations.map((location, i) => {
         const locationIndex = this.showLocationIndices ? i : -1;
         const selected = this.showSelection ? this.indicesSelected.includes(i) : false;
         const state = {
@@ -76,6 +93,7 @@ export default {
         };
         return { location, state };
       });
+      return studyRequestMarkers;
     },
     showActionPopup() {
       if (this.indicesSelected.length > 1) {
@@ -93,6 +111,9 @@ export default {
     },
     showSelection() {
       return this.$route.name === 'requestStudyNew';
+    },
+    isSearchActive() {
+      return this.locationToAdd !== null;
     },
     ...mapState('editRequests', ['indicesSelected']),
     ...mapGetters('editRequests', ['locations']),
