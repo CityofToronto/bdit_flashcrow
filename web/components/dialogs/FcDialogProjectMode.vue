@@ -2,6 +2,7 @@
   <v-dialog
     v-model="internalValue"
     max-width="560"
+    persistent
     scrollable>
     <v-card
       aria-labelledby="heading_dialog_project_mode"
