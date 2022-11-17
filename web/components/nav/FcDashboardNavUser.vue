@@ -1,22 +1,7 @@
 <template>
   <div
     class="fc-dashboard-nav-user text-center pb-2">
-    <div class="d-none">
-      <form
-        v-if="auth.loggedIn"
-        ref="formSignOut"
-        method="POST"
-        action="/api/auth/logout">
-        <input type="hidden" name="csrf" :value="auth.csrf" />
-      </form>
-      <form
-        ref="formSignIn"
-        id="formSignIn"
-        method="POST"
-        action="/api/auth/adfs-init">
-        <input type="hidden" name="csrf" :value="auth.csrf" />
-      </form>
-    </div>
+    <FcLogin ref="FcLogin"/>
     <v-menu
       v-if="auth.loggedIn"
       :attach="$el"
@@ -55,7 +40,7 @@
         <FcButton
           aria-label="Sign In"
           type="fab-icon"
-          @click="actionSignIn()"
+          @click="$refs.FcLogin.actionSignIn()"
           v-on="on">
           <v-icon>mdi-login</v-icon>
         </FcButton>
@@ -66,13 +51,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 
+import FcLogin from '@/web/components/FcLogin.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
   name: 'FcDashboardNavUser',
@@ -80,6 +64,7 @@ export default {
     FcMixinAuthScope,
   ],
   components: {
+    FcLogin,
     FcButton,
     FcTooltip,
   },
@@ -90,15 +75,6 @@ export default {
   methods: {
     actionAdmin() {
       this.$router.push({ name: 'admin' });
-    },
-    actionSignIn() {
-      Vue.nextTick(async () => {
-        const event = this.$analytics.signInEvent();
-        await this.$analytics.send([event]);
-
-        saveLoginState(this.$route);
-        this.$refs.formSignIn.submit();
-      });
     },
     async actionSignOut() {
       const event = this.$analytics.signOutEvent();

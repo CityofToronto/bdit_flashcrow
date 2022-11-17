@@ -1,21 +1,6 @@
 <template>
   <div>
-  <div class="d-none">
-    <form
-      v-if="auth.loggedIn"
-      ref="formSignOut"
-      method="POST"
-      action="/api/auth/logout">
-      <input type="hidden" name="csrf" :value="auth.csrf" />
-    </form>
-    <form
-      ref="formSignIn"
-      id="formSignIn"
-      method="POST"
-      action="/api/auth/adfs-init">
-      <input type="hidden" name="csrf" :value="auth.csrf" />
-    </form>
-  </div>
+    <FcLogin ref="FcLogin" />
   <section
     aria-labelledby="heading_track_requests_requests"
     class="fc-requests-track d-flex flex-column fill-height">
@@ -133,7 +118,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { Ripple } from 'vuetify/lib/directives';
 import {
@@ -161,6 +145,7 @@ import {
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
+import FcLogin from '@/web/components/FcLogin.vue';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
@@ -176,8 +161,6 @@ import FcMenuStudyRequestsStatus
 import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { saveLoginState } from '@/web/store/LoginState';
-import store from '@/web/store';
 
 export default {
   name: 'FcRequestsTrack',
@@ -186,6 +169,7 @@ export default {
     Ripple,
   },
   components: {
+    FcLogin,
     FcDataTableRequests,
     FcDialogProjectMode,
     FcMenuDownloadTrackRequests,
@@ -340,24 +324,9 @@ export default {
     this.setFiltersRequestUserOnly(userOnly);
   },
   methods: {
-    actionSignIn() {
-      Vue.nextTick(async () => {
-        const event = this.$analytics.signInEvent();
-        await this.$analytics.send([event]);
-
-        saveLoginState(this.$route);
-        this.$refs.formSignIn.submit();
-      });
-    },
-    async testAuth() {
-      const { loggedIn } = await store.dispatch('checkAuth');
-      return loggedIn;
-    },
     async actionDownload(selectedOnly) {
       this.loadingDownload = true;
-      const checkAuth = await this.testAuth();
-      // eslint-disable-next-line no-debugger
-      debugger;
+      const checkAuth = await this.$refs.FcLogin.testAuth();
       if (checkAuth) {
         if (selectedOnly) {
           await this.actionDownloadSelected();
@@ -365,7 +334,7 @@ export default {
           await this.actionDownloadAll();
         }
       } else {
-        this.actionSignIn();
+        this.$refs.FcLogin.actionSignIn();
       }
       this.loadingDownload = false;
     },
