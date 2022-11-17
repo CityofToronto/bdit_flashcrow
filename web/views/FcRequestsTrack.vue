@@ -1,4 +1,21 @@
 <template>
+  <div>
+  <div class="d-none">
+    <form
+      v-if="auth.loggedIn"
+      ref="formSignOut"
+      method="POST"
+      action="/api/auth/logout">
+      <input type="hidden" name="csrf" :value="auth.csrf" />
+    </form>
+    <form
+      ref="formSignIn"
+      id="formSignIn"
+      method="POST"
+      action="/api/auth/adfs-init">
+      <input type="hidden" name="csrf" :value="auth.csrf" />
+    </form>
+  </div>
   <section
     aria-labelledby="heading_track_requests_requests"
     class="fc-requests-track d-flex flex-column fill-height">
@@ -112,9 +129,11 @@
       </v-card>
     </section>
   </section>
+  </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { Ripple } from 'vuetify/lib/directives';
 import {
@@ -157,6 +176,8 @@ import FcMenuStudyRequestsStatus
 import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import { saveLoginState } from '@/web/store/LoginState';
+import store from '@/web/store';
 
 export default {
   name: 'FcRequestsTrack',
@@ -319,12 +340,32 @@ export default {
     this.setFiltersRequestUserOnly(userOnly);
   },
   methods: {
+    actionSignIn() {
+      Vue.nextTick(async () => {
+        const event = this.$analytics.signInEvent();
+        await this.$analytics.send([event]);
+
+        saveLoginState(this.$route);
+        this.$refs.formSignIn.submit();
+      });
+    },
+    async testAuth() {
+      const { loggedIn } = await store.dispatch('checkAuth');
+      return loggedIn;
+    },
     async actionDownload(selectedOnly) {
       this.loadingDownload = true;
-      if (selectedOnly) {
-        await this.actionDownloadSelected();
+      const checkAuth = await this.testAuth();
+      // eslint-disable-next-line no-debugger
+      debugger;
+      if (checkAuth) {
+        if (selectedOnly) {
+          await this.actionDownloadSelected();
+        } else {
+          await this.actionDownloadAll();
+        }
       } else {
-        await this.actionDownloadAll();
+        this.actionSignIn();
       }
       this.loadingDownload = false;
     },
