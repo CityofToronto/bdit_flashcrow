@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FcLogin ref="FcLogin" />
+    <FcLogin ref="fcLogin" />
   <section
     aria-labelledby="heading_track_requests_requests"
     class="fc-requests-track d-flex flex-column fill-height">
@@ -326,15 +326,15 @@ export default {
   methods: {
     async actionDownload(selectedOnly) {
       this.loadingDownload = true;
-      const checkAuth = await this.$refs.FcLogin.testAuth();
-      if (checkAuth) {
+      const loggedIn = await this.$refs.fcLogin.getLoginStatus();
+      if (loggedIn) {
         if (selectedOnly) {
           await this.actionDownloadSelected();
         } else {
           await this.actionDownloadAll();
         }
       } else {
-        this.$refs.FcLogin.actionSignIn();
+        this.$refs.fcLogin.actionSignIn();
       }
       this.loadingDownload = false;
     },

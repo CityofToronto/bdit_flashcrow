@@ -32,6 +32,9 @@ export default {
     ...mapState(['auth']),
   },
   methods: {
+    actionAdmin() {
+      this.$router.push({ name: 'admin' });
+    },
     actionSignIn() {
       Vue.nextTick(async () => {
         const event = this.$analytics.signInEvent();
@@ -46,7 +49,7 @@ export default {
 
       this.$refs.formSignOut.submit();
     },
-    async testAuth() {
+    async getLoginStatus() {
       const { loggedIn } = await store.dispatch('checkAuth');
       return loggedIn;
     },

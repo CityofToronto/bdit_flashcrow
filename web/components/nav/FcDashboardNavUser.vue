@@ -1,7 +1,7 @@
 <template>
   <div
     class="fc-dashboard-nav-user text-center pb-2">
-    <FcLogin ref="FcLogin"/>
+    <FcLogin ref="fcLogin"/>
     <v-menu
       v-if="auth.loggedIn"
       :attach="$el"
@@ -26,11 +26,11 @@
       <v-list class="text-left" id="fc_menu_user">
         <v-list-item
           v-if="hasAuthScope(AuthScope.ADMIN)"
-          @click="actionAdmin">
+          @click="$refs.fcLogin.actionAdmin">
           <v-list-item-title>Admin Console</v-list-item-title>
         </v-list-item>
         <v-list-item
-          @click="actionSignOut">
+          @click="$refs.fcLogin.actionSignOut">
           <v-list-item-title>Sign out</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -40,7 +40,7 @@
         <FcButton
           aria-label="Sign In"
           type="fab-icon"
-          @click="$refs.FcLogin.actionSignIn()"
+          @click="$refs.fcLogin.actionSignIn()"
           v-on="on">
           <v-icon>mdi-login</v-icon>
         </FcButton>
@@ -71,17 +71,6 @@ export default {
   computed: {
     ...mapState(['auth']),
     ...mapGetters(['username']),
-  },
-  methods: {
-    actionAdmin() {
-      this.$router.push({ name: 'admin' });
-    },
-    async actionSignOut() {
-      const event = this.$analytics.signOutEvent();
-      await this.$analytics.send([event]);
-
-      this.$refs.formSignOut.submit();
-    },
   },
 };
 </script>
