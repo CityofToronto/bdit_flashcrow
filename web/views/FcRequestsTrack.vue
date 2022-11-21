@@ -325,9 +325,9 @@ export default {
   },
   methods: {
     async actionDownload(selectedOnly) {
-      this.loadingDownload = true;
       const loggedIn = await this.$refs.fcLogin.getLoginStatus();
       if (loggedIn) {
+        this.loadingDownload = true;
         if (selectedOnly) {
           await this.actionDownloadSelected();
         } else {
