@@ -44,7 +44,7 @@
                   :n="itemsStudyRequest.length" />
               </template>
             </v-checkbox>
-
+            <Login ref="login" />
             <FcMenuDownloadTrackRequests
               :loading="loadingDownload"
               :selected-items="selectedItems"
@@ -142,6 +142,7 @@ import {
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
+import Login from '@/web/components/Login.vue';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
@@ -165,6 +166,7 @@ export default {
     Ripple,
   },
   components: {
+    Login,
     FcDataTableRequests,
     FcDialogProjectMode,
     FcMenuDownloadTrackRequests,
@@ -320,13 +322,18 @@ export default {
   },
   methods: {
     async actionDownload(selectedOnly) {
-      this.loadingDownload = true;
-      if (selectedOnly) {
-        await this.actionDownloadSelected();
+      const { loggedIn } = await this.checkAuth();
+      if (loggedIn) {
+        this.loadingDownload = true;
+        if (selectedOnly) {
+          await this.actionDownloadSelected();
+        } else {
+          await this.actionDownloadAll();
+        }
+        this.loadingDownload = false;
       } else {
-        await this.actionDownloadAll();
+        this.$refs.login.actionSignIn();
       }
-      this.loadingDownload = false;
     },
     async actionDownloadAll() {
       const id = uuidv4();
@@ -397,7 +404,7 @@ export default {
       await this.loadAsync();
     },
     ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
-    ...mapActions(['saveStudyRequest', 'updateStudyRequests']),
+    ...mapActions(['saveStudyRequest', 'updateStudyRequests', 'checkAuth']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
   },
 };
