@@ -3,13 +3,7 @@
     <template v-if="collisionHasMvcrFile">
       <template v-if="!userLoggedIn">
         <a @click="userLogin">Login to View</a>
-        <form
-          ref="formSignIn"
-          id="formSignIn"
-          method="POST"
-          action="/api/auth/adfs-init">
-          <input type="hidden" name="csrf" :value="auth.csrf" />
-        </form>
+        <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
         <a v-on:click="fetchPdf">View</a>
@@ -27,18 +21,21 @@
 </template>
 
 <script>
+import Login from '@/web/components/Login.vue';
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { getMvcr, hasMvcr } from '@/lib/api/WebApi';
 import { saveAs } from 'file-saver';
 import { mapState, mapGetters } from 'vuex';
-import { saveLoginState } from '@/web/store/LoginState';
 
 export default {
   name: 'MvcrLink',
   mixins: [
     FcMixinAuthScope,
   ],
+  components: {
+    Login,
+  },
   props: {
     value: {
       type: Boolean,
@@ -83,8 +80,7 @@ export default {
       const route = this.$route;
       route.params.mvcrRead = true;
       route.params.collisionFilters = JSON.stringify(this.filterParamsCollision);
-      saveLoginState(route);
-      this.$refs.formSignIn.submit();
+      this.$refs.login.actionSignIn();
     },
   },
   computed: {
