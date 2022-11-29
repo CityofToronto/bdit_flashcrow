@@ -156,7 +156,7 @@ export default {
               enumValue => ({ text: enumValue.text, value: enumValue }),
             ),
           ],
-          text: 'Assign To',
+          text: StudyRequestStatus.ASSIGNED.text,
           value: StudyRequestStatus.ASSIGNED,
         });
       }
