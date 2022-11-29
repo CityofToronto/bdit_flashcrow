@@ -143,9 +143,9 @@ export default {
     },
     items() {
       const items = [{
-        disabled: !this.canRequestChanges,
-        text: 'Request Changes',
-        value: StudyRequestStatus.CHANGES_NEEDED,
+        disabled: !this.canReopen,
+        text: StudyRequestStatus.REQUESTED.text,
+        value: StudyRequestStatus.REQUESTED,
       }];
       if (this.showAssignTo) {
         items.push({
@@ -161,21 +161,21 @@ export default {
         });
       }
       items.push({
+        disabled: !this.canCancel,
+        text: StudyRequestStatus.CANCELLED.text,
+        value: StudyRequestStatus.CANCELLED,
+      }, {
         disabled: !this.canMarkCompleted,
-        text: 'Mark Completed',
+        text: StudyRequestStatus.COMPLETED.text,
         value: StudyRequestStatus.COMPLETED,
       }, {
         disabled: !this.canRejectData,
-        text: 'Reject Data',
+        text: StudyRequestStatus.REJECTED.text,
         value: StudyRequestStatus.REJECTED,
       }, {
-        disabled: !this.canCancel,
-        text: 'Cancel',
-        value: StudyRequestStatus.CANCELLED,
-      }, {
-        disabled: !this.canReopen,
-        text: 'Reopen',
-        value: StudyRequestStatus.REQUESTED,
+        disabled: !this.canRequestChanges,
+        text: StudyRequestStatus.CHANGES_NEEDED.text,
+        value: StudyRequestStatus.CHANGES_NEEDED,
       });
       return items;
     },
@@ -274,7 +274,7 @@ export default {
       });
       this.displayFeedback(studyRequestsUnactionable, StudyRequestStatus.CHANGES_NEEDED);
     },
-    displayFeedback(studyRequestsUnactionable, status, subitem = null) {
+    displayFeedback(studyRequestsUnactionable, status) {
       if (studyRequestsUnactionable.length > 0) {
         this.setDialog({
           dialog: 'AlertStudyRequestsUnactionable',
@@ -285,14 +285,7 @@ export default {
           },
         });
       } else {
-        const requestsPlural = this.studyRequests.length > 1 ? 'requests have' : 'request has';
-        if (status === StudyRequestStatus.ASSIGNED) {
-          this.setToastInfo(
-            `Your ${requestsPlural} been ${status.textVerbPastTense} to ${subitem.text}.`,
-          );
-        } else {
-          this.setToastInfo(`Your ${requestsPlural} been ${status.textVerbPastTense}.`);
-        }
+        this.setToastInfo(`Updated ${this.studyRequests.length} request(s) to "${status.text}"`);
       }
     },
     /* eslint-enable no-param-reassign */

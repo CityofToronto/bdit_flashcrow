@@ -32,8 +32,6 @@ import '@/web/css/main.scss';
 
 import FcDialogAlertStudyRequestUrgent
   from '@/web/components/dialogs/FcDialogAlertStudyRequestUrgent.vue';
-import FcDialogAlertStudyRequestsUnactionable
-  from '@/web/components/dialogs/FcDialogAlertStudyRequestsUnactionable.vue';
 import FcDialogAlertStudyTypeUnactionable
   from '@/web/components/dialogs/FcDialogAlertStudyTypeUnactionable.vue';
 import FcDialogConfirmUnauthorized
@@ -53,7 +51,6 @@ export default {
   components: {
     FcAppbar,
     FcDialogAlertStudyRequestUrgent,
-    FcDialogAlertStudyRequestsUnactionable,
     FcDialogAlertStudyTypeUnactionable,
     FcDialogConfirmUnauthorized,
     FcGlobalFilterDrawer,
