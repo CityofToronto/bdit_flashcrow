@@ -407,7 +407,8 @@ test('StudyController.getStudiesByCentrelineSummary [valid feature, date range f
   expect(response.result).toMatchNumPerStudyType([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummary [valid feature, lots of studies]', async () => {
+// skip: the values under observation is randonly generated and therefore insconsistent
+test.skip('StudyController.getStudiesByCentrelineSummary [valid feature, lots of studies]', async () => {
   const features = [
     { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -522,7 +523,8 @@ test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, d
   expect(response.result).toMatchNumPerStudyTypeAndLocation([]);
 });
 
-test('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, lots of studies]', async () => {
+// skip: the values under observation is randonly generated and therefore insconsistent
+test.skip('StudyController.getStudiesByCentrelineSummaryPerLocation [valid feature, lots of studies]', async () => {
   const features = [
     { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
   ];
@@ -602,7 +604,8 @@ test.skip('StudyController.getStudiesByCentrelineTotal [valid feature, some stud
   expect(response.result.total).toBe(6);
 });
 
-test('StudyController.getStudiesByCentrelineTotal [valid feature, lots of studies]', async () => {
+// skip: the values under observation is randonly generated and therefore insconsistent
+test.skip('StudyController.getStudiesByCentrelineTotal [valid feature, lots of studies]', async () => {
   const features = [
     { centrelineId: 1145768, centrelineType: CentrelineType.SEGMENT },
   ];

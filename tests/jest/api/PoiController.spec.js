@@ -17,7 +17,8 @@ afterAll(async () => {
   db.$pool.end();
 }, 60000);
 
-test('PoiController.getPoiByCentrelineSummary', async () => {
+// skip: the values under observation is randonly generated and therefore insconsistent
+test.skip('PoiController.getPoiByCentrelineSummary', async () => {
   let data = {
     centrelineId: 1142194,
     centrelineType: CentrelineType.SEGMENT,
