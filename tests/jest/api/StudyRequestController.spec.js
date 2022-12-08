@@ -357,30 +357,6 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   });
   let persistedStudyRequest = response.result;
 
-  // requester can cancel request
-  Mailer.send.mockClear();
-  persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: persistedStudyRequest,
-  });
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.id).toEqual(persistedStudyRequest.id);
-  persistedStudyRequest = response.result;
-  expect(Mailer.send).toHaveBeenCalledTimes(1);
-
-  // requester can reopen request
-  Mailer.send.mockClear();
-  persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
-  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
-    method: 'PUT',
-    data: persistedStudyRequest,
-  });
-  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expect(response.result.id).toEqual(persistedStudyRequest.id);
-  persistedStudyRequest = response.result;
-  expect(Mailer.send).toHaveBeenCalledTimes(0);
-
   // requester cannot request changes
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
@@ -479,6 +455,52 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   expect(Mailer.send).toHaveBeenCalledTimes(1);
 });
 
+test('StudyRequestController.putStudyRequest requester can cancel request', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(requester);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  let persistedStudyRequest = response.result;
+
+  Mailer.send.mockClear();
+  persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(1);
+});
+
+test('StudyRequestController.putStudyRequest supervisor can cancel request', async () => {
+  const transientStudyRequest = generateStudyRequest();
+  mockDAOsForStudyRequest(transientStudyRequest);
+
+  client.setUser(supervisor);
+  let response = await client.fetch('/requests/study', {
+    method: 'POST',
+    data: transientStudyRequest,
+  });
+  let persistedStudyRequest = response.result;
+
+  Mailer.send.mockClear();
+  persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: persistedStudyRequest,
+  });
+  expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
+  expect(response.result.id).toEqual(persistedStudyRequest.id);
+  persistedStudyRequest = response.result;
+  expect(Mailer.send).toHaveBeenCalledTimes(1);
+});
+
 function expectStudyRequestChanges(actual, expected) {
   expect(actual).toHaveLength(expected.length);
   expected.forEach((status, i) => {
@@ -490,7 +512,7 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   const transientStudyRequest = generateStudyRequest();
   mockDAOsForStudyRequest(transientStudyRequest);
 
-  client.setUser(requester);
+  client.setUser(supervisor);
   let response = await client.fetch('/requests/study', {
     method: 'POST',
     data: transientStudyRequest,
@@ -514,7 +536,7 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectStudyRequestChanges(response.result, []);
 
-  persistedStudyRequest.status = StudyRequestStatus.CANCELLED;
+  persistedStudyRequest.status = StudyRequestStatus.ASSIGNED;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -524,16 +546,16 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   // status-related changes are logged in change table
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/changes`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectStudyRequestChanges(response.result, [StudyRequestStatus.CANCELLED]);
+  expectStudyRequestChanges(response.result, [StudyRequestStatus.ASSIGNED]);
 
   // other users can fetch changes as well
   client.setUser(ett1);
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/changes`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
-  expectStudyRequestChanges(response.result, [StudyRequestStatus.CANCELLED]);
+  expectStudyRequestChanges(response.result, [StudyRequestStatus.ASSIGNED]);
 
-  client.setUser(requester);
-  persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
+  client.setUser(supervisor);
+  persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -544,12 +566,11 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}/changes`);
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectStudyRequestChanges(response.result, [
-    StudyRequestStatus.REQUESTED,
-    StudyRequestStatus.CANCELLED,
+    StudyRequestStatus.CHANGES_NEEDED,
+    StudyRequestStatus.ASSIGNED,
   ]);
 
-  client.setUser(supervisor);
-  persistedStudyRequest.status = StudyRequestStatus.CHANGES_NEEDED;
+  persistedStudyRequest.status = StudyRequestStatus.REQUESTED;
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
     method: 'PUT',
     data: persistedStudyRequest,
@@ -575,9 +596,9 @@ test('StudyRequestController.getStudyRequestChanges', async () => {
   expect(response.statusCode).toBe(HttpStatus.OK.statusCode);
   expectStudyRequestChanges(response.result, [
     StudyRequestStatus.ASSIGNED,
-    StudyRequestStatus.CHANGES_NEEDED,
     StudyRequestStatus.REQUESTED,
-    StudyRequestStatus.CANCELLED,
+    StudyRequestStatus.CHANGES_NEEDED,
+    StudyRequestStatus.ASSIGNED,
   ]);
 });
 
