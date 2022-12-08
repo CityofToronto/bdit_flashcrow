@@ -380,6 +380,16 @@ test('StudyRequestController.putStudyRequest [status changes]', async () => {
   persistedStudyRequest = response.result;
   expect(Mailer.send).toHaveBeenCalledTimes(0);
 
+  // SR status can NOT transition from REQUESTED to REJECTED
+  response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
+    method: 'PUT',
+    data: {
+      ...persistedStudyRequest,
+      status: StudyRequestStatus.REJECTED,
+    },
+  });
+  expect(response.statusCode).toBe(HttpStatus.FORBIDDEN.statusCode);
+
   // requester cannot assign
   client.setUser(requester);
   response = await client.fetch(`/requests/study/${persistedStudyRequest.id}`, {
