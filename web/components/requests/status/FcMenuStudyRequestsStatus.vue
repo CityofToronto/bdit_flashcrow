@@ -285,7 +285,12 @@ export default {
           },
         });
       } else {
-        this.setToastInfo(`Updated ${this.studyRequests.length} request(s) to "${status.text}"`);
+        const numOfStudyRequests = this.studyRequests.length;
+        if (numOfStudyRequests === 1) {
+          this.setToastInfo(`Request #${this.studyRequests[0].id} set to "${status.text}"`);
+        } else if (numOfStudyRequests > 1) {
+          this.setToastInfo(`${numOfStudyRequests} requests set to "${status.text}"`);
+        }
       }
     },
     /* eslint-enable no-param-reassign */
