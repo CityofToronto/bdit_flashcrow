@@ -41,16 +41,16 @@ const SHORTCUT_CHIPS = [
     label: 'All',
   }, {
     filters: {
-      assignees: [null],
+      assignees: [],
       createdAtStart: null,
       createdAtEnd: null,
       dueDateStart: null,
       dueDateEnd: null,
-      statuses: [],
+      statuses: [StudyRequestStatus.REQUESTED],
       studyTypes: [],
       studyTypeOther: false,
     },
-    label: 'Unassigned',
+    label: 'Requested',
   }, {
     filters: {
       assignees: [],
@@ -58,11 +58,14 @@ const SHORTCUT_CHIPS = [
       createdAtEnd: null,
       dueDateStart: null,
       dueDateEnd: null,
-      statuses: [StudyRequestStatus.CANCELLED],
+      statuses: [
+        StudyRequestStatus.ASSIGNED,
+        StudyRequestStatus.REJECTED,
+      ],
       studyTypes: [],
       studyTypeOther: false,
     },
-    label: 'Cancelled',
+    label: 'In Progress',
   }, {
     filters: {
       assignees: [],
@@ -73,7 +76,6 @@ const SHORTCUT_CHIPS = [
       statuses: [
         StudyRequestStatus.CANCELLED,
         StudyRequestStatus.COMPLETED,
-        StudyRequestStatus.REJECTED,
       ],
       studyTypes: [],
       studyTypeOther: false,
