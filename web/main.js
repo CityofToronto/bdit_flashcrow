@@ -75,10 +75,10 @@ const vuetify = new Vuetify({
         success: '#00791e', // in default Vuetify: 'success darken-2'
         // request status
         statusRequested: '#2ec3cc',
-        statusChangesNeeded: '#404040',
+        statusChangesNeeded: '#c0392e',
         statusCancelled: '#e0e0e0',
         statusAssigned: '#fed330',
-        statusRejected: '#c0392e',
+        statusRejected: '#404040',
         statusCompleted: '#26de81',
       },
     },
