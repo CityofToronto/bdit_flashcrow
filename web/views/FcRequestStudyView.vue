@@ -3,11 +3,9 @@
     <FcNavStudyRequest
       :study-request="studyRequest"
       :study-request-bulk-name="studyRequestBulkName">
-      <FcMenuStudyRequestsStatus
+      <SetStatusControl
         v-if="studyRequest !== null"
-        button-class="ml-2"
-        :status="studyRequest.status"
-        :study-requests="[studyRequest]"
+        :study-request="studyRequest"
         @update="onUpdateStudyRequest" />
     </FcNavStudyRequest>
 
@@ -77,8 +75,7 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMenuStudyRequestsStatus
-  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
+import SetStatusControl from '@/web/components/requests/status/SetStatusControl.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
@@ -94,7 +91,7 @@ export default {
   components: {
     FcCommentsStudyRequest,
     FcMap,
-    FcMenuStudyRequestsStatus,
+    SetStatusControl,
     FcNavStudyRequest,
     FcProgressLinear,
     FcStatusStudyRequests,
