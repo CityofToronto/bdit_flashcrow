@@ -13,8 +13,8 @@
       :class="'status-circle-' + circle"></div>
     <v-row class="mx-0 pt-2">
       <v-col
-        v-for="(detail, i) in details"
-        :key="'details_' + i"
+        v-for="(mappedStatus, i) in mappedStatuses"
+        :key="'mappedStatuses_' + i"
         :class="{
           'pl-0': i !== 1,
           'pl-2': i === 1,
@@ -25,15 +25,21 @@
           'text-right': i === 4,
         }"
         :cols="i === 2 ? 4 : 2">
-        <template v-if="detail !== null">
-          <div class="display-1">
-            <span>{{detail.status.text}}</span>
-            <span v-if="detail.n > 0 && detail.n < studyRequests.length">
-              ({{detail.n}} / {{studyRequests.length}})
+        <template v-if="mappedStatus !== null">
+          <div class="display-1" id="status-text">
+            <span>
+              {{ mappedStatus.status.text }}
             </span>
+            <span v-if="isPartialStatus(mappedStatus.n)">
+              ({{mappedStatus.n}}/{{studyRequests.length}})
+            </span>
+            <TooltipStatusProgressBar v-if="i === recentStatusDetailsIndex ||
+            isPartialStatus(mappedStatus.n)">
+              <span id="status-description">{{ mappedStatus.status.description }}</span>
+            </TooltipStatusProgressBar>
           </div>
           <div class="mt-1 subtitle-2">
-            {{detail.createdAt | date}}
+            {{mappedStatus.createdAt | date}}
           </div>
         </template>
       </v-col>
@@ -49,15 +55,25 @@ import { StudyRequestStatus } from '@/lib/Constants';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import DateTime from '@/lib/time/DateTime';
 import { afterDateOf } from '@/lib/time/TimeUtils';
+import TooltipStatusProgressBar from '@/web/components/requests/status/TooltipStatusProgressBar.vue';
 
 export default {
   name: 'FcStatusStudyRequestBulk',
+  components: { TooltipStatusProgressBar },
   props: {
     createdAt: DateTime,
     studyRequests: Array,
     studyRequestChanges: Array,
   },
   computed: {
+    IndexOfNewestMilestone() {
+      return this.milestones.length - 1;
+    },
+    recentStatusDetailsIndex() {
+      const lastMilestoneIndex = this.IndexOfNewestMilestone;
+      const { detailsIndex } = this.milestones[lastMilestoneIndex].status;
+      return detailsIndex;
+    },
     circles() {
       const circles = this.milestones.map(({ status }) => status.name);
       if (this.progress < 50) {
@@ -68,13 +84,13 @@ export default {
       }
       return circles;
     },
-    details() {
-      const details = new Array(5).fill(null);
+    mappedStatuses() {
+      const mappedStatuses = new Array(5).fill(null);
       this.milestones.forEach((milestone) => {
         const { detailsIndex } = milestone.status;
-        details[detailsIndex] = milestone;
+        mappedStatuses[detailsIndex] = milestone;
       });
-      return details;
+      return mappedStatuses;
     },
     milestones() {
       let n = this.statusCounts.get(StudyRequestStatus.REQUESTED);
@@ -172,10 +188,21 @@ export default {
     },
     ...mapState(['now']),
   },
+  methods: {
+    isPartialStatus(statusCount) {
+      return (statusCount > 0 && statusCount < this.studyRequests.length);
+    },
+  },
 };
 </script>
 
 <style lang="scss">
+#status-text {
+  white-space: nowrap;
+}
+#status-description {
+  white-space: pre-line;
+}
 .fc-status-study-requests {
   position: relative;
 
