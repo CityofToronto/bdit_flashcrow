@@ -154,7 +154,7 @@
         v-if="item.status !== null"
         class="align-center d-flex">
         <v-icon :color="item.status.color" class="ml-n2">mdi-circle-medium</v-icon>
-        <span>{{item.status.text}}</span>
+        <span id="status-text">{{item.status.text}}</span>
       </div>
     </template>
     <template v-slot:header.ACTIONS>
@@ -361,6 +361,9 @@ export default {
 </script>
 
 <style lang="scss">
+#status-text {
+  white-space: nowrap;
+}
 .fc-data-table-requests {
   & td:nth-child(1) {
     min-width: 56px;
