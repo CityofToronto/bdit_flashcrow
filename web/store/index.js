@@ -19,7 +19,6 @@ import {
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_SUBMITTED,
-  REQUEST_STUDY_UPDATED,
 } from '@/lib/i18n/Strings';
 import CompositeId from '@/lib/io/CompositeId';
 import DateTime from '@/lib/time/DateTime';
@@ -361,15 +360,15 @@ export default new Vuex.Store({
     async saveStudyRequestBulk({ state, commit }, studyRequestBulk) {
       const { id, urgent } = studyRequestBulk;
       const update = id !== undefined;
-      if (update) {
-        commit('setToastInfo', REQUEST_STUDY_UPDATED.text);
-      } else if (urgent) {
-        commit('setDialog', {
-          dialog: 'AlertStudyRequestUrgent',
-          dialogData: { update },
-        });
-      } else {
-        commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
+      if (!update) {
+        if (urgent) {
+          commit('setDialog', {
+            dialog: 'AlertStudyRequestUrgent',
+            dialogData: { update },
+          });
+        } else {
+          commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
+        }
       }
 
       const { csrf } = state.auth;
