@@ -13,8 +13,8 @@
       :class="'status-circle-' + circle"></div>
     <v-row class="mx-0 pt-2">
       <v-col
-        v-for="(mappedStatus, i) in mappedStatuses"
-        :key="'mappedStatuses_' + i"
+        v-for="(milestone, i) in milestonesItemized"
+        :key="'milestone_' + i"
         :class="{
           'pl-0': i !== 1,
           'pl-2': i === 1,
@@ -25,21 +25,21 @@
           'text-right': i === 4,
         }"
         :cols="i === 2 ? 4 : 2">
-        <template v-if="mappedStatus !== null">
+        <template v-if="milestone !== null">
           <div class="display-1 status-text">
             <span>
-              {{ mappedStatus.status.text }}
+              {{ milestone.status.text }}
             </span>
-            <span v-if="isPartialStatus(mappedStatus.n)">
-              ({{mappedStatus.n}}/{{studyRequests.length}})
+            <span v-if="isPartialStatus(milestone.n)">
+              ({{milestone.n}}/{{studyRequests.length}})
             </span>
-            <TooltipStatusProgressBar v-if="i === recentStatusDetailsIndex ||
-            isPartialStatus(mappedStatus.n)">
-              <span class="status-description">{{ mappedStatus.status.description }}</span>
+            <TooltipStatusProgressBar v-if="isLatestMilestone(i) ||
+            isPartialStatus(milestone.n)">
+              <span class="status-description">{{ milestone.status.description }}</span>
             </TooltipStatusProgressBar>
           </div>
           <div class="mt-1 subtitle-2">
-            {{mappedStatus.createdAt | date}}
+            {{milestone.createdAt | date}}
           </div>
         </template>
       </v-col>
@@ -66,14 +66,6 @@ export default {
     studyRequestChanges: Array,
   },
   computed: {
-    IndexOfNewestMilestone() {
-      return this.milestones.length - 1;
-    },
-    recentStatusDetailsIndex() {
-      const lastMilestoneIndex = this.IndexOfNewestMilestone;
-      const { detailsIndex } = this.milestones[lastMilestoneIndex].status;
-      return detailsIndex;
-    },
     circles() {
       const circles = this.milestones.map(({ status }) => status.name);
       if (this.progress < 50) {
@@ -84,13 +76,13 @@ export default {
       }
       return circles;
     },
-    mappedStatuses() {
-      const mappedStatuses = new Array(5).fill(null);
+    milestonesItemized() {
+      const milestonesItemized = new Array(5).fill(null);
       this.milestones.forEach((milestone) => {
         const { detailsIndex } = milestone.status;
-        mappedStatuses[detailsIndex] = milestone;
+        milestonesItemized[detailsIndex] = milestone;
       });
-      return mappedStatuses;
+      return milestonesItemized;
     },
     milestones() {
       let n = this.statusCounts.get(StudyRequestStatus.REQUESTED);
@@ -191,6 +183,10 @@ export default {
   methods: {
     isPartialStatus(statusCount) {
       return (statusCount > 0 && statusCount < this.studyRequests.length);
+    },
+    isLatestMilestone(index) {
+      const latestMilestone = this.milestonesItemized.findLast(milestone => milestone !== null);
+      return (index === latestMilestone.status.detailsIndex);
     },
   },
 };
