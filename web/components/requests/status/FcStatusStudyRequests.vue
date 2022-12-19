@@ -13,8 +13,8 @@
       :class="'status-circle-' + circle"></div>
     <v-row class="mx-0 pt-2">
       <v-col
-        v-for="(milestone, i) in milestonesItemized"
-        :key="'milestone_' + i"
+        v-for="(stone, i) in milestones"
+        :key="'milestones_' + i"
         :class="{
           'pl-0': i !== 1,
           'pl-2': i === 1,
@@ -25,21 +25,21 @@
           'text-right': i === 4,
         }"
         :cols="i === 2 ? 4 : 2">
-        <template v-if="milestone !== null">
+        <template v-if="stone !== null">
           <div class="display-1 status-text">
             <span>
-              {{ milestone.status.text }}
+              {{ stone.status.text }}
             </span>
-            <span v-if="isPartialStatus(milestone.n)">
-              ({{milestone.n}}/{{studyRequests.length}})
+            <span v-if="isPartialStatus(stone.n)">
+              ({{stone.n}}/{{studyRequests.length}})
             </span>
             <TooltipStatusProgressBar v-if="isLatestMilestone(i) ||
-            isPartialStatus(milestone.n)">
-              <span class="status-description">{{ milestone.status.description }}</span>
+            isPartialStatus(stone.n)">
+              <span class="status-description">{{ stone.status.description }}</span>
             </TooltipStatusProgressBar>
           </div>
           <div class="mt-1 subtitle-2">
-            {{milestone.createdAt | date}}
+            {{stone.createdAt | date}}
           </div>
         </template>
       </v-col>
@@ -67,7 +67,7 @@ export default {
   },
   computed: {
     circles() {
-      const circles = this.milestones.map(({ status }) => status.name);
+      const circles = this.statusCollection.map(({ status }) => status.name);
       if (this.progress < 50) {
         circles.push('center');
       }
@@ -76,17 +76,17 @@ export default {
       }
       return circles;
     },
-    milestonesItemized() {
-      const milestonesItemized = new Array(5).fill(null);
-      this.milestones.forEach((milestone) => {
-        const { detailsIndex } = milestone.status;
-        milestonesItemized[detailsIndex] = milestone;
-      });
-      return milestonesItemized;
-    },
     milestones() {
+      const milestones = new Array(5).fill(null);
+      this.statusCollection.forEach((stone) => {
+        const { detailsIndex } = stone.status;
+        milestones[detailsIndex] = stone;
+      });
+      return milestones;
+    },
+    statusCollection() {
       let n = this.statusCounts.get(StudyRequestStatus.REQUESTED);
-      const milestones = [{
+      const statusCollection = [{
         createdAt: this.createdAt,
         status: StudyRequestStatus.REQUESTED,
         n,
@@ -96,14 +96,14 @@ export default {
       if (n > 0) {
         const changesNeeded = this.statusChanges.get(StudyRequestStatus.CHANGES_NEEDED);
         if (changesNeeded) {
-          milestones.push({ ...changesNeeded, n });
+          statusCollection.push({ ...changesNeeded, n });
         }
       } else {
         n = this.statusCounts.get(StudyRequestStatus.CANCELLED);
         if (n > 0) {
           const cancelled = this.statusChanges.get(StudyRequestStatus.CANCELLED);
           if (cancelled) {
-            milestones.push({ ...cancelled, n });
+            statusCollection.push({ ...cancelled, n });
           }
         }
       }
@@ -112,7 +112,7 @@ export default {
       if (n > 0 || this.progress >= 50) {
         const assigned = this.statusChanges.get(StudyRequestStatus.ASSIGNED);
         if (assigned) {
-          milestones.push({ ...assigned, n });
+          statusCollection.push({ ...assigned, n });
         }
       }
 
@@ -120,7 +120,7 @@ export default {
       if (n > 0) {
         const rejected = this.statusChanges.get(StudyRequestStatus.REJECTED);
         if (rejected) {
-          milestones.push({ ...rejected, n });
+          statusCollection.push({ ...rejected, n });
         }
       }
 
@@ -128,11 +128,11 @@ export default {
       if (n > 0) {
         const completed = this.statusChanges.get(StudyRequestStatus.COMPLETED);
         if (completed) {
-          milestones.push({ ...completed, n });
+          statusCollection.push({ ...completed, n });
         }
       }
 
-      return milestones;
+      return statusCollection;
     },
     progress() {
       if (this.status === StudyRequestStatus.REQUESTED) {
@@ -185,7 +185,7 @@ export default {
       return (statusCount > 0 && statusCount < this.studyRequests.length);
     },
     isLatestMilestone(index) {
-      const latestMilestone = this.milestonesItemized.findLast(milestone => milestone !== null);
+      const latestMilestone = this.milestones.findLast(stone => stone !== null);
       return (index === latestMilestone.status.detailsIndex);
     },
   },
