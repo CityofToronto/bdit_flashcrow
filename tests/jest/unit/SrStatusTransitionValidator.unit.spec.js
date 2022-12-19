@@ -31,7 +31,7 @@ describe('SrStatusTransitionValidator', () => {
 
       test('ASSIGNED', () => {
         expect(getValidTransitions(srs.ASSIGNED)).toEqual(
-          [srs.CANCELLED, srs.COMPLETED, srs.REJECTED, srs.CHANGES_NEEDED],
+          [srs.COMPLETED, srs.CANCELLED, srs.CHANGES_NEEDED, srs.REJECTED],
         );
       });
 
