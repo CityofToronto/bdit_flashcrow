@@ -5,10 +5,10 @@
     bottom>
     <template v-slot:activator="{ on }">
       <FcButton
-        id="information-button"
+        class="information-button"
         type="icon"
         v-on="on">
-        <v-icon id="information-icon">mdi-information-outline</v-icon>
+        <v-icon class="information-icon">mdi-information-outline</v-icon>
       </FcButton>
     </template>
     <slot></slot>
@@ -32,12 +32,12 @@ export default {
 .v-tooltip__content.fc-tooltip-status-progress-bar {
   font-size: 0.875rem !important;
 }
-#information-button {
-  width: 18px;
-  height: 18px;
-  padding-bottom: 3px;
+.information-button {
+  width: 18px !important;
+  height: 18px !important;
+  padding-bottom: 3px !important;
 }
-#information-icon {
-  font-size: 18px;
+.information-icon {
+  font-size: 18px !important;
 }
 </style>

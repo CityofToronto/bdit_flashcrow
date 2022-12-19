@@ -26,7 +26,7 @@
         }"
         :cols="i === 2 ? 4 : 2">
         <template v-if="mappedStatus !== null">
-          <div class="display-1" id="status-text">
+          <div class="display-1 status-text">
             <span>
               {{ mappedStatus.status.text }}
             </span>
@@ -35,7 +35,7 @@
             </span>
             <TooltipStatusProgressBar v-if="i === recentStatusDetailsIndex ||
             isPartialStatus(mappedStatus.n)">
-              <span id="status-description">{{ mappedStatus.status.description }}</span>
+              <span class="status-description">{{ mappedStatus.status.description }}</span>
             </TooltipStatusProgressBar>
           </div>
           <div class="mt-1 subtitle-2">
@@ -197,10 +197,10 @@ export default {
 </script>
 
 <style lang="scss">
-#status-text {
+.status-text {
   white-space: nowrap;
 }
-#status-description {
+.status-description {
   white-space: pre-line;
 }
 .fc-status-study-requests {
