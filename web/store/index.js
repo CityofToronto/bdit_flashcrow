@@ -358,23 +358,14 @@ export default new Vuex.Store({
       return postStudyRequest(csrf, studyRequest);
     },
     async saveStudyRequestBulk({ state, commit }, studyRequestBulk) {
-      const { id, urgent } = studyRequestBulk;
+      const { id } = studyRequestBulk;
       const update = id !== undefined;
-      if (!update) {
-        if (urgent) {
-          commit('setDialog', {
-            dialog: 'AlertStudyRequestUrgent',
-            dialogData: { update },
-          });
-        } else {
-          commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
-        }
-      }
 
       const { csrf } = state.auth;
       if (update) {
         return putStudyRequestBulk(csrf, studyRequestBulk);
       }
+      commit('setToastInfo', REQUEST_STUDY_SUBMITTED.text);
       return postStudyRequestBulk(csrf, studyRequestBulk);
     },
     async updateStudyRequests({ state }, studyRequests) {
