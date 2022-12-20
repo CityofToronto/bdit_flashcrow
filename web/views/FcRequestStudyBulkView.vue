@@ -65,7 +65,7 @@
               </template>
             </v-checkbox>
 
-            <template v-if="canEdit">
+            <template>
               <FcMenuStudyRequestsStatus
                 button-class="ml-2"
                 :disabled="selectAll === false"
@@ -110,7 +110,6 @@ import { mapActions, mapState } from 'vuex';
 import { centrelineKey, ProjectMode } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
-import RequestActions from '@/lib/requests/RequestActions';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
@@ -158,9 +157,6 @@ export default {
   computed: {
     bulkStatus() {
       return bulkStatus(this.studyRequestBulk.studyRequests);
-    },
-    canEdit() {
-      return RequestActions.canEdit(this.auth.user, this.studyRequestBulk);
     },
     items() {
       if (this.studyRequestBulk === null) {
