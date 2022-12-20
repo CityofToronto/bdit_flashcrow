@@ -91,7 +91,6 @@ import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-
 import { StudyRequestStatus } from '@/lib/Constants';
 import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
 
@@ -203,7 +202,6 @@ export default {
       this.updateStatus(this.cancelledStatus);
     },
     updateStatus(nextStatus) {
-      this.showMenu = false;
       this.studyRequest.status = nextStatus;
       this.onUpdateStudyRequest();
       this.setToastInfo(`Request #${this.studyRequest.id} set to "${nextStatus.text}"`);
