@@ -111,7 +111,7 @@
 
 <script>
 import { Ripple } from 'vuetify/lib/directives';
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
 import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
@@ -255,8 +255,11 @@ export default {
     cancelledStatus() {
       return StudyRequestStatus.CANCELLED;
     },
+    selectedRequestsCount() {
+      return this.selectedItems.length;
+    },
     noRequestsSelected() {
-      return this.selectedItems.length === 0;
+      return this.selectedRequestsCount === 0;
     },
     selectedRequestIds() {
       return this.selectedItems.map(i => i.studyRequest.id);
@@ -315,6 +318,9 @@ export default {
           request.status = this.cancelledStatus;
         }
       });
+      const n = this.selectedRequestsCount;
+      const s = n === 1 ? '' : 's';
+      this.setToastInfo(`${n} request${s} cancelled`);
       this.onUpdateStudyRequests();
     },
     async onUpdateStudyRequests() {
@@ -326,6 +332,7 @@ export default {
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
+    ...mapMutations(['setToastInfo']),
   },
 };
 </script>
