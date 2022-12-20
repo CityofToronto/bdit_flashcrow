@@ -3,10 +3,19 @@
     <FcNavStudyRequest
       :study-request="studyRequest"
       :study-request-bulk-name="studyRequestBulkName">
-      <SetStatusControl
-        v-if="studyRequest !== null"
-        :study-request="studyRequest"
-        @update="onUpdateStudyRequest" />
+      <template v-if="studyRequest !== null">
+        <SetStatusDropdown
+          v-if="userIsStudyRequestAdmin && isAnyValidTransitions"
+          :currentStatus="currentStatus"
+          :statusTransitions="validStatusTransitions"
+          @transition-status="updateStatus">
+        </SetStatusDropdown>
+        <CancelRequestButton
+          v-else-if="userIsStudyRequester"
+          :disabled="!userCanCancelStudyRequest"
+          @cancel-request="cancel">
+        </CancelRequestButton>
+      </template>
     </FcNavStudyRequest>
 
     <v-divider></v-divider>
@@ -75,12 +84,16 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import SetStatusControl from '@/web/components/requests/status/SetStatusControl.vue';
+import SetStatusDropdown from '@/web/components/requests/status/SetStatusDropdown.vue';
+import CancelRequestButton from '@/web/components/requests/status/CancelRequestButton.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudy from '@/web/components/requests/summary/FcSummaryStudy.vue';
 import FcSummaryStudyRequest from '@/web/components/requests/summary/FcSummaryStudyRequest.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+
+import { StudyRequestStatus } from '@/lib/Constants';
+import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
 
 export default {
   name: 'FcRequestStudyView',
@@ -91,7 +104,8 @@ export default {
   components: {
     FcCommentsStudyRequest,
     FcMap,
-    SetStatusControl,
+    SetStatusDropdown,
+    CancelRequestButton,
     FcNavStudyRequest,
     FcProgressLinear,
     FcStatusStudyRequests,
@@ -121,6 +135,32 @@ export default {
         selected: false,
       };
       return [{ location, state }];
+    },
+    currentStatus() {
+      return this.studyRequest.status;
+    },
+    userIsStudyRequestAdmin() {
+      return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
+    },
+    userIsStudyRequester() {
+      return this.auth.user.id === this.studyRequest.userId;
+    },
+    transitionValidator() {
+      return new SrStatusTransitionValidator(this.auth.user.scope);
+    },
+    validStatusTransitions() {
+      return this.transitionValidator.getRulesForScope(this.currentStatus);
+    },
+    isAnyValidTransitions() {
+      return this.validStatusTransitions.length > 0;
+    },
+    userCanCancelStudyRequest() {
+      return this.transitionValidator.isValidTransition(
+        this.studyRequest.status, this.cancelledStatus,
+      );
+    },
+    cancelledStatus() {
+      return StudyRequestStatus.CANCELLED;
     },
   },
   methods: {
@@ -158,6 +198,15 @@ export default {
       this.studyRequest = studyRequest;
       this.studyRequestComments.splice(i, 1);
       this.setToastInfo('Your comment has been deleted.');
+    },
+    cancel() {
+      this.updateStatus(this.cancelledStatus);
+    },
+    updateStatus(nextStatus) {
+      this.showMenu = false;
+      this.studyRequest.status = nextStatus;
+      this.onUpdateStudyRequest();
+      this.setToastInfo(`Request #${this.studyRequest.id} set to "${nextStatus.text}"`);
     },
     async onUpdateStudyRequest() {
       this.loading = true;
