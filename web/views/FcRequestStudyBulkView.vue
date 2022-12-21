@@ -246,17 +246,17 @@ export default {
       );
       return cancellableRequests;
     },
-    userCannotCancelAllSelectedRequests() {
-      return this.selectedCancellableMap.includes(false);
-    },
     cancelledStatus() {
       return StudyRequestStatus.CANCELLED;
     },
-    selectedRequestsCount() {
-      return this.selectedItems.length;
-    },
     noRequestsSelected() {
       return this.selectedRequestsCount === 0;
+    },
+    userCannotCancelAllSelectedRequests() {
+      return this.selectedCancellableMap.includes(false);
+    },
+    selectedRequestsCount() {
+      return this.selectedItems.length;
     },
     selectedRequestIds() {
       return this.selectedItems.map(i => i.studyRequest.id);
@@ -308,24 +308,38 @@ export default {
       this.studyRequestUsers.set(user.id, user);
       this.studyRequestUsers = studyRequestUsers;
     },
-    cancelSelected() {
-      this.studyRequestBulk.studyRequests.forEach((request) => {
-        if (this.selectedRequestIds.includes(request.id)) {
-          // eslint-disable-next-line no-param-reassign
-          request.status = this.cancelledStatus;
-        }
-      });
-      const n = this.selectedRequestsCount;
-      const s = n === 1 ? '' : 's';
-      this.setToastInfo(`${n} request${s} cancelled`);
-      this.onUpdateStudyRequests();
-    },
     async onUpdateStudyRequests() {
       this.loadingItems = true;
       this.selectedItems = [];
       await this.saveStudyRequestBulk(this.studyRequestBulk);
       await this.loadAsyncForRoute(this.$route);
       this.loadingItems = false;
+    },
+    async cancelSelected() {
+      this.loadingItems = true;
+      const updatePromises = [];
+      this.studyRequestBulk.studyRequests.forEach((request) => {
+        if (this.selectedRequestIds.includes(request.id)) {
+          // eslint-disable-next-line no-param-reassign
+          request.status = this.cancelledStatus;
+          updatePromises.push(this.saveStudyRequest(request));
+        }
+      });
+      Promise.all(updatePromises).then((responses) => {
+        const n = this.selectedRequestsCount;
+        const s = n === 1 ? '' : 's';
+        this.toastNotification(`${n} request${s} cancelled`);
+        this.reloadPage();
+        return responses;
+      });
+    },
+    async reloadPage() {
+      await this.loadAsyncForRoute(this.$route);
+      this.selectedItems = [];
+      this.loadingItems = false;
+    },
+    toastNotification(text) {
+      this.setToastInfo(text);
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
