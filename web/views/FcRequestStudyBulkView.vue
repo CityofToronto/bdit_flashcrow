@@ -237,9 +237,6 @@ export default {
       }
       return isCreator;
     },
-    userCanCancelAllRequests() {
-      return true;
-    },
     transitionValidator() {
       return new SrStatusTransitionValidator(this.auth.user.scope);
     },
