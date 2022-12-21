@@ -66,14 +66,11 @@
             </v-checkbox>
 
             <template>
-              <FcMenuStudyRequestsStatus
+              <SetStatusDropdown
                 v-if="userIsStudyRequestAdmin"
-                button-class="ml-2"
-                :disabled="selectAll === false"
-                :status="bulkStatus"
-                :study-requests="selectedStudyRequests"
-                text-screen-reader="Selected Requests"
-                @update="onUpdateStudyRequests" />
+                :disabled="noRequestsSelected"
+                :status-transitions="allStatuses"
+                :current-status="bulkStatus" />
               <CancelRequestButton
                 v-else-if="userIsProjectCreator"
                 :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
@@ -125,8 +122,7 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import FcMenuStudyRequestsStatus
-  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
+import SetStatusDropdown from '@/web/components/requests/status/SetStatusDropdown.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequestBulk
   from '@/web/components/requests/summary/FcSummaryStudyRequestBulk.vue';
@@ -148,7 +144,7 @@ export default {
     FcButton,
     FcDataTableRequests,
     FcMap,
-    FcMenuStudyRequestsStatus,
+    SetStatusDropdown,
     FcNavStudyRequest,
     FcProgressLinear,
     FcStatusStudyRequests,
@@ -269,6 +265,9 @@ export default {
     },
     selectedRequestIds() {
       return this.selectedItems.map(i => i.studyRequest.id);
+    },
+    allStatuses() {
+      return StudyRequestStatus.enumValues;
     },
   },
   methods: {

@@ -6,6 +6,7 @@
       <FcButton
         type="secondary"
         v-bind="attrs"
+        :disabled="disabled"
         v-on="on">
         <v-icon :color="currentStatus.color" left>
           mdi-circle-medium
@@ -43,6 +44,10 @@ export default {
     statusTransitions: {
       type: Array,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
