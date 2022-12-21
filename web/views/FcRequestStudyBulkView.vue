@@ -240,20 +240,29 @@ export default {
     transitionValidator() {
       return new SrStatusTransitionValidator(this.auth.user.scope);
     },
-    selectedCancellableMap() {
-      const cancellableRequests = this.selectedItems.map(
-        request => this.transitionValidator.isValidTransition(request.status, this.cancelledStatus),
-      );
+    areSelectedRequestsCancellable() {
+      let cancellableRequests = [];
+      if (this.userIsStudyRequestAdmin) {
+        cancellableRequests = Array(this.selectedRequestsCount).fill(true);
+      } else if (this.userIsProjectCreator) {
+        cancellableRequests = this.selectedItems.map((request) => {
+          const isUsersRequest = request.requestedBy.id === this.auth.user.id;
+          const isValidTransition = this.transitionValidator.isValidTransition(
+            request.status, this.cancelledStatus,
+          );
+          return isUsersRequest && isValidTransition;
+        });
+      }
       return cancellableRequests;
+    },
+    userCannotCancelAllSelectedRequests() {
+      return this.areSelectedRequestsCancellable.includes(false);
     },
     cancelledStatus() {
       return StudyRequestStatus.CANCELLED;
     },
     noRequestsSelected() {
       return this.selectedRequestsCount === 0;
-    },
-    userCannotCancelAllSelectedRequests() {
-      return this.selectedCancellableMap.includes(false);
     },
     selectedRequestsCount() {
       return this.selectedItems.length;
