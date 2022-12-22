@@ -161,21 +161,21 @@ export default {
         });
       }
       items.push({
-        disabled: !this.canCancel,
-        text: StudyRequestStatus.CANCELLED.text,
-        value: StudyRequestStatus.CANCELLED,
-      }, {
         disabled: !this.canMarkCompleted,
         text: StudyRequestStatus.COMPLETED.text,
         value: StudyRequestStatus.COMPLETED,
       }, {
-        disabled: !this.canRejectData,
-        text: StudyRequestStatus.REJECTED.text,
-        value: StudyRequestStatus.REJECTED,
+        disabled: !this.canCancel,
+        text: StudyRequestStatus.CANCELLED.text,
+        value: StudyRequestStatus.CANCELLED,
       }, {
         disabled: !this.canRequestChanges,
         text: StudyRequestStatus.CHANGES_NEEDED.text,
         value: StudyRequestStatus.CHANGES_NEEDED,
+      }, {
+        disabled: !this.canRejectData,
+        text: StudyRequestStatus.REJECTED.text,
+        value: StudyRequestStatus.REJECTED,
       });
       return items;
     },
