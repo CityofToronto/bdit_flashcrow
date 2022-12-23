@@ -50,15 +50,12 @@
               :selected-items="selectedItems"
               type="secondary"
               @action-download="actionDownload" />
-            <template v-if="hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN)">
-              <FcMenuStudyRequestsStatus
-                button-class="ml-2"
-                :disabled="selectAll === false"
-                :status="bulkStatus"
-                :study-requests="selectedStudyRequests"
-                text-screen-reader="Selected Requests"
-                @update="onUpdateStudyRequests" />
-            </template>
+            <SetStatusDropdown
+              v-if="userIsStudyRequestAdmin"
+              :disabled="noRequestsSelected"
+              :status-transitions="allStatuses"
+              :current-status="bulkStatus"
+              @transition-status="updateSelectedRequestsStatus" />
             <FcMenuStudyRequestsProjectMode
               button-class="ml-2"
               :disabled="selectAll === false"
@@ -129,6 +126,7 @@ import {
   ProjectMode,
   ReportFormat,
   ReportType,
+  StudyRequestStatus,
 } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import {
@@ -153,11 +151,11 @@ import FcStudyRequestFilterShortcuts
   from '@/web/components/requests/FcStudyRequestFilterShortcuts.vue';
 import FcMenuDownloadTrackRequests
   from '@/web/components/requests/download/FcMenuDownloadTrackRequests.vue';
-import FcMenuStudyRequestsStatus
-  from '@/web/components/requests/status/FcMenuStudyRequestsStatus.vue';
+import SetStatusDropdown from '@/web/components/requests/status/SetStatusDropdown.vue';
 import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
 
 export default {
   name: 'FcRequestsTrack',
@@ -171,7 +169,7 @@ export default {
     FcDialogProjectMode,
     FcMenuDownloadTrackRequests,
     FcMenuStudyRequestsProjectMode,
-    FcMenuStudyRequestsStatus,
+    SetStatusDropdown,
     FcProgressCircular,
     FcSearchBarRequests,
     FcStudyRequestFilters,
@@ -275,6 +273,21 @@ export default {
       return this.studyRequestItems
         .filter(({ bulk }) => bulk)
         .map(({ request }) => request);
+    },
+    userIsStudyRequestAdmin() {
+      return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
+    },
+    selectedRequestsCount() {
+      return this.selectedStudyRequests.length;
+    },
+    noRequestsSelected() {
+      return this.selectedRequestsCount === 0;
+    },
+    allStatuses() {
+      return StudyRequestStatus.enumValues;
+    },
+    transitionValidator() {
+      return new SrStatusTransitionValidator(this.auth.user.scope);
     },
     ...mapGetters('trackRequests', ['filterParamsRequest', 'hasFiltersRequest']),
     ...mapState(['auth']),
@@ -397,13 +410,42 @@ export default {
 
       this.loading = false;
     },
-    async onUpdateStudyRequests() {
-      const studyRequests = this.selectedStudyRequests;
+    async updateSelectedRequestsStatus(nextStatus) {
+      const selectedRequests = this.selectedStudyRequests;
+      const nSelected = selectedRequests.length;
+      const unchangedStudyRequests = [];
+      selectedRequests.forEach((sr) => {
+        const isValidTransition = this.transitionValidator.isValidTransition(sr.status, nextStatus);
+        if (isValidTransition) {
+          // eslint-disable-next-line no-param-reassign
+          sr.status = nextStatus;
+        } else {
+          unchangedStudyRequests.push(sr);
+        }
+      });
       this.selectedItems = [];
-      await this.updateStudyRequests(studyRequests);
+      await this.updateStudyRequests(selectedRequests);
+      if (unchangedStudyRequests.length > 0) {
+        this.setUnactionableDialog(unchangedStudyRequests, nextStatus, nSelected);
+      } else if (nSelected > 1) {
+        this.setToastInfo(`${nSelected} requests set to "${nextStatus.text}"`);
+      } else {
+        this.setToastInfo(`Request #${selectedRequests[0].id} set to "${nextStatus.text}"`);
+      }
       await this.loadAsync();
     },
+    setUnactionableDialog(studyRequestsUnactionable, status, nRequests) {
+      this.setDialog({
+        dialog: 'AlertStudyRequestsUnactionable',
+        dialogData: {
+          studyRequestsUnactionable,
+          status,
+          nRequests,
+        },
+      });
+    },
     ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
+    ...mapMutations(['setToastInfo', 'setDialog']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests', 'checkAuth']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
   },
