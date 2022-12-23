@@ -424,13 +424,16 @@ export default {
         }
       });
       this.selectedItems = [];
+      const nUnactionable = unchangedStudyRequests.length;
+      const nUpdated = nSelected - nUnactionable;
       await this.updateStudyRequests(selectedRequests);
-      if (unchangedStudyRequests.length > 0) {
-        this.setUnactionableDialog(unchangedStudyRequests, nextStatus, nSelected);
-      } else if (nSelected > 1) {
-        this.setToastInfo(`${nSelected} requests set to "${nextStatus.text}"`);
-      } else {
+      if (nUpdated > 1) {
+        this.setToastInfo(`${nUpdated} requests set to "${nextStatus.text}"`);
+      } else if (nUpdated === 1) {
         this.setToastInfo(`Request #${selectedRequests[0].id} set to "${nextStatus.text}"`);
+      }
+      if (nUnactionable > 0) {
+        this.setUnactionableDialog(unchangedStudyRequests, nextStatus, nSelected);
       }
       await this.loadAsync();
     },
