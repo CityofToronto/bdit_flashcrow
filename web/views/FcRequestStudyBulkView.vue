@@ -70,7 +70,8 @@
                 v-if="userIsStudyRequestAdmin"
                 :disabled="noRequestsSelected"
                 :status-transitions="allStatuses"
-                :current-status="bulkStatus" />
+                :current-status="bulkStatus"
+                @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
                 v-else-if="userIsProjectCreator"
                 :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
@@ -261,10 +262,10 @@ export default {
       return this.selectedRequestsCount === 0;
     },
     selectedRequestsCount() {
-      return this.selectedItems.length;
+      return this.selectedStudyRequests.length;
     },
     selectedRequestIds() {
-      return this.selectedItems.map(i => i.studyRequest.id);
+      return this.selectedStudyRequests.map(sr => sr.id);
     },
     allStatuses() {
       return StudyRequestStatus.enumValues;
@@ -316,12 +317,27 @@ export default {
       this.studyRequestUsers.set(user.id, user);
       this.studyRequestUsers = studyRequestUsers;
     },
-    async onUpdateStudyRequests() {
+    async updateSelectedRequestsStatus(nextStatus) {
+      const unchangedStudyRequests = [];
+      this.selectedStudyRequests.forEach((sr) => {
+        const isValidTransition = this.transitionValidator.isValidTransition(sr.status, nextStatus);
+        if (isValidTransition) {
+          // eslint-disable-next-line no-param-reassign
+          sr.status = nextStatus;
+        } else {
+          unchangedStudyRequests.push(sr);
+        }
+      });
       this.loadingItems = true;
-      this.selectedItems = [];
       await this.saveStudyRequestBulk(this.studyRequestBulk);
-      await this.loadAsyncForRoute(this.$route);
-      this.loadingItems = false;
+      if (unchangedStudyRequests.length > 0) {
+        this.statusUpdateUnactionableForRequestsDialog(unchangedStudyRequests, nextStatus);
+      } else if (this.selectedRequestsCount > 1) {
+        this.setToastInfo(`${this.selectedRequestsCount} requests set to "${nextStatus.text}"`);
+      } else {
+        this.setToastInfo(`Request #${this.selectedStudyRequests[0].id} set to "${nextStatus.text}"`);
+      }
+      this.reloadPage();
     },
     async cancelSelected() {
       this.loadingItems = true;
@@ -349,9 +365,19 @@ export default {
     toastNotification(text) {
       this.setToastInfo(text);
     },
+    statusUpdateUnactionableForRequestsDialog(studyRequestsUnactionable, status) {
+      this.setDialog({
+        dialog: 'AlertStudyRequestsUnactionable',
+        dialogData: {
+          status,
+          studyRequests: this.selectedStudyRequests,
+          studyRequestsUnactionable,
+        },
+      });
+    },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
-    ...mapMutations(['setToastInfo']),
+    ...mapMutations(['setToastInfo', 'setDialog']),
   },
 };
 </script>

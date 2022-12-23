@@ -4,7 +4,7 @@
     :title="title">
     <p class="body-1">
       {{studyRequestsUnactionable.length}} of {{studyRequests.length}}
-      requests could not be {{status.textVerbPastTense}} due to their status:
+      requests could not be {{status.text}} due to their status:
     </p>
     <ul class="body-1">
       <li
