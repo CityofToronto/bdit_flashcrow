@@ -65,14 +65,20 @@
               </template>
             </v-checkbox>
 
-            <template v-if="canEdit">
+            <template>
               <FcMenuStudyRequestsStatus
+                v-if="userIsStudyRequestAdmin"
                 button-class="ml-2"
                 :disabled="selectAll === false"
                 :status="bulkStatus"
                 :study-requests="selectedStudyRequests"
                 text-screen-reader="Selected Requests"
                 @update="onUpdateStudyRequests" />
+              <CancelRequestButton
+                v-else-if="userIsProjectCreator"
+                :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
+                @cancel-request="cancelSelected">
+              </CancelRequestButton>
             </template>
 
             <FcButton
@@ -105,12 +111,11 @@
 
 <script>
 import { Ripple } from 'vuetify/lib/directives';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 
-import { centrelineKey, ProjectMode } from '@/lib/Constants';
+import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
-import RequestActions from '@/lib/requests/RequestActions';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
@@ -126,10 +131,16 @@ import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStud
 import FcSummaryStudyRequestBulk
   from '@/web/components/requests/summary/FcSummaryStudyRequestBulk.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import CancelRequestButton from '@/web/components/requests/status/CancelRequestButton.vue';
+import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
 
 export default {
   name: 'FcRequestStudyBulkView',
-  mixins: [FcMixinRouteAsync],
+  mixins: [
+    FcMixinRouteAsync,
+    FcMixinAuthScope,
+  ],
   directives: {
     Ripple,
   },
@@ -143,6 +154,7 @@ export default {
     FcStatusStudyRequests,
     FcSummaryStudyRequestBulk,
     FcTextNumberTotal,
+    CancelRequestButton,
   },
   data() {
     return {
@@ -158,9 +170,6 @@ export default {
   computed: {
     bulkStatus() {
       return bulkStatus(this.studyRequestBulk.studyRequests);
-    },
-    canEdit() {
-      return RequestActions.canEdit(this.auth.user, this.studyRequestBulk);
     },
     items() {
       if (this.studyRequestBulk === null) {
@@ -218,7 +227,49 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
-    ...mapState(['auth']),
+    userIsStudyRequestAdmin() {
+      return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
+    },
+    userIsProjectCreator() {
+      let isCreator = false;
+      if (this.studyRequestBulk !== null) {
+        isCreator = this.auth.user.id === this.studyRequestBulk.userId;
+      }
+      return isCreator;
+    },
+    transitionValidator() {
+      return new SrStatusTransitionValidator(this.auth.user.scope);
+    },
+    areSelectedRequestsCancellable() {
+      let cancellableRequests = [];
+      if (this.userIsStudyRequestAdmin) {
+        cancellableRequests = Array(this.selectedRequestsCount).fill(true);
+      } else if (this.userIsProjectCreator) {
+        cancellableRequests = this.selectedItems.map((request) => {
+          const isUsersRequest = request.requestedBy.id === this.auth.user.id;
+          const isValidTransition = this.transitionValidator.isValidTransition(
+            request.status, this.cancelledStatus,
+          );
+          return isUsersRequest && isValidTransition;
+        });
+      }
+      return cancellableRequests;
+    },
+    userCannotCancelAllSelectedRequests() {
+      return this.areSelectedRequestsCancellable.includes(false);
+    },
+    cancelledStatus() {
+      return StudyRequestStatus.CANCELLED;
+    },
+    noRequestsSelected() {
+      return this.selectedRequestsCount === 0;
+    },
+    selectedRequestsCount() {
+      return this.selectedItems.length;
+    },
+    selectedRequestIds() {
+      return this.selectedItems.map(i => i.studyRequest.id);
+    },
   },
   methods: {
     actionEdit() {
@@ -273,8 +324,35 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.loadingItems = false;
     },
+    async cancelSelected() {
+      this.loadingItems = true;
+      const updatePromises = [];
+      this.studyRequestBulk.studyRequests.forEach((request) => {
+        if (this.selectedRequestIds.includes(request.id)) {
+          // eslint-disable-next-line no-param-reassign
+          request.status = this.cancelledStatus;
+          updatePromises.push(this.saveStudyRequest(request));
+        }
+      });
+      Promise.all(updatePromises).then((responses) => {
+        const n = this.selectedRequestsCount;
+        const s = n === 1 ? '' : 's';
+        this.toastNotification(`${n} request${s} cancelled`);
+        this.reloadPage();
+        return responses;
+      });
+    },
+    async reloadPage() {
+      await this.loadAsyncForRoute(this.$route);
+      this.selectedItems = [];
+      this.loadingItems = false;
+    },
+    toastNotification(text) {
+      this.setToastInfo(text);
+    },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
+    ...mapMutations(['setToastInfo']),
   },
 };
 </script>
