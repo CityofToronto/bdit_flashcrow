@@ -1,10 +1,10 @@
 <template>
   <FcDialogAlert
     v-model="internalValue"
-    :title="'Could not update all requests'">
+    :title="'Status transition invalid'">
     <p class="body-1">
-      {{studyRequestsUnactionable.length}} of {{studyRequests.length}}
-      requests could not be {{status.text}} due to their status:
+      {{nUnactionable}} of {{nRequests}} requests couldn't
+      be transitioned to {{status.text}} from their curent status:
     </p>
     <ul class="body-1">
       <li
@@ -30,9 +30,14 @@ export default {
     FcDialogAlert,
   },
   props: {
-    status: StudyRequestStatus,
-    studyRequests: Array,
     studyRequestsUnactionable: Array,
+    status: StudyRequestStatus,
+    nRequests: Number,
+  },
+  computed: {
+    nUnactionable() {
+      return this.studyRequestsUnactionable.length;
+    },
   },
 };
 </script>

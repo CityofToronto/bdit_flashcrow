@@ -331,7 +331,7 @@ export default {
       this.loadingItems = true;
       await this.saveStudyRequestBulk(this.studyRequestBulk);
       if (unchangedStudyRequests.length > 0) {
-        this.statusUpdateUnactionableForRequestsDialog(unchangedStudyRequests, nextStatus);
+        this.setUnactionableDialog(unchangedStudyRequests, nextStatus);
       } else if (this.selectedRequestsCount > 1) {
         this.setToastInfo(`${this.selectedRequestsCount} requests set to "${nextStatus.text}"`);
       } else {
@@ -352,7 +352,7 @@ export default {
       Promise.all(updatePromises).then((responses) => {
         const n = this.selectedRequestsCount;
         const s = n === 1 ? '' : 's';
-        this.toastNotification(`${n} request${s} cancelled`);
+        this.setToastInfo(`${n} request${s} cancelled`);
         this.reloadPage();
         return responses;
       });
@@ -362,16 +362,13 @@ export default {
       this.selectedItems = [];
       this.loadingItems = false;
     },
-    toastNotification(text) {
-      this.setToastInfo(text);
-    },
-    statusUpdateUnactionableForRequestsDialog(studyRequestsUnactionable, status) {
+    setUnactionableDialog(studyRequestsUnactionable, status) {
       this.setDialog({
         dialog: 'AlertStudyRequestsUnactionable',
         dialogData: {
-          status,
-          studyRequests: this.selectedStudyRequests,
           studyRequestsUnactionable,
+          status,
+          nRequests: this.selectedStudyRequests.length,
         },
       });
     },
