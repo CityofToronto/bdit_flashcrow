@@ -8,7 +8,7 @@
         v-bind="attrs"
         :disabled="disabled"
         v-on="on">
-        <v-icon :color="currentStatus.color" left>
+        <v-icon v-if="hasCurrentStatus" :color="currentStatus.color" left>
           mdi-circle-medium
         </v-icon>
         <span>Set Status</span>
@@ -39,7 +39,7 @@ export default {
   props: {
     currentStatus: {
       type: Object,
-      required: true,
+      required: false,
     },
     statusTransitions: {
       type: Array,
@@ -54,6 +54,11 @@ export default {
     return {
       showMenu: false,
     };
+  },
+  computed: {
+    hasCurrentStatus() {
+      return this.currentStatus !== null;
+    },
   },
   methods: {
     transitionStatus(nextStatus) {
