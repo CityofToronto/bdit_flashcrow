@@ -3,8 +3,7 @@
     v-model="internalValue"
     :title="'Status transition invalid'">
     <p class="body-1">
-      {{nUnactionable}} of {{nRequests}} requests couldn't
-      be transitioned to {{status.text}} from their curent status:
+      {{bodyText}}
     </p>
     <ul class="body-1">
       <li
@@ -37,6 +36,13 @@ export default {
   computed: {
     nUnactionable() {
       return this.studyRequestsUnactionable.length;
+    },
+    bodyText() {
+      let text = `The following request cannot be transitioned to ${this.status.text} from its current status:`;
+      if (this.nRequests > 1) {
+        text = `${this.nUnactionable} of ${this.nRequests} requests cannot be transitioned to ${this.status.text} from their curent status:`;
+      }
+      return text;
     },
   },
 };
