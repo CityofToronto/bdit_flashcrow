@@ -9,7 +9,6 @@ import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import StudyRequestItemDAO from '@/lib/db/StudyRequestItemDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import StudyRequest from '@/lib/model/StudyRequest';
-import RequestActions from '@/lib/requests/RequestActions';
 import { generateFiltersStudyRequestForStudyRequestId } from '@/lib/test/random/FilterGenerator';
 import {
   generateStudyRequest,
@@ -162,7 +161,7 @@ test('StudyRequestDAO.byCentrelinePending', async () => {
   expect(studyRequests).toContainEqual(persistedStudyRequest1);
   expect(studyRequests).toContainEqual(persistedStudyRequest2);
 
-  RequestActions.actionMarkCompleted(persistedStudyRequest1);
+  persistedStudyRequest1.status = StudyRequestStatus.COMPLETED;
   persistedStudyRequest1 = await StudyRequestDAO.update(persistedStudyRequest1);
   studyRequests = await StudyRequestDAO.byCentrelinePending([
     persistedStudyRequest1,
@@ -237,24 +236,14 @@ test('StudyRequestDAO.update [status actions]', async () => {
   let persistedStudyRequest = await StudyRequestDAO.create(transientStudyRequest, user);
 
   // complete
-  RequestActions.actionMarkCompleted(persistedStudyRequest);
+  persistedStudyRequest.status = StudyRequestStatus.COMPLETED;
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
-  let fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
+  const fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // fetch by centreline pending
-  let fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([persistedStudyRequest]);
+  const fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([persistedStudyRequest]);
   expect(fetchedStudyRequests).not.toContainEqual(persistedStudyRequest);
-
-  // reopen
-  RequestActions.actionReopen(persistedStudyRequest);
-  persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
-  fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
-  expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
-
-  // fetch by centreline pending
-  fetchedStudyRequests = await StudyRequestDAO.byCentrelinePending([persistedStudyRequest]);
-  expect(fetchedStudyRequests).toContainEqual(persistedStudyRequest);
 });
 
 test('StudyRequestDAO.delete', async () => {

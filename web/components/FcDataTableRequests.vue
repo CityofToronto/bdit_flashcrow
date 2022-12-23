@@ -199,7 +199,6 @@ import {
   StudyRequestAssignee,
   StudyRequestStatus,
 } from '@/lib/Constants';
-import RequestActions from '@/lib/requests/RequestActions';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
@@ -348,12 +347,6 @@ export default {
     },
     actionUpdateItem(item) {
       this.$emit('update-item', item);
-    },
-    canAssignTo(item) {
-      if (item.type === ItemType.STUDY_REQUEST_BULK) {
-        return false;
-      }
-      return RequestActions.canAssignTo(this.auth.user, item.studyRequest);
     },
     ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
   },

@@ -35,14 +35,17 @@ import { mapGetters, mapState } from 'vuex';
 
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
-import RequestActions from '@/lib/requests/RequestActions';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcBreadcrumbsStudyRequest from '@/web/components/requests/nav/FcBreadcrumbsStudyRequest.vue';
 import FcHeadingStudyRequest from '@/web/components/requests/nav/FcHeadingStudyRequest.vue';
+import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 
 export default {
   name: 'FcNavStudyRequest',
+  mixins: [
+    FcMixinAuthScope,
+  ],
   components: {
     FcButton,
     FcBreadcrumbsStudyRequest,
@@ -67,7 +70,8 @@ export default {
   },
   computed: {
     canEdit() {
-      return RequestActions.canEdit(this.auth.user, this.studyRequest);
+      return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN)
+        || this.hasAuthScope(this.AuthScope.STUDY_REQUESTS);
     },
     isBulk() {
       const { name } = this.$route;
