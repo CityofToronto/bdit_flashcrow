@@ -1,7 +1,7 @@
 <template>
   <FcDialogAlert
     v-model="internalValue"
-    :title="title">
+    :title="'Could not update all requests'">
     <p class="body-1">
       {{studyRequestsUnactionable.length}} of {{studyRequests.length}}
       requests could not be {{status.text}} due to their status:
@@ -33,11 +33,6 @@ export default {
     status: StudyRequestStatus,
     studyRequests: Array,
     studyRequestsUnactionable: Array,
-  },
-  computed: {
-    title() {
-      return `Could not ${this.status.textVerb} all requests`;
-    },
   },
 };
 </script>
