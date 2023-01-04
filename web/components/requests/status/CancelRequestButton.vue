@@ -9,14 +9,16 @@
     </FcButton>
     <FcDialogConfirm
       v-model="showDialog"
-      textCancel="No"
-      textOk="Yes, cancel it"
-      title="Cancel Confirmation"
+      textCancel="No, don't cancel"
+      textOk="Yes, cancel"
+      :title="`Cancel study request${isMultipleRequests ? 's' : ''}`"
       okButtonType="primary"
       @action-ok="cancel">
       <div class="body-1">
         <p>
-          Are you sure you want to cancel this Study Request?
+          Are you sure you want to cancel
+          {{ isMultipleRequests ? `${nRequests} requests` : "this request" }}?
+          Data Collection staff and any subscribers will be notified by email.
         </p>
       </div>
     </FcDialogConfirm>
@@ -42,6 +44,15 @@ export default {
     disabled: {
       type: Boolean,
       default: true,
+    },
+    nRequests: {
+      type: Number,
+      default: 1,
+    },
+  },
+  computed: {
+    isMultipleRequests() {
+      return this.nRequests > 1;
     },
   },
   methods: {

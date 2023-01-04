@@ -75,6 +75,7 @@
               <CancelRequestButton
                 v-else-if="userIsProjectCreator"
                 :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
+                :nRequests="selectedRequestsCount"
                 @cancel-request="cancelSelected">
               </CancelRequestButton>
             </template>
