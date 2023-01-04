@@ -50,12 +50,15 @@
               :selected-items="selectedItems"
               type="secondary"
               @action-download="actionDownload" />
-            <SetStatusDropdown
-              v-if="userIsStudyRequestAdmin"
-              :disabled="noRequestsSelected"
-              :status-transitions="allStatuses"
-              :current-status="bulkStatus"
-              @transition-status="updateSelectedRequestsStatus" />
+            <div class="set-status-dropdown">
+              <SetStatusDropdown
+                v-if="userIsStudyRequestAdmin"
+                :disabled="noRequestsSelected"
+                :status-transitions="allStatuses"
+                :current-status="bulkStatus"
+                :nRequests="selectedRequestsCount"
+                @transition-status="updateSelectedRequestsStatus" />
+            </div>
             <FcMenuStudyRequestsProjectMode
               button-class="ml-2"
               :disabled="selectAll === false"
@@ -456,6 +459,9 @@ export default {
 </script>
 
 <style lang="scss">
+.set-status-dropdown {
+  padding-left: 8px;
+}
 .fc-requests-track {
   background-color: var(--v-shading-base);
   max-height: var(--full-height);

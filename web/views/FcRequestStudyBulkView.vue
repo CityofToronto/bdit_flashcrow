@@ -71,6 +71,7 @@
                 :disabled="noRequestsSelected"
                 :status-transitions="allStatuses"
                 :current-status="bulkStatus"
+                :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
                 v-else-if="userIsProjectCreator"
