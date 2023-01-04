@@ -7,33 +7,24 @@
       @click="showDialog = true">
       CANCEL
     </FcButton>
-    <FcDialogConfirm
-      v-model="showDialog"
-      textCancel="No, don't cancel"
-      textOk="Yes, cancel"
-      :title="`Cancel study request${isMultipleRequests ? 's' : ''}`"
-      okButtonType="primary"
-      @action-ok="cancel">
-      <div class="body-1">
-        <p>
-          Are you sure you want to cancel
-          {{ isMultipleRequests ? `${nRequests} requests` : "this request" }}?
-          Data Collection staff and any subscribers will be notified by email.
-        </p>
-      </div>
-    </FcDialogConfirm>
+    <CancelStudyRequestConfirmDialog
+      :showDialog="showDialog"
+      :nRequests="nRequests"
+      @cancelConfirmed="cancel"
+      @close="showDialog = false"
+    />
   </div>
 </template>
 
 <script>
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
+import CancelStudyRequestConfirmDialog from '@/web/components/dialogs/CancelStudyRequestConfirmDialog.vue';
 
 export default {
   name: 'CancelRequestButton',
   components: {
     FcButton,
-    FcDialogConfirm,
+    CancelStudyRequestConfirmDialog,
   },
   data() {
     return {
@@ -50,13 +41,9 @@ export default {
       default: 1,
     },
   },
-  computed: {
-    isMultipleRequests() {
-      return this.nRequests > 1;
-    },
-  },
   methods: {
     cancel() {
+      this.showDialog = false;
       this.$emit('cancel-request');
     },
   },
