@@ -27,7 +27,7 @@
           {{textCancel}}
         </FcButton>
         <FcButton
-          type="tertiary"
+          :type="okButtonType"
           @click="actionClickOk">
           {{textOk}}
         </FcButton>
@@ -58,6 +58,10 @@ export default {
     title: {
       type: String,
       default: 'Confirm',
+    },
+    okButtonType: {
+      type: String,
+      default: 'tertiary',
     },
     parentClass: {
       type: String,
