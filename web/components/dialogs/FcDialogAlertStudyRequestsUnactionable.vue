@@ -1,7 +1,7 @@
 <template>
   <FcDialogAlert
     v-model="internalValue"
-    :title="'Status transition invalid'">
+    :title="title">
     <p class="body-1">
       {{bodyText}}
     </p>
@@ -38,11 +38,19 @@ export default {
       return this.studyRequestsUnactionable.length;
     },
     bodyText() {
-      let text = `The following request cannot be transitioned to ${this.status.text} from its current status:`;
-      if (this.nRequests > 1) {
-        text = `${this.nUnactionable} of ${this.nRequests} requests cannot be transitioned to ${this.status.text} from their curent status:`;
+      let text = `This request cannot be transitioned to "${this.status.text}" from its current status:`;
+      if (this.isMultipleRequests) {
+        text = `${this.nUnactionable} of ${this.nRequests} requests cannot be updated to "${this.status.text}" from their current status:`;
       }
       return text;
+    },
+    title() {
+      let title = 'Cannot update request';
+      if (this.isMultipleRequests) title += 's';
+      return title;
+    },
+    isMultipleRequests() {
+      return this.nRequests > 1;
     },
   },
 };
