@@ -74,7 +74,7 @@
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
-                v-else-if="userIsProjectCreator"
+                v-else-if="userIsStudyRequester"
                 :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
                 :nRequests="selectedRequestsCount"
                 @cancel-request="cancelSelected">
@@ -229,12 +229,8 @@ export default {
     userIsStudyRequestAdmin() {
       return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
     },
-    userIsProjectCreator() {
-      let isCreator = false;
-      if (this.studyRequestBulk !== null) {
-        isCreator = this.auth.user.id === this.studyRequestBulk.userId;
-      }
-      return isCreator;
+    userIsStudyRequester() {
+      return this.studyRequesterUserIds.includes(this.auth.user.id);
     },
     transitionValidator() {
       return new SrStatusTransitionValidator(this.auth.user.scope);
@@ -243,7 +239,7 @@ export default {
       let cancellableRequests = [];
       if (this.userIsStudyRequestAdmin) {
         cancellableRequests = Array(this.selectedRequestsCount).fill(true);
-      } else if (this.userIsProjectCreator) {
+      } else {
         cancellableRequests = this.selectedItems.map((request) => {
           const isUsersRequest = request.requestedBy.id === this.auth.user.id;
           const isValidTransition = this.transitionValidator.isValidTransition(
@@ -271,6 +267,11 @@ export default {
     },
     allStatuses() {
       return StudyRequestStatus.enumValues;
+    },
+    studyRequesterUserIds() {
+      const ids = [];
+      this.studyRequestUsers.forEach(user => ids.push(user.id));
+      return ids;
     },
   },
   methods: {
