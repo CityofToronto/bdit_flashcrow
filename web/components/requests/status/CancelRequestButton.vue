@@ -1,12 +1,21 @@
 <template>
   <div>
-    <FcButton
-      class="ml-2"
-      type="secondary"
-      :disabled="disabled"
-      @click="showDialog = true">
-      CANCEL
-    </FcButton>
+    <v-tooltip top v-model="showTooltip">
+      <template v-slot:activator="{ attrs }">
+        <div v-bind="attrs"
+          @mouseenter="isHovering = !isHovering"
+          @mouseleave="isHovering = !isHovering">
+          <FcButton
+            class="ml-2"
+            type="secondary"
+            :disabled="disabled"
+            @click="showDialog = true">
+            CANCEL
+          </FcButton>
+        </div>
+      </template>
+      <span class="no-cancel">{{ tooltipText }}</span>
+    </v-tooltip>
     <CancelStudyRequestConfirmDialog
       :showDialog="showDialog"
       :nRequests="nRequests"
@@ -29,6 +38,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      isHovering: false,
     };
   },
   props: {
@@ -41,6 +51,26 @@ export default {
       default: 1,
     },
   },
+  computed: {
+    showTooltip() {
+      return this.isHovering && this.disabled && this.areRequestsSelected;
+    },
+    tooltipText() {
+      const single = `You cannot cancel a request that has been dispatched for
+        collection. If you have questions, please comment below or contact
+        TrafficData@toronto.ca.`;
+      const multiple = `You selected one or more requests that are dispatched
+        for collection or were requested by other staff, and cannot be cancelled. To
+        cancel, please change your selection or contact TrafficData@toronto.ca.`;
+      return this.isSingleRequest ? single : multiple;
+    },
+    isSingleRequest() {
+      return this.nRequests === 1;
+    },
+    areRequestsSelected() {
+      return this.nRequests !== 0;
+    },
+  },
   methods: {
     cancel() {
       this.showDialog = false;
@@ -49,3 +79,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.v-tooltip__content {
+  max-width: 350px !important;
+}
+</style>
