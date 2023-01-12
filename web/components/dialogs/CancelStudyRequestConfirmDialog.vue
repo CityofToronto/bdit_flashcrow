@@ -9,7 +9,7 @@
     <div class="body-1">
       <p>
         Are you sure you want to cancel {{ bodyTextVariation }}?
-        Data Collection staff and any subscribers will be notified by email.
+        Subscribers will be notified by email.
       </p>
     </div>
   </FcDialogConfirm>
