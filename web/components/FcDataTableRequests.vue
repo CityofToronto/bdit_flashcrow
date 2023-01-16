@@ -134,9 +134,6 @@
         {{item.createdAt | date}}
       </span>
     </template>
-    <template v-slot:item.ASSIGNED_TO="{ item }">
-      <span>{{item.assignedTo}}</span>
-    </template>
     <template v-slot:item.DUE_DATE="{ item }">
       <span
         v-if="item.dueDate !== null">
@@ -195,10 +192,7 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 
-import {
-  StudyRequestAssignee,
-  StudyRequestStatus,
-} from '@/lib/Constants';
+import { StudyRequestStatus } from '@/lib/Constants';
 import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
@@ -253,13 +247,6 @@ export default {
     },
   },
   data() {
-    const itemsAssignedTo = [
-      { text: 'Unassigned', value: null },
-      ...StudyRequestAssignee.enumValues.map(
-        enumValue => ({ text: enumValue.text, value: enumValue }),
-      ),
-    ];
-
     const sortKeys = {
       CREATED_AT: true,
       DUE_DATE: true,
@@ -269,7 +256,6 @@ export default {
     };
 
     return {
-      itemsAssignedTo,
       ItemType,
       sortKeys,
       StudyRequestStatus,
@@ -393,21 +379,16 @@ export default {
     width: 140px;
   }
   & td:nth-child(8),
-  & th.fc-data-table-header-ASSIGNED_TO {
-    min-width: 140px;
-    width: 140px;
-  }
-  & td:nth-child(9),
   & th.fc-data-table-header-DUE_DATE {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(10),
+  & td:nth-child(9),
   & th.fc-data-table-header-STATUS {
     min-width: 140px;
     width: 140px;
   }
-  & td:nth-child(11),
+  & td:nth-child(10),
   & th.fc-data-table-header-ACTIONS {
     min-width: 105px;
     width: 105px;
