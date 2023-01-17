@@ -54,25 +54,6 @@
             :value="status"></v-checkbox>
         </fieldset>
 
-        <fieldset class="mt-6">
-          <legend class="headline">Assignee</legend>
-
-          <v-checkbox
-            v-model="internalFilters.assignees"
-            class="mt-2"
-            hide-details
-            label="Unassigned"
-            :value="null"></v-checkbox>
-          <v-checkbox
-            v-for="assignee in StudyRequestAssignee.enumValues"
-            :key="assignee.name"
-            v-model="internalFilters.assignees"
-            class="mt-2"
-            hide-details
-            :label="assignee.text"
-            :value="assignee"></v-checkbox>
-        </fieldset>
-
         <FcRadioGroup
           v-model="internalFilters.userOnly"
           class="mt-6"
@@ -152,11 +133,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import {
-  StudyRequestAssignee,
-  StudyRequestStatus,
-  StudyType,
-} from '@/lib/Constants';
+import { StudyRequestStatus, StudyType } from '@/lib/Constants';
 import { defaultStudyRequestFilters } from '@/lib/filters/DefaultFilters';
 import ValidationsStudyRequestFilters from '@/lib/validation/ValidationsStudyRequestFilters';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -166,7 +143,6 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 function cloneStudyRequestFilters(filters) {
   const {
-    assignees,
     createdAtStart,
     createdAtEnd,
     dueDateStart,
@@ -178,7 +154,6 @@ function cloneStudyRequestFilters(filters) {
     urgent,
   } = filters;
   return {
-    assignees: [...assignees],
     createdAtStart,
     createdAtEnd,
     dueDateStart,
@@ -205,7 +180,6 @@ export default {
   data() {
     return {
       internalFilters: cloneStudyRequestFilters(this.filters),
-      StudyRequestAssignee,
       StudyRequestStatus,
       StudyType,
     };

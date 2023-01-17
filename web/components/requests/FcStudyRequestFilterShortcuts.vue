@@ -29,7 +29,6 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 const SHORTCUT_CHIPS = [
   {
     filters: {
-      assignees: [],
       createdAtStart: null,
       createdAtEnd: null,
       dueDateStart: null,
@@ -41,7 +40,6 @@ const SHORTCUT_CHIPS = [
     label: 'All',
   }, {
     filters: {
-      assignees: [],
       createdAtStart: null,
       createdAtEnd: null,
       dueDateStart: null,
@@ -53,7 +51,6 @@ const SHORTCUT_CHIPS = [
     label: 'Requested',
   }, {
     filters: {
-      assignees: [],
       createdAtStart: null,
       createdAtEnd: null,
       dueDateStart: null,
@@ -68,7 +65,6 @@ const SHORTCUT_CHIPS = [
     label: 'In Progress',
   }, {
     filters: {
-      assignees: [],
       createdAtStart: null,
       createdAtEnd: null,
       dueDateStart: null,
@@ -103,8 +99,7 @@ function filterDateTimeMatches(dt1, dt2) {
 }
 
 function filtersMatchShortcutChip(filters, { filters: chipFilters }) {
-  return filterArrayMatches(filters.assignees, chipFilters.assignees)
-    && filters.closed === chipFilters.closed
+  return filters.closed === chipFilters.closed
     && filterDateTimeMatches(filters.createdAtStart, chipFilters.createdAtStart)
     && filterDateTimeMatches(filters.createdAtEnd, chipFilters.createdAtEnd)
     && filterDateTimeMatches(filters.dueDateStart, chipFilters.dueDateStart)

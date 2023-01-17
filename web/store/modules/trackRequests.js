@@ -19,7 +19,6 @@ export default {
   getters: {
     filterChipsRequest(state) {
       const {
-        assignees,
         createdAtStart,
         createdAtEnd,
         dueDateStart,
@@ -72,13 +71,6 @@ export default {
         const filterChip = { filter: 'statuses', label, value: statuses };
         filterChipsRequest.push(filterChip);
       }
-      if (assignees.length > 0) {
-        const label = assignees
-          .map(assignee => (assignee === null ? 'Unassigned' : assignee.text))
-          .join(', ');
-        const filterChip = { filter: 'assignees', label, value: assignees };
-        filterChipsRequest.push(filterChip);
-      }
       if (userOnly) {
         const filterChip = { filter: 'userOnly', label: 'Requested by me', value: true };
         filterChipsRequest.push(filterChip);
@@ -91,7 +83,6 @@ export default {
     },
     filterParamsRequest(state) {
       const {
-        assignees,
         createdAtStart,
         createdAtEnd,
         dueDateStart,
@@ -105,11 +96,6 @@ export default {
       const { column, query } = state.searchRequest;
       const { sortBy, sortDesc } = state.sortRequest;
       const params = { sortBy, sortDesc };
-      if (assignees.length > 0) {
-        params.assignees = assignees.map(
-          assignee => (assignee === null ? '' : assignee),
-        );
-      }
       if (createdAtStart !== null) {
         params.createdAtStart = createdAtStart;
       }
