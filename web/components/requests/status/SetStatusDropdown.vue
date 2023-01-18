@@ -50,7 +50,7 @@ export default {
   props: {
     currentStatus: {
       type: Object,
-      required: false,
+      default: null,
     },
     statusTransitions: {
       type: Array,

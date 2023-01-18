@@ -70,7 +70,6 @@
                 v-if="userIsStudyRequestAdmin"
                 :disabled="noRequestsSelected"
                 :status-transitions="allStatuses"
-                :current-status="bulkStatus"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
@@ -118,7 +117,6 @@ import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
@@ -167,9 +165,6 @@ export default {
     };
   },
   computed: {
-    bulkStatus() {
-      return bulkStatus(this.studyRequestBulk.studyRequests);
-    },
     items() {
       if (this.studyRequestBulk === null) {
         return [];

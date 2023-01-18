@@ -55,7 +55,6 @@
                 v-if="userIsStudyRequestAdmin"
                 :disabled="noRequestsSelected"
                 :status-transitions="allStatuses"
-                :current-status="bulkStatus"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
             </div>
@@ -142,7 +141,7 @@ import {
   getStudyRequestBulkItem,
 } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
-import { bulkStatus, ItemType } from '@/lib/requests/RequestStudyBulkUtils';
+import { ItemType } from '@/lib/requests/RequestStudyBulkUtils';
 import Login from '@/web/components/Login.vue';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
@@ -197,9 +196,6 @@ export default {
     };
   },
   computed: {
-    bulkStatus() {
-      return bulkStatus(this.selectedStudyRequests);
-    },
     filterParamsRequestWithPagination() {
       const limit = this.itemsPerPage;
       const offset = (this.page - 1) * this.itemsPerPage;
