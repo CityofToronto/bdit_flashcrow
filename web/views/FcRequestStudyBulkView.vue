@@ -68,7 +68,7 @@
             <template>
               <SetStatusDropdown
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected"
+                :disabled="noRequestsSelected || doSelectionStatusesDiffer"
                 :status-transitions="allStatuses"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
@@ -131,6 +131,7 @@ import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import CancelRequestButton from '@/web/components/requests/status/CancelRequestButton.vue';
 import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
+import _ from 'underscore';
 
 export default {
   name: 'FcRequestStudyBulkView',
@@ -220,6 +221,12 @@ export default {
     },
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
+    },
+    selectedStudyRequestStatuses() {
+      return _.uniq(this.selectedStudyRequests.map(sr => sr.status));
+    },
+    doSelectionStatusesDiffer() {
+      return this.selectedStudyRequestStatuses.length > 1;
     },
     userIsStudyRequestAdmin() {
       return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);

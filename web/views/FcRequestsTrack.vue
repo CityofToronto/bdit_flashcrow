@@ -53,7 +53,7 @@
             <div class="set-status-dropdown">
               <SetStatusDropdown
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected"
+                :disabled="noRequestsSelected || doSelectionStatusesDiffer"
                 :status-transitions="allStatuses"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
@@ -158,6 +158,7 @@ import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
+import _ from 'underscore';
 
 export default {
   name: 'FcRequestsTrack',
@@ -267,6 +268,12 @@ export default {
     },
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
+    },
+    selectedStudyRequestStatuses() {
+      return _.uniq(this.selectedStudyRequests.map(sr => sr.status));
+    },
+    doSelectionStatusesDiffer() {
+      return this.selectedStudyRequestStatuses.length > 1;
     },
     studyRequestsBulk() {
       return this.studyRequestItems
