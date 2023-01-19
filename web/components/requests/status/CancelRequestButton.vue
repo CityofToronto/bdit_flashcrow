@@ -50,22 +50,23 @@ export default {
       type: Number,
       default: 1,
     },
+    projectContext: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     showTooltip() {
       return this.isHovering && this.disabled && this.areRequestsSelected;
     },
     tooltipText() {
-      const single = `You cannot cancel a request that has been dispatched for
+      const nonProject = `You cannot cancel a request that has been dispatched for
         collection. If you have questions, please comment below or contact
         TrafficData@toronto.ca.`;
-      const multiple = `You selected one or more requests that are dispatched
+      const project = `You selected one or more requests that are dispatched
         for collection or were requested by other staff, and cannot be cancelled. To
         cancel, please change your selection or contact TrafficData@toronto.ca.`;
-      return this.isSingleRequest ? single : multiple;
-    },
-    isSingleRequest() {
-      return this.nRequests === 1;
+      return this.projectContext ? project : nonProject;
     },
     areRequestsSelected() {
       return this.nRequests !== 0;
