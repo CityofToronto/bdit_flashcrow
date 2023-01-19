@@ -1,39 +1,46 @@
 <template>
-  <div>
-    <v-menu
-      v-model="showMenu"
-      :close-on-content-click="false">
-      <template v-slot:activator="{ on, attrs }">
-        <FcButton
-          type="secondary"
-          v-bind="attrs"
-          :disabled="disabled"
-          v-on="on">
-          <v-icon v-if="hasCurrentStatus" :color="currentStatus.color" left>
-            mdi-circle-medium
-          </v-icon>
-          <span>Set Status</span>
-          <v-icon right>mdi-menu-down</v-icon>
-        </FcButton>
-      </template>
-      <v-list>
-        <v-list-item v-for="status in statusTransitions" :key="status.name"
-          class="fc-item-study-requests-status"
-          @click="transitionStatus(status)">
-        <v-list-item-title>
-          <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
-          <span>{{ status.text }}</span>
-        </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <CancelStudyRequestConfirmDialog
-      :showDialog="showDialog"
-      :nRequests="nRequests"
-      @cancelConfirmed="cancel"
-      @close="showDialog = false"
-    />
-  </div>
+  <v-tooltip top v-model="showTooltip">
+    <template v-slot:activator="{ attrs }">
+      <div v-bind="attrs"
+        @mouseenter="isHovering = !isHovering"
+        @mouseleave="isHovering = !isHovering">
+        <v-menu
+          v-model="showMenu"
+          :close-on-content-click="false">
+          <template v-slot:activator="{ on, attrs }">
+            <FcButton
+              type="secondary"
+              v-bind="attrs"
+              :disabled="disabled"
+              v-on="on">
+              <v-icon v-if="hasCurrentStatus" :color="currentStatus.color" left>
+                mdi-circle-medium
+              </v-icon>
+              <span>Set Status</span>
+              <v-icon right>mdi-menu-down</v-icon>
+            </FcButton>
+          </template>
+          <v-list>
+            <v-list-item v-for="status in statusTransitions" :key="status.name"
+              class="fc-item-study-requests-status"
+              @click="transitionStatus(status)">
+            <v-list-item-title>
+              <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
+              <span>{{ status.text }}</span>
+            </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <CancelStudyRequestConfirmDialog
+          :showDialog="showDialog"
+          :nRequests="nRequests"
+          @cancelConfirmed="cancel"
+          @close="showDialog = false"
+        />
+      </div>
+    </template>
+    <span class="no-cancel">{{ tooltipText }}</span>
+  </v-tooltip>
 </template>
 
 <script>
@@ -69,9 +76,18 @@ export default {
     return {
       showMenu: false,
       showDialog: false,
+      isHovering: false,
+      tooltipText: `Please select requests with the same status
+        in order to update their statuses.`,
     };
   },
   computed: {
+    showTooltip() {
+      return this.isHovering && this.isForMultipleRequests && this.disabled;
+    },
+    isForMultipleRequests() {
+      return this.nRequests > 1;
+    },
     hasCurrentStatus() {
       return this.currentStatus !== null;
     },
@@ -92,3 +108,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.v-tooltip__content {
+  max-width: 350px !important;
+}
+</style>
