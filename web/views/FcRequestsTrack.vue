@@ -430,39 +430,18 @@ export default {
     async updateSelectedRequestsStatus(nextStatus) {
       const selectedRequests = this.selectedStudyRequests;
       const nSelected = selectedRequests.length;
-      const unchangedStudyRequests = [];
       selectedRequests.forEach((sr) => {
-        const isValidTransition = this.transitionValidator.isValidTransition(sr.status, nextStatus);
-        if (isValidTransition) {
-          // eslint-disable-next-line no-param-reassign
-          sr.status = nextStatus;
-        } else {
-          unchangedStudyRequests.push(sr);
-        }
+        // eslint-disable-next-line no-param-reassign
+        sr.status = nextStatus;
       });
       this.selectedItems = [];
-      const nUnactionable = unchangedStudyRequests.length;
-      const nUpdated = nSelected - nUnactionable;
       await this.updateStudyRequests(selectedRequests);
-      if (nUpdated > 1) {
-        this.setToastInfo(`${nUpdated} requests set to "${nextStatus.text}"`);
-      } else if (nUpdated === 1) {
+      if (nSelected > 1) {
+        this.setToastInfo(`${nSelected} requests set to "${nextStatus.text}"`);
+      } else if (nSelected === 1) {
         this.setToastInfo(`Request #${selectedRequests[0].id} set to "${nextStatus.text}"`);
       }
-      if (nUnactionable > 0) {
-        this.setUnactionableDialog(unchangedStudyRequests, nextStatus, nSelected);
-      }
       await this.loadAsync();
-    },
-    setUnactionableDialog(studyRequestsUnactionable, status, nRequests) {
-      this.setDialog({
-        dialog: 'AlertStudyRequestsUnactionable',
-        dialogData: {
-          studyRequestsUnactionable,
-          status,
-          nRequests,
-        },
-      });
     },
     ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
     ...mapMutations(['setToastInfo', 'setDialog']),

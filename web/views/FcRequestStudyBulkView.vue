@@ -335,27 +335,17 @@ export default {
       this.studyRequestUsers = studyRequestUsers;
     },
     async updateSelectedRequestsStatus(nextStatus) {
-      const unchangedStudyRequests = [];
+      const nSelected = this.selectedRequestsCount;
       this.selectedStudyRequests.forEach((sr) => {
-        const isValidTransition = this.transitionValidator.isValidTransition(sr.status, nextStatus);
-        if (isValidTransition) {
-          // eslint-disable-next-line no-param-reassign
-          sr.status = nextStatus;
-        } else {
-          unchangedStudyRequests.push(sr);
-        }
+        // eslint-disable-next-line no-param-reassign
+        sr.status = nextStatus;
       });
-      const nUnactionable = unchangedStudyRequests.length;
-      const nUpdated = this.selectedRequestsCount - nUnactionable;
       this.loadingItems = true;
       await this.saveStudyRequestBulk(this.studyRequestBulk);
-      if (nUpdated > 1) {
-        this.setToastInfo(`${nUpdated} requests set to "${nextStatus.text}"`);
+      if (nSelected > 1) {
+        this.setToastInfo(`${nSelected} requests set to "${nextStatus.text}"`);
       } else {
         this.setToastInfo(`Request #${this.selectedStudyRequests[0].id} set to "${nextStatus.text}"`);
-      }
-      if (nUnactionable > 0) {
-        this.setUnactionableDialog(unchangedStudyRequests, nextStatus);
       }
       this.reloadPage();
     },
@@ -381,16 +371,6 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.selectedItems = [];
       this.loadingItems = false;
-    },
-    setUnactionableDialog(studyRequestsUnactionable, status) {
-      this.setDialog({
-        dialog: 'AlertStudyRequestsUnactionable',
-        dialogData: {
-          studyRequestsUnactionable,
-          status,
-          nRequests: this.selectedStudyRequests.length,
-        },
-      });
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
