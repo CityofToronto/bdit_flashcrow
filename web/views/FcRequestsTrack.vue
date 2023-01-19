@@ -53,8 +53,8 @@
             <div class="set-status-dropdown">
               <SetStatusDropdown
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected || doSelectionStatusesDiffer"
-                :status-transitions="allStatuses"
+                :disabled="noRequestsSelected || doSelectionStatusesDiffer || !isValidTransitions"
+                :status-transitions="validStatusTransitions"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
             </div>
@@ -128,7 +128,6 @@ import {
   ProjectMode,
   ReportFormat,
   ReportType,
-  StudyRequestStatus,
 } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import {
@@ -289,11 +288,23 @@ export default {
     noRequestsSelected() {
       return this.selectedRequestsCount === 0;
     },
-    allStatuses() {
-      return StudyRequestStatus.enumValues;
-    },
     transitionValidator() {
       return new SrStatusTransitionValidator(this.auth.user.scope);
+    },
+    currentStatus() {
+      let status = false;
+      if (!this.doSelectionStatusesDiffer) [status] = this.selectedStudyRequestStatuses;
+      return status;
+    },
+    validStatusTransitions() {
+      let transitions = [];
+      if (!this.noRequestsSelected && !this.doSelectionStatusesDiffer) {
+        transitions = this.transitionValidator.getRulesForScope(this.currentStatus);
+      }
+      return transitions;
+    },
+    isValidTransitions() {
+      return this.validStatusTransitions.length > 0;
     },
     ...mapGetters('trackRequests', ['filterParamsRequest', 'hasFiltersRequest']),
     ...mapState(['auth']),

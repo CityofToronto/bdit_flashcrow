@@ -68,8 +68,8 @@
             <template>
               <SetStatusDropdown
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected || doSelectionStatusesDiffer"
-                :status-transitions="allStatuses"
+                :disabled="noRequestsSelected || doSelectionStatusesDiffer || !isValidTransitions"
+                :status-transitions="validStatusTransitions"
                 :nRequests="selectedRequestsCount"
                 @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
@@ -231,6 +231,21 @@ export default {
     userIsStudyRequestAdmin() {
       return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
     },
+    currentStatus() {
+      let status = false;
+      if (!this.doSelectionStatusesDiffer) [status] = this.selectedStudyRequestStatuses;
+      return status;
+    },
+    validStatusTransitions() {
+      let transitions = [];
+      if (!this.noRequestsSelected && !this.doSelectionStatusesDiffer) {
+        transitions = this.transitionValidator.getRulesForScope(this.currentStatus);
+      }
+      return transitions;
+    },
+    isValidTransitions() {
+      return this.validStatusTransitions.length > 0;
+    },
     userIsStudyRequester() {
       return this.studyRequesterUserIds.includes(this.auth.user.id);
     },
@@ -266,9 +281,6 @@ export default {
     },
     selectedRequestIds() {
       return this.selectedStudyRequests.map(sr => sr.id);
-    },
-    allStatuses() {
-      return StudyRequestStatus.enumValues;
     },
     studyRequesterUserIds() {
       const ids = [];
