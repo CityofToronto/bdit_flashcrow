@@ -226,5 +226,9 @@ export default {
   & .fc-map {
     min-height: 400px;
   }
+
+  .set-status-dropdown button.fc-button.v-btn {
+    margin-left: 7px;
+  }
 }
 </style>

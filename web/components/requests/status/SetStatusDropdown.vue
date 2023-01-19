@@ -1,7 +1,7 @@
 <template>
   <v-tooltip top v-model="showTooltip">
     <template v-slot:activator="{ attrs }">
-      <div v-bind="attrs"
+      <div v-bind="attrs" class="set-status-dropdown"
         @mouseenter="isHovering = !isHovering"
         @mouseleave="isHovering = !isHovering">
         <v-menu
