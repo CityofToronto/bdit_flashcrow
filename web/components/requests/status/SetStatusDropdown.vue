@@ -30,7 +30,7 @@
                   <div>
                     {{ status.text }}
                   </div>
-                  <div class="sub">Requester and followers will be notified</div>
+                  <div class="sub">Subscribers will be notified</div>
                 </div>
               </v-list-item-title>
               <v-list-item-title v-else>
@@ -125,6 +125,10 @@ export default {
 <style lang="scss">
 .v-tooltip__content {
   max-width: 350px !important;
+}
+
+.v-list-item__title .v-icon {
+  bottom: 1px;
 }
 
 .v-list-item__title.with-subtext {

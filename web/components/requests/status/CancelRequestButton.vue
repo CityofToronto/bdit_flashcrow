@@ -10,7 +10,7 @@
             type="secondary"
             :disabled="disabled"
             @click="showDialog = true">
-            CANCEL
+            CANCEL REQUEST
           </FcButton>
         </div>
       </template>
