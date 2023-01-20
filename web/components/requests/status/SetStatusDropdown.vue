@@ -24,10 +24,19 @@
             <v-list-item v-for="status in statusTransitions" :key="status.name"
               class="fc-item-study-requests-status"
               @click="transitionStatus(status)">
-            <v-list-item-title>
-              <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
-              <span>{{ status.text }}</span>
-            </v-list-item-title>
+              <v-list-item-title v-if="statusTriggersEmails(status)" class="with-subtext">
+                <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
+                <div class="text">
+                  <div>
+                    {{ status.text }}
+                  </div>
+                  <div class="sub">Requester and followers will be notified</div>
+                </div>
+              </v-list-item-title>
+              <v-list-item-title v-else>
+                <v-icon :color="status.color" left>mdi-circle-medium</v-icon>
+                <span>{{ status.text }}</span>
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -39,7 +48,9 @@
         />
       </div>
     </template>
-    <span class="no-cancel">{{ tooltipText }}</span>
+    <span class="no-cancel">
+      Please select requests with the same status in order to update their statuses.
+    </span>
   </v-tooltip>
 </template>
 
@@ -77,8 +88,6 @@ export default {
       showMenu: false,
       showDialog: false,
       isHovering: false,
-      tooltipText: `Please select requests with the same status
-        in order to update their statuses.`,
     };
   },
   computed: {
@@ -105,6 +114,10 @@ export default {
       }
       return false;
     },
+    statusTriggersEmails(status) {
+      const srs = StudyRequestStatus;
+      return status === srs.COMPLETED || status === srs.CANCELLED;
+    },
   },
 };
 </script>
@@ -113,4 +126,23 @@ export default {
 .v-tooltip__content {
   max-width: 350px !important;
 }
+
+.v-list-item__title.with-subtext {
+
+  .v-icon {
+    vertical-align: text-bottom;
+    bottom: 3px;
+  }
+
+  .text {
+    display: inline-block;
+
+    .sub {
+      font-weight: 400;
+      font-size: 12px;
+      color: #757575;
+    }
+  }
+}
+
 </style>
