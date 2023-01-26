@@ -18,9 +18,9 @@
     <v-spacer></v-spacer>
 
     <FcButton
-      v-if="showEdit"
+      v-if="(userIsSrAdmin || userIsStudyRequester) && !isEditing"
       class="ml-8"
-      :disabled="!canEdit || (status !== null && !status.editable)"
+      :disabled="!canEdit"
       type="secondary"
       @click="actionEdit">
       <v-icon color="primary" left>mdi-pencil</v-icon> Edit
@@ -32,7 +32,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
-
+import { StudyRequestStatus } from '@/lib/Constants';
 import { getLocationByCentreline } from '@/lib/api/WebApi';
 import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { bulkStatus } from '@/lib/requests/RequestStudyBulkUtils';
@@ -69,9 +69,34 @@ export default {
     };
   },
   computed: {
+    userIsSrAdmin() {
+      return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
+    },
+    userIsStudyRequester() {
+      let isRequester = false;
+      if (this.studyRequest !== null) isRequester = this.auth.user.id === this.studyRequest.userId;
+      return isRequester;
+    },
     canEdit() {
-      return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN)
-        || this.hasAuthScope(this.AuthScope.STUDY_REQUESTS);
+      const { status } = this;
+      const srs = StudyRequestStatus;
+      let canEdit = false;
+      if (status === null) {
+        canEdit = false;
+      } else if (this.userIsSrAdmin) {
+        if (this.isBulk) {
+          canEdit = true;
+        } else if (status !== srs.CANCELLED && status !== srs.COMPLETED) {
+          canEdit = true;
+        }
+      } else if (this.userIsStudyRequester) {
+        if (this.isBulk) {
+          canEdit = true;
+        } else if (status === srs.REQUESTED || status === srs.CHANGES_NEEDED) {
+          canEdit = true;
+        }
+      }
+      return canEdit;
     },
     isBulk() {
       const { name } = this.$route;
@@ -115,9 +140,13 @@ export default {
       }
       return this.routeBackViewRequest;
     },
-    showEdit() {
+    isEditing() {
       const { name } = this.$route;
-      return name === 'requestStudyBulkView' || name === 'requestStudyView';
+      let isEditing = false;
+      if (name === 'requestStudyBulkEdit' || name === 'requestStudyEdit') {
+        isEditing = true;
+      }
+      return isEditing;
     },
     status() {
       if (this.studyRequest === null) {
