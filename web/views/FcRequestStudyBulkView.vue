@@ -66,11 +66,9 @@
             </v-checkbox>
 
             <template>
-              <SetStatusDropdown
+              <SetStatusDropdownForBulk
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected || doSelectionStatusesDiffer || !isValidTransitions"
-                :status-transitions="validStatusTransitions"
-                :nRequests="selectedRequestsCount"
+                :study-requests="selectedStudyRequests"
                 @transition-status="updateSelectedRequestsStatus" />
               <CancelRequestButton
                 v-else-if="userIsStudyRequester"
@@ -124,7 +122,7 @@ import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
-import SetStatusDropdown from '@/web/components/requests/status/SetStatusDropdown.vue';
+import SetStatusDropdownForBulk from '@/web/components/requests/status/SetStatusDropdownForBulk.vue';
 import FcStatusStudyRequests from '@/web/components/requests/status/FcStatusStudyRequests.vue';
 import FcSummaryStudyRequestBulk
   from '@/web/components/requests/summary/FcSummaryStudyRequestBulk.vue';
@@ -132,7 +130,6 @@ import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import CancelRequestButton from '@/web/components/requests/status/CancelRequestButton.vue';
 import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
-import _ from 'underscore';
 
 export default {
   name: 'FcRequestStudyBulkView',
@@ -147,7 +144,7 @@ export default {
     FcButton,
     FcDataTableRequests,
     FcMap,
-    SetStatusDropdown,
+    SetStatusDropdownForBulk,
     FcNavStudyRequest,
     FcProgressLinear,
     FcStatusStudyRequests,
@@ -223,29 +220,8 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
-    selectedStudyRequestStatuses() {
-      return _.uniq(this.selectedStudyRequests.map(sr => sr.status));
-    },
-    doSelectionStatusesDiffer() {
-      return this.selectedStudyRequestStatuses.length > 1;
-    },
     userIsStudyRequestAdmin() {
       return this.hasAuthScope(this.AuthScope.STUDY_REQUESTS_ADMIN);
-    },
-    currentStatus() {
-      let status = false;
-      if (!this.doSelectionStatusesDiffer) [status] = this.selectedStudyRequestStatuses;
-      return status;
-    },
-    validStatusTransitions() {
-      let transitions = [];
-      if (!this.noRequestsSelected && !this.doSelectionStatusesDiffer) {
-        transitions = this.transitionValidator.getRulesForScope(this.currentStatus);
-      }
-      return transitions;
-    },
-    isValidTransitions() {
-      return this.validStatusTransitions.length > 0;
     },
     userIsStudyRequester() {
       return this.studyRequesterUserIds.includes(this.auth.user.id);

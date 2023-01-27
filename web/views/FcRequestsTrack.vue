@@ -51,12 +51,11 @@
               type="secondary"
               @action-download="actionDownload" />
             <div class="set-status-dropdown">
-              <SetStatusDropdown
+              <SetStatusDropdownForBulk
                 v-if="userIsStudyRequestAdmin"
-                :disabled="noRequestsSelected || doSelectionStatusesDiffer || !isValidTransitions"
-                :status-transitions="validStatusTransitions"
-                :nRequests="selectedRequestsCount"
-                @transition-status="updateSelectedRequestsStatus" />
+                :study-requests="selectedStudyRequests"
+                @transition-status="updateSelectedRequestsStatus"
+              />
             </div>
             <FcMenuStudyRequestsProjectMode
               button-class="ml-2"
@@ -152,12 +151,10 @@ import FcStudyRequestFilterShortcuts
   from '@/web/components/requests/FcStudyRequestFilterShortcuts.vue';
 import FcMenuDownloadTrackRequests
   from '@/web/components/requests/download/FcMenuDownloadTrackRequests.vue';
-import SetStatusDropdown from '@/web/components/requests/status/SetStatusDropdown.vue';
+import SetStatusDropdownForBulk from '@/web/components/requests/status/SetStatusDropdownForBulk.vue';
 import FcMenuStudyRequestsProjectMode
   from '@/web/components/requests/status/FcMenuStudyRequestsProjectMode.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import SrStatusTransitionValidator from '@/lib/SrStatusTransitionValidator';
-import _ from 'underscore';
 
 export default {
   name: 'FcRequestsTrack',
@@ -171,7 +168,7 @@ export default {
     FcDialogProjectMode,
     FcMenuDownloadTrackRequests,
     FcMenuStudyRequestsProjectMode,
-    SetStatusDropdown,
+    SetStatusDropdownForBulk,
     FcProgressCircular,
     FcSearchBarRequests,
     FcStudyRequestFilters,
@@ -268,12 +265,6 @@ export default {
     selectedStudyRequests() {
       return this.selectedItems.map(({ studyRequest }) => studyRequest);
     },
-    selectedStudyRequestStatuses() {
-      return _.uniq(this.selectedStudyRequests.map(sr => sr.status));
-    },
-    doSelectionStatusesDiffer() {
-      return this.selectedStudyRequestStatuses.length > 1;
-    },
     studyRequestsBulk() {
       return this.studyRequestItems
         .filter(({ bulk }) => bulk)
@@ -281,30 +272,6 @@ export default {
     },
     userIsStudyRequestAdmin() {
       return this.hasAuthScope(AuthScope.STUDY_REQUESTS_ADMIN);
-    },
-    selectedRequestsCount() {
-      return this.selectedStudyRequests.length;
-    },
-    noRequestsSelected() {
-      return this.selectedRequestsCount === 0;
-    },
-    transitionValidator() {
-      return new SrStatusTransitionValidator(this.auth.user.scope);
-    },
-    currentStatus() {
-      let status = false;
-      if (!this.doSelectionStatusesDiffer) [status] = this.selectedStudyRequestStatuses;
-      return status;
-    },
-    validStatusTransitions() {
-      let transitions = [];
-      if (!this.noRequestsSelected && !this.doSelectionStatusesDiffer) {
-        transitions = this.transitionValidator.getRulesForScope(this.currentStatus);
-      }
-      return transitions;
-    },
-    isValidTransitions() {
-      return this.validStatusTransitions.length > 0;
     },
     ...mapGetters('trackRequests', ['filterParamsRequest', 'hasFiltersRequest']),
     ...mapState(['auth']),
