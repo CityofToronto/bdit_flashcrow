@@ -328,8 +328,11 @@ export default {
       this.map.on('load', () => {
         this.updateLocationsSource();
         this.updateLocationsMarkersSource();
-        if (this.locationsState === 0) this.map.easeTo(this.defaultEaseOpts);
-
+        if (this.locationsState === 0) {
+          this.map.easeTo(this.defaultEaseOpts);
+        } else {
+          this.easeToLocationbByMode();
+        }
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
@@ -388,12 +391,8 @@ export default {
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
     },
-    locationsState(locationsState) {
-      if (this.easeToLocationMode === 'all') {
-        this.easeToLocationsState(locationsState);
-      } else if (this.easeToLocationMode === 'single') {
-        this.easeToLocationsState([locationsState[locationsState.length - 1]]);
-      }
+    locationsState() {
+      this.easeToLocationbByMode();
     },
     mapStyle() {
       if (this.map === null) {
@@ -413,6 +412,14 @@ export default {
     },
   },
   methods: {
+    easeToLocationbByMode() {
+      const locations = this.locationsState;
+      if (this.easeToLocationMode === 'all') {
+        this.easeToLocationsState(locations);
+      } else if (this.easeToLocationMode === 'single') {
+        this.easeToLocationsState([locations[locations.length - 1]]);
+      }
+    },
     actionOpenGoogleMaps() {
       if (this.map === null) {
         return;
