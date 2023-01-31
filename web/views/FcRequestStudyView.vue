@@ -5,7 +5,8 @@
       :study-request-bulk-name="studyRequestBulkName">
       <template v-if="studyRequest !== null">
         <SetStatusDropdown
-          v-if="userIsStudyRequestAdmin && isAnyValidTransitions"
+          v-if="userIsStudyRequestAdmin"
+          :disabled="!isAnyValidTransitions"
           :currentStatus="currentStatus"
           :statusTransitions="validStatusTransitions"
           @transition-status="updateStatus">
