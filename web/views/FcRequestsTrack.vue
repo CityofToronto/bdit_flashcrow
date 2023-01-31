@@ -419,13 +419,14 @@ export default {
 </script>
 
 <style lang="scss">
-.set-status-dropdown {
-  padding-left: 8px;
-}
 .fc-requests-track {
   background-color: var(--v-shading-base);
   max-height: var(--full-height);
   width: 100%;
+
+  .set-status-dropdown {
+    padding-left: 8px;
+  }
 
   & .fc-requests-track-card {
     height: calc(100% - 4px);
