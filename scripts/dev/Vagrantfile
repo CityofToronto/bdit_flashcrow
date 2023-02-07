@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
   # 90xx: DEBUGGING / PROFILING / DOCUMENTATION
 
   # npm run docs:js
-  config.vm.network "forwarded_port", guest: 9000, host: 9000
+  # config.vm.network "forwarded_port", guest: 9000, host: 9000
   # npm run frontend [webpack-bundle-analyzer]
   config.vm.network "forwarded_port", guest: 9080, host: 9080
   # npm run backend:inspect
