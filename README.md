@@ -15,7 +15,6 @@ To contact the MOVE team:
 | --- | --- | --- |
 | You have a question about development, deployment, security, or other technical aspects of MOVE's web application | Web Application Developer | [Leon Lukashevsky](mailto:Leon.Lukashevsky@toronto.ca) |
 | You have a question about development, deployment, security, or other technical aspects of MOVE's data infrastructure | Civic Data Engineer | [Peter Lyons](mailto:Peter.Lyons@toronto.ca) |
-| You have a question related to MOVE design practices, usability, or accessibility | Design Lead | [Shine Chaudhuri](mailto:Shine.Chaudhuri@toronto.ca) |
 | You have a question related to MOVE user testing, upcoming launches, or roadmaps | Product Manager | [Maddy Ewins](mailto:Maddy.Ewins@toronto.ca) |
 | Your question isn't captured above, or you're not sure who to contact | Team Inbox | [MOVE Team](mailto:move-team@toronto.ca) |
 
