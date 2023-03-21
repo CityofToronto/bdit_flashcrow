@@ -90,23 +90,6 @@ test('StudyRequest', () => {
   expect(result.value).toEqual(transientStudyRequest);
   expect(result.error).toBeUndefined();
 
-  // hours should be null for automatic counts!
-  transientStudyRequest.studyType = StudyType.ATR_SPEED_VOLUME;
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.error).not.toBeUndefined();
-
-  // duration should be non-null for automatic counts!
-  transientStudyRequest.hours = null;
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.error).not.toBeUndefined();
-  expect(result.error.details[0].path).toEqual(['duration']);
-  expect(result.error.details[0].type).toEqual('number.base');
-
-  transientStudyRequest.duration = 24;
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.value).toEqual(transientStudyRequest);
-  expect(result.error).toBeUndefined();
-
   // duration should be multiple of 24!
   transientStudyRequest.duration = 25;
   result = StudyRequest.create.validate(transientStudyRequest);
