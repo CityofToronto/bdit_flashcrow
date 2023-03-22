@@ -103,17 +103,4 @@ test('StudyRequest', () => {
   expect(result.error).not.toBeUndefined();
   expect(result.error.details[0].path).toEqual(['duration']);
   expect(result.error.details[0].type).toEqual('any.custom');
-
-  // other study types should have long-form study type text!
-  transientStudyRequest.duration = 72;
-  transientStudyRequest.studyType = StudyType.OTHER_AUTOMATIC;
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.error).not.toBeUndefined();
-  expect(result.error.details[0].path).toEqual(['studyTypeOther']);
-  expect(result.error.details[0].type).toEqual('string.base');
-
-  transientStudyRequest.studyTypeOther = 'just your regular, ordinary study type';
-  result = StudyRequest.create.validate(transientStudyRequest);
-  expect(result.value).toEqual(transientStudyRequest);
-  expect(result.error).toBeUndefined();
 });

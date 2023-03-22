@@ -67,16 +67,14 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
     };
     const studyTypes = getLocationStudyTypes(location);
     expect(studyTypes).toBeInstanceOf(Array);
-    expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_AUTOMATIC);
-    expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_MANUAL);
+    expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER);
   });
   const location = {
     centrelineType: CentrelineType.SEGMENT,
     featureCode: null,
   };
   expect(getLocationStudyTypes(location)).toBeInstanceOf(Array);
-  expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_AUTOMATIC);
-  expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER_MANUAL);
+  expect(getLocationStudyTypes(location)).not.toContain(StudyType.OTHER);
 });
 
 test('CentrelineUtils.getLocationsCorridorDescription', () => {

@@ -168,7 +168,7 @@ export default {
       );
       return [
         ...locationsStudyTypes,
-        StudyType.OTHER_MANUAL,
+        StudyType.OTHER,
       ];
     },
     selectAll: {

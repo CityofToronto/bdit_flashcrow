@@ -205,7 +205,7 @@ test('StudyRequestDAO.update [study details]', async () => {
   expect(fetchedStudyRequest).toEqual(persistedStudyRequest);
 
   // update study type: other
-  persistedStudyRequest.studyType = StudyType.OTHER_MANUAL;
+  persistedStudyRequest.studyType = StudyType.OTHER;
   persistedStudyRequest.studyTypeOther = 'counting domesticated chickens crossing the road';
   persistedStudyRequest = await StudyRequestDAO.update(persistedStudyRequest);
   fetchedStudyRequest = await StudyRequestDAO.byId(persistedStudyRequest.id);
