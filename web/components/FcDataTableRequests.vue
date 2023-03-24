@@ -109,14 +109,13 @@
           left>
           <template v-slot:activator="{ on }">
             <span v-on="on">
-              {{item.studyRequest.studyType.label}}
-              <span class="sr-only">({{item.studyRequest.studyTypeOther}})</span>
+              {{getStudyTypeOtherLabel(item)}}
             </span>
           </template>
-          <span>{{item.studyRequest.studyTypeOther}}</span>
+          <span>{{getStudyTypeOtherLabel(item, false)}}</span>
         </FcTooltip>
         <span v-else>
-          {{item.studyRequest.studyType.label}}
+          {{getStudyType(item)}}
         </span>
       </div>
     </template>
@@ -333,6 +332,16 @@ export default {
     },
     actionUpdateItem(item) {
       this.$emit('update-item', item);
+    },
+    getStudyType(item) {
+      return item.studyRequest.studyType.label;
+    },
+    getStudyTypeOtherLabel(item, full = true) {
+      const commonLabel = this.getStudyType(item);
+      const customLabel = item.studyRequest.studyTypeOther.trim();
+      let label = `${commonLabel} (${customLabel})`;
+      if (!full) label = customLabel;
+      return label;
     },
     ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
   },
