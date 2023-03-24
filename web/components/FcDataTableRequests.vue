@@ -104,16 +104,9 @@
             class="ml-1"
             :n="item.studyRequestBulk.studyRequests.length" />
         </span>
-        <FcTooltip
-          v-else-if="item.studyRequest.studyType.other"
-          left>
-          <template v-slot:activator="{ on }">
-            <span v-on="on">
-              {{getStudyTypeOtherLabel(item)}}
-            </span>
-          </template>
-          <span>{{getStudyTypeOtherLabel(item, false)}}</span>
-        </FcTooltip>
+        <span  v-else-if="item.studyRequest.studyType.other">
+          {{getStudyTypeOtherLabel(item)}}
+        </span>
         <span v-else>
           {{getStudyType(item)}}
         </span>
