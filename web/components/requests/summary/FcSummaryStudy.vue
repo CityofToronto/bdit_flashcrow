@@ -12,7 +12,7 @@
       <h4 class="headline font-weight-bold">
         <span>{{study.studyType.label}}</span>
         <span v-if="study.studyType.other">
-          ({{study.studyTypeOther}})
+          ({{study.studyTypeOther.trim()}})
         </span>
       </h4>
     </v-card-title>

@@ -11,7 +11,7 @@
         <strong>
           {{studyRequest.studyType.label}}
           <span v-if="studyRequest.studyType.other">
-            ({{studyRequest.studyTypeOther}})
+            ({{studyRequest.studyTypeOther.trim()}})
           </span>
         </strong>
         has been requested on {{studyRequest.createdAt | date}}.
