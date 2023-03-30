@@ -37,7 +37,7 @@
             </v-col>
             <v-col class="my-0 py-2" cols="6">
               <FcStudyRequestDuration
-                v-if="studyRequest.studyType.automatic"
+                v-if="studyRequest.studyType.isMultiDay"
                 dense
                 :v="v" />
               <FcStudyRequestHours

@@ -32,7 +32,7 @@
             </dd>
           </v-col>
           <v-col cols="6">
-            <template v-if="study.studyType.automatic">
+            <template v-if="study.studyType.isMultiDay">
               <dt class="subtitle-1">Study Duration</dt>
               <dd class="mt-1 display-1">
                 {{study.duration | durationHuman}}
@@ -92,7 +92,7 @@ export default {
       const durationInDays = duration / 24;
       if (daysOfWeek.length !== 1 || consecutiveStudyDays !== durationInDays) {
         message = 'The study will be performed on one of these days.';
-        if (studyType.automatic && durationInDays !== 1) {
+        if (studyType.isMultiDay && durationInDays !== 1) {
           message = `The study will be performed across ${durationInDays} consecutive days.`;
         }
       }

@@ -25,7 +25,7 @@
               </v-col>
               <v-col cols="6">
                 <FcStudyRequestDuration
-                  v-if="internalValue.studyType.automatic"
+                  v-if="internalValue.studyType.isMultiDay"
                   :v="$v.internalValue" />
                 <FcStudyRequestHours
                   v-else

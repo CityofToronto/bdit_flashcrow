@@ -60,7 +60,7 @@ export default {
       const studyType = this.v.studyType.$model;
       const durationInDays = this.v.duration.$model / 24;
       let message = 'The study will be performed on one of these days.';
-      if (studyType !== null && studyType.automatic && durationInDays !== 1) {
+      if (studyType !== null && studyType.isMultiDay && durationInDays !== 1) {
         message = `The study will be performed across ${durationInDays} consecutive days.`;
       }
       return [message];

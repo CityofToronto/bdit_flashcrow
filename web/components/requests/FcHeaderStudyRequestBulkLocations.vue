@@ -202,7 +202,7 @@ export default {
       }
       return this.internalValue.every((i) => {
         const { studyType } = this.studyRequests[i];
-        return studyType !== null && studyType.automatic;
+        return studyType !== null && studyType.isMultiDay;
       });
     },
     showHours() {
@@ -211,7 +211,7 @@ export default {
       }
       return this.internalValue.every((i) => {
         const { studyType } = this.studyRequests[i];
-        return studyType !== null && !studyType.automatic;
+        return studyType !== null && !studyType.isMultiDay;
       });
     },
   },
