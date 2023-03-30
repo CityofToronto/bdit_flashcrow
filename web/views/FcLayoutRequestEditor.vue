@@ -1,11 +1,11 @@
 <template>
   <div class="fc-layout-request-editor fill-height">
     <div class="fc-pane-wrapper d-flex fill-height">
-      <div class="fc-drawer flex-grow-1 flex-shrink-0">
+      <div class="fc-drawer flex-shrink-0">
         <router-view
           @action-focus-map="actionFocusMap"></router-view>
       </div>
-      <div class="flex-grow-1 flex-shrink-0">
+      <div class="flex-shrink-0 map">
         <FcMap
           class="fill-height"
           :layers="{
@@ -157,11 +157,15 @@ export default {
 
   & > .fc-pane-wrapper > div {
     flex-basis: 0;
-    width: 50%;
   }
 
   & > .fc-pane-wrapper > .fc-drawer {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
+    flex-grow: 2;
+  }
+
+  & > .fc-pane-wrapper > .map {
+    flex-grow: 1;
   }
 }
 
