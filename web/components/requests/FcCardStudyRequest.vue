@@ -19,39 +19,7 @@
     </v-card-title>
 
     <v-card-text class="pb-0">
-      <fieldset>
-        <legend class="sr-only">Study Type for Request</legend>
-
-        <v-row class="mt-1">
-          <v-col class="my-0 py-2" cols="8">
-            <FcStudyRequestStudyType
-              dense
-              :location="location"
-              :v="v" />
-          </v-col>
-          <template v-if="studyRequest.studyType !== null">
-            <v-col class="my-0 py-2" cols="6">
-              <FcStudyRequestDaysOfWeek
-                dense
-                :v="v" />
-            </v-col>
-            <v-col class="my-0 py-2" cols="6">
-              <FcStudyRequestDuration
-                v-if="studyRequest.studyType.isMultiDay"
-                dense
-                :v="v" />
-              <FcStudyRequestHours
-                v-else
-                dense
-                :v="v" />
-            </v-col>
-          </template>
-          <v-col class="my-0 pt-0" cols="12">
-            <FcStudyRequestNotes
-              :v="v" />
-          </v-col>
-        </v-row>
-      </fieldset>
+      <StudyRequestForm :v="v" :location="location" />
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -69,23 +37,14 @@ import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
-import FcStudyRequestDaysOfWeek
-  from '@/web/components/requests/fields/FcStudyRequestDaysOfWeek.vue';
-import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
-import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
-import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
-import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
+import StudyRequestForm from '@/web/components/requests/StudyRequestForm.vue';
 
 export default {
   name: 'FcCardStudyRequest',
   components: {
+    StudyRequestForm,
     FcButton,
     FcIconLocationMulti,
-    FcStudyRequestDaysOfWeek,
-    FcStudyRequestDuration,
-    FcStudyRequestHours,
-    FcStudyRequestNotes,
-    FcStudyRequestStudyType,
     FcTextMostRecent,
   },
   props: {
