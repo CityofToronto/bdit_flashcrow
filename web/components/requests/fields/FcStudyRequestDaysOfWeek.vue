@@ -5,7 +5,7 @@
     hide-details="auto"
     :items="itemsDaysOfWeek"
     :disabled="isDurationInWeeks"
-    label="Study Days"
+    :label="label"
     :messages="messagesDaysOfWeek"
     multiple
     outlined
@@ -31,6 +31,12 @@ export default {
     return { itemsDaysOfWeek };
   },
   computed: {
+    studyType() {
+      return this.v.studyType.$model;
+    },
+    isMultiDayStudy() {
+      return this.studyType.isMultiDay;
+    },
     errorMessagesDaysOfWeek() {
       const errors = [];
       if (!this.v.daysOfWeek.$dirty && !this.v.duration.$dirty) {
@@ -57,10 +63,9 @@ export default {
       },
     },
     messagesDaysOfWeek() {
-      const studyType = this.v.studyType.$model;
       const durationInDays = this.v.duration.$model / 24;
       let message = 'The study will be performed on one of these days.';
-      if (studyType !== null && studyType.isMultiDay && durationInDays !== 1) {
+      if (this.studyType !== null && this.isMultiDayStudy && durationInDays !== 1) {
         message = `The study will be performed across ${durationInDays} consecutive days.`;
       }
       return [message];
@@ -73,6 +78,10 @@ export default {
         && studyDuration !== 0
         && studyDuration % weekInHours === 0) isDurationInWeeks = true;
       return isDurationInWeeks;
+    },
+    label() {
+      const partA = this.isMultiDayStudy ? 'Day(s)' : 'Day';
+      return `${partA} of Week`;
     },
   },
   watch: {

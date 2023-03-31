@@ -5,7 +5,7 @@
       :error-messages="errorMessagesStudyType"
       hide-details="auto"
       :items="itemsStudyType"
-      label="Study Type"
+      label="Type"
       :of-type="StudyType"
       outlined
       v-bind="$attrs" />

@@ -3,7 +3,7 @@
     v-model="v.hours.$model"
     hide-details="auto"
     item-text="description"
-    label="Study Hours"
+    label="Hours"
     :messages="messagesHours"
     :of-type="StudyHours"
     outlined
