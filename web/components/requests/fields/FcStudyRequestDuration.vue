@@ -3,6 +3,7 @@
     v-model="v.duration.$model"
     hide-details="auto"
     :items="itemsDuration"
+    :disabled="isSingleDayStudy"
     label="Duration"
     :messages="messagesDuration"
     outlined
@@ -10,7 +11,6 @@
 </template>
 
 <script>
-import { numConsecutiveDaysOfWeek } from '@/lib/time/TimeUtils';
 
 export default {
   name: 'FcStudyRequestDuration',
@@ -30,19 +30,19 @@ export default {
     return { itemsDuration };
   },
   computed: {
+    studyType() {
+      return this.v.studyType.$model;
+    },
+    isSingleDayStudy() {
+      return !this.studyType.isMultiDay;
+    },
     messagesDuration() {
       const duration = this.v.duration.$model;
-      if (duration === null) {
+      if (duration === null || !this.isMultiDayStudy) {
         return [];
       }
       return [`${duration} hours`];
     },
-  },
-  created() {
-    const daysOfWeek = this.v.daysOfWeek.$model;
-    const n = numConsecutiveDaysOfWeek(daysOfWeek);
-    this.v.duration.$model = n * 24;
-    this.v.hours.$model = null;
   },
 };
 </script>
