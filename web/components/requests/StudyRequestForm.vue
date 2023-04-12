@@ -19,8 +19,14 @@
       </v-col>
       <v-col class="my-0 py-2" cols="4">
         <FcStudyRequestDaysOfWeek
+          v-if="isMultiDayStudy"
           dense
           :v="v" />
+        <SrDayOptionsInput
+          v-else
+          dense
+          :v="v"
+        />
       </v-col>
       <v-col class="my-0 py-2" cols="4">
         <FcStudyRequestHours
@@ -39,6 +45,8 @@
 <script>
 import FcStudyRequestDaysOfWeek
   from '@/web/components/requests/fields/FcStudyRequestDaysOfWeek.vue';
+import SrDayOptionsInput
+  from '@/web/components/requests/fields/SrDayOptionsInput.vue';
 import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequestDuration.vue';
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
@@ -49,6 +57,7 @@ export default {
   name: 'StudyRequestForm',
   components: {
     FcStudyRequestDaysOfWeek,
+    SrDayOptionsInput,
     FcStudyRequestDuration,
     FcStudyRequestHours,
     FcStudyRequestNotes,
@@ -62,6 +71,14 @@ export default {
     return {
       REQUEST_STUDY_TIME_TO_FULFILL,
     };
+  },
+  computed: {
+    studyType() {
+      return this.v.studyType.$model;
+    },
+    isMultiDayStudy() {
+      return this.studyType.isMultiDay;
+    },
   },
 };
 </script>
