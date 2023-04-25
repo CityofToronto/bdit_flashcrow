@@ -3,6 +3,7 @@
     class='day-options'
     v-model="modelValue"
     :items="dayValues"
+    :messages="inputCaption"
     label="Day Options"
     :menu-props="{ closeOnContentClick: true, maxHeight: 206 }"
     multiple
@@ -117,6 +118,13 @@ export default {
     isSpecificDaySelected() {
       return this.modelValue.length === 1;
     },
+    inputCaption() {
+      let caption = '';
+      if (!this.isSpecificDaySelected) {
+        caption = this.getAlternativeDaysOptionItemSubtitleByFirstValue(this.modelValue[0]);
+      }
+      return caption;
+    },
   },
   methods: {
     getAlternativeDaysOptionItemLabel(index) {
@@ -130,6 +138,13 @@ export default {
       const options = this.alternativeDaysOptionList;
       if (index < options.length) subtitle = options[index].subtitle;
       return subtitle;
+    },
+    getAlternativeDaysOptionItemSubtitleByFirstValue(value) {
+      const optionItem = this.alternativeDaysOptionList.find((item) => {
+        const firstValue = item.value[0];
+        return firstValue === value;
+      });
+      return optionItem.subtitle;
     },
     getAlternativeDaysOptionItemValue(index) {
       let value = null;
