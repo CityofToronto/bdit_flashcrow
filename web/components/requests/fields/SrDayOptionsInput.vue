@@ -4,7 +4,7 @@
     v-model="modelValue"
     :items="dayValues"
     label="Day Options"
-    :menu-props="{ closeOnContentClick: true, maxHeight: 'fit-content' }"
+    :menu-props="{ closeOnContentClick: true, maxHeight: 206 }"
     multiple
     v-bind="$attrs"
     outlined>
