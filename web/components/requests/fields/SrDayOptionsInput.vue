@@ -1,5 +1,6 @@
 <template>
   <v-select
+    class='day-options'
     v-model="modelValue"
     :items="dayValues"
     label="Day Options"
@@ -167,6 +168,12 @@ export default {
 </script>
 
 <style>
+
+  .day-options .v-select__selections span {
+    max-width: 180px;
+    white-space: nowrap;
+  }
+
   .blank.alternative-days-option {
     display: none !important;
   }
