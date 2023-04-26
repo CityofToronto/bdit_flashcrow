@@ -3,28 +3,28 @@
     class='day-options'
     v-model="modelValue"
     :items="dayValues"
-    :messages="inputCaption"
+    :messages="selectedItemSubtitle"
     label="Day Options"
     :menu-props="{ closeOnContentClick: true, maxHeight: 206 }"
     multiple
     v-bind="$attrs"
     outlined>
-    <template v-slot:selection="{ item, index }">
+    <template v-slot:selection="{ index }">
       <span v-if="index === 0">
-        {{ getSelectionLabelFromValue(item) }}
+        {{ selectedItemTitle }}
       </span>
     </template>
     <template v-slot:item="{ item }">
       <v-list-item
-        @click="modelValue = getAlternativeDaysOptionItemValue(item)"
-        :class="{ blank: isBlankAlternativeDaysOption(item)}"
+        @click="modelValue = alternativeDaysOptionItemByIndex(item).value"
+        :class="{ blank: alternativeDaysOptionItemByIndex(item).value === null}"
         class='alternative-days-option'>
         <v-list-item-content>
           <v-list-item-title>
-            {{ getAlternativeDaysOptionItemLabel(item) }}
+            {{ alternativeDaysOptionItemByIndex(item).text }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            {{ getAlternativeDaysOptionItemSubtitle(item) }}
+            {{ alternativeDaysOptionItemByIndex(item).subtitle }}
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -118,72 +118,46 @@ export default {
     isSpecificDaySelected() {
       return this.modelValue.length === 1;
     },
-    inputCaption() {
-      let caption = '';
-      if (!this.isSpecificDaySelected) {
-        caption = this.getAlternativeDaysOptionItemSubtitleByFirstValue(this.modelValue[0]);
+    selectedOptionItem() {
+      const currentValue = this.modelValue;
+      let item = {
+        text: '',
+        subtitle: '',
+      };
+      if (this.isSpecificDaySelected) {
+        item = this.specificDayOptionsList.find(i => i.value[0] === currentValue[0]);
+      } else {
+        item = this.alternativeDaysOptionList.find(i => i.value.length === currentValue.length);
       }
-      return caption;
+      return item;
+    },
+    selectedItemTitle() {
+      return this.selectedOptionItem.text;
+    },
+    selectedItemSubtitle() {
+      let subtitle = '';
+      if (!this.isSpecificDaySelected) {
+        subtitle = this.selectedOptionItem.subtitle;
+      }
+      return subtitle;
     },
   },
   methods: {
-    getAlternativeDaysOptionItemLabel(index) {
-      let label = '';
+    alternativeDaysOptionItemByIndex(index) {
+      let item = {
+        text: '',
+        subtitle: '',
+        value: null,
+      };
       const options = this.alternativeDaysOptionList;
-      if (index < options.length) label = options[index].text;
-      return label;
-    },
-    getAlternativeDaysOptionItemSubtitle(index) {
-      let subtitle = '';
-      const options = this.alternativeDaysOptionList;
-      if (index < options.length) subtitle = options[index].subtitle;
-      return subtitle;
-    },
-    getAlternativeDaysOptionItemSubtitleByFirstValue(value) {
-      const optionItem = this.alternativeDaysOptionList.find((item) => {
-        const firstValue = item.value[0];
-        return firstValue === value;
-      });
-      return optionItem.subtitle;
-    },
-    getAlternativeDaysOptionItemValue(index) {
-      let value = null;
-      const options = this.alternativeDaysOptionList;
-      if (index < options.length) value = options[index].value;
-      return value;
-    },
-    isBlankAlternativeDaysOption(index) {
-      return this.getAlternativeDaysOptionItemLabel(index) === '';
-    },
-    getSelectionLabelFromValue(value) {
-      let label = '';
-      if (this.isSpecificDaySelected) {
-        label = this.getSpecificDayLabelForValue(value);
-      } else {
-        label = this.getAlternativeDaysLabelByFirstValue(value);
-      }
-      return label;
-    },
-    getAlternativeDaysLabelByFirstValue(value) {
-      const optionItem = this.alternativeDaysOptionList.find((item) => {
-        const firstValue = item.value[0];
-        return firstValue === value;
-      });
-      return optionItem.text;
-    },
-    getSpecificDayLabelForValue(value) {
-      const optionItem = this.specificDayOptionsList.find((item) => {
-        const itemValue = item.value[0];
-        return itemValue === value;
-      });
-      return optionItem.text;
+      if (index < options.length) item = options[index];
+      return item;
     },
   },
 };
 </script>
 
 <style>
-
   .day-options .v-select__selections span {
     max-width: 180px;
     white-space: nowrap;
