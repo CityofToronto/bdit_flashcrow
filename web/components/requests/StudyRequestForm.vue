@@ -80,5 +80,11 @@ export default {
       return this.studyType.isMultiDay;
     },
   },
+  watch: {
+    isMultiDayStudy(newVal) {
+      this.v.duration.$model = (newVal ? 72 : 24);
+      this.v.daysOfWeek.$model = [2, 3, 4];
+    },
+  },
 };
 </script>
