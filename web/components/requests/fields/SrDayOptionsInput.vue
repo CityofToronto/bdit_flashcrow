@@ -159,7 +159,7 @@ export default {
 
 <style>
   .day-options .v-select__selections span {
-    max-width: 180px;
+    max-width: 170px;
     white-space: nowrap;
   }
 
