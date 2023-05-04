@@ -1,37 +1,38 @@
 <template>
-  <FcSelectEnum
-    v-model="v.hours.$model"
-    hide-details="auto"
+  <v-select
+    v-model="internalValue"
+    :items="hourOptions"
     item-text="description"
-    label="Hours"
-    :messages="messagesHours"
-    :of-type="StudyHours"
+    item-value="name"
     outlined
+    label="Hours"
+    :messages="selectedTimes"
     v-bind="$attrs" />
 </template>
 
 <script>
 import { StudyHours } from '@/lib/Constants';
-import FcSelectEnum from '@/web/components/inputs/FcSelectEnum.vue';
 
 export default {
   name: 'FcStudyRequestHours',
-  components: {
-    FcSelectEnum,
-  },
   props: {
     v: Object,
   },
-  data() {
-    return { StudyHours };
-  },
   computed: {
-    messagesHours() {
-      const hours = this.v.hours.$model;
-      if (hours === null) {
-        return [];
-      }
-      return hours.hint;
+    hourOptions() {
+      const options = StudyHours.enumValues;
+      return options;
+    },
+    selectedTimes() {
+      return this.v.hours.$model.hint;
+    },
+    internalValue: {
+      get() {
+        return this.v.hours.$model.name;
+      },
+      set(val) {
+        this.v.hours.$model = StudyHours.enumValueOf(val);
+      },
     },
   },
 };
