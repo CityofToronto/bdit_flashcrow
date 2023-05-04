@@ -59,6 +59,7 @@ import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequest
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
 import { REQUEST_STUDY_TIME_TO_FULFILL } from '@/lib/i18n/Strings';
+import { StudyHours } from '@/lib/Constants';
 
 export default {
   name: 'StudyRequestForm',
@@ -91,6 +92,7 @@ export default {
     isMultiDayStudy(newVal) {
       this.v.duration.$model = (newVal ? 72 : 24);
       this.v.daysOfWeek.$model = [2, 3, 4];
+      this.v.hours.$model = (newVal ? null : StudyHours.ROUTINE);
     },
   },
 };
