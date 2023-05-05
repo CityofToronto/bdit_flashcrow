@@ -20,7 +20,9 @@ export default {
   },
   computed: {
     hourOptions() {
-      const options = StudyHours.enumValues;
+      const options = StudyHours.enumValues.filter(
+        option => this.hourOptionsByStudyType.includes(option.name),
+      );
       return options;
     },
     store: {
@@ -40,7 +42,15 @@ export default {
       },
     },
     selectedTimes() {
-      return this.store.hint;
+      let hint = '';
+      if (!this.studyType.other) hint = this.store.hint;
+      return hint;
+    },
+    hourOptionsByStudyType() {
+      return this.studyType.hourOptions;
+    },
+    studyType() {
+      return this.v.studyType.$model;
     },
   },
 };
