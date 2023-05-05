@@ -1,6 +1,6 @@
 <template>
   <v-select
-    v-model="internalValue"
+    v-model="storeEnumToStrInterface"
     :items="hourOptions"
     item-text="description"
     item-value="name"
@@ -23,16 +23,24 @@ export default {
       const options = StudyHours.enumValues;
       return options;
     },
-    selectedTimes() {
-      return this.v.hours.$model.hint;
-    },
-    internalValue: {
+    store: {
       get() {
-        return this.v.hours.$model.name;
+        return this.v.hours.$model;
       },
       set(val) {
-        this.v.hours.$model = StudyHours.enumValueOf(val);
+        this.v.hours.$model = val;
       },
+    },
+    storeEnumToStrInterface: {
+      get() {
+        return this.store.name;
+      },
+      set(val) {
+        this.store = StudyHours.enumValueOf(val);
+      },
+    },
+    selectedTimes() {
+      return this.store.hint;
     },
   },
 };
