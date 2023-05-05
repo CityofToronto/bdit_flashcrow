@@ -4,6 +4,7 @@
     :items="hourOptions"
     item-text="description"
     item-value="name"
+    :disabled="isTypeOther"
     outlined
     label="Hours"
     :messages="selectedTimes"
@@ -43,11 +44,14 @@ export default {
     },
     selectedTimes() {
       let hint = '';
-      if (!this.studyType.other) hint = this.store.hint;
+      if (!this.isTypeOther) hint = this.store.hint;
       return hint;
     },
     hourOptionsByStudyType() {
       return this.studyType.hourOptions;
+    },
+    isTypeOther() {
+      return this.studyType.other;
     },
     studyType() {
       return this.v.studyType.$model;
