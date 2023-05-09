@@ -4,7 +4,7 @@
     :items="hourOptions"
     item-text="description"
     item-value="name"
-    :disabled="isTypeOther"
+    :disabled="isStudyTypeOther"
     outlined
     label="Hours"
     :messages="caption"
@@ -43,13 +43,18 @@ export default {
       },
     },
     caption() {
-      return this.store.hint;
+      let { hint } = this.store;
+      if (this.isHourTypeOther) hint = 'Specify custom hours for this study';
+      return hint;
     },
     hourOptionsByStudyType() {
       return this.studyType.hourOptions;
     },
-    isTypeOther() {
+    isStudyTypeOther() {
       return this.studyType.other;
+    },
+    isHourTypeOther() {
+      return this.store === StudyHours.OTHER;
     },
     studyType() {
       return this.v.studyType.$model;
