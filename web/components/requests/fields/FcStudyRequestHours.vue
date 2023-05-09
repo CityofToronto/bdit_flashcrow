@@ -7,7 +7,7 @@
     :disabled="isTypeOther"
     outlined
     label="Hours"
-    :messages="selectedTimes"
+    :messages="caption"
     v-bind="$attrs" />
 </template>
 
@@ -42,10 +42,8 @@ export default {
         this.store = StudyHours.enumValueOf(val);
       },
     },
-    selectedTimes() {
-      let hint = '';
-      if (!this.isTypeOther) hint = this.store.hint;
-      return hint;
+    caption() {
+      return this.store.hint;
     },
     hourOptionsByStudyType() {
       return this.studyType.hourOptions;
