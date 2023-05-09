@@ -5,7 +5,7 @@
     :items="itemsDuration"
     :disabled="isSingleDayStudy"
     label="Duration"
-    :messages="messagesDuration"
+    :messages="caption"
     outlined
     v-bind="$attrs" />
 </template>
@@ -35,12 +35,24 @@ export default {
     isSingleDayStudy() {
       return !this.studyType.isMultiDay;
     },
-    messagesDuration() {
-      const duration = this.v.duration.$model;
-      if (duration === null || !this.isMultiDayStudy) {
-        return [];
+    storeDurationInHours() {
+      return this.v.duration.$model;
+    },
+    storeDurationInDays() {
+      return this.storeDurationInHours / 24;
+    },
+    caption() {
+      let caption = 'The study will be conducted on 1 day';
+      if (!this.isSingleDayStudy) {
+        const nDays = this.storeDurationInDays;
+        const nHours = this.storeDurationInHours;
+        if (nDays === 1) {
+          caption += ' (24 hours)';
+        } else {
+          caption = `The study will be conducted across ${nDays} consecutive days (${nHours} hours)`;
+        }
       }
-      return [`${duration} hours`];
+      return caption;
     },
   },
 };
