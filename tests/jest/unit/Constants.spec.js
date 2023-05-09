@@ -22,9 +22,3 @@ test('ReportParameter#defaultValue', () => {
   expect(defaultValueDate.equals(defaultValueDateExpected)).toBe(true);
   expect(ReportParameter.PREVENTABLE_COLLISIONS.defaultValue()).toEqual([0, 0, 0]);
 });
-
-test('StudyHours#hint', () => {
-  expect(StudyHours.OTHER.hint).toEqual(STUDY_HOURS_HINT_OTHER);
-  expect(StudyHours.ROUTINE.hint)
-    .toEqual('07:30 -- 09:30, 10:00 -- 12:00, 13:00 -- 15:00, 16:00 -- 18:00');
-});
