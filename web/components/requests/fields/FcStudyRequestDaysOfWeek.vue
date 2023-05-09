@@ -6,7 +6,7 @@
     :items="itemsDaysOfWeek"
     :disabled="isDurationInWeeks"
     :label="label"
-    :messages="messagesDaysOfWeek"
+    :messages="caption"
     multiple
     outlined
     v-bind="$attrs">
@@ -28,7 +28,8 @@ export default {
   },
   data() {
     const itemsDaysOfWeek = TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
-    return { itemsDaysOfWeek };
+    const caption = 'The study will be conducted across the days selected';
+    return { itemsDaysOfWeek, caption };
   },
   computed: {
     studyType() {
@@ -61,14 +62,6 @@ export default {
       set(daysOfWeek) {
         this.v.daysOfWeek.$model = ArrayUtils.sortBy(daysOfWeek, i => i);
       },
-    },
-    messagesDaysOfWeek() {
-      const durationInDays = this.v.duration.$model / 24;
-      let message = 'The study will be performed on one of these days.';
-      if (this.studyType !== null && this.isMultiDayStudy && durationInDays !== 1) {
-        message = `The study will be performed across ${durationInDays} consecutive days.`;
-      }
-      return [message];
     },
     isDurationInWeeks() {
       const studyDuration = this.v.duration.$model;
