@@ -50,7 +50,7 @@ export default {
         const duration = this.v.duration.$model;
         let numberDaysRequired = duration / 24;
         if (duration === 336) numberDaysRequired = 7;
-        const msg = `Please select ${numberDaysRequired} consecutive days or reduce study duration.`;
+        const msg = `Please select ${numberDaysRequired} consecutive days or reduce study duration`;
         errors.push(msg);
       }
       return errors;

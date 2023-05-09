@@ -10,13 +10,13 @@
           :location="location"
           :v="v" />
       </v-col>
-    </v-row>
-    <v-row class="mt-5" v-if="isMultiDayStudy">
       <v-col class="my-0 py-2" cols="6">
         <FcStudyRequestDuration
           dense
           :v="v" />
       </v-col>
+    </v-row>
+    <v-row class="mt-5" v-if="isMultiDayStudy">
       <v-col class="my-0 py-2" cols="6">
         <FcStudyRequestDaysOfWeek
           dense
@@ -24,18 +24,13 @@
       </v-col>
     </v-row>
     <v-row class="mt-5" v-else>
-      <v-col class="my-0 py-2" cols="2">
-        <FcStudyRequestDuration
-          dense
-          :v="v" />
-      </v-col>
-      <v-col class="my-0 py-2" cols="5">
+      <v-col class="my-0 py-2" cols="6">
         <SrDayOptionsInput
           dense
           :v="v"
         />
       </v-col>
-      <v-col class="my-0 py-2" cols="5">
+      <v-col class="my-0 py-2" cols="6">
         <FcStudyRequestHours
           dense
           :v="v" />
