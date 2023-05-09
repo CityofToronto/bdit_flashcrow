@@ -3,7 +3,7 @@
     class='day-options'
     v-model="modelValue"
     :items="dayValues"
-    :messages="selectedItemSubtitle"
+    :messages="caption"
     label="Day Options"
     :menu-props="{ closeOnContentClick: true, maxHeight: 206 }"
     multiple
@@ -61,16 +61,19 @@ export default {
         {
           text: 'Regular Traffic Conditions',
           subtitle: 'Tue, Wed, or Thu',
+          captionSubclause: 'Tuesday, Wednesday, or Thursday',
           value: [2, 3, 4],
         },
         {
           text: 'Any Weekday',
           subtitle: 'Mon, Tue, Wed, Thu, or Fri',
+          captionSubclause: 'weekday',
           value: [1, 2, 3, 4, 5],
         },
         {
           text: 'Any Weekend Day',
           subtitle: 'Sat or Sun',
+          captionSubclause: 'Saturday or Sunday',
           value: [0, 6],
         },
       ],
@@ -134,12 +137,12 @@ export default {
     selectedItemTitle() {
       return this.selectedOptionItem.text;
     },
-    selectedItemSubtitle() {
-      let subtitle = '';
-      if (!this.isSpecificDaySelected) {
-        subtitle = this.selectedOptionItem.subtitle;
-      }
-      return subtitle;
+    selectedItemCaptionSubclause() {
+      const isDaySpecific = this.isSpecificDaySelected;
+      return isDaySpecific ? this.selectedItemTitle : this.selectedOptionItem.captionSubclause;
+    },
+    caption() {
+      return `The study will be conducted on a ${this.selectedItemCaptionSubclause}`;
     },
   },
   methods: {
