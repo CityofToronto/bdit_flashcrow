@@ -60,20 +60,18 @@ export default {
       alternativeDaysOptionList: [
         {
           text: 'Regular Traffic Conditions',
-          subtitle: 'Tue, Wed, or Thu',
-          captionSubclause: 'Tuesday, Wednesday, or Thursday',
+          subtitle: 'Tuesday, Wednesday, or Thursday',
           value: [2, 3, 4],
         },
         {
           text: 'Any Weekday',
-          subtitle: 'Mon, Tue, Wed, Thu, or Fri',
+          subtitle: 'Monday, Tuesday, Wednesday, Thursday, or Friday',
           captionSubclause: 'weekday',
           value: [1, 2, 3, 4, 5],
         },
         {
           text: 'Any Weekend Day',
-          subtitle: 'Sat or Sun',
-          captionSubclause: 'Saturday or Sunday',
+          subtitle: 'Saturday or Sunday',
           value: [0, 6],
         },
       ],
@@ -138,8 +136,14 @@ export default {
       return this.selectedOptionItem.text;
     },
     selectedItemCaptionSubclause() {
-      const isDaySpecific = this.isSpecificDaySelected;
-      return isDaySpecific ? this.selectedItemTitle : this.selectedOptionItem.captionSubclause;
+      let clause = '';
+      const item = this.selectedOptionItem;
+      if (this.isSpecificDaySelected) {
+        clause = item.text;
+      } else {
+        clause = item.captionSubclause || item.subtitle;
+      }
+      return clause;
     },
     caption() {
       return `The study will be conducted on a ${this.selectedItemCaptionSubclause}`;
