@@ -44,7 +44,7 @@ export default {
     },
     caption() {
       let { hint } = this.store;
-      if (this.isHourTypeOther) hint = 'Specify custom hours for this study';
+      if (this.isHourTypeOther) hint = 'Specify the hours of this study in Notes';
       return hint;
     },
     hourOptionsByStudyType() {
