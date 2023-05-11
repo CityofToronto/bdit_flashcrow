@@ -164,7 +164,6 @@ import {
 } from 'vuex';
 
 import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
-
 import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';

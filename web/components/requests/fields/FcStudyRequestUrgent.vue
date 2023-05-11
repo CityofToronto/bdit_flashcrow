@@ -7,6 +7,8 @@
       class="mt-1"
       label="Urgent"
       :messages="[OPTIONAL.text]" />
+    <v-messages class="eta"
+      :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]" />
     <template v-if="v.urgent.$model">
       <v-row>
         <v-col cols="8">
@@ -58,6 +60,7 @@ import {
   OPTIONAL,
   REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
   REQUEST_STUDY_PROVIDE_URGENT_REASON,
+  REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
@@ -81,6 +84,7 @@ export default {
       dueDateUrgent: null,
       // MESSAGES
       OPTIONAL,
+      REQUEST_STUDY_TIME_TO_FULFILL,
     };
   },
   computed: {
@@ -195,3 +199,10 @@ export default {
   },
 };
 </script>
+
+<style>
+  .v-messages.eta {
+    margin-top: 15px;
+    font-style: italic;
+  }
+</style>

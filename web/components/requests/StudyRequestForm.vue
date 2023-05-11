@@ -1,7 +1,6 @@
 <template>
   <fieldset>
     <legend class="sr-only">Study Type for Request</legend>
-    <v-messages :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]" />
     <v-row class="mt-2">
       <v-col class="my-0 py-2" cols="6">
         <FcStudyRequestStudyType
@@ -53,7 +52,6 @@ import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequ
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
-import { REQUEST_STUDY_TIME_TO_FULFILL } from '@/lib/i18n/Strings';
 import { StudyHours } from '@/lib/Constants';
 
 export default {
@@ -69,11 +67,6 @@ export default {
   props: {
     v: Object,
     location: Object,
-  },
-  data() {
-    return {
-      REQUEST_STUDY_TIME_TO_FULFILL,
-    };
   },
   computed: {
     studyType() {
