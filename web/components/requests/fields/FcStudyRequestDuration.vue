@@ -5,7 +5,7 @@
     :items="itemsDuration"
     :disabled="isSingleDayStudy"
     label="Duration"
-    :messages="caption"
+    :messages="alternateCaption"
     outlined
     v-bind="$attrs" />
 </template>
@@ -40,6 +40,14 @@ export default {
     },
     storeDurationInDays() {
       return this.storeDurationInHours / 24;
+    },
+    alternateCaption() {
+      let caption = 'The study will be conducted on a single day';
+      if (!this.isSingleDayStudy) {
+        const nHours = this.storeDurationInHours;
+        caption = `The study will be conducted across ${nHours} consecutive hours`;
+      }
+      return caption;
     },
     caption() {
       let caption = 'The study will be conducted on 1 day';
