@@ -16,7 +16,7 @@
       </v-col>
     </v-row>
     <v-row class="mt-5" v-if="isMultiDayStudy">
-      <v-col class="my-0 py-2" cols="6">
+      <v-col class="my-0 py-2" cols="12">
         <FcStudyRequestDaysOfWeek
           dense
           :v="v" />

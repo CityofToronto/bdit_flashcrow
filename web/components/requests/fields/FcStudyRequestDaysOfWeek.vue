@@ -3,9 +3,9 @@
     v-model="internalDaysOfWeek"
     :error-messages="errorMessagesDaysOfWeek"
     hide-details="auto"
-    :items="itemsDaysOfWeek"
+    :items="dayOptions"
     :disabled="isDurationInWeeks"
-    :label="label"
+    label="Day(s) of Week"
     :messages="caption"
     multiple
     outlined
@@ -19,7 +19,6 @@
 <script>
 import ArrayUtils from '@/lib/ArrayUtils';
 import { REQUEST_STUDY_REQUIRES_DAYS_OF_WEEK } from '@/lib/i18n/Strings';
-import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
   name: 'FcStudyRequestDaysOfWeek',
@@ -27,17 +26,40 @@ export default {
     v: Object,
   },
   data() {
-    const itemsDaysOfWeek = TimeFormatters.DAYS_OF_WEEK.map((text, value) => ({ text, value }));
-    const caption = 'The study will be conducted across the days selected';
-    return { itemsDaysOfWeek, caption };
+    return {
+      dayOptions: [
+        {
+          text: 'Sunday',
+          value: 0,
+        },
+        {
+          text: 'Monday',
+          value: 1,
+        },
+        {
+          text: 'Tuesday',
+          value: 2,
+        },
+        {
+          text: 'Wednesday',
+          value: 3,
+        },
+        {
+          text: 'Thursday',
+          value: 4,
+        },
+        {
+          text: 'Friday',
+          value: 5,
+        },
+        {
+          text: 'Satruday',
+          value: 6,
+        },
+      ],
+    };
   },
   computed: {
-    studyType() {
-      return this.v.studyType.$model;
-    },
-    isMultiDayStudy() {
-      return this.studyType.isMultiDay;
-    },
     errorMessagesDaysOfWeek() {
       const errors = [];
       if (!this.v.daysOfWeek.$dirty && !this.v.duration.$dirty) {
@@ -63,18 +85,41 @@ export default {
         this.v.daysOfWeek.$model = ArrayUtils.sortBy(daysOfWeek, i => i);
       },
     },
+    studyDuration() {
+      return this.v.duration.$model;
+    },
     isDurationInWeeks() {
-      const studyDuration = this.v.duration.$model;
       const weekInHours = 168;
       let isDurationInWeeks = false;
-      if (Number.isInteger(studyDuration)
-        && studyDuration !== 0
-        && studyDuration % weekInHours === 0) isDurationInWeeks = true;
+      if (Number.isInteger(this.studyDuration)
+        && this.studyDuration !== 0
+        && this.studyDuration % weekInHours === 0) isDurationInWeeks = true;
       return isDurationInWeeks;
     },
-    label() {
-      const partA = this.isMultiDayStudy ? 'Day(s)' : 'Day';
-      return `${partA} of Week`;
+    firstDayOfStudy() {
+      const firstDayIndex = this.internalDaysOfWeek[0];
+      return this.dayOptions[firstDayIndex].text;
+    },
+    isSingleDaySelected() {
+      return this.internalDaysOfWeek.length === 1;
+    },
+    caption() {
+      const nHours = this.studyDuration;
+      const nDays = nHours / 24;
+      let caption = '';
+      if (nDays === 1) {
+        if (this.isSingleDaySelected) {
+          caption = `The study will run for 24 consecutive hours on a ${this.firstDayOfStudy}`;
+        } else {
+          caption = 'The study will run for 24 consecutve hours on one of the days selected';
+        }
+      } else if (this.isDurationInWeeks) {
+        const nWeeks = nDays / 7;
+        caption = `The study will run for ${nWeeks} weeks (${nHours} consecutive hours) starting on a Sunday`;
+      } else {
+        caption = `The study will run for ${nDays} days (${nHours} consecutive hours) within the selected range`;
+      }
+      return caption;
     },
   },
   watch: {
