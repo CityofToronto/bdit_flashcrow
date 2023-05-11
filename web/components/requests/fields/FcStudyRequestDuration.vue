@@ -42,7 +42,13 @@ export default {
       return this.storeDurationInHours / 24;
     },
     caption() {
-      return this.isSingleDayStudy ? 'This type of study occurs on a single day' : '';
+      let caption = this.studyType.label;
+      if (this.isSingleDayStudy) {
+        caption += ' studies occur on one day';
+      } else {
+        caption += ' studies can span multiple days';
+      }
+      return caption;
     },
   },
 };
