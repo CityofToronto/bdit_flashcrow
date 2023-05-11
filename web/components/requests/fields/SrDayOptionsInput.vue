@@ -11,7 +11,7 @@
     outlined>
     <template v-slot:selection="{ index }">
       <span v-if="index === 0">
-        {{ selectedItemTitle }}
+        {{ selectedOptionItem.text }}
       </span>
     </template>
     <template v-slot:item="{ item }">
@@ -66,7 +66,6 @@ export default {
         {
           text: 'Any Weekday',
           subtitle: 'Monday, Tuesday, Wednesday, Thursday, or Friday',
-          captionSubclause: 'weekday',
           value: [1, 2, 3, 4, 5],
         },
         {
@@ -132,21 +131,9 @@ export default {
       }
       return item;
     },
-    selectedItemTitle() {
-      return this.selectedOptionItem.text;
-    },
-    selectedItemCaptionSubclause() {
-      let clause = '';
-      const item = this.selectedOptionItem;
-      if (this.isSpecificDaySelected) {
-        clause = item.text;
-      } else {
-        clause = item.captionSubclause || item.subtitle;
-      }
-      return clause;
-    },
     caption() {
-      return `The study will be conducted on a ${this.selectedItemCaptionSubclause}`;
+      const item = this.selectedOptionItem;
+      return this.isSpecificDaySelected ? '' : item.subtitle;
     },
   },
   methods: {
