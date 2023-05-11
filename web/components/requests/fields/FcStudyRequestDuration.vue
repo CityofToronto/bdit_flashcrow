@@ -5,7 +5,7 @@
     :items="itemsDuration"
     :disabled="isSingleDayStudy"
     label="Duration"
-    :messages="alternateCaption"
+    :messages="caption"
     outlined
     v-bind="$attrs" />
 </template>
@@ -41,26 +41,8 @@ export default {
     storeDurationInDays() {
       return this.storeDurationInHours / 24;
     },
-    alternateCaption() {
-      let caption = 'The study will be conducted on a single day';
-      if (!this.isSingleDayStudy) {
-        const nHours = this.storeDurationInHours;
-        caption = `The study will be conducted across ${nHours} consecutive hours`;
-      }
-      return caption;
-    },
     caption() {
-      let caption = 'The study will be conducted on 1 day';
-      if (!this.isSingleDayStudy) {
-        const nDays = this.storeDurationInDays;
-        const nHours = this.storeDurationInHours;
-        if (nDays === 1) {
-          caption += ' (24 hours)';
-        } else {
-          caption = `The study will be conducted across ${nDays} consecutive days (${nHours} hours)`;
-        }
-      }
-      return caption;
+      return this.isSingleDayStudy ? 'This type of study occurs on a single day' : '';
     },
   },
 };
