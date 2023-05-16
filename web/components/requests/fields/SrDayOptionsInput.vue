@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import _ from 'underscore';
 
 export default {
   name: 'SrDayOptionsInput',
@@ -120,14 +121,20 @@ export default {
     },
     selectedOptionItem() {
       const currentValue = this.modelValue;
-      let item = {
-        text: '',
-        subtitle: '',
-      };
+      let item;
       if (this.isSpecificDaySelected) {
         item = this.specificDayOptionsList.find(i => i.value[0] === currentValue[0]);
       } else {
-        item = this.alternativeDaysOptionList.find(i => i.value.length === currentValue.length);
+        const alternateItem = this.alternativeDaysOptionList
+          .find(i => _.difference(currentValue, i.value).length === 0);
+        if (alternateItem) {
+          item = alternateItem;
+        } else {
+          item = {
+            text: 'Custom Days',
+            subtitle: this.customDaysSubtitle(currentValue),
+          };
+        }
       }
       return item;
     },
@@ -146,6 +153,13 @@ export default {
       const options = this.alternativeDaysOptionList;
       if (index < options.length) item = options[index];
       return item;
+    },
+    customDaysSubtitle(dayIndicies) {
+      const lastDayIndex = dayIndicies.pop();
+      const lastDay = this.specificDayOptionsList[lastDayIndex].text;
+      let subtitle = dayIndicies.map(i => this.specificDayOptionsList[i].text).join(', ');
+      subtitle = `${subtitle}, or ${lastDay}`;
+      return subtitle;
     },
   },
 };
