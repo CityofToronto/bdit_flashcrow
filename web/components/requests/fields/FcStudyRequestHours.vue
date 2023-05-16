@@ -8,6 +8,7 @@
     outlined
     label="Hours"
     :messages="caption"
+    :class="{ hours: !isHourTypeOther }"
     v-bind="$attrs" />
 </template>
 
@@ -62,3 +63,9 @@ export default {
   },
 };
 </script>
+
+<style>
+  .hours .v-messages__message {
+    font-size: 10px;
+  }
+</style>
