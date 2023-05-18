@@ -115,7 +115,8 @@ export default {
         }
       } else if (this.isDurationInWeeks) {
         const nWeeks = nDays / 7;
-        caption = `The study will run for ${nWeeks} weeks (${nHours} consecutive hours) starting on a Sunday`;
+        const weekOrWeeksStr = (nWeeks === 1 ? 'week' : 'weeks');
+        caption = `The study will run for ${nWeeks} ${weekOrWeeksStr} (${nHours} consecutive hours) starting on a Sunday`;
       } else {
         caption = `The study will run for ${nDays} days (${nHours} consecutive hours) within the selected range`;
       }
