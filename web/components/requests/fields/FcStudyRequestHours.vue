@@ -25,6 +25,9 @@ export default {
       const options = StudyHours.enumValues.filter(
         option => this.hourOptionsByStudyType.includes(option.name),
       );
+      if (this.isNonStandardLegacyOtherState) {
+        options.push(this.store);
+      }
       return options;
     },
     store: {
@@ -56,6 +59,9 @@ export default {
     },
     isHourTypeOther() {
       return this.store === StudyHours.OTHER;
+    },
+    isNonStandardLegacyOtherState() {
+      return this.isStudyTypeOther && !this.isHourTypeOther;
     },
     studyType() {
       return this.v.studyType.$model;
