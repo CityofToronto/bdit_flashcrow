@@ -148,6 +148,9 @@ export default {
 </script>
 
 <style lang="scss">
+.fc-layout-request-editor .fc-map-top-left .fc-input-location-search {
+  width: 348px;
+}
 .fc-layout-request-editor {
   width: 100%;
 
