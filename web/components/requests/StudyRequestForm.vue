@@ -1,7 +1,7 @@
 <template>
   <fieldset>
     <legend class="sr-only">Study Type for Request</legend>
-    <v-row class="mt-2">
+    <v-row class="mt-0">
       <v-col class="my-0 py-2" cols="6">
         <FcStudyRequestStudyType
           ref="autofocus"
@@ -15,14 +15,14 @@
           :v="v" />
       </v-col>
     </v-row>
-    <v-row class="mt-5" v-if="isMultiDayStudy">
+    <v-row class="mt-0" v-if="isMultiDayStudy">
       <v-col class="my-0 py-2" cols="12">
         <FcStudyRequestDaysOfWeek
           dense
           :v="v" />
       </v-col>
     </v-row>
-    <v-row class="mt-5" v-else>
+    <v-row class="mt-0" v-else>
       <v-col class="my-0 py-2" cols="6">
         <SrDayOptionsInput
           dense
@@ -35,7 +35,7 @@
           :v="v" />
       </v-col>
     </v-row>
-    <v-row class="mt-4">
+    <v-row class="mt-0">
       <v-col class="my-0 pt-0" cols="12">
         <FcStudyRequestNotes :v="v" />
       </v-col>
