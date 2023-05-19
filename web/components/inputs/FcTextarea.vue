@@ -6,7 +6,7 @@
     :label="label"
     no-resize
     outlined
-    rows="4"
+    :rows="rows"
     v-bind="$attrs" />
 </template>
 
@@ -21,6 +21,10 @@ export default {
   mixins: [FcMixinVModelProxy(String)],
   props: {
     label: String,
+    rows: {
+      type: Number,
+      default: 4,
+    },
   },
   mounted() {
     const idCounter = DomIdGenerator.generateId(PREFIX_DOM_ID);

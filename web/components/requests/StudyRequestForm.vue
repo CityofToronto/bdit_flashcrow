@@ -35,7 +35,7 @@
           :v="v" />
       </v-col>
     </v-row>
-    <v-row class="mt-0">
+    <v-row class="mt-2">
       <v-col class="my-0 pt-0" cols="12">
         <FcStudyRequestNotes :v="v" />
       </v-col>
