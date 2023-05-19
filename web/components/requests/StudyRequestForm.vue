@@ -96,9 +96,3 @@ export default {
   },
 };
 </script>
-
-<style>
-  .study-request-form .v-messages__message {
-    font-size: 10px;
-  }
-</style>

@@ -139,8 +139,15 @@ export default {
       return item;
     },
     caption() {
+      const mainClause = 'The study will be conducted on a';
       const item = this.selectedOptionItem;
-      return this.isSpecificDaySelected ? '' : item.subtitle;
+      let caption = '';
+      if (this.isSpecificDaySelected) {
+        caption = `${mainClause} ${item.text}`;
+      } else {
+        caption = `${mainClause} ${item.subtitle}`;
+      }
+      return caption;
     },
   },
   methods: {
