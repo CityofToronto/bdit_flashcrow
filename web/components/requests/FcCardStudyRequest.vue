@@ -19,7 +19,7 @@
     </v-card-title>
 
     <v-card-text class="pb-0">
-      <StudyRequestForm :v="v" :location="location" />
+      <StudyRequestForm class='study-request-form' :v="v" :location="location" />
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
