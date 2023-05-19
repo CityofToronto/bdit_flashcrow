@@ -53,7 +53,7 @@ export default {
           value: 5,
         },
         {
-          text: 'Satruday',
+          text: 'Saturday',
           value: 6,
         },
       ],
@@ -96,29 +96,14 @@ export default {
         && this.studyDuration % weekInHours === 0) isDurationInWeeks = true;
       return isDurationInWeeks;
     },
-    firstDayOfStudy() {
-      const firstDayIndex = this.internalDaysOfWeek[0];
-      return this.dayOptions[firstDayIndex].text;
-    },
     isSingleDaySelected() {
       return this.internalDaysOfWeek.length === 1;
     },
     caption() {
-      const nHours = this.studyDuration;
-      const nDays = nHours / 24;
-      let caption = '';
-      if (nDays === 1) {
-        if (this.isSingleDaySelected) {
-          caption = `The study will run for 24 consecutive hours on a ${this.firstDayOfStudy}`;
-        } else {
-          caption = 'The study will run for 24 consecutve hours on one of the days selected';
-        }
-      } else if (this.isDurationInWeeks) {
-        const nWeeks = nDays / 7;
-        const weekOrWeeksStr = (nWeeks === 1 ? 'week' : 'weeks');
-        caption = `The study will run for ${nWeeks} ${weekOrWeeksStr} (${nHours} consecutive hours) starting on a Sunday`;
-      } else {
-        caption = `The study will run for ${nDays} days (${nHours} consecutive hours) within the selected range`;
+      let caption = 'The study will be conducted within the range of selected days';
+      if (this.isSingleDaySelected) {
+        const day = this.dayOptions[this.internalDaysOfWeek[0]].text;
+        caption = `The study will be conducted on a ${day}`;
       }
       return caption;
     },
