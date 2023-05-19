@@ -101,7 +101,7 @@ export default {
           value: [5],
         },
         {
-          text: 'Satruday',
+          text: 'Saturday',
           value: [6],
         },
       ],
