@@ -31,7 +31,7 @@
         <dd>
           <v-messages
             class="mt-1"
-            :value="[study.hours.hint]"></v-messages>
+            :value="[hoursCaption]"></v-messages>
         </dd>
       </template>
     </v-col>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { StudyHours } from '@/lib/Constants';
 
 export default {
   name: 'SingleCollectionDayFields',
@@ -54,6 +55,11 @@ export default {
     };
   },
   computed: {
+    hoursCaption() {
+      const { hours } = this.study;
+      const isOtherHours = hours === StudyHours.OTHER;
+      return isOtherHours ? 'See notes for requested hours' : hours.hint;
+    },
   },
 };
 </script>
