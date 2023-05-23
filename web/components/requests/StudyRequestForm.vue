@@ -2,7 +2,7 @@
   <fieldset>
     <legend class="sr-only">Study Type for Request</legend>
     <v-row class="mt-0">
-      <v-col class="my-0 py-2" cols="6">
+      <v-col class="my-1 py-2" cols="6">
         <FcStudyRequestStudyType
           ref="autofocus"
           dense
