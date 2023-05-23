@@ -5,7 +5,7 @@
     label="Notes"
     :messages="messagesNotes"
     v-bind="$attrs"
-    rows="2"
+    :rows="2"
     @blur="v.notes.$touch()" />
 </template>
 
