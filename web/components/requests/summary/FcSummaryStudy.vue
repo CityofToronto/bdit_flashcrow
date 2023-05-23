@@ -20,6 +20,7 @@
     <v-card-text class="default--text">
       <div class="mx-9">
         <SingleCollectionDayFields v-if="isSingleDayStudy" :study="study" />
+        <MultipleCollectionDaysFields v-else :study="study" />
         <v-row>
           <v-col cols="12">
             <dt class="subtitle-1">Notes</dt>
@@ -38,6 +39,7 @@
 import { mapState } from 'vuex';
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import SingleCollectionDayFields from '@/web/components/requests/summary/SingleCollectionDayFields.vue';
+import MultipleCollectionDaysFields from '@/web/components/requests/summary/MultipleCollectionDaysFields.vue';
 
 export default {
   name: 'FcSummaryStudy',
@@ -47,6 +49,7 @@ export default {
   },
   components: {
     SingleCollectionDayFields,
+    MultipleCollectionDaysFields,
   },
   computed: {
     alt() {
