@@ -113,11 +113,12 @@
         </fieldset>
 
         <template v-if="studyRequests.length > 0">
-          <v-divider class="mt-5 mb-1 ml-5"></v-divider>
+          <v-divider class="mt-1 mb-1 ml-5"></v-divider>
 
           <FcStudyRequestUrgent
-            class="pt-5 px-5"
+            class="px-5"
             :is-create="true"
+            :nRequests="studyRequests.length"
             :v="$v.studyRequests.$each[0]" />
         </template>
       </div>

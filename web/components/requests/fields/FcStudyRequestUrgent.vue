@@ -1,14 +1,12 @@
 <template>
   <fieldset>
-    <legend class="display-2 pt-4">Request Priority and Details</legend>
-
-    <v-checkbox
-      v-model="v.urgent.$model"
-      class="mt-1"
-      label="Urgent"
-      :messages="[OPTIONAL.text]" />
     <v-messages class="eta"
       :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]" />
+    <v-checkbox
+      v-model="v.urgent.$model"
+      class="mt-1 urgent"
+      :label="label"
+    />
     <template v-if="v.urgent.$model">
       <v-row>
         <v-col cols="8">
@@ -76,6 +74,10 @@ export default {
   props: {
     isCreate: Boolean,
     v: Object,
+    nRequests: {
+      type: Number,
+      default: 1,
+    },
   },
   data() {
     return {
@@ -88,6 +90,11 @@ export default {
     };
   },
   computed: {
+    label() {
+      let subject = 'This study needs';
+      if (this.nRequests > 1) subject = 'These studies need';
+      return `${subject} to be conducted urgently`;
+    },
     errorMessagesCcEmails() {
       const errors = [];
       if (!this.v.ccEmails.requiredIfUrgent) {
@@ -204,5 +211,9 @@ export default {
   .v-messages.eta {
     margin-top: 15px;
     font-style: italic;
+  }
+
+  .urgent .v-label {
+    padding: 1px 0 0 0 !important;
   }
 </style>

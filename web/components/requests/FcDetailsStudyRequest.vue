@@ -2,11 +2,11 @@
   <section class="d-flex flex-column min-height-fill max-height-fill">
 
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <StudyRequestForm class="study-request-form pa-5"
+      <StudyRequestForm class="study-request-form pt-5 px-5 pb-1"
         :v="$v.internalValue" :location="location" />
       <v-divider></v-divider>
       <FcStudyRequestUrgent
-        class="pa-5"
+        class="px-5"
         :is-create="isCreate"
         :v="$v.internalValue" />
     </div>
