@@ -27,7 +27,7 @@
             <FcInputTextArray
               v-model="v.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
-              label="Additional Emails Subscribed"
+              label="Staff Subscribed"
               :messages="messagesCcEmails" />
           </v-col>
         </v-row>

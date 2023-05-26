@@ -3,7 +3,7 @@
     <v-row class="mt-1 mb-2" tag="dl">
       <v-col cols="6">
         <template v-if="!isCreate">
-          <dt class="subtitle-1">Additional Emails Subscribed</dt>
+          <dt class="subtitle-1">Staff Subscribed</dt>
           <dd class="mt-1 display-1">
             <v-chip
               v-for="(ccEmail, i) in studyRequestBulk.ccEmails"

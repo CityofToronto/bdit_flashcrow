@@ -31,7 +31,7 @@
           <FcInputTextArray
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
-            label="Additional Emails Subscribed"
+            label="Staff Subscribed"
             :messages="messagesCcEmails"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
