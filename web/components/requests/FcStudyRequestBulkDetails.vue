@@ -28,6 +28,7 @@
               v-model="v.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
               label="Staff Subscribed"
+              placeholder="Enter a @toronto.ca email address"
               messages="Staff who should be notified when the data is ready"
               :optional="true" />
           </v-col>
@@ -40,7 +41,6 @@
           class="mt-3"
           label="Notes"
           :optional="true"
-          :messages="messagesNotes"
           @blur="v.notes.$touch()" />
       </div>
     </fieldset>

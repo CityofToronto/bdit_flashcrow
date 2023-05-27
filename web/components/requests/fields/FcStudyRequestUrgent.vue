@@ -32,6 +32,7 @@
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
             label="Staff Subscribed"
+            placeholder="Enter a @toronto.ca email address"
             :optional="!isUrgent"
             messages="Staff who should be notified when the data is ready"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
