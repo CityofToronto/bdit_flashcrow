@@ -32,7 +32,7 @@
             v-model="v.ccEmails.$model"
             :error-messages="errorMessagesCcEmails"
             label="Staff Subscribed"
-            :messages="messagesCcEmails"
+            :optional="!isUrgent"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
@@ -44,7 +44,7 @@
         class="mt-3"
         :error-messages="errorMessagesUrgentReason"
         label="Notes"
-        :messages="messagesUrgentReason"
+        :optional="!isUrgent"
         :success="v.urgent.$model && !v.urgentReason.$invalid"
         @blur="v.urgentReason.$touch()" />
     </div>
@@ -135,19 +135,8 @@ export default {
       }
       return null;
     },
-    messagesCcEmails() {
-      const urgent = this.v.urgent.$model;
-      if (urgent) {
-        return [];
-      }
-      return [OPTIONAL.text];
-    },
-    messagesUrgentReason() {
-      const urgent = this.v.urgent.$model;
-      if (urgent) {
-        return [];
-      }
-      return [OPTIONAL.text];
+    isUrgent() {
+      return this.v.urgent.$model;
     },
     minDueDate() {
       const { now } = this;

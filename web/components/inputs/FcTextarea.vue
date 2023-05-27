@@ -3,11 +3,14 @@
     v-model="internalValue"
     class="fc-textarea"
     counter
-    :label="label"
     no-resize
     outlined
     :rows="rows"
-    v-bind="$attrs" />
+    v-bind="$attrs">
+    <template v-slot:label>
+      {{ inputLabel }}
+    </template>
+  </v-textarea>
 </template>
 
 <script>
@@ -24,6 +27,17 @@ export default {
     rows: {
       type: Number,
       default: 4,
+    },
+    optional: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    inputLabel() {
+      let inputLabel = this.label;
+      if (this.optional) inputLabel = `${inputLabel} (optional)`;
+      return inputLabel;
     },
   },
   mounted() {

@@ -28,7 +28,7 @@
               v-model="v.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
               label="Staff Subscribed"
-              :messages="messagesCcEmails" />
+              :optional="true" />
           </v-col>
         </v-row>
       </div>
@@ -38,6 +38,7 @@
           v-model="v.notes.$model"
           class="mt-3"
           label="Notes"
+          :optional="true"
           :messages="messagesNotes"
           @blur="v.notes.$touch()" />
       </div>
@@ -93,12 +94,6 @@ export default {
         errors.push('Please enter a name for this project.');
       }
       return errors;
-    },
-    messagesCcEmails() {
-      return [OPTIONAL.text];
-    },
-    messagesNotes() {
-      return [OPTIONAL.text];
     },
   },
 };

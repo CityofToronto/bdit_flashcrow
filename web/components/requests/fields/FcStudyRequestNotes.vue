@@ -3,15 +3,14 @@
     v-model="internalNotes"
     :error-messages="errorMessagesNotes"
     label="Notes"
-    :messages="messagesNotes"
     v-bind="$attrs"
     :rows="2"
+    :optional="true"
     @blur="v.notes.$touch()" />
 </template>
 
 <script>
-import { StudyHours } from '@/lib/Constants';
-import { OPTIONAL, REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES } from '@/lib/i18n/Strings';
+import { REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES } from '@/lib/i18n/Strings';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
 
 export default {
@@ -45,13 +44,6 @@ export default {
           this.v.notes.$model = internalNotes;
         }
       },
-    },
-    messagesNotes() {
-      const hours = this.v.hours.$model;
-      if (hours === StudyHours.OTHER) {
-        return [];
-      }
-      return [OPTIONAL.text];
     },
   },
 };

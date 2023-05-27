@@ -6,6 +6,9 @@
     multiple
     outlined
     v-bind="$attrs">
+    <template v-slot:label>
+      {{ inputLabel }}
+    </template>
     <template v-slot:selection="{ attrs, item, parent, selected }">
       <v-chip
         color="secondary"
@@ -32,5 +35,19 @@ import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 export default {
   name: 'FcInputTextArray',
   mixins: [FcMixinVModelProxy(Array)],
+  props: {
+    label: String,
+    optional: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    inputLabel() {
+      let inputLabel = this.label;
+      if (this.optional) inputLabel = `${inputLabel} (optional)`;
+      return inputLabel;
+    },
+  },
 };
 </script>
