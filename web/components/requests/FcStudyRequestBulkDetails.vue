@@ -28,6 +28,7 @@
               v-model="v.ccEmails.$model"
               :error-messages="errorMessagesCcEmails"
               label="Staff Subscribed"
+              messages="Staff who should be notified when the data is ready"
               :optional="true" />
           </v-col>
         </v-row>

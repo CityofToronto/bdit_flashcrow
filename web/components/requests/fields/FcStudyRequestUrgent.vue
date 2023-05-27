@@ -33,6 +33,7 @@
             :error-messages="errorMessagesCcEmails"
             label="Staff Subscribed"
             :optional="!isUrgent"
+            messages="Staff who should be notified when the data is ready"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
