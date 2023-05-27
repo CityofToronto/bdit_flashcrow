@@ -30,7 +30,7 @@
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
         <fieldset>
           <div class="align-center d-flex">
-            <legend class="display-2 py-4 pl-5">Studies Requested</legend>
+            <legend class="display-2 py-4 pl-5">Requesting Studies</legend>
             <FcTextNumberTotal class="ml-2" :n="studyRequests.length" />
 
             <v-spacer></v-spacer>
