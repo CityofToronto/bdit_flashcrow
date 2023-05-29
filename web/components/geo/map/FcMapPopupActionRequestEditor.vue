@@ -57,9 +57,11 @@ export default {
         await this.actionAddStudy(location);
       } else {
         await this.actionSetStudyLocation(location);
+        this.setIndicesSelected([]);
       }
     },
     ...mapMutations(['setToastInfo']),
+    ...mapMutations('editRequests', ['setIndicesSelected']),
     ...mapActions('editRequests', [
       'addStudyRequestAtLocation',
       'setSelectedStudyRequestsLocation',
