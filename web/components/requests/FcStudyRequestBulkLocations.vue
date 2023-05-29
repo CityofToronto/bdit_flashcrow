@@ -47,6 +47,7 @@ import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { mapMutations } from 'vuex';
 
 export default {
   name: 'FcStudyRequestBulkLocations',
@@ -79,8 +80,10 @@ export default {
   methods: {
     actionEditLocation(i) {
       this.internalValue = [i];
+      this.setToastInfo('Set the study location using the map');
       this.$emit('action-focus-map');
     },
+    ...mapMutations(['setToastInfo']),
   },
 };
 </script>
