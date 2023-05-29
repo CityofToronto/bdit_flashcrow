@@ -10,6 +10,12 @@
         :selected="selected" />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
+        <FcButton
+          type="tertiary"
+          :small="true"
+          @click="$emit('action-edit-location')">
+          <v-icon small>mdi-pencil</v-icon>
+        </FcButton>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
           :study="mostRecent.get(studyRequest.studyType)" />
@@ -21,14 +27,6 @@
     <v-card-text class="pb-0">
       <StudyRequestForm class='study-request-form' :v="v" :location="location" />
     </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <FcButton
-        type="tertiary"
-        @click="$emit('action-edit-location')">
-        Edit Location
-      </FcButton>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -78,6 +76,24 @@ export default {
   border: 2px solid var(--v-border-base);
   &.selected {
     border: 2px solid var(--v-primary-base);
+  }
+}
+
+.fc-card-study-request-title {
+  .headline {
+    display: inline-block;
+  }
+  .fc-text-most-recent {
+    display: block;
+    width: fit-content;
+  }
+  .fc-button {
+    position: relative;
+    bottom: 2px;
+    left: 8px;
+    min-width: fit-content !important;
+    height: fit-content !important;
+    padding: 0 !important;
   }
 }
 </style>
