@@ -72,35 +72,6 @@
             <v-divider class="mt-3 mb-6 ml-5"></v-divider>
           </template>
 
-          <div class="align-center d-flex">
-            <div class="mx-8"></div>
-            <v-card
-              v-if="internalIndicesSelected.length <= 1"
-              class="fc-card-study-request flex-grow-1 flex-shrink-1"
-              outlined>
-              <v-card-text class="pb-0">
-                <p class="font-weight-regular headline">
-                  <span v-if="internalIndicesSelected.length === 0">
-                    Use the map to add a study at a location.  You can add more
-                    than one study at the same location.
-                  </span>
-                  <span v-else>
-                    Use the map to set the location of the selected study.
-                  </span>
-                </p>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <FcButton
-                  type="tertiary"
-                  @click="$emit('action-focus-map')">
-                  Search Map
-                </FcButton>
-              </v-card-actions>
-            </v-card>
-            <div class="mx-7"></div>
-          </div>
-
           <FcStudyRequestBulkLocations
             ref="locations"
             v-model="internalIndicesSelected"
