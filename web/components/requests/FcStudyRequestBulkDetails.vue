@@ -81,10 +81,10 @@ export default {
           return;
         }
         if (!this.v.ccEmails.$each[i].required) {
-          errors.push('Please enter a value.');
+          errors.push('Please enter a value');
         }
         if (!this.v.ccEmails.$each[i].torontoInternal) {
-          errors.push('Please enter a valid @toronto.ca email address.');
+          errors.push('Please enter a valid @toronto.ca email address');
         }
       });
       return errors;
@@ -92,7 +92,7 @@ export default {
     errorMessagesName() {
       const errors = [];
       if (!this.v.name.required) {
-        errors.push('Please enter a name for this project.');
+        errors.push('Please enter a name for this project');
       }
       return errors;
     },

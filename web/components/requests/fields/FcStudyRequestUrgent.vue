@@ -100,17 +100,17 @@ export default {
     errorMessagesCcEmails() {
       const errors = [];
       if (!this.v.ccEmails.requiredIfUrgent) {
-        errors.push('Please provide an additional point of contact for this urgent request.');
+        errors.push('Please provide an additional point of contact for this urgent request');
       }
       this.v.ccEmails.$model.forEach((_, i) => {
         if (!this.v.ccEmails.$each[i].$dirty) {
           return;
         }
         if (!this.v.ccEmails.$each[i].required) {
-          errors.push('Please enter a value.');
+          errors.push('Please enter a value');
         }
         if (!this.v.ccEmails.$each[i].torontoInternal) {
-          errors.push('Please enter a valid @toronto.ca email address.');
+          errors.push('Please enter a valid @toronto.ca email address');
         }
       });
       return errors;
