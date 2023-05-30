@@ -9,7 +9,7 @@
           :location="location"
           :v="v" />
       </v-col>
-      <v-col class="my-0 py-2" cols="6">
+      <v-col class="my-1 py-2" cols="6">
         <FcStudyRequestDuration
           dense
           :v="v" />
