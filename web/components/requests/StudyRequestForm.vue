@@ -22,7 +22,7 @@
           :v="v" />
       </v-col>
     </v-row>
-    <v-row class="mt-0" v-else>
+    <v-row class="mt-1" v-else>
       <v-col class="my-0 py-2" cols="6">
         <SrDayOptionsInput
           dense
