@@ -84,7 +84,6 @@
         </fieldset>
 
         <template v-if="studyRequests.length > 0">
-          <v-divider class="mt-1 mb-1 ml-5"></v-divider>
 
           <FcStudyRequestUrgent
             class="px-5"

@@ -4,14 +4,11 @@
     <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <StudyRequestForm class="study-request-form pt-5 px-5 pb-1"
         :v="$v.internalValue" :location="location" />
-      <v-divider></v-divider>
       <FcStudyRequestUrgent
         class="px-5"
         :is-create="isCreate"
         :v="$v.internalValue" />
     </div>
-
-    <v-divider></v-divider>
 
     <footer class="flex-grow-0 flex-shrink-0 shading">
       <div class="align-center d-flex px-3 py-2">
