@@ -1,11 +1,28 @@
 <template>
   <fieldset>
-    <v-messages class="eta"
-      :value="[REQUEST_STUDY_TIME_TO_FULFILL.text]" />
+    <v-divider></v-divider>
+    <div class="mt-5">
+      <v-row>
+        <v-col cols="8">
+          <FcInputTextArray
+            v-model="v.ccEmails.$model"
+            :error-messages="errorMessagesCcEmails"
+            label="Staff Subscribed"
+            placeholder="Enter a @toronto.ca email address"
+            :optional="!isUrgent"
+            dense
+            messages="Staff who should be notified when the data is ready"
+            :success="v.urgent.$model && !v.ccEmails.$invalid" />
+        </v-col>
+      </v-row>
+    </div>
+
     <v-checkbox
       v-model="v.urgent.$model"
       class="mt-1 urgent"
       :label="label"
+      @click="scrollRequiredIntoView()"
+      :messages="[REQUEST_STUDY_TIME_TO_FULFILL.text]"
     />
     <template v-if="v.urgent.$model">
       <v-row>
@@ -16,6 +33,7 @@
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
             label="Expected By (YYYY-MM-DD)"
+            dense
             :max="maxDueDate"
             :min="minDueDate"
             outlined
@@ -23,33 +41,18 @@
           </FcDatePicker>
         </v-col>
       </v-row>
+      <div class="mt-4" ref="urgentNotes">
+        <FcTextarea
+          v-model="v.urgentReason.$model"
+          class="mt-3"
+          :rows="2"
+          :error-messages="errorMessagesUrgentReason"
+          label="Notes"
+          :optional="!isUrgent"
+          :success="v.urgent.$model && !v.urgentReason.$invalid"
+          @blur="v.urgentReason.$touch()" />
+      </div>
     </template>
-
-    <div class="mt-4">
-      <v-row>
-        <v-col cols="8">
-          <FcInputTextArray
-            v-model="v.ccEmails.$model"
-            :error-messages="errorMessagesCcEmails"
-            label="Staff Subscribed"
-            placeholder="Enter a @toronto.ca email address"
-            :optional="!isUrgent"
-            messages="Staff who should be notified when the data is ready"
-            :success="v.urgent.$model && !v.ccEmails.$invalid" />
-        </v-col>
-      </v-row>
-    </div>
-
-    <div class="mt-4">
-      <FcTextarea
-        v-model="v.urgentReason.$model"
-        class="mt-3"
-        :error-messages="errorMessagesUrgentReason"
-        label="Notes"
-        :optional="!isUrgent"
-        :success="v.urgent.$model && !v.urgentReason.$invalid"
-        @blur="v.urgentReason.$touch()" />
-    </div>
   </fieldset>
 </template>
 
@@ -149,6 +152,15 @@ export default {
       return now.plus({ months: 2 });
     },
     ...mapState(['now']),
+  },
+  methods: {
+    scrollRequiredIntoView() {
+      if (this.isUrgent) {
+        setTimeout(() => {
+          this.$refs.urgentNotes.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 50);
+      }
+    },
   },
   watch: {
     'v.urgent.$model': function watchUrgent(urgent, urgentPrev) {
