@@ -23,7 +23,7 @@
         <MultipleCollectionDaysFields v-else :study="study" />
         <v-row>
           <v-col cols="12">
-            <dt class="subtitle-1">Notes</dt>
+            <dt class="subtitle-1">Collection Notes</dt>
             <dd class="mt-1 display-1">
               <span v-if="study.notes">{{study.notes}}</span>
               <span v-else>None</span>

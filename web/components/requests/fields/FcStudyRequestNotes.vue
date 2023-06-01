@@ -1,8 +1,9 @@
 <template>
   <FcTextarea
     v-model="internalNotes"
+    :messages="caption"
     :error-messages="errorMessagesNotes"
-    label="Notes"
+    label="Collection Notes"
     v-bind="$attrs"
     :rows="2"
     :optional="true"
@@ -22,6 +23,9 @@ export default {
     v: Object,
   },
   computed: {
+    caption() {
+      return 'Additional information about when, where, and what data to collect that is shared with the contractor';
+    },
     errorMessagesNotes() {
       const errors = [];
       if (!this.v.notes.requiredIfOtherHours) {
