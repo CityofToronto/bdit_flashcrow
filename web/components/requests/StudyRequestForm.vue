@@ -52,7 +52,7 @@ import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequ
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
-import { StudyHours } from '@/lib/Constants';
+import { StudyHours, StudyType, CentrelineType } from '@/lib/Constants';
 
 export default {
   name: 'StudyRequestForm',
@@ -69,8 +69,13 @@ export default {
     location: Object,
   },
   computed: {
-    studyType() {
-      return this.v.studyType.$model;
+    studyType: {
+      get() {
+        return this.v.studyType.$model;
+      },
+      set(type) {
+        this.v.studyType.$model = type;
+      },
     },
     isMultiDayStudy() {
       return this.studyType.isMultiDay;
@@ -84,6 +89,15 @@ export default {
       }
       this.v.hours.$model = value;
     },
+    resetStudyType(centrelineType) {
+      let studyType;
+      if (centrelineType === CentrelineType.INTERSECTION) {
+        studyType = StudyType.TMC;
+      } else {
+        studyType = StudyType.ATR_SPEED_VOLUME;
+      }
+      this.studyType = studyType;
+    },
   },
   watch: {
     isMultiDayStudy(newVal) {
@@ -92,6 +106,9 @@ export default {
     },
     studyType() {
       this.resetHoursValue();
+    },
+    location(newLocation) {
+      this.resetStudyType(newLocation.centrelineType);
     },
   },
 };
