@@ -45,8 +45,10 @@ export default {
       const mainClause = 'The study will be conducted';
       const nDays = this.storeDurationInDays;
       const nHours = this.storeDurationInHours;
-      let caption = `${mainClause} on 1 day (24 hours)`;
-      if (!this.isSingleDayStudy && nDays > 1) {
+      let caption = `${mainClause} on 1 day`;
+      if (!this.isSingleDayStudy && nDays === 1) {
+        caption = `${mainClause} on 1 day (24 consecutive hours)`;
+      } else if (!this.isSingleDayStudy && nDays > 1) {
         caption = `${mainClause} across ${nDays} consecutive days (${nHours} hours)`;
       }
       return caption;

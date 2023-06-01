@@ -45,12 +45,10 @@ export default {
       return this.study.daysOfWeek.length;
     },
     durationCaption() {
-      return `The study will be conducted for ${this.nDays} consecutive days (${this.nHours} hours)`;
+      return `The study will be conducted across ${this.nDays} consecutive days (${this.nHours} hours)`;
     },
     daysCaption() {
-      let caption = 'The study will be performed on these days';
-      if (this.nDaysOfWeek > this.nDays) caption = `The study will be performed on ${this.nDays} of these days`;
-      return caption;
+      return 'The study will be conducted within the range of these days';
     },
   },
 };

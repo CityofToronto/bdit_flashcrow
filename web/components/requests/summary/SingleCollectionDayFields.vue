@@ -50,7 +50,7 @@ export default {
     return {
       captions: {
         duration: 'The study will be conducted on 1 day',
-        days: 'The study will be performed on one of these days',
+        days: 'The study will be conducted on one of these days',
       },
     };
   },
