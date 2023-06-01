@@ -22,7 +22,7 @@
       </v-col>
 
       <v-col cols="12">
-        <dt class="subtitle-1">Notes</dt>
+        <dt class="subtitle-1">Project Description</dt>
         <dd class="mt-1 display-1">
           <span v-if="studyRequestBulk.notes">
             {{studyRequestBulk.notes}}

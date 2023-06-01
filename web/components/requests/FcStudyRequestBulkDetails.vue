@@ -11,6 +11,7 @@
           <v-col cols="8">
             <v-text-field
               ref="autofocus"
+              dense
               v-model="v.name.$model"
               :error-messages="errorMessagesName"
               label="Set Name for Project"
@@ -21,11 +22,12 @@
         </v-row>
       </div>
 
-      <div class="mt-4">
+      <div>
         <v-row>
           <v-col cols="8">
             <FcInputTextArray
               v-model="v.ccEmails.$model"
+              dense
               :error-messages="errorMessagesCcEmails"
               label="Staff Subscribed"
               placeholder="Enter a @toronto.ca email address"
@@ -39,7 +41,9 @@
         <FcTextarea
           v-model="v.notes.$model"
           class="mt-3"
-          label="Notes"
+          label="Project Description"
+          messages="A concise overview of the purpose and/or goals of the project"
+          :rows="2"
           :optional="true"
           @blur="v.notes.$touch()" />
       </div>
