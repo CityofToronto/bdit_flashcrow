@@ -32,7 +32,7 @@
             class="mt-3"
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
-            label="Needed By (YYYY-MM-DD)"
+            label="Expected By (YYYY-MM-DD)"
             dense
             :max="maxDueDate"
             :min="minDueDate"
@@ -140,9 +140,9 @@ export default {
       if (!this.v.dueDate.required) {
         let byDateErrorText = 'Please indicate the date the results of ';
         if (this.isBulkRequest) {
-          byDateErrorText += 'these requests are needed by';
+          byDateErrorText += 'these requests are expected by';
         } else {
-          byDateErrorText += 'this request are needed by';
+          byDateErrorText += 'this request are expected by';
         }
         errors.push(byDateErrorText);
       }
