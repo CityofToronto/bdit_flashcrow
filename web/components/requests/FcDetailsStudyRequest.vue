@@ -36,12 +36,6 @@ import StudyRequestForm from '@/web/components/requests/StudyRequestForm.vue';
 import { mapActions, mapMutations } from 'vuex';
 
 import {
-  StudyType,
-} from '@/lib/Constants';
-import {
-  OPTIONAL,
-  REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
-  REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_SUBMITTED,
   REQUEST_STUDY_UPDATED,
 } from '@/lib/i18n/Strings';
@@ -68,18 +62,6 @@ export default {
   props: {
     isCreate: Boolean,
     location: Object,
-  },
-  data() {
-    return {
-      // CACHED DUE DATES
-      dueDate: null,
-      dueDateUrgent: null,
-      // MESSAGES
-      OPTIONAL,
-      REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
-      REQUEST_STUDY_PROVIDE_URGENT_REASON,
-      StudyType,
-    };
   },
   validations: {
     internalValue: ValidationsStudyRequest,

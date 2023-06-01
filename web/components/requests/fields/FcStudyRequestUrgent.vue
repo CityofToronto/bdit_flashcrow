@@ -11,7 +11,7 @@
             placeholder="Enter a @toronto.ca email address"
             :optional="!isUrgent"
             dense
-            messages="Staff who should be notified when the data is ready"
+            messages="Staff who will be notified when the data is ready"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
@@ -32,7 +32,7 @@
             class="mt-3"
             :error-messages="errorMessagesDueDate"
             hide-details="auto"
-            label="Expected By (YYYY-MM-DD)"
+            label="Needed By (YYYY-MM-DD)"
             dense
             :max="maxDueDate"
             :min="minDueDate"
@@ -47,8 +47,9 @@
           class="mt-3"
           :rows="2"
           :error-messages="errorMessagesUrgentReason"
-          label="Notes"
+          label="Urgent Reason"
           :optional="!isUrgent"
+          :messages="urgentReasonCaption"
           :success="v.urgent.$model && !v.urgentReason.$invalid"
           @blur="v.urgentReason.$touch()" />
       </div>
@@ -61,8 +62,6 @@ import { mapState } from 'vuex';
 
 import {
   OPTIONAL,
-  REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE,
-  REQUEST_STUDY_PROVIDE_URGENT_REASON,
   REQUEST_STUDY_TIME_TO_FULFILL,
 } from '@/lib/i18n/Strings';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
@@ -95,15 +94,33 @@ export default {
     };
   },
   computed: {
+    isBulkRequest() {
+      return this.nRequests > 1;
+    },
+    urgentReasonCaption() {
+      let caption = 'The reason the Data Collection team will use when prioritizing ';
+      if (this.isBulkRequest) {
+        caption += 'these requests';
+      } else {
+        caption += 'this request';
+      }
+      return caption;
+    },
     label() {
       let subject = 'This study needs';
-      if (this.nRequests > 1) subject = 'These studies need';
+      if (this.isBulkRequest) subject = 'These studies need';
       return `${subject} to be conducted urgently`;
     },
     errorMessagesCcEmails() {
       const errors = [];
       if (!this.v.ccEmails.requiredIfUrgent) {
-        errors.push('Please provide an additional point of contact for this urgent request');
+        let ccErrorText = 'Please provide at least one additional point of contact for ';
+        if (this.isBulkRequest) {
+          ccErrorText += 'these urgent requests';
+        } else {
+          ccErrorText += 'this urgent request';
+        }
+        errors.push(ccErrorText);
       }
       this.v.ccEmails.$model.forEach((_, i) => {
         if (!this.v.ccEmails.$each[i].$dirty) {
@@ -121,14 +138,26 @@ export default {
     errorMessagesDueDate() {
       const errors = [];
       if (!this.v.dueDate.required) {
-        errors.push(REQUEST_STUDY_PROVIDE_URGENT_DUE_DATE.text);
+        let byDateErrorText = 'Please indicate the date the results of ';
+        if (this.isBulkRequest) {
+          byDateErrorText += 'these requests are needed by';
+        } else {
+          byDateErrorText += 'this request are needed by';
+        }
+        errors.push(byDateErrorText);
       }
       return errors;
     },
     errorMessagesUrgentReason() {
       const errors = [];
       if (!this.v.urgentReason.requiredIfUrgent) {
-        errors.push(REQUEST_STUDY_PROVIDE_URGENT_REASON.text);
+        let reasonErrorText = 'Please provide the Data Collection team with a clear and concise reason for why ';
+        if (this.isBulkRequest) {
+          reasonErrorText += 'these are urgent requests';
+        } else {
+          reasonErrorText += 'this is an urgent request';
+        }
+        errors.push(reasonErrorText);
       }
       return errors;
     },

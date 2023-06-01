@@ -54,13 +54,12 @@
           </dd>
         </template>
       </v-col>
-      <v-col cols="12">
-        <dt class="subtitle-1">Notes</dt>
+      <v-col cols="12" v-if="studyRequest.urgentReason">
+        <dt class="subtitle-1">Urgent Reason</dt>
         <dd class="mt-1 display-1">
-          <span v-if="studyRequest.urgentReason">
+          <span>
             {{studyRequest.urgentReason}}
           </span>
-          <span v-else>None</span>
         </dd>
       </v-col>
     </v-row>
