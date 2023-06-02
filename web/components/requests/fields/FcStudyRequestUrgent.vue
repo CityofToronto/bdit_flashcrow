@@ -49,7 +49,6 @@
           :error-messages="errorMessagesUrgentReason"
           label="Urgent Reason"
           :optional="!isUrgent"
-          :messages="urgentReasonCaption"
           :success="v.urgent.$model && !v.urgentReason.$invalid"
           @blur="v.urgentReason.$touch()" />
       </div>
@@ -97,15 +96,6 @@ export default {
     isBulkRequest() {
       return this.nRequests > 1;
     },
-    urgentReasonCaption() {
-      let caption = 'The reason the Data Collection team will use when prioritizing ';
-      if (this.isBulkRequest) {
-        caption += 'these requests';
-      } else {
-        caption += 'this request';
-      }
-      return caption;
-    },
     label() {
       let subject = 'This study needs';
       if (this.isBulkRequest) subject = 'These studies need';
@@ -151,11 +141,11 @@ export default {
     errorMessagesUrgentReason() {
       const errors = [];
       if (!this.v.urgentReason.requiredIfUrgent) {
-        let reasonErrorText = 'Please provide the Data Collection team with a clear and concise reason for why ';
+        let reasonErrorText = 'Please provide the Data Collection team with a clear and concise reason why ';
         if (this.isBulkRequest) {
-          reasonErrorText += 'these are urgent requests';
+          reasonErrorText += 'these requests are urgent';
         } else {
-          reasonErrorText += 'this is an urgent request';
+          reasonErrorText += 'this request is urgent';
         }
         errors.push(reasonErrorText);
       }

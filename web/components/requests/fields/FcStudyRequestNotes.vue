@@ -24,7 +24,7 @@ export default {
   },
   computed: {
     caption() {
-      return 'Additional information about when, where, and what data to collect that is shared with the contractor';
+      return 'Additional information about when, where, and what data to collect';
     },
     errorMessagesNotes() {
       const errors = [];
