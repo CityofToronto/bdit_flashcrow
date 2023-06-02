@@ -12,7 +12,7 @@
       </template>
     </v-col>
     <v-col cols="4">
-      <dt class="subtitle-1">Days of Week</dt>
+      <dt class="subtitle-1">Day Options</dt>
       <dd class="mt-1 display-1">
         {{study.daysOfWeek | daysOfWeek}}
       </dd>
@@ -24,7 +24,7 @@
     </v-col>
     <v-col cols="4">
       <template>
-        <dt class="subtitle-1">Study Hours</dt>
+        <dt class="subtitle-1">Hours</dt>
         <dd class="mt-1 display-1">
           {{study.hours.description}}
         </dd>
