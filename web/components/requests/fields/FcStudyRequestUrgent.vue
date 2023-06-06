@@ -137,12 +137,7 @@ export default {
     errorMessagesDueDate() {
       const errors = [];
       if (!this.v.dueDate.required) {
-        let byDateErrorText = 'Please indicate when ';
-        if (this.isBulkRequest) {
-          byDateErrorText += 'these study counts are needed by';
-        } else {
-          byDateErrorText += 'this study count is needed by';
-        }
+        const byDateErrorText = 'Please indicate when the data is needed by';
         errors.push(byDateErrorText);
       }
       return errors;
