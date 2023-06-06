@@ -22,8 +22,21 @@
       class="mt-1 urgent"
       :label="label"
       @click="scrollRequiredIntoView()"
-      :messages="[REQUEST_STUDY_TIME_TO_FULFILL.text]"
     />
+    <FcTooltip
+      content-class="fc-tooltip-status-progress-bar"
+      :max-width="400"
+      right>
+      <template v-slot:activator="{ on }">
+        <FcButton
+          class="eta-info-icon"
+          type="icon"
+          v-on="on">
+          <v-icon id="information-icon" small>mdi-information-outline</v-icon>
+        </FcButton>
+      </template>
+      <span>Standard turnaround is 2 - 3 months, but timelines may vary based on seasonality</span>
+    </FcTooltip>
     <template v-if="v.urgent.$model">
       <v-row>
         <v-col cols="8">
@@ -59,13 +72,11 @@
 <script>
 import { mapState } from 'vuex';
 
-import {
-  OPTIONAL,
-  REQUEST_STUDY_TIME_TO_FULFILL,
-} from '@/lib/i18n/Strings';
 import FcDatePicker from '@/web/components/inputs/FcDatePicker.vue';
 import FcInputTextArray from '@/web/components/inputs/FcInputTextArray.vue';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
+import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcStudyRequestUrgent',
@@ -73,6 +84,8 @@ export default {
     FcDatePicker,
     FcInputTextArray,
     FcTextarea,
+    FcTooltip,
+    FcButton,
   },
   props: {
     isCreate: Boolean,
@@ -87,9 +100,6 @@ export default {
       // CACHED DUE DATES
       dueDate: null,
       dueDateUrgent: null,
-      // MESSAGES
-      OPTIONAL,
-      REQUEST_STUDY_TIME_TO_FULFILL,
     };
   },
   computed: {
@@ -97,9 +107,9 @@ export default {
       return this.nRequests > 1;
     },
     label() {
-      let subject = 'This study needs';
-      if (this.isBulkRequest) subject = 'These studies need';
-      return `${subject} to be conducted urgently`;
+      let subject = 'This study is';
+      if (this.isBulkRequest) subject = 'These studies are';
+      return `${subject} urgent`;
     },
     errorMessagesCcEmails() {
       const errors = [];
@@ -230,12 +240,17 @@ export default {
 </script>
 
 <style>
-  .v-messages.eta {
-    margin-top: 15px;
-    font-style: italic;
+  .urgent {
+    display: inline-block;
   }
 
   .urgent .v-label {
     padding: 1px 0 0 0 !important;
+  }
+
+  .eta-info-icon {
+    position: relative;
+    right: 5px;
+    bottom: 5px;
   }
 </style>
