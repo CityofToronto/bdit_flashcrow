@@ -11,15 +11,17 @@
       @action-cancel="actionCancelProjectMode"
       @action-save="actionSaveProjectMode" />
 
-    <div
-      v-if="studyRequests.length > 1"
-      class="flex-grow-0 flex-shrink-0 shading">
-      <FcHeaderStudyRequestBulkLocations
-        v-model="internalIndicesSelected"
-        :locations="locations"
-        :study-requests="studyRequests" />
-      <v-divider></v-divider>
+    <div class="shading pl-5 pr-5 pt-2 pb-2 d-flex
+      flex-row justify-space-between align-center">
+      <span>You are requesting <strong>{{messageStudyRequests}}</strong></span>
+      <FcMenuStudyRequestsProjectMode
+        v-if="studyRequestBulk === null"
+        button-class="mr-3"
+        :label="labelProject"
+        text-inject="requested studies"
+        @action-project-mode="actionSetProjectMode" />
     </div>
+    <v-divider></v-divider>
 
     <FcProgressLinear
       v-if="loading"
@@ -29,28 +31,6 @@
         ref="formWrapper"
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
         <fieldset>
-          <div class="align-center d-flex">
-            <legend class="display-2 py-4 pl-5">Requesting Studies</legend>
-            <FcTextNumberTotal class="ml-2" :n="studyRequests.length" />
-
-            <v-spacer></v-spacer>
-
-            <FcMenuStudyRequestsProjectMode
-              button-class="mr-3"
-              :label="labelProject"
-              text-inject="requested studies"
-              @action-project-mode="actionSetProjectMode" />
-            <FcButton
-              v-if="projectMode !== ProjectMode.NONE"
-              class="mr-2"
-              type="secondary"
-              @click="actionRemoveFromProject">
-              <v-icon color="primary" left>mdi-folder-remove</v-icon>
-              <span>Remove</span>
-              <span class="sr-only">From Project</span>
-            </FcButton>
-          </div>
-
           <template v-if="studyRequestBulk !== null">
             <v-text-field
               class="mx-5 mt-3"
@@ -84,7 +64,6 @@
         </fieldset>
 
         <template v-if="studyRequests.length > 0">
-
           <FcStudyRequestUrgent
             class="px-5"
             :is-create="true"
@@ -98,7 +77,6 @@
 
         <div class="align-center d-flex px-3 py-2">
           <span>
-            <span>You are requesting <strong>{{messageStudyRequests}}</strong></span>
             <span v-if="projectMode !== ProjectMode.NONE && studyRequestBulk !== null">
               in project <strong>{{studyRequestBulk.name}}</strong>
             </span>
@@ -138,15 +116,12 @@ import { LocationSelectionType, ProjectMode } from '@/lib/Constants';
 import { makeStudyRequest } from '@/lib/requests/RequestEmpty';
 import ValidationsStudyRequest from '@/lib/validation/ValidationsStudyRequest';
 import ValidationsStudyRequestBulk from '@/lib/validation/ValidationsStudyRequestBulk';
-import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcDialogConfirmRequestStudyLeave
   from '@/web/components/dialogs/FcDialogConfirmRequestStudyLeave.vue';
 import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
-import FcHeaderStudyRequestBulkLocations
-  from '@/web/components/requests/FcHeaderStudyRequestBulkLocations.vue';
 import FcStudyRequestBulkLocations
   from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
@@ -186,12 +161,10 @@ export default {
     FcButtonAria,
     FcDialogConfirmRequestStudyLeave,
     FcDialogProjectMode,
-    FcHeaderStudyRequestBulkLocations,
     FcMenuStudyRequestsProjectMode,
     FcProgressLinear,
     FcStudyRequestBulkLocations,
     FcStudyRequestUrgent,
-    FcTextNumberTotal,
   },
   data() {
     return {
