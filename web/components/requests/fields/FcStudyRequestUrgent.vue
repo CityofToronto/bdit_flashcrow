@@ -10,7 +10,6 @@
             label="Staff Subscribed"
             placeholder="Enter a @toronto.ca email address"
             :optional="!isUrgent"
-            dense
             messages="Staff who will be notified when the data is ready"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
@@ -107,8 +106,8 @@ export default {
       return this.nRequests > 1;
     },
     label() {
-      let subject = 'This study is';
-      if (this.isBulkRequest) subject = 'These studies are';
+      let subject = 'This request is';
+      if (this.isBulkRequest) subject = 'These requests are';
       return `${subject} urgent`;
     },
     errorMessagesCcEmails() {
