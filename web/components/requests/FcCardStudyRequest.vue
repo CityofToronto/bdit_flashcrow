@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="fc-card-study-request"
+    class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
     outlined>
     <v-card-title class="align-start pb-2">
