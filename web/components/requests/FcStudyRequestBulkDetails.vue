@@ -37,7 +37,7 @@
         </v-row>
       </div>
 
-      <div class="mt-4">
+      <div class="mt-4 project-notes">
         <FcTextarea
           v-model="v.notes.$model"
           class="mt-3"
@@ -103,3 +103,10 @@ export default {
   },
 };
 </script>
+
+<style>
+  .project-notes textarea {
+    margin: 20px 0 15px 0 !important;
+    line-height: 1.4rem;
+  }
+</style>

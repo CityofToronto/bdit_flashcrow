@@ -53,7 +53,7 @@
           </FcDatePicker>
         </v-col>
       </v-row>
-      <div class="mt-4" ref="urgentNotes">
+      <div class="mt-4 urgent-notes" ref="urgentNotes">
         <FcTextarea
           v-model="v.urgentReason.$model"
           class="mt-3"
@@ -251,5 +251,10 @@ export default {
     position: relative;
     right: 5px;
     bottom: 5px;
+  }
+
+  .urgent-notes textarea {
+    margin: 14px 0 !important;
+    line-height: 1.4rem;
   }
 </style>

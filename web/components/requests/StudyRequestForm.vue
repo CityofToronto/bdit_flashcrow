@@ -36,7 +36,7 @@
       </v-col>
     </v-row>
     <v-row class="mt-5">
-      <v-col class="my-0 pt-0" cols="12">
+      <v-col class="my-0 pt-0 collection-notes" cols="12">
         <FcStudyRequestNotes :v="v" />
       </v-col>
     </v-row>
@@ -113,3 +113,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.collection-notes textarea {
+  margin: 14px 0 10px 0 !important;
+  line-height: 1.4rem;
+}
+</style>
