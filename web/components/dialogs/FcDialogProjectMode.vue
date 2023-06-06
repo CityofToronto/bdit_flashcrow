@@ -83,7 +83,7 @@ export default {
   computed: {
     errorMessagesAddToProject() {
       if (this.$v.studyRequestBulk.$invalid) {
-        return ['Please select an existing project to add these requests to.'];
+        return ['Please select an existing project to add these requests to'];
       }
       return [];
     },
