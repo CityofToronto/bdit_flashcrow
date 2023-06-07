@@ -4,24 +4,9 @@
       v-for="({ location, mostRecent, studyRequest }, i) in items"
       :key="i"
       class="align-center d-flex">
-      <FcTooltip
-        v-if="items.length > 1"
-        right>
-        <template v-slot:activator="{ on }">
-          <div v-on="on">
-            <v-checkbox
-              v-model="internalValue"
-              :aria-label="'Select ' + location.description + ' for editing'"
-              class="ml-5 mr-3"
-              :value="i" />
-          </div>
-        </template>
-        <span>Select {{location.description}} for editing</span>
-      </FcTooltip>
-      <div v-else class="mx-8"></div>
 
       <FcCardStudyRequest
-        class="flex-grow-1 flex-shrink-1 mr-3 my-1"
+        class="flex-grow-1 flex-shrink-1 mr-3 my-1 ml-3"
         :index="i"
         :location="location"
         :most-recent="mostRecent"
@@ -50,7 +35,6 @@
 </template>
 
 <script>
-import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcCardStudyRequest from '@/web/components/requests/FcCardStudyRequest.vue';
@@ -64,7 +48,6 @@ export default {
     FcButtonAria,
     FcButton,
     FcCardStudyRequest,
-    FcTooltip,
   },
   props: {
     locations: Array,
