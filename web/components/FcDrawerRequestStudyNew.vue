@@ -39,7 +39,7 @@
         <fieldset>
           <template v-if="studyRequestBulk !== null">
             <v-text-field
-              class="mx-5 mt-3"
+              class="mx-3 mt-5"
               label="Selected Project"
               :messages="messagesProject"
               outlined
@@ -55,7 +55,7 @@
                 </FcButtonAria>
               </template>
             </v-text-field>
-            <v-divider class="mt-3 mb-6 ml-5"></v-divider>
+            <v-divider></v-divider>
           </template>
 
           <FcStudyRequestBulkLocations
