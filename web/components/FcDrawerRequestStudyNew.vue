@@ -12,11 +12,17 @@
       @action-save="actionSaveProjectMode" />
 
     <div class="shading pl-5 pr-5 pt-2 pb-2 d-flex
-      flex-row justify-space-between align-center">
-      <span>You are requesting <strong>{{messageStudyRequests}}</strong></span>
+      flex-row align-center">
+      <span class="flex-grow-1">You are requesting <strong>{{messageStudyRequests}}</strong></span>
+      <FcButton
+        type="secondary"
+        class="mr-2"
+        @click="addStudyRequest">
+        <v-icon color="primary" class="mr-2" small>mdi-plus-box</v-icon>
+        Add Study
+      </FcButton>
       <FcMenuStudyRequestsProjectMode
         v-if="studyRequestBulk === null"
-        button-class="mr-3"
         :label="labelProject"
         text-inject="requested studies"
         @action-project-mode="actionSetProjectMode" />
@@ -268,6 +274,11 @@ export default {
     ]),
   },
   methods: {
+    async addStudyRequest() {
+      const lastLocation = this.locations[this.locations.length - 1];
+      this.setToastInfo(`Added study at ${lastLocation.description}`);
+      this.addStudyRequestAtLocation(lastLocation);
+    },
     actionCancelProjectMode() {
       this.projectMode = this.projectModePrev;
     },
@@ -333,6 +344,7 @@ export default {
     ...mapActions('editRequests', [
       'createStudyRequests',
       'setStudyRequestsForLocationsSelection',
+      'addStudyRequestAtLocation',
     ]),
   },
 };
