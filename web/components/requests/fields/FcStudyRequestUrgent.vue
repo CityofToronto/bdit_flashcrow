@@ -34,8 +34,8 @@
           <v-icon id="information-icon" small>mdi-information-outline</v-icon>
         </FcButton>
       </template>
-      <span>Average turnaround is 2 - 3 months,
-        and is generally longest in the spring and autumn</span>
+      <span>Standard turnaround is 2 - 3 months, but timelines may vary based on seasonality,
+        request volume, or other factor</span>
     </FcTooltip>
     <template v-if="v.urgent.$model">
       <v-row>
