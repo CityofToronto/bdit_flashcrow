@@ -28,7 +28,6 @@ npm ci
 
 # build static files into dist
 npm run frontend:build
-npm run docs:build
 
 # copy to web root
 sudo rm -rf /usr/share/nginx/html/flashcrow
