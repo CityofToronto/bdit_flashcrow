@@ -13,19 +13,31 @@
 
     <div class="shading pl-5 pr-5 pt-2 pb-2 d-flex
       flex-row align-center">
-      <span class="flex-grow-1">You are requesting <strong>{{messageStudyRequests}}</strong></span>
-      <FcButton
-        type="secondary"
-        class="mr-2"
-        @click="addStudyRequest">
-        <v-icon color="primary" class="mr-2" small>mdi-plus-box</v-icon>
-        Add Study
-      </FcButton>
+      <span class="flex-grow-1">
+        <span>You are requesting <strong>{{messageStudyRequests}}</strong></span>
+        <span v-if="projectMode !== ProjectMode.NONE && studyRequestBulk !== null">
+          in project <strong>{{studyRequestBulk.name}}</strong>
+        </span>
+      </span>
       <FcMenuStudyRequestsProjectMode
         v-if="studyRequestBulk === null"
         :label="labelProject"
         text-inject="requested studies"
         @action-project-mode="actionSetProjectMode" />
+      <FcButton
+        v-else
+        type="secondary"
+        @click="actionRemoveFromProject">
+        <v-icon color="primary" left>mdi-folder-remove</v-icon>
+        <span>Remove From Project</span>
+      </FcButton>
+      <FcButton
+        type="secondary"
+        class="ml-2"
+        @click="addStudyRequest">
+        <v-icon color="primary" class="mr-2" small>mdi-plus-box</v-icon>
+        Add Study
+      </FcButton>
     </div>
     <v-divider></v-divider>
 
@@ -37,27 +49,6 @@
         ref="formWrapper"
         class="flex-grow-1 flex-shrink-1 overflow-y-auto">
         <fieldset>
-          <template v-if="studyRequestBulk !== null">
-            <v-text-field
-              class="mx-3 mt-5"
-              label="Selected Project"
-              :messages="messagesProject"
-              outlined
-              :value="studyRequestBulk.name">
-              <template v-slot:append>
-                <FcButtonAria
-                  aria-label="Remove"
-                  button-class="mt-n2"
-                  right
-                  type="icon"
-                  @click="actionRemoveFromProject">
-                  <v-icon>mdi-close</v-icon>
-                </FcButtonAria>
-              </template>
-            </v-text-field>
-            <v-divider></v-divider>
-          </template>
-
           <FcStudyRequestBulkLocations
             ref="locations"
             v-model="internalIndicesSelected"
@@ -82,14 +73,6 @@
         <v-divider></v-divider>
 
         <div class="align-center d-flex px-3 py-2">
-          <span>
-            <span v-if="projectMode !== ProjectMode.NONE && studyRequestBulk !== null">
-              in project <strong>{{studyRequestBulk.name}}</strong>
-            </span>
-          </span>
-
-          <v-spacer></v-spacer>
-
           <FcButton
             class="mr-2"
             type="tertiary"
@@ -127,7 +110,6 @@ import FcDialogConfirmRequestStudyLeave
 import FcDialogProjectMode from '@/web/components/dialogs/FcDialogProjectMode.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcStudyRequestBulkLocations
   from '@/web/components/requests/FcStudyRequestBulkLocations.vue';
 import FcStudyRequestUrgent from '@/web/components/requests/fields/FcStudyRequestUrgent.vue';
@@ -164,7 +146,6 @@ export default {
   ],
   components: {
     FcButton,
-    FcButtonAria,
     FcDialogConfirmRequestStudyLeave,
     FcDialogProjectMode,
     FcMenuStudyRequestsProjectMode,
