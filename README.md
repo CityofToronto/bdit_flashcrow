@@ -66,10 +66,6 @@ These scripts are listed in [package.json](package.json), as per the [`npm-run-s
 - `ci:npm-outdated`: run `npm outdated` to scan for outdated dependency versions;
 - `ci:test-unit`: run unit `jest` tests, as required for our CodeBuild pipeline;
 
-### Documentation
-
-- `docs:js`: generates JSDoc-based documentation and serves it on port 9000, with hot-reloading for changes;
-
 ### MOVE Web Frontend
 
 - `frontend`: runs `webpack-dev-server` to serve frontend static resources on port 8080, with hot-reloading for changes, and with `webpack-bundle-analyzer` running on port 9080;
