@@ -10,12 +10,14 @@
         :selected="selected" />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
-        <FcButton
+        <FcButtonAria
+          aria-label="Change location"
+          button-class="mr-2"
+          right
           type="tertiary"
-          :small="true"
           @click="$emit('action-edit-location')">
           <v-icon small>mdi-pencil</v-icon>
-        </FcButton>
+        </FcButtonAria>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
           :study="mostRecent.get(studyRequest.studyType)" />
@@ -33,15 +35,15 @@
 <script>
 import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import StudyRequestForm from '@/web/components/requests/StudyRequestForm.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
 export default {
   name: 'FcCardStudyRequest',
   components: {
+    FcButtonAria,
     StudyRequestForm,
-    FcButton,
     FcIconLocationMulti,
     FcTextMostRecent,
   },
