@@ -35,7 +35,7 @@
         </FcButton>
       </template>
       <span>Standard turnaround is 2 - 3 months, but timelines may vary based on seasonality,
-        request volume, or other factor</span>
+        request volume, or other factors</span>
     </FcTooltip>
     <template v-if="v.urgent.$model">
       <v-row>
