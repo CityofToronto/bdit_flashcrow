@@ -11,6 +11,7 @@
             placeholder="Enter a @toronto.ca email address"
             :optional="!isUrgent"
             messages="Staff who will be notified when the data is ready"
+            :key="componentKey"
             :success="v.urgent.$model && !v.ccEmails.$invalid" />
         </v-col>
       </v-row>
@@ -100,6 +101,7 @@ export default {
       // CACHED DUE DATES
       dueDate: null,
       dueDateUrgent: null,
+      componentKey: 0,
     };
   },
   computed: {
@@ -188,6 +190,7 @@ export default {
   },
   watch: {
     'v.urgent.$model': function watchUrgent(urgent, urgentPrev) {
+      this.componentKey += 1;
       const { now } = this;
 
       // cache existing due date
