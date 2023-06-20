@@ -17,6 +17,7 @@
 
       <FcButtonAria
         :aria-label="'Remove ' + location.description + ' from request'"
+        :disabled="isRequestOneStudy"
         button-class="mr-2"
         right
         type="icon"
@@ -58,6 +59,9 @@ export default {
         const mostRecent = this.mostRecents[i];
         return { location, mostRecent, studyRequest };
       });
+    },
+    isRequestOneStudy() {
+      return this.items.length === 1;
     },
   },
   methods: {
