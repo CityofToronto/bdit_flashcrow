@@ -27,7 +27,6 @@
           <v-col cols="8">
             <FcInputTextArray
               v-model="v.ccEmails.$model"
-              dense
               :error-messages="errorMessagesCcEmails"
               label="Staff Subscribed"
               placeholder="Enter a @toronto.ca email address"
