@@ -15,15 +15,26 @@
         :v="v.$each[i]"
         @action-edit-location="actionEditLocation(i)" />
 
-      <FcButtonAria
-        :aria-label="'Remove ' + location.description + ' from request'"
-        :disabled="isRequestOneStudy"
-        button-class="mr-2"
-        right
-        type="icon"
-        @click="$emit('action-remove-study', i)">
-        <v-icon>mdi-close</v-icon>
-      </FcButtonAria>
+      <v-tooltip
+        :disabled="!isRequestOneStudy"
+        right>
+        <template v-slot:activator="{ on, attrs }">
+          <span
+            class="remove-disabled-tooltip-trigger"
+            :class="{ mute: !isRequestOneStudy }"
+            v-bind="attrs" v-on="on">x</span>
+          <FcButtonAria
+            :aria-label="'Remove ' + location.description + ' from request'"
+            :disabled="isRequestOneStudy"
+            button-class="mr-2"
+            right
+            type="icon"
+            @click="$emit('action-remove-study', i)">
+            <v-icon>mdi-close</v-icon>
+          </FcButtonAria>
+        </template>
+        <span>A request must include at least one study</span>
+      </v-tooltip>
     </div>
   </section>
 </template>
@@ -74,3 +85,19 @@ export default {
   },
 };
 </script>
+
+<style>
+  .remove-disabled-tooltip-trigger {
+    opacity: 0;
+    position: relative;
+    right: 30px;
+  }
+
+  .remove-disabled-tooltip-trigger:hover {
+    cursor: default;
+  }
+
+  .remove-disabled-tooltip-trigger.mute {
+    font-size: 0;
+  }
+</style>
