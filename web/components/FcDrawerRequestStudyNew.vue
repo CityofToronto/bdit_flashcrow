@@ -72,19 +72,20 @@
       <footer class="flex-grow-0 flex-shrink-0 shading">
         <v-divider></v-divider>
 
-        <div class="align-center d-flex px-3 py-2">
+        <div class="d-flex flex-row-reverse px-3 py-2">
           <FcButton
             class="mr-2"
-            type="tertiary"
-            @click="actionNavigateBack(false)">
-            Cancel
-          </FcButton>
-          <FcButton
             :disabled="loadingSubmit || studyRequests.length === 0"
             :loading="loadingSubmit"
             type="primary"
             @click="actionSubmit">
             <span>Submit</span>
+          </FcButton>
+          <FcButton
+            class="mr-2"
+            type="tertiary"
+            @click="actionNavigateBack(false)">
+            Cancel
           </FcButton>
         </div>
       </footer>
