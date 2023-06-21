@@ -1,8 +1,16 @@
 BEGIN;
 
+CREATE TABLE IF NOT EXISTS types_for_other_requests(
+	"id" INT,
+	"studyType" VARCHAR,
+	"studyTypeOther" VARCHAR,
+	study_type_new VARCHAR,
+	study_type_other_new VARCHAR
+);
+
 UPDATE study_requests sr
-SET "studyType" = tor.study_type_new, 
-    "studyTypeOther" = tor.study_type_other_new 
+SET "studyType" = tor.study_type_new,
+    "studyTypeOther" = tor.study_type_other_new
 FROM types_for_other_requests tor
 WHERE sr.id = tor.id;
 
