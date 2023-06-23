@@ -6,13 +6,14 @@
     label="Collection Notes"
     v-bind="$attrs"
     :rows="2"
-    :optional="true"
+    :optional="!isHoursTypeOther"
     @blur="v.notes.$touch()" />
 </template>
 
 <script>
 import { REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES } from '@/lib/i18n/Strings';
 import FcTextarea from '@/web/components/inputs/FcTextarea.vue';
+import { StudyHours } from '@/lib/Constants';
 
 export default {
   name: 'FcStudyRequestNotes',
@@ -32,6 +33,9 @@ export default {
         errors.push(REQUEST_STUDY_OTHER_HOURS_REQUIRES_NOTES.text);
       }
       return errors;
+    },
+    isHoursTypeOther() {
+      return this.v.hours.$model === StudyHours.OTHER;
     },
     internalNotes: {
       get() {

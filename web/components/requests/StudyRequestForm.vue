@@ -37,7 +37,7 @@
     </v-row>
     <v-row class="mt-5">
       <v-col class="my-0 pt-0 collection-notes" cols="12">
-        <FcStudyRequestNotes :v="v" />
+        <FcStudyRequestNotes :v="v" :key="componentKey" />
       </v-col>
     </v-row>
   </fieldset>
@@ -67,6 +67,11 @@ export default {
   props: {
     v: Object,
     location: Object,
+  },
+  data() {
+    return {
+      componentKey: 0,
+    };
   },
   computed: {
     studyType: {
@@ -109,6 +114,9 @@ export default {
     },
     location(newLocation) {
       this.resetStudyType(newLocation.centrelineType);
+    },
+    'v.hours.$model': function watchHour() {
+      this.componentKey += 1;
     },
   },
 };
