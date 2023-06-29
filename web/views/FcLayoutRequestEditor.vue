@@ -33,8 +33,8 @@
             <v-divider></v-divider>
 
             <v-card-actions class="shading">
-              <FcMapPopupActionRequestEditor
-                :feature="feature" />
+              <FcMapPopupActionRequestEditor v-if="isNewRequest" :feature="feature" />
+              <EditStudyLocationPopUpVue v-else :feature="feature" />
             </v-card-actions>
           </template>
         </FcMap>
@@ -47,6 +47,8 @@
 import { mapGetters, mapState } from 'vuex';
 
 import FcMap from '@/web/components/geo/map/FcMap.vue';
+import EditStudyLocationPopUpVue
+  from '@/web/components/geo/map/EditStudyLocationPopUp.vue';
 import FcMapPopupActionRequestEditor
   from '@/web/components/geo/map/FcMapPopupActionRequestEditor.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
@@ -58,6 +60,7 @@ export default {
     FcInputLocationSearch,
     FcMap,
     FcMapPopupActionRequestEditor,
+    EditStudyLocationPopUpVue,
   },
   data() {
     return {
@@ -85,12 +88,12 @@ export default {
     },
     studyRequestMarkers() {
       const studyRequestMarkers = this.locations.map((location, i) => {
-        const locationIndex = this.showLocationIndices ? i : -1;
+        const locationIndex = this.isNewRequest ? i : -1;
         const selected = this.showSelection ? this.indicesSelected.includes(i) : false;
         const state = {
           deselected: false,
           locationIndex,
-          multi: this.showLocationIndices,
+          multi: this.isNewRequest,
           selected,
         };
         return { location, state };
@@ -104,7 +107,7 @@ export default {
       const { name } = this.$route;
       return name === 'requestStudyNew' || name === 'requestStudyEdit';
     },
-    showLocationIndices() {
+    isNewRequest() {
       return this.$route.name === 'requestStudyNew';
     },
     showLocationSearch() {
