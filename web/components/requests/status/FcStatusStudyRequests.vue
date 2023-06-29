@@ -58,7 +58,7 @@ import { afterDateOf } from '@/lib/time/TimeUtils';
 import TooltipStatusProgressBar from '@/web/components/requests/status/TooltipStatusProgressBar.vue';
 
 export default {
-  name: 'FcStatusStudyRequestBulk',
+  name: 'FcStatusStudyRequest',
   components: { TooltipStatusProgressBar },
   props: {
     createdAt: DateTime,
@@ -199,6 +199,7 @@ export default {
 <style lang="scss">
 #status-text {
   white-space: nowrap;
+  font-size: 17px !important;
 }
 #status-description {
   white-space: pre-line;
