@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.1] - 2023-08-09
+
+### Hotfixes
+
+- Numerous changes to the Study Request module including...
+  - Updated the URL from which ariel-view map tiles are sourced
+  - Remove Volume ATR from the set of study types that can be requested
+
 ## [1.11.0] - 2023-07-21
 
 ### Improvements and Fixes
@@ -19,8 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - clarify what the states mean and how a request can move between them
     - make management of the requests more straigtforward for the data collection team
   - The layout and functionality of the Study Request form has been reorganized for clarity
-    - You can now add a study to a request using from the form (rather then from the map only)
-  -   Input orientation and text were updated to disambiguate requirements and clearly indicate what information is needed for various types
+    - You can now add a study to a request from the form (rather then from the map only)
+  -   Input layout and text were updated to disambiguate requirements and clearly indicate what information is needed for various request types
 
 ## [1.10.0] - 2022-08-29
 
