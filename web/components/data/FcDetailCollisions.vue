@@ -31,7 +31,7 @@
         </div>
         <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
           <dt class="body-1">
-            Validated
+            Verified
           </dt>
           <dd>
             <FcTextSummaryFraction
