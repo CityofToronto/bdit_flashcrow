@@ -25,7 +25,7 @@ test('EmailStudyRequestBulkRequestedAdmin', async () => {
   await email.init();
 
   const recipients = email.getRecipients();
-  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin()]);
+  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin('EmailStudyRequestBulkRequestedAdmin')]);
 
   const subject = email.getSubject();
   expect(subject).toEqual(`[MOVE] New project: ${studyRequestBulk.name}`);
