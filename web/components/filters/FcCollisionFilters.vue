@@ -35,15 +35,15 @@
       class="mt-6"
       hide-details
       :items="[
-        { label: 'Validated', value: true },
-        { label: 'Not Validated', value: false },
+        { label: 'Verified', value: true },
+        { label: 'Not Verified', value: false },
         { label: 'All', value: null },
       ]"
       label="Validation">
       <template v-slot:label-right>
         <FcTooltipCollisionFilter>
           <span>
-            Some collisions have been validated by Transportation Services staff, who check
+            Some collisions have been verified by Transportation Services staff, who check
             that the descriptions and diagrams on the original collision report were entered
             correctly.
           </span>

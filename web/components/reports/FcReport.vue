@@ -20,7 +20,7 @@
         </v-row>
         <component
           v-else
-          :key="'content_' + i"
+          :key="'contentRow_' + i"
           :is="'FcReport' + contentRow.type.suffix"
           v-bind="contentRow.options"
           class="pt-4" />

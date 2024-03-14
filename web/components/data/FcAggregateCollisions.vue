@@ -76,7 +76,7 @@ export default {
     const fields = [
       { description: 'Amount', name: 'amount' },
       { description: 'KSI', name: 'ksi' },
-      { description: 'Validated', name: 'validated' },
+      { description: 'Verified', name: 'verified' },
     ];
 
     return {
