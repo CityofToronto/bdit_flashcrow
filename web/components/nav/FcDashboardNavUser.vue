@@ -16,6 +16,7 @@
       :attach="$el"
       :min-width="140"
       right
+      top
       :z-index="100">
       <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
         <FcTooltip right>
