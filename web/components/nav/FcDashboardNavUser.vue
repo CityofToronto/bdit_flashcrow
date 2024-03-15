@@ -15,6 +15,9 @@
       v-if="auth.loggedIn"
       :attach="$el"
       :min-width="140"
+      bottom
+      :nudge-top="hasAuthScope(AuthScope.ADMIN) ? '58px' : '10px'"
+      :nudge-right="60"
       right
       :z-index="100">
       <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
