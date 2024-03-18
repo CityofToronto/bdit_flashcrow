@@ -116,7 +116,7 @@ export default {
     },
     statusTriggersEmails(status) {
       const srs = StudyRequestStatus;
-      return status === srs.COMPLETED || status === srs.CANCELLED;
+      return status === srs.COMPLETED || status === srs.CANCELLED || status === srs.CHANGES_NEEDED;
     },
   },
 };
