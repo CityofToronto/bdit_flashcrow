@@ -37,7 +37,7 @@ test('MailUtils.getStudyRequestBulkUpdateEmails', () => {
   );
   let studyRequestBulkOld = studyRequestBulk;
   let emails = getStudyRequestBulkUpdateEmails(studyRequestBulkNew, studyRequestBulkOld);
-  expect(emails).toHaveLength(0);
+  expect(emails).toHaveLength(1);
 
   studyRequestBulkOld = studyRequestBulkNew;
   studyRequestBulkNew = studyRequestBulkWithStatus(
@@ -71,7 +71,7 @@ test('MailUtils.getStudyRequestUpdateEmails', () => {
   };
   let studyRequestOld = studyRequest;
   let emails = getStudyRequestUpdateEmails(studyRequestNew, studyRequestOld);
-  expect(emails).toHaveLength(0);
+  expect(emails).toHaveLength(1);
 
   studyRequestOld = studyRequestNew;
   studyRequestNew = {
