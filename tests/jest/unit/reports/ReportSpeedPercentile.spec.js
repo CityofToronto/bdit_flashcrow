@@ -170,28 +170,22 @@ test('ReportSpeedPercentile#generateCsv Column Names are as expected', () => {
   } = setup_4_2156283();
   const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
   const { columns } = reportInstance.generateCsv(study, transformedData);
-  expect(columns).toEqual([
+
+  const speedClassColumns = SPEED_CLASSES.map(([lo, hi]) => {
+    const key = `speed_${lo}_${hi}`;
+    const header = `${lo}-${hi} kph`;
+    return { key, header };
+  });
+  const expectedColumns = [
     { key: 'time', header: 'Time' },
     { key: 'direction', header: 'Direction' },
-    { key: 'speed_1_19', header: '1-19 kph' },
-    { key: 'speed_20_25', header: '20-25 kph' },
-    { key: 'speed_26_30', header: '26-30 kph' },
-    { key: 'speed_31_35', header: '31-35 kph' },
-    { key: 'speed_36_40', header: '36-40 kph' },
-    { key: 'speed_41_45', header: '41-45 kph' },
-    { key: 'speed_46_50', header: '46-50 kph' },
-    { key: 'speed_51_55', header: '51-55 kph' },
-    { key: 'speed_56_60', header: '56-60 kph' },
-    { key: 'speed_61_65', header: '61-65 kph' },
-    { key: 'speed_66_70', header: '66-70 kph' },
-    { key: 'speed_71_75', header: '71-75 kph' },
-    { key: 'speed_76_80', header: '76-80 kph' },
-    { key: 'speed_81_160', header: '81-160 kph' },
+    ...speedClassColumns,
     { key: 'count', header: 'Count' },
     { key: 'pct15', header: 'p15' },
     { key: 'pct50', header: 'p50' },
     { key: 'pct85', header: 'p85' },
     { key: 'pct95', header: 'p95' },
     { key: 'mu', header: 'Mean' },
-  ]);
+  ];
+  expect(expectedColumns).toEqual(columns);
 });
