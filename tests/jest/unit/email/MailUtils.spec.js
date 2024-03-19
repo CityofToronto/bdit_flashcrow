@@ -2,6 +2,7 @@ import { StudyRequestStatus } from '@/lib/Constants';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import EmailStudyRequestBulkCancelled from '@/lib/email/EmailStudyRequestBulkCancelled';
 import EmailStudyRequestBulkCompleted from '@/lib/email/EmailStudyRequestBulkCompleted';
+import EmailStudyRequestCancelledAdmin from '@/lib/email/EmailStudyRequestCancelledAdmin';
 import EmailStudyRequestCancelled from '@/lib/email/EmailStudyRequestCancelled';
 import EmailStudyRequestCompleted from '@/lib/email/EmailStudyRequestCompleted';
 import {
@@ -45,7 +46,7 @@ test('MailUtils.getStudyRequestBulkUpdateEmails', () => {
     StudyRequestStatus.CANCELLED,
   );
   emails = getStudyRequestBulkUpdateEmails(studyRequestBulkNew, studyRequestBulkOld);
-  expect(emails).toHaveLength(1);
+  expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestBulkCancelled);
 
   studyRequestBulkOld = studyRequestBulkWithStatus(
@@ -79,7 +80,7 @@ test('MailUtils.getStudyRequestUpdateEmails', () => {
     status: StudyRequestStatus.CANCELLED,
   };
   emails = getStudyRequestUpdateEmails(studyRequestNew, studyRequestOld);
-  expect(emails).toHaveLength(1);
+  expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
 
   studyRequestOld = {
@@ -112,7 +113,7 @@ test('MailUtils.getStudyRequestUpdateEmailsDeep [cancelling single request]', as
   };
   const studyRequestOld = studyRequestBulk.studyRequests[0];
   const emails = await getStudyRequestUpdateEmailsDeep(studyRequestNew, studyRequestOld);
-  expect(emails).toHaveLength(1);
+  expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
 });
 
@@ -174,9 +175,10 @@ test('MailUtils.getStudyRequestUpdateEmailsDeep [cancelling last request]', asyn
   };
   const studyRequestOld = studyRequestBulk.studyRequests[0];
   const emails = await getStudyRequestUpdateEmailsDeep(studyRequestNew, studyRequestOld);
-  expect(emails).toHaveLength(2);
+  expect(emails).toHaveLength(3);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
-  expect(emails[1]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestCancelledAdmin);
+  expect(emails[2]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
 });
 
 test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling single request]', async () => {
@@ -198,7 +200,7 @@ test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling single request]'
     studyRequestBulkNew,
     studyRequestBulkOld,
   );
-  expect(emails).toHaveLength(1);
+  expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
 });
 
@@ -266,7 +268,8 @@ test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling last request]', 
     studyRequestBulkNew,
     studyRequestBulkOld,
   );
-  expect(emails).toHaveLength(2);
+  expect(emails).toHaveLength(3);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
-  expect(emails[1]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestCancelledAdmin);
+  expect(emails[2]).toBeInstanceOf(EmailStudyRequestBulkCompleted);
 });
