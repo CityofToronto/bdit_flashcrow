@@ -360,8 +360,6 @@ export default {
   & .fc-map .fc-selector-multi-location {
     background-color: var(--v-shading-base);
     border-radius: 8px;
-    height: 387px;
-    width: 640px;
   }
 
   &.vertical {
