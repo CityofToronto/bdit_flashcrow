@@ -1,6 +1,7 @@
 import { StudyRequestStatus } from '@/lib/Constants';
 import StudyRequestBulkDAO from '@/lib/db/StudyRequestBulkDAO';
 import EmailStudyRequestBulkCancelled from '@/lib/email/EmailStudyRequestBulkCancelled';
+import EmailStudyRequestBulkCancelledAdmin from '@/lib/email/EmailStudyRequestBulkCancelledAdmin';
 import EmailStudyRequestBulkCompleted from '@/lib/email/EmailStudyRequestBulkCompleted';
 import EmailStudyRequestCancelledAdmin from '@/lib/email/EmailStudyRequestCancelledAdmin';
 import EmailStudyRequestCancelled from '@/lib/email/EmailStudyRequestCancelled';
@@ -48,6 +49,7 @@ test('MailUtils.getStudyRequestBulkUpdateEmails', () => {
   emails = getStudyRequestBulkUpdateEmails(studyRequestBulkNew, studyRequestBulkOld);
   expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestBulkCancelled);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestBulkCancelledAdmin);
 
   studyRequestBulkOld = studyRequestBulkWithStatus(
     studyRequestBulk,
@@ -82,6 +84,7 @@ test('MailUtils.getStudyRequestUpdateEmails', () => {
   emails = getStudyRequestUpdateEmails(studyRequestNew, studyRequestOld);
   expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestCancelledAdmin);
 
   studyRequestOld = {
     ...studyRequest,
@@ -115,6 +118,7 @@ test('MailUtils.getStudyRequestUpdateEmailsDeep [cancelling single request]', as
   const emails = await getStudyRequestUpdateEmailsDeep(studyRequestNew, studyRequestOld);
   expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestCancelledAdmin);
 });
 
 test('MailUtils.getStudyRequestUpdateEmailsDeep [completing single request]', async () => {
@@ -202,6 +206,7 @@ test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [cancelling single request]'
   );
   expect(emails).toHaveLength(2);
   expect(emails[0]).toBeInstanceOf(EmailStudyRequestCancelled);
+  expect(emails[1]).toBeInstanceOf(EmailStudyRequestCancelledAdmin);
 });
 
 test('MailUtils.getStudyRequestBulkUpdateEmailsDeep [completing single request]', async () => {
