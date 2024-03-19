@@ -105,10 +105,10 @@
           </FcTooltip>
         </template>
         <template v-else>
-          <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
+          <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
-      <div class="d-flex align-center mt-4">
+      <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <v-checkbox
             v-model="internalCorridor"
@@ -117,7 +117,7 @@
             label="Include intersections and midblocks between locations" />
 
           <v-spacer></v-spacer>
-
+          <br/>
           <FcButton
             type="tertiary"
             @click="showConfirmMultiLocationLeave = true">
