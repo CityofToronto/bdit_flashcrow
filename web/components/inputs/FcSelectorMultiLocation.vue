@@ -408,6 +408,7 @@ export default {
   & .fc-multi-location-corridor {
     & .v-label {
       font-size: 0.875rem;
+      padding-left: 0 !important;
     }
   }
 }
