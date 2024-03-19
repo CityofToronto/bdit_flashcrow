@@ -108,16 +108,16 @@
           <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
-      <div class="d-flex align-center">
-        <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <v-checkbox
+
+        <v-checkbox
+            v-if="locationMode === LocationMode.MULTI_EDIT"
             v-model="internalCorridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
             label="Include intersections and midblocks between locations" />
 
-          <v-spacer></v-spacer>
-          <br/>
+      <div class="d-flex justify-end mt-1">
+        <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
             @click="showConfirmMultiLocationLeave = true">
