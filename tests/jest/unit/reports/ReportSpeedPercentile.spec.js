@@ -158,3 +158,34 @@ test('ReportSpeedPercentile#generateCsv [Morningside S of Lawrence: ATR_SPEED_VO
     reportInstance.generateCsv(study, transformedData);
   }).not.toThrow();
 });
+
+test('ReportSpeedPercentile#generateCsv Column Names are as expected', () => {
+  const reportInstance = new ReportSpeedPercentile();
+
+  const {
+    countLocation,
+    counts,
+    study,
+    studyData,
+  } = setup_4_2156283();
+  const transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
+  const { columns } = reportInstance.generateCsv(study, transformedData);
+
+  const speedClassColumns = SPEED_CLASSES.map(([lo, hi]) => {
+    const key = `speed_${lo}_${hi}`;
+    const header = `${lo}-${hi} kph`;
+    return { key, header };
+  });
+  const expectedColumns = [
+    { key: 'time', header: 'Time' },
+    { key: 'direction', header: 'Direction' },
+    ...speedClassColumns,
+    { key: 'count', header: 'Count' },
+    { key: 'pct15', header: 'p15' },
+    { key: 'pct50', header: 'p50' },
+    { key: 'pct85', header: 'p85' },
+    { key: 'pct95', header: 'p95' },
+    { key: 'mu', header: 'Mean' },
+  ];
+  expect(expectedColumns).toEqual(columns);
+});
