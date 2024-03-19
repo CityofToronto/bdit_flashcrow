@@ -18,7 +18,7 @@
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
-      <div>
+      <div class="fc-input-grow">
         <div class="fc-input-location-search-wrapper elevation-2">
           <FcInputLocationSearch
             v-for="(_, i) in locationsEditSelection.locations"
@@ -37,7 +37,7 @@
             @location-add="actionAdd" />
         </div>
         <v-messages
-          class="mt-2"
+          class="mt-2 mb-2"
           :value="messagesMaxLocations"></v-messages>
       </div>
       <div class="ml-2">
@@ -105,7 +105,7 @@
           </FcTooltip>
         </template>
         <template v-else>
-          <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
+          <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
 
@@ -394,12 +394,15 @@ export default {
   }
 
   & .fc-input-location-search-wrapper {
-    width: 448px;
+    width: 100%;
     & > .fc-input-location-search {
       &:not(:first-child) {
         border-top: 1px solid var(--v-border-base);
       }
     }
+  }
+  & .fc-input-grow {
+    width: 100%;
   }
   & .fc-input-location-search-remove {
     height: 39px;
