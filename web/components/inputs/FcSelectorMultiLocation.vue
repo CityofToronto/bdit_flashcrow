@@ -7,12 +7,14 @@
       v-model="showConfirmMultiLocationLeave" />
 
     <FcButton
-      v-if="locationMode === LocationMode.MULTI"
-      class="btn-clear-all mr-5 mt-3"
-      type="secondary"
+      v-if="hasManyLocations"
+      class="btn btn-clear-all"
+      width="10"
+      title="Clear All"
+      type="tertiary"
       @click="actionClear">
-      <v-icon color="primary" left>mdi-map-marker-remove-variant</v-icon>
-      Clear
+      <v-icon color="error">mdi-close-box-multiple</v-icon>
+
     </FcButton>
 
     <div
@@ -38,6 +40,7 @@
         </div>
         <v-messages
           class="mt-2 mb-2"
+          v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
       </div>
       <div class="ml-2">
@@ -69,7 +72,7 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <h2 class="display-3 mb-4">{{locationsEditDescription}}</h2>
+          <h2 class="display-3 mb-4 mt-4">{{locationsEditDescription}}</h2>
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
@@ -110,7 +113,7 @@
       </div>
 
         <v-checkbox
-            v-if="locationMode === LocationMode.MULTI_EDIT"
+            v-if="hasManyLocations"
             v-model="internalCorridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
@@ -251,6 +254,13 @@ export default {
         return `${key}_${counter}`;
       });
     },
+    hasManyLocations() {
+      const mode = this.locationMode;
+      if (mode !== LocationMode.MULTI_EDIT && mode !== LocationMode.MULTI) {
+        return false;
+      }
+      return this.locationsEditKeys.length > 1;
+    },
     messagesMaxLocations() {
       if (this.locationMode !== LocationMode.MULTI_EDIT || !this.locationsEditFull) {
         return [];
@@ -388,9 +398,10 @@ export default {
   position: relative;
 
   & > .btn-clear-all {
-    position: absolute;
-    right: 0;
-    top: 0;
+    align-self: end;
+    padding: 0;
+    min-width: 30px !important;
+    opacity: 0.8;
   }
 
   & .fc-input-location-search-wrapper {
