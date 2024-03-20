@@ -9,7 +9,7 @@
         silent />
     </div>
 
-    <div class="fc-map-controls fc-map-top-left">
+    <div class="fc-map-controls fc-map-top-left fc-max-width">
       <slot name="top-left" />
     </div>
 
@@ -667,5 +667,8 @@ export default {
       }
     }
   }
+}
+.fc-max-width {
+  max-width: 50%;
 }
 </style>
