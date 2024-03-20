@@ -26,7 +26,7 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import '@mdi/font/css/materialdesignicons.css';
+import '@mdi/font/css/materialdesignicons.min.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '@/web/css/main.scss';
 
