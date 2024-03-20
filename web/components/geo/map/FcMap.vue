@@ -9,7 +9,7 @@
         silent />
     </div>
 
-    <div class="fc-map-controls fc-map-top-left fc-max-width">
+    <div class="fc-map-controls fc-map-top-left fc-half-width">
       <slot name="top-left" />
     </div>
 
@@ -611,6 +611,9 @@ export default {
       width: 30px;
     }
   }
+  & > .fc-half-width {
+    width: 50%;
+  }
 
   /*
    * MapboxGL style overrides.
@@ -667,8 +670,5 @@ export default {
       }
     }
   }
-}
-.fc-max-width {
-  max-width: 50%;
 }
 </style>
