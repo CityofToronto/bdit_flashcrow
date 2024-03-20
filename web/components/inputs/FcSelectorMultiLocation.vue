@@ -6,17 +6,6 @@
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
 
-    <FcButton
-      v-if="hasManyLocations"
-      class="btn btn-clear-all"
-      width="10"
-      title="Clear All"
-      type="tertiary"
-      @click="actionClear">
-      <v-icon color="error">mdi-close-box-multiple</v-icon>
-
-    </FcButton>
-
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
@@ -396,13 +385,6 @@ export default {
 <style lang="scss">
 .fc-selector-multi-location {
   position: relative;
-
-  & > .btn-clear-all {
-    align-self: end;
-    padding: 0;
-    min-width: 30px !important;
-    opacity: 0.8;
-  }
 
   & .fc-input-location-search-wrapper {
     width: 100%;
