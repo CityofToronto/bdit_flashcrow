@@ -1,37 +1,46 @@
 <template>
-  <v-card class="fc-map-legend" width="250">
+  <v-card class="fc-map-legend" :class="{ shrink: isHidden }">
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
           <div>Legend</div>
           <v-icon v-if="!isHidden" @click="toggleLegend">mdi-chevron-down</v-icon>
-          <v-icon v-if="isHidden" @click="toggleLegend">mdi-chevron-up</v-icon>
+          <v-icon v-else @click="toggleLegend">mdi-chevron-up</v-icon>
         </legend>
         <v-divider></v-divider>
 
-        <template v-for="(layerItem, i) in layerItems">
-          <v-divider
-            v-if="layerItem === null"
-            :key="i"
-            class="ml-4"></v-divider>
-          <component
-            v-else
-            v-model="internalValue[layerItem.value]"
-            :key="layerItem.value"
-            :is="'FcLegendRow' + layerItem.suffix"
-            class="mx-4 mt-2 mb-3" />
-        </template>
+        <div v-if="!isHidden" >
+          <template v-for="(layerItem, i) in layerItems" >
+            <v-divider
+              v-if="layerItem === null"
+              :key="i"
+              class="ml-4"></v-divider>
+            <component
+              v-else
+              v-model="internalValue[layerItem.value]"
+              :key="layerItem.value"
+              :is="'FcLegendRow' + layerItem.suffix"
+              class="mx-4 mt-2 mb-3" />
+          </template>
+        </div>
       </fieldset>
 
-      <v-divider></v-divider>
+      <div v-if="!isHidden">
+        <v-divider></v-divider>
 
-      <div class="text-center py-1">
-        <FcButton
-          type="tertiary"
-          @click="showMore = !showMore">
-          <span v-if="showMore">Less</span>
-          <span v-else>More</span>
-        </FcButton>
+        <div class="text-center py-1">
+          <FcButton
+            type="tertiary"
+            @click="showMore = !showMore">
+            <span v-if="showMore">
+              <v-icon>mdi-menu-up</v-icon>
+              Less
+            </span>
+            <span v-else>
+              More
+            </span>
+          </FcButton>
+        </div>
       </div>
     </v-card-text>
   </v-card>
@@ -103,6 +112,7 @@ export default {
 
 <style lang="scss">
 .fc-map-legend {
+  width: 250px;
   & .fc-legend-icon {
     height: 24px;
     position: relative;
@@ -111,6 +121,11 @@ export default {
   & .headline {
     width: 100%;
     justify-content: space-between;
+    align-items: center;
   }
+}
+.shrink {
+  width: 130px;
+  opacity: 0.9;
 }
 </style>
