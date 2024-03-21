@@ -115,12 +115,20 @@
             @click="showConfirmMultiLocationLeave = true">
             Cancel
           </FcButton>
-          <FcButton
+          <!-- <FcButton
             :disabled="loading || hasError"
             :loading="loading"
             type="secondary"
             @click="saveLocationsEdit">
             Done
+          </FcButton> -->
+          <FcButton
+            :disabled="loading || hasError"
+            :loading="loading"
+            type="secondary"
+            color="blue"
+            @click="saveAndThenView">
+            View Data
           </FcButton>
         </template>
         <template v-else-if="detailView">
@@ -312,6 +320,7 @@ export default {
       'locationsEditDescription',
       'locationsEditFull',
       'locationsForModeEmpty',
+      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -332,6 +341,18 @@ export default {
     },
   },
   methods: {
+    saveAndThenView() {
+      this.saveLocationsEdit();
+      const { s1, selectionTypeName } = this.$route.params;
+      const params = this.locationsRouteParams;
+      // guard-against redundant view-change
+      if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
+        this.$router.push({
+          name: 'viewDataAtLocation',
+          params,
+        });
+      }
+    },
     actionAdd(location) {
       const { description } = location;
       this.setToastInfo(`Added ${description} to selected locations.`);
