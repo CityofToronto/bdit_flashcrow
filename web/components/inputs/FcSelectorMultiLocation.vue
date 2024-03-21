@@ -123,10 +123,9 @@
             Done
           </FcButton> -->
           <FcButton
-            :disabled="loading || hasError"
+            :disabled="loading || hasError || hasZeroLocations"
             :loading="loading"
-            type="secondary"
-            color="blue"
+            type="primary"
             @click="saveAndThenView">
             View Data
           </FcButton>
@@ -250,6 +249,9 @@ export default {
         keyCounter.set(key, counter);
         return `${key}_${counter}`;
       });
+    },
+    hasZeroLocations() {
+      return !this.locationsEditKeys || this.locationsEditKeys.length === 0;
     },
     hasManyLocations() {
       const mode = this.locationMode;
