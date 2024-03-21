@@ -108,7 +108,7 @@
             hide-details
             label="Include intersections and midblocks between locations" />
 
-      <div class="d-flex justify-end mt-1">
+      <div class="d-flex mt-1">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
@@ -131,18 +131,22 @@
           </FcButton>
         </template>
         <template v-else-if="detailView">
-          <FcSummaryPoi :location="locationActive" />
+          <div class="d-flex shrink-column">
 
-          <v-spacer></v-spacer>
+            <FcSummaryPoi :location="locationActive" class="column-space"/>
 
-          <slot name="action" />
-          <FcButton
-            class="ml-2"
-            type="secondary"
-            @click="setLocationMode(LocationMode.MULTI_EDIT)">
-            <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
-            Edit Locations
-          </FcButton>
+            <v-spacer></v-spacer>
+
+            <slot name="action" />
+            <FcButton
+              class="ml-2 column-space"
+              type="secondary"
+              @click="setLocationMode(LocationMode.MULTI_EDIT)">
+              <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
+              Edit Locations
+            </FcButton>
+
+          </div>
         </template>
         <template v-else>
           <span
@@ -432,6 +436,17 @@ export default {
       font-size: 0.875rem;
       padding-left: 0 !important;
     }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .shrink-column {
+    flex-direction: column;
+    align-items: baseline;
+  }
+  .column-space {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 }
 </style>
