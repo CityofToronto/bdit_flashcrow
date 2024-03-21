@@ -9,7 +9,7 @@
         silent />
     </div>
 
-    <div class="fc-map-controls fc-map-top-left">
+    <div class="fc-map-controls fc-map-top-left fc-half-width">
       <slot name="top-left" />
     </div>
 
@@ -610,6 +610,9 @@ export default {
       min-width: 30px;
       width: 30px;
     }
+  }
+  & > .fc-half-width {
+    width: 50%;
   }
 
   /*

@@ -6,19 +6,10 @@
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
 
-    <FcButton
-      v-if="locationMode === LocationMode.MULTI"
-      class="btn-clear-all mr-5 mt-3"
-      type="secondary"
-      @click="actionClear">
-      <v-icon color="primary" left>mdi-map-marker-remove-variant</v-icon>
-      Clear
-    </FcButton>
-
     <div
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
-      <div>
+      <div class="fc-input-grow">
         <div class="fc-input-location-search-wrapper elevation-2">
           <FcInputLocationSearch
             v-for="(_, i) in locationsEditSelection.locations"
@@ -37,7 +28,8 @@
             @location-add="actionAdd" />
         </div>
         <v-messages
-          class="mt-2"
+          class="mt-2 mb-2"
+          v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
       </div>
       <div class="ml-2">
@@ -69,7 +61,7 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <h2 class="display-3 mb-4">{{locationsEditDescription}}</h2>
+          <h2 class="display-3 mb-4 mt-4">{{locationsEditDescription}}</h2>
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
@@ -108,16 +100,16 @@
           <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
-      <div class="d-flex align-center mt-4">
-        <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <v-checkbox
+
+        <v-checkbox
+            v-if="hasManyLocations"
             v-model="internalCorridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
             label="Include intersections and midblocks between locations" />
 
-          <v-spacer></v-spacer>
-
+      <div class="d-flex justify-end mt-1">
+        <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
             @click="showConfirmMultiLocationLeave = true">
@@ -250,6 +242,13 @@ export default {
         keyCounter.set(key, counter);
         return `${key}_${counter}`;
       });
+    },
+    hasManyLocations() {
+      const mode = this.locationMode;
+      if (mode !== LocationMode.MULTI_EDIT && mode !== LocationMode.MULTI) {
+        return false;
+      }
+      return this.locationsEditKeys.length > 1;
     },
     messagesMaxLocations() {
       if (this.locationMode !== LocationMode.MULTI_EDIT || !this.locationsEditFull) {
@@ -387,19 +386,16 @@ export default {
 .fc-selector-multi-location {
   position: relative;
 
-  & > .btn-clear-all {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
   & .fc-input-location-search-wrapper {
-    width: 448px;
+    width: 100%;
     & > .fc-input-location-search {
       &:not(:first-child) {
         border-top: 1px solid var(--v-border-base);
       }
     }
+  }
+  & .fc-input-grow {
+    width: 100%;
   }
   & .fc-input-location-search-remove {
     height: 39px;
@@ -408,6 +404,7 @@ export default {
   & .fc-multi-location-corridor {
     & .v-label {
       font-size: 0.875rem;
+      padding-left: 0 !important;
     }
   }
 }
