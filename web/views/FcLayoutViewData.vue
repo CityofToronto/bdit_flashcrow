@@ -72,11 +72,11 @@
               v-else-if="locationMode.multi"
               class="elevation-2">
               <template v-slot:action>
-                <FcButton
+                <!-- <FcButton
                   type="secondary"
                   @click="actionViewData">
                   View Data
-                </FcButton>
+                </FcButton> -->
               </template>
             </FcSelectorMultiLocation>
             <FcSelectorSingleLocation
