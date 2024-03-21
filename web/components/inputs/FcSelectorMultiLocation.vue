@@ -112,7 +112,7 @@
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
-            @click="showConfirmMultiLocationLeave = true">
+            @click="leaveLocationMode">
             Cancel
           </FcButton>
           <!-- <FcButton
@@ -354,6 +354,9 @@ export default {
           params,
         });
       }
+    },
+    leaveLocationMode() {
+      this.cancelLocationsEdit();
     },
     actionAdd(location) {
       const { description } = location;
