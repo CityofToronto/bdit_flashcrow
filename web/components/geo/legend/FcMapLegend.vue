@@ -2,8 +2,11 @@
   <v-card class="fc-map-legend" width="250">
     <v-card-text class="default--text pa-0">
       <fieldset>
-        <legend class="headline px-4 py-3">Legend</legend>
-
+        <legend class="headline px-4 py-3 d-flex justify-content-between">
+          <div>Legend</div>
+          <v-icon v-if="!isHidden" @click="toggleLegend">mdi-chevron-down</v-icon>
+          <v-icon v-if="isHidden" @click="toggleLegend">mdi-chevron-up</v-icon>
+        </legend>
         <v-divider></v-divider>
 
         <template v-for="(layerItem, i) in layerItems">
@@ -67,10 +70,16 @@ export default {
       { suffix: 'Hospitals', value: 'hospitals' },
     ];
     return {
+      isHidden: false,
       showMore: false,
       layerItemsLess,
       layerItemsMore,
     };
+  },
+  methods: {
+    toggleLegend() {
+      this.isHidden = !this.isHidden;
+    },
   },
   computed: {
     layerItems() {
@@ -98,6 +107,10 @@ export default {
     height: 24px;
     position: relative;
     width: 24px;
+  }
+  & .headline {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 </style>
