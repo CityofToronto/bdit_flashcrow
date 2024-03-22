@@ -113,6 +113,7 @@ export default {
 <style lang="scss">
 .fc-map-legend {
   width: 250px;
+  display: block;
   & .fc-legend-icon {
     height: 24px;
     position: relative;
@@ -127,5 +128,11 @@ export default {
 .shrink {
   width: 130px;
   opacity: 0.9;
+}
+
+@media only screen and (max-width: 600px) {
+  .fc-map-legend {
+    display: none;
+  }
 }
 </style>
