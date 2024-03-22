@@ -126,7 +126,6 @@ export default {
   }
 }
 .shrink {
-  width: 130px;
   opacity: 0.9;
 }
 
