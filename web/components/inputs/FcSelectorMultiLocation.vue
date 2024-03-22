@@ -108,7 +108,7 @@
             hide-details
             label="Include intersections and midblocks between locations" />
 
-      <div class="d-flex mt-1">
+      <div class="d-flex mt-1 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
@@ -443,6 +443,7 @@ export default {
   .shrink-column {
     flex-direction: column;
     align-items: baseline;
+    width: 100%;
   }
   .column-space {
     margin-top: 0.5rem;
