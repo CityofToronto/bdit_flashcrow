@@ -131,9 +131,9 @@
           </FcButton>
         </template>
         <template v-else-if="detailView">
-          <div class="d-flex shrink-column">
+          <div class="d-flex">
 
-            <FcSummaryPoi :location="locationActive" class="column-space"/>
+            <FcSummaryPoi :location="locationActive"/>
 
             <v-spacer></v-spacer>
 
@@ -436,18 +436,6 @@ export default {
       font-size: 0.875rem;
       padding-left: 0 !important;
     }
-  }
-}
-
-@media only screen and (max-width: 1000px) {
-  .shrink-column {
-    flex-direction: column;
-    align-items: baseline;
-    width: 100%;
-  }
-  .column-space {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
   }
 }
 </style>
