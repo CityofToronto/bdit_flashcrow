@@ -259,7 +259,7 @@ export default {
     },
     hasManyLocations() {
       const mode = this.locationMode;
-      if (mode !== LocationMode.MULTI_EDIT && mode !== LocationMode.MULTI) {
+      if (mode !== LocationMode.MULTI_EDIT) {
         return false;
       }
       return this.locationsEditKeys.length > 1;
