@@ -14,6 +14,7 @@
             v-model="query"
             :aria-label="query"
             autocomplete="off"
+            spellcheck="false"
             dense
             :flat="hasLocationIndex"
             hide-details
