@@ -13,12 +13,8 @@
         v-if="!readonly"
         type="tertiary"
         @click="setFiltersOpen(true)">
-        <span v-if="hasFilters">Edit</span>
-        <span v-else>Add</span>
+        <v-icon>mdi-plus</v-icon>
       </FcButton>
-    </div>
-    <div v-if="!hasFilters" class="secondary--text">
-      No active filters
     </div>
     <div
       v-if="filterChipsCommon.length > 0"
