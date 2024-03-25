@@ -108,34 +108,38 @@
             hide-details
             label="Include intersections and midblocks between locations" />
 
-      <div class="d-flex justify-end mt-1">
+      <div class="d-flex mt-1 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
-            @click="showConfirmMultiLocationLeave = true">
+            @click="leaveLocationMode">
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || hasError"
+            :disabled="loading || hasError || hasZeroLocations"
             :loading="loading"
-            type="secondary"
-            @click="saveLocationsEdit">
-            Done
+            type="primary"
+            @click="saveAndThenView">
+            View Data
           </FcButton>
         </template>
         <template v-else-if="detailView">
-          <FcSummaryPoi :location="locationActive" />
+          <div class="d-flex">
 
-          <v-spacer></v-spacer>
+            <FcSummaryPoi :location="locationActive"/>
 
-          <slot name="action" />
-          <FcButton
-            class="ml-2"
-            type="secondary"
-            @click="setLocationMode(LocationMode.MULTI_EDIT)">
-            <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
-            Edit Locations
-          </FcButton>
+            <v-spacer></v-spacer>
+
+            <slot name="action" />
+            <FcButton
+              class="ml-2 column-space"
+              type="secondary"
+              @click="setLocationMode(LocationMode.MULTI_EDIT)">
+              <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
+              Edit Locations
+            </FcButton>
+
+          </div>
         </template>
         <template v-else>
           <span
@@ -243,9 +247,12 @@ export default {
         return `${key}_${counter}`;
       });
     },
+    hasZeroLocations() {
+      return !this.locationsEditKeys || this.locationsEditKeys.length === 0;
+    },
     hasManyLocations() {
       const mode = this.locationMode;
-      if (mode !== LocationMode.MULTI_EDIT && mode !== LocationMode.MULTI) {
+      if (mode !== LocationMode.MULTI_EDIT) {
         return false;
       }
       return this.locationsEditKeys.length > 1;
@@ -312,6 +319,7 @@ export default {
       'locationsEditDescription',
       'locationsEditFull',
       'locationsForModeEmpty',
+      'locationsRouteParams',
     ]),
   },
   watch: {
@@ -332,6 +340,21 @@ export default {
     },
   },
   methods: {
+    saveAndThenView() {
+      this.saveLocationsEdit();
+      const { s1, selectionTypeName } = this.$route.params;
+      const params = this.locationsRouteParams;
+      // guard-against redundant view-change
+      if (s1 !== params.s1 || selectionTypeName !== params.selectionTypeName) {
+        this.$router.push({
+          name: 'viewDataAtLocation',
+          params,
+        });
+      }
+    },
+    leaveLocationMode() {
+      this.cancelLocationsEdit();
+    },
     actionAdd(location) {
       const { description } = location;
       this.setToastInfo(`Added ${description} to selected locations.`);
