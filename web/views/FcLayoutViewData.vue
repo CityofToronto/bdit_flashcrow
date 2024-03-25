@@ -70,15 +70,7 @@
               class="mt-3 ml-5" />
             <FcSelectorMultiLocation
               v-else-if="locationMode.multi"
-              class="elevation-2">
-              <template v-slot:action>
-                <!-- <FcButton
-                  type="secondary"
-                  @click="actionViewData">
-                  View Data
-                </FcButton> -->
-              </template>
-            </FcSelectorMultiLocation>
+              class="elevation-2"/>
             <FcSelectorSingleLocation
               v-else
               v-model="internalLocationsSelection"

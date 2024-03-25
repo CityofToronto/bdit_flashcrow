@@ -115,13 +115,6 @@
             @click="leaveLocationMode">
             Cancel
           </FcButton>
-          <!-- <FcButton
-            :disabled="loading || hasError"
-            :loading="loading"
-            type="secondary"
-            @click="saveLocationsEdit">
-            Done
-          </FcButton> -->
           <FcButton
             :disabled="loading || hasError || hasZeroLocations"
             :loading="loading"
