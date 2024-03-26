@@ -11,7 +11,7 @@
     </p>
     <template v-else>
       <section
-        class="fc-multi-edit-inset mt-5">
+        class="fc-multi-edit-inset mt-5 text-center">
         <v-row
           class="my-6"
           no-gutters>
@@ -30,7 +30,7 @@
             <div class="display-1 font-weight-medium mt-1">
               {{studyTotal}}
             </div>
-            <div class="font-weight-regular mt-2 title">
+            <div class="font-weight-regular mt-2 title" v-if="studyTotal !== 0">
               <FcTextMostRecent :study="mostRecent" />
             </div>
           </v-col>
