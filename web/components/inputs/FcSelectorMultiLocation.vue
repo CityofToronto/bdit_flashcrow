@@ -104,7 +104,7 @@
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-0"
+            class="fc-multi-location-corridor mt-0 mb-1"
             hide-details
             label="Include corridor between locations" />
 
