@@ -39,5 +39,6 @@ export default {
 <style lang="scss">
 .fc-summary-poi-chip {
   display: inline-block;
+  margin-top: 5px;
 }
 </style>
