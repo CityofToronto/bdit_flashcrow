@@ -22,33 +22,33 @@
       <FcListFilterChips
         @click-filter="actionRemoveFilterCommon"
         :filter-chips="filterChipsCommon"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsCollision.length > 0"
-      class="align-center d-flex mt-2">
-      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
-        Collisions &#x2022;
+      class="align-center d-flex mt-6">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
+        Collisions:
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterCollision"
         :filter-chips="filterChipsCollision"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsStudy.length > 0"
-      class="align-center d-flex mt-2">
-      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
-        Studies &#x2022;
+      class="align-center d-flex mt-6">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
+        Studies:
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterStudy"
         :filter-chips="filterChipsStudy"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
   </section>
@@ -116,3 +116,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-global-filters {
+  .filter-name {
+    align-self: flex-start;
+    margin-right: 15px;
+  }
+}
+</style>
