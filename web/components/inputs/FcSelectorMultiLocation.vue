@@ -106,7 +106,7 @@
             v-model="internalCorridor"
             class="fc-multi-location-corridor mt-0"
             hide-details
-            label="Include intersections and midblocks between locations" />
+            label="Include corridor between locations" />
 
       <div class="d-flex mt-1 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
