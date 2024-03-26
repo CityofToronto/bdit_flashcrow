@@ -39,7 +39,7 @@
         { label: 'Not Verified', value: false },
         { label: 'All', value: null },
       ]"
-      label="Validation">
+      label="Verification">
       <template v-slot:label-right>
         <FcTooltipCollisionFilter>
           <span>
