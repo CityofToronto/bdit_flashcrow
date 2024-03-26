@@ -18,7 +18,7 @@
     </div>
     <div
       v-if="filterChipsCommon.length > 0"
-      class="align-center d-flex mt-2">
+      class="align-center d-flex mt-2 mb-2">
       <FcListFilterChips
         @click-filter="actionRemoveFilterCommon"
         :filter-chips="filterChipsCommon"
@@ -27,7 +27,7 @@
     </div>
     <div
       v-if="filterChipsCollision.length > 0"
-      class="align-center d-flex mt-6">
+      class="align-center d-flex mt-4 mb-2">
       <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
         Collisions:
       </span>
@@ -40,7 +40,7 @@
     </div>
     <div
       v-if="filterChipsStudy.length > 0"
-      class="align-center d-flex mt-6">
+      class="align-center d-flex mt-4 mb-2">
       <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
         Studies:
       </span>
