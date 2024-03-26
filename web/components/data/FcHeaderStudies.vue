@@ -1,6 +1,6 @@
 <template>
   <header class="px-5 py-3">
-    <div class="align-center d-flex">
+    <div class="align-center d-flex flex-wrap justify-end">
       <h3 class="headline">
         <span>Studies</span>
         <span class="body-1 secondary--text">
