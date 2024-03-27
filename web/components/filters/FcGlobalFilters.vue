@@ -13,46 +13,42 @@
         v-if="!readonly"
         type="tertiary"
         @click="setFiltersOpen(true)">
-        <span v-if="hasFilters">Edit</span>
-        <span v-else>Add</span>
+        <v-icon>mdi-plus</v-icon>
       </FcButton>
-    </div>
-    <div v-if="!hasFilters" class="secondary--text">
-      No active filters
     </div>
     <div
       v-if="filterChipsCommon.length > 0"
-      class="align-center d-flex mt-2">
+      class="align-center d-flex mt-2 mb-2">
       <FcListFilterChips
         @click-filter="actionRemoveFilterCommon"
         :filter-chips="filterChipsCommon"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsCollision.length > 0"
-      class="align-center d-flex mt-2">
-      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
-        Collisions &#x2022;
+      class="align-center d-flex mt-4 mb-2">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
+        Collisions:
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterCollision"
         :filter-chips="filterChipsCollision"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
     <div
       v-if="filterChipsStudy.length > 0"
-      class="align-center d-flex mt-2">
-      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text">
-        Studies &#x2022;
+      class="align-center d-flex mt-4 mb-2">
+      <span class="body-1 flex-grow-0 flex-shrink-0 secondary--text filter-name">
+        Studies:
       </span>
       <FcListFilterChips
         class="ml-1"
         @click-filter="actionRemoveFilterStudy"
         :filter-chips="filterChipsStudy"
-        :max-width="320"
+        :max-width="250"
         :readonly="readonly" />
     </div>
   </section>
@@ -120,3 +116,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-global-filters {
+  .filter-name {
+    align-self: flex-start;
+    margin-right: 15px;
+  }
+}
+</style>

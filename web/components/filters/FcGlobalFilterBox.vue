@@ -1,6 +1,6 @@
 <template>
-  <v-card width="448">
-    <v-card-text class="px-4 pa-3">
+  <v-card class="fc-filter-box">
+    <v-card-text class="pl-3 pa-1">
       <FcGlobalFilters :readonly="readonly" />
     </v-card-text>
   </v-card>
@@ -22,3 +22,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-filter-box {
+  opacity: 0.9;
+  display: inline-block;
+  min-width: 125px;
+}
+</style>

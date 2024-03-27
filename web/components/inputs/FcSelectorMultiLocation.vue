@@ -61,7 +61,7 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <h2 class="display-3 mb-4 mt-4">{{locationsEditDescription}}</h2>
+          <!-- <h2 class="display-2 mb-4 mt-4">{{locationsEditDescription}}</h2> -->
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
@@ -97,16 +97,16 @@
           </FcTooltip>
         </template>
         <template v-else>
-          <h2 class="display-3 mb-4">{{locationsDescription}}</h2>
+          <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
 
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-0"
+            class="fc-multi-location-corridor mt-0 mb-1"
             hide-details
-            label="Include intersections and midblocks between locations" />
+            label="Include corridor between locations" />
 
       <div class="d-flex mt-1 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">

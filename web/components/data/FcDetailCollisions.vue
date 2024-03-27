@@ -4,7 +4,7 @@
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
     <template v-else>
-      <dl class="d-flex flex-grow-1 flex-shrink-1">
+      <dl class="d-flex flex-grow-1 flex-shrink-1 text-center">
         <div class="flex-grow-1 flex-shrink-1">
           <dt class="body-1">
             Total
