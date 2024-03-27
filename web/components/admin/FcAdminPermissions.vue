@@ -3,7 +3,6 @@
     <FcDataTable
       class="fc-data-table-users"
       :columns="columns"
-      :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       :items="users"
       :loading="loading"
@@ -43,7 +42,7 @@
         </div>
       </template>
     </FcDataTable>
-    <v-pagination v-model="page" :length="numPages" :total-visible="7"/>
+    <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
   </div>
 </template>
 
@@ -52,7 +51,7 @@ import { mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { formatUsername } from '@/lib/StringFormatters';
-import { getUsers, putUser } from '@/lib/api/WebApi';
+import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -92,7 +91,7 @@ export default {
       sortKeys,
       users: [],
       page: 1,
-      total: 2,
+      total: 0,
       itemsPerPage: 1,
     };
   },
@@ -117,9 +116,18 @@ export default {
       await putUser(this.auth.csrf, user);
       this.loadingChangeUserScope = false;
     },
-    async loadAsyncForRoute() {
-      const users = await getUsers();
+    async getPage(page) {
+      const offset = this.itemsPerPage * (page - 1);
+      const users = await getUsersPagination(this.itemsPerPage, offset);
       this.users = users;
+    },
+    async loadAsyncForRoute() {
+      const offset = this.itemsPerPage * (this.page - 1);
+      const users = await getUsersPagination(this.itemsPerPage, offset);
+      this.users = users;
+
+      const total = await getUsersTotal();
+      this.total = total;
     },
   },
 };
