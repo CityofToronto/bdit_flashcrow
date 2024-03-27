@@ -3,7 +3,8 @@
     <FcDataTable
       class="fc-data-table-users"
       :columns="columns"
-      disable-pagination
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
       :items="users"
       :loading="loading"
       must-sort
@@ -42,6 +43,7 @@
         </div>
       </template>
     </FcDataTable>
+    <v-pagination v-model="page" :length="numPages" :total-visible="7"/>
   </div>
 </template>
 
@@ -89,10 +91,25 @@ export default {
       loadingChangeUserScope: false,
       sortKeys,
       users: [],
+      page: 1,
+      total: 2,
+      itemsPerPage: 1,
     };
   },
   computed: {
     ...mapState(['auth']),
+    numPages() {
+      return Math.ceil(this.total / this.itemsPerPage);
+    },
+    pageFrom() {
+      if (this.total === 0) {
+        return 0;
+      }
+      return (this.page - 1) * this.itemsPerPage + 1;
+    },
+    pageTo() {
+      return Math.min(this.total, this.page * this.itemsPerPage);
+    },
   },
   methods: {
     async actionChangeUserScope(user) {
