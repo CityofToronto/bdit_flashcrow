@@ -4,8 +4,9 @@
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
   "scripts": {
+    "concurrently":"concurrently \"npm run frontend\" \"npm run backend\" \"npm run reporter\" \"npm run scheduler\"",
     "backend": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer nodemon -r esm -r module-alias/register web/web.js",
-    "backend:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r esm -r module-alias/register --inspect=0.0.0.0:9100 web/web.js",
+    "backend:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer nodemon -r esm -r module-alias/register --inspect=0.0.0.0:9100 web/web.js",
     "backend:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9100 web/web.js",
     "backend:test-api": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass API_TEST_HEADLESS=1 node  -r esm -r module-alias/register web/web.js",
     "ci:jest-coverage": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass jest --coverage --runInBand",
@@ -85,6 +86,7 @@
     "@vue/eslint-config-airbnb": "^5.3.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.5.1",
+    "concurrently": "^8.2.2",
     "core-js": "^3.30.2",
     "documentation": "^14.0.2",
     "eslint": "^7.32.0",
