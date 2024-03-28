@@ -2,60 +2,64 @@
   <section class="fc-requests-track d-flex flex-column fill-height">
     <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
-        <div class="fc-admin-permissions">
-          <v-card-text class="fc-data-table-requests-wrapper flex-grow-1 flex-shrink-1 pa-0">
-            <FcDataTable
-              class="fc-data-table-users"
-              :columns="columns"
-              :page.sync="page"
-              :items="users"
-              :loading="loading"
-              must-sort
-              sort-by="UNIQUE_NAME"
-              :sort-desc="false"
-              :sort-keys="sortKeys">
-              <template v-slot:item.UNIQUE_NAME="{ item }">
-                <span>{{item | username}}</span>
-              </template>
-              <template
-                v-for="{ authScope, itemSlot } of authScopeSlots"
-                v-slot:[itemSlot]="{ item }">
-                <div
-                  :key="'u:' + item.id + ':' + authScope.name"
-                  class="d-flex">
-                  <FcTooltip right>
-                    <template v-slot:activator="{ on }">
-                      <v-checkbox
-                        v-model="item.scope"
-                        class="mt-0 pt-0"
-                        :disabled="loadingChangeUserScope"
-                        hide-details
-                        :value="authScope"
-                        @change="actionChangeUserScope(item)"
-                        v-on="on"></v-checkbox>
-                    </template>
-                    <span>
-                      <span v-if="item.scope.includes(authScope)">
-                        Deny {{authScope.name}}
-                      </span>
-                      <span v-else>
-                        Grant {{authScope.name}}
-                      </span>
+        <v-divider></v-divider>
+
+        <v-card-text class="fc-data-table-requests-wrapper flex-grow-1 flex-shrink-1 pa-0">
+          <FcDataTable
+            class="fc-data-table-users"
+            :columns="columns"
+            :page.sync="page"
+            :items="users"
+            :loading="loading"
+            must-sort
+            sort-by="UNIQUE_NAME"
+            :sort-desc="false"
+            :sort-keys="sortKeys">
+            <template v-slot:item.UNIQUE_NAME="{ item }">
+              <span>{{item | username}}</span>
+            </template>
+            <template
+              v-for="{ authScope, itemSlot } of authScopeSlots"
+              v-slot:[itemSlot]="{ item }">
+              <div
+                :key="'u:' + item.id + ':' + authScope.name"
+                class="d-flex">
+                <FcTooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-checkbox
+                      v-model="item.scope"
+                      class="mt-0 pt-0"
+                      :disabled="loadingChangeUserScope"
+                      hide-details
+                      :value="authScope"
+                      @change="actionChangeUserScope(item)"
+                      v-on="on"></v-checkbox>
+                  </template>
+                  <span>
+                    <span v-if="item.scope.includes(authScope)">
+                      Deny {{authScope.name}}
                     </span>
-                  </FcTooltip>
-                </div>
-              </template>
-            </FcDataTable>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions class="flex-grow-0 flex-shrink-0">
-            <v-spacer></v-spacer>
-            <div>
-              {{pageFrom}}&ndash;{{pageTo}} of {{total}}
-            </div>
-            <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
-          </v-card-actions>
-        </div>
+                    <span v-else>
+                      Grant {{authScope.name}}
+                    </span>
+                  </span>
+                </FcTooltip>
+              </div>
+            </template>
+          </FcDataTable>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions class="flex-grow-0 flex-shrink-0">
+          <v-spacer></v-spacer>
+
+          <div>
+            {{pageFrom}}&ndash;{{pageTo}} of {{total}}
+          </div>
+
+          <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
+        </v-card-actions>
       </v-card>
     </section>
   </section>
@@ -107,7 +111,7 @@ export default {
       users: [],
       page: 1,
       total: 0,
-      itemsPerPage: 1,
+      itemsPerPage: 8,
     };
   },
   computed: {
