@@ -53,5 +53,6 @@ export default {
 .fc-admin {
   max-height: var(--full-height);
   width: 100%;
+  background-color: var(--v-shading-base);
 }
 </style>
