@@ -4,12 +4,15 @@
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
         <v-divider></v-divider>
 
-        <v-card-text class="fc-data-table-requests-wrapper flex-grow-1 flex-shrink-1 pa-0">
+        <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
             class="fc-data-table-users"
             :columns="columns"
             :page.sync="page"
             :items="users"
+            :items-per-page.sync="itemsPerPage"
+            fixed-header
+            height="calc(100vh - 250px)"
             :loading="loading"
             must-sort
             sort-by="UNIQUE_NAME"
@@ -107,11 +110,12 @@ export default {
       authScopeSlots,
       columns,
       loadingChangeUserScope: false,
+      loading: true,
       sortKeys,
       users: [],
       page: 1,
       total: 0,
-      itemsPerPage: 8,
+      itemsPerPage: 10,
     };
   },
   computed: {
@@ -137,13 +141,13 @@ export default {
     },
     async getPage(page) {
       const offset = this.itemsPerPage * (page - 1);
+      this.loading = true;
       const users = await getUsersPagination(this.itemsPerPage, offset);
       this.users = users;
+      this.loading = false;
     },
     async loadAsyncForRoute() {
-      const offset = this.itemsPerPage * (this.page - 1);
-      const users = await getUsersPagination(this.itemsPerPage, offset);
-      this.users = users;
+      this.getPage(this.page);
 
       const total = await getUsersTotal();
       this.total = total;
