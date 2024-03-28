@@ -115,7 +115,7 @@ export default {
       users: [],
       page: 1,
       total: 0,
-      itemsPerPage: 10,
+      itemsPerPage: 50,
     };
   },
   computed: {
