@@ -1,5 +1,5 @@
 <template>
-  <v-card class="fc-map-legend" :class="{ shrink: isHidden }">
+  <v-card class="fc-map-legend" :class="{ shrink: isHidden, drawerOpen: drawerOpen }">
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
@@ -54,6 +54,7 @@ import FcLegendRowHospitals from '@/web/components/geo/legend/FcLegendRowHospita
 import FcLegendRowSchools from '@/web/components/geo/legend/FcLegendRowSchools.vue';
 import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { mapState } from 'vuex';
 
 export default {
   name: 'FcMapLegend',
@@ -106,6 +107,9 @@ export default {
       });
       return layerLabels;
     },
+    ...mapState('viewData', [
+      'drawerOpen',
+    ]),
   },
 };
 </script>
@@ -127,6 +131,9 @@ export default {
 }
 .shrink {
   opacity: 0.9;
+}
+.drawerOpen {
+  display: none;
 }
 
 @media only screen and (max-width: 600px) {
