@@ -134,4 +134,10 @@ export default {
     display: none;
   }
 }
+// hide when screen is too-short, too
+@media only screen and (max-height: 450px) {
+  .fc-map-legend {
+    display: none;
+  }
+}
 </style>
