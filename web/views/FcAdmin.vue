@@ -17,7 +17,7 @@
         <h2 class="display-3 mt-5">{{title}}</h2>
       </div>
     </nav>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-5">
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto px-0">
       <router-view></router-view>
     </section>
   </section>
@@ -53,5 +53,6 @@ export default {
 .fc-admin {
   max-height: var(--full-height);
   width: 100%;
+  background-color: var(--v-shading-base);
 }
 </style>
