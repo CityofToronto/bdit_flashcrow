@@ -118,6 +118,7 @@ export default {
 .fc-map-legend {
   width: 250px;
   display: block;
+  user-select: none;
   & .fc-legend-icon {
     height: 24px;
     position: relative;
