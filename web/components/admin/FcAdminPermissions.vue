@@ -1,48 +1,71 @@
 <template>
-  <div class="fc-admin-permissions">
-    <FcDataTable
-      class="fc-data-table-users"
-      :columns="columns"
-      disable-pagination
-      :items="users"
-      :loading="loading"
-      must-sort
-      sort-by="UNIQUE_NAME"
-      :sort-desc="false"
-      :sort-keys="sortKeys">
-      <template v-slot:item.UNIQUE_NAME="{ item }">
-        <span>{{item | username}}</span>
-      </template>
-      <template
-        v-for="{ authScope, itemSlot } of authScopeSlots"
-        v-slot:[itemSlot]="{ item }">
-        <div
-          :key="'u:' + item.id + ':' + authScope.name"
-          class="d-flex">
-          <FcTooltip right>
-            <template v-slot:activator="{ on }">
-              <v-checkbox
-                v-model="item.scope"
-                class="mt-0 pt-0"
-                :disabled="loadingChangeUserScope"
-                hide-details
-                :value="authScope"
-                @change="actionChangeUserScope(item)"
-                v-on="on"></v-checkbox>
+  <section class="fc-requests-track d-flex flex-column fill-height">
+    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
+      <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
+        <v-divider></v-divider>
+
+        <v-card-text class="flex-grow-1 pa-0">
+          <FcDataTable
+            class="fc-data-table-users"
+            :columns="columns"
+            :page.sync="page"
+            :items="users"
+            :items-per-page.sync="itemsPerPage"
+            fixed-header
+            height="calc(100vh - 250px)"
+            :loading="loading"
+            must-sort
+            sort-by="UNIQUE_NAME"
+            :sort-desc="false"
+            :sort-keys="sortKeys">
+            <template v-slot:item.UNIQUE_NAME="{ item }">
+              <span>{{item | username}}</span>
             </template>
-            <span>
-              <span v-if="item.scope.includes(authScope)">
-                Deny {{authScope.name}}
-              </span>
-              <span v-else>
-                Grant {{authScope.name}}
-              </span>
-            </span>
-          </FcTooltip>
-        </div>
-      </template>
-    </FcDataTable>
-  </div>
+            <template
+              v-for="{ authScope, itemSlot } of authScopeSlots"
+              v-slot:[itemSlot]="{ item }">
+              <div
+                :key="'u:' + item.id + ':' + authScope.name"
+                class="d-flex">
+                <FcTooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-checkbox
+                      v-model="item.scope"
+                      class="mt-0 pt-0"
+                      :disabled="loadingChangeUserScope"
+                      hide-details
+                      :value="authScope"
+                      @change="actionChangeUserScope(item)"
+                      v-on="on"></v-checkbox>
+                  </template>
+                  <span>
+                    <span v-if="item.scope.includes(authScope)">
+                      Deny {{authScope.name}}
+                    </span>
+                    <span v-else>
+                      Grant {{authScope.name}}
+                    </span>
+                  </span>
+                </FcTooltip>
+              </div>
+            </template>
+          </FcDataTable>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions class="flex-grow-0 flex-shrink-0">
+          <v-spacer></v-spacer>
+
+          <div>
+            {{pageFrom}}&ndash;{{pageTo}} of {{total}}
+          </div>
+
+          <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
+        </v-card-actions>
+      </v-card>
+    </section>
+  </section>
 </template>
 
 <script>
@@ -50,7 +73,7 @@ import { mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
 import { formatUsername } from '@/lib/StringFormatters';
-import { getUsers, putUser } from '@/lib/api/WebApi';
+import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -87,12 +110,28 @@ export default {
       authScopeSlots,
       columns,
       loadingChangeUserScope: false,
+      loading: true,
       sortKeys,
       users: [],
+      page: 1,
+      total: 0,
+      itemsPerPage: 50,
     };
   },
   computed: {
     ...mapState(['auth']),
+    numPages() {
+      return Math.ceil(this.total / this.itemsPerPage);
+    },
+    pageFrom() {
+      if (this.total === 0) {
+        return 0;
+      }
+      return (this.page - 1) * this.itemsPerPage + 1;
+    },
+    pageTo() {
+      return Math.min(this.total, this.page * this.itemsPerPage);
+    },
   },
   methods: {
     async actionChangeUserScope(user) {
@@ -100,9 +139,18 @@ export default {
       await putUser(this.auth.csrf, user);
       this.loadingChangeUserScope = false;
     },
-    async loadAsyncForRoute() {
-      const users = await getUsers();
+    async getPage(page) {
+      const offset = this.itemsPerPage * (page - 1);
+      this.loading = true;
+      const users = await getUsersPagination(this.itemsPerPage, offset);
       this.users = users;
+      this.loading = false;
+    },
+    async loadAsyncForRoute() {
+      this.getPage(this.page);
+
+      const total = await getUsersTotal();
+      this.total = total;
     },
   },
 };
