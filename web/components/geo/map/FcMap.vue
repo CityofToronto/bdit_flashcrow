@@ -294,7 +294,7 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
-      if (this.hoveredFeature === null) {
+      if (this.hoveredFeature === null || this.selectedFeature !== null) {
         return false;
       }
       return this.featureKeyHovered !== this.featureKeySelected
