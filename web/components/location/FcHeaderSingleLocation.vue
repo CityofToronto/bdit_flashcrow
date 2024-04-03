@@ -7,12 +7,12 @@
     <template v-else>
       <FcButton
         type="tertiary"
-        class="add-location-btn"
+        class="add-location-btn ml-3 mb-3"
         @click="actionAddLocation">
         <v-icon color="primary" left>mdi-plus</v-icon>
         Add Location
       </FcButton>
-      <h2 class="display-3">{{location.description}}</h2>
+      <h2 class="display-2">{{location.description}}</h2>
       <div class="label mt-2">
         {{textLocationFeatureType}} &#x2022; {{textMostRecentStudy}}
       </div>
@@ -77,7 +77,6 @@ export default {
   },
   methods: {
     actionAddLocation() {
-      console.log('setLocation-stub');//eslint-disable-line
       this.setLocationMode(LocationMode.MULTI_EDIT);
     },
     async syncLocation() {
