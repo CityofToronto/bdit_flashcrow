@@ -17,17 +17,9 @@
         <FcSelectorSingleLocation
           v-model="internalLocationsSelection" />
         <FcHeaderSingleLocation
-          class="mt-4"
           :location="locationActive" />
         <div class="d-flex mt-4">
           <FcSummaryPoi :location="locationActive" />
-          <v-spacer></v-spacer>
-          <FcButton
-            type="secondary"
-            @click="actionAddLocation">
-            <v-icon color="primary" left>mdi-map-marker-plus</v-icon>
-            Add Location
-          </FcButton>
         </div>
       </div>
     </header>
@@ -172,9 +164,6 @@ export default {
     },
   },
   methods: {
-    actionAddLocation() {
-      this.setLocationMode(LocationMode.MULTI_EDIT);
-    },
     actionToggleDetailView() {
       if (this.detailView) {
         this.setLocationsIndex(-1);
@@ -193,7 +182,6 @@ export default {
       await this.initLocations({ features, selectionType });
     },
     ...mapMutations([
-      'setLocationMode',
       'setLocationsIndex',
       'setToastInfo',
     ]),
