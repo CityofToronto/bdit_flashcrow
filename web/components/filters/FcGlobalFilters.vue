@@ -5,7 +5,7 @@
     <div class="align-center d-flex">
       <component
         :is="headerTag"
-        class="headline" :id="headingId">
+        class="headline mr-1 filter-title" :id="headingId">
         Filters
       </component>
       <v-spacer></v-spacer>
@@ -122,6 +122,9 @@ export default {
   .filter-name {
     align-self: flex-start;
     margin-right: 15px;
+  }
+  .filter-title {
+    user-select: none;
   }
 }
 </style>

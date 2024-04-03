@@ -6,7 +6,7 @@
     clipped-left
     dense>
     <FcDashboardNavBrand />
-    <h1 class="headline ml-2">{{textH1}}</h1>
+    <h1 class="headline ml-2 no-select">{{textH1}}</h1>
     <v-chip
       class="ml-2"
       :color="frontendEnv.colorClass + ' darken-4'"
@@ -74,6 +74,9 @@ export default {
 .fc-appbar {
   & > .v-toolbar__content {
     border-bottom: 1px solid var(--v-border-base);
+  }
+  .no-select {
+    user-select: none;
   }
 }
 </style>

@@ -294,7 +294,7 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
-      if (this.hoveredFeature === null) {
+      if (this.hoveredFeature === null || this.selectedFeature !== null) {
         return false;
       }
       return this.featureKeyHovered !== this.featureKeySelected
@@ -599,6 +599,7 @@ export default {
   & > .fc-map-legend-wrapper {
     right: 20px;
     top: 12px;
+    z-index: 1;
   }
   & > .fc-map-navigate {
     bottom: 77px;
