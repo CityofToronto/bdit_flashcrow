@@ -12,7 +12,7 @@ import {
   generateAtrSpeedVolume,
   generateAtrVolume,
   generateRandomCountData,
-  generateHourOfDayRange,
+  generateTimeOfDayRange,
   generateIndexRange,
   generateTmc,
   generateWithMissing,
@@ -25,7 +25,8 @@ expect.extend({
 
 test('ReportTimeUtils.indexRangeHourOfDay [empty dataset]', () => {
   const countData = [];
-  const indexRange = indexRangeHourOfDay(countData, 9, 17);
+  const timeWindow = generateTimeOfDayRange();
+  const indexRange = indexRangeHourOfDay(countData, timeWindow);
   expect(indexRange).toEqual({ lo: 0, hi: 0 });
 });
 
@@ -34,10 +35,11 @@ test('ReportTimeUtils.indexRangeHourOfDay [fuzz test]', () => {
     const countData = generateRandomCountData({
       COUNT: [1000, 10000],
     });
-    const { start, end } = generateHourOfDayRange();
-    const { lo, hi } = indexRangeHourOfDay(countData, start, end);
+    const timeWindow = generateTimeOfDayRange();
+
+    const { lo, hi } = indexRangeHourOfDay(countData, timeWindow);
     countData.forEach(({ t }, j) => {
-      expect(t.hour >= start && t.hour < end).toEqual(j >= lo && j < hi);
+      expect(t >= timeWindow.startTime && t < timeWindow.endTime).toEqual(j >= lo && j < hi);
     });
   }
 });
