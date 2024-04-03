@@ -55,15 +55,12 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
       <FcButton
-        class="ml-3 edit-location-btn"
+        class="ml-3 edit-location-btn mb-1"
         type="tertiary"
         @click="setLocationMode(LocationMode.MULTI_EDIT)">
         <v-icon color="primary" left>mdi-pencil</v-icon>
         Edit Locations
       </FcButton>
-      <v-messages
-        class="mt-2"
-        :value="[]"></v-messages>
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">

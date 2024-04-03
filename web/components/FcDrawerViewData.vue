@@ -18,7 +18,7 @@
           v-model="internalLocationsSelection" />
         <FcHeaderSingleLocation
           :location="locationActive" />
-        <div class="d-flex mt-4 justify-end">
+        <div class="d-flex mt-1 justify-end">
           <FcSummaryPoi :location="locationActive" />
         </div>
       </div>

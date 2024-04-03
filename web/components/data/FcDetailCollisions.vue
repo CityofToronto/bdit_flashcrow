@@ -4,8 +4,8 @@
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
     <template v-else>
-      <dl class="d-flex flex-grow-1 flex-shrink-1 text-center">
-        <div class="flex-grow-1 flex-shrink-1">
+      <dl class="d-flex flex-grow-1 flex-shrink-1 text-center justify-space-around">
+        <div class="flex-grow-1 collision-fact">
           <dt class="body-1">
             Total
           </dt>
@@ -17,7 +17,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="flex-grow-1 flex-shrink-1">
+        <div class="flex-grow-1 flex-shrink-1 collision-fact">
           <dt class="body-1">
             KSI
           </dt>
@@ -29,7 +29,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 mr-8">
+        <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 collision-fact mr-4">
           <dt class="body-1">
             Verified
           </dt>
@@ -43,8 +43,8 @@
         </div>
       </dl>
       <FcButton
-        class="flex-grow-0 flex-shrink-0"
-        type="tertiary"
+        class="flex-grow-0 flex-shrink-0 mt-2"
+        type="secondary"
         :disabled="collisionSummary.amount === 0"
         @click="$emit('show-reports')">
         <span>View Reports</span>
@@ -80,8 +80,13 @@ export default {
 
 <style lang="scss">
 .fc-detail-collisions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
   .fc-collisions-validated {
     width: 120px;
+  }
+  .collision-fact {
+    min-width: 50px;
   }
 }
 </style>
