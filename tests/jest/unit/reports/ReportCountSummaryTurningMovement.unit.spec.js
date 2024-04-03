@@ -1,9 +1,10 @@
 import ReportCountSummaryTurningMovement from '@/lib/reports/ReportCountSummaryTurningMovement';
+import { REPORT_CONSTANTS } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 
 describe('ReportCountSummaryTurningMovement', () => {
   const ReportTMC = ReportCountSummaryTurningMovement;
-  const INTERVAL_DURATION = ReportTMC.COUNT_INTERVAL_DURATION;
+  const INTERVAL_DURATION = REPORT_CONSTANTS.COUNT_INTERVAL_DURATION;
   const INTERVAL_MINS = INTERVAL_DURATION.minutes;
   const countStartTime = DateTime.now();
   const nullSummary = ReportTMC.statSummaryForNullCount();
@@ -127,7 +128,6 @@ describe('ReportCountSummaryTurningMovement', () => {
   });
 
   describe('totalsForPeak', () => {
-    const { PEAK_DURATION } = ReportTMC;
     let window;
     function getTotalsForPeak() {
       return ReportTMC.totalsForPeak(getFormattedCounts(), window);
@@ -155,7 +155,7 @@ describe('ReportCountSummaryTurningMovement', () => {
 
     test('returns the earliest peark period with highest count WITHIN the window', () => {
       const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 10 });
-      const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+      const peakEndTime = peakStartTime.plus(REPORT_CONSTANTS.PEAK_DURATION);
       expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
       expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
     });
@@ -177,7 +177,7 @@ describe('ReportCountSummaryTurningMovement', () => {
 
       test('the time range returned is the duration of a peak', () => {
         const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 1 });
-        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        const peakEndTime = peakStartTime.plus(REPORT_CONSTANTS.PEAK_DURATION);
         expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
         expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
       });
@@ -200,7 +200,7 @@ describe('ReportCountSummaryTurningMovement', () => {
 
       test('the time range returned is the duration of a peak', () => {
         const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 6 });
-        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        const peakEndTime = peakStartTime.plus(REPORT_CONSTANTS.PEAK_DURATION);
         expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
         expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
       });
@@ -225,7 +225,7 @@ describe('ReportCountSummaryTurningMovement', () => {
 
       test('the time range returned is the duration of a peak', () => {
         const peakStartTime = countStartTime.plus({ minutes: INTERVAL_MINS * 8 });
-        const peakEndTime = peakStartTime.plus(PEAK_DURATION);
+        const peakEndTime = peakStartTime.plus(REPORT_CONSTANTS.PEAK_DURATION);
         expect(getTotalsForPeak().timeRange.start).toEqual(peakStartTime);
         expect(getTotalsForPeak().timeRange.end).toEqual(peakEndTime);
       });
