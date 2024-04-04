@@ -189,6 +189,7 @@ export default {
       studyRequestItems: [],
       studyRequestLocations: new Map(),
       studyRequestUsers: new Map(),
+      studyRequestComments: new Map(),
       total: 0,
     };
   },
@@ -209,12 +210,14 @@ export default {
             this.studyRequestLocations,
             this.studyRequestUsers,
             request,
+            this.studyRequestComments,
           );
         }
         return getStudyRequestItem(
           this.studyRequestLocations,
           this.studyRequestUsers,
           request,
+          this.studyRequestComments,
         );
       });
     },
