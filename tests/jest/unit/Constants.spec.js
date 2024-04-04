@@ -1,9 +1,4 @@
-import {
-  HttpStatus,
-  ReportParameter,
-  StudyHours,
-} from '@/lib/Constants';
-import { STUDY_HOURS_HINT_OTHER } from '@/lib/i18n/Strings';
+import { HttpStatus, ReportParameter } from '@/lib/Constants';
 import DateTime from '@/lib/time/DateTime';
 
 test('HttpStatus#isOk', () => {
