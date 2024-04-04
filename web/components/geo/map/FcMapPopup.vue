@@ -169,6 +169,9 @@ export default {
   &.hovered {
     z-index: calc(var(--z-index-controls) - 2);
   }
+  .mapboxgl-popup-content {
+    pointer-events: none !important;
+  }
 
   /*
    * MapboxGL style overrides.
