@@ -5,7 +5,14 @@
       aria-label="Loading location details"
       small />
     <template v-else>
-      <h2 class="display-3">{{location.description}}</h2>
+      <FcButton
+        type="tertiary"
+        class="add-location-btn ml-3 mb-3"
+        @click="actionAddLocation">
+        <v-icon color="primary" left>mdi-plus</v-icon>
+        Add Location
+      </FcButton>
+      <h2 class="display-2">{{location.description}}</h2>
       <div class="label mt-2">
         {{textLocationFeatureType}} &#x2022; {{textMostRecentStudy}}
       </div>
@@ -19,11 +26,15 @@ import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
+import { LocationMode } from '@/lib/Constants';
+import { mapMutations } from 'vuex';
 
 export default {
   name: 'FcHeaderSingleLocation',
   components: {
     FcProgressCircular,
+    FcButton,
   },
   props: {
     location: Object,
@@ -65,6 +76,9 @@ export default {
     this.syncLocation();
   },
   methods: {
+    actionAddLocation() {
+      this.setLocationMode(LocationMode.MULTI_EDIT);
+    },
     async syncLocation() {
       if (this.location === null) {
         return;
@@ -76,6 +90,15 @@ export default {
       this.studySummary = studySummary;
       this.loading = false;
     },
+    ...mapMutations([
+      'setLocationMode',
+    ]),
   },
 };
 </script>
+
+<style lang="scss">
+.add-location-btn {
+  text-transform: none !important;
+}
+</style>

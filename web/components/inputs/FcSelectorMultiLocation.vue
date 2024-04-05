@@ -49,14 +49,18 @@
     </div>
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1">
+      class="flex-grow-1 flex-shrink-1 text-right">
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
-      <v-messages
-        class="mt-2"
-        :value="[]"></v-messages>
+      <FcButton
+        class="ml-3 edit-location-btn mb-1"
+        type="tertiary"
+        @click="setLocationMode(LocationMode.MULTI_EDIT)">
+        <v-icon color="primary" left>mdi-pencil</v-icon>
+        Edit Locations
+      </FcButton>
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
@@ -131,13 +135,6 @@
             <v-spacer></v-spacer>
 
             <slot name="action" />
-            <FcButton
-              class="ml-2 column-space"
-              type="secondary"
-              @click="setLocationMode(LocationMode.MULTI_EDIT)">
-              <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
-              Edit Locations
-            </FcButton>
 
           </div>
         </template>
@@ -151,13 +148,7 @@
           <v-spacer></v-spacer>
 
           <slot name="action" />
-          <FcButton
-            class="ml-2"
-            type="secondary"
-            @click="setLocationMode(LocationMode.MULTI_EDIT)">
-            <v-icon color="primary" left>mdi-circle-edit-outline</v-icon>
-            Edit Locations
-          </FcButton>
+
         </template>
       </div>
     </div>
@@ -430,5 +421,8 @@ export default {
       padding-left: 0 !important;
     }
   }
+}
+.edit-location-btn {
+  text-transform: none !important;
 }
 </style>

@@ -4,30 +4,14 @@
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">
-        <template v-slot:action>
-          <FcButton
-            type="secondary"
-            @click="actionToggleDetailView">
-            <span v-if="detailView">Aggregate View</span>
-            <span v-else>Detail View</span>
-          </FcButton>
-        </template>
       </FcSelectorMultiLocation>
       <div v-else class="px-5 py-3">
         <FcSelectorSingleLocation
           v-model="internalLocationsSelection" />
         <FcHeaderSingleLocation
-          class="mt-4"
           :location="locationActive" />
-        <div class="d-flex mt-4">
+        <div class="d-flex mt-1 justify-start">
           <FcSummaryPoi :location="locationActive" />
-          <v-spacer></v-spacer>
-          <FcButton
-            type="secondary"
-            @click="actionAddLocation">
-            <v-icon color="primary" left>mdi-map-marker-plus</v-icon>
-            Add Location
-          </FcButton>
         </div>
       </div>
     </header>
@@ -79,7 +63,6 @@ import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
 import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcGlobalFilters from '@/web/components/filters/FcGlobalFilters.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
@@ -92,7 +75,6 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
-    FcButton,
     FcGlobalFilters,
     FcHeaderSingleLocation,
     FcProgressLinear,
@@ -172,9 +154,6 @@ export default {
     },
   },
   methods: {
-    actionAddLocation() {
-      this.setLocationMode(LocationMode.MULTI_EDIT);
-    },
     actionToggleDetailView() {
       if (this.detailView) {
         this.setLocationsIndex(-1);
@@ -193,7 +172,6 @@ export default {
       await this.initLocations({ features, selectionType });
     },
     ...mapMutations([
-      'setLocationMode',
       'setLocationsIndex',
       'setToastInfo',
     ]),
