@@ -624,7 +624,7 @@ export default {
   }
   .mapboxgl-ctrl-bottom-left {
     & > .mapboxgl-ctrl-scale {
-      background-color: hsla(0, 0%, 100%, 0.8);
+      background-color: hsla(0%, 0%, 100%, 0.8);
       border-color: #272727;
       bottom: 0;
       color: #272727;
@@ -635,7 +635,7 @@ export default {
       position: absolute;
     }
     & > .mapboxgl-ctrl-attrib {
-      background-color: hsla(0, 0%, 100%, 0.8);
+      background-color: hsla(0%, 0%, 100%, 0.8);
       bottom: 10px;
       color: #272727;
       font-size: 0.75rem;

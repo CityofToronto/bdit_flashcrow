@@ -19,7 +19,6 @@ test('VectorTile.Utils', () => {
   }).toThrow();
 });
 
-
 test('VectorTile.Feature', () => {
   const createdAt = DateTime.local();
   let featureOptions = {

@@ -37,7 +37,6 @@ test('Random.range()', () => {
   }).toThrow();
 });
 
-
 test('Random.choice()', () => {
   const N = 100;
   const xs = ['a'];
