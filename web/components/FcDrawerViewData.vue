@@ -4,14 +4,6 @@
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">
-        <!-- <template v-slot:action>
-          <FcButton
-            type="secondary"
-            @click="actionToggleDetailView">
-            <span v-if="detailView">Aggregate View</span>
-            <span v-else>Detail View</span>
-          </FcButton>
-        </template> -->
       </FcSelectorMultiLocation>
       <div v-else class="px-5 py-3">
         <FcSelectorSingleLocation
@@ -71,7 +63,6 @@ import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
 import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcGlobalFilters from '@/web/components/filters/FcGlobalFilters.vue';
-// import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
@@ -84,7 +75,6 @@ export default {
     FcMixinRouteAsync,
   ],
   components: {
-    // FcButton,
     FcGlobalFilters,
     FcHeaderSingleLocation,
     FcProgressLinear,
