@@ -4,6 +4,8 @@
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
         <v-divider></v-divider>
 
+        <v-text-field single-line v-model="search" @input="searchUsers"></v-text-field>
+
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
             class="fc-data-table-users"
@@ -61,7 +63,7 @@
             {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
 
-          <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
+          <v-pagination v-model="page" :length="numPages" :total-visible="7"/>
         </v-card-actions>
       </v-card>
     </section>
@@ -116,6 +118,7 @@ export default {
       page: 1,
       total: 0,
       itemsPerPage: 50,
+      search: '',
     };
   },
   computed: {
@@ -142,15 +145,19 @@ export default {
     async getPage(page) {
       const offset = this.itemsPerPage * (page - 1);
       this.loading = true;
-      const users = await getUsersPagination(this.itemsPerPage, offset);
+      const users = await getUsersPagination(this.itemsPerPage, offset, this.search);
       this.users = users;
       this.loading = false;
     },
     async loadAsyncForRoute() {
-      this.getPage(this.page);
+      this.getPage(this.page, this.search);
 
-      const total = await getUsersTotal();
+      const total = await getUsersTotal(this.search);
       this.total = total;
+    },
+    async searchUsers(search) {
+      this.search = search;
+      this.getPage(this.page);
     },
   },
 };
