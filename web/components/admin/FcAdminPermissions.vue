@@ -3,8 +3,15 @@
     <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
         <v-divider></v-divider>
-
-        <v-text-field single-line v-model="search" @input="searchUsers"></v-text-field>
+        <v-text-field
+          v-model="query"
+          append-icon="mdi-magnify"
+          class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
+          dense
+          hide-details
+          label="Search for a user"
+          outlined>
+        </v-text-field>
 
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
@@ -14,7 +21,7 @@
             :items="users"
             :items-per-page.sync="itemsPerPage"
             fixed-header
-            height="calc(100vh - 250px)"
+            height="calc(100vh - 280px)"
             :loading="loading"
             must-sort
             sort-by="UNIQUE_NAME"
@@ -74,6 +81,7 @@
 import { mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
+import { debounce } from '@/lib/FunctionUtils';
 import { formatUsername } from '@/lib/StringFormatters';
 import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
@@ -118,7 +126,7 @@ export default {
       page: 1,
       total: 0,
       itemsPerPage: 50,
-      search: '',
+      query: '',
     };
   },
   computed: {
@@ -135,6 +143,29 @@ export default {
     pageTo() {
       return Math.min(this.total, this.page * this.itemsPerPage);
     },
+    filterParams() {
+      const limit = this.itemsPerPage;
+      const offset = this.itemsPerPage * (this.page - 1);
+      const search = this.query;
+      return {
+        limit, offset, search,
+      };
+    },
+  },
+  watch: {
+    query: {
+      handler: function resetPage() {
+        this.page = 1;
+      },
+      immediate: true,
+    },
+    filterParams: {
+      deep: true,
+      handler: debounce(async function updateItems() {
+        this.updateData(this.filterParams);
+      }),
+      immediate: true,
+    },
   },
   methods: {
     async actionChangeUserScope(user) {
@@ -142,22 +173,18 @@ export default {
       await putUser(this.auth.csrf, user);
       this.loadingChangeUserScope = false;
     },
-    async getPage(page) {
-      const offset = this.itemsPerPage * (page - 1);
+    async updateData(filterParams) {
       this.loading = true;
-      const users = await getUsersPagination(this.itemsPerPage, offset, this.search);
+      const { limit, offset, search } = filterParams;
+      const users = await getUsersPagination(limit, offset, search);
+      const total = await getUsersTotal(search);
+
       this.users = users;
+      this.total = total;
       this.loading = false;
     },
     async loadAsyncForRoute() {
-      this.getPage(this.page, this.search);
-
-      const total = await getUsersTotal(this.search);
-      this.total = total;
-    },
-    async searchUsers(search) {
-      this.search = search;
-      this.getPage(this.page);
+      this.updateUsers(this.filterParams);
     },
   },
 };
