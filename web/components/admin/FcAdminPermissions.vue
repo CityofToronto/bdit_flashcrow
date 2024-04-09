@@ -16,15 +16,9 @@
           outlined>
         </v-text-field>
       </v-card>
-      <!-- <v-spacer></v-spacer> -->
     </div>
-    <!-- <div class="flex-grow-0 flex-shrink-0 px-5">
-
-    </div> -->
     <section class="flex-grow-1 flex-shrink-1 mt-3 mb-6 px-5">
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height" flat outlined>
-        <!-- <v-divider></v-divider> -->
-
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
             class="fc-data-table-users"
