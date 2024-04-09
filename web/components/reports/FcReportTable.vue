@@ -69,7 +69,9 @@
             :key="'cell_footer_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <FcTextReportValue :value="value" />
+            <FcTextReportValue v-if="value ==='MV'" value="MVCR" />
+            <FcTextReportValue v-else-if="value === 'CR'" value="Img" />
+            <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
       </tfoot>

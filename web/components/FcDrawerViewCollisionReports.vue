@@ -86,7 +86,7 @@
             </div>
           </template>
 
-          <div v-if="!error" class="mr-3">
+          <div class="mr-3">
             <FcMenuDownloadReportFormat
               :loading="loadingDownload"
               :report-type="activeReportType"
@@ -111,21 +111,9 @@
           </div>
         </div>
         <div
-          v-else-if="!error"
-          class="fc-report-wrapper pa-3">
-          <FcReport v-bind="reportLayout" />
-        </div>
-        <div
           v-else
           class="fc-report-wrapper pa-3">
-          <p>The report you've requested could not be created due to an internal server error.
-            Please contact the move team for further assistance.</p>
-            <FcButton
-            type="secondary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            Back to map
-          </FcButton>
+          <FcReport v-bind="reportLayout" />
         </div>
       </section>
     </template>
@@ -188,7 +176,6 @@ export default {
       leaveConfirmed: false,
       LocationMode,
       loadingDownload: false,
-      loadError: false,
       loadingReportLayout: false,
       nextRoute: null,
       reportLayout: null,
@@ -406,10 +393,6 @@ export default {
 
       this.updateReportLayout();
     },
-    handleError() {
-      this.loadingReportLayout = false;
-      this.error = true;
-    },
     async updateReportLayout() {
       if (this.activeReportType === null) {
         return;
@@ -420,7 +403,7 @@ export default {
         this.activeReportType,
         this.activeReportId,
         this.filterParamsCollision,
-      ).catch(this.handleError);
+      );
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
