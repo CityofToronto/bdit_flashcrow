@@ -32,11 +32,12 @@
           <FcButton
             type="tertiary"
             @click="showMore = !showMore">
-            <span v-if="showMore">
+            <span v-if="showMore" class="center-icon">
               <v-icon>mdi-menu-up</v-icon>
               Less
             </span>
-            <span v-else>
+            <span v-else class="center-icon">
+              <v-icon>mdi-menu-down</v-icon>
               More
             </span>
           </FcButton>
@@ -128,6 +129,9 @@ export default {
 }
 .shrink {
   opacity: 0.9;
+}
+.center-icon {
+  margin-right: 24px;
 }
 
 @media only screen and (max-width: 600px) {
