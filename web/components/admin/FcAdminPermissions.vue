@@ -1,18 +1,18 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
-    <div class="align-center d-flex mt-2 mb-2 px-5">
-      <h2 class="display-3 mt-0" id="heading_track_requests_requests">
+    <div class="align-center d-flex mt-1 mb-0 px-5">
+      <h2 class="display-3 mt-0 flex-grow-2" id="heading_track_requests_requests">
         User Permissions
       </h2>
       <v-spacer></v-spacer>
-      <v-card flat outlined class="flex-grow-1 flex-shrink-1">
+      <v-card flat outlined class="flex-grow-0 flex-shrink-0">
         <v-text-field
           v-model="query"
           append-icon="mdi-magnify"
           class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
           dense
           hide-details
-          label="Search for a user"
+          label="Search"
           outlined>
         </v-text-field>
       </v-card>
@@ -21,7 +21,7 @@
     <!-- <div class="flex-grow-0 flex-shrink-0 px-5">
 
     </div> -->
-    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
+    <section class="flex-grow-1 flex-shrink-1 mt-3 mb-6 px-5">
       <v-card class= "fc-requests-track-card d-flex flex-column fill-height" flat outlined>
         <!-- <v-divider></v-divider> -->
 
@@ -33,7 +33,7 @@
             :items="users"
             :items-per-page.sync="itemsPerPage"
             fixed-header
-            height="calc(100vh - 265px)"
+            height="calc(100vh - 250px)"
             :loading="loading"
             must-sort
             sort-by="UNIQUE_NAME"
@@ -175,7 +175,7 @@ export default {
       deep: true,
       handler: debounce(async function updateItems() {
         this.updateData(this.filterParams);
-      }),
+      }, 200),
       immediate: true,
     },
   },
