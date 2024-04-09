@@ -63,7 +63,7 @@
 
         <div class="align-center d-flex">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name">
