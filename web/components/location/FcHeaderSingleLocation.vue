@@ -7,7 +7,7 @@
     <template v-else>
       <FcButton
         type="tertiary"
-        class="add-location-btn ml-3 mb-3"
+        class="add-location-btn mb-3"
         @click="actionAddLocation">
         <v-icon color="primary" left>mdi-plus</v-icon>
         Add Location
