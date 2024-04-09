@@ -34,7 +34,9 @@
             :key="'cell_header_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
-            <FcTextReportValue :value="value" />
+            <FcTextReportValue v-if="value ==='MV'" value="MVCR" />
+            <FcTextReportValue v-else-if="value === 'CR'" value="Img" />
+            <FcTextReportValue v-else :value="value" />
           </component>
         </tr>
       </thead>
@@ -267,7 +269,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'Img');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'CR');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
