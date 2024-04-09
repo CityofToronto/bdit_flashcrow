@@ -28,7 +28,7 @@ test('EmailStudyRequestNewComment', async () => {
   await email.init();
 
   const recipients = email.getRecipients();
-  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin('EmailStudyRequestNewComment'), ...studyRequest.ccEmails]);
+  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin(), ...studyRequest.ccEmails]);
 
   const subject = email.getSubject();
   expect(subject).toEqual('[MOVE] New comment on request #42 for Test location');

@@ -42,7 +42,7 @@ test('EmailStudyRequestChanged', async () => {
   await email.init();
 
   const recipients = email.getRecipients();
-  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin('EmailStudyRequestChanged')]);
+  expect(recipients).toEqual([EmailBase.getRecipientStudyRequestAdmin()]);
 
   const subject = email.getSubject();
   expect(subject).toEqual('[MOVE] Request changed: #42 - Test location');
