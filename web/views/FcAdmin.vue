@@ -35,7 +35,7 @@ export default {
           title = 'Metrics';
           break;
         case 'adminPermissions':
-          title = 'User Permissions';
+          title = '';
           break;
         case 'adminUtilities':
           title = 'Utilities';

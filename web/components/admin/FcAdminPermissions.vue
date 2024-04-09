@@ -1,8 +1,11 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
-    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
-      <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
-        <v-divider></v-divider>
+    <div class="align-center d-flex mt-2 mb-2 px-5">
+      <h2 class="display-3 mt-0" id="heading_track_requests_requests">
+        User Permissions
+      </h2>
+      <v-spacer></v-spacer>
+      <v-card flat outlined class="flex-grow-1 flex-shrink-1">
         <v-text-field
           v-model="query"
           append-icon="mdi-magnify"
@@ -12,6 +15,15 @@
           label="Search for a user"
           outlined>
         </v-text-field>
+      </v-card>
+      <!-- <v-spacer></v-spacer> -->
+    </div>
+    <!-- <div class="flex-grow-0 flex-shrink-0 px-5">
+
+    </div> -->
+    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
+      <v-card class= "fc-requests-track-card d-flex flex-column fill-height" flat outlined>
+        <!-- <v-divider></v-divider> -->
 
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
@@ -21,7 +33,7 @@
             :items="users"
             :items-per-page.sync="itemsPerPage"
             fixed-header
-            height="calc(100vh - 280px)"
+            height="calc(100vh - 265px)"
             :loading="loading"
             must-sort
             sort-by="UNIQUE_NAME"
