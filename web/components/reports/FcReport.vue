@@ -67,3 +67,8 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.fc-report {
+  margin-left: 25px;
+}
+</style>
