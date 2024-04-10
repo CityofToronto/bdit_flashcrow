@@ -82,7 +82,7 @@
 
         <div class="align-center d-flex">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-if="!error" v-model="indexActiveReportType">
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name"
@@ -103,6 +103,7 @@
           </FcButton>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
+              :disabled="error"
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Study Report"
@@ -135,6 +136,9 @@
           <div class="font-weight-regular headline secondary--text">
             Report not available, try a different location.
           </div>
+        </div>
+        <div v-else-if="error">
+          Report broken, please contact the move team.
         </div>
         <div
           v-else
@@ -208,6 +212,7 @@ export default {
       reportUserParameters[name] = defaultParameters;
     });
     return {
+      error: false,
       indexActiveReportType: 0,
       indexActiveStudy: 0,
       leaveConfirmed: false,
@@ -455,6 +460,11 @@ export default {
         activeReportId,
         reportParameters,
       );
+      if (1 < 2) {
+        this.error = true;
+        this.loadingReportLayout = false;
+        throw new Error();
+      }
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;

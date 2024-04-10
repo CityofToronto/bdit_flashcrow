@@ -5,6 +5,7 @@
         v-bind="attrs"
         v-on="on"
         class="ml-2"
+        :disabled="disabled"
         :loading="loading"
         :scope="requireAuth ? [] : null"
         :type="type">
@@ -50,6 +51,10 @@ export default {
     FcButton,
   },
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     loading: {
       type: Boolean,
       default: false,
