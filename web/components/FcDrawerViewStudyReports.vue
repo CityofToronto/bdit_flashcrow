@@ -25,7 +25,7 @@
           </FcButton>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
-            <span class="font-weight-regular headline secondary--text">
+            <span class="font-weight-light headline secondary--text">
               &#x2022; {{locationActive.description}}
             </span>
           </h2>

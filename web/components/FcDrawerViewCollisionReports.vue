@@ -25,7 +25,7 @@
           </FcButton>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
-            <span class="font-weight-regular headline secondary--text">
+            <span class="font-weight-light headline secondary--text">
               &#x2022;
               <span v-if="locationMode === LocationMode.SINGLE || detailView">
                 {{locationActive.description}}
