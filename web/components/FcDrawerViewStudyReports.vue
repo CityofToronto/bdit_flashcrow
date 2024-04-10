@@ -80,7 +80,7 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex">
+        <div class="align-center d-flex pt-1">
           <nav>
             <v-tabs v-model="indexActiveReportType">
               <v-tab
