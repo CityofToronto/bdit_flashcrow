@@ -18,7 +18,7 @@
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
           <FcButton
-            type="secondary"
+            type="primary"
             @click="actionNavigateBack">
             <v-icon left>mdi-chevron-left</v-icon>
             View Data

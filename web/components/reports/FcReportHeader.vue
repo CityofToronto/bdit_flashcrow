@@ -26,7 +26,7 @@
       <div class="ma-3">
         <v-icon color="blue">mdi-information</v-icon>
       </div>
-      <div class="ml-1 mr-2 pa-2">
+      <div class="ml-1 mr-2 pr-2">
         For an in-depth explanation of how to interpret this data,
         <a class="link" href="https://www.notion.so/bditto/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196" target="_blank" rel="noopener noreferrer">
           see here
