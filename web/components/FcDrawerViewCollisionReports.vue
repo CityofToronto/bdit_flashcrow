@@ -113,8 +113,10 @@
           </div>
         </div>
         <FcCallout v-if="reportRetrievalError"
+        icon="mdi-alert-circle"
+        iconColor="white"
+        textColor="white"
         type="error-callout"
-        iconColor="black"
         >There was a problem loading this report.
             If you need this data urgently,
             email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.
@@ -390,7 +392,7 @@ export default {
     handleError(err) {
       this.reportRetrievalError = true;
       this.loadingReportLayout = false;
-      this.setToastError(`${err}`);
+      this.setToastError(err);
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;

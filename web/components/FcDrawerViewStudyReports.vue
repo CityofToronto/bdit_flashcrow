@@ -137,10 +137,10 @@
             Report not available, try a different location.
           </div>
         </div>
-        <FcCallout v-else-if="studyRetrievalError ||
-        (this.reportLayout !== null && this.reportLayout.content[0].options?.body?.length === 0)"
+        <FcCallout v-else-if="studyRetrievalError || reportBodyEmpty"
+        icon="mdi-alert-circle"
+        iconColor="white"
         type="error-callout"
-        iconColor="black"
         >There was a problem loading this report.
             If you need this data urgently,
             email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.

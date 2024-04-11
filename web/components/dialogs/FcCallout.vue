@@ -1,7 +1,7 @@
 <template>
   <div :class="type">
           <div class="ma-3">
-            <v-icon :color="iconColor">mdi-information</v-icon>
+            <v-icon :color="iconColor">{{ icon }}</v-icon>
           </div>
           <slot class="ml-1 mr-2 pa-2">
            Error getting data
@@ -18,9 +18,10 @@
 export default {
   name: 'FcCallout',
   props: {
-    type: String,
-    iconColor: String,
     calloutMessage: String,
+    icon: String,
+    iconColor: String,
+    type: String,
   },
 };
 </script>
@@ -29,10 +30,13 @@ export default {
 .error-callout {
     display: flex;
     align-items: center;
-    background-color: #ff06064f;
-    color: black;
+    background-color: #ff0606e7;
+    color: #ffff;
     border-radius: 5px;
     min-height: 60px;
-    font-size: 16px;
+    font-size: 18px;
+    & > a {
+      color: black;
+    }
   }
 </style>

@@ -170,11 +170,11 @@ export default {
         this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       } catch (err) {
         this.error = true;
-        this.setToastBackendError(err);
+        this.setToastEnrichedError('<span>Tooltip failed to load. If you have questions, email <a href="mailto:move-team@toronto.ca">the MOVE team</a></span>');
       }
       this.loading = false;
     },
-    ...mapMutations(['setToastBackendError']),
+    ...mapMutations(['setToastEnrichedError']),
   },
 };
 </script>

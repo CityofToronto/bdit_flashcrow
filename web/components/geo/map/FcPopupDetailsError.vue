@@ -1,9 +1,8 @@
 <template>
   <div>
-    <p>
+    <p class="pa-1">
       There was a problem loading this information.
-      The MOVE Team has been notified. Email
-      <a href="mailto:move-team@toronto.ca">move-team@toronto.ca</a> if you have questions.
+      Contact the MOVE team for assistance.
     </p>
   </div>
 </template>
