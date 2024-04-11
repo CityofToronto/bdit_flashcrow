@@ -137,13 +137,15 @@
             Report not available, try a different location.
           </div>
         </div>
-        <div
-          v-else-if="studyRetrievalError || reportBodyEmpty"
-          class="ma-3 text-center">
-          <div class="font-weight-regular headline secondary--text mt-12">
+        <div class="callout ma-3" v-else-if="studyRetrievalError ||
+        (this.reportLayout !== null && this.reportLayout.content[0].options?.body?.length === 0)">
+          <div class="ma-3">
+            <v-icon color="blue">mdi-information</v-icon>
+          </div>
+          <div class="ml-1 mr-2 pa-2">
             There was a problem loading this report.
-            Email the <a href="mailto:move-team@toronto.ca">MOVE team</a> if you need
-            this data urgently.
+            If you need this data urgently,
+            email <a href="mailto:move-team@toronto.ca">us</a>.
           </div>
         </div>
         <div
