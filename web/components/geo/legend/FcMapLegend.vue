@@ -4,8 +4,8 @@
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
           <div>Legend</div>
-          <v-icon v-if="!isHidden" @click="toggleLegend">mdi-chevron-down</v-icon>
-          <v-icon v-else @click="toggleLegend">mdi-chevron-up</v-icon>
+          <v-icon v-if="!isHidden" @click="toggleLegend">mdi-chevron-up</v-icon>
+          <v-icon v-else @click="toggleLegend">mdi-chevron-down</v-icon>
         </legend>
         <v-divider></v-divider>
 
