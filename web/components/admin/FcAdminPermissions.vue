@@ -72,7 +72,11 @@
         <v-card-actions class="flex-grow-0 flex-shrink-0">
           <v-spacer></v-spacer>
 
-          <div>
+          <FcProgressCircular
+            v-if="isLoadingTotal"
+            small
+          />
+          <div v-else>
             {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
 
@@ -89,6 +93,7 @@ import { mapState } from 'vuex';
 import { AuthScope } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { formatUsername } from '@/lib/StringFormatters';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
@@ -102,6 +107,7 @@ export default {
   components: {
     FcDataTable,
     FcTooltip,
+    FcProgressCircular,
   },
   data() {
     const authScopeSlots = AuthScope.enumValues.map((authScope) => {
@@ -133,6 +139,7 @@ export default {
       total: 0,
       itemsPerPage: 50,
       query: '',
+      isLoadingTotal: true,
     };
   },
   computed: {
@@ -181,6 +188,7 @@ export default {
     },
     async updateData(filterParams) {
       this.loading = true;
+      this.isLoadingTotal = true;
       const { limit, offset, search } = filterParams;
       const users = await getUsersPagination(limit, offset, search);
       const total = await getUsersTotal(search);
@@ -188,6 +196,7 @@ export default {
       this.users = users;
       this.total = total;
       this.loading = false;
+      this.isLoadingTotal = false;
     },
     async loadAsyncForRoute() {
       this.updateUsers(this.filterParams);
