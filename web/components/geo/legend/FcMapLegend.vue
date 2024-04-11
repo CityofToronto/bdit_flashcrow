@@ -1,5 +1,17 @@
 <template>
-  <v-card class="fc-map-legend" :class="{ shrink: isHidden }">
+
+  <div v-if="this.drawerOpen && this.isMiniMode">
+   <v-tooltip left>
+      <template v-slot:activator="{ on, attrs }">
+        <FcButton class="fc-legend-mini-mode" @click="toggleMiniMode" v-bind="attrs" v-on="on">
+          <v-icon >mdi-format-list-checkbox</v-icon>
+        </FcButton>
+      </template>
+      <span>Toggle Legend</span>
+    </v-tooltip>
+  </div>
+
+  <v-card v-else class="fc-map-legend" :class="{ shrink: isHidden }">
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
@@ -9,18 +21,11 @@
         </legend>
         <v-divider></v-divider>
 
-        <div v-if="!isHidden" >
-          <template v-for="(layerItem, i) in layerItems" >
-            <v-divider
-              v-if="layerItem === null"
-              :key="i"
-              class="ml-4"></v-divider>
-            <component
-              v-else
-              v-model="internalValue[layerItem.value]"
-              :key="layerItem.value"
-              :is="'FcLegendRow' + layerItem.suffix"
-              class="mx-4 mt-2 mb-3" />
+        <div v-if="!isHidden">
+          <template v-for="(layerItem, i) in layerItems">
+            <v-divider v-if="layerItem === null" :key="i" class="ml-4"></v-divider>
+            <component v-else v-model="internalValue[layerItem.value]" :key="layerItem.value"
+              :is="'FcLegendRow' + layerItem.suffix" class="mx-4 mt-2 mb-3" />
           </template>
         </div>
       </fieldset>
@@ -29,9 +34,7 @@
         <v-divider></v-divider>
 
         <div class="text-center py-1">
-          <FcButton
-            type="tertiary"
-            @click="showMore = !showMore">
+          <FcButton type="tertiary" @click="showMore = !showMore">
             <span v-if="showMore" class="center-icon">
               <v-icon>mdi-menu-up</v-icon>
               Less
@@ -55,6 +58,7 @@ import FcLegendRowHospitals from '@/web/components/geo/legend/FcLegendRowHospita
 import FcLegendRowSchools from '@/web/components/geo/legend/FcLegendRowSchools.vue';
 import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { mapState } from 'vuex';
 
 export default {
   name: 'FcMapLegend',
@@ -80,6 +84,7 @@ export default {
       { suffix: 'Hospitals', value: 'hospitals' },
     ];
     return {
+      isMiniMode: true,
       isHidden: false,
       showMore: false,
       layerItemsLess,
@@ -89,6 +94,9 @@ export default {
   methods: {
     toggleLegend() {
       this.isHidden = !this.isHidden;
+    },
+    toggleMiniMode() {
+      this.isMiniMode = !this.isMiniMode;
     },
   },
   computed: {
@@ -107,7 +115,18 @@ export default {
       });
       return layerLabels;
     },
+    ...mapState('viewData', [
+      'drawerOpen',
+    ]),
   },
+  watch: {
+    drawerOpen() {
+      if (this.drawerOpen) {
+        this.isMiniMode = true;
+      }
+    },
+  },
+
 };
 </script>
 
@@ -116,22 +135,32 @@ export default {
   width: 250px;
   display: block;
   user-select: none;
+
   & .fc-legend-icon {
     height: 24px;
     position: relative;
     width: 24px;
   }
+
   & .headline {
     width: 100%;
     justify-content: space-between;
     align-items: center;
   }
+
+  & .shrink {
+    opacity: 0.9;
+  }
+
+  & .center-icon {
+    margin-right: 24px;
+  }
 }
-.shrink {
-  opacity: 0.9;
-}
-.center-icon {
-  margin-right: 24px;
+
+.fc-legend-mini-mode {
+  max-width: 32px;
+  max-height: 32px;
+  min-width: unset !important;
 }
 
 @media only screen and (max-width: 600px) {
@@ -139,6 +168,7 @@ export default {
     display: none;
   }
 }
+
 // hide when screen is too-short, too
 @media only screen and (max-height: 450px) {
   .fc-map-legend {
