@@ -169,15 +169,6 @@ export default {
   &.hovered {
     z-index: calc(var(--z-index-controls) - 2);
   }
-  .mapboxgl-popup-content {
-    pointer-events: none;
-  }
-  .v-card__actions{
-    pointer-events: none;
-  }
-  .fc-button {
-    pointer-events: all !important;
-  }
 
   /*
    * MapboxGL style overrides.
