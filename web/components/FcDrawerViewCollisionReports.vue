@@ -66,6 +66,7 @@
             <v-tabs v-model="indexActiveReportType">
               <v-tab
                 v-for="reportType in reportTypes"
+                :disabled="reportRetrievalError"
                 :key="reportType.name">
                 {{reportType.label}}
               </v-tab>
@@ -88,6 +89,7 @@
 
           <div class="mr-3">
             <FcMenuDownloadReportFormat
+              :disabled="reportRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Collision Report"
@@ -108,6 +110,15 @@
             class="ma-3" />
           <div class="font-weight-regular headline secondary--text">
             This page is loading, please wait.
+          </div>
+        </div>
+        <div
+          v-else-if="reportRetrievalError"
+          class="ma-3 text-center">
+          <div class="font-weight-regular headline secondary--text mt-12">
+            There was a problem loading this report.
+            Email the <a href="mailto:move-team@toronto.ca">MOVE team</a> if you need
+            this data urgently.
           </div>
         </div>
         <div
@@ -179,6 +190,7 @@ export default {
       loadingReportLayout: false,
       nextRoute: null,
       reportLayout: null,
+      reportRetrievalError: false,
       reportTypes: [
         ReportType.COLLISION_DIRECTORY,
         ReportType.COLLISION_TABULATION,
@@ -375,6 +387,11 @@ export default {
 
       return true;
     },
+    handleError(err) {
+      this.reportRetrievalError = true;
+      this.loadingReportLayout = false;
+      this.setToastError(`${err}`);
+    },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
       const features = CompositeId.decode(s1);
@@ -403,7 +420,7 @@ export default {
         this.activeReportType,
         this.activeReportId,
         this.filterParamsCollision,
-      );
+      ).catch(err => this.handleError(err));
       this.reportLayout = reportLayout;
 
       this.loadingReportLayout = false;
@@ -452,7 +469,7 @@ export default {
       if (Array.isArray(headerRows)) row = headerRows[index];
       return row;
     },
-    ...mapMutations(['setLocationsIndex', 'setToast']),
+    ...mapMutations(['setLocationsIndex', 'setToast', 'setToastError']),
     ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
     ...mapActions(['initLocations']),
   },

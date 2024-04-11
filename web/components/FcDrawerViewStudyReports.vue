@@ -82,11 +82,11 @@
 
         <div class="align-center d-flex">
           <nav>
-            <v-tabs v-if="!error" v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType">
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name"
-                :disabled="studies.length === 0">
+                :disabled="reportBodyEmpty || studyRetrievalError">
                 {{reportType.label}}
               </v-tab>
             </v-tabs>
@@ -103,7 +103,7 @@
           </FcButton>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
-              :disabled="error"
+              :disabled="reportBodyEmpty || studyRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Study Report"
@@ -137,8 +137,14 @@
             Report not available, try a different location.
           </div>
         </div>
-        <div v-else-if="error">
-          Report broken, please contact the move team.
+        <div
+          v-else-if="studyRetrievalError || reportBodyEmpty"
+          class="ma-3 text-center">
+          <div class="font-weight-regular headline secondary--text mt-12">
+            There was a problem loading this report.
+            Email the <a href="mailto:move-team@toronto.ca">MOVE team</a> if you need
+            this data urgently.
+          </div>
         </div>
         <div
           v-else
@@ -212,7 +218,6 @@ export default {
       reportUserParameters[name] = defaultParameters;
     });
     return {
-      error: false,
       indexActiveReportType: 0,
       indexActiveStudy: 0,
       leaveConfirmed: false,
@@ -220,11 +225,13 @@ export default {
       loadingReportLayout: false,
       LocationMode,
       nextRoute: null,
+      reportBodyEmpty: false,
       reportLayout: null,
       reportUserParameters,
       showConfirmLeave: false,
       showReportParameters: false,
       studies: [],
+      studyRetrievalError: false,
       studySummaryPerLocation: [],
     };
   },
@@ -412,6 +419,11 @@ export default {
         params,
       });
     },
+    handleError() {
+      this.loadingReportLayout = false;
+      this.studyRetrievalError = true;
+      this.setToastError('Report retrieval failed. Please contact the MOVE team for assistance.');
+    },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName, studyTypeName } = to.params;
       const features = CompositeId.decode(s1);
@@ -454,22 +466,20 @@ export default {
         return;
       }
       this.loadingReportLayout = true;
-
       const reportLayout = await getReportWeb(
         activeReportType,
         activeReportId,
         reportParameters,
-      );
-      if (1 < 2) {
-        this.error = true;
-        this.loadingReportLayout = false;
-        throw new Error();
-      }
-      this.reportLayout = reportLayout;
+      ).catch(err => this.handleError(err));
 
+      this.reportLayout = reportLayout;
+      if (reportLayout.content[0].options?.body?.length === 0) {
+        this.reportBodyEmpty = true;
+        this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
+      }
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocationsIndex']),
+    ...mapMutations(['setLocationsIndex', 'setToastError']),
     ...mapActions(['initLocations']),
   },
 };
