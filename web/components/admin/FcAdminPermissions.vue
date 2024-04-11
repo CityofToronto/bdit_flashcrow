@@ -18,7 +18,7 @@
             sort-by="UNIQUE_NAME"
             :sort-desc="false"
             :sort-keys="sortKeys">
-            <template v-slot:item.UNIQUE_NAME="{ item }">
+            <template v-slot:[`item.UNIQUE_NAME`]="{ item }">
               <span>{{item | username}}</span>
             </template>
             <template
@@ -136,7 +136,7 @@ export default {
   methods: {
     async actionChangeUserScope(user) {
       this.loadingChangeUserScope = true;
-      await putUser(this.auth.csrf, user);
+      await putUser(this.auth, user);
       this.loadingChangeUserScope = false;
     },
     async getPage(page) {
