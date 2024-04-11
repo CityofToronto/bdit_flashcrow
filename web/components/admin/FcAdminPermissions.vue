@@ -98,9 +98,9 @@ export default {
         value: 'UNIQUE_NAME',
         text: 'User',
       },
-      ...AuthScope.enumValues.map(({ name }) => ({
+      ...AuthScope.enumValues.map(({ name, description }) => ({
         value: name,
-        text: name,
+        text: description,
       })),
     ];
     const sortKeys = {
