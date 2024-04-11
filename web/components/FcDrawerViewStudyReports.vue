@@ -137,17 +137,14 @@
             Report not available, try a different location.
           </div>
         </div>
-        <div class="callout ma-3" v-else-if="studyRetrievalError ||
-        (this.reportLayout !== null && this.reportLayout.content[0].options?.body?.length === 0)">
-          <div class="ma-3">
-            <v-icon color="blue">mdi-information</v-icon>
-          </div>
-          <div class="ml-1 mr-2 pa-2">
-            There was a problem loading this report.
+        <FcCallout v-else-if="studyRetrievalError ||
+        (this.reportLayout !== null && this.reportLayout.content[0].options?.body?.length === 0)"
+        type="error-callout"
+        iconColor="black"
+        >There was a problem loading this report.
             If you need this data urgently,
-            email <a href="mailto:move-team@toronto.ca">us</a>.
-          </div>
-        </div>
+            email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.
+        </FcCallout>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -194,12 +191,14 @@ import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.v
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParameters from '@/web/components/reports/FcReportParameters.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import FcCallout from '@/web/components/dialogs/FcCallout.vue';
 
 export default {
   name: 'FcDrawerViewStudyReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
+    FcCallout,
     FcDialogConfirm,
     FcIconLocationMulti,
     FcListLocationMulti,

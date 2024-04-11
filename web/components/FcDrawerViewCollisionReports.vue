@@ -112,16 +112,13 @@
             This page is loading, please wait.
           </div>
         </div>
-         <div class="callout ma-3" v-if="reportRetrievalError">
-          <div class="ma-3">
-            <v-icon color="blue">mdi-information</v-icon>
-          </div>
-          <div class="ml-1 mr-2 pa-2">
-            There was a problem loading this report.
+        <FcCallout v-if="reportRetrievalError"
+        type="error-callout"
+        iconColor="black"
+        >There was a problem loading this report.
             If you need this data urgently,
-            email <a href="mailto:move-team@toronto.ca">us</a>.
-          </div>
-        </div>
+            email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.
+        </FcCallout>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -167,12 +164,14 @@ import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.v
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import DateTime from '@/lib/time/DateTime';
+import FcCallout from '@/web/components/dialogs/FcCallout.vue';
 
 export default {
   name: 'FcDrawerViewCollisionReports',
   mixins: [FcMixinRouteAsync, FcMixinAuthScope],
   components: {
     FcButton,
+    FcCallout,
     FcDialogConfirm,
     FcIconLocationMulti,
     FcListLocationMulti,
