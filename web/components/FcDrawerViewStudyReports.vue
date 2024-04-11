@@ -54,7 +54,7 @@
               @click-location="setLocationsIndex" />
           </v-menu>
           <v-menu
-            v-if="studies.length > 0"
+            v-if="studies.length > 1"
             :max-height="320">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
@@ -62,7 +62,7 @@
                 v-on="on"
                 class="flex-grow-0 mt-0"
                 type="secondary">
-                <v-icon color="primary" left>mdi-history</v-icon>
+                <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
                 {{labelActiveStudy}}
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
@@ -82,7 +82,7 @@
 
         <div class="align-center d-flex pt-1">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name"
