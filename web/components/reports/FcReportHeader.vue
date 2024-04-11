@@ -9,7 +9,7 @@
     <div class="ml-3">
       <div class="title">{{ORG_NAME}}</div>
       <h3 class="display-1">
-        <span>{{type.label}}</span>
+        <span v-if="type">{{type.label}}</span>
         <span class="sr-only">{{info}}</span>
         <span class="sr-only">{{subinfo}}</span>
       </h3>
