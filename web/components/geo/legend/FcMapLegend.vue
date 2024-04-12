@@ -1,5 +1,4 @@
 <template>
-
   <div v-if="this.drawerOpen && this.isMini">
    <v-tooltip left>
       <template v-slot:activator="{ on, attrs }">
@@ -12,6 +11,7 @@
   </div>
 
   <v-card v-else class="fc-map-legend" :class="{ shrink: isCollapsed }">
+
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
@@ -38,6 +38,7 @@
 
         <div class="text-center py-1">
           <FcButton type="tertiary" @click="showMore = !showMore">
+
             <span v-if="showMore" class="center-icon">
               <v-icon>mdi-menu-up</v-icon>
               Less
@@ -61,7 +62,6 @@ import FcLegendRowHospitals from '@/web/components/geo/legend/FcLegendRowHospita
 import FcLegendRowSchools from '@/web/components/geo/legend/FcLegendRowSchools.vue';
 import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
-import { mapState } from 'vuex';
 
 export default {
   name: 'FcMapLegend',
@@ -118,9 +118,6 @@ export default {
       });
       return layerLabels;
     },
-    ...mapState('viewData', [
-      'drawerOpen',
-    ]),
   },
   watch: {
     drawerOpen() {
