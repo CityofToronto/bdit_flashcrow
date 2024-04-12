@@ -1,5 +1,5 @@
 <template>
-  <article class="fc-report">
+  <article class="fc-report mx-2">
     <FcReportHeader
       :study-type="studyType"
       :type="type"

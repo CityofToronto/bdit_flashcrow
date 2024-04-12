@@ -18,14 +18,14 @@
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
           <FcButton
-            type="secondary"
+            type="primary"
             @click="actionNavigateBack">
             <v-icon left>mdi-chevron-left</v-icon>
             View Data
           </FcButton>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
-            <span class="font-weight-regular headline secondary--text">
+            <span class="font-weight-light headline secondary--text">
               &#x2022;
               <span v-if="locationMode === LocationMode.SINGLE || detailView">
                 {{locationActive.description}}
@@ -63,7 +63,7 @@
 
         <div class="align-center d-flex">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name">
@@ -474,6 +474,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-collision-reports {
-  max-height: calc(var(--full-height) - 60px);
+  max-height: var(--full-height);
 }
 </style>

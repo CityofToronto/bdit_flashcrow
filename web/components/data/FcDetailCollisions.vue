@@ -1,10 +1,10 @@
 <template>
-  <div class="fc-detail-collisions align-end d-flex mb-5 mx-5">
+  <div class="fc-detail-collisions align-end d-flex mb-5 mr-5 ml-5">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
     <template v-else>
-      <dl class="d-flex flex-grow-1 flex-shrink-1 text-center justify-space-around">
+      <dl class="d-flex flex-grow-1 flex-shrink-1 justify-space-around">
         <div class="flex-grow-1 collision-fact">
           <dt class="body-1">
             Total
@@ -89,4 +89,11 @@ export default {
     min-width: 50px;
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .fc-collisions-validated {
+    width: unset !important;
+  }
+}
+
 </style>

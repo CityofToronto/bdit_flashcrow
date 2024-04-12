@@ -12,7 +12,7 @@
     <template v-if="hasDrawer">
       <FcButton
         v-if="vertical"
-        class="pane-drawer-toggle mb-2"
+        class="pane-drawer-toggle mb-2 d-none"
         type="fab-text"
         @click="setDrawerOpen(!drawerOpen)">
         <v-icon
@@ -409,7 +409,7 @@ export default {
         width: 180px;
       }
       & > .fc-pane-wrapper > .fc-map-wrapper {
-        height: 60px;
+        height: 0;
       }
       & > .fc-pane-wrapper > .fc-drawer {
         height: calc(100% - 60px);
