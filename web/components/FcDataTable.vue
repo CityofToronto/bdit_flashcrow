@@ -18,7 +18,7 @@
     v-bind="$attrs">
     <template
       v-if="showSelect"
-      v-slot:header.data-table-select="{ on, props }">
+      v-slot:[`header.data-table-select`]="{ on, props }">
       <v-simple-checkbox
         v-bind="props"
         v-on="on">
