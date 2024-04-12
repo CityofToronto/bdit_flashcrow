@@ -170,7 +170,7 @@ export default {
         this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       } catch (err) {
         this.error = true;
-        this.setToastEnrichedError('<span>Tooltip failed to load. If you have questions, email <a href="mailto:move-team@toronto.ca">the MOVE team</a></span>');
+        this.setToastEnrichedError('<span>Tooltip failed to load. If you have questions, email <a style="color:white; font-weight:bold" href="mailto:move-team@toronto.ca">the MOVE team</a></span>');
       }
       this.loading = false;
     },

@@ -30,13 +30,13 @@ export default {
 .error-callout {
     display: flex;
     align-items: center;
-    background-color: #ff0606c0;
+    background-color: #e7000077;
     color: #ffff;
     border-radius: 5px;
     min-height: 60px;
     font-size: 18px;
     & > a {
-      color: black;
+      font-weight: bold;
     }
   }
 </style>
