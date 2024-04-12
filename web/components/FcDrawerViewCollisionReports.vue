@@ -208,7 +208,7 @@ export default {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
     activeReportId() {
-      if ((this.locationMode === LocationMode.SINGLE || this.detailView)) {
+      if (this.locationMode === LocationMode.SINGLE || this.detailView) {
         const s1 = CompositeId.encode(this.locationsActive);
         const selectionType = LocationSelectionType.POINTS;
         return `${s1}/${selectionType.name}`;
