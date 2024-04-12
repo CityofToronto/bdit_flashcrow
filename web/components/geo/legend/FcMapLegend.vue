@@ -62,6 +62,7 @@ import FcLegendRowHospitals from '@/web/components/geo/legend/FcLegendRowHospita
 import FcLegendRowSchools from '@/web/components/geo/legend/FcLegendRowSchools.vue';
 import FcLegendRowStudies from '@/web/components/geo/legend/FcLegendRowStudies.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { mapState } from 'vuex';
 
 export default {
   name: 'FcMapLegend',
@@ -118,6 +119,9 @@ export default {
       });
       return layerLabels;
     },
+    ...mapState('viewData', [
+      'drawerOpen',
+    ]),
   },
   watch: {
     drawerOpen() {
