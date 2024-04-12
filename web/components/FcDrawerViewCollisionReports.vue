@@ -75,7 +75,7 @@
 
           <v-spacer></v-spacer>
 
-          <template v-if="!loadingReportLayout">
+          <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrCount > 0">
               <FcButton
@@ -392,7 +392,7 @@ export default {
     handleError(err) {
       this.reportRetrievalError = true;
       this.loadingReportLayout = false;
-      this.setToastError(err);
+      this.setToastError(err.message);
     },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
