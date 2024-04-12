@@ -1,9 +1,9 @@
 <template>
 
-  <div v-if="this.drawerOpen && this.isMiniMode">
+  <div v-if="this.drawerOpen && this.isMini">
    <v-tooltip left>
       <template v-slot:activator="{ on, attrs }">
-        <FcButton class="fc-legend-mini-mode" @click="toggleMiniMode" v-bind="attrs" v-on="on">
+        <FcButton class="fc-legend-mini-mode" @click="toggleMini" v-bind="attrs" v-on="on">
           <v-icon >mdi-format-list-checkbox</v-icon>
         </FcButton>
       </template>
@@ -11,17 +11,20 @@
     </v-tooltip>
   </div>
 
-  <v-card v-else class="fc-map-legend" :class="{ shrink: isHidden }">
+  <v-card v-else class="fc-map-legend" :class="{ shrink: isCollapsed }">
     <v-card-text class="default--text pa-0">
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
           <div>Legend</div>
-          <v-icon v-if="!isHidden" @click="toggleLegend">mdi-chevron-up</v-icon>
-          <v-icon v-else @click="toggleLegend">mdi-chevron-down</v-icon>
+          <v-icon v-if="drawerOpen && !isMini" @click="toggleMini">
+            mdi-format-list-checkbox
+          </v-icon>
+          <v-icon v-else-if="!isCollapsed" @click="toggleCollapsed">mdi-chevron-up</v-icon>
+          <v-icon v-else @click="toggleCollapsed">mdi-chevron-down</v-icon>
         </legend>
         <v-divider></v-divider>
 
-        <div v-if="!isHidden">
+        <div v-if="!isCollapsed">
           <template v-for="(layerItem, i) in layerItems">
             <v-divider v-if="layerItem === null" :key="i" class="ml-4"></v-divider>
             <component v-else v-model="internalValue[layerItem.value]" :key="layerItem.value"
@@ -30,7 +33,7 @@
         </div>
       </fieldset>
 
-      <div v-if="!isHidden">
+      <div v-if="!isCollapsed">
         <v-divider></v-divider>
 
         <div class="text-center py-1">
@@ -84,19 +87,19 @@ export default {
       { suffix: 'Hospitals', value: 'hospitals' },
     ];
     return {
-      isMiniMode: true,
-      isHidden: false,
+      isMini: true,
+      isCollapsed: false,
       showMore: false,
       layerItemsLess,
       layerItemsMore,
     };
   },
   methods: {
-    toggleLegend() {
-      this.isHidden = !this.isHidden;
+    toggleCollapsed() {
+      this.isCollapsed = !this.isCollapsed;
     },
-    toggleMiniMode() {
-      this.isMiniMode = !this.isMiniMode;
+    toggleMini() {
+      this.isMini = !this.isMini;
     },
   },
   computed: {
@@ -122,7 +125,8 @@ export default {
   watch: {
     drawerOpen() {
       if (this.drawerOpen) {
-        this.isMiniMode = true;
+        this.isMini = true;
+        this.isCollapsed = false; // mini+collapsed is a bad combo
       }
     },
   },
