@@ -18,14 +18,14 @@
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
           <FcButton
-            type="secondary"
+            type="primary"
             @click="actionNavigateBack">
             <v-icon left>mdi-chevron-left</v-icon>
             View Data
           </FcButton>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
-            <span class="font-weight-regular headline secondary--text">
+            <span class="font-weight-light headline secondary--text">
               &#x2022; {{locationActive.description}}
             </span>
           </h2>
@@ -54,7 +54,7 @@
               @click-location="setLocationsIndex" />
           </v-menu>
           <v-menu
-            v-if="studies.length > 0"
+            v-if="studies.length > 1"
             :max-height="320">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
@@ -62,7 +62,7 @@
                 v-on="on"
                 class="flex-grow-0 mt-0"
                 type="secondary">
-                <v-icon color="primary" left>mdi-history</v-icon>
+                <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
                 {{labelActiveStudy}}
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
@@ -80,9 +80,9 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex">
+        <div class="align-center d-flex pt-1">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name"
@@ -501,6 +501,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-study-reports {
-  max-height: calc(var(--full-height) - 60px);
+  max-height: var(--full-height);
 }
 </style>

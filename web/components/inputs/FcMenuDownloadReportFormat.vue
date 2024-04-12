@@ -6,6 +6,7 @@
         v-on="on"
         class="ml-2"
         :disabled="disabled"
+        title="Download Report"
         :loading="loading"
         :scope="requireAuth ? [] : null"
         :type="type">
@@ -14,7 +15,6 @@
           :color="type === 'secondary' ? 'primary' : 'white'">
           mdi-cloud-download
         </v-icon>
-        <span>Download</span>
         <span
           v-if="textScreenReader !== null"
           class="sr-only">

@@ -301,6 +301,9 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
+      if (this.zoomLevel < 12) {
+        return false;
+      }
       if (this.hoveredFeature === null || this.selectedFeature !== null) {
         return false;
       }
@@ -308,6 +311,9 @@ export default {
         && this.featureKeyHovered === this.featureKeyHoveredPopup;
     },
     showSelectedPopup() {
+      if (this.zoomLevel < 12) {
+        return false;
+      }
       if (this.selectedFeature === null) {
         return false;
       }
