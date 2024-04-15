@@ -6,12 +6,12 @@
       class="body-1 mb-1">
       {{line}}
     </p>
+    <v-divider></v-divider>
     <FcButton
-    type="tertiary"
-    class="px-0"
-    @click="actionShowRequest">
-    View Request
-  </FcButton>
+      type="tertiary"
+      @click="actionShowRequest">
+      View Request
+    </FcButton>
   </div>
 </template>
 
