@@ -17,7 +17,7 @@
     "frontend": "vue-cli-service serve",
     "frontend:build": "vue-cli-service build",
     "lint": "eslint '**/*.js' && stylelint '**/*.vue'",
-    "pre-commit:lint-staged": "lint-staged",
+    "pre-commit:lint-staged": "lint-staged --no-stash",
     "pre-commit:test-unit-staged": "NODE_ENV=test PGPASSFILE=/mnt/ramdisk_move_test/.pgpass TEST_DIR=\"unit/**\" jest --changedSince=master --runInBand",
     "reporter": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer nodemon -r esm -r module-alias/register reporter/reporter.js --port 8200",
     "reporter:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r esm -r module-alias/register --inspect=0.0.0.0:9200 reporter/reporter.js --port 8200",
