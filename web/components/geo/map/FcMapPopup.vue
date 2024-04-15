@@ -35,6 +35,7 @@ import FcPopupDetailsHospital from '@/web/components/geo/map/FcPopupDetailsHospi
 import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocation.vue';
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
+import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
@@ -50,6 +51,7 @@ export default {
     FcPopupDetailsLocation,
     FcPopupDetailsSchool,
     FcPopupDetailsStudy,
+    FcPopupDetailsStudyRequest,
     FcProgressLinear,
   },
   props: {
@@ -116,6 +118,9 @@ export default {
       }
       if (this.layerId === 'studies') {
         return 'Study Location';
+      }
+      if (this.layerId === 'locations-markers' && this.feature.properties.studyType) {
+        return this.feature.properties.description;
       }
       return null;
     },

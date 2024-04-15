@@ -517,6 +517,9 @@ export default {
           'schoolsLevel1',
         );
       }
+      if (!this.showLegend) {
+        layers.push('locations-markers');
+      }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
       if (features.length > 0) {

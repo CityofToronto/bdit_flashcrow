@@ -52,7 +52,7 @@
             <MvcrLink v-if="mvcrImgColumnIndex === c"
               :value="value"
               :collisionId="row[0].value"
-              :collisionIsoDateArray="row[1].value.split('-')"
+              :collisionIsoDateArray="row[2].value.split('-')"
               @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
               @showMvcrNotFoundAlert="showMvcrNotFoundAlert = !showMvcrNotFoundAlert"
             />
