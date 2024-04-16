@@ -111,6 +111,14 @@ function getFeatureKey(feature) {
   return `${layerId}:${id}`;
 }
 
+function getFeatureKeyLocation(location) {
+  if (location === null) {
+    return null;
+  }
+  const { centrelineType, centrelineId } = location;
+  return `c:${centrelineType}:${centrelineId}`;
+}
+
 export default {
   name: 'FcMap',
   components: {
@@ -371,8 +379,27 @@ export default {
     hoveredFeature: debounce(function watchHoveredFeature() {
       this.featureKeyHoveredPopup = this.featureKeyHovered;
     }, 200),
-    locationActive() {
-      this.selectedFeature = null;
+    locationActive(locationActive, locationActivePrev) {
+      if (locationActive === null) {
+        const featureKeyLocationActivePrev = getFeatureKeyLocation(locationActivePrev);
+        if (this.featureKeySelected === featureKeyLocationActivePrev) {
+          this.selectedFeature = null;
+        }
+        return;
+      }
+      const { description, geom, ...locationActiveRest } = locationActive;
+      const properties = {
+        ...locationActiveRest,
+        name: description,
+      };
+      const layerId = properties.centrelineType === CentrelineType.INTERSECTION
+        ? 'intersections'
+        : 'midblocks';
+      this.selectedFeature = {
+        geometry: geom,
+        layer: { id: layerId },
+        properties,
+      };
     },
     locationsGeoJson() {
       this.updateLocationsSource();
