@@ -11,6 +11,11 @@
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
+        <p v-else-if="error">
+          <component
+          :is="'FcPopupDetails' + 'Error'"
+          />
+        </p>
         <component
           v-else
           :is="'FcPopupDetails' + detailsSuffix"
@@ -26,6 +31,7 @@
 
 <script>
 import maplibregl from 'maplibre-gl/dist/maplibre-gl';
+import { mapMutations } from 'vuex';
 
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import { getFeatureDetails, getFeatureDetailsSuffix } from '@/lib/geo/map/PopupDetails';
@@ -35,6 +41,7 @@ import FcPopupDetailsHospital from '@/web/components/geo/map/FcPopupDetailsHospi
 import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocation.vue';
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
+import FcPopupDetailsError from '@/web/components/geo/map/FcPopupDetailsError.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
@@ -51,6 +58,7 @@ export default {
     FcPopupDetailsSchool,
     FcPopupDetailsStudy,
     FcProgressLinear,
+    FcPopupDetailsError,
   },
   props: {
     feature: Object,
@@ -65,6 +73,7 @@ export default {
     return {
       featureDetails: null,
       loading: true,
+      error: false,
     };
   },
   computed: {
@@ -155,10 +164,17 @@ export default {
       });
     },
     async loadAsyncForFeature() {
+      this.error = false;
       this.loading = true;
-      this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
+      try {
+        this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
+      } catch (err) {
+        this.error = true;
+        this.setToastEnrichedError('<span>Tooltip failed to load. If you have questions, email <a style="color:white; font-weight:bold" href="mailto:move-team@toronto.ca">the MOVE team</a></span>');
+      }
       this.loading = false;
     },
+    ...mapMutations(['setToastEnrichedError']),
   },
 };
 </script>

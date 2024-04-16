@@ -8,6 +8,7 @@
     :timeout="timeout">
     <slot name="icon"></slot>
     <span class="body-1">{{text}}</span>
+    <span class="body-1" v-html="html"></span>
     <template v-slot:action="{ attrs }">
       <FcButton
         v-if="action !== null"
@@ -57,6 +58,7 @@ export default {
       type: String,
       default: 'black',
     },
+    html: String,
     loading: {
       type: Boolean,
       default: false,

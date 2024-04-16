@@ -66,6 +66,7 @@
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
+                :disabled="reportRetrievalError"
                 :key="reportType.name">
                 {{reportType.label}}
               </v-tab>
@@ -74,7 +75,7 @@
 
           <v-spacer></v-spacer>
 
-          <template v-if="!loadingReportLayout">
+          <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrCount > 0">
               <FcButton
@@ -88,6 +89,7 @@
 
           <div class="mr-3">
             <FcMenuDownloadReportFormat
+              :disabled="reportRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Collision Report"
@@ -110,6 +112,15 @@
             This page is loading, please wait.
           </div>
         </div>
+        <FcCallout v-if="reportRetrievalError"
+        icon="mdi-alert-circle"
+        iconColor="white"
+        textColor="white"
+        type="error-callout"
+        >There was a problem loading this report.
+            If you need this data urgently,
+            email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.
+        </FcCallout>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -155,12 +166,14 @@ import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.v
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import DateTime from '@/lib/time/DateTime';
+import FcCallout from '@/web/components/dialogs/FcCallout.vue';
 
 export default {
   name: 'FcDrawerViewCollisionReports',
   mixins: [FcMixinRouteAsync, FcMixinAuthScope],
   components: {
     FcButton,
+    FcCallout,
     FcDialogConfirm,
     FcIconLocationMulti,
     FcListLocationMulti,
@@ -179,6 +192,7 @@ export default {
       loadingReportLayout: false,
       nextRoute: null,
       reportLayout: null,
+      reportRetrievalError: false,
       reportTypes: [
         ReportType.COLLISION_DIRECTORY,
         ReportType.COLLISION_TABULATION,
@@ -375,6 +389,11 @@ export default {
 
       return true;
     },
+    handleError(err) {
+      this.reportRetrievalError = true;
+      this.loadingReportLayout = false;
+      this.setToastError(err.message);
+    },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName } = to.params;
       const features = CompositeId.decode(s1);
@@ -403,10 +422,10 @@ export default {
         this.activeReportType,
         this.activeReportId,
         this.filterParamsCollision,
-      );
-      this.reportLayout = reportLayout;
-
+      ).catch(err => this.handleError(err));
       this.loadingReportLayout = false;
+
+      this.reportLayout = reportLayout;
     },
     parseFiltersFromRouteParams() {
       const routeParams = this.$route.params;
@@ -452,7 +471,7 @@ export default {
       if (Array.isArray(headerRows)) row = headerRows[index];
       return row;
     },
-    ...mapMutations(['setLocationsIndex', 'setToast']),
+    ...mapMutations(['setLocationsIndex', 'setToast', 'setToastError']),
     ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
     ...mapActions(['initLocations']),
   },
