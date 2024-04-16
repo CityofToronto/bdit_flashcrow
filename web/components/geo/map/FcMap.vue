@@ -317,6 +317,10 @@ export default {
       if (this.selectedFeature === null) {
         return false;
       }
+      if (this.$parent.suppressMapPopup === true) {
+        this.setSelectedFeature(null);
+        return false;
+      }
       const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
       if (this.vertical) {
         return !featureMatchesRoute;
