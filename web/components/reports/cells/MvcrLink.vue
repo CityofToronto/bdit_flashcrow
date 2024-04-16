@@ -41,14 +41,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    collisionId: {
-      type: String,
-      required: true,
-    },
-    collisionIsoDateArray: {
-      type: Array,
-      required: true,
-    },
     mvcrDetails: {
       type: Object,
       required: false,
@@ -56,8 +48,13 @@ export default {
   },
   methods: {
     async download() {
+      console.log(this.mvcrDetails); // eslint-disable-line no-console
       try {
-        const mvcrPdf = await getMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
+        const mvcrPdf = await getMvcr(
+          this.mvcrDetails.year,
+          this.mvcrDetails.month,
+          this.mvcrDetails.accnb,
+        );
         saveAs(mvcrPdf, this.mvcrFilename);
       } catch (err) {
         if (err.response.status === 404) {
@@ -67,9 +64,13 @@ export default {
       return true;
     },
     async fetchPdf() {
-      const mvcrExists = await hasMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
+      const mvcrExists = await hasMvcr(
+        this.mvcrDetails.year,
+        this.mvcrDetails.month,
+        this.mvcrDetails.accnb,
+      );
       if (mvcrExists) {
-        window.open(`/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`, '_blank');
+        window.open(`/api/mvcr/${this.mvcrDetails.year}/${this.mvcrDetails.month}/${this.mvcrDetails.accnb}`, '_blank');
       } else {
         this.showMvcrNotFoundAlert();
       }
@@ -98,19 +99,6 @@ export default {
     },
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
-    },
-    urlPath() {
-      const path = `/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`;
-      return path;
-    },
-    collisionYear() {
-      return this.collisionIsoDateArray[0];
-    },
-    collisionMonth() {
-      return this.collisionIsoDateArray[1];
-    },
-    mvcrFilename() {
-      return `mvcr_${this.collisionYear}_${this.collisionMonth}_${this.collisionId}.pdf`;
     },
   },
 };
