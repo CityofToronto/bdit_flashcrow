@@ -52,8 +52,6 @@
             <MvcrLink v-if="mvcrImgColumnIndex === c"
               :value="value"
               :mvcrDetails="mvcrDetails"
-              :collisionId="row[0].value"
-              :collisionIsoDateArray="row[2].value.split('-')"
               @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
               @showMvcrNotFoundAlert="showMvcrNotFoundAlert = !showMvcrNotFoundAlert"
             />
