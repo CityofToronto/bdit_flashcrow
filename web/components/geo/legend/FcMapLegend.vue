@@ -16,7 +16,7 @@
       <fieldset>
         <legend class="headline px-4 py-3 d-flex justify-content-between">
           <div>Legend</div>
-          <v-icon v-if="drawerOpen && !isMini" @click="toggleMini">
+          <v-icon v-if="drawerOpen && !isMini" @click="toggleMini" class="nudge-icon">
             mdi-format-list-checkbox
           </v-icon>
           <v-icon v-else-if="!isCollapsed" @click="toggleCollapsed">mdi-chevron-up</v-icon>
@@ -159,6 +159,10 @@ export default {
 
   & .center-icon {
     margin-right: 24px;
+  }
+  & .nudge-icon {
+    margin-right: -7px;
+    margin-top: -3px;
   }
 }
 
