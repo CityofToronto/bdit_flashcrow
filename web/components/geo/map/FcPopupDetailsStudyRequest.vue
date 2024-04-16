@@ -6,42 +6,22 @@
       class="body-1 mb-1">
       {{line}}
     </p>
-    <v-divider></v-divider>
-    <FcButton
-      type="tertiary"
-      @click="actionShowRequest">
-      View Request
-    </FcButton>
   </div>
 </template>
 
 <script>
-import FcButton from '../../inputs/FcButton.vue';
 
 export default {
   name: 'FcPopupDetailsStudyRequest',
-  components: {
-    FcButton,
-  },
   props: {
     featureDetails: Object,
   },
   computed: {
     description() {
       const {
-        studyType, studyId, studyHours,
+        requestType, requestId, requestHours, numDays,
       } = this.featureDetails;
-      return [`#${studyId} - ${studyType}`, `${studyHours === null ? 'No hours info' : studyHours} hours`];
-    },
-  },
-  methods: {
-    actionShowRequest() {
-      const { studyId } = this.featureDetails;
-      const route = {
-        name: 'requestStudyView',
-        params: { id: studyId },
-      };
-      this.$router.push(route);
+      return [`#${requestId} - ${requestType}`, (String(requestHours) === 'null' ? `${numDays} day`.concat(numDays > 1 ? 's' : '') : `${requestHours} hours`)];
     },
   },
 };

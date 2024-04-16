@@ -20,6 +20,16 @@
       <template v-if="featureSelectable && !loading">
         <slot name="action" v-bind="feature" />
       </template>
+      <template v-if="isStudyRequest && !loading && featureSelectable">
+        <v-divider></v-divider>
+        <v-card-actions class="shading">
+          <FcButton
+            type="tertiary"
+            @click="actionShowRequest">
+            View Request
+          </FcButton>
+        </v-card-actions>
+      </template>
     </v-card>
   </div>
 </template>
@@ -36,16 +46,19 @@ import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocat
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
 import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
+import FcButton from '../../inputs/FcButton.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
   'intersections',
   'midblocks',
+  'locations-markers',
 ];
 
 export default {
   name: 'FcMapPopup',
   components: {
+    FcButton,
     FcPopupDetailsCollision,
     FcPopupDetailsHospital,
     FcPopupDetailsLocation,
@@ -83,6 +96,9 @@ export default {
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.feature.layer.id);
     },
+    isStudyRequest() {
+      return !(this.feature.properties.requestId === undefined);
+    },
     layerId() {
       return this.feature.layer.id;
     },
@@ -119,7 +135,7 @@ export default {
       if (this.layerId === 'studies') {
         return 'Study Location';
       }
-      if (this.layerId === 'locations-markers' && this.feature.properties.studyType) {
+      if (this.layerId === 'locations-markers' && this.feature.properties.requestType) {
         return this.feature.properties.description;
       }
       return null;
@@ -163,6 +179,14 @@ export default {
       this.loading = true;
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
+    },
+    actionShowRequest() {
+      const { requestId } = this.feature.properties;
+      const route = {
+        name: 'requestStudyView',
+        params: { id: requestId },
+      };
+      this.$router.push(route);
     },
   },
 };
