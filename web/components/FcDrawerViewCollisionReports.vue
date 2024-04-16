@@ -82,7 +82,7 @@
                 @click="downloadAllMvcrs"
                 class="ml-2"
                 :type="'secondary'">
-                  <span>Export {{ mvcrCount }} MVCR</span>
+                  <span>Export {{ mvcrIds }} MVCR</span>
               </FcButton>
             </div>
           </template>
@@ -190,6 +190,7 @@ export default {
       LocationMode,
       loadingDownload: false,
       loadingReportLayout: false,
+      mvcrDetails: null,
       nextRoute: null,
       reportLayout: null,
       reportRetrievalError: false,
@@ -294,17 +295,29 @@ export default {
       return this.rowsWithMvcrs.length;
     },
     mvcrIds() {
-      const mvcrIds = this.rowsWithMvcrs.map((row) => {
-        const collisionDateStr = row[this.dateColumnIndex].value;
-        const collisionDateArray = collisionDateStr.split('-');
+      const mvcrIds = this.mvcrDetails.map((element) => {
+        console.log(this.element); // eslint-disable-line no-console
         const id = {
-          collisionId: row[this.mvcrNumberColumnIndex].value,
-          collisionYear: collisionDateArray[0],
-          collisionMonth: collisionDateArray[1],
+          collisionId: element[0].mvcrDetails.accnb,
+          collisionYear: element[0].mvcrDetails.year,
+          collisionMonth: element[0].mvcrDetails.month,
         };
         return id;
       });
+      console.log(mvcrIds); // eslint-disable-line no-console
       return mvcrIds;
+      // const mvcrIds = this.rowsWithMvcrs.map((row) => {
+      //   const collisionDateStr = row[this.dateColumnIndex].value;
+      //   const collisionDateArray = collisionDateStr.split('-');
+      //   const id = {
+      //     collisionId: row[this.mvcrNumberColumnIndex].value,
+      //     collisionYear: collisionDateArray[0],
+      //     collisionMonth: collisionDateArray[1],
+      //   };
+      //   return id;
+      // });
+      // console.log(mvcrIds); // eslint-disable-line no-console
+      // return mvcrIds;
     },
     ...mapState([
       'locationMode',
@@ -412,6 +425,12 @@ export default {
 
       this.updateReportLayout();
     },
+    async extractMvcrRows(reportLayout) {
+      const mvcrDetails = reportLayout.content[1].options.body.map(
+        array => array.filter(item => Object.hasOwn(item, 'mvcrDetails')),
+      );
+      this.mvcrDetails = mvcrDetails;
+    },
     async updateReportLayout() {
       if (this.activeReportType === null) {
         return;
@@ -426,6 +445,7 @@ export default {
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
+      this.extractMvcrRows(this.reportLayout);
     },
     parseFiltersFromRouteParams() {
       const routeParams = this.$route.params;

@@ -6,9 +6,9 @@
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a v-on:click="fetchPdf">View</a>
+        <a v-on:click="fetchPdf(mvcrDetails)">View</a>
         &bull;
-        <button v-on:click="download">Download</button>
+        <button v-on:click="download(mvcrDetails)">Download</button>
       </template>
       <template v-else>
         <a @click="showMvcrAccessDialog">Request Access</a>
@@ -48,6 +48,10 @@ export default {
     collisionIsoDateArray: {
       type: Array,
       required: true,
+    },
+    mvcrDetails: {
+      type: Object,
+      required: false,
     },
   },
   methods: {

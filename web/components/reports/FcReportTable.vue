@@ -45,12 +45,13 @@
           v-for="(row, r) in bodyNormalized"
           :key="'row_body_' + r">
           <component
-            v-for="({ attrs, tag, value }, c) in row"
+            v-for="({ attrs, tag, value, mvcrDetails}, c) in row"
             :key="'cell_body_' + r + '_' + c"
             :is="tag"
             v-bind="attrs">
             <MvcrLink v-if="mvcrImgColumnIndex === c"
               :value="value"
+              :mvcrDetails="mvcrDetails"
               :collisionId="row[0].value"
               :collisionIsoDateArray="row[2].value.split('-')"
               @showMvcrAccessDialog="showMvcrAccessDialog = !showMvcrAccessDialog"
@@ -173,6 +174,7 @@ function getColgroup(columnStyles, numColumns) {
 function getSectionRows(section, header, tableStyle) {
   return section.map(row => row.map((cell) => {
     const {
+      mvcrDetails,
       value,
       rowspan,
       colspan,
@@ -192,6 +194,7 @@ function getSectionRows(section, header, tableStyle) {
       attrs.class = classList;
     }
     return {
+      mvcrDetails,
       tag,
       attrs,
       value,
