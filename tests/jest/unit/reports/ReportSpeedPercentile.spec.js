@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import path from 'path';
 
-import { CardinalDirection, SPEED_CLASSES } from '@/lib/Constants';
+import { SPEED_CLASSES } from '@/lib/Constants';
 import ReportSpeedPercentile from '@/lib/reports/ReportSpeedPercentile';
 import { toBeWithinTolerance } from '@/lib/test/ExpectMatchers';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -70,7 +70,7 @@ test('ReportSpeedPercentile#transformData [empty dataset]', () => {
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
   expect(date.equals(study.startDate)).toBe(true);
-  expect(direction).toBe(CardinalDirection.NORTH);
+  expect(direction).toBe('NB');
   transformedData = stats;
   expect(transformedData).toEqual(transformedData_SPEED_PERCENTILE_4_2156283_empty);
 });
@@ -93,7 +93,7 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: ATR_SPEED_
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
   expect(date.equals(study.startDate)).toBe(true);
-  expect(direction).toBe(CardinalDirection.NORTH);
+  expect(direction).toBe('NB');
   transformedData = stats;
 
   const {
