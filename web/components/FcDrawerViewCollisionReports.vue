@@ -366,11 +366,12 @@ export default {
         array => array.filter(item => Object.hasOwn(item, 'mvcrDetails')),
       );
       this.mvcrDetails = mvcrDetails;
-      this.mvcrIds = mvcrDetails.map(element => ({
-        collisionId: element[0].mvcrDetails.accnb,
-        collisionYear: element[0].mvcrDetails.year,
-        collisionMonth: element[0].mvcrDetails.month,
-      }));
+      this.mvcrIds = mvcrDetails.filter(element => element[0].mvcrDetails !== null)
+        .map(element => ({
+          collisionId: element[0].mvcrDetails.accnb,
+          collisionYear: element[0].mvcrDetails.year,
+          collisionMonth: element[0].mvcrDetails.month,
+        }));
     },
     async updateReportLayout() {
       if (this.activeReportType === null) {
