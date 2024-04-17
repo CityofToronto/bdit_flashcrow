@@ -124,7 +124,7 @@
         <div
           v-else
           class="fc-report-wrapper pa-3">
-          <FcReport v-bind="reportLayout" />
+          <FcReport v-if="!loadingReportLayout" v-bind="reportLayout" />
         </div>
       </section>
     </template>
@@ -387,7 +387,9 @@ export default {
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
-      this.extractMvcrRows(this.reportLayout);
+      if (this.isDirectoryReport) {
+        this.extractMvcrRows(this.reportLayout);
+      }
     },
     parseFiltersFromRouteParams() {
       const routeParams = this.$route.params;
