@@ -65,7 +65,8 @@ test('ReportSpeedPercentile#transformData [empty dataset]', () => {
 
   const { countLocation, counts, study } = setup_4_2156283();
   const studyData = new Map([[2156283, []]]);
-  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
+  let { reportData: transformedData } = reportInstance.transformData(study,
+    { countLocation, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
   expect(date.equals(study.startDate)).toBe(true);
@@ -87,7 +88,8 @@ test('ReportSpeedPercentile#transformData [Morningside S of Lawrence: ATR_SPEED_
     study,
     studyData,
   } = setup_4_2156283();
-  let transformedData = reportInstance.transformData(study, { countLocation, counts, studyData });
+  let { reportData: transformedData } = reportInstance.transformData(study,
+    { countLocation, counts, studyData });
   expect(transformedData).toHaveLength(1);
   const { date, direction, stats } = transformedData[0];
   expect(date.equals(study.startDate)).toBe(true);
