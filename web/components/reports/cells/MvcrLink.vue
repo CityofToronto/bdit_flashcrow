@@ -50,9 +50,9 @@ export default {
     async download() {
       try {
         const mvcrPdf = await getMvcr(
-          this.mvcrDetails.year,
-          this.mvcrDetails.month,
-          this.mvcrDetails.accnb,
+          this.mvcrDetails.collisionYear,
+          this.mvcrDetails.collisionMonth,
+          this.mvcrDetails.collisionId,
         );
         saveAs(mvcrPdf, this.mvcrFilename);
       } catch (err) {
@@ -64,12 +64,12 @@ export default {
     },
     async fetchPdf() {
       const mvcrExists = await hasMvcr(
-        this.mvcrDetails.year,
-        this.mvcrDetails.month,
-        this.mvcrDetails.accnb,
+        this.mvcrDetails.collisionYear,
+        this.mvcrDetails.collisionMonth,
+        this.mvcrDetails.collisionId,
       );
       if (mvcrExists) {
-        window.open(`/api/mvcr/${this.mvcrDetails.year}/${this.mvcrDetails.month}/${this.mvcrDetails.accnb}`, '_blank');
+        window.open(`/api/mvcr/${this.mvcrDetails.collisionYear}/${this.mvcrDetails.collisionMonth}/${this.mvcrDetails.collisionId}`, '_blank');
       } else {
         this.showMvcrNotFoundAlert();
       }
