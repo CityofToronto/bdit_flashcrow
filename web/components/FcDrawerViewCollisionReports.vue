@@ -368,9 +368,9 @@ export default {
       this.mvcrDetails = mvcrDetails;
       this.mvcrIds = mvcrDetails.filter(element => element[0].mvcrDetails !== null)
         .map(element => ({
-          collisionId: element[0].mvcrDetails.accnb,
-          collisionYear: element[0].mvcrDetails.year,
-          collisionMonth: element[0].mvcrDetails.month,
+          collisionId: element[0].mvcrDetails.collisionId,
+          collisionYear: element[0].mvcrDetails.collisionYear,
+          collisionMonth: element[0].mvcrDetails.collisionMonth,
         }));
     },
     async updateReportLayout() {
