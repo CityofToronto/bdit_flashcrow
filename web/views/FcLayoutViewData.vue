@@ -157,6 +157,7 @@ export default {
     return {
       LocationMode,
       showConfirmMultiLocationLeave: false,
+      suppressMapPopup: false,
     };
   },
   computed: {
@@ -289,6 +290,11 @@ export default {
   },
   watch: {
     drawerOpen() {
+      if (this.drawerOpen) {
+        this.suppressMapPopup = true;
+      } else {
+        this.suppressMapPopup = false;
+      }
       Vue.nextTick(() => {
         this.$refs.map.resize();
       });

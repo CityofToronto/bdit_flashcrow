@@ -9,12 +9,19 @@
         Filters
       </component>
       <v-spacer></v-spacer>
-      <FcButton
-        v-if="!readonly"
-        type="tertiary"
-        @click="setFiltersOpen(true)">
-        <v-icon>mdi-plus</v-icon>
-      </FcButton>
+
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <FcButton
+            v-if="!readonly"
+            type="tertiary" v-bind="attrs" v-on="on"
+            @click="setFiltersOpen(true)">
+            <v-icon>mdi-plus</v-icon>
+          </FcButton>
+        </template>
+        <span>Add Data Filters</span>
+      </v-tooltip>
+
     </div>
     <div
       v-if="filterChipsCommon.length > 0"
