@@ -6,9 +6,9 @@
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a v-on:click="fetchPdf(mvcrDetails)">View</a>
+        <a v-on:click="fetchPdf()">View</a>
         &bull;
-        <button v-on:click="download(mvcrDetails)">Download</button>
+        <button v-on:click="download()">Download</button>
       </template>
       <template v-else>
         <a @click="showMvcrAccessDialog">Request Access</a>
