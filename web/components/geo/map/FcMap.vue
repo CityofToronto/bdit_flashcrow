@@ -551,11 +551,11 @@ export default {
       }
     },
     setHoveredFeature(feature) {
-      this.hoveredFeature = feature;
+      // this.hoveredFeature = feature;
+      this.hoveredFeature = this.fixStudyRequestInfo(feature);
     },
     setSelectedFeature(feature) {
-      console.log(this.fixStudyRequestInfo(feature)); // eslint-disable-line no-console
-      this.selectedFeature = feature;
+      // this.selectedFeature = feature;
       this.selectedFeature = this.fixStudyRequestInfo(feature);
     },
     updateLocationsSource() {
@@ -573,9 +573,7 @@ export default {
     fixStudyRequestInfo(feature) {
       if (feature !== null) {
         const { properties, ...rest } = feature;
-        console.log(rest); // eslint-disable-line no-console
         if (properties.studyRequests) {
-          console.log(feature); // eslint-disable-line no-console
           const { location: matchingLocation } = this.locationsState.filter(
             ({ location }) => location.centrelineId === properties.centrelineId,
           )[0];

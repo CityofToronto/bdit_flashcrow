@@ -354,7 +354,6 @@ export default {
       const locationGroups = {};
       for (let i = 0; i < locationsState.length; i++) {
         const studyRequest = locationsState[i];
-        console.log(studyRequest); // eslint-disable-line no-console
         const { description } = studyRequest.location;
         if (description in locationGroups) {
           const {
@@ -379,7 +378,6 @@ export default {
         }
       }
       const locations = Object.values(locationGroups);
-      console.log(locations); // eslint-disable-line no-console
       return locations;
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),

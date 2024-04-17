@@ -97,7 +97,7 @@ export default {
       return SELECTABLE_LAYERS.includes(this.feature.layer.id);
     },
     isStudyRequest() {
-      return !(this.feature.properties.requestId === undefined);
+      return !(this.feature.properties.studyRequests === undefined);
     },
     layerId() {
       return this.feature.layer.id;
@@ -135,7 +135,7 @@ export default {
       if (this.layerId === 'studies') {
         return 'Study Location';
       }
-      if (this.layerId === 'locations-markers' && this.feature.properties.requestType) {
+      if (this.layerId === 'locations-markers' && this.feature.properties.studyRequests) {
         return this.feature.properties.description;
       }
       return null;
@@ -143,6 +143,7 @@ export default {
   },
   watch: {
     coordinates() {
+      this.loadAsyncForFeature();
       this.popup.setLngLat(this.coordinates);
     },
     featureKey: {
