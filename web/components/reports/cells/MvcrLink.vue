@@ -48,7 +48,6 @@ export default {
   },
   methods: {
     async download() {
-      console.log(this.mvcrDetails); // eslint-disable-line no-console
       try {
         const mvcrPdf = await getMvcr(
           this.mvcrDetails.year,
