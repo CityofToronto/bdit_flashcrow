@@ -1,6 +1,6 @@
 <template>
   <div class="fc-header-single-location">
-    <FcProgressCircular
+    <div
       v-if="loading || location === null"
       aria-label="Loading location details"
       small />
@@ -25,7 +25,6 @@ import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import { LocationMode } from '@/lib/Constants';
 import { mapMutations } from 'vuex';
@@ -33,7 +32,6 @@ import { mapMutations } from 'vuex';
 export default {
   name: 'FcHeaderSingleLocation',
   components: {
-    FcProgressCircular,
     FcButton,
   },
   props: {
