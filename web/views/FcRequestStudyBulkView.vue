@@ -196,7 +196,8 @@ export default {
         };
         locationsState.push({ location, state });
       });
-      return locationsState;
+      return this.groupRequestsByLocation(locationsState);
+      // return locationsState;
     },
     selectAll: {
       get() {
@@ -348,6 +349,38 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.selectedItems = [];
       this.loadingItems = false;
+    },
+    groupRequestsByLocation(locationsState) {
+      const locationGroups = {};
+      for (let i = 0; i < locationsState.length; i++) {
+        const studyRequest = locationsState[i];
+        console.log(studyRequest); // eslint-disable-line no-console
+        const { description } = studyRequest.location;
+        if (description in locationGroups) {
+          const {
+            requestId, requestType, numDays, requestHours,
+          } = studyRequest.location;
+          locationGroups[description].location.studyRequests.push({
+            requestId, requestType, numDays, requestHours,
+          });
+        } else {
+          const {
+            requestId, requestType, numDays, requestHours, ...rest
+          } = studyRequest.location;
+          locationGroups[description] = {
+            location: {
+              ...rest,
+              studyRequests: [{
+                requestId, requestType, numDays, requestHours,
+              }],
+            },
+            state: studyRequest.state,
+          };
+        }
+      }
+      const locations = Object.values(locationGroups);
+      console.log(locations); // eslint-disable-line no-console
+      return locations;
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
