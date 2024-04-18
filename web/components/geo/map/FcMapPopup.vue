@@ -20,16 +20,6 @@
       <template v-if="featureSelectable && !loading">
         <slot name="action" v-bind="feature" />
       </template>
-      <template v-if="isStudyRequest && !loading && featureSelectable">
-        <v-divider></v-divider>
-        <v-card-actions class="shading">
-          <FcButton
-            type="tertiary"
-            @click="actionShowRequest">
-            View Request
-          </FcButton>
-        </v-card-actions>
-      </template>
     </v-card>
   </div>
 </template>
@@ -180,14 +170,6 @@ export default {
       this.loading = true;
       this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       this.loading = false;
-    },
-    actionShowRequest() {
-      const { requestId } = this.feature.properties;
-      const route = {
-        name: 'requestStudyView',
-        params: { id: requestId },
-      };
-      this.$router.push(route);
     },
   },
 };
