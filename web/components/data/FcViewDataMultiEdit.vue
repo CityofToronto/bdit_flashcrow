@@ -35,22 +35,6 @@
             </div>
           </v-col>
         </v-row>
-        <v-divider></v-divider>
-      </section>
-      <section
-        aria-labelledby="heading_multi_edit_selected"
-        class="mt-5">
-        <h3
-          class="fc-multi-edit-inset display-2 pb-1"
-          id="heading_multi_edit_selected">
-          Selected Locations
-          <FcTextNumberTotal class="ml-2" :n="locations.length" />
-        </h3>
-        <FcListLocationMulti
-          class="ml-6"
-          icon-classes="mr-5"
-          :locations="locations"
-          :locations-selection="locationsSelection" />
       </section>
     </template>
   </div>
@@ -65,17 +49,13 @@ import {
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
-import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcViewDataMultiEdit',
   components: {
-    FcListLocationMulti,
     FcProgressLinear,
     FcTextMostRecent,
-    FcTextNumberTotal,
   },
   props: {
     locations: Array,
