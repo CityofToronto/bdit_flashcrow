@@ -83,24 +83,6 @@
 
           <template
             v-if="showLocationSelection"
-            v-slot:action-navigate>
-            <FcButtonAria
-              :aria-label="tooltipLocationMode"
-              class="pa-0"
-              :class="{
-                primary: locationMode.multi,
-                'white--text': locationMode.multi,
-              }"
-              :disabled="locationMode === LocationMode.MULTI_EDIT"
-              left
-              type="fab-text"
-              @click="actionToggleLocationMode">
-              <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
-            </FcButtonAria>
-          </template>
-
-          <template
-            v-if="showLocationSelection"
             v-slot:action-popup="feature">
             <v-divider></v-divider>
 
@@ -134,7 +116,6 @@ import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
@@ -143,7 +124,6 @@ export default {
   name: 'FcLayoutViewData',
   components: {
     FcButton,
-    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
@@ -260,12 +240,6 @@ export default {
       const { showLocationSelection } = this.$route.meta;
       return showLocationSelection;
     },
-    tooltipLocationMode() {
-      if (this.locationMode.multi) {
-        return 'Switch to single-location mode';
-      }
-      return 'Add location';
-    },
     vertical() {
       const { vertical } = this.$route.meta;
       return vertical;
@@ -316,15 +290,6 @@ export default {
     },
   },
   methods: {
-    actionToggleLocationMode() {
-      if (this.locationMode === LocationMode.SINGLE) {
-        this.setLocationMode(LocationMode.MULTI_EDIT);
-      } else if (this.locationsForMode.length > 1) {
-        this.showConfirmMultiLocationLeave = true;
-      } else {
-        this.setLocationMode(LocationMode.SINGLE);
-      }
-    },
     actionViewData() {
       const { name } = this.$route;
       if (name === 'viewDataAtLocation') {
