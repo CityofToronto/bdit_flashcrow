@@ -113,7 +113,7 @@ import { mapActions, mapMutations } from 'vuex';
 
 import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
-import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
+import { getStudyRequestLocation, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
@@ -196,7 +196,7 @@ export default {
         };
         locationsState.push({ location, state });
       });
-      return this.groupRequestsByLocation(locationsState);
+      return groupRequestsByLocation(locationsState);
       // return locationsState;
     },
     selectAll: {
@@ -349,36 +349,6 @@ export default {
       await this.loadAsyncForRoute(this.$route);
       this.selectedItems = [];
       this.loadingItems = false;
-    },
-    groupRequestsByLocation(locationsState) {
-      const locationGroups = {};
-      for (let i = 0; i < locationsState.length; i++) {
-        const studyRequest = locationsState[i];
-        const { description } = studyRequest.location;
-        if (description in locationGroups) {
-          const {
-            requestId, requestType, numDays, requestHours,
-          } = studyRequest.location;
-          locationGroups[description].location.studyRequests.push({
-            requestId, requestType, numDays, requestHours,
-          });
-        } else {
-          const {
-            requestId, requestType, numDays, requestHours, ...rest
-          } = studyRequest.location;
-          locationGroups[description] = {
-            location: {
-              ...rest,
-              studyRequests: [{
-                requestId, requestType, numDays, requestHours,
-              }],
-            },
-            state: studyRequest.state,
-          };
-        }
-      }
-      const locations = Object.values(locationGroups);
-      return locations;
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
