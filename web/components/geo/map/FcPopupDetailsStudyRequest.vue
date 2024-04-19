@@ -2,15 +2,19 @@
   <div>
     <div v-for="(item, i) in items"
       :key="i">
-      <v-divider class="mb-1" v-if="i > 0"></v-divider>
-      <p
-        v-for="(line, i) in generateDescription(item)"
-        :key="i"
-        class="body-1 mb-1 class d-inline">
-        {{line}}
-      </p>
-      <FcButton class="d-inline" @click="viewRequest(item)" type="tertiary"
-      button-class="btn-show-request" right small><v-icon>mdi-open-in-new</v-icon></FcButton>
+      <v-divider class="px-0 my-3" v-if="i > 0"></v-divider>
+      <div class="d-flex align-center">
+        <div class="flex-0 ml-3">
+          <p
+            v-for="(line, i) in generateDescription(item)"
+            :key="i"
+            class="body-1 mb-1">
+            {{line}}
+          </p>
+        </div>
+        <FcButton class="flex-1" @click="viewRequest(item)" type="tertiary"
+        button-class="btn-show-request" right small><v-icon>mdi-open-in-new</v-icon></FcButton>
+      </div>
     </div>
   </div>
 </template>
@@ -42,7 +46,7 @@ export default {
       const {
         requestType, requestId, requestHours, numDays,
       } = studyRequest;
-      return [`#${requestId} - ${requestType}`, (String(requestHours) === 'null' ? `${numDays} day`.concat(numDays > 1 ? 's' : '') : `${requestHours} hours`)];
+      return [`#${requestId} · ${requestType} · `.concat(String(requestHours) === 'null' ? `${numDays} Day`.concat(numDays > 1 ? 's' : '') : `${requestHours} Hours`)];
     },
     viewRequest(request) {
       const { requestId } = request;

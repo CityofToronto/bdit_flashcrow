@@ -7,14 +7,15 @@
 
       <v-divider></v-divider>
 
-      <v-card-text class="default--text">
+      <v-card-text class="default--text"
+      :class="this.feature.properties.studyRequests ? 'px-0' : ''">
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
         <component
           v-else
           :is="'FcPopupDetails' + detailsSuffix"
-          :feature-details="featureDetails" />
+          :feature-details="featureDetails"/>
       </v-card-text>
 
       <template v-if="featureSelectable && !loading">
