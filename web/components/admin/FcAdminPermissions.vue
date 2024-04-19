@@ -18,7 +18,7 @@
       </v-card>
     </div>
     <section class="flex-grow-1 flex-shrink-1 mt-3 mb-6 px-5">
-      <v-card class= "fc-requests-track-card d-flex flex-column fill-height" flat outlined>
+      <v-card class="fc-requests-track-card d-flex flex-column fill-height" flat outlined>
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
             class="fc-data-table-users"
@@ -34,31 +34,38 @@
             :sort-desc="false"
             :sort-keys="sortKeys">
             <template v-slot:[`item.UNIQUE_NAME`]="{ item }">
-              <span>{{item | username}}</span>
+              <span>{{ item | username }}</span>
             </template>
             <template
               v-for="{ authScope, itemSlot } of authScopeSlots"
               v-slot:[itemSlot]="{ item }">
-              <div
-                :key="'u:' + item.id + ':' + authScope.name"
-                class="d-flex">
+              <div :key="'u:' + item.id + ':' + authScope.name" class="d-flex">
                 <FcTooltip right>
                   <template v-slot:activator="{ on }">
-                    <v-checkbox
-                      v-model="item.scope"
-                      class="mt-0 pt-0"
-                      :disabled="loadingChangeUserScope"
-                      hide-details
-                      :value="authScope"
-                      @change="actionChangeUserScope(item)"
-                      v-on="on"></v-checkbox>
+                    <div v-if="authScope.name === 'MVCR_READ'">
+                      <FcAdminDropdown
+                        :permissions="mvcrPermissionSlots"
+                        :currentSelection="getMvcrState(item)"
+                        @change="mvcrPermissionChanged" />
+                    </div>
+                    <div v-else>
+                      <v-checkbox
+                        v-model="item.scope"
+                        class="mt-0 pt-0"
+                        :disabled="loadingChangeUserScope"
+                        hide-details
+                        :value="authScope"
+                        @change="actionChangeUserScope(item)"
+                        v-on="on">
+                      </v-checkbox>
+                    </div>
                   </template>
                   <span>
                     <span v-if="item.scope.includes(authScope)">
-                      Deny {{authScope.name}}
+                      Deny {{ authScope.name }}
                     </span>
                     <span v-else>
-                      Grant {{authScope.name}}
+                      Grant {{ authScope.name }}
                     </span>
                   </span>
                 </FcTooltip>
@@ -72,15 +79,12 @@
         <v-card-actions class="flex-grow-0 flex-shrink-0">
           <v-spacer></v-spacer>
 
-          <FcProgressCircular
-            v-if="isLoadingTotal"
-            small
-          />
+          <FcProgressCircular v-if="isLoadingTotal" small />
           <div v-else>
-            {{pageFrom}}&ndash;{{pageTo}} of {{total}}
+            {{ pageFrom }}&ndash;{{ pageTo }} of {{ total }}
           </div>
 
-          <v-pagination v-model="page" :length="numPages" :total-visible="7"/>
+          <v-pagination v-model="page" :length="numPages" :total-visible="7" />
         </v-card-actions>
       </v-card>
     </section>
@@ -89,8 +93,7 @@
 
 <script>
 import { mapState } from 'vuex';
-
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, MvcrPermissions } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { formatUsername } from '@/lib/StringFormatters';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
@@ -98,6 +101,7 @@ import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import FcAdminDropdown from './FcAdminDropdown.vue';
 
 export default {
   name: 'FcAdminPermissions',
@@ -108,12 +112,19 @@ export default {
     FcDataTable,
     FcTooltip,
     FcProgressCircular,
+    FcAdminDropdown,
   },
   data() {
+    const selectedPermission = '';
     const authScopeSlots = AuthScope.enumValues.map((authScope) => {
       const { name } = authScope;
       const itemSlot = `item.${name}`;
       return { authScope, itemSlot };
+    });
+    const mvcrPermissionSlots = MvcrPermissions.enumValues.map((permissionState) => {
+      const { label } = permissionState;
+      const permissionSlot = `item.${label}`;
+      return { permissionState, permissionSlot };
     });
     const columns = [
       {
@@ -130,6 +141,8 @@ export default {
     };
     return {
       authScopeSlots,
+      selectedPermission,
+      mvcrPermissionSlots,
       columns,
       loadingChangeUserScope: false,
       loading: true,
@@ -199,7 +212,17 @@ export default {
       this.isLoadingTotal = false;
     },
     async loadAsyncForRoute() {
-      this.updateUsers(this.filterParams);
+      this.updateData(this.filterParams);
+    },
+    getMvcrState(user) {
+      return MvcrPermissions[user.mvcrAcctType];
+    },
+    mvcrPermissionChanged(mvcrAcctType) {
+      this.log(mvcrAcctType);
+    },
+    log(msg) {
+      // eslint-disable-next-line no-console
+      console.log(msg);
     },
   },
 };
