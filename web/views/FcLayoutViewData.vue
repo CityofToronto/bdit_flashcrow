@@ -68,9 +68,6 @@
             <FcSelectorCollapsedLocation
               v-if="!showLocationSelection"
               class="mt-3 ml-5" />
-            <FcSelectorMultiLocation
-              v-else-if="locationMode.multi"
-              class="elevation-2"/>
             <FcSelectorSingleLocation
               v-else
               v-model="internalLocationsSelection"
@@ -117,7 +114,6 @@ import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
-import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
@@ -130,7 +126,6 @@ export default {
     FcMapPopupActionViewData,
     FcTooltip,
     FcSelectorCollapsedLocation,
-    FcSelectorMultiLocation,
     FcSelectorSingleLocation,
   },
   data() {
