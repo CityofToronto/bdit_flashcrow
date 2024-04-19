@@ -4,7 +4,7 @@
       <legend class="headline">Study Types</legend>
 
       <template v-for="studyType in StudyType.enumValues">
-        <template v-if="studyType.dataAvailable">
+        <template v-if="!studyType.maskStudy">
           <v-checkbox
             :key="studyType.name"
             v-model="internalValue.studyTypes"
