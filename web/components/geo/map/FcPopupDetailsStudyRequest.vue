@@ -1,17 +1,16 @@
 <template>
   <div>
     <div v-for="(item, i) in items"
-      :key="i"
-    @click="viewRequest(item)">
-    <v-divider class="mb-1" v-if="i > 0"></v-divider>
-        <p
-          v-for="(line, i) in generateDescription(item)"
-          :key="i"
-          class="body-1 mb-1">
-          {{line}}
-        </p>
-        <FcButton @click="viewRequest(item)" type="secondary"
-        button-class="btn-show-request" right><v-icon>mdi-open-in-new</v-icon></FcButton>
+      :key="i">
+      <v-divider class="mb-1" v-if="i > 0"></v-divider>
+      <p
+        v-for="(line, i) in generateDescription(item)"
+        :key="i"
+        class="body-1 mb-1 class d-inline">
+        {{line}}
+      </p>
+      <FcButton class="d-inline" @click="viewRequest(item)" type="tertiary"
+      button-class="btn-show-request" right small><v-icon>mdi-open-in-new</v-icon></FcButton>
     </div>
   </div>
 </template>
