@@ -28,11 +28,6 @@
             v-on="onMenu">
             <template v-slot:append>
               <template v-if="hasLocationIndex">
-                <FcIconLocationMulti
-                  v-if="!hasLocationToAddIndex"
-                  :location-index="locationIndex"
-                  :selected="selected" />
-                <span v-else>&nbsp;</span>
               </template>
               <template v-else>
                 <FcTooltip
@@ -85,7 +80,6 @@ import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
 
 class LocationSearchState extends Enum {}
@@ -102,7 +96,6 @@ export default {
   mixins: [FcMixinVModelProxy(Object)],
   components: {
     FcButton,
-    FcIconLocationMulti,
     FcTooltip,
   },
   props: {
