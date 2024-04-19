@@ -1,8 +1,11 @@
 <template>
   <div class="d-none">
     <v-card ref="content" min-width="220">
-      <v-card-title class="shading">
+      <v-card-title class="shading flex-column d-flex align-start">
         <h2 class="display-1">{{title}}</h2>
+        <h4 v-if="this.feature.properties.studyRequests"
+        class="display-2 body-2 text-subtitle-2
+        mt-1">{{ this.feature.properties.description }}</h4>
       </v-card-title>
 
       <v-divider></v-divider>
@@ -127,7 +130,8 @@ export default {
         return 'Study Location';
       }
       if (this.layerId === 'locations-markers' && this.feature.properties.studyRequests) {
-        return this.feature.properties.description;
+        const numRequests = this.feature.properties.studyRequests.length;
+        return (numRequests > 1 ? `${numRequests} ` : '').concat('Study Request').concat(numRequests > 1 ? 's' : '');
       }
       return null;
     },
