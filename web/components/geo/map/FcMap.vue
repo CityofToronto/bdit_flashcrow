@@ -168,6 +168,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    isRequestPage: {
+      type: Boolean,
+      default: false,
+    },
     easeToLocationMode: {
       type: String,
       validator: value => ['all', 'single', 'none'].includes(value),
@@ -517,7 +521,7 @@ export default {
           'schoolsLevel1',
         );
       }
-      if (!this.showLegend) {
+      if (this.isRequestPage) {
         layers.push('locations-markers');
       }
 

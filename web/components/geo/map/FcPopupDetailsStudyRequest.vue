@@ -47,7 +47,7 @@ export default {
       const {
         requestType, requestId, requestHours, numDays,
       } = studyRequest;
-      return [`#${requestId}`, `${requestType}`, (String(requestHours) === 'null' ? `${numDays} day`.concat(numDays > 1 ? 's' : '') : `${requestHours} Hours`)];
+      return [`${requestType}`, `#${requestId} • `.concat(String(requestHours) === 'null' ? `${numDays} day`.concat(numDays > 1 ? 's' : '') : `${requestHours} Hours`)];
     },
     viewRequest(request) {
       const { requestId } = request;

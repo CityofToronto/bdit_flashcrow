@@ -38,7 +38,8 @@
             <FcMap
               class="mx-5"
               :locations-state="locationsState"
-              :show-legend="false" />
+              :show-legend="false"
+              :is-request-page="true"/>
           </v-col>
         </v-row>
 
