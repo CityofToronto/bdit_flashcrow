@@ -14,6 +14,10 @@
     </div>
 
     <div class="fc-map-controls fc-map-mode">
+      <p
+      v-if="frontendEnv === FrontendEnv.LOCAL || frontendEnv === FrontendEnv.DEV">
+        Zoom level: {{ zoomLevel.toFixed(2) }}
+    </p>
       <FcButton
         class="mr-2"
         type="fab-text"
@@ -77,7 +81,7 @@
 <script>
 import maplibregl from 'maplibre-gl/dist/maplibre-gl';
 import Vue from 'vue';
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 import { CentrelineType, MapZoom } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
@@ -93,6 +97,7 @@ import FcMapLegend from '@/web/components/geo/legend/FcMapLegend.vue';
 import FcMapPopup from '@/web/components/geo/map/FcMapPopup.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+import FrontendEnv from '@/web/config/FrontendEnv';
 
 function getFeatureKey(feature) {
   if (feature === null) {
@@ -189,11 +194,13 @@ export default {
       hoveredFeature: null,
       // keeps track of currently selected feature
       selectedFeature: null,
+      zoomLevel: 0,
       defaultEaseOpts: {
         center: BOUNDS_TORONTO.getCenter(),
         duration: 1000,
         zoom: MapZoom.LEVEL_3.minzoom,
       },
+      FrontendEnv,
     };
   },
   computed: {
@@ -298,6 +305,9 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
+      if (this.zoomLevel < 12) {
+        return false;
+      }
       if (this.hoveredFeature === null || this.selectedFeature !== null) {
         return false;
       }
@@ -305,7 +315,14 @@ export default {
         && this.featureKeyHovered === this.featureKeyHoveredPopup;
     },
     showSelectedPopup() {
+      if (this.zoomLevel < 12) {
+        return false;
+      }
       if (this.selectedFeature === null) {
+        return false;
+      }
+      if (this.$parent.suppressMapPopup === true) {
+        this.setSelectedFeature(null);
         return false;
       }
       const featureMatchesRoute = this.featureKeySelected === this.featureKeyRoute;
@@ -314,6 +331,7 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
+    ...mapState(['frontendEnv']),
   },
   created() {
     this.map = null;
@@ -337,9 +355,11 @@ export default {
         } else {
           this.easeToLocationbByMode();
         }
+        this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
       });
+      this.zoomLevel = this.map.getZoom();
     });
   },
   beforeDestroy() {
@@ -545,6 +565,9 @@ export default {
       });
       this.setSelectedFeature(feature);
     },
+    onMapMove() {
+      this.zoomLevel = this.map.getZoom();
+    },
     onMapMousemove(e) {
       const feature = this.getFeatureForPoint(e.point);
       this.setHoveredFeature(feature);
@@ -606,6 +629,15 @@ export default {
    * Various controls overlays along the corners / edges of the map.
    */
   & > .fc-map-controls {
+    & > p {
+      background-color: var(--white);
+      width: 60%;
+      padding: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+      font: inherit;
+    }
+
     position: absolute;
     z-index: var(--z-index-controls);
   }

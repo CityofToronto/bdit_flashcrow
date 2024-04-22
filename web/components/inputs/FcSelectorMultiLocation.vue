@@ -55,7 +55,7 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
       <FcButton
-        class="ml-3 edit-location-btn mb-1"
+        class="ml-3 edit-location-btn mb-1 mt-1"
         type="tertiary"
         @click="setLocationMode(LocationMode.MULTI_EDIT)">
         <v-icon color="primary" left>mdi-pencil</v-icon>
@@ -112,7 +112,7 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-1 justify-end">
+      <div class="d-flex mt-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"

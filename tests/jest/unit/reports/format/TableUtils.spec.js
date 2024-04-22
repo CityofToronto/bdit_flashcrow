@@ -73,6 +73,7 @@ test('TableUtils.normalizeCell', () => {
   expected = {
     value: null,
     rowspan: 1,
+    mvcrDetails: null,
     colspan: 1,
     header,
     style: {
@@ -103,6 +104,7 @@ test('TableUtils.normalizeCell', () => {
     value: 'foobar',
     rowspan: 2,
     colspan: 1,
+    mvcrDetails: null,
     header: false,
     style: {
       alignment: 'right',
@@ -131,6 +133,7 @@ test('TableUtils.normalizeCell', () => {
     value: 'foobar',
     rowspan: 2,
     colspan: 1,
+    mvcrDetails: null,
     header: false,
     style: {
       alignment: 'right',

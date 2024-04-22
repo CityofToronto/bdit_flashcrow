@@ -15,6 +15,11 @@
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
+        <p v-else-if="error">
+          <component
+          :is="'FcPopupDetails' + 'Error'"
+          />
+        </p>
         <component
           v-else
           :is="'FcPopupDetails' + detailsSuffix"
@@ -30,6 +35,7 @@
 
 <script>
 import maplibregl from 'maplibre-gl/dist/maplibre-gl';
+import { mapMutations } from 'vuex';
 
 import { getGeometryMidpoint } from '@/lib/geo/GeometryUtils';
 import { getFeatureDetails, getFeatureDetailsSuffix } from '@/lib/geo/map/PopupDetails';
@@ -40,7 +46,7 @@ import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocat
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
 import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
-import FcButton from '../../inputs/FcButton.vue';
+import FcPopupDetailsError from '@/web/components/geo/map/FcPopupDetailsError.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
@@ -52,7 +58,6 @@ const SELECTABLE_LAYERS = [
 export default {
   name: 'FcMapPopup',
   components: {
-    FcButton,
     FcPopupDetailsCollision,
     FcPopupDetailsHospital,
     FcPopupDetailsLocation,
@@ -60,6 +65,7 @@ export default {
     FcPopupDetailsStudy,
     FcPopupDetailsStudyRequest,
     FcProgressLinear,
+    FcPopupDetailsError,
   },
   props: {
     feature: Object,
@@ -74,6 +80,7 @@ export default {
     return {
       featureDetails: null,
       loading: true,
+      error: false,
     };
   },
   computed: {
@@ -172,10 +179,17 @@ export default {
       });
     },
     async loadAsyncForFeature() {
+      this.error = false;
       this.loading = true;
-      this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
+      try {
+        this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
+      } catch (err) {
+        this.error = true;
+        this.setToastEnrichedError('<span>Tooltip failed to load. If you have questions, email <a style="color:white; font-weight:bold" href="mailto:move-team@toronto.ca">the MOVE team</a></span>');
+      }
       this.loading = false;
     },
+    ...mapMutations(['setToastEnrichedError']),
   },
 };
 </script>
@@ -185,15 +199,6 @@ export default {
   z-index: calc(var(--z-index-controls) - 1);
   &.hovered {
     z-index: calc(var(--z-index-controls) - 2);
-  }
-  .mapboxgl-popup-content {
-    pointer-events: none;
-  }
-  .v-card__actions{
-    pointer-events: none;
-  }
-  .fc-button {
-    pointer-events: all !important;
   }
 
   /*

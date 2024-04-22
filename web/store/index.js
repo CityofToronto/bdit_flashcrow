@@ -222,6 +222,11 @@ export default new Vuex.Store({
       Vue.set(state, 'toastData', { text });
       Vue.set(state, 'toastKey', state.toastKey + 1);
     },
+    setToastEnrichedError(state, html) {
+      Vue.set(state, 'toast', 'EnrichedError');
+      Vue.set(state, 'toastData', { html });
+      Vue.set(state, 'toastKey', state.toastKey + 1);
+    },
     setToastInfo(state, text) {
       Vue.set(state, 'toast', 'Info');
       Vue.set(state, 'toastData', { text });

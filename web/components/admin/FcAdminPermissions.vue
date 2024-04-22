@@ -1,9 +1,24 @@
 <template>
   <section class="fc-requests-track d-flex flex-column fill-height">
-    <section class="flex-grow-1 flex-shrink-1 mt-4 mb-6 px-5">
-      <v-card class= "fc-requests-track-card d-flex flex-column fill-height">
-        <v-divider></v-divider>
-
+    <div class="align-center d-flex mt-1 mb-0 px-5">
+      <h2 class="display-3 mt-0 flex-grow-2" id="heading_track_requests_requests">
+        User Permissions
+      </h2>
+      <v-spacer></v-spacer>
+      <v-card flat outlined class="flex-grow-0 flex-shrink-0">
+        <v-text-field
+          v-model="query"
+          append-icon="mdi-magnify"
+          class="fc-search-bar-requests flex-grow-0 flex-shrink-0"
+          dense
+          hide-details
+          label="Search"
+          outlined>
+        </v-text-field>
+      </v-card>
+    </div>
+    <section class="flex-grow-1 flex-shrink-1 mt-3 mb-6 px-5">
+      <v-card class= "fc-requests-track-card d-flex flex-column fill-height" flat outlined>
         <v-card-text class="flex-grow-1 pa-0">
           <FcDataTable
             class="fc-data-table-users"
@@ -18,7 +33,7 @@
             sort-by="UNIQUE_NAME"
             :sort-desc="false"
             :sort-keys="sortKeys">
-            <template v-slot:item.UNIQUE_NAME="{ item }">
+            <template v-slot:[`item.UNIQUE_NAME`]="{ item }">
               <span>{{item | username}}</span>
             </template>
             <template
@@ -57,11 +72,15 @@
         <v-card-actions class="flex-grow-0 flex-shrink-0">
           <v-spacer></v-spacer>
 
-          <div>
+          <FcProgressCircular
+            v-if="isLoadingTotal"
+            small
+          />
+          <div v-else>
             {{pageFrom}}&ndash;{{pageTo}} of {{total}}
           </div>
 
-          <v-pagination v-model="page" :length="numPages" :total-visible="7" @input="getPage"/>
+          <v-pagination v-model="page" :length="numPages" :total-visible="7"/>
         </v-card-actions>
       </v-card>
     </section>
@@ -72,7 +91,9 @@
 import { mapState } from 'vuex';
 
 import { AuthScope } from '@/lib/Constants';
+import { debounce } from '@/lib/FunctionUtils';
 import { formatUsername } from '@/lib/StringFormatters';
+import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
@@ -86,6 +107,7 @@ export default {
   components: {
     FcDataTable,
     FcTooltip,
+    FcProgressCircular,
   },
   data() {
     const authScopeSlots = AuthScope.enumValues.map((authScope) => {
@@ -98,9 +120,9 @@ export default {
         value: 'UNIQUE_NAME',
         text: 'User',
       },
-      ...AuthScope.enumValues.map(({ name }) => ({
+      ...AuthScope.enumValues.map(({ name, description }) => ({
         value: name,
-        text: name,
+        text: description,
       })),
     ];
     const sortKeys = {
@@ -116,6 +138,8 @@ export default {
       page: 1,
       total: 0,
       itemsPerPage: 50,
+      query: '',
+      isLoadingTotal: true,
     };
   },
   computed: {
@@ -132,25 +156,50 @@ export default {
     pageTo() {
       return Math.min(this.total, this.page * this.itemsPerPage);
     },
+    filterParams() {
+      const limit = this.itemsPerPage;
+      const offset = this.itemsPerPage * (this.page - 1);
+      const search = this.query;
+      return {
+        limit, offset, search,
+      };
+    },
+  },
+  watch: {
+    query: {
+      handler: function resetPage() {
+        this.page = 1;
+      },
+      immediate: true,
+    },
+    filterParams: {
+      deep: true,
+      handler: debounce(async function updateItems() {
+        this.updateData(this.filterParams);
+      }, 200),
+      immediate: true,
+    },
   },
   methods: {
     async actionChangeUserScope(user) {
       this.loadingChangeUserScope = true;
-      await putUser(this.auth.csrf, user);
+      await putUser(this.auth, user);
       this.loadingChangeUserScope = false;
     },
-    async getPage(page) {
-      const offset = this.itemsPerPage * (page - 1);
+    async updateData(filterParams) {
       this.loading = true;
-      const users = await getUsersPagination(this.itemsPerPage, offset);
+      this.isLoadingTotal = true;
+      const { limit, offset, search } = filterParams;
+      const users = await getUsersPagination(limit, offset, search);
+      const total = await getUsersTotal(search);
+
       this.users = users;
+      this.total = total;
       this.loading = false;
+      this.isLoadingTotal = false;
     },
     async loadAsyncForRoute() {
-      this.getPage(this.page);
-
-      const total = await getUsersTotal();
-      this.total = total;
+      this.updateData(this.filterParams);
     },
   },
 };

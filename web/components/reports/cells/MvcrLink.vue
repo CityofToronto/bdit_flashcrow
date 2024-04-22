@@ -6,9 +6,9 @@
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a v-on:click="fetchPdf">View</a>
+        <a v-on:click="fetchPdf()">View</a>
         &bull;
-        <button v-on:click="download">Download</button>
+        <button v-on:click="download()">Download</button>
       </template>
       <template v-else>
         <a @click="showMvcrAccessDialog">Request Access</a>
@@ -41,19 +41,19 @@ export default {
       type: Boolean,
       default: false,
     },
-    collisionId: {
-      type: String,
-      required: true,
-    },
-    collisionIsoDateArray: {
-      type: Array,
-      required: true,
+    mvcrDetails: {
+      type: Object,
+      required: false,
     },
   },
   methods: {
     async download() {
       try {
-        const mvcrPdf = await getMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
+        const mvcrPdf = await getMvcr(
+          this.mvcrDetails.collisionYear,
+          this.mvcrDetails.collisionMonth,
+          this.mvcrDetails.collisionId,
+        );
         saveAs(mvcrPdf, this.mvcrFilename);
       } catch (err) {
         if (err.response.status === 404) {
@@ -63,9 +63,13 @@ export default {
       return true;
     },
     async fetchPdf() {
-      const mvcrExists = await hasMvcr(this.collisionYear, this.collisionMonth, this.collisionId);
+      const mvcrExists = await hasMvcr(
+        this.mvcrDetails.collisionYear,
+        this.mvcrDetails.collisionMonth,
+        this.mvcrDetails.collisionId,
+      );
       if (mvcrExists) {
-        window.open(`/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`, '_blank');
+        window.open(`/api/mvcr/${this.mvcrDetails.collisionYear}/${this.mvcrDetails.collisionMonth}/${this.mvcrDetails.collisionId}`, '_blank');
       } else {
         this.showMvcrNotFoundAlert();
       }
@@ -94,19 +98,6 @@ export default {
     },
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
-    },
-    urlPath() {
-      const path = `/api/mvcr/${this.collisionYear}/${this.collisionMonth}/${this.collisionId}`;
-      return path;
-    },
-    collisionYear() {
-      return this.collisionIsoDateArray[0];
-    },
-    collisionMonth() {
-      return this.collisionIsoDateArray[1];
-    },
-    mvcrFilename() {
-      return `mvcr_${this.collisionYear}_${this.collisionMonth}_${this.collisionId}.pdf`;
     },
   },
 };

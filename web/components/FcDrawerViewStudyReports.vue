@@ -18,14 +18,14 @@
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
           <FcButton
-            type="secondary"
+            type="primary"
             @click="actionNavigateBack">
             <v-icon left>mdi-chevron-left</v-icon>
             View Data
           </FcButton>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
-            <span class="font-weight-regular headline secondary--text">
+            <span class="font-weight-light headline secondary--text">
               &#x2022; {{locationActive.description}}
             </span>
           </h2>
@@ -54,7 +54,7 @@
               @click-location="setLocationsIndex" />
           </v-menu>
           <v-menu
-            v-if="studies.length > 0"
+            v-if="studies.length > 1"
             :max-height="320">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
@@ -62,7 +62,7 @@
                 v-on="on"
                 class="flex-grow-0 mt-0"
                 type="secondary">
-                <v-icon color="primary" left>mdi-history</v-icon>
+                <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
                 {{labelActiveStudy}}
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
@@ -80,13 +80,13 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex">
+        <div class="align-center d-flex pt-1">
           <nav>
-            <v-tabs v-model="indexActiveReportType">
+            <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
                 v-for="reportType in reportTypes"
                 :key="reportType.name"
-                :disabled="studies.length === 0">
+                :disabled="reportBodyEmpty || studyRetrievalError">
                 {{reportType.label}}
               </v-tab>
             </v-tabs>
@@ -103,6 +103,7 @@
           </FcButton>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
+              :disabled="reportBodyEmpty || studyRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Study Report"
@@ -136,6 +137,14 @@
             Report not available, try a different location.
           </div>
         </div>
+        <FcCallout v-else-if="studyRetrievalError || reportBodyEmpty"
+        icon="mdi-alert-circle"
+        iconColor="white"
+        type="error-callout"
+        >There was a problem loading this report.
+            If you need this data urgently,
+            email&nbsp;<a href='mailto:move-team@toronto.ca'>us</a>.
+        </FcCallout>
         <div
           v-else
           class="fc-report-wrapper pa-3">
@@ -182,12 +191,14 @@ import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.v
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParameters from '@/web/components/reports/FcReportParameters.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import FcCallout from '@/web/components/dialogs/FcCallout.vue';
 
 export default {
   name: 'FcDrawerViewStudyReports',
   mixins: [FcMixinRouteAsync],
   components: {
     FcButton,
+    FcCallout,
     FcDialogConfirm,
     FcIconLocationMulti,
     FcListLocationMulti,
@@ -215,11 +226,13 @@ export default {
       loadingReportLayout: false,
       LocationMode,
       nextRoute: null,
+      reportBodyEmpty: false,
       reportLayout: null,
       reportUserParameters,
       showConfirmLeave: false,
       showReportParameters: false,
       studies: [],
+      studyRetrievalError: false,
       studySummaryPerLocation: [],
     };
   },
@@ -407,6 +420,11 @@ export default {
         params,
       });
     },
+    handleError() {
+      this.loadingReportLayout = false;
+      this.studyRetrievalError = true;
+      this.setToastError('Report retrieval failed. Please contact the MOVE team for assistance.');
+    },
     async loadAsyncForRoute(to) {
       const { s1, selectionTypeName, studyTypeName } = to.params;
       const features = CompositeId.decode(s1);
@@ -449,17 +467,20 @@ export default {
         return;
       }
       this.loadingReportLayout = true;
-
       const reportLayout = await getReportWeb(
         activeReportType,
         activeReportId,
         reportParameters,
-      );
-      this.reportLayout = reportLayout;
+      ).catch(err => this.handleError(err));
 
+      this.reportLayout = reportLayout;
+      if (reportLayout.content[0].options?.body?.length === 0) {
+        this.reportBodyEmpty = true;
+        this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
+      }
       this.loadingReportLayout = false;
     },
-    ...mapMutations(['setLocationsIndex']),
+    ...mapMutations(['setLocationsIndex', 'setToastError']),
     ...mapActions(['initLocations']),
   },
 };
@@ -480,6 +501,6 @@ export default {
 }
 
 .drawer-open .fc-drawer-view-study-reports {
-  max-height: calc(var(--full-height) - 60px);
+  max-height: var(--full-height);
 }
 </style>
