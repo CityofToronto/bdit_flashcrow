@@ -28,19 +28,29 @@
                 :study-requests="studyRequestBulk.studyRequests"
                 :study-request-changes="studyRequestChanges" />
             </div>
-            <FcSummaryStudyRequestBulk
-              class="mx-0"
-              :study-request-bulk="studyRequestBulk" />
-              <v-divider></v-divider>
           </v-col>
           <v-col cols="6">
-            <section
-            aria-labelledby="heading_bulk_request_requests"
-            class="mb-6 mx-5">
-            <h3 class="display-2 mt-6 mb-2" id="heading_bulk_request_requests">
-              <span>Requests</span>
-            </h3>
-            <div class="align-center d-flex px-4 py-2">
+            <FcSummaryStudyRequestBulk
+              class="mx-5"
+              :study-request-bulk="studyRequestBulk" />
+          </v-col>
+          <v-col cols="6">
+            <FcMap
+              class="mx-5"
+              :locations-state="locationsState"
+              :show-legend="false" />
+          </v-col>
+        </v-row>
+
+        <v-divider></v-divider>
+
+        <section
+          aria-labelledby="heading_bulk_request_requests"
+          class="mb-6 mx-5">
+          <h3 class="display-2 mt-6 mb-2" id="heading_bulk_request_requests">
+            <span>Requests</span>
+          </h3>
+          <div class="align-center d-flex px-4 py-2">
             <v-checkbox
               v-model="selectAll"
               class="mt-0 mr-2 pt-0"
@@ -77,9 +87,9 @@
               <v-icon left>mdi-folder-remove</v-icon>
               Remove From Project
             </FcButton>
-            </div>
+          </div>
 
-            <v-divider></v-divider>
+          <v-divider></v-divider>
 
           <FcDataTableRequests
             v-model="selectedItems"
@@ -91,15 +101,7 @@
             :items="items"
             :loading="loadingItems"
             @update-item="actionUpdateItem" />
-          </section>
-          </v-col>
-          <v-col cols="6">
-            <FcMap
-              class="mx-5"
-              :locations-state="locationsState"
-              :show-legend="false" />
-          </v-col>
-        </v-row>
+        </section>
       </section>
     </div>
   </div>
