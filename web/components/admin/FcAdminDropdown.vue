@@ -13,7 +13,7 @@
 <script>
 
 export default {
-  props: ['permissions', 'currentSelection'],
+  props: ['permissions', 'currentSelection', 'currentUser'],
   data() {
     return {
       selectedPermission: '',
@@ -23,8 +23,17 @@ export default {
     getOptions(selectedItem, allItems) {
       return allItems.filter(({ permissionState }) => permissionState !== selectedItem);
     },
+    updateUser(mvcrPermission, user) {
+      // eslint-disable-next-line no-console
+      console.log(mvcrPermission);
+      // eslint-disable-next-line no-console
+      console.log(user);
+    },
     handleSelection() {
-      this.$emit('change', this.selectedPermission || this.currentSelection.label);
+      const permissionChange = this.selectedPermission || this.currentSelection.label;
+      // const newCurrentUser =
+      this.updateUser(permissionChange, this.currentUser);
+      // this.$emit('change', );
     },
   },
 };

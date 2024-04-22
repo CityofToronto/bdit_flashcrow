@@ -46,6 +46,7 @@
                       <FcAdminDropdown
                         :permissions="mvcrPermissionSlots"
                         :currentSelection="getMvcrState(item)"
+                        :currentUser="item"
                         @change="mvcrPermissionChanged" />
                     </div>
                     <div v-else>
