@@ -199,7 +199,7 @@ export default {
       this.isLoadingTotal = false;
     },
     async loadAsyncForRoute() {
-      this.updateUsers(this.filterParams);
+      this.updateData(this.filterParams);
     },
   },
 };
