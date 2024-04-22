@@ -77,12 +77,12 @@
 
           <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
-              && userHasMvcrReadPermission && mvcrCount > 0">
+              && userHasMvcrReadPermission && mvcrIds.length > 0">
               <FcButton
                 @click="downloadAllMvcrs"
                 class="ml-2"
                 :type="'secondary'">
-                  <span>Export {{ mvcrCount }} MVCR</span>
+                  <span>Export {{ mvcrIds.length }} MVCR</span>
               </FcButton>
             </div>
           </template>
@@ -124,7 +124,7 @@
         <div
           v-else
           class="fc-report-wrapper pa-3">
-          <FcReport v-bind="reportLayout" />
+          <FcReport v-if="!loadingReportLayout" v-bind="reportLayout" />
         </div>
       </section>
     </template>
@@ -190,6 +190,8 @@ export default {
       LocationMode,
       loadingDownload: false,
       loadingReportLayout: false,
+      mvcrIds: [],
+      mvcrDetails: 0,
       nextRoute: null,
       reportLayout: null,
       reportRetrievalError: false,
@@ -252,59 +254,6 @@ export default {
       );
       locationsIconProps[this.locationsIndex].selected = true;
       return locationsIconProps;
-    },
-    mvcrNumberColumnIndex() {
-      if (!this.isDirectoryReport) return false;
-      let colIndex = false;
-      const headerRowOne = this.headerRowByIndex(0);
-      const headerRowTwo = this.headerRowByIndex(1);
-      if (Array.isArray(headerRowOne) && Array.isArray(headerRowTwo)) {
-        const mvcrColIndex = headerRowOne.findIndex(h => h.value.toLowerCase() === 'mvcr');
-        const numberColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'number');
-        if (mvcrColIndex === numberColIndex && mvcrColIndex !== -1) colIndex = mvcrColIndex;
-      }
-      return colIndex;
-    },
-    dateColumnIndex() {
-      if (!this.isDirectoryReport) return false;
-      let colIndex = false;
-      const headerRowTwo = this.headerRowByIndex(1);
-      if (Array.isArray(headerRowTwo)) {
-        const dateColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'date');
-        if (dateColIndex !== -1) colIndex = dateColIndex;
-      }
-      return colIndex;
-    },
-    mvcrImgColumnIndex() {
-      if (!this.isDirectoryReport) return false;
-      let colIndex = false;
-      const headerRowTwo = this.headerRowByIndex(1);
-      if (Array.isArray(headerRowTwo)) {
-        const dateColIndex = headerRowTwo.findIndex(h => h.value.toLowerCase() === 'cr');
-        if (dateColIndex !== -1) colIndex = dateColIndex;
-      }
-      return colIndex;
-    },
-    rowsWithMvcrs() {
-      const bodyRows = this.reportSectionRows('body');
-      const rowsWithMvcrs = bodyRows.filter(row => row[this.mvcrImgColumnIndex].value);
-      return rowsWithMvcrs;
-    },
-    mvcrCount() {
-      return this.rowsWithMvcrs.length;
-    },
-    mvcrIds() {
-      const mvcrIds = this.rowsWithMvcrs.map((row) => {
-        const collisionDateStr = row[this.dateColumnIndex].value;
-        const collisionDateArray = collisionDateStr.split('-');
-        const id = {
-          collisionId: row[this.mvcrNumberColumnIndex].value,
-          collisionYear: collisionDateArray[0],
-          collisionMonth: collisionDateArray[1],
-        };
-        return id;
-      });
-      return mvcrIds;
     },
     ...mapState([
       'locationMode',
@@ -412,6 +361,18 @@ export default {
 
       this.updateReportLayout();
     },
+    async extractMvcrRows(reportLayout) {
+      const mvcrDetails = reportLayout.content[1].options.body.map(
+        array => array.filter(item => Object.hasOwn(item, 'mvcrDetails')),
+      );
+      this.mvcrDetails = mvcrDetails;
+      this.mvcrIds = mvcrDetails.filter(element => element[0].mvcrDetails !== null)
+        .map(element => ({
+          collisionId: element[0].mvcrDetails.collisionId,
+          collisionYear: element[0].mvcrDetails.collisionYear,
+          collisionMonth: element[0].mvcrDetails.collisionMonth,
+        }));
+    },
     async updateReportLayout() {
       if (this.activeReportType === null) {
         return;
@@ -426,6 +387,9 @@ export default {
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
+      if (this.isDirectoryReport) {
+        this.extractMvcrRows(this.reportLayout);
+      }
     },
     parseFiltersFromRouteParams() {
       const routeParams = this.$route.params;
