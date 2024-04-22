@@ -331,7 +331,7 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
-    ...mapState(['frontendEnv']),
+    ...mapState('trackRequests', ['frontendEnv', 'hoveredStudyRequest']),
   },
   created() {
     this.map = null;
@@ -433,6 +433,12 @@ export default {
         'active-midblocksCasing',
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
+    },
+    hoveredStudyRequest() {
+      if (this.hoveredStudyRequest) {
+        const desiredCentrelineId = this.hoveredStudyRequest.location.centrelineId;
+        this.setHoveredFeature(this.getFeatureForLayerAndProperty('locations-markers', 'centrelineId', desiredCentrelineId));
+      }
     },
   },
   methods: {

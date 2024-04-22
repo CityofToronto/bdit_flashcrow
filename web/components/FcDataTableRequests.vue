@@ -75,7 +75,9 @@
       </div>
       <div
         v-else-if="item.location !== null"
-        class="text-wrap">
+        class="text-wrap"
+        @mouseover="setHoveredStudyRequest(item)"
+        @mouseleave="setHoveredStudyRequest(null)">
         {{item.location.description}}
       </div>
     </template>
@@ -336,7 +338,7 @@ export default {
       if (!full) label = customLabel;
       return label;
     },
-    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
+    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc', 'setHoveredStudyRequest']),
   },
 };
 </script>
