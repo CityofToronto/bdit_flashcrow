@@ -124,8 +124,7 @@ export default {
       state.studyRequestLocations.set(key, location);
       state.studyRequests.push(studyRequest);
     },
-    addHoveredStudyRequest(state, { index, rootState }) {
-      console.log('INSIDE STATE', rootState); // eslint-disable-line no-console
+    addHoveredStudyRequest(state, { index }) {
       state.hoveredRequestLocation = index;
     },
     clearStudyRequests(state) {
@@ -174,7 +173,6 @@ export default {
   },
   actions: {
     async addHoveredStudyRequest({ commit, rootState }, index) {
-      console.log('inside hover', index); // eslint-disable-line no-console
       commit('addHoveredStudyRequest', { index, rootState });
     },
     async addStudyRequestAtLocation({ commit, rootState }, location) {

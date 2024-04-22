@@ -258,7 +258,6 @@ export default {
       const features = [];
 
       if (this.hoverState !== null) {
-        console.log('asdasdasdasdasd', this.locationsState); // eslint-disable-line no-console
         const { location, state } = this.locationsState[this.hoverState];
         const {
           geom,
@@ -286,7 +285,6 @@ export default {
         const properties = { ...propertiesRest, ...state };
         return { type: 'Feature', geometry, properties };
       });
-      console.log('LOCATION', features); // eslint-disable-line no-console
 
       return {
         type: 'FeatureCollection',

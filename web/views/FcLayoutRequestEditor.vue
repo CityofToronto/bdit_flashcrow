@@ -77,7 +77,6 @@ export default {
   },
   computed: {
     hoverRequestState() {
-      console.log(this.hoverLocation); // eslint-disable-line no-console
       return 0;
     },
     mapMarkers() {
