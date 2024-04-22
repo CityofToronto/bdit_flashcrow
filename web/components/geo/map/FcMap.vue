@@ -177,6 +177,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    isRequestPage: {
+      type: Boolean,
+      default: false,
+    },
     easeToLocationMode: {
       type: String,
       validator: value => ['all', 'single', 'none'].includes(value),
@@ -574,6 +578,9 @@ export default {
           'schoolsLevel1',
         );
       }
+      if (this.isRequestPage) {
+        layers.push('locations-markers');
+      }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
       if (features.length > 0) {
@@ -608,10 +615,12 @@ export default {
       }
     },
     setHoveredFeature(feature) {
-      this.hoveredFeature = feature;
+      // this.hoveredFeature = feature;
+      this.hoveredFeature = this.fixStudyRequestInfo(feature);
     },
     setSelectedFeature(feature) {
-      this.selectedFeature = feature;
+      // this.selectedFeature = feature;
+      this.selectedFeature = this.fixStudyRequestInfo(feature);
     },
     updateHoverSource() {
       GeoStyle.setData('hover-markers', this.hoverGeoJson);
@@ -630,6 +639,22 @@ export default {
       if (this.map !== null) {
         this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
       }
+    },
+    fixStudyRequestInfo(feature) {
+      if (feature !== null) {
+        const { properties, ...rest } = feature;
+        if (properties.studyRequests) {
+          const { location: matchingLocation } = this.locationsState.filter(
+            ({ location }) => location.centrelineId === properties.centrelineId,
+          )[0];
+          return {
+            properties: matchingLocation,
+            geometry: feature.geometry,
+            ...rest,
+          };
+        }
+      }
+      return feature;
     },
     ...mapMutations(['setToastInfo']),
   },
