@@ -89,8 +89,12 @@ export default {
     mostRecentByLocation: new Map(),
     studyRequestLocations: new Map(),
     studyRequests: [],
+    hoveredRequestLocation: null,
   },
   getters: {
+    hoverLocation(state) {
+      return state.hoveredRequestLocation;
+    },
     locations(state) {
       return state.studyRequests.map((studyRequest) => {
         const key = centrelineKey(studyRequest);
@@ -119,6 +123,10 @@ export default {
       state.mostRecentByLocation.set(key, mostRecentByStudyType);
       state.studyRequestLocations.set(key, location);
       state.studyRequests.push(studyRequest);
+    },
+    addHoveredStudyRequest(state, { index, rootState }) {
+      console.log('INSIDE STATE', rootState); // eslint-disable-line no-console
+      state.hoveredRequestLocation = index;
     },
     clearStudyRequests(state) {
       state.indicesSelected = [];
@@ -165,6 +173,10 @@ export default {
     },
   },
   actions: {
+    async addHoveredStudyRequest({ commit, rootState }, index) {
+      console.log('inside hover', index); // eslint-disable-line no-console
+      commit('addHoveredStudyRequest', { index, rootState });
+    },
     async addStudyRequestAtLocation({ commit, rootState }, location) {
       const studyRequest = makeStudyRequest(rootState.now, location);
 

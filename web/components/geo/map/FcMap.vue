@@ -169,6 +169,10 @@ export default {
       type: Array,
       default() { return []; },
     },
+    hoverState: {
+      type: Number,
+      default: null,
+    },
     showLegend: {
       type: Boolean,
       default: true,
@@ -250,12 +254,40 @@ export default {
         this.$emit('update:layers', layers);
       },
     },
+    hoverGeoJson() {
+      const features = [];
+
+      if (this.hoverState !== null) {
+        console.log('asdasdasdasdasd', this.locationsState); // eslint-disable-line no-console
+        const { location, state } = this.locationsState[this.hoverState];
+        const {
+          geom,
+          lat,
+          lng,
+          ...propertiesRest
+        } = location;
+
+        const geometry = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        const properties = { ...propertiesRest, ...state };
+        const feature = { type: 'Feature', geometry, properties };
+        features.push(feature);
+      }
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
     locationsGeoJson() {
       const features = this.locationsState.map(({ location, state }) => {
         const { geom: geometry, ...propertiesRest } = location;
         const properties = { ...propertiesRest, ...state };
         return { type: 'Feature', geometry, properties };
       });
+      console.log('LOCATION', features); // eslint-disable-line no-console
+
       return {
         type: 'FeatureCollection',
         features,
@@ -269,6 +301,7 @@ export default {
           lng,
           ...propertiesRest
         } = location;
+
         const geometry = {
           type: 'Point',
           coordinates: [lng, lat],
@@ -276,6 +309,7 @@ export default {
         const properties = { ...propertiesRest, ...state };
         return { type: 'Feature', geometry, properties };
       });
+
       return {
         type: 'FeatureCollection',
         features,
@@ -345,6 +379,7 @@ export default {
       });
       this.map.on('load', () => {
         this.updateLocationsSource();
+        this.updateHoverSource();
         this.updateLocationsMarkersSource();
         if (this.locationsState === 0) {
           this.map.easeTo(this.defaultEaseOpts);
@@ -408,6 +443,9 @@ export default {
     locationsGeoJson() {
       this.updateLocationsSource();
     },
+    hoverGeoJson() {
+      this.updateHoverSource();
+    },
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
     },
@@ -420,6 +458,7 @@ export default {
       }
       this.map.setStyle(this.mapStyle);
       this.updateLocationsSource();
+      this.updateHoverSource();
       this.updateLocationsMarkersSource();
       this.map.setFilter(
         'active-intersections',
@@ -575,6 +614,12 @@ export default {
     },
     setSelectedFeature(feature) {
       this.selectedFeature = feature;
+    },
+    updateHoverSource() {
+      GeoStyle.setData('hover-markers', this.hoverGeoJson);
+      if (this.map !== null) {
+        this.map.getSource('hover-markers').setData(this.hoverGeoJson);
+      }
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);

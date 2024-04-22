@@ -1,5 +1,6 @@
 <template>
-  <v-card
+  <v-card @mouseenter="test(index)"
+    @mouseleave="test(null)"
     class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
     outlined>
@@ -38,6 +39,9 @@ import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import StudyRequestForm from '@/web/components/requests/StudyRequestForm.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+import {
+  mapActions,
+} from 'vuex';
 
 export default {
   name: 'FcCardStudyRequest',
@@ -69,6 +73,14 @@ export default {
       }
       return 'Midblock';
     },
+  },
+  methods: {
+    async test(index) {
+      this.addHoveredStudyRequest(index);
+    },
+    ...mapActions('editRequests', [
+      'addHoveredStudyRequest',
+    ]),
   },
 };
 </script>

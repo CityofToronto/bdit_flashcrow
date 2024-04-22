@@ -15,6 +15,7 @@
             studies: true,
             volume: false,
           }"
+          :hover-state="hoveredRequestLocation"
           :location-active="locationToAdd"
           :locations-state="mapMarkers"
           :easeToLocationMode="mapEaseMode"
@@ -75,6 +76,10 @@ export default {
     };
   },
   computed: {
+    hoverRequestState() {
+      console.log(this.hoverLocation); // eslint-disable-line no-console
+      return 0;
+    },
     mapMarkers() {
       const mapMarkers = [...this.studyRequestMarkers];
       if (this.isSearchActive) {
@@ -120,8 +125,8 @@ export default {
     isSearchActive() {
       return this.locationToAdd !== null;
     },
-    ...mapState('editRequests', ['indicesSelected']),
-    ...mapGetters('editRequests', ['locations']),
+    ...mapState('editRequests', ['indicesSelected', 'hoveredRequestLocation']),
+    ...mapGetters('editRequests', ['locations', 'hoverLocation']),
   },
   methods: {
     actionFocusMap() {
