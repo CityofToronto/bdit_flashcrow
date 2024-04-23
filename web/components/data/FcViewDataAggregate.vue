@@ -8,9 +8,9 @@
         <FcHeaderCollisions
           :collision-total="collisionTotal"
           :disabled="reportExportMode === ReportExportMode.STUDIES">
-          <template v-slot:action>
+          <template v-slot:action v-if="collisionSummary.amount > 0">
             <FcButton
-              class="ml-2"
+              class="ml-2 mb-1"
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
