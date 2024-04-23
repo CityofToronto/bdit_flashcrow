@@ -1,20 +1,11 @@
 <template>
-  <div class="fc-input-location-search-wrapper elevation-2">
+  <div class="fc-input-summary text-left pa-2">
     <div
       v-for="(_, i) in locationsSelection.locations"
       :key="i"
-      class="fc-input-location-search">
-      <v-text-field
-        v-model="locationsSelection.locations[i].description"
-        :aria-label="'Location #' + (i + 1) + ': ' + locationsSelection.locations[i].description"
-        autocomplete="off"
-        dense
-        flat
-        hide-details
-        readonly
-        solo
-        tabindex="-1">
-      </v-text-field>
+      class="fc-summary-line mb-1">
+      <span v-if="i>0">and </span>
+      <b>{{ locationsSelection.locations[i].description }}</b>
     </div>
   </div>
 </template>
@@ -68,3 +59,8 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.fc-input-summary {
+  border-bottom: 1px solid lightgrey;
+}
+</style>

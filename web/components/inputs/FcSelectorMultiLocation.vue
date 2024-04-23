@@ -1,7 +1,7 @@
 <template>
   <div
     aria-label="Search for multiple locations in the map"
-    class="fc-selector-multi-location d-flex flex-column px-5 py-3"
+    class="fc-selector-multi-location d-flex flex-column px-5 pt-3"
     role="search">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
@@ -36,13 +36,13 @@
     </div>
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1 text-right">
+      class="flex-grow-1 flex-shrink-1 flex-col pr-5 mr-5">
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
       <FcButton
-        class="ml-3 edit-location-btn mb-1 mt-1"
+        class="ml-3 edit-location-btn mb-1 mt-1 justify-end"
         type="tertiary"
         @click="setLocationMode(LocationMode.MULTI_EDIT)">
         <v-icon color="primary" left>mdi-pencil</v-icon>
@@ -86,9 +86,6 @@
             </template>
             <span>Next location</span>
           </FcTooltip>
-        </template>
-        <template v-else>
-          <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
         </template>
       </div>
 
