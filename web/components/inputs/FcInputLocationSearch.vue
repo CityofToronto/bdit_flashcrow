@@ -36,7 +36,8 @@
                         class="mr-1"
                         type="icon"
                         @click="actionRemove"
-                        v-on="onTooltip">
+                        v-on="onTooltip"
+                        plain>
                         <v-icon>mdi-close</v-icon>
                       </FcButton>
                     </template>

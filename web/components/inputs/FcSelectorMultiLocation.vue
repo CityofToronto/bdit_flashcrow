@@ -37,6 +37,9 @@
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
+        <FcButton class="fc-close-top-right" type="tertiary" icon>
+          <v-icon color="grey">mdi-close-circle</v-icon>
+        </FcButton>
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
@@ -402,6 +405,11 @@ export default {
       font-size: 0.875rem;
       padding-left: 0 !important;
     }
+  }
+  & .fc-close-top-right {
+    position: absolute;
+    right: 8px;
+    top: 4px;
   }
 }
 .edit-location-btn {
