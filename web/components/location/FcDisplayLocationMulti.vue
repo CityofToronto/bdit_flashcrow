@@ -1,17 +1,37 @@
 <template>
-  <div class="fc-input-summary text-left pa-2">
-    <div
-      v-for="(_, i) in locationsSelection.locations"
-      :key="i"
-      class="fc-summary-line mb-1">
-      <span v-if="i>0">and </span>
-      <b>{{ locationsSelection.locations[i].description }}</b>
+  <div class="fc-input-summary text-left pa-1 pb-0">
+    <!-- if in CORRIDOR-mode -->
+    <div v-if="isCorridor">
+      <span>from </span>
+      <span class="fc-summary-name">{{ locationsSelection.locations[0].description }}</span>
+      <div class="fc-summary-indent">
+        <span>to </span>
+        <span class="fc-summary-name">
+          {{ locationsSelection.locations[locationsSelection.locations.length - 1].description }}
+        </span>
+      </div>
+    </div>
+    <!-- support different sizes -->
+    <div v-else-if="locationsSelection.locations.length === 1">
+      <div class="fc-summary-name">{{ locationsSelection.locations[0].description }}</div>
+    </div>
+    <div v-else-if="locationsSelection.locations.length === 2">
+      <div class="fc-summary-name">{{ locationsSelection.locations[0].description }}</div>
+      <span> and </span>
+      <span class="fc-summary-name">{{ locationsSelection.locations[1].description }}</span>
+    </div>
+    <div v-else>
+      <div class="fc-summary-name">{{ locationsSelection.locations[0].description }}</div>
+      <span class="fc-summary-indent"> and
+        <span class="fc-summary-name">{{ locationsSelection.locations.length - 1 }}</span>
+        more locations
+      </span>
     </div>
   </div>
 </template>
 
 <script>
-import { CentrelineType } from '@/lib/Constants';
+import { CentrelineType, LocationSelectionType } from '@/lib/Constants';
 import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 
 export default {
@@ -23,6 +43,9 @@ export default {
     locationsSelection: Object,
   },
   computed: {
+    isCorridor() {
+      return this.locationsSelection.selectionType === LocationSelectionType.CORRIDOR;
+    },
     intersectionsByWaypoint() {
       let intersections = [];
       const intersectionsByWaypoint = [];
@@ -61,6 +84,12 @@ export default {
 </script>
 <style lang="scss">
 .fc-input-summary {
-  border-bottom: 1px solid lightgrey;
+  & .fc-summary-name {
+    font-weight: bold;
+  }
+
+  & .fc-summary-indent {
+    margin-left: 10px;
+  }
 }
 </style>

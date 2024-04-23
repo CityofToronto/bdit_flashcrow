@@ -36,13 +36,13 @@
     </div>
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1 flex-col pr-5 mr-5">
+      class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
       <FcButton
-        class="ml-3 edit-location-btn mb-1 mt-1 justify-end"
+        class="ml-3 edit-location-btn"
         type="tertiary"
         @click="setLocationMode(LocationMode.MULTI_EDIT)">
         <v-icon color="primary" left>mdi-pencil</v-icon>
