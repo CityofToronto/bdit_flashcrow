@@ -18,7 +18,8 @@
             :location-index="i"
             :selected="i === locationsEditIndex"
             @focus="setLocationsEditIndex(i)"
-            @location-remove="actionRemove" />
+            @location-remove="actionRemove"
+            showClose />
           <FcInputLocationSearch
             v-if="!locationsEditFull"
             ref="autofocus"
@@ -31,20 +32,6 @@
           class="mt-2 mb-2"
           v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
-      </div>
-      <div class="ml-2">
-        <div
-          v-for="(location, i) in locationsEditSelection.locations"
-          :key="'remove_' + i"
-          class="fc-input-location-search-remove">
-          <FcButtonAria
-            :aria-label="'Remove Location #' + (i + 1) + ': ' + location.description"
-            right
-            type="icon"
-            @click="actionRemove(i)">
-            <v-icon>mdi-close</v-icon>
-          </FcButtonAria>
-        </div>
       </div>
     </div>
     <div
@@ -178,7 +165,6 @@ import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
@@ -190,7 +176,6 @@ export default {
   mixins: [FcMixinInputAutofocus],
   components: {
     FcButton,
-    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcDisplayLocationMulti,
     FcHeaderSingleLocation,
