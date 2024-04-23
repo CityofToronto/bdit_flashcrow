@@ -10,7 +10,7 @@
       </component>
       <v-spacer></v-spacer>
 
-      <v-tooltip left>
+      <v-tooltip right>
         <template v-slot:activator="{ on, attrs }">
           <FcButton
             v-if="!readonly"
