@@ -64,6 +64,7 @@
           <template v-slot:action>
             <FcButton
               class="ml-2"
+              v-if="studySummary.length > 0"
               :disabled="
                 studySummary.length === 0
                 || reportExportMode === ReportExportMode.COLLISIONS"
