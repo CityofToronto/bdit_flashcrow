@@ -37,7 +37,7 @@
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
-        <FcButton class="fc-close-top-right" type="tertiary" icon>
+        <FcButton class="fc-close-top-right" type="tertiary" icon @click="actionClear">
           <v-icon color="grey">mdi-close-circle</v-icon>
         </FcButton>
       <FcDisplayLocationMulti
@@ -95,11 +95,11 @@
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-0 mb-1"
+            class="fc-multi-location-corridor mt-1 mb-1"
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 justify-end">
+      <div class="d-flex mt-2 mb-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
@@ -111,7 +111,7 @@
             :loading="loading"
             type="primary"
             @click="saveAndThenView">
-            View Data
+            Save
           </FcButton>
         </template>
         <template v-else-if="detailView">
@@ -402,7 +402,7 @@ export default {
 
   & .fc-multi-location-corridor {
     & .v-label {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       padding-left: 0 !important;
     }
   }
