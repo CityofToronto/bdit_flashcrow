@@ -1,9 +1,10 @@
 <template>
-  <v-card @mouseenter="addHoverLayer(index)"
-    @mouseleave="addHoverLayer(null)"
+  <v-card @mouseenter="addHoverLayer(index, $event)"
+    @mouseleave="addHoverLayer(null, $event)"
     class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
-    outlined>
+    outlined
+    :elevation="elevation">
     <v-card-title class="align-start pb-2">
       <FcIconLocationMulti
         class="mr-3"
@@ -65,6 +66,8 @@ export default {
     return {
       StudyHours,
       StudyType,
+      lastMouseEnterSource: null,
+      elevation: 0,
     };
   },
   computed: {
@@ -77,11 +80,21 @@ export default {
     },
   },
   methods: {
-    async addHoverLayer(index) {
-      this.addHoveredStudyRequest(index);
+    async addHoverLayer(index, event) {
+      if (index === null) {
+        // eslint-disable-next-line no-underscore-dangle
+        if (event.toElement._prevClass !== 'align-center d-flex') {
+          return;
+        }
+        this.addHoveredStudyIndex(index);
+        this.elevation = 0;
+      } else {
+        this.elevation = 10;
+        this.addHoveredStudyIndex(index);
+      }
     },
     ...mapActions('editRequests', [
-      'addHoveredStudyRequest',
+      'addHoveredStudyIndex',
     ]),
   },
 };

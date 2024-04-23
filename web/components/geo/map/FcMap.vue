@@ -169,7 +169,7 @@ export default {
       type: Array,
       default() { return []; },
     },
-    hoverState: {
+    hoverLayerState: {
       type: Number,
       default: null,
     },
@@ -261,8 +261,8 @@ export default {
     hoverGeoJson() {
       const features = [];
 
-      if (this.hoverState !== null) {
-        const { location, state } = this.locationsState[this.hoverState];
+      if (this.hoverLayerState !== null) {
+        const { location, state } = this.locationsState[this.hoverLayerState];
         const {
           geom,
           lat,

@@ -15,7 +15,7 @@
             studies: true,
             volume: false,
           }"
-          :hover-state="hoveredRequestLocation"
+          :hover-layer-state="hoveredStudyIndex"
           :location-active="locationToAdd"
           :locations-state="mapMarkers"
           :easeToLocationMode="mapEaseMode"
@@ -121,7 +121,7 @@ export default {
     isSearchActive() {
       return this.locationToAdd !== null;
     },
-    ...mapState('editRequests', ['indicesSelected', 'hoveredRequestLocation']),
+    ...mapState('editRequests', ['indicesSelected', 'hoveredStudyIndex']),
     ...mapGetters('editRequests', ['locations', 'hoverLocation']),
   },
   methods: {
