@@ -130,13 +130,13 @@
             This page is loading, please wait.
           </div>
         </div>
-        <div
-          v-else-if="studies.length === 0"
-          class="ma-3 text-center">
-          <div class="font-weight-regular headline secondary--text">
-            Report not available, try a different location.
-          </div>
-        </div>
+        <FcCallout v-else-if="studies.length === 0"
+          icon="mdi-alert-circle"
+          iconColor="white"
+          textColor="white"
+          type="error-callout"
+          >Report not available, try a different location.
+        </FcCallout>
         <FcCallout v-else-if="studyRetrievalError || reportBodyEmpty"
         icon="mdi-alert-circle"
         iconColor="white"
