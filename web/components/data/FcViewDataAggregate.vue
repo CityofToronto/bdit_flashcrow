@@ -106,7 +106,6 @@
           :locations-selection="locationsSelection"
           @show-reports="actionShowReportsStudy" />
 
-        <v-divider></v-divider>
       </section>
     </template>
   </div>
