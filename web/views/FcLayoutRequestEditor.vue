@@ -76,9 +76,6 @@ export default {
     };
   },
   computed: {
-    hoverRequestState() {
-      return 0;
-    },
     mapMarkers() {
       const mapMarkers = [...this.studyRequestMarkers];
       if (this.isSearchActive) {
