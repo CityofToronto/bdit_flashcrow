@@ -1,6 +1,6 @@
 <template>
-  <v-card @mouseenter="test(index)"
-    @mouseleave="test(null)"
+  <v-card @mouseenter="addHoverLayer(index)"
+    @mouseleave="addHoverLayer(null)"
     class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
     outlined>
@@ -28,7 +28,9 @@
     </v-card-title>
 
     <v-card-text class="pb-0">
-      <StudyRequestForm class='study-request-form' :v="v" :location="location" />
+      <StudyRequestForm
+      class='study-request-form' :v="v" :location="location"
+      :index="index"/>
     </v-card-text>
   </v-card>
 </template>
@@ -75,7 +77,7 @@ export default {
     },
   },
   methods: {
-    async test(index) {
+    async addHoverLayer(index) {
       this.addHoveredStudyRequest(index);
     },
     ...mapActions('editRequests', [
