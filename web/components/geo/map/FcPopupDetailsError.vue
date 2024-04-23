@@ -2,7 +2,7 @@
   <div>
     <p class="pa-1">
       There was a problem loading this information.
-      Contact the MOVE team for assistance.
+      Contact the <a href='mailto:move-team@toronto.ca'>MOVE Team</a> for assistance.
     </p>
   </div>
 </template>

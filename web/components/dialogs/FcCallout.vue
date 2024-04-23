@@ -35,6 +35,8 @@ export default {
     border-radius: 5px;
     min-height: 60px;
     font-size: 18px;
+    width: max-content;
+    padding: 0 1rem;
     & > a {
       font-weight: bold;
     }
