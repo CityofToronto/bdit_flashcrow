@@ -436,8 +436,17 @@ export default {
     },
     hoveredStudyRequest() {
       if (this.hoveredStudyRequest) {
+        // We activate the tooltip here
         const desiredCentrelineId = this.hoveredStudyRequest.location.centrelineId;
         this.setHoveredFeature(this.getFeatureForLayerAndProperty('locations-markers', 'centrelineId', desiredCentrelineId));
+
+        // We focus in on a specific location marker here
+        const desiredLocations = this.locationsState.filter(
+          item => item.location.centrelineId === desiredCentrelineId,
+        );
+        this.easeToLocationsState(desiredLocations);
+      } else {
+        this.setHoveredFeature(null);
       }
     },
   },
