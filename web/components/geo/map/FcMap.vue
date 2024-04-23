@@ -412,8 +412,12 @@ export default {
     locationsGeoJson() {
       this.updateLocationsSource();
     },
-    locationsMarkersGeoJson() {
-      this.updateLocationsMarkersSource();
+    locationsMarkersGeoJson: {
+      deep: true,
+      handler: function update() {
+        this.updateLocationsMarkersSource();
+      },
+      immediate: true,
     },
     locationsState() {
       this.easeToLocationbByMode();
@@ -436,17 +440,25 @@ export default {
     },
     hoveredStudyRequest() {
       if (this.hoveredStudyRequest) {
-        // We activate the tooltip here
         const desiredCentrelineId = this.hoveredStudyRequest.location.centrelineId;
-        this.setHoveredFeature(this.getFeatureForLayerAndProperty('locations-markers', 'centrelineId', desiredCentrelineId));
 
-        // We focus in on a specific location marker here
-        const desiredLocations = this.locationsState.filter(
-          item => item.location.centrelineId === desiredCentrelineId,
-        );
-        this.easeToLocationsState(desiredLocations);
+        // setting 'selected: true' on the right location marker
+        this.locationsMarkersGeoJson.features.forEach((item) => {
+          if (item.properties.centrelineId === desiredCentrelineId) {
+            item.properties.selected = true; // eslint-disable-line no-param-reassign
+          } else {
+            item.properties.selected = false; // eslint-disable-line no-param-reassign
+          }
+        });
+
+        this.updateLocationsMarkersSource();
       } else {
         this.setHoveredFeature(null);
+
+        // setting 'selected: false' for every location marker
+        this.locationsMarkersGeoJson.features.forEach((item) => {
+          item.properties.selected = false; // eslint-disable-line no-param-reassign
+        });
       }
     },
   },
