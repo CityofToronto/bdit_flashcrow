@@ -21,7 +21,7 @@
       </div>
       <div class="ml-1 mr-2 pr-2 py-2">
         For an in-depth explanation of how to interpret this data,
-        <a class="link" href="https://www.notion.so/bditto/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196" target="_blank" rel="noopener noreferrer">
+        <a class="link" href="https://bditto.notion.site/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196" target="_blank" rel="noopener noreferrer">
           see here
         </a>
       </div>

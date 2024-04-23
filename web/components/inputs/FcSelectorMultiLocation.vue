@@ -293,7 +293,7 @@ export default {
       const includesMidblocksStr = includesMidblocks === 1
         ? '1 midblock'
         : `${includesMidblocks} midblocks`;
-      return `Includes ${includesIntersectionsStr} and ${includesMidblocksStr} between locations`;
+      return `${includesIntersectionsStr}, ${includesMidblocksStr}`;
     },
     ...mapState([
       'locationMode',
