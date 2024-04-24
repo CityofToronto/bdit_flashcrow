@@ -13,6 +13,7 @@ import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import CountLocationDAO from '@/lib/db/CountLocationDAO';
 import StudyDAO from '@/lib/db/StudyDAO';
 import StudyDataDAO from '@/lib/db/StudyDataDAO';
+import PoiDAO from '@/lib/db/PoiDAO';
 import ReportFactory from '@/lib/reports/ReportFactory';
 import MovePdfGenerator from '@/lib/reports/format/MovePdfGenerator';
 import { loadJsonSync } from '@/lib/test/TestDataLoader';
@@ -22,6 +23,7 @@ jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/CountLocationDAO');
 jest.mock('@/lib/db/StudyDAO');
 jest.mock('@/lib/db/StudyDataDAO');
+jest.mock('@/lib/db/PoiDAO');
 
 const countData_4_2156283 = loadJsonSync(
   path.resolve(__dirname, '../data/countData_4_2156283.json'),
@@ -59,6 +61,13 @@ function setup_4_2156283_single() {
     centrelineType: CentrelineType.SEGMENT,
   };
   CountLocationDAO.byStudy.mockResolvedValue(countLocation);
+
+  const poiResponse = {
+    hospital: null,
+    school: { id: 1134, geom_dist: 229.636281975754 },
+    trafficSignals: [{ px: 499 }],
+  };
+  PoiDAO.byCentrelineSummary.mockResolvedValue(poiResponse);
 
   const counts = [{
     id: 2156283,
@@ -125,6 +134,14 @@ function setup_5_36781() {
       coordinates: [-79.361498301, 43.663158537],
     },
   };
+
+  const poiResponse = {
+    hospital: null,
+    school: { id: 871, geom_dist: 239.31776433927 },
+    trafficSignals: [{ px: 1390 }],
+  };
+  PoiDAO.byCentrelineSummary.mockResolvedValue(poiResponse);
+
   const counts = [{
     id: 36781,
     legacy: true,
@@ -202,6 +219,12 @@ function setup_5_38661() {
       coordinates: [-79.343625497, 43.70747321],
     },
   });
+  const poiResponse = {
+    hospital: null,
+    school: { id: 741, geom_dist: 211.268629431655 },
+    trafficSignals: [{ px: 680 }],
+  };
+  PoiDAO.byCentrelineSummary.mockResolvedValue(poiResponse);
   CentrelineDAO.featuresIncidentTo.mockResolvedValue([
     {
       centrelineId: 649,
