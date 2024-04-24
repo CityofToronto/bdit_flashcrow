@@ -123,7 +123,7 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || hasError || hasZeroLocations"
+            :disabled="loading || hasError"
             :loading="loading"
             type="primary"
             @click="saveAndThenView">
