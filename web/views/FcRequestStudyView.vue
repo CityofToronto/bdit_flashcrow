@@ -80,7 +80,7 @@
 import { mapActions, mapMutations } from 'vuex';
 
 import { getStudyRequest, getStudyRequestBulkName } from '@/lib/api/WebApi';
-import { getStudyRequestLocation, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcCommentsStudyRequest from '@/web/components/requests/FcCommentsStudyRequest.vue';
@@ -134,7 +134,7 @@ export default {
         multi: false,
         selected: false,
       };
-      return groupRequestsByLocation([{ location, state }]);
+      return [{ location, state }];
     },
     currentStatus() {
       return this.studyRequest.status;
