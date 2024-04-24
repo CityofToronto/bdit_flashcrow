@@ -307,6 +307,7 @@ export default {
   display: flex;
   flex-wrap: none;
   justify-content: space-between;
+  border-radius: 8px;
   & .nudge-right {
     left: 15px;
   }

@@ -17,11 +17,12 @@
               <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
               <div class="fc-connector-lines" :class="!internalCorridor ? 'hide': ''"></div>
             </div>
-            <div class="fc-input-location-search-wrapper elevation-2"
-            :class="i > 0 ? 'fc-input-has-border' : ''">
+            <div class="fc-input-location-search-wrapper" >
               <FcInputLocationSearch
               v-model="locationsEditSelection.locations[i]"
               :location-index="i"
+              class="elevation-2"
+              :class="i > 0 ? 'fc-input-has-border' : ''"
               :selected="i === locationsEditIndex"
               @focus="setLocationsEditIndex(i)"
               @location-remove="actionRemove"
@@ -31,10 +32,11 @@
 
           <div class="fc-multi-line">
             <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
-            <div class="fc-input-location-search-wrapper elevation-2 fc-input-has-border">
+            <div class="fc-input-location-search-wrapper">
               <FcInputLocationSearch
                 v-if="!locationsEditFull"
                 ref="autofocus"
+                class="elevation-2 fc-input-has-border"
                 v-model="locationToAdd"
                 :location-index="-1"
                 @focus="setLocationsEditIndex(-1)"
