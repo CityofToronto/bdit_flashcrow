@@ -17,10 +17,6 @@
           />
         </p>
         <component
-          v-else-if="title.includes('Study Request')"
-          :is="'FcPopupDetails' + detailsSuffix"
-          :feature-details="this.feature.properties"/>
-        <component
           v-else
           :is="'FcPopupDetails' + detailsSuffix"
           :feature-details="featureDetails" />
@@ -174,7 +170,7 @@ export default {
         this.featureDetails = await getFeatureDetails(this.layerId, this.feature);
       } catch (err) {
         this.error = true;
-        this.setToastEnrichedError('<span>Tooltip failed to load. Email the<a style="color:white; font-weight:bold" href="mailto:move-team@toronto.ca"> MOVE team</a> for assistance.</span>');
+        this.setToastEnrichedError('<span>Tooltip failed to load. Email the <a style="color:white; font-weight:bold" href="mailto:move-team@toronto.ca">MOVE team</a> for assistance.</span>');
       }
       this.loading = false;
     },

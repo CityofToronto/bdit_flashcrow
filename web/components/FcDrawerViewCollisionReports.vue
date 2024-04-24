@@ -118,7 +118,7 @@
         textColor="white"
         type="error-callout"
         >There was a problem loading this report.
-        Email the <a href='mailto:move-team@toronto.ca'>MOVE Team</a> for assistance.
+        Email the&nbsp;<a href='mailto:move-team@toronto.ca'>MOVE Team</a>&nbsp;for assistance.
         </FcCallout>
         <div
           v-else
