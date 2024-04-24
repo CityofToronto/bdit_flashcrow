@@ -1,17 +1,13 @@
 <template>
   <div class="d-none">
     <v-card ref="content" min-width="220">
-      <v-card-title class="shading flex-column d-flex align-start">
+      <v-card-title class="shading">
         <h2 class="display-1">{{title}}</h2>
-        <h4 v-if="this.feature.properties.studyRequests"
-        class="display-2 body-2 text-subtitle-2
-        mt-1">{{ this.feature.properties.description }}</h4>
       </v-card-title>
 
       <v-divider></v-divider>
 
-      <v-card-text class="default--text"
-      :class="this.feature.properties.studyRequests ? 'px-0' : ''">
+      <v-card-text class="default--text">
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
@@ -27,7 +23,7 @@
         <component
           v-else
           :is="'FcPopupDetails' + detailsSuffix"
-          :feature-details="featureDetails"/>
+          :feature-details="featureDetails" />
       </v-card-text>
 
       <template v-if="featureSelectable && !loading">
@@ -49,14 +45,12 @@ import FcPopupDetailsHospital from '@/web/components/geo/map/FcPopupDetailsHospi
 import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocation.vue';
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
-import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
 import FcPopupDetailsError from '@/web/components/geo/map/FcPopupDetailsError.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
   'intersections',
   'midblocks',
-  'locations-markers',
 ];
 
 export default {
@@ -67,7 +61,6 @@ export default {
     FcPopupDetailsLocation,
     FcPopupDetailsSchool,
     FcPopupDetailsStudy,
-    FcPopupDetailsStudyRequest,
     FcProgressLinear,
     FcPopupDetailsError,
   },
@@ -100,9 +93,6 @@ export default {
     },
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.feature.layer.id);
-    },
-    isStudyRequest() {
-      return !(this.feature.properties.studyRequests === undefined);
     },
     layerId() {
       return this.feature.layer.id;
@@ -139,10 +129,6 @@ export default {
       }
       if (this.layerId === 'studies') {
         return 'Study Location';
-      }
-      if (this.layerId === 'locations-markers' && this.feature.properties.studyRequests) {
-        const numRequests = this.feature.properties.studyRequests.length;
-        return (numRequests > 1 ? `${numRequests} ` : '').concat('Study Request').concat(numRequests > 1 ? 's' : '');
       }
       return null;
     },

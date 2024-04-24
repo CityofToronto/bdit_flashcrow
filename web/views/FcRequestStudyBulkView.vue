@@ -38,8 +38,7 @@
             <FcMap
               class="mx-5"
               :locations-state="locationsState"
-              :show-legend="false"
-              :is-request-page="true"/>
+              :show-legend="false" />
           </v-col>
         </v-row>
 
@@ -114,7 +113,7 @@ import { mapActions, mapMutations } from 'vuex';
 
 import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
-import { getStudyRequestLocation, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
+import { getStudyRequestLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
@@ -197,8 +196,7 @@ export default {
         };
         locationsState.push({ location, state });
       });
-      return groupRequestsByLocation(locationsState);
-      // return locationsState;
+      return locationsState;
     },
     selectAll: {
       get() {
