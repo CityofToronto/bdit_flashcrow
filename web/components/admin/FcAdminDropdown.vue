@@ -1,11 +1,10 @@
-<!-- eslint-disable no-console -->
 <template>
   <select class="dropdown" v-model="selectedPermission" @change="handleSelection">
     <option value='' :selected="true">{{ currentSelection.label }}</option>
     <option v-for="{ permissionState, permissionSlot } in
       getOptions(currentSelection, permissions)"
       :key="permissionSlot"
-      :value="permissionState.label">
+      :value="permissionState">
       <span v-if="currentSelection != permissionState.label">{{ permissionState.label }}</span>
     </option>
   </select>
@@ -24,16 +23,14 @@ export default {
       return allItems.filter(({ permissionState }) => permissionState !== selectedItem);
     },
     updateUser(mvcrPermission, user) {
-      // eslint-disable-next-line no-console
-      console.log(mvcrPermission);
-      // eslint-disable-next-line no-console
-      console.log(user);
+      const permissionId = mvcrPermission.ordinal;
+      const updatedUser = { ...user, mvcrAcctType: permissionId };
+      return updatedUser;
     },
     handleSelection() {
-      const permissionChange = this.selectedPermission || this.currentSelection.label;
-      // const newCurrentUser =
-      this.updateUser(permissionChange, this.currentUser);
-      // this.$emit('change', );
+      const permissionChange = this.selectedPermission || this.currentSelection;
+      const newUserPermission = this.updateUser(permissionChange, this.currentUser);
+      this.$emit('change', newUserPermission);
     },
   },
 };
