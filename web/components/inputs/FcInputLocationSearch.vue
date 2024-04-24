@@ -1,6 +1,6 @@
 <template>
-  <div class="fc-single-location-row">
-    <div class="fc-input-location-search elevation-2"
+  <div class="fc-single-location-row mb-1">
+    <div class="fc-input-location-search"
     :class="{ 'fc-location-search-home': !drawerOpen}">
       <v-menu
         v-model="showLocationSuggestions"

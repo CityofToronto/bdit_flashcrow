@@ -387,7 +387,7 @@ export default {
 
   & .fc-input-location-search-wrapper {
     width: 100%;
-    & > .fc-input-location-search {
+    & > .fc-single-location-row {
       &:not(:first-child) {
         border-top: 1px solid var(--v-border-base);
       }
