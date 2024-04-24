@@ -1,7 +1,7 @@
 <template>
-  <div class="fc-single-location-row mb-1">
+  <div class="fc-single-location-row">
     <div class="fc-input-location-search"
-    :class="{ 'fc-location-search-home': !drawerOpen}">
+    :class="{ 'fc-location-search-home elevation-2': !drawerOpen}">
       <v-menu
         v-model="showLocationSuggestions"
         ref="menuLocationSuggestions"
@@ -35,7 +35,6 @@
                       <template v-slot:activator="{ on: onTooltip }">
                         <FcButton
                           aria-label="Clear Location"
-                          class="mr-1"
                           type="icon"
                           @click="actionRemove"
                           v-on="onTooltip"
