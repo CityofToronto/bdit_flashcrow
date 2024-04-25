@@ -8,6 +8,7 @@
       <FcButton
         type="tertiary"
         class="add-location-btn mb-2 mt-1"
+        small
         @click="actionAddLocation">
         <v-icon color="primary" left>mdi-plus</v-icon>
         Add Location
