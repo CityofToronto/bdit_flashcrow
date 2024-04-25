@@ -1,14 +1,24 @@
 <template>
-  <div class="fc-input-summary text-left pa-1 pb-0">
+  <div class="fc-input-summary text-left pa-1 pb-0 mr-4">
     <!-- if in CORRIDOR-mode -->
     <div v-if="isCorridor">
-      <span>from </span>
-      <span class="fc-summary-name">{{ locationsSelection.locations[0].description }}</span>
-      <div class="fc-summary-indent">
-        <span>to </span>
-        <span class="fc-summary-name">
+      <div  class="fc-corridor-summary-line">
+        <div class="mr-2">from </div>
+        <div class="fc-summary-name">{{ locationsSelection.locations[0].description }}</div>
+      </div>
+      <div class="fc-corridor-summary-line fc-summary-indent">
+        <div class="mr-2">to </div>
+        <div class="fc-summary-name">
           {{ locationsSelection.locations[locationsSelection.locations.length - 1].description }}
-        </span>
+        </div>
+      </div>
+      <div v-if="locationsSelection.locations.length >= 3"
+        class="fc-corridor-summary-line ml-2">
+        <div class="mr-2">via </div>
+        <div class="fc-summary-name">
+          {{ locationsSelection.locations.length - 2 }}
+          &nbsp;locations
+        </div>
       </div>
     </div>
     <!-- support different sizes -->
@@ -88,8 +98,12 @@ export default {
     font-weight: bold;
   }
 
+  & .fc-corridor-summary-line {
+    display: flex;
+    flex-wrap: none;
+  }
   & .fc-summary-indent {
-    margin-left: 10px;
+    margin-left: 18px;
   }
 }
 </style>
