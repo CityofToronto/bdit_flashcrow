@@ -11,22 +11,12 @@
 </template>
 
 <script>
+import { StudyType } from '@/lib/Constants';
+
 export default {
   name: 'FcStudyRequestDuration',
   props: {
     v: Object,
-  },
-  data() {
-    const itemsDuration = [
-      { text: '1 day', value: 24 },
-      { text: '2 days', value: 48 },
-      { text: '3 days', value: 72 },
-      { text: '4 days', value: 96 },
-      { text: '5 days', value: 120 },
-      { text: '1 week', value: 168 },
-      { text: '2 weeks', value: 336 },
-    ];
-    return { itemsDuration };
   },
   computed: {
     studyType() {
@@ -52,6 +42,26 @@ export default {
         caption = `${mainClause} across ${nDays} consecutive days (${nHours} hours)`;
       }
       return caption;
+    },
+    itemsDuration() {
+      if (this.studyType === StudyType.ATR_VOLUME_BICYCLE) {
+        const itemsDuration = [
+          { text: '1 day', value: 24 },
+          { text: '3 days', value: 72 },
+          { text: '1 week', value: 168 },
+        ];
+        return itemsDuration;
+      }
+      const itemsDuration = [
+        { text: '1 day', value: 24 },
+        { text: '2 days', value: 48 },
+        { text: '3 days', value: 72 },
+        { text: '4 days', value: 96 },
+        { text: '5 days', value: 120 },
+        { text: '1 week', value: 168 },
+        { text: '2 weeks', value: 336 },
+      ];
+      return itemsDuration;
     },
   },
 };
