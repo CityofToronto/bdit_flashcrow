@@ -5,8 +5,8 @@
     role="search">
     <FcInputLocationSearch
       ref="autofocus"
-      v-model="internalValue"
-      class="elevation-2" />
+      isSingleMode
+      v-model="internalValue" />
   </div>
 </template>
 
@@ -54,11 +54,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.fc-selector-single-location {
-  & > .fc-input-location-search {
-    max-width: 448px;
-  }
-}
-</style>

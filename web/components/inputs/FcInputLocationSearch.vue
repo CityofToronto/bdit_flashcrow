@@ -1,86 +1,106 @@
 <template>
-  <div class="fc-input-location-search">
-    <v-menu
-      v-model="showLocationSuggestions"
-      ref="menuLocationSuggestions"
-      :attach="$el"
-      :close-on-click="false"
-      :close-on-content-click="false"
-      :offset-y="true"
-      :open-on-click="false">
-      <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
-        <div v-bind="attrsMenu">
-          <v-text-field
-            v-model="query"
-            :aria-label="query"
-            autocomplete="off"
-            spellcheck="false"
-            dense
-            :flat="hasLocationIndex"
-            hide-details
-            label="Choose location or click on the map"
-            :loading="loading"
-            solo
-            v-bind="$attrs"
-            @blur="actionBlur"
-            @focus="actionFocus"
-            @input="actionInput"
-            v-on="onMenu">
-            <template v-slot:append>
-              <template v-if="hasLocationIndex">
-              </template>
-              <template v-else>
-                <FcTooltip
-                  v-if="internalValue !== null || query !== null"
-                  right>
-                  <template v-slot:activator="{ on: onTooltip }">
-                    <FcButton
-                      aria-label="Clear Location"
-                      class="mr-1"
-                      type="icon"
-                      @click="actionClear"
-                      v-on="onTooltip">
-                      <v-icon>mdi-close-circle</v-icon>
-                    </FcButton>
+  <div class="fc-single-location-row">
+    <div class="fc-input-location-search"
+    :class="{ 'fc-location-search-home elevation-2': !drawerOpen}">
+      <v-menu
+        v-model="showLocationSuggestions"
+        ref="menuLocationSuggestions"
+        :attach="$el"
+        :close-on-click="false"
+        :close-on-content-click="false"
+        :offset-y="true"
+        :open-on-click="false">
+        <template v-slot:activator="{ attrs: attrsMenu, on: onMenu }">
+          <div v-bind="attrsMenu">
+            <v-text-field
+              v-model="query"
+              :aria-label="query"
+              autocomplete="off"
+              spellcheck="false"
+              dense
+              :flat="hasLocationIndex"
+              hide-details
+              label="Choose location or click on the map"
+              :loading="loading"
+              solo
+              v-bind="$attrs"
+              @blur="actionBlur"
+              @focus="actionFocus"
+              @input="actionInput"
+              v-on="onMenu">
+              <template v-slot:append>
+                <template v-if="hasLocationIndex">
+                  <template v-if="showClose">
+                    <FcTooltip right>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <FcButton
+                          aria-label="Clear Location"
+                          type="icon"
+                          @click="actionRemove"
+                          v-on="onTooltip"
+                          plain>
+                          <v-icon>mdi-close</v-icon>
+                        </FcButton>
+                      </template>
+                      <span>Clear Location</span>
+                    </FcTooltip>
                   </template>
-                  <span>Clear Location</span>
-                </FcTooltip>
-                <v-divider vertical />
-                <v-icon
-                  :color="hasFocus ? 'primary' : null"
-                  right>
-                  mdi-magnify
-                </v-icon>
+                </template>
+                <template v-else>
+                  <v-icon
+                    :color="hasFocus ? 'primary' : null"
+                    right>
+                    mdi-magnify
+                  </v-icon>
+                </template>
               </template>
-            </template>
-          </v-text-field>
-        </div>
-      </template>
-      <v-list
-        ref="listLocationSuggestions"
-        class="fc-list-location-suggestions">
-        <v-list-item
-          v-for="(location, i) in locationSuggestions"
-          :key="i"
-          @click="actionSelect(location)">
-          <v-list-item-content>
-            <v-list-item-title>
-              <span>{{location.description}}</span>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+            </v-text-field>
+          </div>
+        </template>
+
+        <v-list
+          ref="listLocationSuggestions"
+          class="fc-list-location-suggestions">
+          <v-list-item
+            v-for="(location, i) in locationSuggestions"
+            :key="i"
+            @click="actionSelect(location)">
+            <v-list-item-content>
+              <v-list-item-title>
+                <span>{{location.description}}</span>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
+    <div v-if="isSingleMode && drawerOpen">
+      <FcTooltip right>
+          <template v-slot:activator="{ on: onTooltip }">
+            <FcButton
+              aria-label="Clear Location"
+              class="mr-1 nudge-right"
+              type="icon"
+              @click="actionClear"
+              v-on="onTooltip">
+              <v-icon>mdi-close-circle</v-icon>
+            </FcButton>
+          </template>
+          <span>Clear Location</span>
+        </FcTooltip>
+   </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
 import { Enum } from '@/lib/ClassUtils';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { mapMutations, mapState } from 'vuex';
 
 class LocationSearchState extends Enum {}
 LocationSearchState.init([
@@ -104,6 +124,14 @@ export default {
       default: null,
     },
     selected: {
+      type: Boolean,
+      default: false,
+    },
+    showClose: {
+      type: Boolean,
+      default: false,
+    },
+    isSingleMode: {
       type: Boolean,
       default: false,
     },
@@ -144,6 +172,9 @@ export default {
         }
       },
     },
+    ...mapState('viewData', [
+      'drawerOpen',
+    ]),
   },
   watch: {
     internalValue() {
@@ -211,6 +242,13 @@ export default {
         this.$emit('location-remove', this.locationIndex);
       }
     },
+    actionRemove() {
+      const description = this.query || '';
+      this.setToastInfo(`Removed ${description} from selected locations.`);
+      this.setLocationsEditIndex(-1);
+      this.removeLocationEdit(this.locationIndex);
+      Vue.nextTick(() => this.autofocus());
+    },
     actionBlur(e) {
       /*
        * Clicking a location suggestion in the dropdown triggers a blur event.  However, if
@@ -255,12 +293,28 @@ export default {
       this.internalValue = location;
       this.state = LocationSearchState.VALUE_SELECTED;
     },
+    ...mapMutations([
+      'setLocationsEditIndex',
+      'removeLocationEdit',
+      'setToastInfo',
+    ]),
   },
 };
 </script>
 
 <style lang="scss">
+.fc-single-location-row {
+  display: flex;
+  flex-wrap: none;
+  justify-content: space-between;
+  border-radius: 8px;
+  & .nudge-right {
+    left: 15px;
+  }
+}
+
 .fc-input-location-search {
+  flex-grow: 1;
   & > .v-input--is-focused {
     box-shadow: 0 0 0 2px var(--v-primary-base);
   }
@@ -270,5 +324,8 @@ export default {
   &.v-select.v-select--is-menu-active .v-input__icon--append .v-icon {
     transform: none;
   }
+}
+.fc-location-search-home {
+  max-width: 448px;
 }
 </style>

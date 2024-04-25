@@ -3,12 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
-    <p
-      v-else-if="studySummaryUnfiltered.length === 0"
-      class="my-8 py-12 secondary--text text-center">
-      There are no studies for this location,<br>
-      please request a study if necessary
-    </p>
+    <p v-else-if="studySummaryUnfiltered.length === 0"></p>
     <template v-else>
       <div
         v-for="(item, i) in items"
