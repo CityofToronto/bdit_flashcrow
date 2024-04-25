@@ -71,7 +71,6 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <!-- <h2 class="display-2 mb-4 mt-4">{{locationsEditDescription}}</h2> -->
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
