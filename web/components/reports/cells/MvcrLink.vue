@@ -99,6 +99,9 @@ export default {
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
+    mvcrFilename() {
+      return `mvcr_${this.mvcrDetails.collisionYear}_${this.mvcrDetails.collisionMonth}_${this.mvcrDetails.collisionId}.pdf`;
+    },
   },
 };
 </script>
