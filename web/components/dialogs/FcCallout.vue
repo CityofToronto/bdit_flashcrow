@@ -37,6 +37,7 @@ export default {
     font-size: 18px;
     width: max-content;
     padding: 0 1rem;
+    margin: 0 auto;
     & > a {
       font-weight: bold;
     }
