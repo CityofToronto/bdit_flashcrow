@@ -219,11 +219,7 @@ export default {
       return MvcrPermissions[user.mvcrAcctType];
     },
     mvcrPermissionChanged(mvcrAcctType) {
-      this.log(mvcrAcctType);
-    },
-    log(msg) {
-      // eslint-disable-next-line no-console
-      console.log(msg);
+      this.actionChangeUserScope(mvcrAcctType);
     },
   },
 };
