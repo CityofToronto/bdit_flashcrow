@@ -8,9 +8,9 @@
         <FcHeaderCollisions
           :collision-total="collisionTotal"
           :disabled="reportExportMode === ReportExportMode.STUDIES">
-          <template v-slot:action>
+          <template v-slot:action v-if="collisionSummary.amount > 0">
             <FcButton
-              class="ml-2"
+              class="ma-1"
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
@@ -28,7 +28,7 @@
             </FcButton>
             <FcButton
               v-if="reportExportMode !== ReportExportMode.COLLISIONS"
-              class="ml-2"
+              class="ma-1"
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
@@ -63,7 +63,8 @@
           :study-total="studyTotal">
           <template v-slot:action>
             <FcButton
-              class="ml-2"
+              class="ma-1"
+              v-if="studySummary.length > 0"
               :disabled="
                 studySummary.length === 0
                 || reportExportMode === ReportExportMode.COLLISIONS"
@@ -81,7 +82,7 @@
             </FcButton>
             <FcButton
               v-if="reportExportMode !== ReportExportMode.STUDIES"
-              class="ml-2"
+              class="ma-1"
               :disabled="reportExportMode === ReportExportMode.COLLISIONS"
               type="secondary"
               @click="actionRequestStudy">
@@ -106,7 +107,6 @@
           :locations-selection="locationsSelection"
           @show-reports="actionShowReportsStudy" />
 
-        <v-divider></v-divider>
       </section>
     </template>
   </div>

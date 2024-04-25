@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
-    <template v-else>
+    <template v-else-if="collisionSummary.amount > 0">
       <v-expansion-panels
         v-model="indexOpen"
         accordion
