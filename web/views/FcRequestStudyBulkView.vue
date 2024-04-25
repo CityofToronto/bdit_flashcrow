@@ -114,7 +114,7 @@ import { mapActions, mapMutations } from 'vuex';
 
 import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants';
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
-import { getStudyRequestLocation, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
+import { getStudyRequestInfo, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
 import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
@@ -188,7 +188,7 @@ export default {
         if (this.studyRequestLocations.has(key)) {
           location = this.studyRequestLocations.get(key);
         }
-        location = getStudyRequestLocation(studyRequest, location);
+        location = getStudyRequestInfo(studyRequest, location);
         const state = {
           deselected: false,
           locationIndex: -1,
