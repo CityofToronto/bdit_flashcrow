@@ -1,7 +1,7 @@
 <template>
   <div
     aria-label="Search for multiple locations in the map"
-    class="fc-selector-multi-location d-flex flex-column px-5 py-3"
+    class="fc-selector-multi-location d-flex flex-column px-4 pt-3"
     role="search">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
@@ -10,52 +10,58 @@
       v-if="locationMode === LocationMode.MULTI_EDIT"
       class="align-start d-flex flex-grow-1 flex-shrink-1">
       <div class="fc-input-grow">
-        <div class="fc-input-location-search-wrapper elevation-2">
-          <FcInputLocationSearch
-            v-for="(_, i) in locationsEditSelection.locations"
-            :key="locationsEditKeys[i]"
-            v-model="locationsEditSelection.locations[i]"
-            :location-index="i"
-            :selected="i === locationsEditIndex"
-            @focus="setLocationsEditIndex(i)"
-            @location-remove="actionRemove" />
-          <FcInputLocationSearch
-            v-if="!locationsEditFull"
-            ref="autofocus"
-            v-model="locationToAdd"
-            :location-index="-1"
-            @focus="setLocationsEditIndex(-1)"
-            @location-add="actionAdd" />
+        <div >
+          <div class="fc-multi-line" v-for="(_, i) in locationsEditSelection.locations"
+          :key="locationsEditKeys[i]">
+            <div>
+              <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
+              <div class="fc-connector-lines" :class="!internalCorridor ? 'hide': ''"></div>
+            </div>
+            <div class="fc-input-location-search-wrapper" >
+              <FcInputLocationSearch
+              v-model="locationsEditSelection.locations[i]"
+              :location-index="i"
+              class="elevation-2"
+              :class="i > 0 ? 'fc-input-has-border' : ''"
+              :selected="i === locationsEditIndex"
+              @focus="setLocationsEditIndex(i)"
+              @location-remove="actionRemove"
+              showClose />
+            </div>
+          </div>
+
+          <div class="fc-multi-line">
+            <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
+            <div class="fc-input-location-search-wrapper">
+              <FcInputLocationSearch
+                v-if="!locationsEditFull"
+                ref="autofocus"
+                class="elevation-2 fc-input-has-border"
+                v-model="locationToAdd"
+                :location-index="-1"
+                @focus="setLocationsEditIndex(-1)"
+                @location-add="actionAdd" />
+              </div>
+          </div>
         </div>
         <v-messages
           class="mt-2 mb-2"
           v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
       </div>
-      <div class="ml-2">
-        <div
-          v-for="(location, i) in locationsEditSelection.locations"
-          :key="'remove_' + i"
-          class="fc-input-location-search-remove">
-          <FcButtonAria
-            :aria-label="'Remove Location #' + (i + 1) + ': ' + location.description"
-            right
-            type="icon"
-            @click="actionRemove(i)">
-            <v-icon>mdi-close</v-icon>
-          </FcButtonAria>
-        </div>
-      </div>
     </div>
     <div
       v-else
-      class="flex-grow-1 flex-shrink-1 text-right">
+      class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
+        <FcButton class="fc-close-top-right" type="tertiary" icon @click="actionClear">
+          <v-icon color="grey">mdi-close-circle</v-icon>
+        </FcButton>
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
       <FcButton
-        class="ml-3 edit-location-btn mb-1 mt-1"
+        class="ml-3 edit-location-btn"
         type="tertiary"
         @click="setLocationMode(LocationMode.MULTI_EDIT)">
         <v-icon color="primary" left>mdi-pencil</v-icon>
@@ -65,7 +71,6 @@
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <!-- <h2 class="display-2 mb-4 mt-4">{{locationsEditDescription}}</h2> -->
         </template>
         <template v-else-if="detailView">
           <FcHeaderSingleLocation
@@ -100,19 +105,16 @@
             <span>Next location</span>
           </FcTooltip>
         </template>
-        <template v-else>
-          <h2 class="display-2 mb-4">{{locationsDescription}}</h2>
-        </template>
       </div>
 
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-0 mb-1"
+            class="fc-multi-location-corridor mt-1 mb-1"
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 justify-end">
+      <div class="d-flex mt-2 mb-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
@@ -120,11 +122,11 @@
             Cancel
           </FcButton>
           <FcButton
-            :disabled="loading || hasError || hasZeroLocations"
+            :disabled="loading || hasError"
             :loading="loading"
             type="primary"
             @click="saveAndThenView">
-            View Data
+            Save
           </FcButton>
         </template>
         <template v-else-if="detailView">
@@ -178,7 +180,6 @@ import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import FcDisplayLocationMulti from '@/web/components/location/FcDisplayLocationMulti.vue';
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
@@ -190,7 +191,6 @@ export default {
   mixins: [FcMixinInputAutofocus],
   components: {
     FcButton,
-    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcDisplayLocationMulti,
     FcHeaderSingleLocation,
@@ -402,11 +402,9 @@ export default {
 
   & .fc-input-location-search-wrapper {
     width: 100%;
-    & > .fc-input-location-search {
-      &:not(:first-child) {
-        border-top: 1px solid var(--v-border-base);
-      }
-    }
+  }
+  & .fc-input-has-border {
+    border-top: 1px solid var(--v-border-base);
   }
   & .fc-input-grow {
     width: 100%;
@@ -417,9 +415,32 @@ export default {
 
   & .fc-multi-location-corridor {
     & .v-label {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       padding-left: 0 !important;
     }
+  }
+  & .fc-close-top-right {
+    position: absolute;
+    right: 8px;
+    top: 4px;
+  }
+  & .fc-multi-line {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  & .dots {
+    opacity: 0.7;
+    margin-right: 8px !important;
+  }
+  & .fc-connector-lines {
+    position: absolute;
+    height:16px;
+    left:27px;
+    border-left:2px dotted grey;
+  }
+  & .hide {
+    display: none;
   }
 }
 .edit-location-btn {
