@@ -5,11 +5,9 @@
       :key="i"
       :disabled="disabledNormalized[i]"
       @click="$emit('click-location', i)">
-      <v-list-item-title>
-        <div class="d-flex">
-          <FcIconLocationMulti
-            v-bind="locationsIconProps[i]"
-            :class="iconClasses" />
+      <v-list-item-title class="px-0">
+        <div class="d-flex align-center">
+          <v-icon class="mr-2">mdi-map-marker</v-icon>
           <div class="body-1 flex-grow-1 flex-shrink-1">
             <div
               :class="{
@@ -32,13 +30,10 @@
 
 <script>
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 
 export default {
   name: 'FcListLocationMulti',
-  components: {
-    FcIconLocationMulti,
-  },
+  components: {},
   props: {
     disabled: {
       type: Array,
