@@ -70,6 +70,12 @@
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
+
+      <div v-if="textLocationsSelectionIncludes !== null"
+        class="pr-2 secondary--text text-left mt-2">
+        {{textLocationsSelectionIncludes}}
+      </div>
+
       <FcButton
         class="ml-3 edit-location-btn"
         type="tertiary"
@@ -77,6 +83,7 @@
         <v-icon color="primary" left>mdi-pencil</v-icon>
         Edit Locations
       </FcButton>
+
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
@@ -124,7 +131,7 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mb-5 mr-2 justify-end">
+      <div class="d-flex mt-2 mb-1 mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
           <FcButton
             type="tertiary"
@@ -151,16 +158,7 @@
           </div>
         </template>
         <template v-else>
-          <span
-            v-if="textLocationsSelectionIncludes !== null"
-            class="pr-2 secondary--text">
-            {{textLocationsSelectionIncludes}}
-          </span>
-
-          <v-spacer></v-spacer>
-
           <slot name="action" />
-
         </template>
       </div>
     </div>
