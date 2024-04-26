@@ -15,7 +15,10 @@
           :key="locationsEditKeys[i]">
             <div>
               <v-icon class="ma-1 dots" small >mdi-map-marker-outline</v-icon>
-              <div class="fc-connector-lines" :class="!internalCorridor ? 'hide': ''"></div>
+              <div class="fc-connector-lines"
+                :class="!internalCorridor ? 'hide': ''"
+                v-if="i < 4"
+              ></div>
             </div>
             <div class="fc-input-location-search-wrapper" >
               <FcInputLocationSearch
@@ -31,7 +34,8 @@
           </div>
 
           <div class="fc-multi-line">
-            <v-icon class="ma-1 dots" small >mdi-map-marker-outline</v-icon>
+            <v-icon class="ma-1 dots"
+             small v-if="!locationsEditFull">mdi-map-marker-outline</v-icon>
             <div class="fc-input-location-search-wrapper">
               <FcInputLocationSearch
                 v-if="!locationsEditFull"
