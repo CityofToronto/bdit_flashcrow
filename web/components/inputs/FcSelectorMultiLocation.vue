@@ -131,20 +131,22 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mb-1 mr-2 justify-end">
+      <div class="d-flex mt-2 mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <FcButton
-            type="tertiary"
-            @click="leaveLocationMode">
-            Cancel
-          </FcButton>
-          <FcButton
-            :disabled="loading || hasError"
-            :loading="loading"
-            type="primary"
-            @click="saveAndThenView">
-            Save
-          </FcButton>
+          <div class="mb-3">
+            <FcButton
+              type="tertiary"
+              @click="leaveLocationMode">
+              Cancel
+            </FcButton>
+            <FcButton
+              :disabled="loading || hasError"
+              :loading="loading"
+              type="primary"
+              @click="saveAndThenView">
+              Save
+            </FcButton>
+          </div>
         </template>
         <template v-else-if="detailView">
           <div class="d-flex">
