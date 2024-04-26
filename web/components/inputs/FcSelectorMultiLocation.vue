@@ -49,7 +49,7 @@
           </div>
         </div>
         <v-messages
-          class="mt-2 mb-2"
+          class="mt-2 mb-2 ml-7"
           v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
       </div>
