@@ -100,6 +100,7 @@ import FcCommonFilters from '@/web/components/filters/FcCommonFilters.vue';
 import FcStudyFilters from '@/web/components/filters/FcStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
+import { saveFilterState } from '@/web/store/LoginState';
 
 function cloneCollisionFilters(filtersCollision) {
   const {
@@ -217,6 +218,7 @@ export default {
       this.internalFiltersStudy = defaultStudyFilters();
     },
     actionSave() {
+      saveFilterState(this.internalFiltersCollision);
       this.setFiltersCollision(this.internalFiltersCollision);
       this.setFiltersCommon(this.internalFiltersCommon);
       this.setFiltersStudy(this.internalFiltersStudy);

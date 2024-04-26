@@ -63,11 +63,14 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 import Login from '@/web/components/Login.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import { getFilterState } from '@/web/store/LoginState';
+// eslint-disable-next-line no-unused-vars, import/named
+import { CollisionDetail, CollisionEmphasisArea } from '@/lib/Constants';
 
 export default {
   name: 'FcDashboardNavUser',
@@ -83,6 +86,12 @@ export default {
     ...mapState(['auth']),
     ...mapGetters(['username']),
   },
+  mounted() {
+    const filters = JSON.parse(getFilterState());
+    filters.details = filters.details.map(element => CollisionDetail[element]);
+    filters.emphasisAreas = filters.emphasisAreas.map(element => CollisionEmphasisArea[element]);
+    this.setFiltersCollision(filters);
+  },
   methods: {
     actionAdmin() {
       this.$router.push({ name: 'admin' });
@@ -93,6 +102,9 @@ export default {
 
       this.$refs.formSignOut.submit();
     },
+    ...mapMutations('viewData', [
+      'setFiltersCollision',
+    ]),
   },
 };
 </script>
