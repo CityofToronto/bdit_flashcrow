@@ -46,72 +46,78 @@
           </v-row>
           <v-row class="d-flex flex-row">
             <v-col cols="8" class="flex-1">
-              <section
-                aria-labelledby="heading_bulk_request_requests"
-                class="mb-0 mx-0 py-0 flex-grow-0 flex-shrink-1">
-                <div class="align-center d-flex px-4 py-2">
-                  <v-checkbox
-                    v-model="selectAll"
-                    class="mt-0 mr-2 pt-0"
-                    hide-details
-                    :indeterminate="selectAll === null">
-                    <template v-slot:label>
-                      <span class="font-weight-medium">Select all</span>
-                      <FcTextNumberTotal
-                        class="ml-2"
-                        :k="selectedItems.length"
-                        :n="items.length" />
-                    </template>
-                  </v-checkbox>
-
-                  <template>
-                    <SetStatusDropdownForBulk
-                      v-if="userIsStudyRequestAdmin"
-                      :study-requests="selectedStudyRequests"
-                      @transition-status="updateSelectedRequestsStatus" />
-                    <CancelRequestButton
-                      v-else-if="userIsStudyRequester"
-                      :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
-                      :nRequests="selectedRequestsCount"
-                      :projectContext="true"
-                      @cancel-request="cancelSelected">
-                    </CancelRequestButton>
-                  </template>
-
-                  <FcButton
-                    class="ml-2"
-                    :disabled="selectAll === false"
-                    type="secondary"
-                    @click="actionRemoveFromProject">
-                    <v-icon left>mdi-folder-remove</v-icon>
-                    Remove From Project
-                  </FcButton>
-                </div>
-
-                <v-divider></v-divider>
-
-                <FcDataTableRequests
-                  v-model="selectedItems"
+              <v-card dense outlined class="flex-grow-1 fill-height">
+                <section
                   aria-labelledby="heading_bulk_request_requests"
-                  :columns="columns"
-                  disable-pagination
-                  disable-sort
-                  :has-filters="false"
-                  :items="items"
-                  :loading="loadingItems"
-                  @update-item="actionUpdateItem" />
-              </section>
+                  class="mb-0 mx-0 py-0">
+                  <div class="align-center d-flex px-4 py-2">
+                    <v-checkbox
+                      v-model="selectAll"
+                      class="mt-0 mr-2 pt-0"
+                      hide-details
+                      :indeterminate="selectAll === null">
+                      <template v-slot:label>
+                        <span class="font-weight-medium">Select all</span>
+                        <FcTextNumberTotal
+                          class="ml-2"
+                          :k="selectedItems.length"
+                          :n="items.length" />
+                      </template>
+                    </v-checkbox>
+
+                    <template>
+                      <SetStatusDropdownForBulk
+                        v-if="userIsStudyRequestAdmin"
+                        :study-requests="selectedStudyRequests"
+                        @transition-status="updateSelectedRequestsStatus" />
+                      <CancelRequestButton
+                        v-else-if="userIsStudyRequester"
+                        :disabled="noRequestsSelected || userCannotCancelAllSelectedRequests"
+                        :nRequests="selectedRequestsCount"
+                        :projectContext="true"
+                        @cancel-request="cancelSelected">
+                      </CancelRequestButton>
+                    </template>
+
+                    <FcButton
+                      class="ml-2"
+                      :disabled="selectAll === false"
+                      type="secondary"
+                      @click="actionRemoveFromProject">
+                      <v-icon left>mdi-folder-remove</v-icon>
+                      Remove From Project
+                    </FcButton>
+                  </div>
+
+                  <v-divider></v-divider>
+
+                  <FcDataTableRequests
+                    v-model="selectedItems"
+                    aria-labelledby="heading_bulk_request_requests"
+                    :columns="columns"
+                    disable-pagination
+                    disable-sort
+                    fixed-header
+                    height="400px"
+                    calculate-widths
+                    :has-filters="false"
+                    :items="items"
+                    :loading="loadingItems"
+                    @update-item="actionUpdateItem" />
+                </section>
+              </v-card>
             </v-col>
 
             <v-col cols="4" class="flex-1">
               <FcMap
-                class="mx-2 fill-height"
+                class="mx-0 fill-height"
                 :locations-state="locationsState"
                 :show-legend="false"
                 :is-request-page="true"/>
             </v-col>
           </v-row>
         </v-container>
+
       </section>
     </div>
   </div>
