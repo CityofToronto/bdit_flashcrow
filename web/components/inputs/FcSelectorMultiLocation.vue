@@ -14,7 +14,7 @@
           <div class="fc-multi-line" v-for="(_, i) in locationsEditSelection.locations"
           :key="locationsEditKeys[i]">
             <div>
-              <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
+              <v-icon class="ma-1 dots" small >mdi-map-marker-outline</v-icon>
               <div class="fc-connector-lines" :class="!internalCorridor ? 'hide': ''"></div>
             </div>
             <div class="fc-input-location-search-wrapper" >
@@ -31,7 +31,7 @@
           </div>
 
           <div class="fc-multi-line">
-            <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
+            <v-icon class="ma-1 dots" small >mdi-map-marker-outline</v-icon>
             <div class="fc-input-location-search-wrapper">
               <FcInputLocationSearch
                 v-if="!locationsEditFull"
@@ -110,7 +110,7 @@
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-1 mb-1"
+            class="fc-multi-location-corridor mt-1 mb-1 ml-6"
             hide-details
             label="Include corridor between locations" />
 
