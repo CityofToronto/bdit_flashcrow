@@ -11,7 +11,7 @@
       <v-divider></v-divider>
 
       <v-card-text class="default--text"
-      :class="this.feature.properties.studyRequests ? 'px-0' : ''">
+      :class="this.feature.properties.studyRequests ? 'px-1' : ''">
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />

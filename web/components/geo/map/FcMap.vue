@@ -450,8 +450,6 @@ export default {
             item.properties.selected = false; // eslint-disable-line no-param-reassign
           }
         });
-
-        this.updateLocationsMarkersSource();
       } else {
         this.setHoveredFeature(null);
 
@@ -460,6 +458,7 @@ export default {
           item.properties.selected = false; // eslint-disable-line no-param-reassign
         });
       }
+      this.updateLocationsMarkersSource();
     },
   },
   methods: {
@@ -605,12 +604,18 @@ export default {
       }
     },
     setHoveredFeature(feature) {
-      // this.hoveredFeature = feature;
-      this.hoveredFeature = this.fixStudyRequestInfo(feature);
+      if (this.isRequestPage) {
+        this.hoveredFeature = this.fixStudyRequestInfo(feature);
+      } else {
+        this.hoveredFeature = feature;
+      }
     },
     setSelectedFeature(feature) {
-      // this.selectedFeature = feature;
-      this.selectedFeature = this.fixStudyRequestInfo(feature);
+      if (this.isRequestPage) {
+        this.selectedFeature = this.fixStudyRequestInfo(feature);
+      } else {
+        this.selectedFeature = feature;
+      }
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
