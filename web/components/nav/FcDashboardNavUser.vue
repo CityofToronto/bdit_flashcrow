@@ -63,11 +63,26 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 import Login from '@/web/components/Login.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
+import {
+  getCollisionFilterState,
+  getCommonFilterState,
+  getStudyFilterState,
+  clearCollisionFilterState,
+  clearCommonFilterState,
+  clearStudyFilterState,
+} from '@/web/store/FilterState';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import {
+  CollisionDetail,
+  CollisionEmphasisArea,
+  StudyHours,
+  StudyType,
+} from '@/lib/Constants';
 
 export default {
   name: 'FcDashboardNavUser',
@@ -83,6 +98,34 @@ export default {
     ...mapState(['auth']),
     ...mapGetters(['username']),
   },
+  mounted() {
+    const collisionFilters = JSON.parse(getCollisionFilterState());
+    const commonFilters = JSON.parse(getCommonFilterState());
+    const studyFilters = JSON.parse(getStudyFilterState());
+
+    if (collisionFilters !== null) {
+      collisionFilters.details = collisionFilters.details.map(element => CollisionDetail[element]);
+      collisionFilters.emphasisAreas = collisionFilters.emphasisAreas
+        .map(element => CollisionEmphasisArea[element]);
+      this.setFiltersCollision(collisionFilters);
+    }
+
+    if (commonFilters !== null) {
+      if (commonFilters.dateRangeEnd !== null && commonFilters.dateRangeStart !== null) {
+        commonFilters.dateRangeEnd = TimeFormatters
+          .convertToLuxonDatetime(commonFilters.dateRangeEnd);
+        commonFilters.dateRangeStart = TimeFormatters
+          .convertToLuxonDatetime(commonFilters.dateRangeStart);
+      }
+      this.setFiltersCommon(commonFilters);
+    }
+
+    if (studyFilters !== null) {
+      studyFilters.hours = studyFilters.hours.map(element => StudyHours[element]);
+      studyFilters.studyTypes = studyFilters.studyTypes.map(element => StudyType[element]);
+      this.setFiltersStudy(studyFilters);
+    }
+  },
   methods: {
     actionAdmin() {
       this.$router.push({ name: 'admin' });
@@ -90,9 +133,16 @@ export default {
     async actionSignOut() {
       const event = this.$analytics.signOutEvent();
       await this.$analytics.send([event]);
-
+      clearCollisionFilterState();
+      clearCommonFilterState();
+      clearStudyFilterState();
       this.$refs.formSignOut.submit();
     },
+    ...mapMutations('viewData', [
+      'setFiltersCollision',
+      'setFiltersCommon',
+      'setFiltersStudy',
+    ]),
   },
 };
 </script>
