@@ -37,6 +37,8 @@
           @show-reports="actionShowReportsStudy" />
       </section>
 
+      <v-divider></v-divider>
+
       <FcSectionStudyRequestsPending
         :study-requests-pending="studyRequestsPending" />
     </template>
