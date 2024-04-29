@@ -1,5 +1,4 @@
 const STORAGE_KEY_LOGIN_STATE = 'ca.toronto.move.loginState';
-const STORAGE_KEY_FILTER_STATE = 'ca.toronto.move.filterState';
 
 /**
  * Restores the navigation target saved by {@link saveLoginState}.  This is intended to
@@ -67,38 +66,13 @@ function saveLoginState(to) {
   window.sessionStorage.setItem(STORAGE_KEY_LOGIN_STATE, loginState);
 }
 
-function saveFilterState(filterState) {
-  const filters = JSON.stringify(filterState);
-  window.sessionStorage.setItem(STORAGE_KEY_FILTER_STATE, filters);
-}
-
-function getFilterState() {
-  return window.sessionStorage.getItem(STORAGE_KEY_FILTER_STATE);
-}
-
-function resetFilterState(filter) {
-  const currentFilters = JSON.parse(getFilterState());
-  currentFilters[filter] = [];
-  saveFilterState(currentFilters);
-}
-
-function clearFilterState() {
-  window.sessionStorage.removeItem(STORAGE_KEY_FILTER_STATE);
-}
-
 const LoginState = {
   restoreLoginState,
-  resetFilterState,
   saveLoginState,
-  saveFilterState,
-  clearFilterState,
 };
 
 export {
   LoginState as default,
   restoreLoginState,
-  resetFilterState,
   saveLoginState,
-  saveFilterState,
-  getFilterState,
 };

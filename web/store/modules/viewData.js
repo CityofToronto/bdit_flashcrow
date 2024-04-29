@@ -5,7 +5,7 @@ import {
   defaultCommonFilters,
   defaultStudyFilters,
 } from '@/lib/filters/DefaultFilters';
-import { resetFilterState } from '@/web/store/LoginState';
+import { resetCollisionFilterState, resetStudyFilterState, resetCommonFilterState } from '@/web/store/FilterState';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 
@@ -321,7 +321,7 @@ export default {
   },
   mutations: {
     removeFilterCollision(state, { filter }) {
-      resetFilterState(filter);
+      resetCollisionFilterState(filter);
       if (filter === 'hoursOfDay') {
         state.filtersCollision.hoursOfDayStart = 0;
         state.filtersCollision.hoursOfDayEnd = 24;
@@ -332,6 +332,7 @@ export default {
       }
     },
     removeFilterCommon(state, { filter }) {
+      resetCommonFilterState(filter);
       if (filter === 'dateRange') {
         state.filtersCommon.dateRangeStart = null;
         state.filtersCommon.dateRangeEnd = null;
@@ -340,6 +341,7 @@ export default {
       }
     },
     removeFilterStudy(state, { filter }) {
+      resetStudyFilterState(filter);
       state.filtersStudy[filter] = [];
     },
     setCollisionFactors(state, collisionFactors) {
