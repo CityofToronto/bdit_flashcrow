@@ -14,8 +14,11 @@
           <div class="fc-multi-line" v-for="(_, i) in locationsEditSelection.locations"
           :key="locationsEditKeys[i]">
             <div>
-              <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
-              <div class="fc-connector-lines" :class="!internalCorridor ? 'hide': ''"></div>
+              <v-icon class="ma-1 dots" small >mdi-map-marker-outline</v-icon>
+              <div class="fc-connector-lines"
+                :class="!internalCorridor ? 'hide': ''"
+                v-if="i < 4"
+              ></div>
             </div>
             <div class="fc-input-location-search-wrapper" >
               <FcInputLocationSearch
@@ -31,7 +34,8 @@
           </div>
 
           <div class="fc-multi-line">
-            <v-icon class="ma-1 dots" small >mdi-circle-double</v-icon>
+            <v-icon class="ma-1 dots"
+             small v-if="!locationsEditFull">mdi-map-marker-outline</v-icon>
             <div class="fc-input-location-search-wrapper">
               <FcInputLocationSearch
                 v-if="!locationsEditFull"
@@ -45,7 +49,7 @@
           </div>
         </div>
         <v-messages
-          class="mt-2 mb-2"
+          class="mt-2 mb-2 ml-7"
           v-if="locationsEditFull"
           :value="messagesMaxLocations"></v-messages>
       </div>
@@ -53,13 +57,25 @@
     <div
       v-else
       class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
-        <FcButton class="fc-close-top-right" type="tertiary" icon @click="actionClear">
-          <v-icon color="grey">mdi-close-circle</v-icon>
-        </FcButton>
+      <FcTooltip right>
+          <template v-slot:activator="{ on: onTooltip }">
+            <FcButton class="fc-close-top-right" type="tertiary" icon
+              @click="actionClear" v-on="onTooltip">
+              <v-icon color="grey">mdi-close-circle</v-icon>
+            </FcButton>
+          </template>
+          <span>Clear Location</span>
+        </FcTooltip>
       <FcDisplayLocationMulti
         :locations="locations"
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
+
+      <div v-if="textLocationsSelectionIncludes !== null"
+        class="pr-2 secondary--text text-left mt-2">
+        {{textLocationsSelectionIncludes}}
+      </div>
+
       <FcButton
         class="ml-3 edit-location-btn"
         type="tertiary"
@@ -67,6 +83,7 @@
         <v-icon color="primary" left>mdi-pencil</v-icon>
         Edit Locations
       </FcButton>
+
     </div>
     <div class="flex-grow-0 flex-shrink-0">
       <div class="d-flex align-center">
@@ -110,24 +127,26 @@
         <v-checkbox
             v-if="hasManyLocations"
             v-model="internalCorridor"
-            class="fc-multi-location-corridor mt-1 mb-1"
+            class="fc-multi-location-corridor mt-1 mb-1 ml-6"
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mb-2 justify-end">
+      <div class="d-flex mt-2 mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <FcButton
-            type="tertiary"
-            @click="leaveLocationMode">
-            Cancel
-          </FcButton>
-          <FcButton
-            :disabled="loading || hasError"
-            :loading="loading"
-            type="primary"
-            @click="saveAndThenView">
-            Save
-          </FcButton>
+          <div class="mb-3">
+            <FcButton
+              type="tertiary"
+              @click="leaveLocationMode">
+              Cancel
+            </FcButton>
+            <FcButton
+              :disabled="loading || hasError"
+              :loading="loading"
+              type="primary"
+              @click="saveAndThenView">
+              Save
+            </FcButton>
+          </div>
         </template>
         <template v-else-if="detailView">
           <div class="d-flex">
@@ -141,16 +160,7 @@
           </div>
         </template>
         <template v-else>
-          <span
-            v-if="textLocationsSelectionIncludes !== null"
-            class="pr-2 secondary--text">
-            {{textLocationsSelectionIncludes}}
-          </span>
-
-          <v-spacer></v-spacer>
-
           <slot name="action" />
-
         </template>
       </div>
     </div>
@@ -293,7 +303,7 @@ export default {
       const includesMidblocksStr = includesMidblocks === 1
         ? '1 midblock'
         : `${includesMidblocks} midblocks`;
-      return `${includesIntersectionsStr}, ${includesMidblocksStr}`;
+      return `Includes ${includesIntersectionsStr}, ${includesMidblocksStr}`;
     },
     ...mapState([
       'locationMode',

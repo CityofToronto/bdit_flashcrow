@@ -155,4 +155,10 @@ export default {
     color: var(--v-secondary-base);
   }
 }
+
+// remove extra scrollbar added by outdated version of ress
+// https://stackoverflow.com/questions/56973002/vuetify-adds-scrollbar-when-its-not-needed
+html {
+  overflow-y: auto !important;
+}
 </style>

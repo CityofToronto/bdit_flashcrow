@@ -247,7 +247,11 @@ export default {
       this.setToastInfo(`Removed ${description} from selected locations.`);
       this.setLocationsEditIndex(-1);
       this.removeLocationEdit(this.locationIndex);
-      Vue.nextTick(() => this.autofocus());
+      Vue.nextTick(() => {
+        if (this.autofocus) {
+          this.autofocus();
+        }
+      });
     },
     actionBlur(e) {
       /*
