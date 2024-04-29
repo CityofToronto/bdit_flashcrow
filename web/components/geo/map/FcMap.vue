@@ -451,8 +451,6 @@ export default {
           }
         });
       } else {
-        this.setHoveredFeature(null);
-
         // setting 'selected: false' for every location marker
         this.locationsMarkersGeoJson.features.forEach((item) => {
           item.properties.selected = false; // eslint-disable-line no-param-reassign
