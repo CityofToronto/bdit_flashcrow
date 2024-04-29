@@ -127,6 +127,12 @@ test('TimeFormatters.formatRangeTimeOfDay()', () => {
   expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('00:00\u201301:23');
 });
 
+test('TimeFormatters.convertToLuxonDatetime()', () => {
+  const t = '2024-04-09 00:00:00.000';
+  expect(TimeFormatters.convertToLuxonDatetime(t))
+    .toEqual(DateTime.local(2024, 4, 9, 0, 0, 0, 0));
+});
+
 test('TimeFormatters.DAYS_OF_WEEK', () => {
   expect(TimeFormatters.DAYS_OF_WEEK).toEqual([
     'Sun',
