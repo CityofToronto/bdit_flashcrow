@@ -68,9 +68,21 @@ import Login from '@/web/components/Login.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { getFilterState } from '@/web/store/LoginState';
-// eslint-disable-next-line no-unused-vars, import/named
-import { CollisionDetail, CollisionEmphasisArea } from '@/lib/Constants';
+import {
+  getCollisionFilterState,
+  getCommonFilterState,
+  getStudyFilterState,
+  clearCollisionFilterState,
+  clearCommonFilterState,
+  clearStudyFilterState,
+} from '@/web/store/FilterState';
+import TimeFormatters from '@/lib/time/TimeFormatters';
+import {
+  CollisionDetail,
+  CollisionEmphasisArea,
+  StudyHours,
+  StudyType,
+} from '@/lib/Constants';
 
 export default {
   name: 'FcDashboardNavUser',
@@ -87,10 +99,32 @@ export default {
     ...mapGetters(['username']),
   },
   mounted() {
-    const filters = JSON.parse(getFilterState());
-    filters.details = filters.details.map(element => CollisionDetail[element]);
-    filters.emphasisAreas = filters.emphasisAreas.map(element => CollisionEmphasisArea[element]);
-    this.setFiltersCollision(filters);
+    const collisionFilters = JSON.parse(getCollisionFilterState());
+    const commonFilters = JSON.parse(getCommonFilterState());
+    const studyFilters = JSON.parse(getStudyFilterState());
+
+    if (collisionFilters !== null) {
+      collisionFilters.details = collisionFilters.details.map(element => CollisionDetail[element]);
+      collisionFilters.emphasisAreas = collisionFilters.emphasisAreas
+        .map(element => CollisionEmphasisArea[element]);
+      this.setFiltersCollision(collisionFilters);
+    }
+
+    if (commonFilters !== null) {
+      if (commonFilters.dateRangeEnd !== null && commonFilters.dateRangeStart !== null) {
+        commonFilters.dateRangeEnd = TimeFormatters
+          .convertToLuxonDatetime(commonFilters.dateRangeEnd);
+        commonFilters.dateRangeStart = TimeFormatters
+          .convertToLuxonDatetime(commonFilters.dateRangeStart);
+      }
+      this.setFiltersCommon(commonFilters);
+    }
+
+    if (studyFilters !== null) {
+      studyFilters.hours = studyFilters.hours.map(element => StudyHours[element]);
+      studyFilters.studyTypes = studyFilters.studyTypes.map(element => StudyType[element]);
+      this.setFiltersStudy(studyFilters);
+    }
   },
   methods: {
     actionAdmin() {
@@ -99,11 +133,15 @@ export default {
     async actionSignOut() {
       const event = this.$analytics.signOutEvent();
       await this.$analytics.send([event]);
-
+      clearCollisionFilterState();
+      clearCommonFilterState();
+      clearStudyFilterState();
       this.$refs.formSignOut.submit();
     },
     ...mapMutations('viewData', [
       'setFiltersCollision',
+      'setFiltersCommon',
+      'setFiltersStudy',
     ]),
   },
 };

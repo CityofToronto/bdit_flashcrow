@@ -100,7 +100,7 @@ import FcCommonFilters from '@/web/components/filters/FcCommonFilters.vue';
 import FcStudyFilters from '@/web/components/filters/FcStudyFilters.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMixinVModelProxy from '@/web/mixins/FcMixinVModelProxy';
-import { saveFilterState } from '@/web/store/LoginState';
+import { saveCollisionFilterState, saveCommonFilterState, saveStudyFilterState } from '@/web/store/FilterState';
 
 function cloneCollisionFilters(filtersCollision) {
   const {
@@ -218,9 +218,11 @@ export default {
       this.internalFiltersStudy = defaultStudyFilters();
     },
     actionSave() {
-      saveFilterState(this.internalFiltersCollision);
+      saveCollisionFilterState(this.internalFiltersCollision);
       this.setFiltersCollision(this.internalFiltersCollision);
+      saveCommonFilterState(this.internalFiltersCommon);
       this.setFiltersCommon(this.internalFiltersCommon);
+      saveStudyFilterState(this.internalFiltersStudy);
       this.setFiltersStudy(this.internalFiltersStudy);
       this.setToastInfo('Updated request filters.');
       this.internalValue = false;
