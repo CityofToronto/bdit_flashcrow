@@ -131,6 +131,8 @@ export default {
           this.loading = true;
           this.$router.push({
             name: 'viewData',
+          }).catch((e) => {
+            console.warn('Caught Router Error:', e);//eslint-disable-line
           });
           return;
         }

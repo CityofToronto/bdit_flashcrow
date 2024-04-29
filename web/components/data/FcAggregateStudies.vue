@@ -3,13 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View studies data" />
-    <p
-      v-else-if="studySummaryUnfiltered.length === 0"
-      class="my-8 py-12 secondary--text text-center">
-      There are no studies for these locations,<br>
-      please request studies if necessary
-    </p>
-    <template v-else>
+    <template v-else-if="studySummaryUnfiltered.length > 0">
       <v-expansion-panels
         v-model="indexOpen"
         accordion

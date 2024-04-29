@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
-    <template v-else>
+    <template v-else-if="collisionSummary.amount > 0">
       <v-expansion-panels
         v-model="indexOpen"
         accordion
@@ -76,7 +76,7 @@ export default {
     const fields = [
       { description: 'Amount', name: 'amount' },
       { description: 'KSI', name: 'ksi' },
-      { description: 'Verified', name: 'verified' },
+      { description: 'Verified', name: 'validated' },
     ];
 
     return {

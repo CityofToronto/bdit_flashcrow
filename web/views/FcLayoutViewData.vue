@@ -68,9 +68,6 @@
             <FcSelectorCollapsedLocation
               v-if="!showLocationSelection"
               class="mt-3 ml-5" />
-            <FcSelectorMultiLocation
-              v-else-if="locationMode.multi"
-              class="elevation-2"/>
             <FcSelectorSingleLocation
               v-else
               v-model="internalLocationsSelection"
@@ -79,24 +76,6 @@
             <FcGlobalFilterBox
               class="mt-3 ml-5"
               :readonly="filtersReadonly" />
-          </template>
-
-          <template
-            v-if="showLocationSelection"
-            v-slot:action-navigate>
-            <FcButtonAria
-              :aria-label="tooltipLocationMode"
-              class="pa-0"
-              :class="{
-                primary: locationMode.multi,
-                'white--text': locationMode.multi,
-              }"
-              :disabled="locationMode === LocationMode.MULTI_EDIT"
-              left
-              type="fab-text"
-              @click="actionToggleLocationMode">
-              <v-icon class="display-2">mdi-map-marker-multiple</v-icon>
-            </FcButtonAria>
           </template>
 
           <template
@@ -134,23 +113,19 @@ import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
-import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
   name: 'FcLayoutViewData',
   components: {
     FcButton,
-    FcButtonAria,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
     FcMapPopupActionViewData,
     FcTooltip,
     FcSelectorCollapsedLocation,
-    FcSelectorMultiLocation,
     FcSelectorSingleLocation,
   },
   data() {
@@ -260,12 +235,6 @@ export default {
       const { showLocationSelection } = this.$route.meta;
       return showLocationSelection;
     },
-    tooltipLocationMode() {
-      if (this.locationMode.multi) {
-        return 'Switch to single-location mode';
-      }
-      return 'Add location';
-    },
     vertical() {
       const { vertical } = this.$route.meta;
       return vertical;
@@ -316,15 +285,6 @@ export default {
     },
   },
   methods: {
-    actionToggleLocationMode() {
-      if (this.locationMode === LocationMode.SINGLE) {
-        this.setLocationMode(LocationMode.MULTI_EDIT);
-      } else if (this.locationsForMode.length > 1) {
-        this.showConfirmMultiLocationLeave = true;
-      } else {
-        this.setLocationMode(LocationMode.SINGLE);
-      }
-    },
     actionViewData() {
       const { name } = this.$route;
       if (name === 'viewDataAtLocation') {
@@ -386,7 +346,8 @@ export default {
         2px 1px 3px 0 rgba(0, 0, 0, 0.12);
       color: var(--ink);
       height: 38px;
-      top: 12px;
+      margin-top: -19px;
+      top: 50%;
       width: 16px;
 
       &:hover {

@@ -131,7 +131,6 @@ import { centrelineKey, ProjectMode, StudyRequestStatus } from '@/lib/Constants'
 import { getStudyRequestBulk } from '@/lib/api/WebApi';
 import { getStudyRequestInfo, groupRequestsByLocation } from '@/lib/geo/CentrelineUtils';
 import { getStudyRequestItem } from '@/lib/requests/RequestItems';
-// import RequestDataTableColumns from '@/lib/requests/RequestDataTableColumns';
 import FcDataTableRequests from '@/web/components/FcDataTableRequests.vue';
 import FcTextNumberTotal from '@/web/components/data/FcTextNumberTotal.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
@@ -221,8 +220,7 @@ export default {
         };
         locationsState.push({ location, state });
       });
-      return groupRequestsByLocation(locationsState);
-      // return locationsState;
+      return locationsState;
     },
     selectAll: {
       get() {

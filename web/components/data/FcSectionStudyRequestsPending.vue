@@ -1,5 +1,5 @@
 <template>
-  <section class="pa-5">
+  <section class="pa-3 pl-5">
     <p
       v-for="studyRequest in studyRequestsPending"
       :key="studyRequest.id"

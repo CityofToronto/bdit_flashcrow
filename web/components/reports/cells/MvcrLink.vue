@@ -83,7 +83,6 @@ export default {
     userLogin() {
       const route = this.$route;
       route.params.mvcrRead = true;
-      route.params.collisionFilters = JSON.stringify(this.filterParamsCollision);
       this.$refs.login.actionSignIn();
     },
   },
@@ -98,6 +97,9 @@ export default {
     },
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
+    },
+    mvcrFilename() {
+      return `mvcr_${this.mvcrDetails.collisionYear}_${this.mvcrDetails.collisionMonth}_${this.mvcrDetails.collisionId}.pdf`;
     },
   },
 };

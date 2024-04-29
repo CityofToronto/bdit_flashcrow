@@ -8,11 +8,12 @@
       <FcButton
         type="tertiary"
         class="add-location-btn mb-2 mt-1"
+        small
         @click="actionAddLocation">
         <v-icon color="primary" left>mdi-plus</v-icon>
         Add Location
       </FcButton>
-      <h2 class="display-2">{{location.description}}</h2>
+      <h2 class="display-3">{{location.description}}</h2>
       <div class="label mt-2">
         {{textLocationFeatureType}} &#x2022; {{textMostRecentStudy}}
       </div>
