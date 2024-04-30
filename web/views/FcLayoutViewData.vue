@@ -316,11 +316,11 @@ export default {
       margin: 10px;
       width: 50%;
       max-width: 375px;
-      max-height: 90%;
       z-index: 5;
       border-radius: 8px;
       border: 1px solid lightgrey !important;
-      overflow-y: auto;
+      overflow-y: hidden;
+      max-height: 95%;
     }
   }
 

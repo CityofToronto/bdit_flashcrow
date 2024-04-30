@@ -1,6 +1,6 @@
 <template>
-  <div class="fc-drawer-view-data d-flex flex-column">
-    <header class="flex-grow-0 flex-shrink-0">
+  <div class="fc-drawer-view-data d-flex flex-column pb-6">
+    <header class="flex-grow-0 flex-shrink-0 fc-drawer-header">
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">
@@ -15,8 +15,7 @@
         </div>
       </div>
     </header>
-    <section class="flex-grow-1 flex-shrink-1">
-      <v-divider></v-divider>
+    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
       <FcProgressLinear
         v-if="loading"
         aria-label="Loading View Data drawer" />
@@ -186,5 +185,8 @@ export default {
 <style lang="scss">
 .fc-drawer-view-data {
   max-height: var(--full-height);
+  & .fc-drawer-header {
+    border-bottom: 1px solid lightgrey;
+  }
 }
 </style>
