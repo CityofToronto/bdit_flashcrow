@@ -43,6 +43,7 @@ import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocat
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
 import FcPopupDetailsError from '@/web/components/geo/map/FcPopupDetailsError.vue';
+import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
@@ -60,6 +61,7 @@ export default {
     FcPopupDetailsStudy,
     FcProgressLinear,
     FcPopupDetailsError,
+    FcPopupDetailsStudyRequest,
   },
   props: {
     feature: Object,
@@ -128,7 +130,9 @@ export default {
         return 'Study Location';
       }
       if (this.layerId === 'locations-markers') {
-        return 'Study Request';
+        const studyRequests = JSON.parse(this.feature.properties.studyRequests);
+        const numRequests = studyRequests.length;
+        return (numRequests > 1 ? `${numRequests} ` : '').concat('Study Request').concat(numRequests > 1 ? 's' : '');
       }
       return null;
     },

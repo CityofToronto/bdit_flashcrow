@@ -602,18 +602,10 @@ export default {
       }
     },
     setHoveredFeature(feature) {
-      if (this.isRequestPage) {
-        this.hoveredFeature = this.fixStudyRequestInfo(feature);
-      } else {
-        this.hoveredFeature = feature;
-      }
+      this.hoveredFeature = feature;
     },
     setSelectedFeature(feature) {
-      if (this.isRequestPage) {
-        this.selectedFeature = this.fixStudyRequestInfo(feature);
-      } else {
-        this.selectedFeature = feature;
-      }
+      this.selectedFeature = feature;
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
@@ -626,10 +618,6 @@ export default {
       if (this.map !== null) {
         this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
       }
-    },
-    fixStudyRequestInfo(feature) {
-      console.log(feature); // eslint-disable-line no-console
-      return feature;
     },
     ...mapMutations(['setToastInfo']),
   },
