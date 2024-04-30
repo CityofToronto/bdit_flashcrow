@@ -182,6 +182,10 @@ export default {
       validator: value => ['all', 'single', 'none'].includes(value),
       default: 'all',
     },
+    isRequestPage: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -333,7 +337,7 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.hoveredFeature === null || this.selectedFeature !== null) {
@@ -343,7 +347,7 @@ export default {
         && this.featureKeyHovered === this.featureKeyHoveredPopup;
     },
     showSelectedPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.selectedFeature === null) {
@@ -359,7 +363,15 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
-    ...mapState(['frontendEnv']),
+    locationMarkersByCentreline() {
+      const markersById = {};
+      this.locationsMarkersGeoJson.features.forEach(
+        // eslint-disable-next-line no-return-assign
+        feature => markersById[feature.properties.centrelineId] = feature,
+      );
+      return markersById;
+    },
+    ...mapState('trackRequests', ['frontendEnv', 'hoveredStudyRequest']),
   },
   created() {
     this.map = null;
@@ -467,6 +479,17 @@ export default {
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
     },
+    hoveredStudyRequest(newValue, oldValue) {
+      if (newValue !== null) {
+        const feature = this.locationMarkersByCentreline[newValue];
+        feature.properties.selected = true;
+      }
+      if (oldValue !== null) {
+        const feature = this.locationMarkersByCentreline[oldValue];
+        feature.properties.selected = false;
+      }
+      this.updateLocationsMarkersSource();
+    },
   },
   methods: {
     easeToLocationbByMode() {
@@ -573,6 +596,9 @@ export default {
           'schoolsLevel2',
           'schoolsLevel1',
         );
+      }
+      if (this.isRequestPage) {
+        layers.push('locations-markers');
       }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
