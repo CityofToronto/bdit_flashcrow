@@ -1,14 +1,17 @@
 <template>
   <div class="d-none">
     <v-card ref="content" min-width="220">
-      <v-card-title class="shading">
+      <v-card-title class="shading flex-column d-flex align-start">
         <h2 class="display-1">{{title}}</h2>
+        <h4 v-if="this.feature.properties.studyRequests"
+        class="display-2 body-2 text-subtitle-2
+        mt-1">{{ this.feature.properties.description }}</h4>
       </v-card-title>
 
       <v-divider></v-divider>
 
       <v-card-text class="default--text"
-      :class="this.feature.properties.studyRequests ? 'px-1' : ''">
+      :class="this.feature.properties.studyRequests ? 'px-0' : ''">
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
@@ -81,6 +84,7 @@ export default {
   },
   computed: {
     coordinates() {
+      this.loadAsyncForFeature();
       return getGeometryMidpoint(this.feature.geometry);
     },
     detailsSuffix() {
