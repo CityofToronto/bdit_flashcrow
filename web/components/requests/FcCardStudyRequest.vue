@@ -92,14 +92,9 @@ export default {
           && event.pageY < bottom
           && event.pageY > top
           && index !== null) {
-        this.elevation = 10;
+        this.elevation = 5;
         this.addHoveredStudyIndex(index);
       } else if (index === null) {
-        // eslint-disable-next-line no-underscore-dangle
-        if (event.toElement._prevClass !== 'align-center d-flex') {
-          return;
-        }
-        this.addHoveredStudyIndex(index);
         this.elevation = 0;
       }
     },
