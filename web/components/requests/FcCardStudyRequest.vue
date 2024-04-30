@@ -1,5 +1,6 @@
 <template>
-  <v-card @mouseenter="addHoverLayer(index, $event)"
+  <v-card
+    @mouseover="addHoverLayer(index, $event)"
     @mouseleave="addHoverLayer(null, $event)"
     class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
@@ -81,16 +82,22 @@ export default {
   },
   methods: {
     async addHoverLayer(index, event) {
-      if (index === null) {
-        // eslint-disable-next-line no-underscore-dangle
-        if (event.toElement._prevClass !== 'align-center d-flex') {
-          return;
-        }
-        this.addHoveredStudyIndex(index);
-        this.elevation = 0;
-      } else {
+      const {
+        top,
+        bottom,
+        left,
+        right,
+      } = this.$el.getBoundingClientRect();
+      if (event.pageX > left
+          && event.pageX < right
+          && event.pageY < bottom
+          && event.pageY > top
+          && index !== null) {
         this.elevation = 10;
         this.addHoveredStudyIndex(index);
+      } else if (index === null) {
+        this.addHoveredStudyIndex(index);
+        this.elevation = 0;
       }
     },
     ...mapActions('editRequests', [
