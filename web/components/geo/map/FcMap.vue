@@ -305,7 +305,7 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.hoveredFeature === null || this.selectedFeature !== null) {
@@ -315,7 +315,7 @@ export default {
         && this.featureKeyHovered === this.featureKeyHoveredPopup;
     },
     showSelectedPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.selectedFeature === null) {
