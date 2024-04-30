@@ -346,7 +346,8 @@ export default {
         2px 1px 3px 0 rgba(0, 0, 0, 0.12);
       color: var(--ink);
       height: 38px;
-      top: 12px;
+      margin-top: -19px;
+      top: 50%;
       width: 16px;
 
       &:hover {

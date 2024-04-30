@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <template v-else>
+    <template v-else-if="collisionSummary.amount > 0">
       <dl class="d-flex flex-grow-1 flex-shrink-1 justify-space-around">
         <div class="flex-grow-1 collision-fact">
           <dt class="body-1">
@@ -46,6 +46,7 @@
         class="flex-grow-0 flex-shrink-0 mt-2"
         type="secondary"
         :disabled="collisionSummary.amount === 0"
+        v-if="collisionSummary.amount > 0"
         @click="$emit('show-reports')">
         <span>View Reports</span>
       </FcButton>
