@@ -1,13 +1,17 @@
 <template>
   <div class="d-none">
     <v-card ref="content" min-width="220">
-      <v-card-title class="shading">
+      <v-card-title class="shading flex-column d-flex align-start">
         <h2 class="display-1">{{title}}</h2>
+        <h4 v-if="this.feature.properties.studyRequests"
+        class="display-2 body-2 text-subtitle-2
+        mt-1">{{ this.feature.properties.description }}</h4>
       </v-card-title>
 
       <v-divider></v-divider>
 
-      <v-card-text class="default--text">
+      <v-card-text class="default--text"
+      :class="this.feature.properties.studyRequests ? 'px-0' : ''">
         <FcProgressLinear
           v-if="loading"
           aria-label="Loading feature details" />
@@ -42,6 +46,7 @@ import FcPopupDetailsLocation from '@/web/components/geo/map/FcPopupDetailsLocat
 import FcPopupDetailsSchool from '@/web/components/geo/map/FcPopupDetailsSchool.vue';
 import FcPopupDetailsStudy from '@/web/components/geo/map/FcPopupDetailsStudy.vue';
 import FcPopupDetailsError from '@/web/components/geo/map/FcPopupDetailsError.vue';
+import FcPopupDetailsStudyRequest from '@/web/components/geo/map/FcPopupDetailsStudyRequest.vue';
 
 const SELECTABLE_LAYERS = [
   'studies',
@@ -59,6 +64,7 @@ export default {
     FcPopupDetailsStudy,
     FcProgressLinear,
     FcPopupDetailsError,
+    FcPopupDetailsStudyRequest,
   },
   props: {
     feature: Object,
@@ -78,6 +84,7 @@ export default {
   },
   computed: {
     coordinates() {
+      this.loadAsyncForFeature();
       return getGeometryMidpoint(this.feature.geometry);
     },
     detailsSuffix() {
@@ -125,6 +132,11 @@ export default {
       }
       if (this.layerId === 'studies') {
         return 'Study Location';
+      }
+      if (this.layerId === 'locations-markers') {
+        const studyRequests = JSON.parse(this.feature.properties.studyRequests);
+        const numRequests = studyRequests.length;
+        return (numRequests > 1 ? `${numRequests} ` : '').concat('Study Request').concat(numRequests > 1 ? 's' : '');
       }
       return null;
     },
