@@ -218,8 +218,8 @@ export default {
     getMvcrState(user) {
       return MvcrPermissions[user.mvcrAcctType];
     },
-    mvcrPermissionChanged(mvcrAcctType) {
-      this.actionChangeUserScope(mvcrAcctType);
+    mvcrPermissionChanged(mvcrUserPermission) {
+      this.actionChangeUserScope(mvcrUserPermission);
     },
   },
 };
