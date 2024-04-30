@@ -15,7 +15,7 @@
         </div>
       </div>
     </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+    <section class="flex-grow-1 flex-shrink-1">
       <v-divider></v-divider>
       <FcProgressLinear
         v-if="loading"
