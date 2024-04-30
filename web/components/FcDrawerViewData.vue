@@ -1,6 +1,6 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <header class="flex-grow-0 flex-shrink-0 shading">
+    <header class="flex-grow-0 flex-shrink-0">
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">

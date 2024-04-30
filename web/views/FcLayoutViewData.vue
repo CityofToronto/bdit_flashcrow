@@ -1,14 +1,10 @@
 <template>
   <div
-    class="fc-layout-view-data fill-height"
-    :class="{
-      'drawer-open': drawerOpen,
-      horizontal: true
-    }">
+    class="fc-layout-view-data fill-height horizontal"
+    :class="{ 'drawer-open': drawerOpen }">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
-
-    <template v-if="hasDrawer">
+    <!-- <template v-if="hasDrawer">
       <FcTooltip right>
         <template v-slot:activator="{ on }">
           <FcButton
@@ -22,19 +18,12 @@
         </template>
         <span>{{labelDrawerToggle}}</span>
       </FcTooltip>
-    </template>
-    <div
-      class="fc-pane-wrapper d-flex fill-height">
-      <div
-        v-show="showDrawer"
-        class="fc-drawer flex-grow-1 flex-shrink-0">
+    </template> -->
+    <div class="fc-pane-wrapper fill-height">
+      <div v-show="showDrawer" class="fc-drawer shading elevation-4">
         <router-view></router-view>
       </div>
-      <div
-        class="fc-map-wrapper flex-shrink-0"
-        :class="{
-          'flex-grow-1': !mapBackground,
-        }">
+      <div class="fc-map-wrapper fill-height">
         <FcMap
           ref="map"
           class="fill-height"
@@ -90,23 +79,23 @@ import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
-import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
+// import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
+// import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
   name: 'FcLayoutViewData',
   components: {
-    FcButton,
+    // FcButton,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
     FcMapPopupActionViewData,
-    FcTooltip,
+    // FcTooltip,
     FcSelectorCollapsedLocation,
     FcSelectorSingleLocation,
   },
@@ -200,8 +189,7 @@ export default {
       });
     },
     mapBackground() {
-      const { drawerOpen } = this;
-      return drawerOpen;
+      return true;
     },
     showDrawer() {
       const { drawerOpen, hasDrawer } = this;
@@ -312,8 +300,26 @@ export default {
         background-color: var(--v-shading-base);
       }
     }
-    & > .fc-pane-wrapper > div {
+  }
+
+  & .fc-pane-wrapper {
+    position:relative;
+    height: 100%;
+    & .fc-map-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+    & .fc-drawer {
+      position:absolute;
+      top: 0;
+      left: 0;
+      margin: 10px;
       width: 50%;
+      max-width: 400px;
+      max-height: 90%;
+      z-index: 5;
+      border-radius: 8px;
+      border: 1px solid lightgrey !important;
     }
   }
 
