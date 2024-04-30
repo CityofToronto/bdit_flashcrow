@@ -30,10 +30,10 @@
         </span>
       </div>
     </template>
-    <template v-slot:header.SELECT>
+    <template v-slot:[`header.SELECT`]>
       <span class="sr-only">Select</span>
     </template>
-    <template v-slot:item.SELECT="{ item }">
+    <template v-slot:[`item.SELECT`]="{ item }">
       <FcTooltip right>
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -58,7 +58,7 @@
       </FcTooltip>
 
     </template>
-    <template v-slot:item.ID="{ item }">
+    <template v-slot:[`item.ID`]="{ item }">
       <span
         v-if="item.type.name === 'STUDY_REQUEST'"
         class="text-truncate"
@@ -66,7 +66,7 @@
         {{item.studyRequest.id}}
       </span>
     </template>
-    <template v-slot:item.LOCATION="{ item }">
+    <template v-slot:[`item.LOCATION`]="{ item }">
       <div
         v-if="item.type.name === 'STUDY_REQUEST_BULK'"
         class="align-center d-flex">
@@ -75,14 +75,16 @@
       </div>
       <div
         v-else-if="item.location !== null"
-        class="text-wrap">
+        class="text-wrap"
+        @mouseover="setHoveredStudyRequest(item.location.centrelineId)"
+        @mouseleave="setHoveredStudyRequest(null)">
         {{item.location.description}}
       </div>
     </template>
-    <template v-slot:header.data-table-expand>
+    <template v-slot:[`header.data-table-expand`]>
       <span class="sr-only">Expand</span>
     </template>
-    <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
+    <template v-slot:[`item.data-table-expand`]="{ expand, isExpanded, item }">
       <FcButtonAria
         v-if="item.type.name === 'STUDY_REQUEST_BULK'
           && item.studyRequestBulk.studyRequests.length > 0"
@@ -96,7 +98,7 @@
         <v-icon v-else>mdi-menu-down</v-icon>
       </FcButtonAria>
     </template>
-    <template v-slot:item.STUDY_TYPE="{ item }">
+    <template v-slot:[`item.STUDY_TYPE`]="{ item }">
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
           Project
@@ -112,7 +114,7 @@
         </span>
       </div>
     </template>
-    <template v-slot:item.REQUESTER="{ item }">
+    <template v-slot:[`item.REQUESTER`]="{ item }">
       <div class="text-truncate">
         <span
           v-if="item.requestedBy !== null"
@@ -121,12 +123,12 @@
         </span>
       </div>
     </template>
-    <template v-slot:item.CREATED_AT="{ item }">
+    <template v-slot:[`item.CREATED_AT`]="{ item }">
       <span v-if="item.createdAt !== null">
         {{item.createdAt | date}}
       </span>
     </template>
-    <template v-slot:item.DUE_DATE="{ item }">
+    <template v-slot:[`item.DUE_DATE`]="{ item }">
       <span
         v-if="item.dueDate !== null">
         {{item.dueDate | date}}
@@ -138,7 +140,7 @@
         class="mr-2"
         color="warning">mdi-clipboard-alert</v-icon>
     </template>
-    <template v-slot:item.STATUS="{ item }">
+    <template v-slot:[`item.STATUS`]="{ item }">
       <div
         v-if="item.status !== null"
         class="align-center d-flex">
@@ -146,10 +148,10 @@
         <span class="status-label">{{item.status.text}}</span>
       </div>
     </template>
-    <template v-slot:header.ACTIONS>
+    <template v-slot:[`header.ACTIONS`]>
       <span class="sr-only">Actions</span>
     </template>
-    <template v-slot:item.ACTIONS="{ item }">
+    <template v-slot:[`item.ACTIONS`]="{ item }">
       <div class="text-right">
         <FcButtonAria
           :aria-label="'View ' + item.ariaLabel"
@@ -336,7 +338,7 @@ export default {
       if (!full) label = customLabel;
       return label;
     },
-    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
+    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc', 'setHoveredStudyRequest']),
   },
 };
 </script>

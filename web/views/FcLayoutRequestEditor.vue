@@ -169,7 +169,7 @@ export default {
   }
 
   & > .fc-pane-wrapper > .map {
-    flex-grow: 1;
+    flex-grow: 3;
   }
 }
 .fc-layout-request-editor .fc-map-top-left .fc-input-location-search {
