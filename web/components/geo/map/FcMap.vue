@@ -331,6 +331,14 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
+    locationMarkersByCentreline() {
+      const markersById = {};
+      this.locationsMarkersGeoJson.features.forEach(
+        // eslint-disable-next-line no-return-assign
+        feature => markersById[feature.properties.centrelineId] = feature,
+      );
+      return markersById;
+    },
     ...mapState('trackRequests', ['frontendEnv', 'hoveredStudyRequest']),
   },
   created() {
@@ -412,12 +420,8 @@ export default {
     locationsGeoJson() {
       this.updateLocationsSource();
     },
-    locationsMarkersGeoJson: {
-      deep: true,
-      handler: function update() {
-        this.updateLocationsMarkersSource();
-      },
-      immediate: true,
+    locationsMarkersGeoJson() {
+      this.updateLocationsMarkersSource();
     },
     locationsState() {
       this.easeToLocationbByMode();
@@ -438,23 +442,14 @@ export default {
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
     },
-    hoveredStudyRequest() {
-      if (this.hoveredStudyRequest) {
-        const desiredCentrelineId = this.hoveredStudyRequest.location.centrelineId;
-
-        // setting 'selected: true' on the right location marker
-        this.locationsMarkersGeoJson.features.forEach((item) => {
-          if (item.properties.centrelineId === desiredCentrelineId) {
-            item.properties.selected = true; // eslint-disable-line no-param-reassign
-          } else {
-            item.properties.selected = false; // eslint-disable-line no-param-reassign
-          }
-        });
-      } else {
-        // setting 'selected: false' for every location marker
-        this.locationsMarkersGeoJson.features.forEach((item) => {
-          item.properties.selected = false; // eslint-disable-line no-param-reassign
-        });
+    hoveredStudyRequest(newValue, oldValue) {
+      if (newValue !== null) {
+        const feature = this.locationMarkersByCentreline[newValue];
+        feature.properties.selected = true;
+      }
+      if (oldValue !== null) {
+        const feature = this.locationMarkersByCentreline[oldValue];
+        feature.properties.selected = false;
       }
       this.updateLocationsMarkersSource();
     },

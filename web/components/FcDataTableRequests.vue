@@ -76,7 +76,7 @@
       <div
         v-else-if="item.location !== null"
         class="text-wrap"
-        @mouseover="setHoveredStudyRequest(item)"
+        @mouseover="setHoveredStudyRequest(item.location.centrelineId)"
         @mouseleave="setHoveredStudyRequest(null)">
         {{item.location.description}}
       </div>
