@@ -165,11 +165,11 @@ export default {
 
   & > .fc-pane-wrapper > .fc-drawer {
     border-right: 1px solid rgba(0, 0, 0, 0.12);
-    flex-grow: 2;
+    flex-grow: 1;
   }
 
   & > .fc-pane-wrapper > .map {
-    flex-grow: 3;
+    flex-grow: 2;
   }
 }
 .fc-layout-request-editor .fc-map-top-left .fc-input-location-search {
