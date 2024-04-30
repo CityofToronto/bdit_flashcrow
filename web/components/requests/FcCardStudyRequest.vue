@@ -68,6 +68,8 @@ export default {
       StudyType,
       lastMouseEnterSource: null,
       elevation: 0,
+      prevCard: null,
+      currentCard: null,
     };
   },
   computed: {
@@ -93,8 +95,15 @@ export default {
           && event.pageY > top
           && index !== null) {
         this.elevation = 5;
+        this.currentCard = index;
         this.addHoveredStudyIndex(index);
       } else if (index === null) {
+        this.previousCard = this.currentCard;
+        // eslint-disable-next-line no-underscore-dangle
+        if (event.toElement?._prevClass === 'v-list v-select-list v-sheet theme--light v-list--dense theme--light') {
+          return;
+        }
+        this.addHoveredStudyIndex(index);
         this.elevation = 0;
       }
     },
