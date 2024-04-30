@@ -7,10 +7,9 @@
     outlined
     :elevation="elevation">
     <v-card-title class="align-start pb-2">
-      <FcIconLocationMulti
+      <FcIconLocationSingle
         class="mr-3"
-        :location-index="index"
-        :selected="selected" />
+        />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
         <FcButtonAria
@@ -40,7 +39,7 @@
 <script>
 import { CentrelineType, StudyHours, StudyType } from '@/lib/Constants';
 import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
+import FcIconLocationSingle from '@/web/components/location/FcIconLocationSingle.vue';
 import StudyRequestForm from '@/web/components/requests/StudyRequestForm.vue';
 import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 import {
@@ -52,7 +51,7 @@ export default {
   components: {
     FcButtonAria,
     StudyRequestForm,
-    FcIconLocationMulti,
+    FcIconLocationSingle,
     FcTextMostRecent,
   },
   props: {
