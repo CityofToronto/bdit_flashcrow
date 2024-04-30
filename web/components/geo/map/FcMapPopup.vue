@@ -127,6 +127,9 @@ export default {
       if (this.layerId === 'studies') {
         return 'Study Location';
       }
+      if (this.layerId === 'locations-markers') {
+        return 'Study Request';
+      }
       return null;
     },
   },

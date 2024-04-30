@@ -220,7 +220,7 @@ export default {
         };
         locationsState.push({ location, state });
       });
-      return locationsState;
+      return groupRequestsByLocation(locationsState);
     },
     selectAll: {
       get() {

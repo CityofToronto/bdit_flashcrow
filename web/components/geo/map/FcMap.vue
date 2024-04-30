@@ -178,6 +178,10 @@ export default {
       validator: value => ['all', 'single', 'none'].includes(value),
       default: 'all',
     },
+    isRequestPage: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -561,6 +565,9 @@ export default {
           'schoolsLevel1',
         );
       }
+      if (this.isRequestPage) {
+        layers.push('locations-markers');
+      }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
       if (features.length > 0) {
@@ -619,6 +626,10 @@ export default {
       if (this.map !== null) {
         this.map.getSource('locations-markers').setData(this.locationsMarkersGeoJson);
       }
+    },
+    fixStudyRequestInfo(feature) {
+      console.log(feature); // eslint-disable-line no-console
+      return feature;
     },
     ...mapMutations(['setToastInfo']),
   },
