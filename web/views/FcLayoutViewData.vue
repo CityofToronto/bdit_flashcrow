@@ -323,7 +323,7 @@ export default {
       overflow-y: hidden;
       max-height: 95%;
       z-index: 106;
-      transition: min-width 0.7s ease-in;
+      transition: min-width 0.5s ease-in;
     }
     & .fc-full-drawer {
       min-width: 98% !important;
