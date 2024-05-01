@@ -45,10 +45,8 @@
                       <FcAdminDropdown
                         :permissions="permissions"
                         :currentUser="item"
+                        :isLoading="loadingChangeUserScope"
                         @change="mvcrPermissionChanged" />
-                        <span v-if="item.mvcrAcctType == '1'">
-                          Access valid until: {{ parseExpiryDateTime(item.mvcrExpiryDate) }}
-                        </span>
                     </div>
                     <div v-else>
                       <v-checkbox
@@ -103,7 +101,6 @@ import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcAdminDropdown from './FcAdminDropdown.vue';
 
 export default {
@@ -224,9 +221,6 @@ export default {
     },
     mvcrPermissionChanged(mvcrUserPermission) {
       this.actionChangeUserScope(mvcrUserPermission);
-    },
-    parseExpiryDateTime(expiryDateTime) {
-      return TimeFormatters.formatDateTime(expiryDateTime);
     },
     log(msg) {
       // eslint-disable-next-line no-console
