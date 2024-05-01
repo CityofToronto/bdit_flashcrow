@@ -16,7 +16,7 @@
       aria-label="Loading study reports viewer" />
     <template v-else>
       <div>
-        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
+        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
           <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
@@ -27,6 +27,10 @@
 
           <v-spacer></v-spacer>
 
+          <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">mdi-chevron-up</v-icon>
+          <v-icon v-else class="mx-3" @click="toggleReport">mdi-chevron-down</v-icon>
+
+          <v-icon @click="closeReport">mdi-close-circle</v-icon>
           <v-menu
             v-if="locationMode !== LocationMode.SINGLE"
             :max-height="320">
@@ -75,7 +79,7 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex pt-1">
+        <div class="align-center d-flex pt-1" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
@@ -109,7 +113,7 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2" v-if="!collapseReport">
         <FcReportParameters
           v-if="showReportParameters"
           :report-parameters="reportParameters"
@@ -227,6 +231,7 @@ export default {
       showReportParameters: false,
       studies: [],
       studyRetrievalError: false,
+      collapseReport: false,
       studySummaryPerLocation: [],
     };
   },
@@ -413,6 +418,14 @@ export default {
         name: 'viewDataAtLocation',
         params,
       });
+    },
+    closeReport() {
+      this.$router.push({
+        name: 'viewData',
+      });
+    },
+    toggleReport() {
+      this.collapseReport = !this.collapseReport;
     },
     handleError() {
       this.loadingReportLayout = false;

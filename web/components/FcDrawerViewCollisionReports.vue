@@ -428,7 +428,6 @@ export default {
       return reportContent[section];
     },
     closeReport() {
-      console.log('closing report'); //eslint-disable-line
       this.$router.push({
         name: 'viewData',
       });
