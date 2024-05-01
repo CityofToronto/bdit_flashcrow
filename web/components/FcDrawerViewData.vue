@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-drawer-view-data d-flex flex-column pb-6">
+  <div class="fc-drawer-view-data d-flex flex-column">
     <header class="flex-grow-0 flex-shrink-0 fc-drawer-header">
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
@@ -33,6 +33,7 @@
 
           <FcViewDataDetail
             v-if="locationMode === LocationMode.SINGLE || detailView"
+            class="pb-6"
             :location="locationActive" />
           <FcViewDataAggregate
             v-else

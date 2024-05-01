@@ -20,7 +20,8 @@
       </FcTooltip>
     </template> -->
     <div class="fc-pane-wrapper fill-height">
-      <div v-show="showDrawer" class="fc-drawer shading elevation-4">
+      <div v-show="showDrawer" class="fc-drawer shading elevation-4"
+        :class="{'fc-full-drawer':!showLocationSelection}">
         <router-view></router-view>
       </div>
       <div class="fc-map-wrapper fill-height">
@@ -316,11 +317,16 @@ export default {
       margin: 10px;
       width: 50%;
       max-width: 375px;
-      z-index: 5;
+      min-width: 300px;
       border-radius: 8px;
       border: 1px solid lightgrey !important;
       overflow-y: hidden;
       max-height: 95%;
+      z-index: 106;
+      transition: min-width 0.7s ease-in;
+    }
+    & .fc-full-drawer {
+      min-width: 98% !important;
     }
   }
 

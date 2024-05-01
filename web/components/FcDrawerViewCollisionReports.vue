@@ -17,12 +17,7 @@
     <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <FcButton
-            type="primary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            View Data
-          </FcButton>
+            <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
@@ -35,9 +30,10 @@
               </span>
             </span>
           </h2>
-
           <v-spacer></v-spacer>
 
+          <v-icon class="mr-2">mdi-chevron-down</v-icon>
+          <v-icon>mdi-close-circle</v-icon>
           <v-menu
             v-if="locationMode !== LocationMode.SINGLE && detailView"
             max-height="320">

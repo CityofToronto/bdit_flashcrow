@@ -17,12 +17,7 @@
     <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <FcButton
-            type="primary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            View Data
-          </FcButton>
+          <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
             <span class="font-weight-light headline secondary--text">
