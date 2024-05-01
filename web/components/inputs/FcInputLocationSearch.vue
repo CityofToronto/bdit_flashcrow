@@ -2,7 +2,7 @@
   <div class="fc-single-location-row">
     <div class="fc-input-location-search"
     :class="[{ 'fc-location-search-home elevation-2': !drawerOpen && !limitSizeOfBar}
-      , {'elevation-2': !drawerOpen}]">
+      , {'elevation-2': !drawerOpen && limitSizeOfBar}]">
       <v-menu
         v-model="showLocationSuggestions"
         ref="menuLocationSuggestions"
