@@ -371,7 +371,8 @@ export default {
       );
       return markersById;
     },
-    ...mapState('trackRequests', ['frontendEnv', 'hoveredStudyRequest']),
+    ...mapState(['frontendEnv']),
+    ...mapState('trackRequests', ['hoveredStudyRequest']),
   },
   created() {
     this.map = null;
