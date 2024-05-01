@@ -26,8 +26,7 @@
             :page.sync="page"
             :items="users"
             :items-per-page.sync="itemsPerPage"
-            fixed-header
-            height="calc(100vh - 250px)"
+            fixed-header height="calc(100vh - 250px)"
             :loading="loading"
             must-sort
             sort-by="UNIQUE_NAME"
@@ -36,18 +35,20 @@
             <template v-slot:[`item.UNIQUE_NAME`]="{ item }">
               <span>{{ item | username }}</span>
             </template>
-            <template
-              v-for="{ authScope, itemSlot } of authScopeSlots"
-              v-slot:[itemSlot]="{ item }">
+            <template v-for="{ authScope, itemSlot } of authScopeSlots"
+            v-slot:[itemSlot]="{ item }">
               <div :key="'u:' + item.id + ':' + authScope.name" class="d-flex">
                 <FcTooltip right>
                   <template v-slot:activator="{ on }">
-                    <div v-if="authScope.name === 'MVCR_READ'">
+                    <div v-if="authScope.name === 'MVCR_READ'"
+                    :key="'MVCR_' + item.id">
                       <FcAdminDropdown
-                        :permissions="mvcrPermissionSlots"
-                        :currentSelection="getMvcrState(item)"
+                        :permissions="permissions"
                         :currentUser="item"
                         @change="mvcrPermissionChanged" />
+                        <span v-if="item.mvcrAcctType == '1'">
+                          Access valid until: {{ parseExpiryDateTime(item.mvcrExpiryDate) }}
+                        </span>
                     </div>
                     <div v-else>
                       <v-checkbox
@@ -102,6 +103,7 @@ import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcAdminDropdown from './FcAdminDropdown.vue';
 
 export default {
@@ -127,6 +129,7 @@ export default {
       const permissionSlot = `item.${label}`;
       return { permissionState, permissionSlot };
     });
+    const permissions = MvcrPermissions.enumValues.map(permission => permission.label);
     const columns = [
       {
         value: 'UNIQUE_NAME',
@@ -154,6 +157,7 @@ export default {
       itemsPerPage: 50,
       query: '',
       isLoadingTotal: true,
+      permissions,
     };
   },
   computed: {
@@ -220,6 +224,13 @@ export default {
     },
     mvcrPermissionChanged(mvcrUserPermission) {
       this.actionChangeUserScope(mvcrUserPermission);
+    },
+    parseExpiryDateTime(expiryDateTime) {
+      return TimeFormatters.formatDateTime(expiryDateTime);
+    },
+    log(msg) {
+      // eslint-disable-next-line no-console
+      console.log(msg);
     },
   },
 };
