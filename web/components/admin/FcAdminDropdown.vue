@@ -1,43 +1,33 @@
 <template>
     <div>
-      <select class="dropdown" v-model="selectedPermission" @change="handleSelection">
-        <option value='' :selected="true">{{ currentSelection.label }}</option>
-        <option v-for="{ permissionState, permissionSlot } in
-          getOptions(currentSelection, permissions)" :key="permissionSlot" :value="permissionState">
-          <span>{{ permissionState.label }}</span>
-        </option>
-      </select>
-      <span v-if="currentSelection == '1'">
-        Access valid until: {{ parseExpiryDateTime(currentUser.mvcrExpiryDate) }}
-      </span>
+        <v-select
+            label="MVCR Permission"
+            :items="options"
+            v-model="selectedPermission"
+            variant="underlined"
+            @change="handleSelection" />
     </div>
-  </template>
+</template>
+
 <script>
-import TimeFormatters from '@/lib/time/TimeFormatters';
 
 export default {
-  props: ['permissions', 'currentSelection', 'currentUser'],
+  props: ['permissions', 'currentUser'],
   data() {
     return {
-      selectedPermission: '',
+      selectedPermission: this.permissions[this.currentUser.mvcrAcctType],
+      options: this.permissions,
     };
   },
   methods: {
-    parseExpiryDateTime(expiryDateTime) {
-      return TimeFormatters.formatDateTime(expiryDateTime);
-    },
-    getOptions(selectedItem, allItems) {
-      return allItems.filter(({ permissionState }) => permissionState !== selectedItem);
-    },
-    updateUser(mvcrPermission, user) {
-      const permissionId = mvcrPermission.ordinal;
-      const updatedUser = { ...user, mvcrAcctType: permissionId };
-      return updatedUser;
-    },
     handleSelection() {
-      const permissionChange = this.selectedPermission || this.currentSelection;
-      const newUserPermission = this.updateUser(permissionChange, this.currentUser);
-      this.$emit('change', newUserPermission);
+      const newAccountType = this.options.indexOf(this.selectedPermission);
+      const updatedUser = { ...this.currentUser, mvcrAcctType: newAccountType };
+      this.$emit('change', updatedUser);
+    },
+    log(msg) {
+      // eslint-disable-next-line no-console
+      console.log(msg);
     },
   },
 };
