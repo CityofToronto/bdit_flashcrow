@@ -327,7 +327,7 @@ export default {
       transition: min-width 0.25s cubic-bezier(0.7, 0, 0.84, 0);
     }
     & .fc-full-drawer {
-      min-width: 98% !important;
+      min-width: calc(100vw - 80px) !important;
       min-height: 52px;
     }
   }
