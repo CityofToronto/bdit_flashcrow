@@ -472,6 +472,12 @@ export default {
   & .fc-bg-white {
     background-color: #FFF;
   }
+  & .v-slide-group__prev--disabled {
+    visibility: hidden;
+  }
+  & .v-slide-group__next--disabled {
+    visibility: hidden;
+  }
 }
 
 .drawer-open .fc-drawer-view-collision-reports {
