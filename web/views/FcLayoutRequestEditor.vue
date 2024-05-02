@@ -22,6 +22,7 @@
           :show-legend="false">
           <template v-slot:top-left>
             <FcInputLocationSearch
+              :limit-size-of-bar="true"
               ref="locationSearch"
               v-if="showLocationSearch"
               v-model="locationToAdd"
