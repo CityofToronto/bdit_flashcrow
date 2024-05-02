@@ -1,15 +1,18 @@
 <template>
-    <div :key="'expire_' + this.changeCount">
+    <div :key="'expire_' + this.changeCount" class="fc_admin_dropdown">
         <v-select
             label="MVCR Permission"
             :items="options"
             v-model="selectedPermission"
-            variant="underlined"
             :disabled="this.changesLoading"
+            class="fc_admin_dropdown_items"
             @change="handleSelection" />
-            <span v-if="showExpiry">
-               Access valid until: {{ parseExpiryDateTime(this.user.mvcrExpiryDate) }}
-            </span>
+            <div v-if="showExpiry" class="fc_admin_dropdown_items">
+               <span class="fc_admin_dropdown_span">Access valid until:</span> <br />
+               <span class="fc_admin_dropdown_span">
+                {{ parseExpiryDateTime(this.user.mvcrExpiryDate) }}
+              </span>
+            </div>
     </div>
 </template>
 
@@ -32,16 +35,18 @@ export default {
   },
   watch: {
     selectedPermission() {
+      // eslint-disable-next-line no-console
+      this.showExpiry = this.currentUser.mvcrAcctType === 1;
+      // Need to watch this... I don't like it, but it will return
+      // the previous data since it exists and the new data hasn't
+      // overwritten it yet.
       setTimeout(() => {
         this.updateData();
-      }, 1000);
+      }, 750);
     },
     isLoading(val) {
       if (val === false) {
-        this.log('changes done');
         this.changeCount += 1;
-        // this.log(this.changeCount);
-        this.log(this.user.mvcrAcctType);
       }
     },
   },
@@ -62,10 +67,23 @@ export default {
       this.showExpiry = newUserInfo.mvcrAcctType === 1;
       this.changesLoading = false;
     },
-    log(msg) {
-      // eslint-disable-next-line no-console
-      console.log(msg);
-    },
   },
 };
 </script>
+
+<style scoped>
+.fc_admin_dropdown {
+  display: flex;
+  padding: 5px 0;
+}
+
+.fc_admin_dropdown_items {
+  width: 200px;
+  flex: 1;
+  margin: auto 10px auto 0;
+}
+
+.fc_admin_dropdown_span {
+  font-style: italic;
+}
+</style>

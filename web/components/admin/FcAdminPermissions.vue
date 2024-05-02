@@ -222,10 +222,6 @@ export default {
     mvcrPermissionChanged(mvcrUserPermission) {
       this.actionChangeUserScope(mvcrUserPermission);
     },
-    log(msg) {
-      // eslint-disable-next-line no-console
-      console.log(msg);
-    },
   },
 };
 </script>
