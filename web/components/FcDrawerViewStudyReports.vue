@@ -11,10 +11,19 @@
         Are you sure you want to leave?
       </span>
     </FcDialogConfirm>
-    <FcProgressLinear
-      v-if="loading"
-      aria-label="Loading study reports viewer" />
-    <template v-else>
+    <div class="fc-report-loading" v-if="loading">
+      <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+        <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
+        <h2 class="ml-4">
+          <span class="headline">{{studyType.label}}</span>
+        </h2>
+        <v-spacer></v-spacer>
+        <v-icon @click="closeReport">mdi-close-circle</v-icon>
+      </div>
+      <FcProgressLinear aria-label="Loading study reports viewer" />
+    </div>
+
+      <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
           <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
@@ -79,7 +88,7 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex pt-1" v-if="!collapseReport">
+        <div class="align-center d-flex pt-1 fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
@@ -504,6 +513,9 @@ export default {
       top: 0;
       right: 0;
     }
+  }
+  & .fc-bg-white {
+    background-color: #FFF;
   }
 }
 

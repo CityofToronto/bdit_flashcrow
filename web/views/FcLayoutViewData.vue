@@ -324,10 +324,11 @@ export default {
       overflow-y: hidden;
       max-height: 95%;
       z-index: 106;
-      transition: min-width 0.5s cubic-bezier(0.7, 0, 0.84, 0);
+      transition: min-width 0.25s cubic-bezier(0.7, 0, 0.84, 0);
     }
     & .fc-full-drawer {
       min-width: 98% !important;
+      min-height: 52px;
     }
   }
 

@@ -33,7 +33,6 @@
 
           <FcViewDataDetail
             v-if="locationMode === LocationMode.SINGLE || detailView"
-            class="pb-6"
             :location="locationActive" />
           <FcViewDataAggregate
             v-else
@@ -186,6 +185,7 @@ export default {
 <style lang="scss">
 .fc-drawer-view-data {
   max-height: var(--full-height);
+  min-height: 52px;
   & .fc-drawer-header {
     border-bottom: 1px solid lightgrey;
   }
