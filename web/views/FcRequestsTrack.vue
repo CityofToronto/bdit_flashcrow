@@ -182,7 +182,7 @@ export default {
       loading: true,
       loadingDownload: false,
       loadingTotal: false,
-      page: 1,
+      page: this.getPageNum(),
       projectMode: ProjectMode.NONE,
       selectedItems: [],
       showDialogProjectMode: false,
@@ -288,7 +288,13 @@ export default {
 
         const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
 
-        this.page = 1;
+        // Following logic only resets the page number if the user has applied filters
+        if (this.filtersExist()) {
+          this.page = 1;
+        } else {
+          this.page = this.getPageNum();
+        }
+
         this.total = total;
 
         this.loadingTotal = false;
@@ -314,6 +320,9 @@ export default {
         this.loading = false;
       }, 200),
       immediate: true,
+    },
+    page() {
+      this.setPageNum(this.page);
     },
   },
   created() {
@@ -413,10 +422,14 @@ export default {
       }
       await this.loadAsync();
     },
-    ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
+    filtersExist() {
+      return Object.keys(this.filterParamsRequest).length > 2;
+    },
+    ...mapMutations('trackRequests', ['setFiltersRequestUserOnly', 'setPageNum']),
     ...mapMutations(['setToastInfo', 'setDialog']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests', 'checkAuth']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
+    ...mapGetters('trackRequests', ['getPageNum']),
   },
 };
 </script>
