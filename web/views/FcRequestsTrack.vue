@@ -283,16 +283,18 @@ export default {
   watch: {
     filterParamsRequest: {
       deep: true,
-      handler: debounce(async function updateTotal() {
+      handler: debounce(async function updateTotal(newValue, oldValue) {
         this.loadingTotal = true;
 
         const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
 
-        // Following logic only resets the page number if the user has applied filters
-        if (this.filtersExist()) {
-          this.page = 1;
-        } else {
+        // Following logic only remembers the page number if the user is navigating between pages
+        // without refreshing (i.e oldValue === undefined)
+
+        if (!oldValue) {
           this.page = this.getPageNum();
+        } else {
+          this.page = 1;
         }
 
         this.total = total;
