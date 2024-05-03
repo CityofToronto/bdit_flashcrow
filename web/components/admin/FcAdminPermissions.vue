@@ -121,11 +121,6 @@ export default {
       const itemSlot = `item.${name}`;
       return { authScope, itemSlot };
     });
-    const mvcrPermissionSlots = MvcrPermissions.enumValues.map((permissionState) => {
-      const { label } = permissionState;
-      const permissionSlot = `item.${label}`;
-      return { permissionState, permissionSlot };
-    });
     const permissions = MvcrPermissions.enumValues.map(permission => permission.label);
     const columns = [
       {
@@ -143,7 +138,6 @@ export default {
     return {
       authScopeSlots,
       selectedPermission,
-      mvcrPermissionSlots,
       columns,
       loadingChangeUserScope: false,
       loading: true,
@@ -215,9 +209,6 @@ export default {
     },
     async loadAsyncForRoute() {
       this.updateData(this.filterParams);
-    },
-    getMvcrState(user) {
-      return MvcrPermissions[user.mvcrAcctType];
     },
     mvcrPermissionChanged(mvcrUserPermission) {
       this.actionChangeUserScope(mvcrUserPermission);
