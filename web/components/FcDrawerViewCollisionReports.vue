@@ -25,7 +25,14 @@
     <template v-else>
       <div>
         <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
-            <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon @click="actionNavigateBack" v-bind="attrs" v-on="on" large>
+                mdi-chevron-left
+              </v-icon>
+            </template>
+            <span>View Data</span>
+          </v-tooltip>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
@@ -40,10 +47,28 @@
           </h2>
           <v-spacer></v-spacer>
 
-          <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">mdi-chevron-up</v-icon>
-          <v-icon v-else class="mx-3" @click="toggleReport">mdi-chevron-down</v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
+                  mdi-chevron-up
+                </v-icon>
+                <v-icon v-else class="mx-3" @click="toggleReport">
+                  mdi-chevron-down
+                </v-icon>
+              </span>
+            </template>
+            <span>Toggle Report</span>
+          </v-tooltip>
 
-          <v-icon @click="closeReport">mdi-close-circle</v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon @click="closeReport">mdi-close-circle</v-icon>
+              </span>
+            </template>
+            <span>Close Report</span>
+          </v-tooltip>
 
           <v-menu
             v-if="locationMode !== LocationMode.SINGLE && detailView"
