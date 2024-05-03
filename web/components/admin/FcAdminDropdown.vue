@@ -1,5 +1,5 @@
 <template>
-    <div :key="'expire_' + this.changeCount" class="fc_admin_dropdown">
+    <div :key="'expire_' + this.user.id + '_' + this.changeCount" class="fc_admin_dropdown">
         <v-select
             label="MVCR Permission"
             :items="options"
@@ -8,8 +8,8 @@
             class="fc_admin_dropdown_items"
             @change="handleSelection" />
             <div v-if="showExpiry" class="fc_admin_dropdown_items">
-               <span class="fc_admin_dropdown_span">Access valid until:</span> <br />
-               <span class="fc_admin_dropdown_span">
+              <span class="fc_admin_dropdown_span">Access valid until:</span> <br />
+              <span class="fc_admin_dropdown_span">
                 {{ parseExpiryDateTime(this.user.mvcrExpiryDate) }}
               </span>
             </div>
@@ -35,7 +35,6 @@ export default {
   },
   watch: {
     selectedPermission() {
-      // eslint-disable-next-line no-console
       this.showExpiry = this.currentUser.mvcrAcctType === 1;
       // Need to watch this... I don't like it, but it will return
       // the previous data since it exists and the new data hasn't
