@@ -63,9 +63,7 @@
 
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
-                <v-icon @click="closeReport">mdi-close-circle</v-icon>
-              </span>
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
             </template>
             <span>Close Report</span>
           </v-tooltip>
