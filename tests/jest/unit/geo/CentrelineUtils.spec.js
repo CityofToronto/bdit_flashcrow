@@ -57,7 +57,6 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
       StudyType.PXO_OBSERVE,
       StudyType.VID_OBSERVE,
       StudyType.SCHOOL_CROSS,
-      StudyType.GAP_STUDY,
     ]);
   });
   RoadSegmentType.enumValues.forEach(({ featureCode }) => {
