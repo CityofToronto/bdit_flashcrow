@@ -4,21 +4,6 @@
     :class="{ 'drawer-open': drawerOpen }">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
-    <!-- <template v-if="hasDrawer">
-      <FcTooltip right>
-        <template v-slot:activator="{ on }">
-          <FcButton
-            :aria-label="labelDrawerToggle"
-            class="pane-drawer-toggle"
-            type="icon"
-            @click="setDrawerOpen(!drawerOpen)"
-            v-on="on">
-            <v-icon>{{iconDrawerToggle}}</v-icon>
-          </FcButton>
-        </template>
-        <span>{{labelDrawerToggle}}</span>
-      </FcTooltip>
-    </template> -->
     <div class="fc-pane-wrapper fill-height">
       <div v-show="showDrawer" class="fc-drawer shading elevation-4"
         :class="{'fc-full-drawer':!showLocationSelection}">
@@ -80,23 +65,19 @@ import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
-// import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
-// import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
   name: 'FcLayoutViewData',
   components: {
-    // FcButton,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
     FcMapPopupActionViewData,
-    // FcTooltip,
     FcSelectorCollapsedLocation,
     FcSelectorSingleLocation,
   },
