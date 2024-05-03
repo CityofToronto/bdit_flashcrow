@@ -1,58 +1,15 @@
 <template>
   <div
-    class="fc-layout-view-data fill-height"
-    :class="{
-      'drawer-open': drawerOpen,
-      horizontal: !vertical,
-      vertical
-    }">
+    class="fc-layout-view-data fill-height horizontal"
+    :class="{ 'drawer-open': drawerOpen }">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
-
-    <template v-if="hasDrawer">
-      <FcButton
-        v-if="vertical"
-        class="pane-drawer-toggle mb-2 d-none"
-        type="fab-text"
-        @click="setDrawerOpen(!drawerOpen)">
-        <v-icon
-          color="primary"
-          left>{{iconDrawerToggle}}</v-icon>
-        {{labelDrawerToggle}}
-      </FcButton>
-      <FcTooltip v-else right>
-        <template v-slot:activator="{ on }">
-          <FcButton
-            :aria-label="labelDrawerToggle"
-            class="pane-drawer-toggle"
-            type="icon"
-            @click="setDrawerOpen(!drawerOpen)"
-            v-on="on">
-            <v-icon>{{iconDrawerToggle}}</v-icon>
-          </FcButton>
-        </template>
-        <span>{{labelDrawerToggle}}</span>
-      </FcTooltip>
-    </template>
-    <div
-      class="fc-pane-wrapper d-flex fill-height"
-      :class="{
-        'flex-column': vertical,
-      }">
-      <div
-        v-show="showDrawer"
-        class="fc-drawer flex-grow-1 flex-shrink-0"
-        :class="{
-          'order-2': vertical,
-        }">
+    <div class="fc-pane-wrapper fill-height">
+      <div v-show="showDrawer" class="fc-drawer shading elevation-4"
+        :class="{'fc-full-drawer':!showLocationSelection}">
         <router-view></router-view>
       </div>
-      <div
-        class="fc-map-wrapper flex-shrink-0"
-        :class="{
-          'flex-grow-1': !mapBackground,
-          'order-1': vertical,
-        }">
+      <div class="fc-map-wrapper fill-height">
         <FcMap
           ref="map"
           class="fill-height"
@@ -108,23 +65,19 @@ import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 
 import FcDialogConfirmMultiLocationLeave
   from '@/web/components/dialogs/FcDialogConfirmMultiLocationLeave.vue';
-import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcGlobalFilterBox from '@/web/components/filters/FcGlobalFilterBox.vue';
 import FcMap from '@/web/components/geo/map/FcMap.vue';
 import FcMapPopupActionViewData from '@/web/components/geo/map/FcMapPopupActionViewData.vue';
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcSelectorCollapsedLocation from '@/web/components/inputs/FcSelectorCollapsedLocation.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
 
 export default {
   name: 'FcLayoutViewData',
   components: {
-    FcButton,
     FcDialogConfirmMultiLocationLeave,
     FcGlobalFilterBox,
     FcMap,
     FcMapPopupActionViewData,
-    FcTooltip,
     FcSelectorCollapsedLocation,
     FcSelectorSingleLocation,
   },
@@ -147,10 +100,7 @@ export default {
       return this.$route.name !== 'viewData';
     },
     iconDrawerToggle() {
-      const { drawerOpen, vertical } = this;
-      if (vertical) {
-        return drawerOpen ? 'mdi-arrow-collapse' : 'mdi-arrow-expand';
-      }
+      const { drawerOpen } = this;
       return drawerOpen ? 'mdi-menu-left' : 'mdi-menu-right';
     },
     internalLayers: {
@@ -170,10 +120,7 @@ export default {
       },
     },
     labelDrawerToggle() {
-      const { drawerOpen, vertical } = this;
-      if (vertical) {
-        return drawerOpen ? 'Collapse page' : 'Expand page';
-      }
+      const { drawerOpen } = this;
       return drawerOpen ? 'Collapse side panel' : 'Expand side panel';
     },
     locationsState() {
@@ -224,20 +171,15 @@ export default {
       });
     },
     mapBackground() {
-      const { drawerOpen, vertical } = this;
-      return drawerOpen && vertical;
+      return true;
     },
     showDrawer() {
-      const { drawerOpen, hasDrawer, vertical } = this;
-      return (hasDrawer && drawerOpen) || vertical;
+      const { drawerOpen, hasDrawer } = this;
+      return (hasDrawer && drawerOpen);
     },
     showLocationSelection() {
       const { showLocationSelection } = this.$route.meta;
       return showLocationSelection;
-    },
-    vertical() {
-      const { vertical } = this.$route.meta;
-      return vertical;
     },
     ...mapState([
       'locationMode',
@@ -320,20 +262,6 @@ export default {
     border-radius: 8px;
   }
 
-  &.vertical {
-    & > .pane-drawer-toggle {
-      bottom: 50%;
-      left: calc(50% - 80px);
-      width: 160px;
-    }
-    & > .fc-pane-wrapper > div {
-      height: 50%;
-      &.fc-drawer {
-        border-top: 1px solid rgba(0, 0, 0, 0.12);
-      }
-    }
-  }
-
   &.horizontal {
     & > .pane-drawer-toggle {
       background-color: var(--white);
@@ -354,8 +282,34 @@ export default {
         background-color: var(--v-shading-base);
       }
     }
-    & > .fc-pane-wrapper > div {
+  }
+
+  & .fc-pane-wrapper {
+    position:relative;
+    height: 100%;
+    & .fc-map-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+    & .fc-drawer {
+      position:absolute;
+      top: 0;
+      left: 0;
+      margin: 10px;
       width: 50%;
+      max-width: 375px;
+      min-width: 300px;
+      min-height: 50px;
+      border-radius: 8px;
+      border: 1px solid lightgrey !important;
+      overflow-y: hidden;
+      max-height: 95%;
+      z-index: 106;
+      transition: min-width 0.25s cubic-bezier(0.7, 0, 0.84, 0);
+    }
+    & .fc-full-drawer {
+      min-width: calc(100vw - 80px) !important;
+      min-height: 52px;
     }
   }
 
@@ -368,28 +322,6 @@ export default {
       & > .fc-pane-wrapper > .fc-drawer {
         border-right: 1px solid rgba(0, 0, 0, 0.12);
       }
-    }
-    &.vertical {
-      & > .pane-drawer-toggle {
-        bottom: calc(100% - 60px);
-        left: calc(50% - 90px);
-        width: 180px;
-      }
-      & > .fc-pane-wrapper > .fc-map-wrapper {
-        height: 0;
-      }
-      & > .fc-pane-wrapper > .fc-drawer {
-        height: calc(100% - 60px);
-      }
-    }
-  }
-}
-
-@media screen and (max-height: 900px) {
-  .fc-layout-view-data {
-    &.vertical .fc-map-legend {
-      max-height: 218px;
-      overflow: auto;
     }
   }
 }

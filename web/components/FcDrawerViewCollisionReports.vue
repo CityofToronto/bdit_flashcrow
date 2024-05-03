@@ -11,18 +11,28 @@
         Are you sure you want to leave?
       </span>
     </FcDialogConfirm>
-    <FcProgressLinear
-      v-if="loading"
-      aria-label="Loading collision reports viewer" />
+    <div class="fc-report-loading" v-if="loading">
+      <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+        <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
+        <h2 class="ml-4">
+          <span class="headline">Collisions</span>
+        </h2>
+        <v-spacer></v-spacer>
+        <v-icon @click="closeReport">mdi-close-circle</v-icon>
+      </div>
+      <FcProgressLinear aria-label="Loading collision reports viewer" />
+    </div>
     <template v-else>
       <div>
-        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <FcButton
-            type="primary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            View Data
-          </FcButton>
+        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon @click="actionNavigateBack" v-bind="attrs" v-on="on" large>
+                mdi-chevron-left
+              </v-icon>
+            </template>
+            <span>View Data</span>
+          </v-tooltip>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
@@ -35,8 +45,28 @@
               </span>
             </span>
           </h2>
-
           <v-spacer></v-spacer>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
+                  mdi-chevron-up
+                </v-icon>
+                <v-icon v-else class="mx-3" @click="toggleReport">
+                  mdi-chevron-down
+                </v-icon>
+              </span>
+            </template>
+            <span>Toggle Report</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
+            </template>
+            <span>Close Report</span>
+          </v-tooltip>
 
           <v-menu
             v-if="locationMode !== LocationMode.SINGLE && detailView"
@@ -61,7 +91,7 @@
           </v-menu>
         </div>
 
-        <div class="align-center d-flex">
+        <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
@@ -101,7 +131,7 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2"  v-if="!collapseReport">
         <div
           v-if="loadingReportLayout"
           class="ma-3 text-center">
@@ -199,6 +229,7 @@ export default {
         ReportType.COLLISION_TABULATION,
       ],
       showConfirmLeave: false,
+      collapseReport: false,
     };
   },
   computed: {
@@ -427,6 +458,14 @@ export default {
       const reportContent = this.reportLayout.content[1].options;
       return reportContent[section];
     },
+    closeReport() {
+      this.$router.push({
+        name: 'viewData',
+      });
+    },
+    toggleReport() {
+      this.collapseReport = !this.collapseReport;
+    },
     headerRowByIndex(index) {
       if (!this.isDirectoryReport) return false;
       let row = false;
@@ -452,6 +491,15 @@ export default {
       top: 0;
       right: 0;
     }
+  }
+  & .fc-bg-white {
+    background-color: #FFF;
+  }
+  & .v-slide-group__prev--disabled {
+    visibility: hidden;
+  }
+  & .v-slide-group__next--disabled {
+    visibility: hidden;
   }
 }
 
