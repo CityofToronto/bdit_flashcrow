@@ -15,6 +15,7 @@ export default {
       sortBy: 'ID',
       sortDesc: true,
     },
+    pageNum: 1,
     hoveredStudyRequest: null,
   },
   getters: {
@@ -136,6 +137,9 @@ export default {
     getHoveredStudyRequest(state) {
       return state.hoveredStudyRequest;
     },
+    getPageNum(state) {
+      return state.pageNum;
+    },
   },
   mutations: {
     removeFilterRequest(state, { filter }) {
@@ -179,6 +183,9 @@ export default {
     },
     setHoveredStudyRequest(state, studyRequest) {
       state.hoveredStudyRequest = studyRequest;
+    },
+    setPageNum(state, pageNum) {
+      state.pageNum = pageNum;
     },
   },
 };
