@@ -43,27 +43,6 @@
 
           <v-spacer></v-spacer>
 
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
-                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
-                  mdi-chevron-up
-                </v-icon>
-                <v-icon v-else class="mx-3" @click="toggleReport">
-                  mdi-chevron-down
-                </v-icon>
-              </span>
-            </template>
-            <span>Toggle Report</span>
-          </v-tooltip>
-
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
-            </template>
-            <span>Close Report</span>
-          </v-tooltip>
-
           <v-menu
             v-if="locationMode !== LocationMode.SINGLE"
             :max-height="320">
@@ -95,7 +74,7 @@
                 class="flex-grow-0 mt-0"
                 type="secondary">
                 <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
-                {{labelActiveStudy}}
+                <span class="fc-calendar-btn-label">{{labelActiveStudy}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -110,6 +89,27 @@
               </v-list-item>
             </v-list>
           </v-menu>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
+                  mdi-chevron-up
+                </v-icon>
+                <v-icon v-else class="mx-3" @click="toggleReport">
+                  mdi-chevron-down
+                </v-icon>
+              </span>
+            </template>
+            <span>Toggle Report</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
+            </template>
+            <span>Close Report</span>
+          </v-tooltip>
         </div>
 
         <div class="align-center d-flex pt-1 fc-bg-white" v-if="!collapseReport">
@@ -551,5 +551,11 @@ export default {
 
 .drawer-open .fc-drawer-view-study-reports {
   max-height: var(--full-height);
+}
+
+@media only screen and (max-width: 800px) {
+  .fc-calendar-btn-label {
+    display: none;
+  }
 }
 </style>

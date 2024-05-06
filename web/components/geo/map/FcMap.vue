@@ -606,7 +606,7 @@ export default {
       if (features.length > 0) {
         // see if a feature was clicked ... if so choose that one
         // if a feature was not clicked then get features in a bounding box
-        return features[0];
+        return this.pickTooltipFeature(features);
       }
       const { x, y } = point;
       const bbox = [[x - 10, y - 10], [x + 10, y + 10]];
@@ -614,6 +614,22 @@ export default {
       if (features.length === 0) {
         return null;
       }
+      return this.pickTooltipFeature(features);
+    },
+    pickTooltipFeature(features) {
+      if (features.length === 1) {
+        return features[0];
+      }
+      const preference = {
+        studies: 3,
+        intersections: 2,
+        midblocks: 1,
+      };
+      features.sort((a, b) => {
+        const left = preference[a.source] || 0;
+        const right = preference[b.source] || 0;
+        return right - left;
+      });
       return features[0];
     },
     onMapClick(e) {
