@@ -61,7 +61,7 @@
     "module-alias": "^2.2.3",
     "mustache": "^4.2.0",
     "openid-client": "^4.9.1",
-    "pdfmake": "^0.2.7",
+    "pdfmake": "^0.2.10",
     "pg-boss": "^6.2.2",
     "pg-promise": "^10.15.4",
     "underscore": "^1.13.6",
