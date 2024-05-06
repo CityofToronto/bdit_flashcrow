@@ -29,8 +29,22 @@
               :selected="i === locationsEditIndex"
               @focus="setLocationsEditIndex(i)"
               @location-remove="actionRemove"
-              showClose />
+               />
+               <FcTooltip right>
+                  <template v-slot:activator="{ on: onTooltip }">
+                    <FcButton
+                      aria-label="Clear Location"
+                      type="icon"
+                      @click="actionRemove(i)"
+                      v-on="onTooltip"
+                      plain>
+                      <v-icon>mdi-close</v-icon>
+                    </FcButton>
+                  </template>
+                  <span>Clear Location</span>
+                </FcTooltip>
             </div>
+
           </div>
 
           <div class="fc-multi-line">
@@ -46,6 +60,7 @@
                 @focus="setLocationsEditIndex(-1)"
                 @location-add="actionAdd" />
               </div>
+              <div class="fc-btn-spacer"></div>
           </div>
         </div>
         <v-messages
@@ -411,6 +426,7 @@ export default {
   position: relative;
 
   & .fc-input-location-search-wrapper {
+    display: flex;
     width: 100%;
   }
   & .fc-input-has-border {
@@ -451,6 +467,9 @@ export default {
   }
   & .hide {
     display: none;
+  }
+  & .fc-btn-spacer {
+    width:45px;
   }
 }
 .edit-location-btn {
