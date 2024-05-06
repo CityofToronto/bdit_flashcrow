@@ -33,6 +33,24 @@
                 <template v-if="hasLocationIndex">
                 </template>
                 <template v-else>
+                  <template v-if="!drawerOpen">
+                    <FcTooltip
+                      v-if="internalValue !== null || query !== null"
+                      right>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <FcButton
+                          aria-label="Clear Location"
+                          class="fc-close-btn-inside mr-1"
+                          type="icon"
+                          @click="actionClear"
+                          v-on="onTooltip">
+                          <v-icon>mdi-close-circle</v-icon>
+                        </FcButton>
+                      </template>
+                      <span>Clear Location</span>
+                    </FcTooltip>
+                    <v-divider vertical />
+                  </template>
                   <v-icon
                     :color="hasFocus ? 'primary' : null"
                     right>
@@ -306,5 +324,8 @@ export default {
 }
 .fc-location-search-home {
   max-width: 448px;
+}
+.fc-close-btn-inside {
+  opacity: 0.4;
 }
 </style>
