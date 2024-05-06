@@ -8,20 +8,20 @@
       <v-list-item-title class="px-0">
         <div class="d-flex align-center">
           <v-icon class="mr-2">mdi-map-marker</v-icon>
-          <div class="body-1 flex-grow-1 flex-shrink-1">
-            <div
+          <div class="body-1 truncate">
+            <div class="truncate"
               :class="{
                 'body-1': locationsIconProps[i].locationIndex === -1,
                 title: locationsIconProps[i].locationIndex !== -1,
               }">
               {{location.description}}
             </div>
-            <slot name="subtitle" v-bind="{ location, i }" />
+            <slot name="subtitle" class="truncate" v-bind="{ location, i }" />
           </div>
           <v-spacer></v-spacer>
-          <div class="flex-grow-0 flex-shrink-0">
-            <slot name="action" v-bind="{ location, i }" />
-          </div>
+        </div>
+        <div class="flex-grow-0 flex-shrink-0 text-end">
+          <slot name="action" v-bind="{ location, i }" />
         </div>
       </v-list-item-title>
     </v-list-item>
@@ -59,3 +59,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-list-location-multi {
+  & .truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>
