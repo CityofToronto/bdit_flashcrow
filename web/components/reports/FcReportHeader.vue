@@ -27,11 +27,13 @@
     <div class="text-right">
       <div>{{info}}</div>
       <div>{{subinfo}}</div>
+      <div>{{ this.dateRange }}</div>
     </div>
   </header>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import { ORG_NAME, ReportType, StudyType } from '@/lib/Constants';
 import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 
@@ -53,6 +55,15 @@ export default {
     return {
       ORG_NAME,
     };
+  },
+  computed: {
+    dateRange() {
+      const dateRange = this.filterChipsCommon().filter(item => item.filter === 'dateRange')[0];
+      return dateRange ? dateRange.label : '1985 to present';
+    },
+  },
+  methods: {
+    ...mapGetters('viewData', ['filterChipsCommon']),
   },
 };
 </script>

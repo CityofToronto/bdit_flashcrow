@@ -14,6 +14,15 @@
     </v-col>
   </v-row>
 
+  <div v-if="collisionFilters.length > 0">
+    <h3>Collision Filters</h3>
+    <ul>
+      <li v-for="(item, i) in collisionFilters" :key="i">
+        <b>{{ item.filter }}: </b> {{ item.label }}
+      </li>
+    </ul>
+  </div>
+
   <div class="callout-container" v-if="this.showCallOut">
     <div class="callout ma-3">
       <div class="ma-3">
@@ -32,6 +41,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 
 export default {
@@ -46,6 +56,17 @@ export default {
     showCallOut() {
       return this.$parent.type && this.$parent.type.name === 'COUNT_SUMMARY_TURNING_MOVEMENT';
     },
+    collisionFilters() {
+      const collisionFilters = [...this.filterChipsCollision()];
+      const daysOfWeek = this.filterChipsCommon().filter(item => item.filter === 'daysOfWeek')[0];
+      if (daysOfWeek) {
+        collisionFilters.push(daysOfWeek);
+      }
+      return collisionFilters;
+    },
+  },
+  methods: {
+    ...mapGetters('viewData', ['filterChipsCommon', 'filterChipsCollision']),
   },
 };
 </script>
