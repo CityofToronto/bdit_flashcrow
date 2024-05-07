@@ -5,9 +5,10 @@
       textCancel="Stay on this page"
       textOk="Leave"
       title="Leave Reports"
+      okButtonType="primary"
       @action-ok="actionLeave">
       <span class="body-1">
-        Leaving this page will cause you to switch to another location.
+        Leaving this page will cause you to switch to another location.<br/>
         Are you sure you want to leave?
       </span>
     </FcDialogConfirm>
