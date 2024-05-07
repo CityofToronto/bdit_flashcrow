@@ -27,7 +27,7 @@
     <div class="text-right">
       <div>{{info}}</div>
       <div>{{subinfo}}</div>
-      <div>{{ this.dateRange }}</div>
+      <div v-if="type.label.startsWith('Collision')">{{ this.dateRange }}</div>
     </div>
   </header>
 </template>
@@ -59,7 +59,7 @@ export default {
   computed: {
     dateRange() {
       const dateRange = this.filterChipsCommon().filter(item => item.filter === 'dateRange')[0];
-      return dateRange ? dateRange.label : '1985 to present';
+      return dateRange ? dateRange.label : '1985 to Present';
     },
   },
   methods: {

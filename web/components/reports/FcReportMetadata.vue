@@ -14,13 +14,21 @@
     </v-col>
   </v-row>
 
-  <div v-if="collisionFilters.length > 0">
-    <h3>Collision Filters</h3>
-    <ul>
-      <li v-for="(item, i) in collisionFilters" :key="i">
-        <b>{{ item.filter }}: </b> {{ item.label }}
-      </li>
-    </ul>
+  <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
+    <v-row class="align-center mx-0 px-1">
+      <h3 class="flex-1">{{ numFilters }} Filter{{ this.numFilters > 1 ? 's' : '' }}</h3>
+      <FcButtonAria @click="isExpanded = !isExpanded" type="icon" class="flex-1">
+        <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
+        <v-icon v-else>mdi-menu-down</v-icon>
+      </FcButtonAria>
+    </v-row>
+    <v-expand-transition>
+      <ul v-show="isExpanded" class="pt-1">
+        <li v-for="(item, i) in collisionFilters" :key="i">
+          <b>{{ item.filter }}: </b> {{ item.label }}
+        </li>
+      </ul>
+    </v-expand-transition>
   </div>
 
   <div class="callout-container" v-if="this.showCallOut">
@@ -42,15 +50,24 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { ReportType } from '@/lib/Constants';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
 export default {
   name: 'FcReportMetadata',
   components: {
+    FcButtonAria,
     FcTextReportValue,
   },
   props: {
     entries: Array,
+    type: ReportType,
+  },
+  data() {
+    return {
+      isExpanded: false,
+    };
   },
   computed: {
     showCallOut() {
@@ -63,6 +80,9 @@ export default {
         collisionFilters.push(daysOfWeek);
       }
       return this.readableFilters(collisionFilters);
+    },
+    numFilters() {
+      return this.collisionFilters.length;
     },
   },
   methods: {
