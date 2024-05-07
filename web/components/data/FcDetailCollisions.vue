@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <template v-else-if="collisionSummary.amount > 0">
+    <template v-else-if="collisionSummaryUnfiltered.amount > 0">
       <dl class="d-flex flex-grow-1 flex-shrink-1 justify-space-around">
         <div class="flex-grow-1 collision-fact">
           <dt class="body-1">
