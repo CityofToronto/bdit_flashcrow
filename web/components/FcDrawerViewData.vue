@@ -1,6 +1,6 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <header class="flex-grow-0 flex-shrink-0 fc-drawer-header">
+    <header class="flex-grow-0 flex-shrink-0">
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">
@@ -20,11 +20,7 @@
         v-if="loading"
         aria-label="Loading View Data drawer" />
       <template v-else>
-        <FcViewDataMultiEdit
-          v-if="locationMode === LocationMode.MULTI_EDIT"
-          :locations="locationsEdit"
-          :locations-selection="locationsEditSelection" />
-        <template v-else>
+        <template v-if="locationMode !== LocationMode.MULTI_EDIT">
           <FcGlobalFilters
             class="px-5 py-3"
             header-tag="h3" />
@@ -59,7 +55,6 @@ import {
 import CompositeId from '@/lib/io/CompositeId';
 import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
 import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
-import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcGlobalFilters from '@/web/components/filters/FcGlobalFilters.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
@@ -82,7 +77,6 @@ export default {
     FcSummaryPoi,
     FcViewDataAggregate,
     FcViewDataDetail,
-    FcViewDataMultiEdit,
   },
   data() {
     return {
@@ -186,8 +180,5 @@ export default {
 .fc-drawer-view-data {
   max-height: var(--full-height);
   min-height: 52px;
-  & .fc-drawer-header {
-    border-bottom: 1px solid lightgrey;
-  }
 }
 </style>
