@@ -84,7 +84,6 @@ export default {
   },
   computed: {
     coordinates() {
-      this.loadAsyncForFeature();
       return getGeometryMidpoint(this.feature.geometry);
     },
     detailsSuffix() {
