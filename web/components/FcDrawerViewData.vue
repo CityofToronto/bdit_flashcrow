@@ -1,6 +1,6 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <header class="flex-grow-0 flex-shrink-0">
+    <header class="flex-grow-0 flex-shrink-0 fc-drawer-header">
       <FcSelectorMultiLocation
         v-if="locationMode.multi"
         :detail-view="detailView">
@@ -180,5 +180,8 @@ export default {
 .fc-drawer-view-data {
   max-height: var(--full-height);
   min-height: 52px;
+  & .fc-drawer-header {
+    border-bottom: 1px solid lightgrey;
+  }
 }
 </style>

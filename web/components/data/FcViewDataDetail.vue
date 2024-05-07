@@ -16,25 +16,23 @@
 
       <v-divider></v-divider>
 
-      <section>
-        <FcHeaderStudies :study-total="studyTotal">
-          <template v-slot:action>
-            <FcButton
-              class="ml-3"
-              type="secondary"
-              @click="actionRequestStudy">
-              <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Request New
-              <span class="sr-only">Study</span>
-            </FcButton>
-          </template>
-        </FcHeaderStudies>
+      <section class="pb-10 fc-study-detail-section">
+        <FcHeaderStudies :study-total="studyTotal" />
 
         <FcDetailStudies
           :loading="loadingStudies"
           :study-summary="studySummary"
           :study-summary-unfiltered="studySummaryUnfiltered"
           @show-reports="actionShowReportsStudy" />
+
+        <FcButton
+          class="ml-3"
+          type="secondary"
+          @click="actionRequestStudy">
+          <v-icon color="primary" left>mdi-plus-box</v-icon>
+          Request New
+          <span class="sr-only">Study</span>
+        </FcButton>
       </section>
 
       <FcSectionStudyRequestsPending
@@ -211,3 +209,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-view-data-detail {
+  & .fc-study-detail-section {
+    display: flex;
+    flex-direction: column;
+  }
+}
+</style>
