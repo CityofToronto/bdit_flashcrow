@@ -4,7 +4,7 @@
       v-model="showConfirmLeave"
       textCancel="Stay on this page"
       textOk="Leave"
-      title="Leave Reports"
+      title="Leave Reports?"
       okButtonType="primary"
       @action-ok="actionLeave">
       <span class="body-1">
