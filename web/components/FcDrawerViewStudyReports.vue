@@ -52,8 +52,10 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 mr-2"
                 type="secondary">
-                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2 text-truncate">{{locationActive.description}}</span>
+                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pa-1 fc-study-btn-label">
+                  {{locationActive.description}}
+                </span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -74,7 +76,7 @@
                 class="flex-grow-0 mt-0"
                 type="secondary">
                 <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
-                <span class="fc-calendar-btn-label">{{labelActiveStudy}}</span>
+                <span class="fc-study-btn-label">{{labelActiveStudy}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -217,7 +219,6 @@ import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue'
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParameters from '@/web/components/reports/FcReportParameters.vue';
@@ -231,7 +232,6 @@ export default {
     FcButton,
     FcCallout,
     FcDialogConfirm,
-    FcIconLocationMulti,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
@@ -547,6 +547,15 @@ export default {
   & .v-slide-group__next--disabled {
     visibility: hidden;
   }
+  & .fc-study-btn-label {
+    font-size: 12px;
+    overflow: hidden;
+    max-width: 150px;
+    text-overflow: ellipsis;
+  }
+  & .fc-icon-dim {
+    opacity: 0.6;
+  }
 }
 
 .drawer-open .fc-drawer-view-study-reports {
@@ -554,7 +563,7 @@ export default {
 }
 
 @media only screen and (max-width: 800px) {
-  .fc-calendar-btn-label {
+  .fc-study-btn-label {
     display: none;
   }
 }

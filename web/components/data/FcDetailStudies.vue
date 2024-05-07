@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-studies">
+  <div class="fc-detail-studies pb-8">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
@@ -27,7 +27,7 @@
                 :study="item.mostRecent" />
             </div>
           </div>
-          <div class="fc-studies-n flex-grow-0 flex-shrink-0 mr-8">
+          <div class="fc-studies-n">
             <FcTextSummaryFraction
               :a="item.n"
               :b="item.nUnfiltered"
