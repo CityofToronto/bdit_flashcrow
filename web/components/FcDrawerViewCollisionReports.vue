@@ -226,12 +226,6 @@ export default {
       collapseReport: false,
     };
   },
-  props: {
-    currentLocationSelection: {
-      type: Number,
-      default: null,
-    },
-  },
   computed: {
     userLoggedIn() {
       return this.auth.loggedIn;
@@ -488,8 +482,6 @@ export default {
     ...mapMutations(['setLocationsIndex', 'setToast', 'setToastError']),
     ...mapMutations('viewData', ['setFiltersCollision', 'setFiltersCommon']),
     ...mapActions(['initLocations']),
-  },
-  mounted() {
   },
 };
 </script>
