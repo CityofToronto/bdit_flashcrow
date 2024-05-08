@@ -99,7 +99,7 @@ export default {
       if (centrelineType === CentrelineType.INTERSECTION) {
         studyType = StudyType.TMC;
       } else {
-        studyType = StudyType.ATR_SPEED_VOLUME;
+        studyType = StudyType.ATR_SVC;
       }
       this.studyType = studyType;
     },
