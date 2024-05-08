@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-view-data-detail">
+  <div class="pb-4 fc-view-data-detail">
     <FcProgressLinear
       v-if="loading || location === null"
       aria-label="Loading Detail View for View Data" />
@@ -16,7 +16,7 @@
 
       <v-divider></v-divider>
 
-      <section class="pb-10 fc-study-detail-section">
+      <section class="fc-study-detail-section">
         <FcHeaderStudies :study-total="studyTotal" />
 
         <FcDetailStudies
@@ -25,14 +25,17 @@
           :study-summary-unfiltered="studySummaryUnfiltered"
           @show-reports="actionShowReportsStudy" />
 
-        <FcButton
-          class="ml-3"
-          type="secondary"
-          @click="actionRequestStudy">
-          <v-icon color="primary" left>mdi-plus-box</v-icon>
-          Request New
-          <span class="sr-only">Study</span>
-        </FcButton>
+          <div class="mr-5 align-self-end text-left">
+            <FcButton
+              type="secondary"
+              color="primary"
+              @click="actionRequestStudy">
+              Request&nbsp;
+              <span class="sr-only">New Study</span>
+              <v-icon >mdi-briefcase-plus</v-icon>
+            </FcButton>
+          </div>
+          <div class="pb-5" v-if="studyTotal > 1"/>
       </section>
 
       <FcSectionStudyRequestsPending
@@ -215,6 +218,7 @@ export default {
   & .fc-study-detail-section {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

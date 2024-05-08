@@ -44,11 +44,11 @@
       </dl>
       <FcButton
         class="flex-grow-0 flex-shrink-0 mt-2"
-        type="secondary"
+        type="tertiary"
         :disabled="collisionSummary.amount === 0"
         v-if="collisionSummary.amount > 0"
         @click="$emit('show-reports')">
-        <span>View Reports</span>
+          <v-icon x-large>mdi-chevron-right</v-icon>
       </FcButton>
     </template>
   </div>

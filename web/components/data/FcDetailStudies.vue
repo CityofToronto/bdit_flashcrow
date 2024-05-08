@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-studies">
+  <div class="fc-detail-studies mb-3">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
@@ -38,7 +38,7 @@
             :disabled="!item.studyType.dataAvailable || item.n === 0"
             type="tertiary"
             @click="$emit('show-reports', item)">
-            <span>View Reports</span>
+            <v-icon x-large>mdi-chevron-right</v-icon>
           </FcButton>
         </div>
       </div>
@@ -95,7 +95,8 @@ export default {
 <style lang="scss">
 .fc-detail-studies {
   & .fc-studies-n {
-    width: 120px;
+    width: 60px;
+    text-align: center;
   }
 }
 </style>
