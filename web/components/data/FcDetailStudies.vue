@@ -22,9 +22,7 @@
                 :study-type="item.studyType" />
             </div>
             <div class="mt-1">
-              <FcTextMostRecent
-                v-if="item.mostRecent !== null"
-                :study="item.mostRecent" />
+              <FcTextMostRecent v-if="item.mostRecent !== null" :study="item.mostRecent" minimal/>
             </div>
           </div>
           <div class="fc-studies-n">
