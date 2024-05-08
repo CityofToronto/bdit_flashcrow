@@ -17,10 +17,10 @@
   <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
     <v-row class="align-center mx-0 px-1">
       <h3 class="flex-1">{{ numFilters }} Filter{{ this.numFilters > 1 ? 's' : '' }}</h3>
-      <FcButtonAria @click="isExpanded = !isExpanded" type="icon" class="flex-1">
+      <FcButton @click="isExpanded = !isExpanded" type="icon" class="flex-1">
         <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
         <v-icon v-else>mdi-menu-down</v-icon>
-      </FcButtonAria>
+      </FcButton>
     </v-row>
     <v-expand-transition>
       <ul v-show="isExpanded" class="pt-1">
@@ -52,12 +52,12 @@
 import { mapGetters } from 'vuex';
 import { ReportType } from '@/lib/Constants';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
-import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcReportMetadata',
   components: {
-    FcButtonAria,
+    FcButton,
     FcTextReportValue,
   },
   props: {
