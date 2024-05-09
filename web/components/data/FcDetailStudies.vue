@@ -8,12 +8,12 @@
       <div
         v-for="(item, i) in items"
         :key="item.studyType.name"
-        class="ml-5">
+        class="ml-9">
         <v-divider v-if="i > 0"></v-divider>
         <div
-          class="align-center d-flex pr-5"
+          class="fc-study-detail-row align-center d-flex"
           :class="i === 0 ? 'mb-4' : 'my-4'">
-          <div class="body-1 flex-grow-1 flex-shrink-1">
+          <div class="body-1">
             <div>
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
@@ -32,7 +32,7 @@
               :show-b="hasFiltersCommon || hasFiltersStudy" />
           </div>
           <FcButton
-            class="flex-grow-0 flex-shrink-0"
+            class=""
             :disabled="!item.studyType.dataAvailable || item.n === 0"
             type="tertiary"
             @click="$emit('show-reports', item)">
@@ -92,6 +92,11 @@ export default {
 
 <style lang="scss">
 .fc-detail-studies {
+  width: 100%;
+  & .fc-study-detail-row {
+    display: flex;
+    justify-content: space-between;
+  }
   & .fc-studies-n {
     width: 60px;
     text-align: center;

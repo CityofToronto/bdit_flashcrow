@@ -4,8 +4,10 @@
       No Previous Study
     </span>
     <template v-else>
-     <v-icon small>mdi-clock</v-icon>
-      {{study.startDate | date}} ({{study.startDate | dayOfWeek}})
+      <span class="fc-nowrap">
+        <v-icon small>mdi-clock</v-icon>
+        {{study.startDate | date}} ({{study.startDate | dayOfWeek}})
+      </span>
       <template v-if="!minimal">
         <br/>
         <span v-if="study.duration !== null">
@@ -38,5 +40,8 @@ export default {
 .fc-text-most-recent {
   background-color: rgba(117, 117, 117, 0.1);
   padding: 2px;
+  & .fc-nowrap {
+    white-space: nowrap;
+  }
 }
 </style>
