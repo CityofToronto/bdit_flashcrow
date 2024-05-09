@@ -9,19 +9,8 @@
           :collision-total="collisionTotal"
           :disabled="reportExportMode === ReportExportMode.STUDIES">
           <template v-slot:action v-if="collisionSummary.amount > 0">
-            <FcButton
-              v-if="reportExportMode !== ReportExportMode.COLLISIONS"
-              class="ma-1"
-              :disabled="
-                collisionSummary.amount === 0
-                || reportExportMode === ReportExportMode.STUDIES"
-              type="tertiary"
-              @click="actionShowReportsCollision">
-              <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
-              <span class="sr-only">View Collision Report</span>
-            </FcButton>
             <FcMenuDownloadReportFormat
-              v-else
+              v-if="reportExportMode === ReportExportMode.COLLISIONS"
               :require-auth="true"
               text-screen-reader="Collision Reports"
               @download-report-format="actionDownloadReportFormatCollisions" />
@@ -35,8 +24,19 @@
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
           :locations="locations"
-          :locations-selection="locationsSelection" />
-
+          :locations-selection="locationsSelection" >
+            <FcButton
+              v-if="reportExportMode !== ReportExportMode.COLLISIONS"
+              class="ma-1"
+              :disabled="
+                collisionSummary.amount === 0
+                || reportExportMode === ReportExportMode.STUDIES"
+              type="tertiary"
+              @click="actionShowReportsCollision">
+              <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+              <span class="sr-only">View Collision Report</span>
+            </FcButton>
+        </FcAggregateCollisions>
           <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end">
             <FcButton
               class="ma-1"
