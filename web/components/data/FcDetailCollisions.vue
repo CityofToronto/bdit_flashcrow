@@ -1,11 +1,11 @@
 <template>
-  <div class="fc-detail-collisions align-end d-flex mb-5 mr-5 ml-5">
+  <div class="fc-detail-collisions align-end d-flex mb-5 ml-5 justify-space-around">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
     <template v-else-if="collisionSummaryUnfiltered.amount > 0">
-      <dl class="d-flex flex-grow-1 flex-shrink-1 justify-space-around">
-        <div class="flex-grow-1 collision-fact">
+      <dl class="d-flex flex-grow-1">
+        <div class="collision-fact">
           <dt class="body-1">
             Total
           </dt>
@@ -17,7 +17,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="flex-grow-1 flex-shrink-1 collision-fact">
+        <div class="collision-fact">
           <dt class="body-1">
             KSI
           </dt>
@@ -29,7 +29,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 collision-fact mr-4">
+        <div class="collision-fact">
           <dt class="body-1">
             Verified
           </dt>
@@ -81,13 +81,11 @@ export default {
 
 <style lang="scss">
 .fc-detail-collisions {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  .fc-collisions-validated {
-    width: 120px;
-  }
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   .collision-fact {
-    min-width: 50px;
+    min-width: 70px;
+    text-align: center;
   }
 }
 
