@@ -92,10 +92,10 @@ export default {
 
 <style lang="scss">
 .fc-detail-studies {
-  width: 100%;
   & .fc-study-detail-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
   & .fc-studies-n {
     width: 60px;

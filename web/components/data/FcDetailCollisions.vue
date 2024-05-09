@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <div class="fc-detail-row pa-2 align-end d-flex ml-5 justify-space-around"
+    <div class="fc-detail-row pa-1 d-flex ml-5 mr-2 justify-space-around"
       v-else-if="collisionSummaryUnfiltered.amount > 0">
       <dl class="d-flex flex-grow-1">
         <div class="collision-fact">
