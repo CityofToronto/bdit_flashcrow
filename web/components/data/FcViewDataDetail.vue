@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-4 fc-view-data-detail">
+  <div class="fc-view-data-detail">
     <FcProgressLinear
       v-if="loading || location === null"
       aria-label="Loading Detail View for View Data" />
@@ -16,7 +16,7 @@
 
       <v-divider></v-divider>
 
-      <section class="fc-study-detail-section">
+      <section class="fc-study-detail-section pb-4">
         <FcHeaderStudies :study-total="studyTotal" />
 
         <FcDetailStudies
