@@ -6,6 +6,7 @@
     <template v-else-if="collisionSummary.amount > 0">
 
       <dl class="d-flex flex-grow-1">
+
         <div class="d-flex"><v-icon>mdi mdi-chevron-down</v-icon></div>
         <div class="collision-fact">
           <dt class="body-1">

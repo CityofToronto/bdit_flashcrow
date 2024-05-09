@@ -1,9 +1,10 @@
 <template>
-  <div class="fc-detail-collisions align-end d-flex mb-5 ml-5 justify-space-around">
+  <div class="fc-detail-collisions  mb-5">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <template v-else-if="collisionSummaryUnfiltered.amount > 0">
+    <div class="fc-detail-row pa-2 align-end d-flex ml-5 justify-space-around"
+      v-else-if="collisionSummaryUnfiltered.amount > 0">
       <dl class="d-flex flex-grow-1">
         <div class="collision-fact">
           <dt class="body-1">
@@ -50,7 +51,7 @@
         @click="$emit('show-reports')">
           <v-icon x-large>mdi-chevron-right</v-icon>
       </FcButton>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -87,6 +88,13 @@ export default {
     min-width: 70px;
     text-align: center;
   }
+}
+.fc-detail-row {
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+.fc-detail-row:hover {
+  border: 1px solid lightgrey;
 }
 
 @media only screen and (max-width: 600px) {
