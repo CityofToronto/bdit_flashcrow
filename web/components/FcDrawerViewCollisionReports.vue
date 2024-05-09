@@ -269,7 +269,7 @@ export default {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
         return [this.locationActive];
       }
-      return this.loations;
+      return this.locations;
     },
     locationsIconProps() {
       const locationsIconProps = getLocationsIconProps(
