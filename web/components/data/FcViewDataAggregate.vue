@@ -4,38 +4,21 @@
       v-if="loading || locations.length === 0"
       aria-label="Loading Aggregate View for View Data" />
     <template v-else>
-      <section>
+      <section class="d-flex flex-column">
         <FcHeaderCollisions
           :collision-total="collisionTotal"
           :disabled="reportExportMode === ReportExportMode.STUDIES">
           <template v-slot:action v-if="collisionSummary.amount > 0">
-            <FcButton
-              class="ma-1"
-              :disabled="
-                collisionSummary.amount === 0
-                || reportExportMode === ReportExportMode.STUDIES"
-              :scope="[]"
-              type="secondary"
-              @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
-              <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
-                <v-icon color="primary" left>mdi-file-cancel-outline</v-icon>
-                <span>Cancel Export <span class="sr-only">of Collision Reports</span></span>
-              </template>
-              <template v-else>
-                <v-icon color="primary" left>mdi-file-export</v-icon>
-                <span>Export <span class="sr-only">Collision</span> Reports</span>
-              </template>
-            </FcButton>
             <FcButton
               v-if="reportExportMode !== ReportExportMode.COLLISIONS"
               class="ma-1"
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
-              type="secondary"
+              type="tertiary"
               @click="actionShowReportsCollision">
-              <v-icon color="primary" left>mdi-file-eye</v-icon>
-              <span>View <span class="sr-only">Collision</span> Report</span>
+              <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+              <span class="sr-only">View Collision Report</span>
             </FcButton>
             <FcMenuDownloadReportFormat
               v-else
@@ -53,6 +36,28 @@
           :loading="loadingCollisions"
           :locations="locations"
           :locations-selection="locationsSelection" />
+
+          <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end">
+            <FcButton
+              class="ma-1"
+              :disabled="
+                collisionSummary.amount === 0
+                || reportExportMode === ReportExportMode.STUDIES"
+              :scope="[]"
+              type="secondary"
+              color="primary"
+              @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
+              <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
+                <v-icon color="primary">mdi-cloud-check</v-icon>
+                <span class="sr-only">Cancel Export of Collision Reports</span>
+              </template>
+              <template v-else>
+                Export&nbsp;
+                <v-icon color="primary">mdi-cloud-download</v-icon>
+                <span class="sr-only">Export Collision Reports</span>
+              </template>
+            </FcButton>
+          </div>
       </section>
 
       <v-divider></v-divider>

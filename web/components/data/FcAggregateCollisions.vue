@@ -4,7 +4,47 @@
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
     <template v-else-if="collisionSummary.amount > 0">
-      <v-expansion-panels
+
+      <dl class="d-flex flex-grow-1">
+        <div class="d-flex"><v-icon>mdi mdi-chevron-down</v-icon></div>
+        <div class="collision-fact">
+          <dt class="body-1">
+            Total
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.amount"
+              :b="collisionSummaryUnfiltered.amount"
+              class="mt-1"
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
+          </dd>
+        </div>
+        <div class="collision-fact">
+          <dt class="body-1">
+            KSI
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.ksi"
+              :b="collisionSummaryUnfiltered.ksi"
+              class="mt-1"
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
+          </dd>
+        </div>
+        <div class="collision-fact">
+          <dt class="body-1">
+            Verified
+          </dt>
+          <dd>
+            <FcTextSummaryFraction
+              :a="collisionSummary.validated"
+              :b="collisionSummaryUnfiltered.validated"
+              class="mt-1"
+              :show-b="hasFiltersCollision || hasFiltersCommon" />
+          </dd>
+        </div>
+      </dl>
+      <!-- <v-expansion-panels
         v-model="indexOpen"
         accordion
         flat
@@ -43,7 +83,7 @@
             </FcListLocationMulti>
           </v-expansion-panel-content>
         </v-expansion-panel>
-      </v-expansion-panels>
+      </v-expansion-panels> -->
     </template>
   </div>
 </template>
@@ -54,12 +94,12 @@ import { mapGetters } from 'vuex';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
+// import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
-    FcListLocationMulti,
+    // FcListLocationMulti,
     FcProgressLinear,
     FcTextSummaryFraction,
   },
@@ -109,6 +149,10 @@ export default {
   }
   & .data-empty {
     opacity: 0.37;
+  }
+  & .collision-fact {
+    min-width: 70px;
+    text-align: center;
   }
 }
 </style>
