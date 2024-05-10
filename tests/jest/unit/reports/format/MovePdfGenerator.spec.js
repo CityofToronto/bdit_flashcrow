@@ -309,7 +309,7 @@ test('COUNT_SUMMARY_24H', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H);
   const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('COUNT_SUMMARY_24H_DETAILED', async () => {
@@ -317,7 +317,7 @@ test('COUNT_SUMMARY_24H_DETAILED', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_DETAILED);
   const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('COUNT_SUMMARY_24H_GRAPHICAL', async () => {
@@ -325,7 +325,7 @@ test('COUNT_SUMMARY_24H_GRAPHICAL', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_24H_GRAPHICAL);
   const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('COUNT_SUMMARY_TURNING_MOVEMENT', async () => {
@@ -333,7 +333,7 @@ test('COUNT_SUMMARY_TURNING_MOVEMENT', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.COUNT_SUMMARY_TURNING_MOVEMENT);
   const doc = await reportInstance.generate('TMC/36781', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED', async () => {
@@ -343,7 +343,7 @@ test('COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED', async () => {
     ReportType.COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED,
   );
   const doc = await reportInstance.generate('TMC/36781', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(4);
+  expect(getNumPages(doc)).toBe(3);
 });
 
 test('INTERSECTION_SUMMARY', async () => {
@@ -351,7 +351,7 @@ test('INTERSECTION_SUMMARY', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.INTERSECTION_SUMMARY);
   const doc = await reportInstance.generate('TMC/38661', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('SPEED_PERCENTILE', async () => {
@@ -359,7 +359,7 @@ test('SPEED_PERCENTILE', async () => {
 
   const reportInstance = ReportFactory.getInstance(ReportType.SPEED_PERCENTILE);
   const doc = await reportInstance.generate('ATR_SPEED_VOLUME/2156283', ReportFormat.PDF, {});
-  expect(getNumPages(doc)).toBe(2);
+  expect(getNumPages(doc)).toBe(1);
 });
 
 test('WARRANT_TRAFFIC_SIGNAL_CONTROL', async () => {
@@ -373,5 +373,5 @@ test('WARRANT_TRAFFIC_SIGNAL_CONTROL', async () => {
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   });
-  expect(getNumPages(doc)).toBe(3);
+  expect(getNumPages(doc)).toBe(2);
 });

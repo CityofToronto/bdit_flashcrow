@@ -370,3 +370,7 @@ export default {
     },
   },
 };
+
+export {
+  getCollisionFilterChip,
+};
