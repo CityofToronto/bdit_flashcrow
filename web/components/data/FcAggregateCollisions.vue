@@ -6,44 +6,53 @@
     <template v-else-if="collisionSummary.amount > 0">
       <dl class="d-flex flex-grow-1">
         <div class="d-flex"><v-icon>mdi mdi-chevron-down</v-icon></div>
-        <div class="collision-fact">
-          <dt class="body-1">
-            Total
-          </dt>
-          <dd>
-            <FcTextSummaryFraction
-              :a="collisionSummary.amount"
-              :b="collisionSummaryUnfiltered.amount"
-              class="mt-1"
-              :show-b="hasFiltersCollision || hasFiltersCommon" />
-          </dd>
+        <div class="d-flex pa-2 fc-aggregate-collisions-row">
+          <div class="collision-fact">
+            <dt class="body-1">
+              Total
+            </dt>
+            <dd>
+              <FcTextSummaryFraction
+                :a="collisionSummary.amount"
+                :b="collisionSummaryUnfiltered.amount"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </dd>
+          </div>
+          <div class="collision-fact">
+            <dt class="body-1">
+              KSI
+            </dt>
+            <dd>
+              <FcTextSummaryFraction
+                :a="collisionSummary.ksi"
+                :b="collisionSummaryUnfiltered.ksi"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </dd>
+          </div>
+          <div class="collision-fact">
+            <dt class="body-1">
+              Verified
+            </dt>
+            <dd>
+              <FcTextSummaryFraction
+                :a="collisionSummary.validated"
+                :b="collisionSummaryUnfiltered.validated"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </dd>
+          </div>
+          <slot />
         </div>
-        <div class="collision-fact">
-          <dt class="body-1">
-            KSI
-          </dt>
-          <dd>
-            <FcTextSummaryFraction
-              :a="collisionSummary.ksi"
-              :b="collisionSummaryUnfiltered.ksi"
-              class="mt-1"
-              :show-b="hasFiltersCollision || hasFiltersCommon" />
-          </dd>
-        </div>
-        <div class="collision-fact">
-          <dt class="body-1">
-            Verified
-          </dt>
-          <dd>
-            <FcTextSummaryFraction
-              :a="collisionSummary.validated"
-              :b="collisionSummaryUnfiltered.validated"
-              class="mt-1"
-              :show-b="hasFiltersCollision || hasFiltersCommon" />
-          </dd>
-        </div>
-        <slot />
       </dl>
+      <div v-for="(location, i) in locations" :key="location.centrelineId">
+        <div class="d-flex">
+          <div class="body-1">{{location.description}}</div>
+          <div class="num">{{collisionSummaryPerLocation[i].amount}}</div>
+          <div class="num">{{collisionSummaryPerLocation[i].ksi}}</div>
+        </div>
+      </div>
       <!-- <v-expansion-panels
         v-model="indexOpen"
         accordion
@@ -151,8 +160,16 @@ export default {
     opacity: 0.37;
   }
   & .collision-fact {
-    min-width: 70px;
+    min-width: 60px;
     text-align: center;
+  }
+  & .fc-aggregate-collisions-row {
+    border-radius: 5px;
+  }
+  & .fc-aggregate-collisions-row:hover {
+      box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+            0 1px 1px 0 rgba(0, 0, 0, 0.14),
+            2px 1px 3px 0 rgba(0, 0, 0, 0.12);
   }
 }
 </style>

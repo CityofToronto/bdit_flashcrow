@@ -5,7 +5,7 @@
       aria-label="Loading Detail View collisions data" />
     <div class="fc-collision-detail-row px-1 py-2 d-flex ml-5 mr-2 justify-space-around"
       v-else-if="collisionSummaryUnfiltered.amount > 0">
-      <dl class="d-flex flex-grow-1">
+      <dl class="fc-collision-table d-flex flex-grow-1">
         <div class="collision-fact">
           <dt class="body-1">
             Total
@@ -85,8 +85,11 @@ export default {
   flex-wrap: nowrap;
   justify-content: flex-start;
   .collision-fact {
-    min-width: 70px;
+    min-width: 65px;
     text-align: center;
+  }
+  .fc-collision-table {
+    justify-content: space-evenly;
   }
 }
 .fc-collision-detail-row {

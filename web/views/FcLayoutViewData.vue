@@ -298,7 +298,7 @@ export default {
       margin: 10px;
       width: 50%;
       max-width: 375px;
-      min-width: 300px;
+      min-width: 325px;
       min-height: 50px;
       border-radius: 8px;
       border: 1px solid lightgrey !important;

@@ -8,10 +8,10 @@
       <div
         v-for="(item, i) in items"
         :key="item.studyType.name"
-        class="ml-5">
+        class="ml-1">
         <v-divider v-if="i > 0"></v-divider>
         <div
-          class="fc-study-detail-row pa-3 align-center d-flex"
+          class="fc-study-detail-row py-3 ml-3 pl-3 pr-1 align-center d-flex"
           :class="i === 0 ? 'mb-4' : 'my-4'">
           <div class="body-1">
             <div>

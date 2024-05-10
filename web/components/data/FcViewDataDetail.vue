@@ -16,7 +16,7 @@
 
       <v-divider></v-divider>
 
-      <section class="fc-study-detail-section pb-4">
+      <section class="fc-study-detail-section px-3">
         <FcHeaderStudies :study-total="studyTotal" />
 
         <FcDetailStudies
@@ -218,7 +218,6 @@ export default {
   & .fc-study-detail-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
   }
 }
 </style>
