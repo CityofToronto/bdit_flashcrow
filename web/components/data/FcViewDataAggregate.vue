@@ -52,7 +52,8 @@
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
           :locations="locations"
-          :locations-selection="locationsSelection" />
+          :locations-selection="locationsSelection"
+          @show-collisions="actionShowReportsCollision"  />
       </section>
 
       <v-divider></v-divider>
@@ -105,7 +106,8 @@
           :loading="loadingStudies"
           :locations="locations"
           :locations-selection="locationsSelection"
-          @show-reports="actionShowReportsStudy" />
+          @show-reports="actionShowReportsStudy"
+          />
 
       </section>
     </template>
@@ -282,7 +284,10 @@ export default {
       });
     },
     actionShowReportsCollision() {
-      const params = this.locationsRouteParams;
+      const params = {
+        ...this.locationsRouteParams,
+      };
+
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
         params,

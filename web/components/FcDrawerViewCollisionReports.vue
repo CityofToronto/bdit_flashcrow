@@ -37,16 +37,10 @@
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
               &#x2022;
-              <span v-if="locationMode === LocationMode.SINGLE || detailView">
-                {{locationActive.description}}
-              </span>
-              <span v-else>
-                {{locationsDescription}}
-              </span>
+              {{locationActive.description}}
             </span>
           </h2>
           <v-spacer></v-spacer>
-
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
@@ -67,28 +61,6 @@
             </template>
             <span>Close Report</span>
           </v-tooltip>
-
-          <v-menu
-            v-if="locationMode !== LocationMode.SINGLE && detailView"
-            max-height="320">
-            <template v-slot:activator="{ on, attrs }">
-              <FcButton
-                v-bind="attrs"
-                v-on="on"
-                class="flex-grow-0 mt-0 ml-2"
-                type="secondary">
-                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2">{{locationActive.description}}</span>
-                <v-icon right>mdi-menu-down</v-icon>
-              </FcButton>
-            </template>
-            <FcListLocationMulti
-              :disabled="disabledPerLocation"
-              icon-classes="mr-2"
-              :locations="locations"
-              :locations-selection="locationsSelection"
-              @click-location="setLocationsIndex" />
-          </v-menu>
         </div>
 
         <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
@@ -116,7 +88,28 @@
               </FcButton>
             </div>
           </template>
-
+          <v-menu
+            v-if="locationMode !== LocationMode.SINGLE"
+            max-height="320">
+            <template v-slot:activator="{ on, attrs }">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0 ml-2"
+                type="secondary">
+                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
+                <span class="pl-2">{{locationActive.description}}</span>
+                <v-icon right>mdi-menu-down</v-icon>
+              </FcButton>
+            </template>
+            <FcListLocationMulti
+              :disabled="disabledPerLocation"
+              icon-classes="mr-2"
+              :locations="locations"
+              :locations-selection="locationsSelection"
+              @click-location="changeLocation"
+              />
+          </v-menu>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :disabled="reportRetrievalError"
@@ -213,6 +206,7 @@ export default {
   },
   data() {
     return {
+      activeLocation: 0,
       collisionSummaryPerLocation: [],
       indexActiveReportType: 0,
       leaveConfirmed: false,
@@ -246,7 +240,7 @@ export default {
         return `${s1}/${selectionType.name}`;
       }
       const { locations, selectionType } = this.locationsSelection;
-      const s1 = CompositeId.encode(locations);
+      const s1 = CompositeId.encode([locations[this.activeLocation]]);
       return `${s1}/${selectionType.name}`;
     },
     activeReportType() {
@@ -308,7 +302,13 @@ export default {
       this.updateReportLayout();
     },
   },
-  beforeMount() {
+  async beforeMount() {
+    const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
+      this.locations,
+      this.filterParamsCollision,
+    );
+    this.activeLocation = collisionSummaryPerLocation.findIndex(element => element.amount > 0);
+    this.setLocationsIndex(this.activeLocation);
     this.parseFiltersFromRouteParams();
   },
   beforeRouteLeave(to, from, next) {
@@ -332,6 +332,11 @@ export default {
     next(false);
   },
   methods: {
+    changeLocation(num) {
+      this.setLocationsIndex(num);
+      this.activeLocation = num;
+      this.updateReportLayout();
+    },
     async actionDownload(format) {
       if (this.activeReportType === null) {
         return;
@@ -414,6 +419,7 @@ export default {
         this.activeReportId,
         this.filterParamsCollision,
       ).catch(err => this.handleError(err));
+
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
