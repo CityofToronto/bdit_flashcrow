@@ -5,7 +5,6 @@
       aria-label="Loading Aggregate View collisions data" />
     <template v-else-if="collisionSummary.amount > 0">
       <dl class="d-flex flex-grow-1">
-        <div class="d-flex"><v-icon>mdi mdi-chevron-down</v-icon></div>
         <div class="d-flex pa-2 fc-aggregate-collisions-row">
           <div class="collision-fact">
             <dt class="body-1">
@@ -46,11 +45,33 @@
           <slot />
         </div>
       </dl>
-      <div v-for="(location, i) in locations" :key="location.centrelineId">
-        <div class="d-flex">
-          <div class="body-1">{{location.description}}</div>
-          <div class="num">{{collisionSummaryPerLocation[i].amount}}</div>
-          <div class="num">{{collisionSummaryPerLocation[i].ksi}}</div>
+
+      <div class="fc-collision-detail-box ml-1 mr-3 body-1">
+        <div class="d-flex fc-collision-detail-title ml-2">
+          <FcButton
+            type="tertiary"
+            class="fc-details-btn"
+            @click="showDetails= !showDetails">
+              <v-icon v-if="showDetails">mdi mdi-chevron-up</v-icon>
+              <v-icon v-else>mdi mdi-chevron-down</v-icon>
+              Details
+          </FcButton>
+        </div>
+        <div v-if="showDetails" class="fc-collision-detail-table elevation-1 pa-2">
+          <div class="fc-detail-row fc-detail-header">
+            <div class="fc-detail-desc"></div>
+            <div class="fc-detail-num">Total</div>
+            <div class="fc-detail-num">KSI</div>
+            <div class="fc-detail-num">Verified</div>
+          </div>
+          <div v-for="(location, i) in locations"
+           :key="location.centrelineId"
+            class="fc-detail-row">
+            <div class="fc-detail-desc text-sm">{{location.description}}</div>
+            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].amount}}</div>
+            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].ksi}}</div>
+            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].validated}}</div>
+          </div>
         </div>
       </div>
       <!-- <v-expansion-panels
@@ -103,6 +124,7 @@ import { mapGetters } from 'vuex';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 // import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
@@ -111,6 +133,7 @@ export default {
     // FcListLocationMulti,
     FcProgressLinear,
     FcTextSummaryFraction,
+    FcButton,
   },
   props: {
     collisionSummary: Object,
@@ -131,6 +154,7 @@ export default {
     return {
       fields,
       indexOpen: null,
+      showDetails: false,
     };
   },
   computed: {
@@ -167,9 +191,37 @@ export default {
     border-radius: 5px;
   }
   & .fc-aggregate-collisions-row:hover {
-      box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-            0 1px 1px 0 rgba(0, 0, 0, 0.14),
-            2px 1px 3px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.14),
+    2px 1px 3px 0 rgba(0, 0, 0, 0.12);
+  }
+  & .fc-detail-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    margin-bottom: 10px;
+  }
+  & .fc-detail-header {
+    border-bottom: 1px solid lightgrey;
+    font-size: 12px;
+  }
+  & .fc-detail-desc {
+    text-align: left;
+    width: 150px;
+    font-size: 12px;
+  }
+  & .fc-detail-num {
+    flex-grow: 1;
+    font-weight: bold;
+  }
+  & .fc-details-btn {
+    text-transform: none !important;
+    color: var(--v-default-base);
+  }
+  & .fc-collision-detail-table {
+    text-align: center;
+    background: #fff;
   }
 }
 </style>
