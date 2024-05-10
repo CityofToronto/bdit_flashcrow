@@ -2,7 +2,7 @@
   <div>
   <v-row class="mb-6" tag="dl">
     <v-col
-      v-for="({ cols, name, value }, i) in entries"
+      v-for="({ cols, name, value, subtext }, i) in entries"
       :key="i"
       :cols="cols">
       <dt class="subtitle-1 font-weight-medium">{{name}}</dt>
@@ -10,6 +10,10 @@
         <FcTextReportValue
           text-null="None"
           :value="value" />
+      </dd>
+      <dd v-if="subtext != null" class="v-messages theme--light subtext">
+        <FcTextReportValue
+          :value="subtext" />
       </dd>
     </v-col>
   </v-row>
@@ -64,6 +68,9 @@ export default {
 .callout-container {
   display: flex;
   justify-content: flex-end;
+}
+.subtext {
+  width: 60%;
 }
 
 // only show callout button if there's room
