@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <div class="fc-detail-row pa-1 d-flex ml-5 mr-2 justify-space-around"
+    <div class="fc-collision-detail-row px-1 py-2 d-flex ml-5 mr-2 justify-space-around"
       v-else-if="collisionSummaryUnfiltered.amount > 0">
       <dl class="d-flex flex-grow-1">
         <div class="collision-fact">
@@ -89,12 +89,13 @@ export default {
     text-align: center;
   }
 }
-.fc-detail-row {
-  border: 1px solid transparent;
+.fc-collision-detail-row {
   border-radius: 5px;
 }
-.fc-detail-row:hover {
-  border: 1px solid lightgrey;
+.fc-collision-detail-row:hover {
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        2px 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 @media only screen and (max-width: 600px) {

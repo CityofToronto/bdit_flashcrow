@@ -8,10 +8,10 @@
       <div
         v-for="(item, i) in items"
         :key="item.studyType.name"
-        class="ml-9">
+        class="ml-5">
         <v-divider v-if="i > 0"></v-divider>
         <div
-          class="fc-study-detail-row align-center d-flex"
+          class="fc-study-detail-row pa-3 align-center d-flex"
           :class="i === 0 ? 'mb-4' : 'my-4'">
           <div class="body-1">
             <div>
@@ -96,6 +96,12 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 5px;
+  }
+  .fc-study-detail-row:hover {
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+          0 1px 1px 0 rgba(0, 0, 0, 0.14),
+          2px 1px 3px 0 rgba(0, 0, 0, 0.12);
   }
   & .fc-studies-n {
     width: 60px;
