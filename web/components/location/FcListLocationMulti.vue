@@ -5,10 +5,9 @@
       :key="i"
       :disabled="disabledNormalized[i]"
       @click="$emit('click-location', i)">
-      <v-list-item-title class="px-0">
+      <v-list-item-title class="px-0 fc-list-multi-row">
         <div class="d-flex align-center">
-          <v-icon class="mr-2">mdi-map-marker</v-icon>
-          <div class="body-1 truncate">
+          <div class="fc-list-multi-text body-1 truncate">
             <div class="truncate"
               :class="{
                 'body-1': locationsIconProps[i].locationIndex === -1,
@@ -18,11 +17,8 @@
             </div>
             <slot name="subtitle" class="truncate" v-bind="{ location, i }" />
           </div>
-          <v-spacer></v-spacer>
         </div>
-        <div class="flex-grow-0 flex-shrink-0 text-end">
-          <slot name="action" v-bind="{ location, i }" />
-        </div>
+        <slot name="action" v-bind="{ location, i }" />
       </v-list-item-title>
     </v-list-item>
   </v-list>
@@ -66,6 +62,14 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  & .fc-list-multi-row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+  }
+  & .fc-list-multi-text {
+    max-width: 150px;
   }
 }
 </style>

@@ -25,7 +25,7 @@
           :study-summary-unfiltered="studySummaryUnfiltered"
           @show-reports="actionShowReportsStudy" />
 
-          <div class="mr-5 align-self-end text-left">
+          <div class="mr-5 align-self-end text-left pb-4">
             <FcButton
               type="secondary"
               color="primary"

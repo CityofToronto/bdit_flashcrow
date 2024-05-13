@@ -31,34 +31,27 @@
               :show-b="hasFiltersCommon || hasFiltersStudy"
               small />
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1">
+          <v-expansion-panel-content class="shading pt-1" >
             <FcListLocationMulti
               class="shading"
               :disabled="disabledPerLocationByItem[i]"
-              icon-classes="mr-4"
               :locations="locations"
               :locations-selection="locationsSelection">
-              <template v-slot:subtitle="{ i: j }">
-                <div class="mt-1">
-                  <FcTextMostRecent
-                    v-if="itemsPerLocation[i][j].mostRecent !== null"
-                    :study="itemsPerLocation[i][j].mostRecent" />
-                </div>
-              </template>
               <template v-slot:action="{ i: j }">
-                <div class="mr-9">
+                <div class="d-flex align-center">
                   <FcTextSummaryFraction
                     :a="itemsPerLocation[i][j].n"
                     :b="itemsPerLocation[i][j].nUnfiltered"
                     class="text-right"
                     :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
-                  <div v-if="itemsPerLocation[i][j].n > 0">
+                  <div>
                     <FcButton
                       class="mr-n4 mt-1"
                       type="tertiary"
+                      :disabled="itemsPerLocation[i][j].n === 0"
                       @click="$emit('show-reports', { item, locationsIndex: j })">
-                      <span>View Reports</span>
+                      <v-icon x-large>mdi-chevron-right</v-icon>
                     </FcButton>
                   </div>
                 </div>
@@ -75,7 +68,6 @@
 import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
@@ -88,7 +80,6 @@ export default {
     FcButton,
     FcListLocationMulti,
     FcProgressLinear,
-    FcTextMostRecent,
     FcTextStudyTypeBeta,
     FcTextSummaryFraction,
   },
@@ -157,6 +148,9 @@ export default {
   }
   & .data-empty {
     opacity: 0.37;
+  }
+  &.v-expansion-panel-content__wrap {
+    padding: 0 0 16px !important;
   }
 }
 </style>

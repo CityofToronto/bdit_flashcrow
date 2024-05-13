@@ -74,46 +74,6 @@
           </div>
         </div>
       </div>
-      <!-- <v-expansion-panels
-        v-model="indexOpen"
-        accordion
-        flat
-        focusable>
-        <v-expansion-panel
-          v-for="field in fields"
-          :key="field.name"
-          :aria-disabled="collisionSummary[field.name] === 0"
-          class="fc-collisions-summary-per-location"
-          :disabled="collisionSummary[field.name] === 0">
-          <v-expansion-panel-header class="pr-8">
-            <span class="body-1">{{field.description}}</span>
-            <v-spacer></v-spacer>
-            <FcTextSummaryFraction
-              :a="collisionSummary[field.name]"
-              :b="collisionSummaryUnfiltered[field.name]"
-              class="flex-grow-0 flex-shrink-0 mr-5"
-              :show-b="hasFiltersCollision || hasFiltersCommon"
-              small />
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1">
-            <FcListLocationMulti
-              class="shading"
-              :disabled="disabledPerLocationByField[field.name]"
-              icon-classes="mr-4"
-              :locations="locations"
-              :locations-selection="locationsSelection">
-              <template v-slot:action="{ i }">
-                <FcTextSummaryFraction
-                  :a="collisionSummaryPerLocation[i][field.name]"
-                  :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
-                  class="mr-9"
-                  :show-b="hasFiltersCollision || hasFiltersCommon"
-                  small />
-              </template>
-            </FcListLocationMulti>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels> -->
     </template>
   </div>
 </template>
@@ -125,12 +85,10 @@ import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
-// import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
-    // FcListLocationMulti,
     FcProgressLinear,
     FcTextSummaryFraction,
     FcButton,
