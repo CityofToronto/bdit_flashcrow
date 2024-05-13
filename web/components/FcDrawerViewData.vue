@@ -11,7 +11,7 @@
         </FcButton>
       </div>
     </header>
-    <section class="overflow-y-auto overflow-x-auto">
+    <section class="fc-view-data-section overflow-y-auto overflow-x-auto">
       <FcProgressLinear v-if="loading" aria-label="Loading View Data drawer" />
       <template v-else>
         <template v-if="locationMode !== LocationMode.MULTI_EDIT">
@@ -183,6 +183,9 @@ export default {
 .fc-drawer-view-data {
   max-height: var(--full-height);
   min-height: 52px;
+  & .fc-view-data-section {
+    max-height: calc(100vh - 215px);
+  }
   & .fc-filter-section {
     border-top: 1px solid lightgrey;
   }

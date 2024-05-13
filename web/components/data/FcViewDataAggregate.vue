@@ -37,7 +37,7 @@
               <span class="sr-only">View Collision Report</span>
             </FcButton>
         </FcAggregateCollisions>
-          <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end">
+          <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end mb-2">
             <FcButton
               class="ma-1"
               :disabled="
@@ -95,7 +95,7 @@
           :locations-selection="locationsSelection"
           @show-reports="actionShowReportsStudy" />
 
-          <div class="fc-study-buttons mb-7 d-flex flex-column align-end mr-5">
+          <div class="fc-study-buttons d-flex flex-column align-end mr-5">
             <FcButton
               class="mb-1"
               v-if="studySummary.length > 0"
