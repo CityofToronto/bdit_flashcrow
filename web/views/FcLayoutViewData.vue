@@ -295,7 +295,8 @@ export default {
       position:absolute;
       top: 0;
       left: 0;
-      margin: 10px;
+      margin-left: 10px;
+      margin-right: 10px;
       width: 50%;
       max-width: 375px;
       min-width: 325px;
@@ -303,7 +304,7 @@ export default {
       border-radius: 8px;
       border: 1px solid lightgrey !important;
       overflow-y: hidden;
-      max-height: 95%;
+      // max-height: 95%;
       z-index: 106;
       transition: min-width 0.25s cubic-bezier(0.7, 0, 0.84, 0);
     }

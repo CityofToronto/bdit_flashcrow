@@ -11,7 +11,7 @@
         </FcButton>
       </div>
     </header>
-    <section class=" overflow-y-auto">
+    <section class="overflow-y-auto overflow-x-auto">
       <FcProgressLinear v-if="loading" aria-label="Loading View Data drawer" />
       <template v-else>
         <template v-if="locationMode !== LocationMode.MULTI_EDIT">
