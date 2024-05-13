@@ -88,41 +88,26 @@ export default {
   methods: {
     readableFilters(filters) {
       const readableFilters = [];
+      const filtersMap = {
+        validated: 'Verification',
+        daysOfWeek: 'Days of the Week',
+        details: 'Collision Details',
+        emphasisAreas: 'Vision Zero Emphasis Areas',
+        mvcr: 'MVCR',
+        injury: 'Injuries',
+        drivact: 'Driver Action',
+        drivcond: 'Driver Conditions',
+        hoursOfDay: 'Hours of the Day',
+        initdir: 'Initial Direction of Travel',
+        impactype: 'Initial Impact Type',
+        rdsfcond: 'Weather',
+        vehtype: 'Vehicle Type',
+        manoeuver: 'Manoeuvre',
+      };
       for (let i = 0; i < filters.length; i++) {
         const { filter, label } = filters[i];
-        let newFilter = '';
-
-        if (filter === 'validated') {
-          newFilter = 'Verification';
-        } else if (filter === 'daysOfWeek') {
-          newFilter = 'Days of the Week';
-        } else if (filter === 'details') {
-          newFilter = 'Collision Details';
-        } else if (filter === 'emphasisAreas') {
-          newFilter = 'Vision Zero Emphasis Areas';
-        } else if (filter === 'mvcr') {
-          newFilter = 'MVCR';
-        } else if (filter === 'injury') {
-          newFilter = 'Injuries';
-        } else if (filter === 'drivact') {
-          newFilter = 'Driver Action';
-        } else if (filter === 'drivcond') {
-          newFilter = 'Driver Conditions';
-        } else if (filter === 'hoursOfDay') {
-          newFilter = 'Hours of the Day';
-        } else if (filter === 'impactype') {
-          newFilter = 'Initial Impact Type';
-        } else if (filter === 'initdir') {
-          newFilter = 'Initial Direction of Travel';
-        } else if (filter === 'rdsfcond') {
-          newFilter = 'Weather';
-        } else if (filter === 'vehtype') {
-          newFilter = 'Vehicle Type';
-        } else if (filter === 'manoeuver') {
-          newFilter = 'Manoeuvre';
-        }
         readableFilters.push({
-          filter: newFilter,
+          filter: filtersMap[filter],
           label,
         });
       }
