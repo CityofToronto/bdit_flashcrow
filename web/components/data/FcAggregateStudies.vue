@@ -31,7 +31,7 @@
               :show-b="hasFiltersCommon || hasFiltersStudy"
               small />
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1" >
+          <v-expansion-panel-content class="shading pt-1">
             <FcListLocationMulti
               class="shading"
               :disabled="disabledPerLocationByItem[i]"

@@ -69,15 +69,6 @@
           :study-total="studyTotal">
           <template v-slot:action>
             <div v-if="reportExportMode !== ReportExportMode.STUDIES"></div>
-            <!-- <FcButton
-              v-if="reportExportMode !== ReportExportMode.STUDIES"
-              class="ma-1"
-              :disabled="reportExportMode === ReportExportMode.COLLISIONS"
-              type="secondary"
-              @click="actionRequestStudy">
-              <v-icon color="primary" left>mdi-plus-box</v-icon>
-              Request New <span class="sr-only">Studies</span>
-            </FcButton> -->
             <FcMenuDownloadReportFormat
               v-else
               :require-auth="true"
