@@ -235,11 +235,6 @@ export default {
     },
     activeReportId() {
       if (this.locationMode === LocationMode.SINGLE || this.detailView) {
-        if (this.locationsActive.includes(null)) {
-          const { locations, selectionType } = this.locationsSelection;
-          const s1 = CompositeId.encode([locations[this.activeLocation]]);
-          return `${s1}/${selectionType.name}`;
-        }
         const s1 = CompositeId.encode(this.locationsActive);
         const selectionType = LocationSelectionType.POINTS;
         return `${s1}/${selectionType.name}`;
