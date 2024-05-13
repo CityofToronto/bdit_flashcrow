@@ -45,7 +45,7 @@ export default {
     },
     itemsDuration() {
       if (this.studyType === StudyType.ATR_VOLUME_BICYCLE
-      || this.studyType === StudyType.ATR_SPEED_VOLUME) {
+      || this.studyType === StudyType.ATR_SVC) {
         const itemsDuration = [
           { text: '1 day', value: 24 },
           { text: '3 days', value: 72 },

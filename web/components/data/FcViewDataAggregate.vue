@@ -24,7 +24,8 @@
           :collision-summary-per-location-unfiltered="collisionSummaryPerLocationUnfiltered"
           :loading="loadingCollisions"
           :locations="locations"
-          :locations-selection="locationsSelection" >
+          :locations-selection="locationsSelection"
+          @show-collisions="actionShowReportsCollision" >
             <FcButton
               v-if="reportExportMode !== ReportExportMode.COLLISIONS"
               class="ma-1"
@@ -93,7 +94,8 @@
           :loading="loadingStudies"
           :locations="locations"
           :locations-selection="locationsSelection"
-          @show-reports="actionShowReportsStudy" />
+          @show-reports="actionShowReportsStudy"
+          />
 
           <div class="fc-study-buttons d-flex flex-column align-end mr-5">
             <FcButton
@@ -303,7 +305,10 @@ export default {
       });
     },
     actionShowReportsCollision() {
-      const params = this.locationsRouteParams;
+      const params = {
+        ...this.locationsRouteParams,
+      };
+
       this.$router.push({
         name: 'viewCollisionReportsAtLocation',
         params,
