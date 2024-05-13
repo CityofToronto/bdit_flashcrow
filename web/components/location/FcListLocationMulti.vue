@@ -71,5 +71,8 @@ export default {
   & .fc-list-multi-text {
     max-width: 150px;
   }
+  & .v-list-item {
+    padding: 0;
+  }
 }
 </style>

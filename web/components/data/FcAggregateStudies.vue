@@ -42,10 +42,10 @@
                   <FcTextSummaryFraction
                     :a="itemsPerLocation[i][j].n"
                     :b="itemsPerLocation[i][j].nUnfiltered"
-                    class="text-right"
+                    class="text-center fc-study-list-number"
                     :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
-                  <div>
+                  <div class="fc-chevron-wrapper">
                     <FcButton
                       class="mr-n4 mt-1"
                       type="tertiary"
@@ -151,6 +151,12 @@ export default {
   }
   &.v-expansion-panel-content__wrap {
     padding: 0 0 16px !important;
+  }
+  & .fc-study-list-number {
+    min-width: 50px;
+  }
+  & .fc-chevron-wrapper {
+    min-width: 80px;
   }
 }
 </style>

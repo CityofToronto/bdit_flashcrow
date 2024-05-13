@@ -4,7 +4,7 @@
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
     <template v-else-if="collisionSummary.amount > 0">
-      <dl class="d-flex flex-grow-1">
+      <dl class="d-flex flex-grow-1 justify-space-around">
         <div class="d-flex pa-2 fc-aggregate-collisions-row">
           <div class="collision-fact">
             <dt class="body-1">
@@ -142,7 +142,7 @@ export default {
     opacity: 0.37;
   }
   & .collision-fact {
-    min-width: 60px;
+    min-width: 65px;
     text-align: center;
   }
   & .fc-aggregate-collisions-row {

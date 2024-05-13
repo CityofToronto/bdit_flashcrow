@@ -44,7 +44,7 @@
         </div>
       </dl>
       <FcButton
-        class="flex-grow-0 flex-shrink-0 mt-2"
+        class="ma-1"
         type="tertiary"
         :disabled="collisionSummary.amount === 0"
         v-if="collisionSummary.amount > 0"

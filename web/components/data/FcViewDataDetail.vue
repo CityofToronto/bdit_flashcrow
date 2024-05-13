@@ -16,7 +16,7 @@
 
       <v-divider></v-divider>
 
-      <section class="fc-study-detail-section px-3">
+      <section class="fc-study-detail-section">
         <FcHeaderStudies :study-total="studyTotal" />
 
         <FcDetailStudies
