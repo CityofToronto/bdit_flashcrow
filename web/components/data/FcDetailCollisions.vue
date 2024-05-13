@@ -47,7 +47,6 @@
         class="ma-1"
         type="tertiary"
         :disabled="collisionSummary.amount === 0"
-        v-if="collisionSummary.amount > 0"
         @click="$emit('show-reports')">
           <v-icon x-large>mdi-chevron-right</v-icon>
       </FcButton>
