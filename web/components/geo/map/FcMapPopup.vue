@@ -166,7 +166,7 @@ export default {
   methods: {
     createPopup() {
       const hoveredClassName = this.hovered ? ' hovered' : '';
-      const offset = this.hovered ? 0 : 40;
+      const offset = (this.hovered && this.layerId !== 'locations-markers') ? 0 : 40;
       this.popup = new maplibregl.Popup({
         anchor: 'bottom',
         className: `fc-map-popup elevation-2${hoveredClassName}`,
