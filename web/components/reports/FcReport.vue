@@ -22,6 +22,7 @@
           v-else
           :key="'contentRow_' + i"
           :is="'FcReport' + contentRow.type.suffix"
+          :type="type"
           v-bind="contentRow.options"
           class="pt-4" />
       </template>

@@ -18,6 +18,23 @@
     </v-col>
   </v-row>
 
+  <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
+    <v-row class="align-center mx-0 px-1">
+      <h3 class="flex-1">{{ numFilters }} Filter{{ this.numFilters > 1 ? 's' : '' }}</h3>
+      <FcButton @click="isExpanded = !isExpanded" type="icon" class="flex-1">
+        <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
+        <v-icon v-else>mdi-menu-down</v-icon>
+      </FcButton>
+    </v-row>
+    <v-expand-transition>
+      <ul v-show="isExpanded" class="pt-1">
+        <li v-for="(item, i) in collisionFilters" :key="i">
+          <b>{{ item.filter }}: </b> {{ item.label }}
+        </li>
+      </ul>
+    </v-expand-transition>
+  </div>
+
   <div class="callout-container" v-if="this.showCallOut">
     <div class="callout ma-3">
       <div class="ma-3">
@@ -36,20 +53,71 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { ReportType } from '@/lib/Constants';
 import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcReportMetadata',
   components: {
+    FcButton,
     FcTextReportValue,
   },
   props: {
     entries: Array,
+    type: ReportType,
+  },
+  data() {
+    return {
+      isExpanded: false,
+    };
   },
   computed: {
     showCallOut() {
       return this.$parent.type && this.$parent.type.name === 'COUNT_SUMMARY_TURNING_MOVEMENT';
     },
+    collisionFilters() {
+      const collisionFilters = [...this.filterChipsCollision()];
+      const daysOfWeek = this.filterChipsCommon().filter(item => item.filter === 'daysOfWeek')[0];
+      if (daysOfWeek) {
+        collisionFilters.push(daysOfWeek);
+      }
+      return this.readableFilters(collisionFilters);
+    },
+    numFilters() {
+      return this.collisionFilters.length;
+    },
+  },
+  methods: {
+    readableFilters(filters) {
+      const readableFilters = [];
+      const filtersMap = {
+        validated: 'Verification',
+        daysOfWeek: 'Days of the Week',
+        details: 'Collision Details',
+        emphasisAreas: 'Vision Zero Emphasis Areas',
+        mvcr: 'MVCR',
+        injury: 'Injuries',
+        drivact: 'Driver Action',
+        drivcond: 'Driver Conditions',
+        hoursOfDay: 'Hours of the Day',
+        initdir: 'Initial Direction of Travel',
+        impactype: 'Initial Impact Type',
+        rdsfcond: 'Weather',
+        vehtype: 'Vehicle Type',
+        manoeuver: 'Manoeuvre',
+      };
+      for (let i = 0; i < filters.length; i++) {
+        const { filter, label } = filters[i];
+        readableFilters.push({
+          filter: filtersMap[filter],
+          label,
+        });
+      }
+      return readableFilters;
+    },
+    ...mapGetters('viewData', ['filterChipsCommon', 'filterChipsCollision']),
   },
 };
 </script>
