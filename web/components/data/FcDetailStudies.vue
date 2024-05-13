@@ -1,9 +1,9 @@
 <template>
-  <div class="fc-detail-studies mb-3">
+  <div class="fc-detail-studies mb-2">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
-    <p v-else-if="studySummaryUnfiltered.length === 0"></p>
+    <div v-else-if="studySummaryUnfiltered.length === 0"></div>
     <template v-else>
       <div
         v-for="(item, i) in items"
