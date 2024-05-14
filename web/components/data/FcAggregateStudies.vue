@@ -15,7 +15,8 @@
           :aria-disabled="item.n === 0"
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
-          <v-expansion-panel-header class="pr-8" ripple>
+          <v-expansion-panel-header class="pa-1 pr-4 fc-study-expansion-header" ripple>
+            <v-icon small color="primary" class="fc-study-header-icon">mdi-briefcase</v-icon>
             <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
@@ -149,6 +150,9 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-studies {
+  & .fc-study-header-icon {
+    max-width: 32px;
+  }
   & .fc-studies-summary-per-location {
     border-radius: 5px;
     margin-right: 12px;
@@ -160,7 +164,7 @@ export default {
   }
   & .fc-studies-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
   & .fc-study-summary-header {
     font-weight: bold;
