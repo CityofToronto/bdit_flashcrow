@@ -104,7 +104,7 @@
                 </v-icon>
               </span>
             </template>
-            <span>Toggle Report</span>
+            <span>Collapse Report</span>
           </v-tooltip>
 
           <v-tooltip bottom>
