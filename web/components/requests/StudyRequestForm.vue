@@ -23,7 +23,7 @@
       </v-col>
     </v-row>
     <v-row class="mt-1" v-else>
-      <v-col class="my-0 py-2" cols="6">
+      <v-col class="my-0 py-2 day-request" cols="6">
         <SrDayOptionsInput
           dense
           :v="v"
@@ -126,5 +126,9 @@ export default {
 .collection-notes textarea {
   margin: 14px 0 10px 0 !important;
   line-height: 1.4rem;
+}
+
+.day-request {
+  min-height: 6rem;
 }
 </style>
