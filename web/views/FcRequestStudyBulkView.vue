@@ -98,7 +98,7 @@
                     disable-pagination
                     disable-sort
                     fixed-header
-                    height="400px"
+                    height="417px"
                     calculate-widths
                     :has-filters="false"
                     :items="items"

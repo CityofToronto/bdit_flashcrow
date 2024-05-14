@@ -1,6 +1,15 @@
 <template>
   <section>
     <v-row class="mt-1 mb-2" tag="dl">
+      <v-col cols="12">
+        <dt class="subtitle-1">Project Description</dt>
+        <dd class="mt-1 display-1">
+          <span v-if="studyRequestBulk.notes">
+            {{studyRequestBulk.notes}}
+          </span>
+          <span v-else>None</span>
+        </dd>
+      </v-col>
       <v-col cols="6">
         <template v-if="!isCreate">
           <dt class="subtitle-1">Staff Subscribed</dt>
@@ -19,16 +28,6 @@
             </span>
           </dd>
         </template>
-      </v-col>
-
-      <v-col cols="12">
-        <dt class="subtitle-1">Project Description</dt>
-        <dd class="mt-1 display-1">
-          <span v-if="studyRequestBulk.notes">
-            {{studyRequestBulk.notes}}
-          </span>
-          <span v-else>None</span>
-        </dd>
       </v-col>
     </v-row>
   </section>
