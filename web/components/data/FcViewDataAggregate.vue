@@ -28,7 +28,7 @@
           @show-collisions="actionShowReportsCollision" >
             <FcButton
               v-if="reportExportMode !== ReportExportMode.COLLISIONS"
-              class="ma-1"
+              width="50px"
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"

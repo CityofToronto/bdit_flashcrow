@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-studies mb-2">
+  <div class="fc-detail-studies mb-2 px-1">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
@@ -32,7 +32,7 @@
               :show-b="hasFiltersCommon || hasFiltersStudy" />
           </div>
           <FcButton
-            class=""
+            width="50px"
             :disabled="!item.studyType.dataAvailable || item.n === 0"
             type="secondary"
             @click="$emit('show-reports', item)">

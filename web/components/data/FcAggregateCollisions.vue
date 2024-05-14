@@ -147,6 +147,8 @@ export default {
   }
   & .fc-aggregate-collisions-row {
     border-radius: 5px;
+    flex-grow: 1;
+    justify-content: space-around;
   }
   & .fc-detail-row {
     display: flex;

@@ -8,7 +8,7 @@
       <v-list-item-title class="px-0 fc-list-multi-row">
         <v-icon
           :class="{'fc-icon-dim':disabledNormalized[i]}"
-          class="pa-2" size="20">
+          class="pa-1" size="18">
           mdi-map-marker
         </v-icon>
         <div class="d-flex align-center">
@@ -71,10 +71,11 @@ export default {
   & .fc-list-multi-row {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   & .fc-list-multi-text {
-    max-width: 150px;
+    max-width: 145px;
+    min-width: 145px;
   }
   & .v-list-item {
     padding: 0;
