@@ -42,6 +42,30 @@
             </span>
           </h2>
           <v-spacer></v-spacer>
+
+          <v-menu
+            v-if="locationMode !== LocationMode.SINGLE"
+            max-height="320">
+            <template v-slot:activator="{ on, attrs }">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0 ml-2"
+                type="secondary">
+                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
+                <v-icon right>mdi-menu-down</v-icon>
+              </FcButton>
+            </template>
+            <FcListLocationMulti
+              :disabled="disabledPerLocation"
+              icon-classes="mr-2"
+              :locations="locations"
+              :locations-selection="locationsSelection"
+              @click-location="changeLocation"
+              />
+          </v-menu>
+
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
@@ -89,28 +113,6 @@
               </FcButton>
             </div>
           </template>
-          <v-menu
-            v-if="locationMode !== LocationMode.SINGLE"
-            max-height="320">
-            <template v-slot:activator="{ on, attrs }">
-              <FcButton
-                v-bind="attrs"
-                v-on="on"
-                class="flex-grow-0 mt-0 ml-2"
-                type="secondary">
-                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
-                <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
-                <v-icon right>mdi-menu-down</v-icon>
-              </FcButton>
-            </template>
-            <FcListLocationMulti
-              :disabled="disabledPerLocation"
-              icon-classes="mr-2"
-              :locations="locations"
-              :locations-selection="locationsSelection"
-              @click-location="changeLocation"
-              />
-          </v-menu>
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :disabled="reportRetrievalError"
