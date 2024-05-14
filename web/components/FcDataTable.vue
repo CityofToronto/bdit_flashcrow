@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 import { Ripple } from 'vuetify/lib/directives';
 
 import { KeyCode } from '@/lib/Constants';
@@ -182,6 +183,18 @@ export default {
         }
       });
     });
+
+    // Adds hover event listeners to table rows
+    const $tableRows = this.$el.querySelectorAll('tbody tr');
+    $tableRows.forEach(($tr) => {
+      $tr.addEventListener('mouseover', () => {
+        const requestId = parseInt($tr.children[1].innerText.trim(), 10);
+        this.setHoveredStudyRequest(requestId);
+      });
+      $tr.addEventListener('mouseleave', () => {
+        this.setHoveredStudyRequest(null);
+      });
+    });
   },
   methods: {
     customSort(items, sortBy, sortDesc) {
@@ -196,6 +209,7 @@ export default {
         return compareKeys(ka, kb, kf);
       });
     },
+    ...mapMutations('trackRequests', ['setHoveredStudyRequest']),
   },
 };
 </script>
