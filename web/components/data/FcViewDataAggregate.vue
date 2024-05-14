@@ -26,17 +26,23 @@
           :locations="locations"
           :locations-selection="locationsSelection"
           @show-collisions="actionShowReportsCollision" >
-            <FcButton
-              v-if="reportExportMode !== ReportExportMode.COLLISIONS"
-              width="50px"
-              :disabled="
-                collisionSummary.amount === 0
-                || reportExportMode === ReportExportMode.STUDIES"
-              type="secondary"
-              @click="actionShowReportsCollision">
-              <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
-              <span class="sr-only">View Collision Report</span>
-            </FcButton>
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <FcButton
+                v-on="on"
+                v-if="reportExportMode !== ReportExportMode.COLLISIONS"
+                width="50px"
+                :disabled="
+                  collisionSummary.amount === 0
+                  || reportExportMode === ReportExportMode.STUDIES"
+                type="secondary"
+                @click="actionShowReportsCollision">
+                <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+                <span class="sr-only">View Collision Report</span>
+              </FcButton>
+              </template>
+              <span>View Report</span>
+            </v-tooltip>
         </FcAggregateCollisions>
           <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end mb-2">
             <FcButton
