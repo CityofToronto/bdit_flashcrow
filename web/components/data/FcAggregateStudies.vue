@@ -15,8 +15,8 @@
           :aria-disabled="item.n === 0"
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
-          <v-expansion-panel-header class="pr-8">
-            <div class="body-1">
+          <v-expansion-panel-header class="pr-8" ripple>
+            <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
                 class="ml-2"
@@ -149,8 +149,21 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-studies {
+  & .fc-studies-summary-per-location {
+    border-radius: 5px;
+    margin-right: 12px;
+    box-shadow:
+        0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+  }
   & .fc-studies-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
+    margin-bottom: 8px;
+  }
+  & .fc-study-summary-header {
+    font-weight: bold;
   }
   & .data-empty {
     opacity: 0.37;

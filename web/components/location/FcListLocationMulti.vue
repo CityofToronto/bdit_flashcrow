@@ -7,7 +7,7 @@
       <v-list-item-title class="px-0 fc-list-multi-row">
         <v-icon
           :class="{'fc-icon-dim':disabledNormalized[i]}"
-          class="fc-location-list-icon pa-1" size="18">
+          class="fc-location-list-icon pr-2" size="18">
           mdi-map-marker
         </v-icon>
         <div class="d-flex align-center">
@@ -75,9 +75,13 @@ export default {
   & .fc-list-multi-text {
     max-width: 145px;
     min-width: 145px;
+    font-style: italic;
   }
   & .v-list-item {
     padding: 0;
+  }
+  & .fc-icon-dim {
+    opacity: 0.6;
   }
 }
 
