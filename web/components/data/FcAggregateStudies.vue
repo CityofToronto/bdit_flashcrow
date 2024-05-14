@@ -47,8 +47,7 @@
                     small />
                   <div class="fc-chevron-wrapper">
                     <FcButton
-                      class="mr-n4 mt-1"
-                      width="50px"
+                      width="40px"
                       type="tertiary"
                       :disabled="itemsPerLocation[i][j].n === 0"
                       @click="$emit('show-reports', { item, locationsIndex: j })">

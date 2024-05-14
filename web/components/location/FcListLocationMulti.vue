@@ -3,12 +3,11 @@
     <v-list-item
       v-for="(location, i) in locations"
       :key="i"
-      :disabled="disabledNormalized[i]"
-      @click="$emit('click-location', i)">
+      :disabled="disabledNormalized[i]">
       <v-list-item-title class="px-0 fc-list-multi-row">
         <v-icon
           :class="{'fc-icon-dim':disabledNormalized[i]}"
-          class="pa-1" size="18">
+          class="fc-location-list-icon pa-1" size="18">
           mdi-map-marker
         </v-icon>
         <div class="d-flex align-center">
@@ -79,6 +78,12 @@ export default {
   }
   & .v-list-item {
     padding: 0;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .fc-location-list-icon {
+    display: none !important;
   }
 }
 </style>
