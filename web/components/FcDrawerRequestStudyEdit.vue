@@ -62,8 +62,12 @@ export default {
   },
   computed: {
     location() {
+      const currentId = this.studyRequest.id != null ? this.studyRequest.id : null;
       if (this.locations.length === 0) {
         return null;
+      }
+      if (currentId) {
+        window.localStorage.setItem(`study_${currentId}_location`, JSON.stringify(this.locations[0]));
       }
       return this.locations[0];
     },
@@ -89,6 +93,7 @@ export default {
     async loadAsyncForRoute(to) {
       const { id } = to.params;
       const { studyRequest } = await getStudyRequest(id);
+      window.localStorage.setItem(`study_${id}_studyRequest`, JSON.stringify(studyRequest));
       await this.setStudyRequestsForStudyRequest(studyRequest);
       this.setIndicesSelected([0]);
 
