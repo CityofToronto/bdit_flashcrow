@@ -57,7 +57,7 @@
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
-            <FcListLocationMulti
+            <FcListLocationDropdown
               :disabled="disabledPerLocation"
               icon-classes="mr-2"
               :locations="locations"
@@ -186,7 +186,7 @@ import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue'
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
+import FcListLocationDropdown from '@/web/components/location/FcListLocationDropdown.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import DateTime from '@/lib/time/DateTime';
@@ -199,7 +199,7 @@ export default {
     FcButton,
     FcCallout,
     FcDialogConfirm,
-    FcListLocationMulti,
+    FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
     FcProgressLinear,
@@ -521,5 +521,11 @@ export default {
 
 .drawer-open .fc-drawer-view-collision-reports {
   max-height: var(--full-height);
+}
+
+@media only screen and (max-width: 800px) {
+  .fc-collision-btn-location {
+    display: none;
+  }
 }
 </style>
