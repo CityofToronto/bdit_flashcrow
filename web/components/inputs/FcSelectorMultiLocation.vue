@@ -198,7 +198,6 @@ import {
   LocationSelectionType,
   MAX_LOCATIONS,
 } from '@/lib/Constants';
-import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirmMultiLocationLeave
@@ -296,20 +295,18 @@ export default {
       if (this.locationsSelection.selectionType !== LocationSelectionType.CORRIDOR) {
         return null;
       }
-      const locationsWaypointIndices = getLocationsWaypointIndices(
-        this.locations,
-        this.locationsSelection.locations,
-      );
       let includesIntersections = 0;
       let includesMidblocks = 0;
-      this.locations.forEach(({ centrelineType }, i) => {
-        const waypointIndices = locationsWaypointIndices[i];
-        if (waypointIndices.length === 0) {
-          if (centrelineType === CentrelineType.INTERSECTION) {
+      const alreadyCounted = new Set();
+      this.locations.forEach((obj) => {
+        // prevent double-counting
+        if (alreadyCounted.has(obj.centrelineId) === false) {
+          if (obj.centrelineType === CentrelineType.INTERSECTION) {
             includesIntersections += 1;
           } else {
             includesMidblocks += 1;
           }
+          alreadyCounted.add(obj.centrelineId);
         }
       });
       const includesIntersectionsStr = includesIntersections === 1
@@ -318,7 +315,7 @@ export default {
       const includesMidblocksStr = includesMidblocks === 1
         ? '1 midblock'
         : `${includesMidblocks} midblocks`;
-      return `Includes ${includesIntersectionsStr}, ${includesMidblocksStr}`;
+      return `${includesIntersectionsStr}, ${includesMidblocksStr}`;
     },
     ...mapState([
       'locationMode',

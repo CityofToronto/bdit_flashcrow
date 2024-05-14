@@ -4,17 +4,21 @@
       No Previous Study
     </span>
     <template v-else>
-      Most Recent
-      {{study.startDate | date}} ({{study.startDate | dayOfWeek}})
-      &#x2022;
-      <span v-if="study.duration !== null">
-        {{study.duration | durationHuman}} ({{study.duration}} hrs)
+      <span class="fc-nowrap">
+        <v-icon small>mdi-clock</v-icon>
+        {{study.startDate | date}} ({{study.startDate | dayOfWeek}})
       </span>
-      <span
-        v-else-if="study.hours !== null"
-        :title="study.hours.hint">
-        {{study.hours.description}}
-      </span>
+      <template v-if="!minimal">
+        <br/>
+        <span v-if="study.duration !== null">
+          {{study.duration | durationHuman}} ({{study.duration}} hrs)
+        </span>
+        <span
+          v-else-if="study.hours !== null"
+          :title="study.hours.hint">
+          {{study.hours.description}}
+        </span>
+      </template>
     </template>
   </span>
 </template>
@@ -24,6 +28,10 @@ export default {
   name: 'FcTextMostRecent',
   props: {
     study: Object,
+    minimal: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
@@ -32,5 +40,8 @@ export default {
 .fc-text-most-recent {
   background-color: rgba(117, 117, 117, 0.1);
   padding: 2px;
+  & .fc-nowrap {
+    white-space: nowrap;
+  }
 }
 </style>

@@ -1,33 +1,29 @@
 <template>
   <div class="fc-drawer-view-data d-flex flex-column">
-    <header class="flex-grow-0 flex-shrink-0 fc-drawer-header">
-      <FcSelectorMultiLocation
-        v-if="locationMode.multi"
-        :detail-view="detailView">
-      </FcSelectorMultiLocation>
-      <div v-else class="px-5 py-3">
-        <FcSelectorSingleLocation
-          v-model="internalLocationsSelection" />
-        <FcHeaderSingleLocation
-          :location="locationActive" />
-        <div class="d-flex mt-1 justify-start">
-          <FcSummaryPoi :location="locationActive" />
-        </div>
+    <header class="fc-drawer-header">
+      <FcSelectorMultiLocation v-if="locationMode.multi" :detail-view="detailView"/>
+      <div v-else class="px-5 pt-3">
+        <FcSelectorSingleLocation v-model="internalLocationsSelection" />
+        <FcButton type="tertiary" class="add-location-btn mb-2 mt-1" small
+          @click="actionAddLocation">
+            <v-icon color="primary" left>mdi-plus</v-icon>
+            Add Location
+        </FcButton>
       </div>
     </header>
-    <section class="flex-grow-1 flex-shrink-1 overflow-y-auto">
-      <FcProgressLinear
-        v-if="loading"
-        aria-label="Loading View Data drawer" />
+    <section class="fc-view-data-section overflow-y-auto overflow-x-auto">
+      <FcProgressLinear v-if="loading" aria-label="Loading View Data drawer" />
       <template v-else>
-        <FcViewDataMultiEdit
-          v-if="locationMode === LocationMode.MULTI_EDIT"
-          :locations="locationsEdit"
-          :locations-selection="locationsEditSelection" />
-        <template v-else>
-          <FcGlobalFilters
-            class="px-5 py-3"
-            header-tag="h3" />
+        <template v-if="locationMode !== LocationMode.MULTI_EDIT">
+
+          <div v-if="!locationMode.multi" class="mx-5 mb-3">
+            <FcHeaderSingleLocation :location="locationActive" />
+            <div class="d-flex mt-1 justify-start">
+              <FcSummaryPoi :location="locationActive" />
+            </div>
+          </div>
+
+          <FcGlobalFilters class="fc-filter-section px-5 py-3" header-tag="h3" />
 
           <v-divider></v-divider>
 
@@ -52,14 +48,10 @@ import {
   mapState,
 } from 'vuex';
 
-import {
-  LocationMode,
-  LocationSelectionType,
-} from '@/lib/Constants';
+import { LocationMode, LocationSelectionType } from '@/lib/Constants';
 import CompositeId from '@/lib/io/CompositeId';
 import FcViewDataAggregate from '@/web/components/data/FcViewDataAggregate.vue';
 import FcViewDataDetail from '@/web/components/data/FcViewDataDetail.vue';
-import FcViewDataMultiEdit from '@/web/components/data/FcViewDataMultiEdit.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcGlobalFilters from '@/web/components/filters/FcGlobalFilters.vue';
 import FcSelectorSingleLocation from '@/web/components/inputs/FcSelectorSingleLocation.vue';
@@ -67,6 +59,7 @@ import FcSelectorMultiLocation from '@/web/components/inputs/FcSelectorMultiLoca
 import FcHeaderSingleLocation from '@/web/components/location/FcHeaderSingleLocation.vue';
 import FcSummaryPoi from '@/web/components/location/FcSummaryPoi.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcDrawerViewData',
@@ -82,7 +75,7 @@ export default {
     FcSummaryPoi,
     FcViewDataAggregate,
     FcViewDataDetail,
-    FcViewDataMultiEdit,
+    FcButton,
   },
   data() {
     return {
@@ -155,6 +148,9 @@ export default {
     },
   },
   methods: {
+    actionAddLocation() {
+      this.setLocationMode(LocationMode.MULTI_EDIT);
+    },
     actionToggleDetailView() {
       if (this.detailView) {
         this.setLocationsIndex(-1);
@@ -175,6 +171,7 @@ export default {
     ...mapMutations([
       'setLocationsIndex',
       'setToastInfo',
+      'setLocationMode',
     ]),
     ...mapMutations('viewData', ['setDetailView']),
     ...mapActions(['initLocations', 'syncLocationsSelectionForMode']),
@@ -186,8 +183,14 @@ export default {
 .fc-drawer-view-data {
   max-height: var(--full-height);
   min-height: 52px;
-  & .fc-drawer-header {
-    border-bottom: 1px solid lightgrey;
+  & .fc-view-data-section {
+    max-height: calc(100vh - 215px);
+  }
+  & .fc-filter-section {
+    border-top: 1px solid lightgrey;
+  }
+  & .add-location-btn {
+    text-transform: none !important;
   }
 }
 </style>
