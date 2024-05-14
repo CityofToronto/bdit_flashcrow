@@ -45,10 +45,10 @@
       </dl>
       <FcButton
         class="ma-1"
-        type="tertiary"
+        type="secondary"
         :disabled="collisionSummary.amount === 0"
         @click="$emit('show-reports')">
-          <v-icon x-large>mdi-chevron-right</v-icon>
+          <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
       </FcButton>
     </div>
   </div>

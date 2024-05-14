@@ -32,7 +32,7 @@
               :disabled="
                 collisionSummary.amount === 0
                 || reportExportMode === ReportExportMode.STUDIES"
-              type="tertiary"
+              type="secondary"
               @click="actionShowReportsCollision">
               <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
               <span class="sr-only">View Collision Report</span>

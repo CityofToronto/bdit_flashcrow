@@ -34,9 +34,9 @@
           <FcButton
             class=""
             :disabled="!item.studyType.dataAvailable || item.n === 0"
-            type="tertiary"
+            type="secondary"
             @click="$emit('show-reports', item)">
-            <v-icon x-large>mdi-chevron-right</v-icon>
+            <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
           </FcButton>
         </div>
       </div>
