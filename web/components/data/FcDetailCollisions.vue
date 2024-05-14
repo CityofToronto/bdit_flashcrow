@@ -94,11 +94,6 @@ export default {
 .fc-collision-detail-row {
   border-radius: 5px;
 }
-.fc-collision-detail-row:hover {
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        2px 1px 3px 0 rgba(0, 0, 0, 0.12);
-}
 
 @media only screen and (max-width: 600px) {
   .fc-collisions-validated {

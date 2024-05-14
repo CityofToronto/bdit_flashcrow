@@ -98,11 +98,6 @@ export default {
     align-items: center;
     border-radius: 5px;
   }
-  .fc-study-detail-row:hover {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-          0 1px 1px 0 rgba(0, 0, 0, 0.14),
-          2px 1px 3px 0 rgba(0, 0, 0, 0.12);
-  }
   & .fc-studies-n {
     width: 60px;
     text-align: center;
