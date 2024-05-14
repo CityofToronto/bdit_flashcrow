@@ -1,6 +1,6 @@
 <template>
   <div class="fc-summary-poi-chip">
-    <FcTooltip bottom>
+    <FcTooltip attach=".fc-summary-poi" bottom>
       <template v-slot:activator="{ on }">
         <v-chip
           v-on="on"
