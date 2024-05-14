@@ -45,7 +45,7 @@
             </h3>
           </v-row>
           <v-row class="d-flex flex-row">
-            <v-col cols="8" class="flex-1 pl-5">
+            <v-col cols="7" class="flex-1 pl-5">
               <v-card dense outlined class="flex-grow-1 fill-height">
                 <section
                   aria-labelledby="heading_bulk_request_requests"
@@ -108,7 +108,7 @@
               </v-card>
             </v-col>
 
-            <v-col cols="4" class="flex-1 px-5 pl-0">
+            <v-col cols="5" class="flex-1 px-5 pl-0">
               <FcMap
                 class="mx-0 fill-height"
                 :locations-state="locationsState"

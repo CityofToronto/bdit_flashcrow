@@ -354,7 +354,7 @@ export default {
   }
   & td:nth-child(2),
   & th.fc-data-table-header-ID {
-    min-width: 70px;
+    min-width: 40px;
     width: 70px;
   }
   & td:nth-child(3),
@@ -364,7 +364,7 @@ export default {
   }
   & td:nth-child(4),
   & th.fc-data-table-header-data-table-expand {
-    min-width: 70px !important;
+    min-width: 1px !important;
     width: 70px !important;
   }
   & td:nth-child(5),
@@ -374,27 +374,27 @@ export default {
   }
   & td:nth-child(6),
   & th.fc-data-table-header-REQUESTER {
-    min-width: 140px;
+    min-width: 80px;
     width: 140px;
   }
   & td:nth-child(7),
   & th.fc-data-table-header-CREATED_AT {
-    min-width: 140px;
+    min-width: 90px;
     width: 140px;
   }
   & td:nth-child(8),
   & th.fc-data-table-header-DUE_DATE {
-    min-width: 140px;
+    min-width: 60px;
     width: 140px;
   }
   & td:nth-child(9),
   & th.fc-data-table-header-STATUS {
-    min-width: 140px;
+    min-width: 60px;
     width: 140px;
   }
   & td:nth-child(10),
   & th.fc-data-table-header-ACTIONS {
-    min-width: 105px;
+    min-width: 60px;
     width: 105px;
   }
 
