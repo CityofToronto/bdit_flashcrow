@@ -2,17 +2,16 @@
   <v-card
     @mouseover="addHoverLayer(index, $event)"
     @mouseleave="addHoverLayer(null, $event)"
-    class="fc-card-study-request pb-2 mb-3 d-flex flex-row"
+    class="fc-card-study-request pb-2 mb-3"
     :class="{ selected }"
     outlined
     :elevation="elevation">
     <div>
-      <FcIconLocationSingle
-        class="ml-3 mt-3"
-        />
-    </div>
-    <div>
     <v-card-title class="align-start pb-2">
+      <FcIconLocationSingle
+        class="mr-3"
+        :index="index"
+        />
       <div class="fc-card-study-request-title">
         <h3 class="headline mb-1">{{location.description}}</h3>
         <FcButtonAria

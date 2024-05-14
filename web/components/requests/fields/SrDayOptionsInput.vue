@@ -174,7 +174,7 @@ export default {
 
 <style>
   .day-options .v-select__selections span {
-    max-width: 170px;
+    max-width: 200px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow:hidden;
