@@ -304,12 +304,14 @@ export default {
     },
   },
   async beforeMount() {
-    const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
-      this.locations,
-      this.filterParamsCollision,
-    );
-    this.activeLocation = collisionSummaryPerLocation.findIndex(element => element.amount > 0);
-    this.setLocationsIndex(this.activeLocation);
+    if (this.locations.length > 0) {
+      const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
+        this.locations,
+        this.filterParamsCollision,
+      );
+      this.activeLocation = collisionSummaryPerLocation.findIndex(element => element.amount > 0);
+      this.setLocationsIndex(this.activeLocation);
+    }
     this.parseFiltersFromRouteParams();
   },
   beforeRouteLeave(to, from, next) {
@@ -384,7 +386,6 @@ export default {
       const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
-
       if (this.locationActive === null) {
         this.setLocationsIndex(0);
       }
@@ -414,13 +415,11 @@ export default {
         return;
       }
       this.loadingReportLayout = true;
-
       const reportLayout = await getReportWeb(
         this.activeReportType,
         this.activeReportId,
         this.filterParamsCollision,
       ).catch(err => this.handleError(err));
-
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
