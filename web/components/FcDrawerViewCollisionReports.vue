@@ -98,8 +98,8 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 ml-2"
                 type="secondary">
-                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2">{{locationActive.description}}</span>
+                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -184,7 +184,6 @@ import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue'
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
 import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -198,7 +197,6 @@ export default {
     FcButton,
     FcCallout,
     FcDialogConfirm,
-    FcIconLocationMulti,
     FcListLocationMulti,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
@@ -507,6 +505,15 @@ export default {
   }
   & .v-slide-group__next--disabled {
     visibility: hidden;
+  }
+  & .fc-collision-btn-location {
+    font-size: 12px;
+    overflow: hidden;
+    max-width: 150px;
+    text-overflow: ellipsis;
+  }
+  & .fc-icon-dim {
+    opacity: 0.6;
   }
 }
 
