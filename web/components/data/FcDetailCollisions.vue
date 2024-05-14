@@ -43,13 +43,20 @@
           </dd>
         </div>
       </dl>
-      <FcButton
-        class="ma-1"
-        type="secondary"
-        :disabled="collisionSummary.amount === 0"
-        @click="$emit('show-reports')">
-          <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
-      </FcButton>
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <FcButton
+            v-on="on"
+            id="fc-detail-collision-btn"
+            class="ma-1"
+            type="secondary"
+            :disabled="collisionSummary.amount === 0"
+            @click="$emit('show-reports')">
+            <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+          </FcButton>
+        </template>
+        <span>View Report</span>
+      </v-tooltip>
     </div>
   </div>
 </template>

@@ -31,13 +31,19 @@
               :b="item.nUnfiltered"
               :show-b="hasFiltersCommon || hasFiltersStudy" />
           </div>
-          <FcButton
-            width="50px"
-            :disabled="!item.studyType.dataAvailable || item.n === 0"
-            type="secondary"
-            @click="$emit('show-reports', item)">
-            <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
-          </FcButton>
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <FcButton
+                v-on="on"
+                width="50px"
+                :disabled="!item.studyType.dataAvailable || item.n === 0"
+                type="secondary"
+                @click="$emit('show-reports', item)">
+                <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+              </FcButton>
+            </template>
+            <span>View Report</span>
+          </v-tooltip>
         </div>
       </div>
     </template>

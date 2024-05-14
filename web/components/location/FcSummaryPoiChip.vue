@@ -1,6 +1,6 @@
 <template>
   <div class="fc-summary-poi-chip">
-    <FcTooltip attach=".fc-summary-poi" bottom>
+    <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-chip
           v-on="on"
@@ -14,19 +14,15 @@
         </v-chip>
       </template>
       <span>{{ariaLabel}}</span>
-    </FcTooltip>
+    </v-tooltip>
     <dd class="sr-only">{{ariaLabel}}</dd>
   </div>
 </template>
 
 <script>
-import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
-
 export default {
   name: 'FcSummaryPoiChip',
-  components: {
-    FcTooltip,
-  },
+  components: {},
   props: {
     ariaLabel: String,
     color: String,
