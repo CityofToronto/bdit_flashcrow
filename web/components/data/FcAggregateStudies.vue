@@ -46,13 +46,19 @@
                     :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
                   <div class="fc-chevron-wrapper">
-                    <FcButton
-                      width="40px"
-                      type="tertiary"
-                      :disabled="itemsPerLocation[i][j].n === 0"
-                      @click="$emit('show-reports', { item, locationsIndex: j })">
-                      <v-icon x-large>mdi-chevron-right</v-icon>
-                    </FcButton>
+                    <v-tooltip right z-index="110">
+                      <template v-slot:activator="{ on }">
+                        <FcButton
+                          v-on="on"
+                          width="40px"
+                          type="tertiary"
+                          :disabled="itemsPerLocation[i][j].n === 0"
+                          @click="$emit('show-reports', { item, locationsIndex: j })">
+                          <v-icon x-large>mdi-chevron-right</v-icon>
+                        </FcButton>
+                      </template>
+                      <span>View Report</span>
+                    </v-tooltip>
                   </div>
                 </div>
               </template>
