@@ -371,6 +371,15 @@ export default {
       );
       return markersById;
     },
+    locationMarkersByRequestId() {
+      const markersById = {};
+      this.locationsMarkersGeoJson.features.forEach((feature) => {
+        feature.properties.studyRequests.forEach((studyRequest) => {
+          markersById[studyRequest.requestId] = feature;
+        });
+      });
+      return markersById;
+    },
     ...mapState(['frontendEnv']),
     ...mapState('trackRequests', ['hoveredStudyRequest']),
   },
@@ -482,11 +491,11 @@ export default {
     },
     hoveredStudyRequest(newValue, oldValue) {
       if (newValue !== null) {
-        const feature = this.locationMarkersByCentreline[newValue];
+        const feature = this.locationMarkersByRequestId[newValue];
         feature.properties.selected = true;
       }
       if (oldValue !== null) {
-        const feature = this.locationMarkersByCentreline[oldValue];
+        const feature = this.locationMarkersByRequestId[oldValue];
         feature.properties.selected = false;
       }
       this.updateLocationsMarkersSource();
