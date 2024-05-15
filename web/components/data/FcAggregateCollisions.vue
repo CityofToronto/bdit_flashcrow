@@ -57,22 +57,22 @@
               Details
           </FcButton>
         </div>
-        <div v-if="showDetails" class="fc-collision-detail-table elevation-1 pa-2">
-          <div class="fc-detail-row fc-detail-header">
-            <div class="fc-detail-desc"></div>
-            <div class="fc-detail-num">Total</div>
-            <div class="fc-detail-num">KSI</div>
-            <div class="fc-detail-num">Verified</div>
-          </div>
-          <div v-for="(location, i) in locations"
+        <table v-if="showDetails" class="fc-collision-detail-table elevation-1 pa-2">
+          <th class="fc-detail-row fc-detail-header">
+            <td class="fc-detail-desc"></td>
+            <td class="fc-detail-num">Total</td>
+            <td class="fc-detail-num">KSI</td>
+            <td class="fc-detail-num">Verified</td>
+          </th>
+          <tr v-for="(location, i) in locations"
            :key="location.centrelineId"
             class="fc-detail-row">
-            <div class="fc-detail-desc text-sm">{{location.description}}</div>
-            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].amount}}</div>
-            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].ksi}}</div>
-            <div class="fc-detail-num">{{collisionSummaryPerLocation[i].validated}}</div>
-          </div>
-        </div>
+            <td class="fc-detail-desc text-sm">{{location.description}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].amount}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].ksi}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].validated}}</td>
+           </tr>
+        </table>
       </div>
     </template>
   </div>
@@ -147,11 +147,8 @@ export default {
   }
   & .fc-aggregate-collisions-row {
     border-radius: 5px;
-  }
-  & .fc-aggregate-collisions-row:hover {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    0 1px 1px 0 rgba(0, 0, 0, 0.14),
-    2px 1px 3px 0 rgba(0, 0, 0, 0.12);
+    flex-grow: 1;
+    justify-content: space-around;
   }
   & .fc-detail-row {
     display: flex;
@@ -178,6 +175,7 @@ export default {
     color: var(--v-default-base);
   }
   & .fc-collision-detail-table {
+    width: 100%;
     text-align: center;
     background: #fff;
   }

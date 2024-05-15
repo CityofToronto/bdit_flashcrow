@@ -3,7 +3,7 @@
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <div class="fc-collision-detail-row px-1 py-2 d-flex ml-5 mr-2 justify-space-around"
+    <div class="fc-collision-detail-row px-1 py-2 d-flex ml-5 justify-space-around"
       v-else-if="collisionSummaryUnfiltered.amount > 0">
       <dl class="fc-collision-table d-flex flex-grow-1">
         <div class="collision-fact">
@@ -43,13 +43,20 @@
           </dd>
         </div>
       </dl>
-      <FcButton
-        class="ma-1"
-        type="tertiary"
-        :disabled="collisionSummary.amount === 0"
-        @click="$emit('show-reports')">
-          <v-icon x-large>mdi-chevron-right</v-icon>
-      </FcButton>
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <FcButton
+            v-on="on"
+            id="fc-detail-collision-btn"
+            class="ma-1"
+            type="secondary"
+            :disabled="collisionSummary.amount === 0"
+            @click="$emit('show-reports')">
+            <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+          </FcButton>
+        </template>
+        <span>View Report</span>
+      </v-tooltip>
     </div>
   </div>
 </template>
@@ -93,11 +100,6 @@ export default {
 }
 .fc-collision-detail-row {
   border-radius: 5px;
-}
-.fc-collision-detail-row:hover {
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        2px 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 @media only screen and (max-width: 600px) {

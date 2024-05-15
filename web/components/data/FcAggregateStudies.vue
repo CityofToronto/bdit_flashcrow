@@ -15,8 +15,9 @@
           :aria-disabled="item.n === 0"
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
-          <v-expansion-panel-header class="pr-8">
-            <div class="body-1">
+          <v-expansion-panel-header class="pa-1 pr-4 fc-study-expansion-header" ripple>
+            <v-icon small color="primary" class="fc-study-header-icon">mdi-briefcase</v-icon>
+            <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
                 class="ml-2"
@@ -46,13 +47,19 @@
                     :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
                   <div class="fc-chevron-wrapper">
-                    <FcButton
-                      class="mr-n4 mt-1"
-                      type="tertiary"
-                      :disabled="itemsPerLocation[i][j].n === 0"
-                      @click="$emit('show-reports', { item, locationsIndex: j })">
-                      <v-icon x-large>mdi-chevron-right</v-icon>
-                    </FcButton>
+                    <v-tooltip right z-index="110">
+                      <template v-slot:activator="{ on }">
+                        <FcButton
+                          v-on="on"
+                          width="40px"
+                          type="tertiary"
+                          :disabled="itemsPerLocation[i][j].n === 0"
+                          @click="$emit('show-reports', { item, locationsIndex: j })">
+                          <v-icon x-large>mdi-chevron-right</v-icon>
+                        </FcButton>
+                      </template>
+                      <span>View Report</span>
+                    </v-tooltip>
                   </div>
                 </div>
               </template>
@@ -143,8 +150,24 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-studies {
+  & .fc-study-header-icon {
+    max-width: 32px;
+  }
+  & .fc-studies-summary-per-location {
+    border-radius: 5px;
+    margin-right: 12px;
+    box-shadow:
+        0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+  }
   & .fc-studies-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
+    margin-bottom: 12px;
+  }
+  & .fc-study-summary-header {
+    font-weight: bold;
   }
   & .data-empty {
     opacity: 0.37;

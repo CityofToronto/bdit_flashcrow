@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-studies mb-2">
+  <div class="fc-detail-studies mb-2 px-1">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
@@ -31,13 +31,19 @@
               :b="item.nUnfiltered"
               :show-b="hasFiltersCommon || hasFiltersStudy" />
           </div>
-          <FcButton
-            class=""
-            :disabled="!item.studyType.dataAvailable || item.n === 0"
-            type="tertiary"
-            @click="$emit('show-reports', item)">
-            <v-icon x-large>mdi-chevron-right</v-icon>
-          </FcButton>
+          <v-tooltip right>
+            <template v-slot:activator="{ on }">
+              <FcButton
+                v-on="on"
+                width="50px"
+                :disabled="!item.studyType.dataAvailable || item.n === 0"
+                type="secondary"
+                @click="$emit('show-reports', item)">
+                <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+              </FcButton>
+            </template>
+            <span>View Report</span>
+          </v-tooltip>
         </div>
       </div>
     </template>
@@ -97,11 +103,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     border-radius: 5px;
-  }
-  .fc-study-detail-row:hover {
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-          0 1px 1px 0 rgba(0, 0, 0, 0.14),
-          2px 1px 3px 0 rgba(0, 0, 0, 0.12);
   }
   & .fc-studies-n {
     width: 60px;

@@ -44,7 +44,7 @@
                           type="icon"
                           @click="actionClear"
                           v-on="onTooltip">
-                          <v-icon>mdi-close-circle</v-icon>
+                          <v-icon color="light-grey">mdi-close-circle</v-icon>
                         </FcButton>
                       </template>
                       <span>Clear Location</span>
@@ -324,8 +324,5 @@ export default {
 }
 .fc-location-search-home {
   max-width: 448px;
-}
-.fc-close-btn-inside {
-  opacity: 0.4;
 }
 </style>
