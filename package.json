@@ -120,11 +120,6 @@
     "vuetify-loader": "^1.9.2",
     "webpack-bundle-analyzer": "^4.9.0"
   },
-  "browserslist": [
-    "last 1 Chrome version",
-    "last 1 Edge version",
-    "last 1 Firefox version"
-  ],
   "_moduleAliases": {
     "@": "."
   },
