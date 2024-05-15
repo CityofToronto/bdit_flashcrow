@@ -149,7 +149,6 @@ export default {
         this.loadAsyncForFeature();
       },
       immediate: true,
-      deep: true,
     },
   },
   created() {
