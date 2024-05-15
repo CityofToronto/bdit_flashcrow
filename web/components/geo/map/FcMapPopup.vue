@@ -90,8 +90,8 @@ export default {
       return getFeatureDetailsSuffix(this.layerId);
     },
     featureKey() {
-      const { layerId, feature: { id } } = this;
-      return `${layerId}:${id}`;
+      const { layerId, feature: { id, properties: { centrelineId } } } = this;
+      return `${layerId}:${id || centrelineId}`;
     },
     featureSelectable() {
       return SELECTABLE_LAYERS.includes(this.feature.layer.id);
