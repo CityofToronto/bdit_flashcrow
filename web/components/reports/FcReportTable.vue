@@ -25,7 +25,7 @@
           :key="'col_' + c"
           v-bind="attrs" />
       </colgroup>
-      <thead v-if="header.length > 0">
+      <thead class="fc-report-table-header" v-if="header.length > 0">
         <tr
           v-for="(row, r) in headerNormalized"
           :key="'row_header_' + r">
@@ -312,6 +312,12 @@ export default {
     & > thead {
       background-color: var(--base-lighter);
     }
+  }
+  & .fc-report-table-header {
+    position: sticky;
+    top: 0;
+    background-color: #98c2e3 !important;
+    z-index: 2;
   }
 }
 </style>

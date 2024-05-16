@@ -127,7 +127,7 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2"  v-if="!collapseReport">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto"  v-if="!collapseReport">
         <div
           v-if="loadingReportLayout"
           class="ma-3 text-center">

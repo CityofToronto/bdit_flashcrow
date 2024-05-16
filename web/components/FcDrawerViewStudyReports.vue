@@ -149,7 +149,7 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2" v-if="!collapseReport">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto" v-if="!collapseReport">
         <FcReportParameters
           v-if="showReportParameters"
           :report-parameters="reportParameters"
