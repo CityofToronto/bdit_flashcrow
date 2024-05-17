@@ -11,6 +11,8 @@
             class="body-0 mb-0">
             {{line}}
           </p>
+          <v-icon :color="item.statusColor" class="ml-n2">mdi-circle-medium</v-icon>
+          <span class="status-label">{{item.statusName}}</span>
         </div>
         <FcButtonAria @click="viewRequest(item)" type="tertiary"
         button-class="btn-show-request" right small
