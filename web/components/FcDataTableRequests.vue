@@ -153,11 +153,10 @@
       <div class="text-right">
         <FcButtonAria
           :aria-label="'View ' + item.ariaLabel"
-          button-class="btn-show-request"
-          left
-          type="secondary"
+          button-class="btn-show-request" left type="secondary"
+          @click.ctrl.capture="(event) => actionShowItemNewTab(item, event)"
           @click="actionShowItem(item)">
-          <v-icon>mdi-open-in-new</v-icon>
+            <v-icon>mdi-open-in-new</v-icon>
         </FcButtonAria>
       </div>
     </template>
@@ -322,6 +321,25 @@ export default {
         };
       }
       this.$router.push(route);
+    },
+    actionShowItemNewTab(item, event) {
+      let route;
+      if (item.type === ItemType.STUDY_REQUEST_BULK) {
+        const { id } = item.studyRequestBulk;
+        route = {
+          name: 'requestStudyBulkView',
+          params: { id },
+        };
+      } else {
+        const { id } = item.studyRequest;
+        route = {
+          name: 'requestStudyView',
+          params: { id },
+        };
+      }
+      const routeData = this.$router.resolve(route);
+      window.open(routeData.href, '_blank');
+      event.stopPropagation(); // prevent the normal click handler
     },
     actionUpdateItem(item) {
       this.$emit('update-item', item);
