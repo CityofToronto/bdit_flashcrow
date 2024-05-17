@@ -6,7 +6,7 @@
         <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <FcTextReportValue text-null="None" :value="value" />
+              <FcTextReportValue text-null="None" :value="value" style="padding-right: 0.5rem;"/>
               <v-icon v-on="on">mdi-help-circle-outline</v-icon>
             </template>
             <span>{{ tooltip }}</span>
