@@ -20,13 +20,12 @@ export default {
     v: Object,
   },
   watch: {
-    'v.hours.$model': function test() {
-      let value = null;
-      if (!this.v.studyType.$model.isMultiDay) {
-        value = StudyHours[this.studyType.hourOptions[0]];
-      }
-      this.v.hours.$model = value;
+    'v.hours.$model': function watchHour() {
+      this.componentKey += 1;
     },
+  },
+  beforeMount() {
+    this.store = StudyHours.enumValueOf(this.v.studyType.$model.hourOptions);
   },
   computed: {
     hourOptions() {
@@ -38,14 +37,6 @@ export default {
       }
       return options;
     },
-    store: {
-      get() {
-        return this.v.hours.$model;
-      },
-      set(val) {
-        this.v.hours.$model = val;
-      },
-    },
     storeEnumToStrInterface: {
       get() {
         return this.store.name;
@@ -54,10 +45,18 @@ export default {
         this.store = StudyHours.enumValueOf(val);
       },
     },
+    store: {
+      get() {
+        return this.v.hours.$model;
+      },
+      set(val) {
+        this.v.hours.$model = val;
+      },
+    },
     caption() {
-      let { hint } = this.store;
-      if (this.isHourTypeOther) hint = 'Specify hours in Collection Notes';
-      return hint;
+      // let { hint } = this.store;
+      // if (this.isHourTypeOther) hint = 'Specify hours in Collection Notes';
+      return 'awd';
     },
     hourOptionsByStudyType() {
       return this.studyType.hourOptions;
