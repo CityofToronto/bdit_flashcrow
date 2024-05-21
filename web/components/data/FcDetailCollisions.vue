@@ -49,6 +49,7 @@
             v-on="on"
             id="fc-detail-collision-btn"
             class="ma-1"
+            width="50px"
             type="secondary"
             :disabled="collisionSummary.amount === 0"
             @click="$emit('show-reports')">
