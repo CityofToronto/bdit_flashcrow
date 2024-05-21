@@ -726,7 +726,7 @@ export default {
   & > .fc-map-legend-wrapper {
     right: 20px;
     top: 12px;
-    z-index: 11;
+    z-index: 9;
   }
   & > .fc-map-navigate {
     bottom: 77px;
