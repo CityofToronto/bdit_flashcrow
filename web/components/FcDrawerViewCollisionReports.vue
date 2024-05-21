@@ -70,10 +70,10 @@
             <template v-slot:activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
                 <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
-                  mdi-chevron-up
+                  mdi-chevron-down
                 </v-icon>
                 <v-icon v-else class="mx-3" @click="toggleReport">
-                  mdi-chevron-down
+                  mdi-chevron-up
                 </v-icon>
               </span>
             </template>
