@@ -169,9 +169,6 @@ export default {
     border-bottom: 1px solid var(--v-border-base);
     margin-bottom: 12px;
   }
-  & .fc-study-summary-header {
-    font-weight: bold;
-  }
   & .data-empty {
     opacity: 0.37;
   }
