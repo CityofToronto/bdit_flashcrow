@@ -5,11 +5,17 @@
       :key="i"
       :disabled="disabledNormalized[i]">
       <v-list-item-title class="pl-0 pr-1 fc-list-multi-row">
-        <v-icon
-          :class="{'fc-icon-dim':disabledNormalized[i]}"
+        <!-- <v-icon
+
           class="fc-location-list-icon pr-2" size="18">
           mdi-map-marker
-        </v-icon>
+        </v-icon> -->
+        <img v-if="location.centrelineType == 1" title="Midblock"
+          src="/icons/map/location-multi-midblock.svg" alt="Midblock icon"
+          width="14" class="mr-3" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
+        <img v-else title="Intersection"
+          src="/icons/map/location-multi-intersection.svg" alt="Midblock icon"
+          width="14" class="mr-3" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
         <div class="d-flex align-center">
           <div class="fc-list-multi-text">
             <div class="fc-list-wrap"
@@ -84,7 +90,7 @@ export default {
     padding: 0;
   }
   & .fc-icon-dim {
-    opacity: 0.6;
+    opacity: 0.4;
   }
 }
 
