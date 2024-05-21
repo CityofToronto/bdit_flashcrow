@@ -423,9 +423,9 @@ export default {
       this.loadingReportLayout = false;
 
       this.reportLayout = reportLayout;
-      // if (this.isDirectoryReport) {
-      //   this.extractMvcrRows(this.reportLayout);
-      // }
+      if (this.isDirectoryReport) {
+        this.extractMvcrRows(this.reportLayout);
+      }
     },
     parseFiltersFromRouteParams() {
       const routeParams = this.$route.params;
