@@ -109,12 +109,6 @@ export default {
       this.v.duration.$model = (newVal ? 72 : 24);
       this.v.daysOfWeek.$model = [2, 3, 4];
     },
-    studyType() {
-      this.resetHoursValue();
-    },
-    location(newLocation) {
-      this.resetStudyType(newLocation.centrelineType);
-    },
     'v.hours.$model': function watchHour() {
       this.componentKey += 1;
     },

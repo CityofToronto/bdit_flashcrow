@@ -19,6 +19,15 @@ export default {
   props: {
     v: Object,
   },
+  watch: {
+    'v.hours.$model': function test() {
+      let value = null;
+      if (!this.v.studyType.$model.isMultiDay) {
+        value = StudyHours[this.studyType.hourOptions[0]];
+      }
+      this.v.hours.$model = value;
+    },
+  },
   computed: {
     hourOptions() {
       const options = StudyHours.enumValues.filter(
