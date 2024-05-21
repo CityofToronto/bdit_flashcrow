@@ -4,18 +4,18 @@
       v-for="(location, i) in locations"
       :key="i"
       :disabled="disabledNormalized[i]">
-      <v-list-item-title class="px-0 fc-list-multi-row">
+      <v-list-item-title class="pl-0 pr-1 fc-list-multi-row">
         <v-icon
           :class="{'fc-icon-dim':disabledNormalized[i]}"
           class="fc-location-list-icon pr-2" size="18">
           mdi-map-marker
         </v-icon>
         <div class="d-flex align-center">
-          <div class="fc-list-multi-text body-1 truncate">
-            <div class="truncate"
+          <div class="fc-list-multi-text">
+            <div class="fc-list-wrap"
               :class="{
-                'body-1': locationsIconProps[i].locationIndex === -1,
-                title: locationsIconProps[i].locationIndex !== -1,
+                'fc-location-hidden': locationsIconProps[i].locationIndex === -1,
+                'fc-location-normal': locationsIconProps[i].locationIndex !== -1,
               }">
               {{location.description}}
             </div>
@@ -62,20 +62,23 @@ export default {
 
 <style lang="scss">
 .fc-list-location-multi {
-  & .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   & .fc-list-multi-row {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
+    margin-bottom: 15px;
+    margin-left: -10px; // couldn't style veutify wrapper
+    margin-right: -10px;
   }
   & .fc-list-multi-text {
-    max-width: 145px;
-    min-width: 145px;
-    font-style: italic;
+    max-width: 200px;
+    min-width: 200px;
+  }
+  & .fc-list-wrap {
+    max-width: 200px;
+    min-width: 200px;
+    white-space: normal;
+    font-size: 12px;
   }
   & .v-list-item {
     padding: 0;
