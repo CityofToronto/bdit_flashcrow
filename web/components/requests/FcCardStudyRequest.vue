@@ -24,7 +24,7 @@
         </FcButtonAria>
         <FcTextMostRecent
           v-if="studyRequest.studyType !== null"
-          :study="mostRecent.get(studyRequest.studyType)" />
+          :study="this.getMostRecent(studyRequest)" />
       </div>
       <v-spacer></v-spacer>
       <span class="font-weight-regular secondary--text">{{locationType}}</span>
@@ -109,6 +109,13 @@ export default {
         this.addHoveredStudyIndex(index);
         this.elevation = 0;
       }
+    },
+    getMostRecent(request) {
+      if (request.studyType === StudyType.ATR_SVC) {
+        return this.mostRecent.get(StudyType.ATR_SVC)
+        || this.mostRecent.get(StudyType.ATR_SPEED_VOLUME);
+      }
+      return this.mostRecent.get(request.studyType);
     },
     ...mapActions('editRequests', [
       'addHoveredStudyIndex',

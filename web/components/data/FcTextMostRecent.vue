@@ -9,14 +9,13 @@
         {{study.startDate | date}} ({{study.startDate | dayOfWeek}})
       </span>
       <template v-if="!minimal">
-        <br/>
         <span v-if="study.duration !== null">
-          {{study.duration | durationHuman}} ({{study.duration}} hrs)
+          &bull; {{study.duration | durationHuman}} ({{study.duration}} hrs)
         </span>
         <span
           v-else-if="study.hours !== null"
           :title="study.hours.hint">
-          {{study.hours.description}}
+          &bull; {{study.hours.description}}
         </span>
       </template>
     </template>
