@@ -40,9 +40,9 @@ export default {
   transform: translate(-50%, -50%);
   color: #3088D6;
   font-weight: bolder;
-  padding: 5px 10px;
-  font-size: 20px;
+  font-size: 15px;
   text-align: center;
+  width: 100%;
   }
 }
 </style>
