@@ -61,13 +61,13 @@ test('TimeFormatters.formatDaysOfWeek()', () => {
   expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Sun');
 
   daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('any day');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Any Day');
 
   daysOfWeek = [1, 2, 3, 4, 5];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('weekdays');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Weekdays');
 
   daysOfWeek = [0, 6];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('weekends');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Weekends');
 
   daysOfWeek = [2, 3, 4];
   expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Tue, Wed, Thu');
