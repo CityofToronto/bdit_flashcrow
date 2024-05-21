@@ -47,15 +47,12 @@
           <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end mb-2">
             <FcButton
               class="ma-1"
-              :disabled="
-                collisionSummary.amount === 0
-                || reportExportMode === ReportExportMode.STUDIES"
               :scope="[]"
               type="secondary"
               color="primary"
               @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
               <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
-                <v-icon color="primary">mdi-cloud-check</v-icon>
+                Cancel&nbsp;<v-icon color="primary">mdi-cloud-check</v-icon>
                 <span class="sr-only">Cancel Export of Collision Reports</span>
               </template>
               <template v-else>
@@ -98,21 +95,18 @@
             <FcButton
               class="mb-1"
               v-if="studySummary.length > 0"
-              :disabled="
-                collisionSummary.amount === 0
-                || reportExportMode === ReportExportMode.STUDIES"
               :scope="[]"
               type="secondary"
               color="primary"
-              @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
-              <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
-                <v-icon color="primary">mdi-cloud-check</v-icon>
-                <span class="sr-only">Cancel Export of Collision Reports</span>
+              @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
+              <template v-if="reportExportMode === ReportExportMode.STUDIES">
+                Cancel&nbsp;<v-icon color="primary">mdi-cloud-check</v-icon>
+                <span class="sr-only">Cancel Export of Study Reports</span>
               </template>
               <template v-else>
                 Export&nbsp;
                 <v-icon color="primary">mdi-cloud-download</v-icon>
-                <span class="sr-only">Export Collision Reports</span>
+                <span class="sr-only">Export Study Reports</span>
               </template>
             </FcButton>
 
