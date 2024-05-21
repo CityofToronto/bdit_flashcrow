@@ -7,7 +7,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <FcTextReportValue text-null="None" :value="value" style="padding-right: 0.5rem;"/>
-              <v-icon v-on="on">mdi-help-circle-outline</v-icon>
+              <FcButton type="icon" v-on="on"><v-icon>mdi-help-circle-outline</v-icon></FcButton>
             </template>
             <span>{{ tooltip }}</span>
           </v-tooltip>
