@@ -64,7 +64,7 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 180px;
+    max-width: 240px;
   }
   & .fc-list-dropdown-row {
     display: flex;
@@ -72,7 +72,7 @@ export default {
     justify-content: flex-start;
   }
   & .fc-list-dropdown-text {
-    max-width: 180px;
+    max-width: 250px;
   }
   & .v-list-item {
     padding: 0;

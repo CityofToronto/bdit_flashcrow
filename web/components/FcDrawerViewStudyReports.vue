@@ -552,7 +552,7 @@ export default {
   & .fc-study-btn-label {
     font-size: 12px;
     overflow: hidden;
-    max-width: 150px;
+    max-width: 250px;
     text-overflow: ellipsis;
   }
   & .fc-icon-dim {
@@ -564,7 +564,7 @@ export default {
   max-height: var(--full-height);
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 900px) {
   .fc-study-btn-label {
     display: none;
   }
