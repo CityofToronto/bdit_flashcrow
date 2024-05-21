@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-studies mb-2 px-1">
+  <div class="fc-detail-studies mb-2 pl-1 pr-3">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View studies data" />
