@@ -370,12 +370,12 @@ export default {
   }
   & td:nth-child(2),
   & th.fc-data-table-header-ID {
-    min-width: 40px;
+    min-width: 20px;
     width: 70px;
   }
   & td:nth-child(3),
   & th.fc-data-table-header-LOCATION {
-    min-width: 210px;
+    min-width: 190px;
     width: auto;
   }
   & td:nth-child(4),
@@ -385,7 +385,7 @@ export default {
   }
   & td:nth-child(5),
   & th.fc-data-table-header-STUDY_TYPE {
-    min-width: 210px;
+    min-width: 190px;
     width: 210px;
   }
   & td:nth-child(6),
