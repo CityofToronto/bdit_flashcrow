@@ -25,6 +25,9 @@
           :study-summary-unfiltered="studySummaryUnfiltered"
           @show-reports="actionShowReportsStudy" />
 
+          <FcSectionStudyRequestsPending
+            :study-requests-pending="studyRequestsPending" />
+
           <div class="mr-4 align-self-end text-left pb-4">
             <FcButton
               type="secondary"
@@ -38,8 +41,6 @@
           <div class="pb-5" v-if="studyTotal > 1"/>
       </section>
 
-      <FcSectionStudyRequestsPending
-        :study-requests-pending="studyRequestsPending" />
     </template>
   </div>
 </template>
