@@ -12,10 +12,10 @@
           mdi-map-marker
         </v-icon>
         <div class="d-flex align-center truncate">
-          <div class="fc-list-dropdown-text body-1 truncate">
+          <div class="fc-list-dropdown-text truncate">
             <div class="truncate" :class="{
-                'body-1': locationsIconProps[i].locationIndex === -1,
-                title: locationsIconProps[i].locationIndex !== -1,
+                'fc-location-hidden': locationsIconProps[i].locationIndex === -1,
+                'fc-location-normal': locationsIconProps[i].locationIndex !== -1,
               }">
               {{location.description}}
             </div>
@@ -61,15 +61,14 @@ export default {
 <style lang="scss">
 .fc-list-location-dropdown {
   & .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
     max-width: 240px;
   }
   & .fc-list-dropdown-row {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
+    font-size: 12px
   }
   & .fc-list-dropdown-text {
     max-width: 250px;

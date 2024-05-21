@@ -511,7 +511,7 @@ export default {
   & .fc-collision-btn-location {
     font-size: 12px;
     overflow: hidden;
-    max-width: 150px;
+    max-width: 250px;
     text-overflow: ellipsis;
   }
   & .fc-icon-dim {
