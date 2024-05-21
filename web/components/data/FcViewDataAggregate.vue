@@ -135,7 +135,7 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { ReportExportMode } from '@/lib/Constants';
+import { ReportExportMode, LocationSelectionType } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -195,6 +195,7 @@ export default {
         ksi: 0,
         validated: 0,
       },
+      locationsSelectionForCorridorReport: null,
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
@@ -265,12 +266,26 @@ export default {
   },
   methods: {
     async actionDownloadReportFormatCollisions(reportFormat) {
-      const job = await postJobGenerateCollisionReports(
-        this.auth.csrf,
-        this.locationsSelection,
-        this.filterParamsCollision,
-        reportFormat,
-      );
+      let job;
+      if (this.locationsSelection.selectionType === LocationSelectionType.CORRIDOR) {
+        this.locationsSelectionForCorridorReport = JSON.parse(
+          JSON.stringify(this.locationsSelection),
+        );
+        this.locationsSelectionForCorridorReport.locations = this.locations;
+        job = await postJobGenerateCollisionReports(
+          this.auth.csrf,
+          this.locationsSelectionForCorridorReport,
+          this.filterParamsCollision,
+          reportFormat,
+        );
+      } else {
+        job = await postJobGenerateCollisionReports(
+          this.auth.csrf,
+          this.locationsSelection,
+          this.filterParamsCollision,
+          reportFormat,
+        );
+      }
 
       this.setToast({
         toast: 'Job',
