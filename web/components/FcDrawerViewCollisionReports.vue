@@ -240,8 +240,8 @@ export default {
         const selectionType = LocationSelectionType.POINTS;
         return `${s1}/${selectionType.name}`;
       }
-      const { locations, selectionType } = this.locationsSelection;
-      const s1 = CompositeId.encode([locations[this.activeLocation]]);
+      const { selectionType } = this.locationsSelection;
+      const s1 = CompositeId.encode([this.locations[this.activeLocation]]);
       return `${s1}/${selectionType.name}`;
     },
     activeReportType() {
