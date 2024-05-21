@@ -77,7 +77,8 @@
                 </v-icon>
               </span>
             </template>
-            <span>Collapse Report</span>
+            <span v-if="collapseReport">Expand Report</span>
+            <span v-else>Collapse Report</span>
           </v-tooltip>
 
           <v-tooltip bottom>
