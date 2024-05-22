@@ -21,6 +21,7 @@
               <FcButton
                 v-on="on"
                 width="50px"
+                class="fc-view-collision-report"
                 :disabled="collisionSummary.amount === 0"
                 type="secondary"
                 @click="actionShowReportsCollision">
@@ -338,3 +339,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-view-collision-report {
+  align-self: center;
+}
+</style>
