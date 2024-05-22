@@ -87,17 +87,16 @@
         :locations-selection="locationsSelection" />
 
       <div v-if="textLocationsSelectionIncludes !== null"
-        class="pr-2 secondary--text text-left mt-2">
-        {{textLocationsSelectionIncludes}}
+        class="pr-2 secondary--text text-left mt-1 d-flex justify-space-between align-center">
+        <div>{{textLocationsSelectionIncludes}}</div>
+        <FcButton
+          class="ml-3 edit-location-btn"
+          type="tertiary"
+          @click="setLocationMode(LocationMode.MULTI_EDIT)">
+          <v-icon color="primary" left>mdi-pencil</v-icon>
+          Edit
+        </FcButton>
       </div>
-
-      <FcButton
-        class="ml-3 edit-location-btn"
-        type="tertiary"
-        @click="setLocationMode(LocationMode.MULTI_EDIT)">
-        <v-icon color="primary" left>mdi-pencil</v-icon>
-        Edit Locations
-      </FcButton>
 
     </div>
     <div class="flex-grow-0 flex-shrink-0">

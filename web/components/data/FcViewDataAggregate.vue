@@ -21,6 +21,7 @@
               <FcButton
                 v-on="on"
                 width="50px"
+                height="40px"
                 class="fc-view-collision-report"
                 :disabled="collisionSummary.amount === 0"
                 type="secondary"
@@ -34,7 +35,7 @@
         </FcAggregateCollisions>
 
         <template v-if="collisionSummary.amount > 0">
-          <div class="fc-study-buttons d-flex flex-column align-end mr-5 mb-2">
+          <div class="fc-study-buttons d-flex flex-column align-end mr-5 mb-2 mt-3">
             <FcMenuDownloadReportFormat
               :require-auth="true"
               type="secondary"
@@ -343,5 +344,8 @@ export default {
 <style lang="scss">
 .fc-view-collision-report {
   align-self: center;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 </style>
