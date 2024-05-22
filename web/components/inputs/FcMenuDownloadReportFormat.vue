@@ -11,12 +11,11 @@
         :loading="loading"
         :scope="requireAuth ? [] : null"
         :type="type">
-          <v-icon left>mdi-cloud-download</v-icon>
-          <span class="fc-download-label">Export</span>
+        <span class="fc-download-label">Export</span>
           <span  v-if="textScreenReader !== null" class="sr-only">
             {{textScreenReader}}
           </span>
-          <v-icon right>mdi-menu-down</v-icon>
+          <v-icon right>mdi-share-all</v-icon>
       </FcButton>
     </template>
     <v-list>
