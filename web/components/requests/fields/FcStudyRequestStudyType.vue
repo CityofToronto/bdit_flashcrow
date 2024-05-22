@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { StudyType, CentrelineType } from '@/lib/Constants';
+import { StudyType } from '@/lib/Constants';
 import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 import {
   REQUEST_STUDY_REQUIRES_STUDY_TYPE,
@@ -57,15 +57,6 @@ export default {
       studyTypeOther: null,
       StudyType,
     };
-  },
-  mounted() {
-    let studyType;
-    if (this.location.centrelineType === CentrelineType.INTERSECTION) {
-      studyType = StudyType.TMC;
-    } else {
-      studyType = StudyType.ATR_SVC;
-    }
-    this.studyType = studyType;
   },
   computed: {
     errorMessagesStudyType() {
