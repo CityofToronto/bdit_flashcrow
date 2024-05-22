@@ -16,7 +16,7 @@
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
           <v-expansion-panel-header class="pa-1 pr-4 fc-study-expansion-header" ripple>
-            <v-icon small color="primary" class="fc-study-header-icon">mdi-briefcase</v-icon>
+            <v-icon small color="primary" class="fc-study-header-icon mx-1">mdi-briefcase</v-icon>
             <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
