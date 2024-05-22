@@ -5,11 +5,6 @@
       :key="i"
       :disabled="disabledNormalized[i]">
       <v-list-item-title class="pl-0 pr-1 fc-list-multi-row">
-        <!-- <v-icon
-
-          class="fc-location-list-icon pr-2" size="18">
-          mdi-map-marker
-        </v-icon> -->
         <img v-if="location.centrelineType == 1" title="Midblock"
           src="/icons/map/location-multi-midblock.svg" alt="Midblock icon"
           width="14" class="mr-3" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
