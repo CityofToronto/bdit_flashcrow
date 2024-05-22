@@ -15,7 +15,7 @@
           <span  v-if="textScreenReader !== null" class="sr-only">
             {{textScreenReader}}
           </span>
-          <v-icon right>mdi-share-all</v-icon>
+          <v-icon right>mdi-arrow-top-right</v-icon>
       </FcButton>
     </template>
     <v-list>
