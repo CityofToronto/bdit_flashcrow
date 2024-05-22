@@ -32,17 +32,17 @@
               </template>
               <span>View Report</span>
             </v-tooltip>
+            <template v-slot:second v-if="collisionSummary.amount > 0">
+              <div class=" d-flex flex-column align-end mr-5 mb-4">
+                <FcMenuDownloadReportFormat
+                  :require-auth="true"
+                  type="tertiary"
+                  text-screen-reader="Collision Reports"
+                  @download-report-format="actionDownloadReportFormatCollisions" />
+                </div>
+            </template>
         </FcAggregateCollisions>
 
-        <template v-if="collisionSummary.amount > 0">
-          <div class="fc-study-buttons d-flex flex-column align-end mr-5 mb-2 mt-3">
-            <FcMenuDownloadReportFormat
-              :require-auth="true"
-              type="secondary"
-              text-screen-reader="Collision Reports"
-              @download-report-format="actionDownloadReportFormatCollisions" />
-            </div>
-        </template>
       </section>
 
       <v-divider></v-divider>
@@ -60,12 +60,12 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex justify-end align-center mr-5 mb-3 mt-1">
+          <div class="fc-study-buttons d-flex flex-col justify-end align-end mr-5 mb-3 mt-1">
 
             <template v-if="studySummary.length > 0">
               <FcMenuDownloadReportFormat
                 :require-auth="true"
-                type="secondary"
+                type="tertiary"
                 text-screen-reader="Study Reports"
                 @download-report-format="actionDownloadReportFormatStudies" />
             </template>
@@ -73,7 +73,7 @@
             <FcButton
               type="secondary"
               color="primary"
-              class="ml-2"
+              class="ml-2 mt-1"
               @click="actionRequestStudy">
               Request&nbsp;
               <span class="sr-only">New Study</span>
