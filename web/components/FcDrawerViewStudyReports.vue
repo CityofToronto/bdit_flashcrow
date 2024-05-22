@@ -53,7 +53,12 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 mr-2"
                 type="secondary">
-                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
                 <span class="pa-1 fc-study-btn-label">
                   {{locationActive.description}}
                 </span>
@@ -554,6 +559,8 @@ export default {
     overflow: hidden;
     max-width: 250px;
     text-overflow: ellipsis;
+    text-transform: none;
+    letter-spacing: normal;
   }
   & .fc-icon-dim {
     opacity: 0.6;

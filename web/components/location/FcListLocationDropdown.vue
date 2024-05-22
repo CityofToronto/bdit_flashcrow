@@ -6,11 +6,14 @@
       :disabled="disabledNormalized[i]"
       @click="$emit('click-location', i)">
       <v-list-item-title class="px-0 fc-list-dropdown-row">
-        <v-icon
-          :class="{'fc-icon-dim':disabledNormalized[i]}"
-          class="pa-2" size="20">
-          mdi-map-marker
-        </v-icon>
+        <span class="px-4">
+          <img v-if="location.centrelineType == 1" title="Midblock"
+          src="/icons/map/location-multi-midblock.svg" alt="Midblock icon"
+          width="14" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
+          <img v-else title="Intersection"
+          src="/icons/map/location-multi-intersection.svg" alt="Midblock icon"
+          width="14" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
+        </span>
         <div class="d-flex align-center truncate">
           <div class="fc-list-dropdown-text truncate">
             <div class="truncate" :class="{
