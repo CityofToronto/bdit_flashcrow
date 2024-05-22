@@ -8,7 +8,8 @@
     outlined
     label="Hours"
     :messages="caption"
-    v-bind="$attrs" />
+    v-bind="$attrs"
+    />
 </template>
 
 <script>
@@ -19,13 +20,13 @@ export default {
   props: {
     v: Object,
   },
-  watch: {
-    'v.hours.$model': function watchHour() {
-      this.componentKey += 1;
-    },
-  },
   beforeMount() {
-    this.store = StudyHours.enumValueOf(this.v.studyType.$model.hourOptions);
+    this.resetHoursValue();
+  },
+  watch: {
+    'v.studyType.$model.name': function studyTypeChange() {
+      this.resetHoursValue();
+    },
   },
   computed: {
     hourOptions() {
@@ -37,14 +38,6 @@ export default {
       }
       return options;
     },
-    storeEnumToStrInterface: {
-      get() {
-        return this.store.name;
-      },
-      set(val) {
-        this.store = StudyHours.enumValueOf(val);
-      },
-    },
     store: {
       get() {
         return this.v.hours.$model;
@@ -53,10 +46,18 @@ export default {
         this.v.hours.$model = val;
       },
     },
+    storeEnumToStrInterface: {
+      get() {
+        return this.store.name;
+      },
+      set(val) {
+        this.store = StudyHours.enumValueOf(val);
+      },
+    },
     caption() {
-      // let { hint } = this.store;
-      // if (this.isHourTypeOther) hint = 'Specify hours in Collection Notes';
-      return 'awd';
+      let { hint } = this.store;
+      if (this.isHourTypeOther) hint = 'Specify hours in Collection Notes';
+      return hint;
     },
     hourOptionsByStudyType() {
       return this.studyType.hourOptions;
@@ -72,6 +73,15 @@ export default {
     },
     studyType() {
       return this.v.studyType.$model;
+    },
+  },
+  methods: {
+    resetHoursValue() {
+      let value = null;
+      if (!this.v.studyType.$model.isMultiDayStudy) {
+        value = StudyHours[this.studyType.hourOptions[0]];
+      }
+      this.v.hours.$model = value;
     },
   },
 };

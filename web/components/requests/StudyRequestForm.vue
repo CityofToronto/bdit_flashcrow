@@ -52,7 +52,6 @@ import FcStudyRequestDuration from '@/web/components/requests/fields/FcStudyRequ
 import FcStudyRequestHours from '@/web/components/requests/fields/FcStudyRequestHours.vue';
 import FcStudyRequestNotes from '@/web/components/requests/fields/FcStudyRequestNotes.vue';
 import FcStudyRequestStudyType from '@/web/components/requests/fields/FcStudyRequestStudyType.vue';
-import { StudyHours, StudyType, CentrelineType } from '@/lib/Constants';
 
 export default {
   name: 'StudyRequestForm',
@@ -84,24 +83,6 @@ export default {
     },
     isMultiDayStudy() {
       return this.studyType.isMultiDay;
-    },
-  },
-  methods: {
-    resetHoursValue() {
-      let value = null;
-      if (!this.isMultiDayStudy) {
-        value = StudyHours[this.studyType.hourOptions[0]];
-      }
-      this.v.hours.$model = value;
-    },
-    resetStudyType(centrelineType) {
-      let studyType;
-      if (centrelineType === CentrelineType.INTERSECTION) {
-        studyType = StudyType.TMC;
-      } else {
-        studyType = StudyType.ATR_SVC;
-      }
-      this.studyType = studyType;
     },
   },
   watch: {
