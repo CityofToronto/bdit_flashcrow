@@ -6,21 +6,17 @@
         v-on="on"
         class="ml-2"
         :disabled="disabled"
-        title="Download Report"
+        title="Export Reports"
+        color="primary"
         :loading="loading"
         :scope="requireAuth ? [] : null"
         :type="type">
-        <v-icon
-          left
-          :color="type === 'secondary' ? 'primary' : 'white'">
-          mdi-cloud-download
-        </v-icon>
-        <span
-          v-if="textScreenReader !== null"
-          class="sr-only">
-          {{textScreenReader}}
-        </span>
-        <v-icon right>mdi-menu-down</v-icon>
+          <v-icon left>mdi-cloud-download</v-icon>
+          <span class="fc-download-label">Export</span>
+          <span  v-if="textScreenReader !== null" class="sr-only">
+            {{textScreenReader}}
+          </span>
+          <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
     <v-list>
@@ -90,3 +86,8 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.fc-download-label {
+  text-transform: none;
+}
+</style>
