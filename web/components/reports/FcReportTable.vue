@@ -316,7 +316,7 @@ export default {
   & .fc-report-table-header {
     position: sticky;
     top: 0;
-    background-color: #98c2e3 !important;
+    background-color: #ACACAC !important;
     z-index: 2;
   }
 }
