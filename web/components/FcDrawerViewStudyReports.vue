@@ -53,7 +53,12 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 mr-2"
                 type="secondary">
-                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
                 <span class="pa-1 fc-study-btn-label">
                   {{locationActive.description}}
                 </span>
@@ -97,14 +102,15 @@
             <template v-slot:activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
                 <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
-                  mdi-chevron-up
+                  mdi-chevron-down
                 </v-icon>
                 <v-icon v-else class="mx-3" @click="toggleReport">
-                  mdi-chevron-down
+                  mdi-chevron-up
                 </v-icon>
               </span>
             </template>
-            <span>Collapse Report</span>
+            <span v-if="collapseReport">Expand Report</span>
+            <span v-else>Collapse Report</span>
           </v-tooltip>
 
           <v-tooltip bottom>
@@ -551,8 +557,10 @@ export default {
   & .fc-study-btn-label {
     font-size: 12px;
     overflow: hidden;
-    max-width: 150px;
+    max-width: 250px;
     text-overflow: ellipsis;
+    text-transform: none;
+    letter-spacing: normal;
   }
   & .fc-icon-dim {
     opacity: 0.6;
@@ -563,7 +571,7 @@ export default {
   max-height: var(--full-height);
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 900px) {
   .fc-study-btn-label {
     display: none;
   }

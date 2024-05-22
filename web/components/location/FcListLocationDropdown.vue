@@ -6,16 +6,19 @@
       :disabled="disabledNormalized[i]"
       @click="$emit('click-location', i)">
       <v-list-item-title class="px-0 fc-list-dropdown-row">
-        <v-icon
-          :class="{'fc-icon-dim':disabledNormalized[i]}"
-          class="pa-2" size="20">
-          mdi-map-marker
-        </v-icon>
+        <span class="px-4">
+          <img v-if="location.centrelineType == 1" title="Midblock"
+          src="/icons/map/location-multi-midblock.svg" alt="Midblock icon"
+          width="14" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
+          <img v-else title="Intersection"
+          src="/icons/map/location-multi-intersection.svg" alt="Midblock icon"
+          width="14" :class="{'fc-icon-dim':disabledNormalized[i]}"/>
+        </span>
         <div class="d-flex align-center truncate">
-          <div class="fc-list-dropdown-text body-1 truncate">
+          <div class="fc-list-dropdown-text truncate">
             <div class="truncate" :class="{
-                'body-1': locationsIconProps[i].locationIndex === -1,
-                title: locationsIconProps[i].locationIndex !== -1,
+                'fc-location-hidden': locationsIconProps[i].locationIndex === -1,
+                'fc-location-normal': locationsIconProps[i].locationIndex !== -1,
               }">
               {{location.description}}
             </div>
@@ -61,18 +64,17 @@ export default {
 <style lang="scss">
 .fc-list-location-dropdown {
   & .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
+    white-space: normal;
+    max-width: 240px;
   }
   & .fc-list-dropdown-row {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
+    font-size: 12px
   }
   & .fc-list-dropdown-text {
-    max-width: 180px;
+    max-width: 250px;
   }
   & .v-list-item {
     padding: 0;

@@ -70,14 +70,15 @@
             <template v-slot:activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">
                 <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
-                  mdi-chevron-up
+                  mdi-chevron-down
                 </v-icon>
                 <v-icon v-else class="mx-3" @click="toggleReport">
-                  mdi-chevron-down
+                  mdi-chevron-up
                 </v-icon>
               </span>
             </template>
-            <span>Collapse Report</span>
+            <span v-if="collapseReport">Expand Report</span>
+            <span v-else>Collapse Report</span>
           </v-tooltip>
 
           <v-tooltip bottom>
@@ -240,8 +241,8 @@ export default {
         const selectionType = LocationSelectionType.POINTS;
         return `${s1}/${selectionType.name}`;
       }
-      const { locations, selectionType } = this.locationsSelection;
-      const s1 = CompositeId.encode([locations[this.activeLocation]]);
+      const { selectionType } = this.locationsSelection;
+      const s1 = CompositeId.encode([this.locations[this.activeLocation]]);
       return `${s1}/${selectionType.name}`;
     },
     activeReportType() {
@@ -510,7 +511,7 @@ export default {
   & .fc-collision-btn-location {
     font-size: 12px;
     overflow: hidden;
-    max-width: 150px;
+    max-width: 250px;
     text-overflow: ellipsis;
   }
   & .fc-icon-dim {
