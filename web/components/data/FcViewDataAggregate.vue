@@ -60,7 +60,7 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex flex-col justify-end align-end mr-5 mb-3 mt-1">
+          <div class="fc-study-buttons d-flex flex-column justify-end align-end mr-5 mb-3 mt-1">
 
             <template v-if="studySummary.length > 0">
               <FcMenuDownloadReportFormat
