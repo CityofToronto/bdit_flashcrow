@@ -51,7 +51,10 @@
                       <template v-slot:activator="{ on }">
                         <FcButton
                           v-on="on"
-                          width="40px"
+                          v-if="itemsPerLocation[i][j].n !== 0"
+                          class="pa-0"
+                          max-width="50px"
+                          min-width="50px"
                           type="tertiary"
                           :disabled="itemsPerLocation[i][j].n === 0"
                           @click="$emit('show-reports', { item, locationsIndex: j })">
@@ -166,9 +169,6 @@ export default {
     border-bottom: 1px solid var(--v-border-base);
     margin-bottom: 12px;
   }
-  & .fc-study-summary-header {
-    font-weight: bold;
-  }
   & .data-empty {
     opacity: 0.37;
   }
@@ -177,9 +177,6 @@ export default {
   }
   & .fc-study-list-number {
     min-width: 50px;
-  }
-  & .fc-chevron-wrapper {
-    min-width: 80px;
   }
 }
 </style>
