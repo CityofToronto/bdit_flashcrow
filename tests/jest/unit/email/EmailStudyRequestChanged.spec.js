@@ -1,7 +1,7 @@
 import CentrelineDAO from '@/lib/db/CentrelineDAO';
 import UserDAO from '@/lib/db/UserDAO';
 import EmailBase from '@/lib/email/EmailBase';
-import EmailStudyRequestChanged from '@/lib/email/EmailStudyRequestChanged';
+import EmailStudyRequestChangedAdmin from '@/lib/email/EmailStudyRequestChangedAdmin';
 import { getRequestChanges } from '@/lib/email/MailUtils';
 import { generateStudyRequest, generateStudyTypeChange } from '@/lib/test/random/StudyRequestGenerator';
 import { generateUser } from '@/lib/test/random/UserGenerator';
@@ -9,7 +9,7 @@ import { generateUser } from '@/lib/test/random/UserGenerator';
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/UserDAO');
 
-test('EmailStudyRequestChanged', async () => {
+test('EmailStudyRequestChangedAdmin', async () => {
   const requester = generateUser();
   const studyRequestOld = generateStudyRequest();
   studyRequestOld.id = 42;
@@ -37,7 +37,7 @@ test('EmailStudyRequestChanged', async () => {
   const requestChanges = {
     studyRequestChanges, featureOld, featureNew, id, userId,
   };
-  const email = new EmailStudyRequestChanged(requestChanges);
+  const email = new EmailStudyRequestChangedAdmin(requestChanges);
 
   await email.init();
 
