@@ -1,7 +1,7 @@
 <template>
   <div
     aria-label="Search for multiple locations in the map"
-    class="fc-selector-multi-location d-flex flex-column px-4 pt-3"
+    class="fc-selector-multi-location d-flex flex-column px-4 py-3"
     role="search">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
@@ -420,7 +420,7 @@ export default {
 <style lang="scss">
 .fc-selector-multi-location {
   position: relative;
-  border: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
 
   & .fc-input-location-search-wrapper {
     display: flex;

@@ -23,7 +23,8 @@
             </div>
           </div>
 
-          <FcGlobalFilters class="fc-filter-section px-5 py-3" header-tag="h3" />
+          <FcGlobalFilters class="px-5 py-3" header-tag="h3"
+            :class="{'fc-filter-section-border':locationMode === LocationMode.SINGLE}"/>
 
           <v-divider></v-divider>
 
@@ -186,7 +187,7 @@ export default {
   & .fc-view-data-section {
     max-height: calc(100vh - 215px);
   }
-  & .fc-filter-section {
+  & .fc-filter-section-border {
     border-top: 1px solid lightgrey;
   }
   & .add-location-btn {
