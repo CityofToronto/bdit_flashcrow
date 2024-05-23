@@ -289,6 +289,22 @@ export default {
       return ids;
     },
   },
+  mounted() {
+    // Adds hover event listeners to table rows
+    document.body.addEventListener('mouseover', (element) => {
+      const targetParent = element.target.parentNode;
+      if (targetParent.tagName === 'TR') {
+        const requestId = parseInt(targetParent.children[1].innerText.trim(), 10);
+        this.setHoveredStudyRequest(requestId);
+      }
+    });
+    document.body.addEventListener('mouseleave', (element) => {
+      const targetParent = element.target.parentNode;
+      if (targetParent.tagName === 'TR') {
+        this.setHoveredStudyRequest(null);
+      }
+    });
+  },
   methods: {
     actionEdit() {
       const { id } = this.studyRequestBulk;
@@ -375,6 +391,7 @@ export default {
     },
     ...mapActions(['saveStudyRequest', 'saveStudyRequestBulk']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
+    ...mapMutations('trackRequests', ['setHoveredStudyRequest']),
     ...mapMutations(['setToastInfo', 'setDialog']),
   },
 };
