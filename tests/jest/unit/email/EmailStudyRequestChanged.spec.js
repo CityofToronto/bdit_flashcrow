@@ -9,7 +9,7 @@ import { generateUser } from '@/lib/test/random/UserGenerator';
 jest.mock('@/lib/db/CentrelineDAO');
 jest.mock('@/lib/db/UserDAO');
 
-test('EmailStudyRequestChanged', async () => {
+test('EmailStudyRequestChangedAdmin', async () => {
   const requester = generateUser();
   const studyRequestOld = generateStudyRequest();
   studyRequestOld.id = 42;
