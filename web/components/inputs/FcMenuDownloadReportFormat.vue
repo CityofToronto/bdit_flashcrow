@@ -9,7 +9,7 @@
         :loading="loading"
         color="primary"
         :scope="requireAuth ? [] : null"
-        :type="type">
+        type="tertiary">
           <span  v-if="textScreenReader !== null" class="sr-only">
             {{textScreenReader}}
           </span>
@@ -17,13 +17,15 @@
           <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
-    <v-list>
+    <v-list shaped>
+      <v-subheader>Export Formats:</v-subheader>
       <v-list-item
         v-for="{ label, value } in items"
         :key="value"
         @click="$emit('download-report-format', value)">
         <v-list-item-title>
-          {{label}}
+          <v-icon color="primary">mdi-download</v-icon>
+          {{label}} files
         </v-list-item-title>
       </v-list-item>
     </v-list>
