@@ -36,7 +36,7 @@
               <div class=" d-flex flex-column align-end mr-5 mb-4">
                 <FcMenuDownloadReportFormat
                   :require-auth="true"
-                  type="tertiary"
+                  type="secondary"
                   text-screen-reader="Collision Reports"
                   @download-report-format="actionDownloadReportFormatCollisions" />
                 </div>
@@ -60,25 +60,26 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex flex-column justify-end align-end mr-5 mb-3 mt-1">
-
-            <template v-if="studySummary.length > 0">
-              <FcMenuDownloadReportFormat
-                :require-auth="true"
-                type="tertiary"
-                text-screen-reader="Study Reports"
-                @download-report-format="actionDownloadReportFormatStudies" />
-            </template>
+          <div class="fc-study-buttons d-flex justify-end align-end mr-5 mb-3 mt-1">
 
             <FcButton
               type="secondary"
               color="primary"
-              class="ml-2 mt-1"
+              class="mr-1 mt-1"
               @click="actionRequestStudy">
               Request&nbsp;
               <span class="sr-only">New Study</span>
               <v-icon >mdi-briefcase-plus</v-icon>
             </FcButton>
+
+            <template v-if="studySummary.length > 0">
+              <FcMenuDownloadReportFormat
+                :require-auth="true"
+                type="secondary"
+                text-screen-reader="Study Reports"
+                @download-report-format="actionDownloadReportFormatStudies" />
+            </template>
+
           </div>
       </section>
     </template>

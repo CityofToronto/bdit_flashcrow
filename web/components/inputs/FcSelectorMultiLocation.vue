@@ -420,6 +420,7 @@ export default {
 <style lang="scss">
 .fc-selector-multi-location {
   position: relative;
+  border: 1px solid lightgrey;
 
   & .fc-input-location-search-wrapper {
     display: flex;

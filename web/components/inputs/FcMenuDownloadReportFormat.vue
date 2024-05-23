@@ -4,18 +4,17 @@
       <FcButton
         v-bind="attrs"
         v-on="on"
-        class="ml-2"
         :disabled="disabled"
         title="Export Reports"
-        color="primary"
         :loading="loading"
+        color="primary"
         :scope="requireAuth ? [] : null"
         :type="type">
-        <span class="fc-download-label">Export</span>
           <span  v-if="textScreenReader !== null" class="sr-only">
             {{textScreenReader}}
           </span>
-          <v-icon right>mdi-arrow-top-right</v-icon>
+          <v-icon>mdi-cloud-download</v-icon>
+          <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
     <v-list>
