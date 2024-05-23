@@ -33,7 +33,7 @@
               <span>View Report</span>
             </v-tooltip>
             <template v-slot:second v-if="collisionSummary.amount > 0">
-              <div class=" d-flex flex-column align-end mr-5 mb-4">
+              <div class=" d-flex flex-column align-end mr-1 mb-4">
                 <FcMenuDownloadReportFormat
                   :require-auth="true"
                   type="secondary"
@@ -60,12 +60,12 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex justify-end align-end mr-5 mb-3 mt-1">
+          <div class="fc-study-buttons d-flex justify-end align-end mr-4 mb-3 mt-1">
 
             <FcButton
               type="secondary"
               color="primary"
-              class="mr-1 mt-1"
+              class="mr-2 mt-1"
               @click="actionRequestStudy">
               Request&nbsp;
               <span class="sr-only">New Study</span>

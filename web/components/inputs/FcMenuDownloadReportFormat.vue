@@ -5,6 +5,7 @@
         v-bind="attrs"
         v-on="on"
         :disabled="disabled"
+        width="50px"
         title="Export Reports"
         :loading="loading"
         color="primary"
@@ -25,7 +26,7 @@
         @click="$emit('download-report-format', value)">
         <v-list-item-title>
           <v-icon color="primary">mdi-download</v-icon>
-          {{label}} files
+          Zipped {{label}} files
         </v-list-item-title>
       </v-list-item>
     </v-list>
