@@ -94,10 +94,8 @@ export default {
     ** an older ATR_SPEED_VOLUME study. If so, we convert it to the new ATR_SVC
     ** type before displaying on the UI.
     */
-    let studyType;
     if (this.v.studyType.$model === StudyType.ATR_SPEED_VOLUME) {
-      studyType = StudyType.ATR_SVC;
-      this.v.studyType.$model = studyType;
+      this.v.studyType.$model = StudyType.ATR_SVC;
     }
   },
   watch: {
