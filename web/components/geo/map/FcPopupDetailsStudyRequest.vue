@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import FcButtonAria from '../../inputs/FcButtonAria.vue';
+import FcButtonAria from '@/web/components/inputs/FcButtonAria.vue';
 
 export default {
   name: 'FcPopupDetailsStudyRequest',
