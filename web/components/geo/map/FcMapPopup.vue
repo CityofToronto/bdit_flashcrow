@@ -57,13 +57,14 @@ const SELECTABLE_LAYERS = [
   'midblocks',
 ];
 
+// some commented-out for being too frequent
 const VEHTYPE_ICONS = {
-  1: 'mdi-car', // Automobile
+  // 1: 'mdi-car', // Automobile
   2: 'mdi-motorbike', // Motorcycle
   3: 'mdi-moped', // Moped
-  4: 'mdi-van-utility', // Passenger Van
-  5: 'mdi-car-lifted-pickup', // Pick Up Truck
-  6: 'mdi-van-utility', // delivery van
+  // 4: 'mdi-van-utility', // Passenger Van
+  // 5: 'mdi-car-lifted-pickup', // Pick Up Truck
+  // 6: 'mdi-van-utility', // delivery van
   7: 'mdi-tow-truck', // tow truck
   8: 'mdi-truck', // open truck
   9: 'mdi-truck', // closed truck
@@ -82,9 +83,10 @@ const VEHTYPE_ICONS = {
   30: 'mdi-tram', // Street Car
   32: 'mdi-ambulance', // Ambulance
   33: 'mdi-fire-truck', //  Fire Vehicle
+  34: 'mdi-car-emergency', //  Police
   36: 'mdi-bicycle', // Bicycle
-  39: 'mdi-taxi', // Taxi
-  98: 'mdi-truck', // Truck (other)
+  // 39: 'mdi-taxi', // Taxi
+  // 98: 'mdi-truck', // Truck (other)
 };
 
 export default {
@@ -135,8 +137,6 @@ export default {
     icon() {
       if (this.layerId === 'collisionsLevel2' || this.layerId === 'collisionsLevel1') {
         const props = this.feature.properties || {};
-        console.log(props);//eslint-disable-line
-        console.log(props.vehtype);//eslint-disable-line
         if (props.pedestrian && props.older_adult) {
           return 'mdi-human-cane';
         }
@@ -151,9 +151,7 @@ export default {
         }
         if (props.vehtype) {
           const types = props.vehtype.split('|');
-          console.log(types);//eslint-disable-line
           for (let i = 0; i <= types.length; i += 1) {
-            console.log(types[i], VEHTYPE_ICONS[types[i]]);//eslint-disable-line
             if (types[i] && VEHTYPE_ICONS[types[i]]) {
               return VEHTYPE_ICONS[types[i]];
             }
