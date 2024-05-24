@@ -10,7 +10,7 @@
         :loading="loading"
         color="primary"
         :scope="requireAuth ? [] : null"
-        type="tertiary">
+        :type="type">
           <span  v-if="textScreenReader !== null" class="sr-only">
             {{textScreenReader}}
           </span>

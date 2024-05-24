@@ -46,7 +46,7 @@
         </div>
       </dl>
 
-      <div class="fc-collision-detail-box ml-1 mr-3 body-1">
+      <div class="fc-collision-detail-box ml-1 mr-4 body-1">
         <div class="d-flex fc-collision-detail-title ml-2 justify-space-apart">
           <FcButton
             type="tertiary"
