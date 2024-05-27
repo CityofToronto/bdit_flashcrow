@@ -22,14 +22,15 @@
 
     <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
       <v-row class="align-center mx-0 px-1">
-        <h3 class="flex-1">{{ numFilters }} Filter{{ this.numFilters > 1 ? 's' : '' }}</h3>
-        <FcButton @click="isExpanded = !isExpanded" type="icon" class="flex-1">
+        <h3 class="flex-1 pr-1">{{ numFilters }}
+          Active Filter{{ this.numFilters > 1 ? 's' : '' }}</h3>
+        <FcButton @click="isExpanded = !isExpanded" type="icon" class="flex-1" small>
           <v-icon v-if="isExpanded">mdi-menu-up</v-icon>
           <v-icon v-else>mdi-menu-down</v-icon>
         </FcButton>
       </v-row>
       <v-expand-transition>
-        <ul v-show="isExpanded" class="pt-1">
+        <ul v-show="isExpanded" class="pt-3">
           <li v-for="(item, i) in collisionFilters" :key="i">
             <b>{{ item.filter }}: </b> {{ item.label }}
           </li>
