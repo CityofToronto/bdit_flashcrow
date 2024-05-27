@@ -5,7 +5,7 @@
     <span class="body-1">
       You have requested an urgent study request,
       please wait for an email from
-      <strong>trafficdata@toronto.ca</strong>
+      <strong>TrafficData@toronto.ca</strong>
       for further instructions.
     </span>
   </FcDialogAlert>
