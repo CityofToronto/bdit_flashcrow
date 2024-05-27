@@ -27,7 +27,7 @@ test('EmailStudyRequestCompleted', async () => {
   expect(recipients).toEqual([requester.email, ...studyRequest.ccEmails]);
 
   const subject = email.getSubject();
-  expect(subject).toEqual('[MOVE] Your request is complete! (Test location)');
+  expect(subject).toEqual('[MOVE] Your request is complete! (#42 - Test location)');
 
   const params = email.getBodyParams();
   expect(params.hrefStudyRequest).toEqual('https://localhost:8080/requests/study/42');

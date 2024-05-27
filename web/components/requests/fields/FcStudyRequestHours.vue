@@ -8,7 +8,8 @@
     outlined
     label="Hours"
     :messages="caption"
-    v-bind="$attrs" />
+    v-bind="$attrs"
+    />
 </template>
 
 <script>
@@ -18,6 +19,14 @@ export default {
   name: 'FcStudyRequestHours',
   props: {
     v: Object,
+  },
+  beforeMount() {
+    this.resetHoursValue();
+  },
+  watch: {
+    'v.studyType.$model.name': function studyTypeChange() {
+      this.resetHoursValue();
+    },
   },
   computed: {
     hourOptions() {
@@ -64,6 +73,15 @@ export default {
     },
     studyType() {
       return this.v.studyType.$model;
+    },
+  },
+  methods: {
+    resetHoursValue() {
+      let value = null;
+      if (!this.v.studyType.$model.isMultiDayStudy) {
+        value = StudyHours[this.studyType.hourOptions[0]];
+      }
+      this.v.hours.$model = value;
     },
   },
 };

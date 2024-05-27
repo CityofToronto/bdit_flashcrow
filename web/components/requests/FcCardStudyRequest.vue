@@ -84,6 +84,17 @@ export default {
       return 'Midblock';
     },
   },
+  watch: {
+    locationType() {
+      let studyType;
+      if (this.location.centrelineType === CentrelineType.INTERSECTION) {
+        studyType = StudyType.TMC;
+      } else {
+        studyType = StudyType.ATR_SVC;
+      }
+      this.v.studyType.$model = studyType;
+    },
+  },
   methods: {
     async addHoverLayer(index, event) {
       const {

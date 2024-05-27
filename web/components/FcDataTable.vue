@@ -185,15 +185,20 @@ export default {
     });
 
     // Adds hover event listeners to table rows
-    const $tableRows = this.$el.querySelectorAll('tbody tr');
-    $tableRows.forEach(($tr) => {
-      $tr.addEventListener('mouseover', () => {
-        const requestId = parseInt($tr.children[1].innerText.trim(), 10);
+    const table = document.getElementsByTagName('tbody')[0];
+
+    table.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('tr');
+      if (target) {
+        const requestId = parseInt(target.children[1].innerText.trim(), 10);
         this.setHoveredStudyRequest(requestId);
-      });
-      $tr.addEventListener('mouseleave', () => {
+      }
+    });
+    table.addEventListener('mouseleave', (e) => {
+      const target = e.target.closest('tbody');
+      if (target) {
         this.setHoveredStudyRequest(null);
-      });
+      }
     });
   },
   methods: {
