@@ -20,7 +20,7 @@
                 v-if="i < 4"
               ></div>
             </div>
-            <div class="fc-input-location-search-wrapper" >
+            <div class="fc-input-location-search-wrapper align-center" >
               <FcInputLocationSearch
               v-model="locationsEditSelection.locations[i]"
               :location-index="i"
@@ -86,9 +86,8 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
 
-      <div v-if="textLocationsSelectionIncludes !== null"
-        class="pr-2 secondary--text text-left mt-1 d-flex justify-space-between align-center">
-        <div>{{textLocationsSelectionIncludes}}</div>
+      <div class="pr-2 secondary--text text-left mt-1 d-flex justify-space-between align-center">
+        <div v-if="textLocationsSelectionIncludes !== null">{{textLocationsSelectionIncludes}}</div>
         <FcButton
           class="ml-3 edit-location-btn"
           type="tertiary"
@@ -145,9 +144,9 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mr-2 justify-end">
+      <div class="d-flex mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <div class="mb-3">
+          <div class="mb-3 mt-2">
             <FcButton
               type="tertiary"
               @click="leaveLocationMode">
@@ -444,8 +443,8 @@ export default {
   }
   & .fc-close-top-right {
     position: absolute;
-    right: 8px;
-    top: 4px;
+    right: 10px;
+    top: 6px;
   }
   & .fc-multi-line {
     display: flex;

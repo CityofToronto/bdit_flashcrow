@@ -60,7 +60,7 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex justify-end align-end mr-5 mb-3 mt-1">
+          <div class="fc-study-buttons d-flex justify-end align-end mr-3 mb-3 mt-1">
 
             <FcButton
               type="secondary"
