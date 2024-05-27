@@ -58,7 +58,7 @@
           </FcButton>
           <slot name="second"></slot>
         </div>
-        <table v-if="showDetails" class="fc-collision-detail-table pa-2">
+        <table v-if="showDetails" class="fc-collision-detail-table pa-2 mb-2 elevation-1">
           <th class="fc-detail-row fc-detail-header">
             <td class="fc-detail-desc"></td>
             <td class="fc-detail-num">Total</td>

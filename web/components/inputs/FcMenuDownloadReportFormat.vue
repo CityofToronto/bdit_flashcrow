@@ -8,6 +8,7 @@
         width="50px"
         title="Export Reports"
         :loading="loading"
+        height="35px"
         color="primary"
         :scope="requireAuth ? [] : null"
         :type="type">

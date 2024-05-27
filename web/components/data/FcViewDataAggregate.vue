@@ -33,7 +33,7 @@
               <span>View Report</span>
             </v-tooltip>
             <template v-slot:second v-if="collisionSummary.amount > 0">
-              <div class=" d-flex flex-column align-end mr-1 mb-4">
+              <div class="d-flex flex-column align-end mr-1 mb-2">
                 <FcMenuDownloadReportFormat
                   :require-auth="true"
                   type="secondary"
