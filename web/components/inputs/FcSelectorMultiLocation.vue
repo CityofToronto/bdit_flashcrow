@@ -1,7 +1,7 @@
 <template>
   <div
     aria-label="Search for multiple locations in the map"
-    class="fc-selector-multi-location d-flex flex-column px-4 pt-3"
+    class="fc-selector-multi-location d-flex flex-column px-4 py-3"
     role="search">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
@@ -20,7 +20,7 @@
                 v-if="i < 4"
               ></div>
             </div>
-            <div class="fc-input-location-search-wrapper" >
+            <div class="fc-input-location-search-wrapper align-center" >
               <FcInputLocationSearch
               v-model="locationsEditSelection.locations[i]"
               :location-index="i"
@@ -86,18 +86,16 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
 
-      <div v-if="textLocationsSelectionIncludes !== null"
-        class="pr-2 secondary--text text-left mt-2">
-        {{textLocationsSelectionIncludes}}
+      <div class="secondary--text text-left mt-1 d-flex justify-space-between align-center">
+        <div v-if="textLocationsSelectionIncludes !== null">{{textLocationsSelectionIncludes}}</div>
+        <FcButton
+          class="ml-3 edit-location-btn"
+          type="tertiary"
+          @click="setLocationMode(LocationMode.MULTI_EDIT)">
+          <v-icon color="primary" left>mdi-pencil</v-icon>
+          Edit
+        </FcButton>
       </div>
-
-      <FcButton
-        class="ml-3 edit-location-btn"
-        type="tertiary"
-        @click="setLocationMode(LocationMode.MULTI_EDIT)">
-        <v-icon color="primary" left>mdi-pencil</v-icon>
-        Edit Locations
-      </FcButton>
 
     </div>
     <div class="flex-grow-0 flex-shrink-0">
@@ -146,9 +144,9 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mr-2 justify-end">
+      <div class="d-flex mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <div class="mb-3">
+          <div class="mb-3 mt-2">
             <FcButton
               type="tertiary"
               @click="leaveLocationMode">
@@ -421,6 +419,7 @@ export default {
 <style lang="scss">
 .fc-selector-multi-location {
   position: relative;
+  border-bottom: 1px solid lightgrey;
 
   & .fc-input-location-search-wrapper {
     display: flex;
@@ -444,8 +443,8 @@ export default {
   }
   & .fc-close-top-right {
     position: absolute;
-    right: 8px;
-    top: 4px;
+    right: 12px;
+    top: 8px;
   }
   & .fc-multi-line {
     display: flex;
@@ -471,5 +470,6 @@ export default {
 }
 .edit-location-btn {
   text-transform: none !important;
+  margin-right: -8px;
 }
 </style>

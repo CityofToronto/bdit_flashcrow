@@ -4,32 +4,30 @@
       <FcButton
         v-bind="attrs"
         v-on="on"
-        class="ml-2"
         :disabled="disabled"
-        title="Download Report"
+        width="50px"
+        title="Export Reports"
         :loading="loading"
+        height="35px"
+        color="primary"
         :scope="requireAuth ? [] : null"
         :type="type">
-        <v-icon
-          left
-          :color="type === 'secondary' ? 'primary' : 'white'">
-          mdi-cloud-download
-        </v-icon>
-        <span
-          v-if="textScreenReader !== null"
-          class="sr-only">
-          {{textScreenReader}}
-        </span>
-        <v-icon right>mdi-menu-down</v-icon>
+          <span  v-if="textScreenReader !== null" class="sr-only">
+            {{textScreenReader}}
+          </span>
+          <v-icon>mdi-cloud-download</v-icon>
+          <v-icon right>mdi-menu-down</v-icon>
       </FcButton>
     </template>
-    <v-list>
+    <v-list shaped>
+      <v-subheader>Export Formats:</v-subheader>
       <v-list-item
         v-for="{ label, value } in items"
         :key="value"
         @click="$emit('download-report-format', value)">
         <v-list-item-title>
-          {{label}}
+          <v-icon color="primary">mdi-download</v-icon>
+          Zipped {{label}} files
         </v-list-item-title>
       </v-list-item>
     </v-list>
@@ -90,3 +88,8 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.fc-download-label {
+  text-transform: none;
+}
+</style>

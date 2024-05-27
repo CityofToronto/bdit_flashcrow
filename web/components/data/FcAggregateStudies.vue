@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-aggregate-studies mb-9 ml-5">
+  <div class="fc-aggregate-studies mb-5 ml-5">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View studies data" />
@@ -16,7 +16,7 @@
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
           <v-expansion-panel-header class="pa-1 pr-4 fc-study-expansion-header" ripple>
-            <v-icon small color="primary" class="fc-study-header-icon">mdi-briefcase</v-icon>
+            <v-icon small color="primary" class="fc-study-header-icon mx-1">mdi-briefcase</v-icon>
             <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta

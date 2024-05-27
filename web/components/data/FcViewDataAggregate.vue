@@ -5,17 +5,7 @@
       aria-label="Loading Aggregate View for View Data" />
     <template v-else>
       <section class="d-flex flex-column">
-        <FcHeaderCollisions
-          :collision-total="collisionTotal"
-          :disabled="reportExportMode === ReportExportMode.STUDIES">
-          <template v-slot:action v-if="collisionSummary.amount > 0">
-            <FcMenuDownloadReportFormat
-              v-if="reportExportMode === ReportExportMode.COLLISIONS"
-              :require-auth="true"
-              text-screen-reader="Collision Reports"
-              @download-report-format="actionDownloadReportFormatCollisions" />
-          </template>
-        </FcHeaderCollisions>
+        <FcHeaderCollisions :collision-total="collisionTotal"/>
 
         <FcAggregateCollisions
           :collision-summary="collisionSummary"
@@ -30,11 +20,10 @@
             <template v-slot:activator="{ on }">
               <FcButton
                 v-on="on"
-                v-if="reportExportMode !== ReportExportMode.COLLISIONS"
                 width="50px"
-                :disabled="
-                  collisionSummary.amount === 0
-                  || reportExportMode === ReportExportMode.STUDIES"
+                height="40px"
+                class="fc-view-collision-report"
+                :disabled="collisionSummary.amount === 0"
                 type="secondary"
                 @click="actionShowReportsCollision">
                 <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
@@ -43,43 +32,23 @@
               </template>
               <span>View Report</span>
             </v-tooltip>
+            <template v-slot:second v-if="collisionSummary.amount > 0">
+              <div class="d-flex flex-column align-end mr-1 mb-2">
+                <FcMenuDownloadReportFormat
+                  :require-auth="true"
+                  type="secondary"
+                  text-screen-reader="Collision Reports"
+                  @download-report-format="actionDownloadReportFormatCollisions" />
+                </div>
+            </template>
         </FcAggregateCollisions>
-          <div v-if="collisionSummary.amount > 0" class="mr-5 align-self-end mb-2">
-            <FcButton
-              class="ma-1"
-              :scope="[]"
-              type="secondary"
-              color="primary"
-              @click="actionToggleReportExportMode(ReportExportMode.COLLISIONS)">
-              <template v-if="reportExportMode === ReportExportMode.COLLISIONS">
-                Cancel&nbsp;<v-icon color="primary">mdi-cloud-check</v-icon>
-                <span class="sr-only">Cancel Export of Collision Reports</span>
-              </template>
-              <template v-else>
-                Export&nbsp;
-                <v-icon color="primary">mdi-cloud-download</v-icon>
-                <span class="sr-only">Export Collision Reports</span>
-              </template>
-            </FcButton>
-          </div>
+
       </section>
 
       <v-divider></v-divider>
 
       <section>
-        <FcHeaderStudies
-          :disabled="reportExportMode === ReportExportMode.COLLISIONS"
-          :study-total="studyTotal">
-          <template v-slot:action>
-            <div v-if="reportExportMode !== ReportExportMode.STUDIES"></div>
-            <FcMenuDownloadReportFormat
-              v-else
-              :require-auth="true"
-              text-screen-reader="Study Reports"
-              @download-report-format="actionDownloadReportFormatStudies" />
-          </template>
-        </FcHeaderStudies>
-
+        <FcHeaderStudies :study-total="studyTotal" />
         <FcAggregateStudies
           :study-summary="studySummary"
           :study-summary-unfiltered="studySummaryUnfiltered"
@@ -91,35 +60,26 @@
           @show-reports="actionShowReportsStudy"
           />
 
-          <div class="fc-study-buttons d-flex flex-column align-end mr-5">
-            <FcButton
-              class="mb-1"
-              v-if="studySummary.length > 0"
-              :scope="[]"
-              type="secondary"
-              color="primary"
-              @click="actionToggleReportExportMode(ReportExportMode.STUDIES)">
-              <template v-if="reportExportMode === ReportExportMode.STUDIES">
-                Cancel&nbsp;<v-icon color="primary">mdi-cloud-check</v-icon>
-                <span class="sr-only">Cancel Export of Study Reports</span>
-              </template>
-              <template v-else>
-                Export&nbsp;
-                <v-icon color="primary">mdi-cloud-download</v-icon>
-                <span class="sr-only">Export Study Reports</span>
-              </template>
-            </FcButton>
+          <div class="fc-study-buttons d-flex justify-end align-end mr-3 mb-3 mt-1">
 
             <FcButton
-              v-if="reportExportMode !== ReportExportMode.STUDIES"
               type="secondary"
               color="primary"
-              class="mb-3"
+              class="mr-2 mt-1"
               @click="actionRequestStudy">
               Request&nbsp;
               <span class="sr-only">New Study</span>
               <v-icon >mdi-briefcase-plus</v-icon>
             </FcButton>
+
+            <template v-if="studySummary.length > 0">
+              <FcMenuDownloadReportFormat
+                :require-auth="true"
+                type="secondary"
+                text-screen-reader="Study Reports"
+                @download-report-format="actionDownloadReportFormatStudies" />
+            </template>
+
           </div>
       </section>
     </template>
@@ -129,7 +89,7 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { ReportExportMode, LocationSelectionType } from '@/lib/Constants';
+import { LocationSelectionType } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -193,8 +153,6 @@ export default {
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
-      reportExportMode: null,
-      ReportExportMode,
       loading: false,
       loadingCollisions: false,
       loadingStudies: false,
@@ -285,8 +243,6 @@ export default {
         toast: 'Job',
         toastData: { job },
       });
-
-      this.reportExportMode = null;
     },
     async actionDownloadReportFormatStudies(reportFormat) {
       const job = await postJobGenerateStudyReports(
@@ -300,8 +256,6 @@ export default {
         toast: 'Job',
         toastData: { job },
       });
-
-      this.reportExportMode = null;
     },
     actionRequestStudy() {
       const params = this.locationsRouteParams;
@@ -379,15 +333,6 @@ export default {
 
       this.loading = false;
     },
-    actionToggleReportExportMode(reportExportMode) {
-      if (this.reportExportMode === reportExportMode) {
-        this.reportExportMode = null;
-        this.setToastInfo('You\'re no longer in Export Report Mode.');
-      } else {
-        this.reportExportMode = reportExportMode;
-        this.setToastInfo('You\'re currently in Export Report Mode.');
-      }
-    },
     ...mapMutations([
       'setLocationsIndex',
       'setToast',
@@ -396,3 +341,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.fc-view-collision-report {
+  align-self: center;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+</style>

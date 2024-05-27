@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-aggregate-collisions mb-5 ml-5">
+  <div class="fc-aggregate-collisions mb-0 ml-5">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
@@ -46,8 +46,8 @@
         </div>
       </dl>
 
-      <div class="fc-collision-detail-box ml-1 mr-3 body-1">
-        <div class="d-flex fc-collision-detail-title ml-2">
+      <div class="fc-collision-detail-box ml-1 mr-4 body-1">
+        <div class="d-flex fc-collision-detail-title ml-2 justify-space-apart">
           <FcButton
             type="tertiary"
             class="fc-details-btn"
@@ -56,8 +56,9 @@
               <v-icon v-else>mdi mdi-chevron-down</v-icon>
               Details
           </FcButton>
+          <slot name="second"></slot>
         </div>
-        <table v-if="showDetails" class="fc-collision-detail-table elevation-1 pa-2">
+        <table v-if="showDetails" class="fc-collision-detail-table pa-2 mb-2 elevation-1">
           <th class="fc-detail-row fc-detail-header">
             <td class="fc-detail-desc"></td>
             <td class="fc-detail-num">Total</td>
@@ -172,7 +173,11 @@ export default {
   }
   & .fc-details-btn {
     text-transform: none !important;
-    color: var(--v-default-base);
+    color: var(--v-secondary-base) !important
+  }
+  & .fc-collision-detail-title {
+    display: flex;
+    justify-content: space-between;
   }
   & .fc-collision-detail-table {
     width: 100%;

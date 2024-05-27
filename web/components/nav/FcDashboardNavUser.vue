@@ -54,7 +54,7 @@
           type="fab-icon"
           @click="$refs.login.actionSignIn()"
           v-on="on">
-          <v-icon>mdi-login</v-icon>
+          <v-icon>mdi-account-plus</v-icon>
         </FcButton>
       </template>
       <span>Sign In</span>
