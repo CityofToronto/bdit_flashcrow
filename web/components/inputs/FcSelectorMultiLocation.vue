@@ -86,7 +86,7 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
 
-      <div class="pr-2 secondary--text text-left mt-1 d-flex justify-space-between align-center">
+      <div class="secondary--text text-left mt-1 d-flex justify-space-between align-center">
         <div v-if="textLocationsSelectionIncludes !== null">{{textLocationsSelectionIncludes}}</div>
         <FcButton
           class="ml-3 edit-location-btn"
@@ -443,8 +443,8 @@ export default {
   }
   & .fc-close-top-right {
     position: absolute;
-    right: 10px;
-    top: 6px;
+    right: 12px;
+    top: 8px;
   }
   & .fc-multi-line {
     display: flex;
@@ -470,5 +470,6 @@ export default {
 }
 .edit-location-btn {
   text-transform: none !important;
+  margin-right: -5px;
 }
 </style>
