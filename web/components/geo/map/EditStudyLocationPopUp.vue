@@ -1,14 +1,25 @@
 <template>
-  <FcButton
-    type="tertiary"
-    @click="actionSelected">
-    Set Location
-  </FcButton>
+  <div>
+    <FcButton type="tertiary" @click="actionSelected">
+      Set Location
+    </FcButton>
+    <FcDialogConfirm
+      v-model="showIncompatableDialog" textCancel="Cancel"
+      textOk="Change Location" title="Invalid location for Study Type" okButtonType="primary"
+      @action-ok="actionForceStudyLocation">
+      <span class="body-1">
+        The location you have selected is not valid for this Study Type.<br />
+        Changing to this location will require you to update the Study Type.
+      </span>
+    </FcDialogConfirm>
+  </div>
+
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 import { getLocationByCentreline, getStudyRequest } from '@/lib/api/WebApi';
+import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import { getLocationStudyTypes } from '@/lib/geo/CentrelineUtils';
 
@@ -16,6 +27,13 @@ export default {
   name: 'EditStudyLocationPopUp',
   components: {
     FcButton,
+    FcDialogConfirm,
+  },
+  data() {
+    return {
+      showIncompatableDialog: false,
+      forcedLocation: null,
+    };
   },
   props: {
     feature: Object,
@@ -36,6 +54,9 @@ export default {
       this.setToastInfo(`Set study location to ${description}.`);
       await this.setSelectedStudyRequestsLocation(location);
     },
+    async actionForceStudyLocation() {
+      await this.setSelectedStudyRequestsLocation(this.forcedLocation);
+    },
     async actionSelected() {
       const { centrelineId, centrelineType } = this.feature.properties;
       const feature = { centrelineId, centrelineType };
@@ -45,6 +66,8 @@ export default {
       } else {
         // eslint-disable-next-line no-console
         console.log('Invalid');
+        this.showIncompatableDialog = true;
+        this.forcedLocation = location;
       }
     },
     ...mapMutations(['setToastInfo']),
