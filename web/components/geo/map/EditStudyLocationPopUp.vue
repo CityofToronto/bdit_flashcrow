@@ -9,7 +9,7 @@
       @action-ok="actionForceStudyLocation">
       <span class="body-1">
         The location you have selected is not valid for this Study Type.<br />
-        Changing to this location will require you to update the Study Request details.
+        Changing to this location will require the Study Request details to be manually updated.
       </span>
     </FcDialogConfirm>
   </div>
