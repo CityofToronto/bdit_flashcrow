@@ -9,7 +9,7 @@
       @action-ok="actionForceStudyLocation">
       <span class="body-1">
         The location you have selected is not valid for this Study Type.<br />
-        Changing to this location will require you to update the Study Type.
+        Changing to this location will require you to update the Study Request details.
       </span>
     </FcDialogConfirm>
   </div>
@@ -64,8 +64,6 @@ export default {
       if (await this.isCompatibleLocationChange(location)) {
         await this.actionSetStudyLocation(location);
       } else {
-        // eslint-disable-next-line no-console
-        console.log('Invalid');
         this.showIncompatableDialog = true;
         this.forcedLocation = location;
       }
