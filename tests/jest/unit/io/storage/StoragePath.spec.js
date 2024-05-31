@@ -59,6 +59,8 @@ test('StoragePath.forReport [collision]', async () => {
   await expect(StoragePath.forReport(report)).resolves.toEqual({
     namespace: StoragePath.NAMESPACE_REPORTS_COLLISION,
     key: 'COLLISION_DIRECTORY_ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION_s1_AkttmBoXtmB_POINTS_204c1293.pdf',
+    partLocationsSelection: 'ST_CLAIR_AVE_W_HOUNSLOW_HEATH_RD_SILVERTHORN_AVE_PLUS_1_LOCATION',
+    partReportType: 'COLLISION_DIRECTORY',
   });
 });
 
