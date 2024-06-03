@@ -48,7 +48,15 @@
       <v-divider></v-divider>
 
       <section>
-        <FcHeaderStudies :study-total="studyTotal" />
+        <FcHeaderStudies :study-total="studyTotal" >
+          <template v-if="studySummary.length > 0" v-slot:action>
+              <FcMenuDownloadReportFormat
+                :require-auth="true"
+                type="tertiary"
+                text-screen-reader="Study Reports"
+                @download-report-format="actionDownloadReportFormatStudies" />
+            </template>
+        </FcHeaderStudies>
         <FcAggregateStudies
           :study-summary="studySummary"
           :study-summary-unfiltered="studySummaryUnfiltered"
@@ -71,14 +79,6 @@
               <span class="sr-only">New Study</span>
               <v-icon >mdi-briefcase-plus</v-icon>
             </FcButton>
-
-            <template v-if="studySummary.length > 0">
-              <FcMenuDownloadReportFormat
-                :require-auth="true"
-                type="secondary"
-                text-screen-reader="Study Reports"
-                @download-report-format="actionDownloadReportFormatStudies" />
-            </template>
 
           </div>
       </section>
