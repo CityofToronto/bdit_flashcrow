@@ -19,17 +19,15 @@
           :layers.sync="internalLayers"
           :location-active="locationActive"
           :locations-state="locationsState">
-          <template
-            v-if="!drawerOpen"
-            v-slot:top-left>
+          <template v-if="!drawerOpen" v-slot:top-left>
             <FcSelectorCollapsedLocation
               v-if="!showLocationSelection"
               class="mt-3 ml-5" />
             <FcSelectorSingleLocation
-              v-else
-              v-model="internalLocationsSelection"
+              v-else v-model="internalLocationsSelection"
               class="mt-3 ml-5" />
-
+          </template>
+          <template v-if="!drawerOpen" v-slot:top-left-two>
             <FcGlobalFilterBox
               class="mt-3 ml-5"
               :readonly="filtersReadonly" />

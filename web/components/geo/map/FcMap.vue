@@ -9,8 +9,11 @@
         silent />
     </div>
 
-    <div class="fc-map-controls fc-map-top-left fc-half-width">
+    <div class="fc-map-controls fc-half-width">
       <slot name="top-left" />
+    </div>
+    <div class="fc-map-controls top-left-two">
+      <slot name="top-left-two" />
     </div>
 
     <div class="fc-map-controls fc-map-mode">
@@ -741,6 +744,9 @@ export default {
   }
   & > .fc-half-width {
     width: 50%;
+  }
+  & .top-left-two {
+    margin-top: 50px;
   }
 
   /*
