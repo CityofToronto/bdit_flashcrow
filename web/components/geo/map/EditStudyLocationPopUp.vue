@@ -8,8 +8,8 @@
       textOk="OK" title="Invalid location for Study Type" okButtonType="primary">
       <span class="body-1">
         We cannot conduct your study at this location.<br />
-        The Study Type will need to be saved as one that is
-        valid for this location before selecting this location.
+        Ensure that the Study Type selected for this location is valid before proceeding with the
+        selection.
       </span>
     </FcDialogAlert>
   </div>
