@@ -52,7 +52,12 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 ml-2"
                 type="secondary">
-                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
                 <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
