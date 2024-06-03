@@ -89,7 +89,11 @@ import MvcrLink from './cells/MvcrLink.vue';
 
 const USE_STICKY_HEADER = {
   COLLISION_DIRECTORY: true,
+  COUNT_SUMMARY_TURNING_MOVEMENT: true,
   COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED: true,
+  SPEED_PERCENTILE: true,
+  COUNT_SUMMARY_24H: true,
+  COUNT_SUMMARY_24H_DETAILED: true,
 };
 
 function getClassListForStyle(style) {

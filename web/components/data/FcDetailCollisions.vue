@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-detail-collisions  mb-5">
+  <div class="fc-detail-collisions mb-4">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
@@ -101,6 +101,7 @@ export default {
 }
 .fc-collision-detail-row {
   border-radius: 5px;
+  align-content: center;
 }
 
 @media only screen and (max-width: 600px) {
