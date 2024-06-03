@@ -106,9 +106,9 @@
           <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrIds.length > 0">
-              <FcButton
+              <FcButton small
                 @click="downloadAllMvcrs"
-                class="ml-2"
+                class="mx-2"
                 :type="'secondary'">
                   <span>Export {{ mvcrIds.length }} MVCR</span>
               </FcButton>
@@ -120,7 +120,7 @@
               :loading="loadingDownload"
               :report-type="activeReportType"
               text-screen-reader="Collision Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
