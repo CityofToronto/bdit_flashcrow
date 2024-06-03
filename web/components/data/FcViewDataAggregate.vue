@@ -5,7 +5,17 @@
       aria-label="Loading Aggregate View for View Data" />
     <template v-else>
       <section class="d-flex flex-column">
-        <FcHeaderCollisions :collision-total="collisionTotal"/>
+        <FcHeaderCollisions :collision-total="collisionTotal">
+          <template v-slot:action v-if="collisionSummary.amount > 0">
+            <div class="d-flex flex-column align-end mr-1 mb-2">
+              <FcMenuDownloadReportFormat
+                :require-auth="true"
+                type="tertiary"
+                text-screen-reader="Collision Reports"
+                @download-report-format="actionDownloadReportFormatCollisions" />
+              </div>
+          </template>
+        </FcHeaderCollisions>
 
         <FcAggregateCollisions
           :collision-summary="collisionSummary"
@@ -32,15 +42,6 @@
               </template>
               <span>View Report</span>
             </v-tooltip>
-            <template v-slot:second v-if="collisionSummary.amount > 0">
-              <div class="d-flex flex-column align-end mr-1 mb-2">
-                <FcMenuDownloadReportFormat
-                  :require-auth="true"
-                  type="secondary"
-                  text-screen-reader="Collision Reports"
-                  @download-report-format="actionDownloadReportFormatCollisions" />
-                </div>
-            </template>
         </FcAggregateCollisions>
 
       </section>

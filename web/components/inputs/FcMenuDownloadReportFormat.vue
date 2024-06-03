@@ -8,8 +8,9 @@
         width="50px"
         title="Export Reports"
         :loading="loading"
-        height="35px"
+        height="25px"
         color="primary"
+        class="fc-download-button"
         :scope="requireAuth ? [] : null"
         :type="type">
           <span  v-if="textScreenReader !== null" class="sr-only">
@@ -89,7 +90,8 @@ export default {
 };
 </script>
 <style lang="scss">
-.fc-download-label {
-  text-transform: none;
+.fc-download-button {
+  opacity: 0.9;
+  margin-top: 5px;
 }
 </style>
