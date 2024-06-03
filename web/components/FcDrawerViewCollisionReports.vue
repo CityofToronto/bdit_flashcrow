@@ -119,6 +119,7 @@
               :disabled="reportRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Collision Report"
               type="tertiary"
               @download-report-format="actionDownload" />

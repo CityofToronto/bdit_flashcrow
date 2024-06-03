@@ -147,8 +147,9 @@
               :disabled="reportBodyEmpty || studyRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Study Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
