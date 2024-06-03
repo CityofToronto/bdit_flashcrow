@@ -1,17 +1,5 @@
 <template>
   <div class="fc-drawer-view-collision-reports d-flex flex-column">
-    <FcDialogConfirm
-      v-model="showConfirmLeave"
-      textCancel="Stay on this page"
-      textOk="Leave"
-      title="Leave Reports?"
-      okButtonType="primary"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        Leaving this page will cause you to switch to another location.<br/>
-        Are you sure you want to leave?
-      </span>
-    </FcDialogConfirm>
     <div class="fc-report-loading" v-if="loading">
       <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
         <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
@@ -188,7 +176,6 @@ import {
 import { defaultCollisionFilters, defaultCommonFilters } from '@/lib/filters/DefaultFilters';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -205,7 +192,6 @@ export default {
   components: {
     FcButton,
     FcCallout,
-    FcDialogConfirm,
     FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
@@ -230,7 +216,6 @@ export default {
         ReportType.COLLISION_DIRECTORY,
         ReportType.COLLISION_TABULATION,
       ],
-      showConfirmLeave: false,
       collapseReport: false,
     };
   },
@@ -338,8 +323,8 @@ export default {
       }
     }
     this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
+    this.leaveConfirmed = true;
+    this.$router.push(this.nextRoute);
   },
   methods: {
     changeLocation(num) {
