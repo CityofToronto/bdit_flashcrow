@@ -14,6 +14,8 @@
         <template v-slot:activator="{ on, attrs }">
           <FcButton
             v-if="!readonly"
+            width="40px"
+            min-width="40px"
             type="tertiary" v-bind="attrs" v-on="on"
             @click="setFiltersOpen(true)">
             <v-icon>mdi-plus</v-icon>

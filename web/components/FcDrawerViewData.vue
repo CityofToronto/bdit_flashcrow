@@ -23,7 +23,7 @@
             </div>
           </div>
 
-          <FcGlobalFilters class="px-5 py-3" header-tag="h3"
+          <FcGlobalFilters class="pl-5 pr-3 py-1" header-tag="h3"
             :class="{'fc-filter-section-border':locationMode === LocationMode.SINGLE}"/>
 
           <v-divider></v-divider>

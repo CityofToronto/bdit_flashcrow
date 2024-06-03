@@ -7,35 +7,17 @@
     dense>
     <FcDashboardNavBrand />
     <h1 class="headline ml-2 no-select">{{textH1}}</h1>
-    <v-chip
-      class="ml-2"
-      :color="frontendEnv.colorClass + ' darken-4'"
-      dark
-      small>
+    <v-spacer></v-spacer>
+    <v-chip class="ml-2" small>
       {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
     </v-chip>
 
-    <v-spacer></v-spacer>
-
-    <FcButton
-      v-if="frontendEnv !== FrontendEnv.PROD"
-      type="secondary"
-      @click="actionProd">
-      <v-icon
-        :aria-hidden="false"
-        aria-label="Opens in a new window"
-        left>
-        mdi-open-in-new
-      </v-icon>
-      Open in release version
-    </FcButton>
   </v-app-bar>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
 import FrontendMeta from '@/web/config/FrontendMeta';
@@ -43,7 +25,6 @@ import FrontendMeta from '@/web/config/FrontendMeta';
 export default {
   name: 'FcAppbar',
   components: {
-    FcButton,
     FcDashboardNavBrand,
   },
   data() {

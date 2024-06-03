@@ -1,17 +1,5 @@
 <template>
   <div class="fc-drawer-view-collision-reports d-flex flex-column">
-    <FcDialogConfirm
-      v-model="showConfirmLeave"
-      textCancel="Stay on this page"
-      textOk="Leave"
-      title="Leave Reports?"
-      okButtonType="primary"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        Leaving this page will cause you to switch to another location.<br/>
-        Are you sure you want to leave?
-      </span>
-    </FcDialogConfirm>
     <div class="fc-report-loading" v-if="loading">
       <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
         <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
@@ -52,7 +40,12 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 ml-2"
                 type="secondary">
-                <v-icon class="fc-icon-dim" size="20">mdi-map-marker</v-icon>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
                 <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
@@ -106,9 +99,9 @@
           <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrIds.length > 0">
-              <FcButton
+              <FcButton small
                 @click="downloadAllMvcrs"
-                class="ml-2"
+                class="mx-2"
                 :type="'secondary'">
                   <span>Export {{ mvcrIds.length }} MVCR</span>
               </FcButton>
@@ -119,8 +112,9 @@
               :disabled="reportRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Collision Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
@@ -182,7 +176,6 @@ import {
 import { defaultCollisionFilters, defaultCommonFilters } from '@/lib/filters/DefaultFilters';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -199,7 +192,6 @@ export default {
   components: {
     FcButton,
     FcCallout,
-    FcDialogConfirm,
     FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
@@ -224,7 +216,6 @@ export default {
         ReportType.COLLISION_DIRECTORY,
         ReportType.COLLISION_TABULATION,
       ],
-      showConfirmLeave: false,
       collapseReport: false,
     };
   },
@@ -332,8 +323,8 @@ export default {
       }
     }
     this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
+    this.leaveConfirmed = true;
+    this.$router.push(this.nextRoute);
   },
   methods: {
     changeLocation(num) {

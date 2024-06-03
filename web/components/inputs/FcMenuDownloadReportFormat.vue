@@ -5,11 +5,14 @@
         v-bind="attrs"
         v-on="on"
         :disabled="disabled"
-        width="50px"
+        width="55px"
+        max-width="55px"
+        min-width="55px"
         title="Export Reports"
         :loading="loading"
-        height="35px"
+        height="25px"
         color="primary"
+        class="fc-download-button"
         :scope="requireAuth ? [] : null"
         :type="type">
           <span  v-if="textScreenReader !== null" class="sr-only">
@@ -27,7 +30,8 @@
         @click="$emit('download-report-format', value)">
         <v-list-item-title>
           <v-icon color="primary">mdi-download</v-icon>
-          Zipped {{label}} files
+          <span v-if="singleFile === true"> {{label}}</span>
+          <span v-else>Zipped {{label}} files</span>
         </v-list-item-title>
       </v-list-item>
     </v-list>
@@ -73,6 +77,10 @@ export default {
       type: String,
       default: 'primary',
     },
+    singleFile: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     items() {
@@ -89,7 +97,8 @@ export default {
 };
 </script>
 <style lang="scss">
-.fc-download-label {
-  text-transform: none;
+.fc-download-button {
+  opacity: 0.7;
+  margin-top: 5px;
 }
 </style>

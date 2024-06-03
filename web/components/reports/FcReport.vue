@@ -14,6 +14,7 @@
             :key="'content_' + i + '_' + j">
             <component
               :is="'FcReport' + blockType.suffix"
+              :type="type"
               v-bind="options"
               class="pt-4" />
           </v-col>

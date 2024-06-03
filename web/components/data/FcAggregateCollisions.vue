@@ -46,11 +46,13 @@
         </div>
       </dl>
 
-      <div class="fc-collision-detail-box ml-1 mr-4 body-1">
+      <div class="fc-collision-detail-box ml-2 mr-4 body-1 mb-4">
         <div class="d-flex fc-collision-detail-title ml-2 justify-space-apart">
           <FcButton
             type="tertiary"
             class="fc-details-btn"
+            width="85px"
+            height="30px"
             @click="showDetails= !showDetails">
               <v-icon v-if="showDetails">mdi mdi-chevron-up</v-icon>
               <v-icon v-else>mdi mdi-chevron-down</v-icon>

@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-aggregate-studies mb-5 ml-5">
+  <div class="fc-aggregate-studies mb-5 ml-5 mr-3">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View studies data" />
@@ -53,8 +53,9 @@
                           v-on="on"
                           v-if="itemsPerLocation[i][j].n !== 0"
                           class="pa-0"
-                          max-width="50px"
-                          min-width="50px"
+                          width="40px"
+                          max-width="40px"
+                          min-width="40px"
                           type="tertiary"
                           :disabled="itemsPerLocation[i][j].n === 0"
                           @click="$emit('show-reports', { item, locationsIndex: j })">

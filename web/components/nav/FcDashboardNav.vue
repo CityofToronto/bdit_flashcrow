@@ -22,7 +22,7 @@
       :to="{ name: 'requestsTrack' }" />
 
     <FcDashboardNavItem
-      icon="cloud-download"
+      icon="cloud-download-outline"
       label="Manage Exports"
       :to="{ name: 'downloadsManage' }">
       <div class="fc-badge-wrapper">

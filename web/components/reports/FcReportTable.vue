@@ -25,7 +25,7 @@
           :key="'col_' + c"
           v-bind="attrs" />
       </colgroup>
-      <thead class="fc-report-table-header" v-if="header.length > 0">
+      <thead v-if="header.length > 0" :class="{'fc-table-sticky-header': useStickyHeader}">
         <tr
           v-for="(row, r) in headerNormalized"
           :key="'row_header_' + r">
@@ -86,6 +86,15 @@ import MvcrNotFoundAlert from '@/web/components/dialogs/MvcrNotFoundAlert.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
 import { AuthScope } from '@/lib/Constants';
 import MvcrLink from './cells/MvcrLink.vue';
+
+const USE_STICKY_HEADER = {
+  COLLISION_DIRECTORY: true,
+  COUNT_SUMMARY_TURNING_MOVEMENT: true,
+  COUNT_SUMMARY_TURNING_MOVEMENT_DETAILED: true,
+  SPEED_PERCENTILE: true,
+  COUNT_SUMMARY_24H: true,
+  COUNT_SUMMARY_24H_DETAILED: true,
+};
 
 function getClassListForStyle(style) {
   const {
@@ -246,6 +255,10 @@ export default {
       type: Array,
       default() { return []; },
     },
+    type: {
+      type: Object,
+      default() { return {}; },
+    },
     body: Array,
     footer: {
       type: Array,
@@ -280,6 +293,9 @@ export default {
     userHasMvcrReadPermission() {
       return this.hasAuthScope(AuthScope.MVCR_READ);
     },
+    useStickyHeader() {
+      return USE_STICKY_HEADER[this.type.name] === true;
+    },
   },
   mounted() {
     const routeParams = this.$route.params;
@@ -313,11 +329,11 @@ export default {
       background-color: var(--base-lighter);
     }
   }
-  & .fc-report-table-header {
-    position: sticky;
-    top: 0;
+  & .fc-table-sticky-header {
     background-color: #ACACAC !important;
+    position: sticky;
     z-index: 2;
+    top: 0;
   }
 }
 </style>

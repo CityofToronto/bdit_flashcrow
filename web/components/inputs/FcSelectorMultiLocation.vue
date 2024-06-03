@@ -87,7 +87,11 @@
         :locations-selection="locationsSelection" />
 
       <div class="secondary--text text-left mt-1 d-flex justify-space-between align-center">
-        <div v-if="textLocationsSelectionIncludes !== null">{{textLocationsSelectionIncludes}}</div>
+        <div>
+          <span v-if="textLocationsSelectionIncludes !== null">
+            {{textLocationsSelectionIncludes}}
+          </span>
+        </div>
         <FcButton
           class="ml-3 edit-location-btn"
           type="tertiary"

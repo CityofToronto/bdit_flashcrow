@@ -1,17 +1,5 @@
 <template>
   <div class="fc-drawer-view-study-reports d-flex flex-column">
-    <FcDialogConfirm
-      v-model="showConfirmLeave"
-      textCancel="Stay on this page"
-      textOk="Leave"
-      title="Leave Reports?"
-      okButtonType="primary"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        Leaving this page will cause you to switch to another location.<br/>
-        Are you sure you want to leave?
-      </span>
-    </FcDialogConfirm>
     <div class="fc-report-loading" v-if="loading">
       <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
         <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
@@ -147,8 +135,9 @@
               :disabled="reportBodyEmpty || studyRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Study Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
@@ -221,7 +210,6 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
@@ -238,7 +226,6 @@ export default {
   components: {
     FcButton,
     FcCallout,
-    FcDialogConfirm,
     FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
@@ -267,7 +254,6 @@ export default {
       reportBodyEmpty: false,
       reportLayout: null,
       reportUserParameters,
-      showConfirmLeave: false,
       showReportParameters: false,
       studies: [],
       studyRetrievalError: false,
@@ -430,8 +416,8 @@ export default {
       }
     }
     this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
+    this.leaveConfirmed = true;
+    this.$router.push(this.nextRoute);
   },
   methods: {
     async actionDownload(format) {
