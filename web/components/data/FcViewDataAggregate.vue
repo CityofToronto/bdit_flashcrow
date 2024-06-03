@@ -7,7 +7,7 @@
       <section class="d-flex flex-column">
         <FcHeaderCollisions :collision-total="collisionTotal">
           <template v-slot:action v-if="collisionSummary.amount > 0">
-            <div class="d-flex flex-column align-end mr-1 mb-2">
+            <div class="d-flex flex-column align-end mb-2">
               <FcMenuDownloadReportFormat
                 :require-auth="true"
                 type="tertiary"

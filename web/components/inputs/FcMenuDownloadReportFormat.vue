@@ -5,7 +5,9 @@
         v-bind="attrs"
         v-on="on"
         :disabled="disabled"
-        width="50px"
+        width="55px"
+        max-width="55px"
+        min-width="55px"
         title="Export Reports"
         :loading="loading"
         height="25px"
@@ -91,7 +93,7 @@ export default {
 </script>
 <style lang="scss">
 .fc-download-button {
-  opacity: 0.9;
+  opacity: 0.8;
   margin-top: 5px;
 }
 </style>
