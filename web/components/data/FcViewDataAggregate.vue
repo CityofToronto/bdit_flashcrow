@@ -90,7 +90,6 @@
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex';
 
-import { LocationSelectionType } from '@/lib/Constants';
 import {
   getCollisionsByCentrelineSummary,
   getCollisionsByCentrelineSummaryPerLocation,
@@ -150,7 +149,7 @@ export default {
         ksi: 0,
         validated: 0,
       },
-      locationsSelectionForCorridorReport: null,
+      locationsSelectionForReport: null,
       collisionSummaryPerLocation,
       collisionSummaryPerLocationUnfiltered,
       collisionTotal: 0,
@@ -218,27 +217,34 @@ export default {
     this.syncLocations();
   },
   methods: {
+    async removeEmptyLocations() {
+      this.locationsSelectionForReport = JSON.parse(
+        JSON.stringify(this.locationsSelection),
+      );
+
+      const indexesToIgnore = await getCollisionsByCentrelineSummaryPerLocation(
+        this.locations, this.filterParamsCollision,
+      );
+      const indexes = indexesToIgnore.map((element, index) => {
+        if (element.amount !== 0) return index;
+        return null;
+      }).filter(element => element !== null);
+      this.locationsSelectionForReport.locations = this.locations
+        .map((element, index) => {
+          if (indexes.includes(index)) return element;
+          return null;
+        }).filter(element => element !== null);
+    },
     async actionDownloadReportFormatCollisions(reportFormat) {
-      let job;
-      if (this.locationsSelection.selectionType === LocationSelectionType.CORRIDOR) {
-        this.locationsSelectionForCorridorReport = JSON.parse(
-          JSON.stringify(this.locationsSelection),
-        );
-        this.locationsSelectionForCorridorReport.locations = this.locations;
-        job = await postJobGenerateCollisionReports(
-          this.auth.csrf,
-          this.locationsSelectionForCorridorReport,
-          this.filterParamsCollision,
-          reportFormat,
-        );
-      } else {
-        job = await postJobGenerateCollisionReports(
-          this.auth.csrf,
-          this.locationsSelection,
-          this.filterParamsCollision,
-          reportFormat,
-        );
-      }
+      await this.removeEmptyLocations();
+      const job = await postJobGenerateCollisionReports(
+        this.auth.csrf,
+        this.locationsSelectionForReport,
+        this.filterParamsCollision,
+        reportFormat,
+      );
+
+      this.locationsSelectionForReport = null;
 
       this.setToast({
         toast: 'Job',
