@@ -21,7 +21,8 @@
           v-model="studyRequestBulk"
           class="px-5"
           :is-create="false"
-          :v="$v.studyRequestBulk" />
+          :v="$v.studyRequestBulk"
+          :errorOnSubmit="errorOnSubmit" />
       </div>
 
       <footer class="flex-grow-0 flex-shrink-0 shading">
@@ -81,6 +82,7 @@ export default {
     return {
       loadingSave: false,
       studyRequestBulk: null,
+      errorOnSubmit: false,
     };
   },
   computed: {
@@ -103,6 +105,7 @@ export default {
   methods: {
     actionSave() {
       if (!this.formValid) {
+        this.errorOnSubmit = true;
         const $form = this.$refs.formWrapper;
         scrollToFirstError($form, '.v-input');
 
