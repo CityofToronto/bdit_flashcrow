@@ -504,6 +504,8 @@ export default {
     overflow: hidden;
     max-width: 250px;
     text-overflow: ellipsis;
+    text-transform: none;
+    letter-spacing: normal;
   }
   & .fc-icon-dim {
     opacity: 0.6;
