@@ -222,16 +222,16 @@ export default {
         JSON.stringify(this.locationsSelection),
       );
 
-      const indexesToIgnore = await getCollisionsByCentrelineSummaryPerLocation(
+      const collisionMetaDataForLocations = await getCollisionsByCentrelineSummaryPerLocation(
         this.locations, this.filterParamsCollision,
       );
-      const indexes = indexesToIgnore.map((element, index) => {
+      const indexesToRetrieve = collisionMetaDataForLocations.map((element, index) => {
         if (element.amount !== 0) return index;
         return null;
       }).filter(element => element !== null);
       this.locationsSelectionForReport.locations = this.locations
         .map((element, index) => {
-          if (indexes.includes(index)) return element;
+          if (indexesToRetrieve.includes(index)) return element;
           return null;
         }).filter(element => element !== null);
     },
