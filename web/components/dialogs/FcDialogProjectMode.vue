@@ -105,13 +105,15 @@ export default {
       this.errorOnSubmit = false;
     },
     actionSave() {
-      if (!this.$v.$invalid) {
-        this.$emit('action-save', this.studyRequestBulk);
-        this.studyRequestBulk = makeStudyRequestBulk();
-        this.internalValue = false;
-      } else {
-        this.errorOnSubmit = true;
-      }
+      setTimeout(() => {
+        if (!this.$v.$invalid) {
+          this.$emit('action-save', this.studyRequestBulk);
+          this.studyRequestBulk = makeStudyRequestBulk();
+          this.internalValue = false;
+        } else {
+          this.errorOnSubmit = true;
+        }
+      });
     },
   },
 };

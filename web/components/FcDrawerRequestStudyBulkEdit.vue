@@ -63,7 +63,6 @@ import FcStudyRequestBulkDetails
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit',
@@ -104,18 +103,15 @@ export default {
   },
   methods: {
     actionSave() {
-      if (!this.formValid) {
-        this.errorOnSubmit = true;
-        const $form = this.$refs.formWrapper;
-        scrollToFirstError($form, '.v-input');
+      setTimeout(() => {
+        if (!this.formValid) {
+          this.errorOnSubmit = true;
+          return;
+        }
 
-        const errorText = getFirstErrorText($form);
-        this.setToastError(errorText);
-        return;
-      }
-
-      this.updateStudyRequestBulk(this.studyRequestBulk);
-      this.actionNavigateBack(true);
+        this.updateStudyRequestBulk(this.studyRequestBulk);
+        this.actionNavigateBack(true);
+      });
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;
