@@ -50,7 +50,7 @@ export default {
       const { studyType } = studyRequest;
       this.currentStudyTypeString = studyType.label;
       const validStudiesArray = await getLocationStudyTypes(location);
-      return validStudiesArray.includes(studyType);
+      return validStudiesArray.includes(studyType) || studyType.other;
     },
     async actionSetStudyLocation(location) {
       const { description } = location;
