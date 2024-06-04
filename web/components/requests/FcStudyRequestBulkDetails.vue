@@ -11,6 +11,7 @@
           <v-col cols="8">
             <v-text-field
               ref="autofocus"
+              autofocus
               dense
               v-model="v.name.$model"
               :error-messages="errorOnSubmit ? errorMessagesName : []"
