@@ -29,6 +29,7 @@
             <FcInputTextArray
               v-model="v.ccEmails.$model"
               :error-messages="errorOnSubmit ? errorMessagesCcEmails : []"
+              ref="inputTextArray"
               label="Staff Subscribed"
               placeholder="Enter a @toronto.ca email address"
               messages="Staff who should be notified when the data is ready"

@@ -18,6 +18,7 @@
       <v-card-text class="default--text">
         <FcStudyRequestBulkDetails
           v-if="projectMode === ProjectMode.CREATE_NEW"
+          ref="projectDetails"
           v-model="studyRequestBulk"
           :is-create="true"
           :v="$v.studyRequestBulk"
@@ -105,7 +106,8 @@ export default {
       this.errorOnSubmit = false;
     },
     actionSave() {
-      setTimeout(() => {
+      this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      this.$nextTick(() => {
         if (!this.$v.$invalid) {
           this.$emit('action-save', this.studyRequestBulk);
           this.studyRequestBulk = makeStudyRequestBulk();

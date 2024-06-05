@@ -22,7 +22,8 @@
           class="px-5"
           :is-create="false"
           :v="$v.studyRequestBulk"
-          :errorOnSubmit="errorOnSubmit" />
+          :errorOnSubmit="errorOnSubmit"
+          ref="projectDetails" />
       </div>
 
       <footer class="flex-grow-0 flex-shrink-0 shading">
@@ -103,7 +104,8 @@ export default {
   },
   methods: {
     actionSave() {
-      setTimeout(() => {
+      this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      this.$nextTick(() => {
         if (!this.formValid) {
           this.errorOnSubmit = true;
           return;
