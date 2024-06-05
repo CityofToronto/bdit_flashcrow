@@ -18,13 +18,15 @@
       <v-card-text class="default--text">
         <FcStudyRequestBulkDetails
           v-if="projectMode === ProjectMode.CREATE_NEW"
+          ref="projectDetails"
           v-model="studyRequestBulk"
           :is-create="true"
-          :v="$v.studyRequestBulk" />
+          :v="$v.studyRequestBulk"
+          :errorOnSubmit="errorOnSubmit" />
         <div v-else-if="projectMode === ProjectMode.ADD_TO_EXISTING">
           <FcInputProjectSearch
             v-model="studyRequestBulk"
-            :error-messages="errorMessagesAddToProject"
+            :error-messages="errorOnSubmit ? errorMessagesAddToProject : []"
             class="mt-6" />
         </div>
       </v-card-text>
@@ -39,7 +41,6 @@
           Cancel
         </FcButton>
         <FcButton
-          :disabled="$v.$invalid"
           type="tertiary"
           @click="actionSave">
           Save
@@ -75,6 +76,7 @@ export default {
     return {
       ProjectMode,
       studyRequestBulk: makeStudyRequestBulk(),
+      errorOnSubmit: false,
     };
   },
   validations: {
@@ -101,11 +103,19 @@ export default {
     actionCancel() {
       this.$emit('action-cancel');
       this.internalValue = false;
+      this.errorOnSubmit = false;
     },
     actionSave() {
-      this.$emit('action-save', this.studyRequestBulk);
-      this.studyRequestBulk = makeStudyRequestBulk();
-      this.internalValue = false;
+      this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      this.$nextTick(() => {
+        if (!this.$v.$invalid) {
+          this.$emit('action-save', this.studyRequestBulk);
+          this.studyRequestBulk = makeStudyRequestBulk();
+          this.internalValue = false;
+        } else {
+          this.errorOnSubmit = true;
+        }
+      });
     },
   },
 };
