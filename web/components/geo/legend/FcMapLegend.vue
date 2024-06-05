@@ -2,7 +2,8 @@
   <div v-if="this.drawerOpen && this.isMini">
    <v-tooltip left>
       <template v-slot:activator="{ on, attrs }">
-        <FcButton class="fc-legend-mini-mode" @click="toggleMini" v-bind="attrs" v-on="on">
+        <FcButton aria-label="Toggle Legend" class="fc-legend-mini-mode"
+          @click="toggleMini" v-bind="attrs" v-on="on">
           <v-icon >mdi-format-list-checkbox</v-icon>
         </FcButton>
       </template>

@@ -4,47 +4,47 @@
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
     <template v-else-if="collisionSummary.amount > 0">
-      <dl class="d-flex flex-grow-1 justify-space-around">
+      <div class="d-flex flex-grow-1 justify-space-around">
         <div class="d-flex pa-2 fc-aggregate-collisions-row">
           <div class="collision-fact">
-            <dt class="body-1">
+            <div class="body-1">
               Total
-            </dt>
-            <dd>
+            </div>
+            <div>
               <FcTextSummaryFraction
                 :a="collisionSummary.amount"
                 :b="collisionSummaryUnfiltered.amount"
                 class="mt-1"
                 :show-b="hasFiltersCollision || hasFiltersCommon" />
-            </dd>
+            </div>
           </div>
           <div class="collision-fact">
-            <dt class="body-1">
+            <div class="body-1">
               KSI
-            </dt>
-            <dd>
+            </div>
+            <div>
               <FcTextSummaryFraction
                 :a="collisionSummary.ksi"
                 :b="collisionSummaryUnfiltered.ksi"
                 class="mt-1"
                 :show-b="hasFiltersCollision || hasFiltersCommon" />
-            </dd>
+            </div>
           </div>
           <div class="collision-fact">
-            <dt class="body-1">
+            <div class="body-1">
               Verified
-            </dt>
-            <dd>
+            </div>
+            <div>
               <FcTextSummaryFraction
                 :a="collisionSummary.validated"
                 :b="collisionSummaryUnfiltered.validated"
                 class="mt-1"
                 :show-b="hasFiltersCollision || hasFiltersCommon" />
-            </dd>
+            </div>
           </div>
           <slot />
         </div>
-      </dl>
+      </div>
 
       <div class="fc-collision-detail-box ml-2 mr-4 body-1 mb-4">
         <div class="d-flex fc-collision-detail-title ml-2 justify-space-apart">

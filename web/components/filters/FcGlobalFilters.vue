@@ -16,6 +16,7 @@
             v-if="!readonly"
             width="40px"
             min-width="40px"
+            aria-label="Add Data Filters"
             type="tertiary" v-bind="attrs" v-on="on"
             @click="setFiltersOpen(true)">
             <v-icon>mdi-plus</v-icon>

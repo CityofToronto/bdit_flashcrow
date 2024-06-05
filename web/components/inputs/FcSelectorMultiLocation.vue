@@ -74,7 +74,7 @@
       class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
       <FcTooltip right>
           <template v-slot:activator="{ on: onTooltip }">
-            <FcButton class="fc-close-top-right" type="tertiary" icon
+            <FcButton aria-label="Clear Location" class="fc-close-top-right" type="tertiary" icon
               @click="actionClear" v-on="onTooltip" color="light-grey">
               <v-icon>mdi-close-circle</v-icon>
             </FcButton>
