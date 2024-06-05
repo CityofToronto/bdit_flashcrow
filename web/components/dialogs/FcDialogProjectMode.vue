@@ -114,6 +114,7 @@ export default {
           this.$emit('action-save', this.studyRequestBulk);
           this.studyRequestBulk = makeStudyRequestBulk();
           this.internalValue = false;
+          this.$v.$reset();
         } else {
           this.errorOnSubmit = true;
         }
