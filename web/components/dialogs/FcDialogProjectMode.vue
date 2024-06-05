@@ -106,7 +106,9 @@ export default {
       this.errorOnSubmit = false;
     },
     actionSave() {
-      this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      if (this.projectMode === ProjectMode.CREATE_NEW) {
+        this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      }
       this.$nextTick(() => {
         if (!this.$v.$invalid) {
           this.$emit('action-save', this.studyRequestBulk);
