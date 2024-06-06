@@ -8,8 +8,10 @@
           <FcButton
             class="ml-2"
             type="secondary"
+            small
             :disabled="disabled"
             @click="showDialog = true">
+            <v-icon left color="secondary">mdi-trash-can-outline</v-icon>
             CANCEL REQUEST
           </FcButton>
         </div>

@@ -57,7 +57,7 @@
                       hide-details
                       :indeterminate="selectAll === null">
                       <template v-slot:label>
-                        <span class="font-weight-medium">Select all</span>
+                        <span class="font-weight-medium fc-select-all-label">Select all</span>
                         <FcTextNumberTotal
                           class="ml-2"
                           :k="selectedItems.length"
@@ -83,8 +83,9 @@
                       class="ml-2"
                       :disabled="selectAll === false"
                       type="secondary"
+                      small
                       @click="actionRemoveFromProject">
-                      <v-icon left>mdi-folder-remove</v-icon>
+                      <v-icon left color="secondary">mdi-folder-remove</v-icon>
                       Remove From Project
                     </FcButton>
                   </div>
@@ -391,5 +392,16 @@ export default {
   & .fc-study-view-left {
     overflow-x: hidden;
   }
+  & .fc-select-all-label {
+    font-size: 12px;
+    white-space: nowrap;
+  }
 }
+
+@media only screen and (max-width: 800px) {
+  .fc-select-all-label {
+    display: none;
+  }
+}
+
 </style>
