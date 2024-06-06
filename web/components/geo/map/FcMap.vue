@@ -412,6 +412,7 @@ export default {
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
+        this.zoomLevel = this.map.getZoom();
       });
       this.zoomLevel = this.map.getZoom();
     });
