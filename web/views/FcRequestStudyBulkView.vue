@@ -1,11 +1,11 @@
 <template>
-  <div class="fc-request-study-bulk-view d-flex flex-column fill-height">
+  <div class="fc-request-study-bulk-view d-flex flex-column fill-height overflow-y-auto">
     <FcNavStudyRequest
       :study-request="studyRequestBulk" />
 
     <v-divider></v-divider>
 
-    <div class="flex-grow-1 flex-shrink-1 overflow-y-auto">
+    <div class="flex-grow-1 flex-shrink-1">
       <FcProgressLinear
         v-if="loading"
         aria-label="Loading bulk study request" />
@@ -29,7 +29,7 @@
                 :study-request-changes="studyRequestChanges" />
             </div>
           </v-col>
-          <v-col cols="6">
+          <v-col>
             <FcSummaryStudyRequestBulk
               class="mx-5"
               :study-request-bulk="studyRequestBulk" />
@@ -109,9 +109,9 @@
               </v-card>
             </v-col>
 
-            <v-col cols="5" class="flex-1 px-5 pl-0">
+            <v-col cols="5" class="flex-1 px-5 pl-0" >
               <FcMap
-                class="mx-0 fill-height"
+                class="mx-0 fill-height fc-map-rounded"
                 :locations-state="locationsState"
                 :show-legend="false"
                 :is-request-page="true"/>
@@ -388,6 +388,9 @@ export default {
 
   & .fc-map {
     min-height: 400px;
+  }
+  & .fc-map-rounded {
+    border-radius:5px;
   }
   & .fc-study-view-left {
     overflow-x: hidden;
