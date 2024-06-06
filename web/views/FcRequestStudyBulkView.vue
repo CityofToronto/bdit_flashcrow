@@ -49,7 +49,7 @@
               <v-card dense outlined class="flex-grow-1 fill-height">
                 <section
                   aria-labelledby="heading_bulk_request_requests"
-                  class="mb-0 mx-0 py-0">
+                  class="mb-0 mx-0 py-0 fc-study-view-left">
                   <div class="align-center d-flex px-4 py-2">
                     <v-checkbox
                       v-model="selectAll"
@@ -387,6 +387,9 @@ export default {
 
   & .fc-map {
     min-height: 400px;
+  }
+  & .fc-study-view-left {
+    overflow-x: hidden;
   }
 }
 </style>
