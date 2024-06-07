@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="internalValue" max-width="560" z-index="401">
+  <v-dialog v-model="internalValue" max-width="560" z-index="301">
     <v-card aria-labelledby="heading_dialog_alert" role="dialog">
       <v-card-title class="shading">
         <h2 class="display-1" id="heading_dialog_alert">{{ title }}</h2>
