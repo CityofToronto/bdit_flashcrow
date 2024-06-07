@@ -1,10 +1,21 @@
 <template>
-  <div class="fc-layout-request-editor fill-height">
+    <div class="fc-layout-request-editor fill-height">
     <div class="fc-pane-wrapper d-flex fill-height">
       <div class="fc-drawer flex-shrink-0">
         <router-view
           @action-focus-map="actionFocusMap"></router-view>
       </div>
+        <FcDialogAlertIncompatibleStudy
+          v-model="showIncompatibleDialog"
+          textOk="OK" title="Cannot change location" okButtonType="primary">
+          <span class="body-1">
+            We cannot conduct a {{this.currentStudyTypeString}} at this location.
+            To learn more about studies and the limitations of where they can be
+            conducted, email Data Collection at TrafficData@toronto.ca. <br />
+            Alternatively, cancel this request and submit a new one. This will
+            not affect the turnaround time of your request.
+          </span>
+        </FcDialogAlertIncompatibleStudy>
       <div class="flex-shrink-0 map">
         <FcMap
           class="fill-height"
@@ -36,12 +47,12 @@
 
             <v-card-actions class="shading">
               <FcMapPopupActionRequestEditor v-if="isNewRequest" :feature="feature" />
-              <EditStudyLocationPopUpVue v-else :feature="feature" />
+              <EditStudyLocationPopUpVue v-else :feature="feature" @showDialog="showDialog" />
             </v-card-actions>
           </template>
         </FcMap>
-      </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -55,6 +66,8 @@ import FcMapPopupActionRequestEditor
   from '@/web/components/geo/map/FcMapPopupActionRequestEditor.vue';
 import FcInputLocationSearch from '@/web/components/inputs/FcInputLocationSearch.vue';
 import { focusInput } from '@/web/ui/FormUtils';
+// eslint-disable-next-line max-len
+import FcDialogAlertIncompatibleStudy from '@/web/components/dialogs/FcDialogAlertIncompatibleStudy.vue';
 
 export default {
   name: 'FcLayoutRequestEditor',
@@ -63,11 +76,14 @@ export default {
     FcMap,
     FcMapPopupActionRequestEditor,
     EditStudyLocationPopUpVue,
+    FcDialogAlertIncompatibleStudy,
   },
   data() {
     return {
       locationToAdd: null,
       mapEaseMode: 'all',
+      currentStudyTypeString: null,
+      showIncompatibleDialog: false,
       searchLocationMarkerOpts: {
         multi: true,
         locationIndex: false,
@@ -132,6 +148,12 @@ export default {
     },
     clearSearch() {
       this.locationToAdd = null;
+    },
+    showDialog(msgStudyType) {
+      // eslint-disable-next-line no-console
+      console.log('msgStudyType', msgStudyType);
+      this.currentStudyTypeString = msgStudyType;
+      this.showIncompatibleDialog = true;
     },
   },
   watch: {
