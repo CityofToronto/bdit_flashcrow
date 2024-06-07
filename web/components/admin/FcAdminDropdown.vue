@@ -7,11 +7,13 @@
             :disabled="this.changesLoading"
             class="fc_admin_dropdown_items"
             @change="handleSelection" />
-            <div v-if="showExpiry" class="fc_admin_dropdown_items">
-              <span class="fc_admin_dropdown_span">Access valid until:</span> <br />
-              <span class="fc_admin_dropdown_span">
-                {{ parseExpiryDateTime(this.user.mvcrExpiryDate) }}
-              </span>
+            <div class="fc_admin_expiry_date">
+              <template v-if="showExpiry">
+                <span class="fc_admin_dropdown_span">Access valid until:</span> <br />
+                <span class="fc_admin_dropdown_span">
+                  {{ parseExpiryDateTime(this.user.mvcrExpiryDate) }}
+                </span>
+              </template>
             </div>
     </div>
 </template>
@@ -81,7 +83,9 @@ export default {
   flex: 1;
   margin: auto 10px auto 0;
 }
-
+.fc_admin_expiry_date {
+  min-width:100px;
+}
 .fc_admin_dropdown_span {
   font-style: italic;
 }

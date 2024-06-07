@@ -748,6 +748,7 @@ export default {
   }
   & .top-left-two {
     margin-top: 50px;
+    z-index: 8 !important;
   }
 
   /*

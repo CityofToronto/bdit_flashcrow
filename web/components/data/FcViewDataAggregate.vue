@@ -4,7 +4,7 @@
       v-if="loading || locations.length === 0"
       aria-label="Loading Aggregate View for View Data" />
     <template v-else>
-      <section class="d-flex flex-column">
+      <section class="d-flex flex-column fc-collision-sidebar-row">
         <FcHeaderCollisions :collision-total="collisionTotal">
           <template v-slot:action v-if="collisionSummary.amount > 0">
             <div class="d-flex flex-column align-end mb-2">
@@ -355,5 +355,8 @@ export default {
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
     0 2px 2px 0 rgba(0, 0, 0, 0.14),
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+.fc-collision-sidebar-row {
+  min-height: 44px;
 }
 </style>

@@ -63,9 +63,10 @@ export default {
 
 <style lang="scss">
 .fc-list-location-dropdown {
+  min-width: 300px;
   & .truncate {
     white-space: normal;
-    max-width: 240px;
+    max-width: 300px;
   }
   & .fc-list-dropdown-row {
     display: flex;
