@@ -253,7 +253,7 @@ export default {
 
 <style lang="scss">
 .fc-map-popup {
-  z-index: calc(var(--z-index-controls) - 1);
+  z-index: calc(var(--z-index-controls) - 2);
   & .fc-popup-title {
     display: flex;
     align-items: center;
@@ -262,7 +262,7 @@ export default {
     flex-flow: row nowrap;
   }
   &.hovered {
-    z-index: calc(var(--z-index-controls) - 2);
+    z-index: calc(var(--z-index-controls) - 3);
   }
 
   /*
