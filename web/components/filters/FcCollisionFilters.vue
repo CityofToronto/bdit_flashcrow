@@ -36,7 +36,12 @@
         <v-spacer></v-spacer>
         <FcTooltipCollisionFilter>
           <span>
-            The source of the collision data
+            We receive data from two sources:
+            Toronto Police Services (TPS) and Collision Reporting Centres (CRC).
+            The police will attend collisions where the minimum
+            requirements are met (collisions involving pedestrians, cyclists,
+            KSIs, $2,000+ property damage, etc.). All other collisions are self-reported.
+            <li></li>
           </span>
         </FcTooltipCollisionFilter>
       </div>
@@ -51,10 +56,6 @@
           hide-details
           :label="source.text"
           :value="source"></v-checkbox>
-        <v-spacer></v-spacer>
-        <FcTooltipCollisionFilter>
-          <span v-html="source.tooltip"></span>
-        </FcTooltipCollisionFilter>
       </div>
     </fieldset>
 
