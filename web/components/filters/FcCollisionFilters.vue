@@ -32,7 +32,7 @@
 
     <fieldset class="mt-4">
       <div class="align-center d-flex">
-        <legend class="headline">Collision Source</legend>
+        <legend class="headline">Data Source</legend>
         <v-spacer></v-spacer>
         <FcTooltipCollisionFilter>
           <span>

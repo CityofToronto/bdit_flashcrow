@@ -101,6 +101,7 @@ export default {
         validated: 'Verification',
         daysOfWeek: 'Days of the Week',
         details: 'Collision Details',
+        sources: 'Data Source',
         emphasisAreas: 'Vision Zero Emphasis Areas',
         mvcr: 'MVCR',
         injury: 'Injuries',
