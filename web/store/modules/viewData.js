@@ -212,6 +212,7 @@ export default {
       } = state.filtersCommon;
       const {
         details,
+        sources,
         drivact,
         drivcond,
         emphasisAreas,
@@ -235,6 +236,9 @@ export default {
       }
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
+      }
+      if (sources.length > 0) {
+        params.sources = sources;
       }
       if (details.length > 0) {
         params.details = details;

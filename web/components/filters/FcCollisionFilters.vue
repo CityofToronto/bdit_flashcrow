@@ -30,6 +30,34 @@
       </div>
     </fieldset>
 
+    <fieldset class="mt-4">
+      <div class="align-center d-flex">
+        <legend class="headline">Collision Source</legend>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span>
+            The source of the collision data
+          </span>
+        </FcTooltipCollisionFilter>
+      </div>
+
+      <div
+        v-for="source in CollisionSource.enumValues"
+        :key="source.name"
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue.sources"
+          class="mt-0"
+          hide-details
+          :label="source.text"
+          :value="source"></v-checkbox>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span v-html="source.tooltip"></span>
+        </FcTooltipCollisionFilter>
+      </div>
+    </fieldset>
+
     <FcRadioGroup
       v-model="internalValue.validated"
       class="mt-6"
@@ -154,6 +182,7 @@
 import {
   CollisionDetail,
   CollisionEmphasisArea,
+  CollisionSource,
 } from '@/lib/Constants';
 import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
 import FcMvcrFieldFilter from '@/web/components/filters/FcMvcrFieldFilter.vue';
@@ -177,6 +206,7 @@ export default {
     return {
       CollisionDetail,
       CollisionEmphasisArea,
+      CollisionSource,
     };
   },
 };
