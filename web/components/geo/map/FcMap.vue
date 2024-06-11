@@ -366,13 +366,14 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
-    locationMarkersByCentreline() {
-      const markersById = {};
-      this.locationsMarkersGeoJson.features.forEach(
-        // eslint-disable-next-line no-return-assign
-        feature => markersById[feature.properties.centrelineId] = feature,
-      );
-      return markersById;
+    centrelineByRequestId() {
+      const centrelineById = {};
+      this.locationsMarkersGeoJson.features.forEach((feature) => {
+        feature.properties.studyRequests.forEach((studyRequest) => {
+          centrelineById[studyRequest.requestId] = feature.properties.centrelineId;
+        });
+      });
+      return centrelineById;
     },
     locationMarkersByRequestId() {
       const markersById = {};
@@ -494,13 +495,20 @@ export default {
       );
     },
     hoveredStudyRequest(newValue, oldValue) {
-      if (newValue !== null) {
+      let newCentrelineId = -1;
+      let oldCentrelineId = -1;
+
+      if (typeof newValue === 'number' && !Number.isNaN(newValue)) {
+        newCentrelineId = this.centrelineByRequestId[newValue];
         const feature = this.locationMarkersByRequestId[newValue];
         feature.properties.selected = true;
       }
-      if (oldValue !== null) {
-        const feature = this.locationMarkersByRequestId[oldValue];
-        feature.properties.selected = false;
+      if (typeof oldValue === 'number' && !Number.isNaN(oldValue)) {
+        oldCentrelineId = this.centrelineByRequestId[oldValue];
+        if (newCentrelineId !== oldCentrelineId) {
+          const feature = this.locationMarkersByRequestId[oldValue];
+          feature.properties.selected = false;
+        }
       }
       this.updateLocationsMarkersSource();
     },
