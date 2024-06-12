@@ -30,35 +30,6 @@
       </div>
     </fieldset>
 
-    <fieldset class="mt-4">
-      <div class="align-center d-flex">
-        <legend class="headline">Data Source</legend>
-        <v-spacer></v-spacer>
-        <FcTooltipCollisionFilter>
-          <span>
-            We receive data from two sources:
-            Toronto Police Services (TPS) and Collision Reporting Centres (CRC).
-            The police will attend collisions where the minimum
-            requirements are met (collisions involving pedestrians, cyclists,
-            KSIs, $2,000+ property damage, etc.). All other collisions are self-reported.
-            <li></li>
-          </span>
-        </FcTooltipCollisionFilter>
-      </div>
-
-      <div
-        v-for="source in CollisionSource.enumValues"
-        :key="source.name"
-        class="align-center d-flex">
-        <v-checkbox
-          v-model="internalValue.sources"
-          class="mt-0"
-          hide-details
-          :label="source.text"
-          :value="source"></v-checkbox>
-      </div>
-    </fieldset>
-
     <FcRadioGroup
       v-model="internalValue.validated"
       class="mt-6"
@@ -79,6 +50,34 @@
         </FcTooltipCollisionFilter>
       </template>
     </FcRadioGroup>
+
+    <fieldset class="mt-4">
+      <div class="align-center d-flex">
+        <legend class="headline">Data Source</legend>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span>
+            We receive data from two sources:
+            Toronto Police Services (TPS) and Collision Reporting Centres (CRC).
+            The police will attend collisions where the
+            minimum requirements are met (collisions involving pedestrians, cyclists,
+            KSIs, $2,000+ property damage, etc.). All other collisions are self-reported.
+          </span>
+        </FcTooltipCollisionFilter>
+      </div>
+
+      <div
+        v-for="source in CollisionSource.enumValues"
+        :key="source.name"
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue.sources"
+          class="mt-0"
+          hide-details
+          :label="source.text"
+          :value="source"></v-checkbox>
+      </div>
+    </fieldset>
 
     <FcRadioGroup
       v-model="internalValue.mvcr"

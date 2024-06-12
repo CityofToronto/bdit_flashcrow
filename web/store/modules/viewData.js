@@ -120,7 +120,7 @@ export default {
         filterChipsCollision.push(filterChip);
       }
       if (sources.length > 0) {
-        const label = sources.map(({ text }) => text).join(', ');
+        const label = sources.map(({ chip }) => chip).join(', ');
         const filterChip = { filter: 'sources', label, value: sources };
         filterChipsCollision.push(filterChip);
       }

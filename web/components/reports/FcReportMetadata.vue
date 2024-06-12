@@ -115,10 +115,10 @@ export default {
         manoeuver: 'Manoeuvre',
       };
       for (let i = 0; i < filters.length; i++) {
-        const { filter, label } = filters[i];
+        const { filter, label, value } = filters[i];
         readableFilters.push({
           filter: filtersMap[filter],
-          label,
+          label: (filter === 'sources' ? value.map(({ text }) => text).join(', ') : label),
         });
       }
       return readableFilters;
