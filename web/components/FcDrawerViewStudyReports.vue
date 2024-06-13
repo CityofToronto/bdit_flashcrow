@@ -1,28 +1,28 @@
 <template>
   <div class="fc-drawer-view-study-reports d-flex flex-column">
-    <FcDialogConfirm
-      v-model="showConfirmLeave"
-      textCancel="Stay on this page"
-      textOk="Leave"
-      title="Leave Reports"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        Leaving this page will cause you to switch to another location.
-        Are you sure you want to leave?
-      </span>
-    </FcDialogConfirm>
-    <FcProgressLinear
-      v-if="loading"
-      aria-label="Loading study reports viewer" />
+    <div class="fc-report-loading" v-if="loading">
+      <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+        <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
+        <h2 class="ml-4">
+          <span class="headline">{{studyType.label}}</span>
+        </h2>
+        <v-spacer></v-spacer>
+        <v-icon @click="closeReport">mdi-close-circle</v-icon>
+      </div>
+      <FcProgressLinear aria-label="Loading study reports viewer" />
+    </div>
+
     <template v-else>
       <div>
-        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <FcButton
-            type="primary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            View Data
-          </FcButton>
+        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon @click="actionNavigateBack" v-bind="attrs" v-on="on" large>
+                mdi-chevron-left
+              </v-icon>
+            </template>
+            <span>View Data</span>
+          </v-tooltip>
           <h2 class="ml-4">
             <span class="headline">{{studyType.label}}</span>
             <span class="font-weight-light headline secondary--text">
@@ -41,12 +41,19 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 mr-2"
                 type="secondary">
-                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2 text-truncate">{{locationActive.description}}</span>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
+                <span class="pa-1 fc-study-btn-label">
+                  {{locationActive.description}}
+                </span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
-            <FcListLocationMulti
+            <FcListLocationDropdown
               :disabled="disabledPerLocation"
               icon-classes="mr-2"
               :locations="locations"
@@ -63,7 +70,7 @@
                 class="flex-grow-0 mt-0"
                 type="secondary">
                 <v-icon color="primary" left>mdi-calendar-month-outline</v-icon>
-                {{labelActiveStudy}}
+                <span class="fc-study-btn-label">{{labelActiveStudy}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
@@ -78,9 +85,31 @@
               </v-list-item>
             </v-list>
           </v-menu>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
+                  mdi-chevron-down
+                </v-icon>
+                <v-icon v-else class="mx-3" @click="toggleReport">
+                  mdi-chevron-up
+                </v-icon>
+              </span>
+            </template>
+            <span v-if="collapseReport">Expand Report</span>
+            <span v-else>Collapse Report</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
+            </template>
+            <span>Close Report</span>
+          </v-tooltip>
         </div>
 
-        <div class="align-center d-flex pt-1">
+        <div class="align-center d-flex pt-1 fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
@@ -106,15 +135,16 @@
               :disabled="reportBodyEmpty || studyRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Study Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto" v-if="!collapseReport">
         <FcReportParameters
           v-if="showReportParameters"
           :report-parameters="reportParameters"
@@ -180,13 +210,11 @@ import {
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
 import TimeFormatters from '@/lib/time/TimeFormatters';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
+import FcListLocationDropdown from '@/web/components/location/FcListLocationDropdown.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcReportParameters from '@/web/components/reports/FcReportParameters.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
@@ -198,9 +226,7 @@ export default {
   components: {
     FcButton,
     FcCallout,
-    FcDialogConfirm,
-    FcIconLocationMulti,
-    FcListLocationMulti,
+    FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
     FcProgressLinear,
@@ -228,10 +254,10 @@ export default {
       reportBodyEmpty: false,
       reportLayout: null,
       reportUserParameters,
-      showConfirmLeave: false,
       showReportParameters: false,
       studies: [],
       studyRetrievalError: false,
+      collapseReport: false,
       studySummaryPerLocation: [],
     };
   },
@@ -390,8 +416,8 @@ export default {
       }
     }
     this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
+    this.leaveConfirmed = true;
+    this.$router.push(this.nextRoute);
   },
   methods: {
     async actionDownload(format) {
@@ -418,6 +444,14 @@ export default {
         name: 'viewDataAtLocation',
         params,
       });
+    },
+    closeReport() {
+      this.$router.push({
+        name: 'viewData',
+      });
+    },
+    toggleReport() {
+      this.collapseReport = !this.collapseReport;
     },
     handleError() {
       this.loadingReportLayout = false;
@@ -497,9 +531,35 @@ export default {
       right: 0;
     }
   }
+  & .fc-bg-white {
+    background-color: #FFF;
+  }
+  & .v-slide-group__prev--disabled {
+    visibility: hidden;
+  }
+  & .v-slide-group__next--disabled {
+    visibility: hidden;
+  }
+  & .fc-study-btn-label {
+    font-size: 12px;
+    overflow: hidden;
+    max-width: 250px;
+    text-overflow: ellipsis;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  & .fc-icon-dim {
+    opacity: 0.6;
+  }
 }
 
 .drawer-open .fc-drawer-view-study-reports {
   max-height: var(--full-height);
+}
+
+@media only screen and (max-width: 900px) {
+  .fc-study-btn-label {
+    display: none;
+  }
 }
 </style>

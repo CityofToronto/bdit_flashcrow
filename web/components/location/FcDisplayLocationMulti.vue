@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-input-summary text-left pa-1 pb-0 mr-4">
+  <div class="fc-input-summary text-left pa-1 pb-0 mr-5">
     <!-- if in CORRIDOR-mode -->
     <div v-if="isCorridor">
       <div  class="fc-corridor-summary-line">

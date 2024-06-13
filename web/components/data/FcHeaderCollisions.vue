@@ -1,5 +1,5 @@
 <template>
-  <header class="pa-3 pl-5">
+  <header class="px-5 pt-3">
     <div class="align-center d-flex flex-wrap justify-end">
       <h3 class="headline">
         <span>Collisions</span>

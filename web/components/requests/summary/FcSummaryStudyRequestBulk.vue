@@ -1,10 +1,19 @@
 <template>
   <section>
-    <v-row class="mt-1 mb-2" tag="dl">
-      <v-col cols="6">
+    <div class="mt-1 mb-2 d-flex justify-space-between" tag="dl">
+      <div>
+        <dt class="subtitle-1">Project Description</dt>
+        <dd class="ma-1 display-1">
+          <span v-if="studyRequestBulk.notes">
+            {{studyRequestBulk.notes}}
+          </span>
+          <span v-else>None</span>
+        </dd>
+      </div>
+      <div>
         <template v-if="!isCreate">
           <dt class="subtitle-1">Staff Subscribed</dt>
-          <dd class="mt-1 display-1">
+          <dd class="ma-1 display-1">
             <v-chip
               v-for="(ccEmail, i) in studyRequestBulk.ccEmails"
               :key="i"
@@ -19,18 +28,8 @@
             </span>
           </dd>
         </template>
-      </v-col>
-
-      <v-col cols="12">
-        <dt class="subtitle-1">Project Description</dt>
-        <dd class="mt-1 display-1">
-          <span v-if="studyRequestBulk.notes">
-            {{studyRequestBulk.notes}}
-          </span>
-          <span v-else>None</span>
-        </dd>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </section>
 </template>
 

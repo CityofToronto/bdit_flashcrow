@@ -4,6 +4,7 @@
       v-model="select"
       cache-items
       clearable
+      autofocus
       hide-no-data
       hide-details="auto"
       :items="studyRequestsBulk"
@@ -38,6 +39,9 @@ export default {
       select: null,
       studyRequestsBulk: [],
     };
+  },
+  props: {
+    errorOnSubmit: Boolean,
   },
   computed: {
     studyRequestBulkSelected() {

@@ -21,7 +21,9 @@
           v-model="studyRequestBulk"
           class="px-5"
           :is-create="false"
-          :v="$v.studyRequestBulk" />
+          :v="$v.studyRequestBulk"
+          :errorOnSubmit="errorOnSubmit"
+          ref="projectDetails" />
       </div>
 
       <footer class="flex-grow-0 flex-shrink-0 shading">
@@ -62,7 +64,6 @@ import FcStudyRequestBulkDetails
 import FcNavStudyRequest from '@/web/components/requests/nav/FcNavStudyRequest.vue';
 import FcMixinLeaveGuard from '@/web/mixins/FcMixinLeaveGuard';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
-import { getFirstErrorText, scrollToFirstError } from '@/web/ui/FormUtils';
 
 export default {
   name: 'FcDrawerRequestStudyBulkEdit',
@@ -81,6 +82,7 @@ export default {
     return {
       loadingSave: false,
       studyRequestBulk: null,
+      errorOnSubmit: false,
     };
   },
   computed: {
@@ -102,17 +104,16 @@ export default {
   },
   methods: {
     actionSave() {
-      if (!this.formValid) {
-        const $form = this.$refs.formWrapper;
-        scrollToFirstError($form, '.v-input');
+      this.$refs.projectDetails.$refs.inputTextArray.$refs.comboInput.blur();
+      this.$nextTick(() => {
+        if (!this.formValid) {
+          this.errorOnSubmit = true;
+          return;
+        }
 
-        const errorText = getFirstErrorText($form);
-        this.setToastError(errorText);
-        return;
-      }
-
-      this.updateStudyRequestBulk(this.studyRequestBulk);
-      this.actionNavigateBack(true);
+        this.updateStudyRequestBulk(this.studyRequestBulk);
+        this.actionNavigateBack(true);
+      });
     },
     async loadAsyncForRoute(to) {
       const { id } = to.params;

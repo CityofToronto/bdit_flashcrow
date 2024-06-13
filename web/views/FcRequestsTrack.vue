@@ -182,7 +182,7 @@ export default {
       loading: true,
       loadingDownload: false,
       loadingTotal: false,
-      page: 1,
+      page: this.getPageNum(),
       projectMode: ProjectMode.NONE,
       selectedItems: [],
       showDialogProjectMode: false,
@@ -283,12 +283,20 @@ export default {
   watch: {
     filterParamsRequest: {
       deep: true,
-      handler: debounce(async function updateTotal() {
+      handler: debounce(async function updateTotal(newValue, oldValue) {
         this.loadingTotal = true;
 
         const total = await getStudyRequestItemsTotal(this.filterParamsRequestWithPagination);
 
-        this.page = 1;
+        // Following logic only remembers the page number if the user is navigating between pages
+        // without refreshing (i.e oldValue === undefined)
+
+        if (!oldValue) {
+          this.page = this.getPageNum();
+        } else {
+          this.page = 1;
+        }
+
         this.total = total;
 
         this.loadingTotal = false;
@@ -314,6 +322,9 @@ export default {
         this.loading = false;
       }, 200),
       immediate: true,
+    },
+    page() {
+      this.setPageNum(this.page);
     },
   },
   created() {
@@ -413,10 +424,14 @@ export default {
       }
       await this.loadAsync();
     },
-    ...mapMutations('trackRequests', ['setFiltersRequestUserOnly']),
+    filtersExist() {
+      return Object.keys(this.filterParamsRequest).length > 2;
+    },
+    ...mapMutations('trackRequests', ['setFiltersRequestUserOnly', 'setPageNum']),
     ...mapMutations(['setToastInfo', 'setDialog']),
     ...mapActions(['saveStudyRequest', 'updateStudyRequests', 'checkAuth']),
     ...mapActions('editRequests', ['updateStudyRequestsBulkRequests']),
+    ...mapGetters('trackRequests', ['getPageNum']),
   },
 };
 </script>

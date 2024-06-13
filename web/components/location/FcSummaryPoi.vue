@@ -1,10 +1,7 @@
 <template>
   <div class="fc-summary-poi">
-    <FcProgressCircular
-      v-if="loading || location === null"
-      aria-label="Loading points of interest near this location"
-      silent
-      small />
+    <div v-if="loading || location === null"
+      aria-label="Loading points of interest near this location" />
     <dl v-else-if="poiChips.length > 0">
       <FcSummaryPoiChip
         v-for="(poiChip, i) in poiChips"
@@ -17,13 +14,11 @@
 
 <script>
 import { getPoiByCentrelineSummary } from '@/lib/api/WebApi';
-import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcSummaryPoiChip from '@/web/components/location/FcSummaryPoiChip.vue';
 
 export default {
   name: 'FcSummaryPoi',
   components: {
-    FcProgressCircular,
     FcSummaryPoiChip,
   },
   props: {

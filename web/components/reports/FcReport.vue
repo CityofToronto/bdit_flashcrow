@@ -14,6 +14,7 @@
             :key="'content_' + i + '_' + j">
             <component
               :is="'FcReport' + blockType.suffix"
+              :type="type"
               v-bind="options"
               class="pt-4" />
           </v-col>
@@ -22,6 +23,7 @@
           v-else
           :key="'contentRow_' + i"
           :is="'FcReport' + contentRow.type.suffix"
+          :type="type"
           v-bind="contentRow.options"
           class="pt-4" />
       </template>

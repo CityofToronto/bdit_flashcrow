@@ -83,7 +83,6 @@ export default {
     userLogin() {
       const route = this.$route;
       route.params.mvcrRead = true;
-      route.params.collisionFilters = JSON.stringify(this.filterParamsCollision);
       this.$refs.login.actionSignIn();
     },
   },

@@ -4,7 +4,7 @@
     :class="{ 'font-weight-medium': !small }">
     {{a}}
     <span
-      v-if="showB"
+      v-if="showB && a!== b"
       class="body-1 secondary--text">
       / {{b}}
     </span>

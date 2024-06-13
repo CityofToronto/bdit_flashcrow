@@ -1,6 +1,6 @@
 {
   "name": "bdit_flashcrow",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
   "scripts": {
@@ -44,6 +44,7 @@
     "archiver": "^5.3.1",
     "aws-sdk": "^2.1393.0",
     "axios": "^0.22.0",
+    "caniuse-lite": "^1.0.30001616",
     "csv-stringify": "^5.6.5",
     "d3-array": "^2.12.1",
     "d3-axis": "^2.1.0",
@@ -61,7 +62,7 @@
     "module-alias": "^2.2.3",
     "mustache": "^4.2.0",
     "openid-client": "^4.9.1",
-    "pdfmake": "^0.2.7",
+    "pdfmake": "^0.2.10",
     "pg-boss": "^6.2.2",
     "pg-promise": "^10.15.4",
     "underscore": "^1.13.6",
@@ -119,11 +120,6 @@
     "vuetify-loader": "^1.9.2",
     "webpack-bundle-analyzer": "^4.9.0"
   },
-  "browserslist": [
-    "last 1 Chrome version",
-    "last 1 Edge version",
-    "last 1 Firefox version"
-  ],
   "_moduleAliases": {
     "@": "."
   },

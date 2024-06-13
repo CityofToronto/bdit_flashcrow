@@ -1,11 +1,12 @@
 <template>
-  <div class="fc-detail-collisions align-end d-flex mb-5 mr-5 ml-5">
+  <div class="fc-detail-collisions mb-4">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Detail View collisions data" />
-    <template v-else-if="collisionSummary.amount > 0">
-      <dl class="d-flex flex-grow-1 flex-shrink-1 justify-space-around">
-        <div class="flex-grow-1 collision-fact">
+    <div class="fc-collision-detail-row pl-1 pr-3 py-2 d-flex ml-5 justify-space-around"
+      v-else-if="collisionSummaryUnfiltered.amount > 0">
+      <dl class="fc-collision-table d-flex flex-grow-1">
+        <div class="collision-fact">
           <dt class="body-1">
             Total
           </dt>
@@ -17,7 +18,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="flex-grow-1 flex-shrink-1 collision-fact">
+        <div class="collision-fact">
           <dt class="body-1">
             KSI
           </dt>
@@ -29,7 +30,7 @@
               :show-b="hasFiltersCollision || hasFiltersCommon" />
           </dd>
         </div>
-        <div class="fc-collisions-validated flex-grow-0 flex-shrink-0 collision-fact mr-4">
+        <div class="collision-fact">
           <dt class="body-1">
             Verified
           </dt>
@@ -42,15 +43,22 @@
           </dd>
         </div>
       </dl>
-      <FcButton
-        class="flex-grow-0 flex-shrink-0 mt-2"
-        type="secondary"
-        :disabled="collisionSummary.amount === 0"
-        v-if="collisionSummary.amount > 0"
-        @click="$emit('show-reports')">
-        <span>View Reports</span>
-      </FcButton>
-    </template>
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <FcButton
+            v-on="on"
+            id="fc-detail-collision-btn"
+            class="ma-1"
+            width="50px"
+            type="secondary"
+            :disabled="collisionSummary.amount === 0"
+            @click="$emit('show-reports')">
+            <v-icon color="primary" x-large>mdi-chevron-right</v-icon>
+          </FcButton>
+        </template>
+        <span>View Report</span>
+      </v-tooltip>
+    </div>
   </div>
 </template>
 
@@ -81,14 +89,19 @@ export default {
 
 <style lang="scss">
 .fc-detail-collisions {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  .fc-collisions-validated {
-    width: 120px;
-  }
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   .collision-fact {
-    min-width: 50px;
+    min-width: 65px;
+    text-align: center;
   }
+  .fc-collision-table {
+    justify-content: space-evenly;
+  }
+}
+.fc-collision-detail-row {
+  border-radius: 5px;
+  align-content: center;
 }
 
 @media only screen and (max-width: 600px) {

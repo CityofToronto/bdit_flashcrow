@@ -1,5 +1,5 @@
 <template>
-  <div class="fc-aggregate-studies mb-5 ml-5">
+  <div class="fc-aggregate-studies mb-5 ml-5 mr-3">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View studies data" />
@@ -15,8 +15,9 @@
           :aria-disabled="item.n === 0"
           class="fc-studies-summary-per-location"
           :disabled="item.n === 0">
-          <v-expansion-panel-header class="pr-8">
-            <div class="body-1">
+          <v-expansion-panel-header class="pa-1 pr-4 fc-study-expansion-header" ripple>
+            <v-icon small color="primary" class="fc-study-header-icon mx-1">mdi-briefcase</v-icon>
+            <div class="body-1 fc-study-summary-header">
               {{item.studyType.label}}
               <FcTextStudyTypeBeta
                 class="ml-2"
@@ -35,31 +36,34 @@
             <FcListLocationMulti
               class="shading"
               :disabled="disabledPerLocationByItem[i]"
-              icon-classes="mr-4"
               :locations="locations"
               :locations-selection="locationsSelection">
-              <template v-slot:subtitle="{ i: j }">
-                <div class="mt-1">
-                  <FcTextMostRecent
-                    v-if="itemsPerLocation[i][j].mostRecent !== null"
-                    :study="itemsPerLocation[i][j].mostRecent" />
-                </div>
-              </template>
               <template v-slot:action="{ i: j }">
-                <div class="mr-9">
+                <div class="d-flex align-center">
                   <FcTextSummaryFraction
                     :a="itemsPerLocation[i][j].n"
                     :b="itemsPerLocation[i][j].nUnfiltered"
-                    class="text-right"
+                    class="text-center fc-study-list-number"
                     :show-b="hasFiltersCommon || hasFiltersStudy"
                     small />
-                  <div v-if="itemsPerLocation[i][j].n > 0">
-                    <FcButton
-                      class="mr-n4 mt-1"
-                      type="tertiary"
-                      @click="$emit('show-reports', { item, locationsIndex: j })">
-                      <span>View Reports</span>
-                    </FcButton>
+                  <div class="fc-chevron-wrapper">
+                    <v-tooltip right z-index="110">
+                      <template v-slot:activator="{ on }">
+                        <FcButton
+                          v-on="on"
+                          v-if="itemsPerLocation[i][j].n !== 0"
+                          class="pa-0"
+                          width="40px"
+                          max-width="40px"
+                          min-width="40px"
+                          type="tertiary"
+                          :disabled="itemsPerLocation[i][j].n === 0"
+                          @click="$emit('show-reports', { item, locationsIndex: j })">
+                          <v-icon x-large>mdi-chevron-right</v-icon>
+                        </FcButton>
+                      </template>
+                      <span>View Report</span>
+                    </v-tooltip>
                   </div>
                 </div>
               </template>
@@ -75,7 +79,6 @@
 import { mapGetters } from 'vuex';
 
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
-import FcTextMostRecent from '@/web/components/data/FcTextMostRecent.vue';
 import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
@@ -88,7 +91,6 @@ export default {
     FcButton,
     FcListLocationMulti,
     FcProgressLinear,
-    FcTextMostRecent,
     FcTextStudyTypeBeta,
     FcTextSummaryFraction,
   },
@@ -152,11 +154,30 @@ export default {
 
 <style lang="scss">
 .fc-aggregate-studies {
+  & .fc-study-header-icon {
+    max-width: 32px;
+  }
+  & .fc-studies-summary-per-location {
+    border-radius: 5px;
+    margin-right: 12px;
+    box-shadow:
+        0 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0 2px 2px 0 rgba(0, 0, 0, 0.14),
+        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+  }
   & .fc-studies-summary-per-location:not(:last-child) {
     border-bottom: 1px solid var(--v-border-base);
+    margin-bottom: 12px;
   }
   & .data-empty {
     opacity: 0.37;
+  }
+  &.v-expansion-panel-content__wrap {
+    padding: 0 0 16px !important;
+  }
+  & .fc-study-list-number {
+    min-width: 50px;
   }
 }
 </style>

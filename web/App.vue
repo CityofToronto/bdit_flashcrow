@@ -139,6 +139,7 @@ export default {
 
   & .fc-navigation-drawer {
     overflow: visible;
+    z-index: 11;
   }
 
   & .v-input--selection-controls__input + .v-label {

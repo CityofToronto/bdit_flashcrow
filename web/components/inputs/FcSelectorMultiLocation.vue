@@ -1,7 +1,7 @@
 <template>
   <div
     aria-label="Search for multiple locations in the map"
-    class="fc-selector-multi-location d-flex flex-column px-4 pt-3"
+    class="fc-selector-multi-location d-flex flex-column px-4 py-3"
     role="search">
     <FcDialogConfirmMultiLocationLeave
       v-model="showConfirmMultiLocationLeave" />
@@ -20,7 +20,7 @@
                 v-if="i < 4"
               ></div>
             </div>
-            <div class="fc-input-location-search-wrapper" >
+            <div class="fc-input-location-search-wrapper align-center" >
               <FcInputLocationSearch
               v-model="locationsEditSelection.locations[i]"
               :location-index="i"
@@ -29,8 +29,22 @@
               :selected="i === locationsEditIndex"
               @focus="setLocationsEditIndex(i)"
               @location-remove="actionRemove"
-              showClose />
+               />
+               <FcTooltip right>
+                  <template v-slot:activator="{ on: onTooltip }">
+                    <FcButton
+                      aria-label="Clear Location"
+                      type="icon"
+                      @click="actionRemove(i)"
+                      v-on="onTooltip"
+                      plain>
+                      <v-icon>mdi-close</v-icon>
+                    </FcButton>
+                  </template>
+                  <span>Clear Location</span>
+                </FcTooltip>
             </div>
+
           </div>
 
           <div class="fc-multi-line">
@@ -46,6 +60,7 @@
                 @focus="setLocationsEditIndex(-1)"
                 @location-add="actionAdd" />
               </div>
+              <div class="fc-btn-spacer"></div>
           </div>
         </div>
         <v-messages
@@ -59,9 +74,9 @@
       class="flex-grow-1 flex-shrink-1 flex flex-column text-right">
       <FcTooltip right>
           <template v-slot:activator="{ on: onTooltip }">
-            <FcButton class="fc-close-top-right" type="tertiary" icon
-              @click="actionClear" v-on="onTooltip">
-              <v-icon color="grey">mdi-close-circle</v-icon>
+            <FcButton aria-label="Clear Location" class="fc-close-top-right" type="tertiary" icon
+              @click="actionClear" v-on="onTooltip" color="light-grey">
+              <v-icon>mdi-close-circle</v-icon>
             </FcButton>
           </template>
           <span>Clear Location</span>
@@ -71,18 +86,20 @@
         :locations-index="locationsIndex"
         :locations-selection="locationsSelection" />
 
-      <div v-if="textLocationsSelectionIncludes !== null"
-        class="pr-2 secondary--text text-left mt-2">
-        {{textLocationsSelectionIncludes}}
+      <div class="secondary--text text-left mt-1 d-flex justify-space-between align-center">
+        <div>
+          <span v-if="textLocationsSelectionIncludes !== null">
+            {{textLocationsSelectionIncludes}}
+          </span>
+        </div>
+        <FcButton
+          class="ml-3 edit-location-btn"
+          type="tertiary"
+          @click="setLocationMode(LocationMode.MULTI_EDIT)">
+          <v-icon color="primary" left>mdi-pencil</v-icon>
+          Edit
+        </FcButton>
       </div>
-
-      <FcButton
-        class="ml-3 edit-location-btn"
-        type="tertiary"
-        @click="setLocationMode(LocationMode.MULTI_EDIT)">
-        <v-icon color="primary" left>mdi-pencil</v-icon>
-        Edit Locations
-      </FcButton>
 
     </div>
     <div class="flex-grow-0 flex-shrink-0">
@@ -131,9 +148,9 @@
             hide-details
             label="Include corridor between locations" />
 
-      <div class="d-flex mt-2 mr-2 justify-end">
+      <div class="d-flex mr-2 justify-end">
         <template v-if="locationMode === LocationMode.MULTI_EDIT">
-          <div class="mb-3">
+          <div class="mb-3 mt-2">
             <FcButton
               type="tertiary"
               @click="leaveLocationMode">
@@ -183,7 +200,6 @@ import {
   LocationSelectionType,
   MAX_LOCATIONS,
 } from '@/lib/Constants';
-import { getLocationsWaypointIndices } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
 import FcDialogConfirmMultiLocationLeave
@@ -281,20 +297,18 @@ export default {
       if (this.locationsSelection.selectionType !== LocationSelectionType.CORRIDOR) {
         return null;
       }
-      const locationsWaypointIndices = getLocationsWaypointIndices(
-        this.locations,
-        this.locationsSelection.locations,
-      );
       let includesIntersections = 0;
       let includesMidblocks = 0;
-      this.locations.forEach(({ centrelineType }, i) => {
-        const waypointIndices = locationsWaypointIndices[i];
-        if (waypointIndices.length === 0) {
-          if (centrelineType === CentrelineType.INTERSECTION) {
+      const alreadyCounted = new Set();
+      this.locations.forEach((obj) => {
+        // prevent double-counting
+        if (alreadyCounted.has(obj.centrelineId) === false) {
+          if (obj.centrelineType === CentrelineType.INTERSECTION) {
             includesIntersections += 1;
           } else {
             includesMidblocks += 1;
           }
+          alreadyCounted.add(obj.centrelineId);
         }
       });
       const includesIntersectionsStr = includesIntersections === 1
@@ -303,7 +317,7 @@ export default {
       const includesMidblocksStr = includesMidblocks === 1
         ? '1 midblock'
         : `${includesMidblocks} midblocks`;
-      return `Includes ${includesIntersectionsStr}, ${includesMidblocksStr}`;
+      return `${includesIntersectionsStr}, ${includesMidblocksStr}`;
     },
     ...mapState([
       'locationMode',
@@ -409,8 +423,10 @@ export default {
 <style lang="scss">
 .fc-selector-multi-location {
   position: relative;
+  border-bottom: 1px solid lightgrey;
 
   & .fc-input-location-search-wrapper {
+    display: flex;
     width: 100%;
   }
   & .fc-input-has-border {
@@ -431,8 +447,8 @@ export default {
   }
   & .fc-close-top-right {
     position: absolute;
-    right: 8px;
-    top: 4px;
+    right: 12px;
+    top: 8px;
   }
   & .fc-multi-line {
     display: flex;
@@ -452,8 +468,12 @@ export default {
   & .hide {
     display: none;
   }
+  & .fc-btn-spacer {
+    width:45px;
+  }
 }
 .edit-location-btn {
   text-transform: none !important;
+  margin-right: -8px;
 }
 </style>

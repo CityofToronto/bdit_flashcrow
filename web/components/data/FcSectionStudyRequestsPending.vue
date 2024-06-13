@@ -1,9 +1,9 @@
 <template>
-  <section class="pa-3 pl-5">
+  <section class="pl-5">
     <p
       v-for="studyRequest in studyRequestsPending"
       :key="studyRequest.id"
-      class="align-center d-flex mb-1">
+      class="align-center d-flex mb-3 pa-3">
       <v-icon
         color="warning"
         left>mdi-information</v-icon>

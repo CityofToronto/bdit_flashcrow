@@ -1,45 +1,38 @@
 <template>
   <div class="fc-drawer-view-collision-reports d-flex flex-column">
-    <FcDialogConfirm
-      v-model="showConfirmLeave"
-      textCancel="Stay on this page"
-      textOk="Leave"
-      title="Leave Reports"
-      @action-ok="actionLeave">
-      <span class="body-1">
-        Leaving this page will cause you to switch to another location.
-        Are you sure you want to leave?
-      </span>
-    </FcDialogConfirm>
-    <FcProgressLinear
-      v-if="loading"
-      aria-label="Loading collision reports viewer" />
+    <div class="fc-report-loading" v-if="loading">
+      <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+        <v-icon @click="actionNavigateBack" large>mdi-chevron-left</v-icon>
+        <h2 class="ml-4">
+          <span class="headline">Collisions</span>
+        </h2>
+        <v-spacer></v-spacer>
+        <v-icon @click="closeReport">mdi-close-circle</v-icon>
+      </div>
+      <FcProgressLinear aria-label="Loading collision reports viewer" />
+    </div>
     <template v-else>
       <div>
-        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 pt-2">
-          <FcButton
-            type="primary"
-            @click="actionNavigateBack">
-            <v-icon left>mdi-chevron-left</v-icon>
-            View Data
-          </FcButton>
+        <div class="align-center d-flex flex-grow-0 flex-shrink-0 px-3 py-2">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon @click="actionNavigateBack" v-bind="attrs" v-on="on" large>
+                mdi-chevron-left
+              </v-icon>
+            </template>
+            <span>View Data</span>
+          </v-tooltip>
           <h2 class="ml-4">
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
               &#x2022;
-              <span v-if="locationMode === LocationMode.SINGLE || detailView">
-                {{locationActive.description}}
-              </span>
-              <span v-else>
-                {{locationsDescription}}
-              </span>
+              {{locationActive.description}}
             </span>
           </h2>
-
           <v-spacer></v-spacer>
 
           <v-menu
-            v-if="locationMode !== LocationMode.SINGLE && detailView"
+            v-if="locationMode !== LocationMode.SINGLE"
             max-height="320">
             <template v-slot:activator="{ on, attrs }">
               <FcButton
@@ -47,21 +40,49 @@
                 v-on="on"
                 class="flex-grow-0 mt-0 ml-2"
                 type="secondary">
-                <FcIconLocationMulti v-bind="locationsIconProps[locationsIndex]" />
-                <span class="pl-2">{{locationActive.description}}</span>
+                <span class="pr-1">
+                  <img v-if="locationActive.centrelineType == 1" title="Midblock"
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
+                  <img v-else title="Intersection"
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
+                </span>
+                <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
-            <FcListLocationMulti
+            <FcListLocationDropdown
               :disabled="disabledPerLocation"
               icon-classes="mr-2"
               :locations="locations"
               :locations-selection="locationsSelection"
-              @click-location="setLocationsIndex" />
+              @click-location="changeLocation"
+              />
           </v-menu>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">
+                <v-icon v-if="collapseReport" class="mx-3" @click="toggleReport">
+                  mdi-chevron-down
+                </v-icon>
+                <v-icon v-else class="mx-3" @click="toggleReport">
+                  mdi-chevron-up
+                </v-icon>
+              </span>
+            </template>
+            <span v-if="collapseReport">Expand Report</span>
+            <span v-else>Collapse Report</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
+            </template>
+            <span>Close Report</span>
+          </v-tooltip>
         </div>
 
-        <div class="align-center d-flex">
+        <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
@@ -78,22 +99,22 @@
           <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrIds.length > 0">
-              <FcButton
+              <FcButton small
                 @click="downloadAllMvcrs"
-                class="ml-2"
+                class="mx-2"
                 :type="'secondary'">
                   <span>Export {{ mvcrIds.length }} MVCR</span>
               </FcButton>
             </div>
           </template>
-
           <div class="mr-3">
             <FcMenuDownloadReportFormat
               :disabled="reportRetrievalError"
               :loading="loadingDownload"
               :report-type="activeReportType"
+              :singleFile="true"
               text-screen-reader="Collision Report"
-              type="secondary"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
@@ -101,7 +122,7 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto pt-2">
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto"  v-if="!collapseReport">
         <div
           v-if="loadingReportLayout"
           class="ma-3 text-center">
@@ -155,13 +176,11 @@ import {
 import { defaultCollisionFilters, defaultCommonFilters } from '@/lib/filters/DefaultFilters';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
-import FcDialogConfirm from '@/web/components/dialogs/FcDialogConfirm.vue';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcMenuDownloadReportFormat from '@/web/components/inputs/FcMenuDownloadReportFormat.vue';
-import FcIconLocationMulti from '@/web/components/location/FcIconLocationMulti.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
+import FcListLocationDropdown from '@/web/components/location/FcListLocationDropdown.vue';
 import FcReport from '@/web/components/reports/FcReport.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';
 import DateTime from '@/lib/time/DateTime';
@@ -173,9 +192,7 @@ export default {
   components: {
     FcButton,
     FcCallout,
-    FcDialogConfirm,
-    FcIconLocationMulti,
-    FcListLocationMulti,
+    FcListLocationDropdown,
     FcMenuDownloadReportFormat,
     FcProgressCircular,
     FcProgressLinear,
@@ -183,6 +200,7 @@ export default {
   },
   data() {
     return {
+      activeLocation: 0,
       collisionSummaryPerLocation: [],
       indexActiveReportType: 0,
       leaveConfirmed: false,
@@ -198,7 +216,7 @@ export default {
         ReportType.COLLISION_DIRECTORY,
         ReportType.COLLISION_TABULATION,
       ],
-      showConfirmLeave: false,
+      collapseReport: false,
     };
   },
   computed: {
@@ -214,8 +232,8 @@ export default {
         const selectionType = LocationSelectionType.POINTS;
         return `${s1}/${selectionType.name}`;
       }
-      const { locations, selectionType } = this.locationsSelection;
-      const s1 = CompositeId.encode(locations);
+      const { selectionType } = this.locationsSelection;
+      const s1 = CompositeId.encode([this.locations[this.activeLocation]]);
       return `${s1}/${selectionType.name}`;
     },
     activeReportType() {
@@ -277,7 +295,15 @@ export default {
       this.updateReportLayout();
     },
   },
-  beforeMount() {
+  async beforeMount() {
+    if (this.locations.length > 0) {
+      const collisionSummaryPerLocation = await getCollisionsByCentrelineSummaryPerLocation(
+        this.locations,
+        this.filterParamsCollision,
+      );
+      this.activeLocation = collisionSummaryPerLocation.findIndex(element => element.amount > 0);
+      this.setLocationsIndex(this.activeLocation);
+    }
     this.parseFiltersFromRouteParams();
   },
   beforeRouteLeave(to, from, next) {
@@ -297,10 +323,15 @@ export default {
       }
     }
     this.nextRoute = to;
-    this.showConfirmLeave = true;
-    next(false);
+    this.leaveConfirmed = true;
+    this.$router.push(this.nextRoute);
   },
   methods: {
+    changeLocation(num) {
+      this.setLocationsIndex(num);
+      this.activeLocation = num;
+      this.updateReportLayout();
+    },
     async actionDownload(format) {
       if (this.activeReportType === null) {
         return;
@@ -347,7 +378,6 @@ export default {
       const features = CompositeId.decode(s1);
       const selectionType = LocationSelectionType.enumValueOf(selectionTypeName);
       await this.initLocations({ features, selectionType });
-
       if (this.locationActive === null) {
         this.setLocationsIndex(0);
       }
@@ -377,7 +407,6 @@ export default {
         return;
       }
       this.loadingReportLayout = true;
-
       const reportLayout = await getReportWeb(
         this.activeReportType,
         this.activeReportId,
@@ -427,6 +456,14 @@ export default {
       const reportContent = this.reportLayout.content[1].options;
       return reportContent[section];
     },
+    closeReport() {
+      this.$router.push({
+        name: 'viewData',
+      });
+    },
+    toggleReport() {
+      this.collapseReport = !this.collapseReport;
+    },
     headerRowByIndex(index) {
       if (!this.isDirectoryReport) return false;
       let row = false;
@@ -453,9 +490,35 @@ export default {
       right: 0;
     }
   }
+  & .fc-bg-white {
+    background-color: #FFF;
+  }
+  & .v-slide-group__prev--disabled {
+    visibility: hidden;
+  }
+  & .v-slide-group__next--disabled {
+    visibility: hidden;
+  }
+  & .fc-collision-btn-location {
+    font-size: 12px;
+    overflow: hidden;
+    max-width: 250px;
+    text-overflow: ellipsis;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  & .fc-icon-dim {
+    opacity: 0.6;
+  }
 }
 
 .drawer-open .fc-drawer-view-collision-reports {
   max-height: var(--full-height);
+}
+
+@media only screen and (max-width: 800px) {
+  .fc-collision-btn-location {
+    display: none;
+  }
 }
 </style>

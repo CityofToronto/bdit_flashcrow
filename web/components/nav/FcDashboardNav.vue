@@ -17,12 +17,12 @@
         'requestStudyEdit',
         'requestStudyNew',
       ]"
-      icon="clipboard-list"
+      icon="clipboard-list-outline"
       label="Track Requests"
       :to="{ name: 'requestsTrack' }" />
 
     <FcDashboardNavItem
-      icon="download"
+      icon="cloud-download-outline"
       label="Manage Exports"
       :to="{ name: 'downloadsManage' }">
       <div class="fc-badge-wrapper">
@@ -43,12 +43,12 @@
 
     <FcDashboardNavItem
       external
-      icon="help-circle-outline"
+      icon="information-outline"
       label="MOVE Help Centre"
       href="https://notion.so/MOVE-Help-Centre-8a345a510b1a4119a1ddef5aa03e1bdc" />
 
     <FcDashboardNavItem
-      icon="bug"
+      icon="room-service-outline"
       label="Report an Issue"
       :href="urlReportIssue" />
   </v-list>

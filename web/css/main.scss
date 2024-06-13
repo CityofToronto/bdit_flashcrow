@@ -1,6 +1,6 @@
 /* roboto-100 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 100;
   src:
@@ -12,7 +12,7 @@
 
 /* roboto-300 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 300;
   src:
@@ -24,7 +24,7 @@
 
 /* roboto-regular - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 400;
   src:
@@ -36,7 +36,7 @@
 
 /* roboto-500 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 500;
   src:
@@ -48,7 +48,7 @@
 
 /* roboto-700 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 700;
   src:
@@ -60,7 +60,7 @@
 
 /* roboto-900 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: Roboto;
   font-style: normal;
   font-weight: 900;
   src:
@@ -119,7 +119,7 @@
 
   --border-default: 1px solid var(--base);
 
-  --z-index-controls: 99;
+  --z-index-controls: 9;
 }
 
 /* BOX SIZING */

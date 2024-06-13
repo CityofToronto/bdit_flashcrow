@@ -15,6 +15,8 @@ export default {
       sortBy: 'ID',
       sortDesc: true,
     },
+    pageNum: 1,
+    hoveredStudyRequest: null,
   },
   getters: {
     filterChipsRequest(state) {
@@ -132,6 +134,12 @@ export default {
     hasFiltersRequest(state, getters) {
       return getters.filterChipsRequest.length > 0 || state.searchRequest.query !== null;
     },
+    getHoveredStudyRequest(state) {
+      return state.hoveredStudyRequest;
+    },
+    getPageNum(state) {
+      return state.pageNum;
+    },
   },
   mutations: {
     removeFilterRequest(state, { filter }) {
@@ -172,6 +180,12 @@ export default {
     },
     setSortRequestSortDesc(state, sortDesc) {
       state.sortRequest.sortDesc = sortDesc;
+    },
+    setHoveredStudyRequest(state, studyRequest) {
+      state.hoveredStudyRequest = studyRequest;
+    },
+    setPageNum(state, pageNum) {
+      state.pageNum = pageNum;
     },
   },
 };

@@ -61,13 +61,13 @@ test('TimeFormatters.formatDaysOfWeek()', () => {
   expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Sun');
 
   daysOfWeek = [0, 1, 2, 3, 4, 5, 6];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('any day');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Any Day');
 
   daysOfWeek = [1, 2, 3, 4, 5];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('weekdays');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Weekdays');
 
   daysOfWeek = [0, 6];
-  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('weekends');
+  expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Weekends');
 
   daysOfWeek = [2, 3, 4];
   expect(TimeFormatters.formatDaysOfWeek(daysOfWeek)).toEqual('Tue, Wed, Thu');
@@ -125,6 +125,12 @@ test('TimeFormatters.formatRangeTimeOfDay()', () => {
   start = DateTime.fromSQL('1986-07-31 00:00:00');
   end = DateTime.fromSQL('1986-07-31 01:23:45');
   expect(TimeFormatters.formatRangeTimeOfDay({ start, end })).toEqual('00:00\u201301:23');
+});
+
+test('TimeFormatters.convertToLuxonDatetime()', () => {
+  const t = '2024-04-09 00:00:00.000';
+  expect(TimeFormatters.convertToLuxonDatetime(t))
+    .toEqual(DateTime.local(2024, 4, 9, 0, 0, 0, 0));
 });
 
 test('TimeFormatters.DAYS_OF_WEEK', () => {

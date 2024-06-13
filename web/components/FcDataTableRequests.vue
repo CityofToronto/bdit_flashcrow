@@ -30,10 +30,10 @@
         </span>
       </div>
     </template>
-    <template v-slot:header.SELECT>
+    <template v-slot:[`header.SELECT`]>
       <span class="sr-only">Select</span>
     </template>
-    <template v-slot:item.SELECT="{ item }">
+    <template v-slot:[`item.SELECT`]="{ item }">
       <FcTooltip right>
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -58,7 +58,7 @@
       </FcTooltip>
 
     </template>
-    <template v-slot:item.ID="{ item }">
+    <template v-slot:[`item.ID`]="{ item }">
       <span
         v-if="item.type.name === 'STUDY_REQUEST'"
         class="text-truncate"
@@ -66,7 +66,7 @@
         {{item.studyRequest.id}}
       </span>
     </template>
-    <template v-slot:item.LOCATION="{ item }">
+    <template v-slot:[`item.LOCATION`]="{ item }">
       <div
         v-if="item.type.name === 'STUDY_REQUEST_BULK'"
         class="align-center d-flex">
@@ -79,10 +79,10 @@
         {{item.location.description}}
       </div>
     </template>
-    <template v-slot:header.data-table-expand>
+    <template v-slot:[`header.data-table-expand`]>
       <span class="sr-only">Expand</span>
     </template>
-    <template v-slot:item.data-table-expand="{ expand, isExpanded, item }">
+    <template v-slot:[`item.data-table-expand`]="{ expand, isExpanded, item }">
       <FcButtonAria
         v-if="item.type.name === 'STUDY_REQUEST_BULK'
           && item.studyRequestBulk.studyRequests.length > 0"
@@ -96,7 +96,7 @@
         <v-icon v-else>mdi-menu-down</v-icon>
       </FcButtonAria>
     </template>
-    <template v-slot:item.STUDY_TYPE="{ item }">
+    <template v-slot:[`item.STUDY_TYPE`]="{ item }">
       <div class="text-wrap">
         <span v-if="item.type.name === 'STUDY_REQUEST_BULK'">
           Project
@@ -112,7 +112,7 @@
         </span>
       </div>
     </template>
-    <template v-slot:item.REQUESTER="{ item }">
+    <template v-slot:[`item.REQUESTER`]="{ item }">
       <div class="text-truncate">
         <span
           v-if="item.requestedBy !== null"
@@ -121,12 +121,12 @@
         </span>
       </div>
     </template>
-    <template v-slot:item.CREATED_AT="{ item }">
+    <template v-slot:[`item.CREATED_AT`]="{ item }">
       <span v-if="item.createdAt !== null">
         {{item.createdAt | date}}
       </span>
     </template>
-    <template v-slot:item.DUE_DATE="{ item }">
+    <template v-slot:[`item.DUE_DATE`]="{ item }">
       <span
         v-if="item.dueDate !== null">
         {{item.dueDate | date}}
@@ -138,7 +138,7 @@
         class="mr-2"
         color="warning">mdi-clipboard-alert</v-icon>
     </template>
-    <template v-slot:item.STATUS="{ item }">
+    <template v-slot:[`item.STATUS`]="{ item }">
       <div
         v-if="item.status !== null"
         class="align-center d-flex">
@@ -146,18 +146,17 @@
         <span class="status-label">{{item.status.text}}</span>
       </div>
     </template>
-    <template v-slot:header.ACTIONS>
+    <template v-slot:[`header.ACTIONS`]>
       <span class="sr-only">Actions</span>
     </template>
-    <template v-slot:item.ACTIONS="{ item }">
+    <template v-slot:[`item.ACTIONS`]="{ item }">
       <div class="text-right">
         <FcButtonAria
           :aria-label="'View ' + item.ariaLabel"
-          button-class="btn-show-request"
-          left
-          type="secondary"
+          button-class="btn-show-request" left type="secondary"
+          @click.ctrl.capture="(event) => actionShowItemNewTab(item, event)"
           @click="actionShowItem(item)">
-          <v-icon>mdi-open-in-new</v-icon>
+            <v-icon>mdi-open-in-new</v-icon>
         </FcButtonAria>
       </div>
     </template>
@@ -323,6 +322,25 @@ export default {
       }
       this.$router.push(route);
     },
+    actionShowItemNewTab(item, event) {
+      let route;
+      if (item.type === ItemType.STUDY_REQUEST_BULK) {
+        const { id } = item.studyRequestBulk;
+        route = {
+          name: 'requestStudyBulkView',
+          params: { id },
+        };
+      } else {
+        const { id } = item.studyRequest;
+        route = {
+          name: 'requestStudyView',
+          params: { id },
+        };
+      }
+      const routeData = this.$router.resolve(route);
+      window.open(routeData.href, '_blank');
+      event.stopPropagation(); // prevent the normal click handler
+    },
     actionUpdateItem(item) {
       this.$emit('update-item', item);
     },
@@ -336,7 +354,7 @@ export default {
       if (!full) label = customLabel;
       return label;
     },
-    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc']),
+    ...mapMutations('trackRequests', ['setSortRequestSortBy', 'setSortRequestSortDesc', 'setHoveredStudyRequest']),
   },
 };
 </script>
@@ -352,47 +370,47 @@ export default {
   }
   & td:nth-child(2),
   & th.fc-data-table-header-ID {
-    min-width: 70px;
+    min-width: 20px;
     width: 70px;
   }
   & td:nth-child(3),
   & th.fc-data-table-header-LOCATION {
-    min-width: 210px;
+    min-width: 190px;
     width: auto;
   }
   & td:nth-child(4),
   & th.fc-data-table-header-data-table-expand {
-    min-width: 70px !important;
+    min-width: 1px !important;
     width: 70px !important;
   }
   & td:nth-child(5),
   & th.fc-data-table-header-STUDY_TYPE {
-    min-width: 210px;
+    min-width: 190px;
     width: 210px;
   }
   & td:nth-child(6),
   & th.fc-data-table-header-REQUESTER {
-    min-width: 140px;
+    min-width: 80px;
     width: 140px;
   }
   & td:nth-child(7),
   & th.fc-data-table-header-CREATED_AT {
-    min-width: 140px;
+    min-width: 90px;
     width: 140px;
   }
   & td:nth-child(8),
   & th.fc-data-table-header-DUE_DATE {
-    min-width: 140px;
+    min-width: 60px;
     width: 140px;
   }
   & td:nth-child(9),
   & th.fc-data-table-header-STATUS {
-    min-width: 140px;
+    min-width: 60px;
     width: 140px;
   }
   & td:nth-child(10),
   & th.fc-data-table-header-ACTIONS {
-    min-width: 105px;
+    min-width: 60px;
     width: 105px;
   }
 

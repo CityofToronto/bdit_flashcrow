@@ -1,7 +1,8 @@
 <template>
   <div class="fc-single-location-row">
     <div class="fc-input-location-search"
-    :class="{ 'fc-location-search-home elevation-2': !drawerOpen}">
+    :class="[{ 'fc-location-search-home elevation-2': !drawerOpen && !limitSizeOfBar}
+      , {'elevation-2': !drawerOpen && limitSizeOfBar}]">
       <v-menu
         v-model="showLocationSuggestions"
         ref="menuLocationSuggestions"
@@ -30,23 +31,26 @@
               v-on="onMenu">
               <template v-slot:append>
                 <template v-if="hasLocationIndex">
-                  <template v-if="showClose">
-                    <FcTooltip right>
+                </template>
+                <template v-else>
+                  <template v-if="!drawerOpen">
+                    <FcTooltip
+                      v-if="internalValue !== null || query !== null"
+                      right>
                       <template v-slot:activator="{ on: onTooltip }">
                         <FcButton
                           aria-label="Clear Location"
+                          class="fc-close-btn-inside mr-1"
                           type="icon"
-                          @click="actionRemove"
-                          v-on="onTooltip"
-                          plain>
-                          <v-icon>mdi-close</v-icon>
+                          @click="actionClear"
+                          v-on="onTooltip">
+                          <v-icon color="light-grey">mdi-close-circle</v-icon>
                         </FcButton>
                       </template>
                       <span>Clear Location</span>
                     </FcTooltip>
+                    <v-divider vertical />
                   </template>
-                </template>
-                <template v-else>
                   <v-icon
                     :color="hasFocus ? 'primary' : null"
                     right>
@@ -93,7 +97,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { Enum } from '@/lib/ClassUtils';
 import { debounce } from '@/lib/FunctionUtils';
 import { getLocationSuggestions } from '@/lib/api/WebApi';
@@ -127,11 +130,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    showClose: {
+    isSingleMode: {
       type: Boolean,
       default: false,
     },
-    isSingleMode: {
+    limitSizeOfBar: {
       type: Boolean,
       default: false,
     },
@@ -242,17 +245,6 @@ export default {
         this.$emit('location-remove', this.locationIndex);
       }
     },
-    actionRemove() {
-      const description = this.query || '';
-      this.setToastInfo(`Removed ${description} from selected locations.`);
-      this.setLocationsEditIndex(-1);
-      this.removeLocationEdit(this.locationIndex);
-      Vue.nextTick(() => {
-        if (this.autofocus) {
-          this.autofocus();
-        }
-      });
-    },
     actionBlur(e) {
       /*
        * Clicking a location suggestion in the dropdown triggers a blur event.  However, if
@@ -312,6 +304,7 @@ export default {
   flex-wrap: none;
   justify-content: space-between;
   border-radius: 8px;
+  flex-grow: 1;
   & .nudge-right {
     left: 15px;
   }

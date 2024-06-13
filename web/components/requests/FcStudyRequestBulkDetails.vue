@@ -11,11 +11,12 @@
           <v-col cols="8">
             <v-text-field
               ref="autofocus"
+              autofocus
               dense
               v-model="v.name.$model"
-              :error-messages="errorMessagesName"
-              label="Set Name for Project"
-              :messages="['Required']"
+              :error-messages="errorOnSubmit ? errorMessagesName : []"
+              label="Project Name (required)"
+              :messages="['The name of the project']"
               outlined>
             </v-text-field>
           </v-col>
@@ -27,7 +28,8 @@
           <v-col cols="8">
             <FcInputTextArray
               v-model="v.ccEmails.$model"
-              :error-messages="errorMessagesCcEmails"
+              :error-messages="errorOnSubmit ? errorMessagesCcEmails : []"
+              ref="inputTextArray"
               label="Staff Subscribed"
               placeholder="Enter a @toronto.ca email address"
               messages="Staff who should be notified when the data is ready"
@@ -70,6 +72,7 @@ export default {
   props: {
     isCreate: Boolean,
     v: Object,
+    errorOnSubmit: Boolean,
   },
   data() {
     return {

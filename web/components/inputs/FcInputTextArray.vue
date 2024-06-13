@@ -1,6 +1,7 @@
 <template>
   <v-combobox
     v-model="internalValue"
+    ref="comboInput"
     append-icon="mdi-plus"
     hide-no-data
     multiple

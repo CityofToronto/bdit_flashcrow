@@ -89,6 +89,15 @@ export default {
       ];
     },
   },
+  beforeMount() {
+    /* This little nugget is to check if the study that is being pulled up is
+    ** an older ATR_SPEED_VOLUME study. If so, we convert it to the new ATR_SVC
+    ** type before displaying on the UI.
+    */
+    if (this.v.studyType.$model === StudyType.ATR_SPEED_VOLUME) {
+      this.v.studyType.$model = StudyType.ATR_SVC;
+    }
+  },
   watch: {
     'v.studyType.$model.other': function watchStudyTypeOther(other) {
       if (other) {

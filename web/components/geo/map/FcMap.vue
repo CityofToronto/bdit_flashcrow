@@ -9,8 +9,11 @@
         silent />
     </div>
 
-    <div class="fc-map-controls fc-map-top-left fc-half-width">
+    <div class="fc-map-controls fc-half-width">
       <slot name="top-left" />
+    </div>
+    <div class="fc-map-controls top-left-two">
+      <slot name="top-left-two" />
     </div>
 
     <div class="fc-map-controls fc-map-mode">
@@ -169,6 +172,10 @@ export default {
       type: Array,
       default() { return []; },
     },
+    hoverLayerState: {
+      type: Number,
+      default: null,
+    },
     showLegend: {
       type: Boolean,
       default: true,
@@ -177,6 +184,10 @@ export default {
       type: String,
       validator: value => ['all', 'single', 'none'].includes(value),
       default: 'all',
+    },
+    isRequestPage: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -250,12 +261,38 @@ export default {
         this.$emit('update:layers', layers);
       },
     },
+    hoverGeoJson() {
+      const features = [];
+
+      if (this.hoverLayerState !== null) {
+        const { location, state } = this.locationsState[this.hoverLayerState];
+        const {
+          geom,
+          lat,
+          lng,
+          ...propertiesRest
+        } = location;
+
+        const geometry = {
+          type: 'Point',
+          coordinates: [lng, lat],
+        };
+        const properties = { ...propertiesRest, ...state };
+        const feature = { type: 'Feature', geometry, properties };
+        features.push(feature);
+      }
+      return {
+        type: 'FeatureCollection',
+        features,
+      };
+    },
     locationsGeoJson() {
       const features = this.locationsState.map(({ location, state }) => {
         const { geom: geometry, ...propertiesRest } = location;
         const properties = { ...propertiesRest, ...state };
         return { type: 'Feature', geometry, properties };
       });
+
       return {
         type: 'FeatureCollection',
         features,
@@ -269,6 +306,7 @@ export default {
           lng,
           ...propertiesRest
         } = location;
+
         const geometry = {
           type: 'Point',
           coordinates: [lng, lat],
@@ -276,6 +314,7 @@ export default {
         const properties = { ...propertiesRest, ...state };
         return { type: 'Feature', geometry, properties };
       });
+
       return {
         type: 'FeatureCollection',
         features,
@@ -301,7 +340,7 @@ export default {
       return GeoStyle.get(this.mapOptions);
     },
     showHoveredPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.hoveredFeature === null || this.selectedFeature !== null) {
@@ -311,7 +350,7 @@ export default {
         && this.featureKeyHovered === this.featureKeyHoveredPopup;
     },
     showSelectedPopup() {
-      if (this.zoomLevel < 12) {
+      if (this.zoomLevel < (this.isRequestPage ? 7 : 12)) {
         return false;
       }
       if (this.selectedFeature === null) {
@@ -327,7 +366,26 @@ export default {
       }
       return !this.drawerOpen || !featureMatchesRoute;
     },
+    centrelineByRequestId() {
+      const centrelineById = {};
+      this.locationsMarkersGeoJson.features.forEach((feature) => {
+        feature.properties.studyRequests.forEach((studyRequest) => {
+          centrelineById[studyRequest.requestId] = feature.properties.centrelineId;
+        });
+      });
+      return centrelineById;
+    },
+    locationMarkersByRequestId() {
+      const markersById = {};
+      this.locationsMarkersGeoJson.features.forEach((feature) => {
+        feature.properties.studyRequests.forEach((studyRequest) => {
+          markersById[studyRequest.requestId] = feature;
+        });
+      });
+      return markersById;
+    },
     ...mapState(['frontendEnv']),
+    ...mapState('trackRequests', ['hoveredStudyRequest']),
   },
   created() {
     this.map = null;
@@ -345,6 +403,7 @@ export default {
       });
       this.map.on('load', () => {
         this.updateLocationsSource();
+        this.updateHoverSource();
         this.updateLocationsMarkersSource();
         if (this.locationsState === 0) {
           this.map.easeTo(this.defaultEaseOpts);
@@ -354,6 +413,7 @@ export default {
         this.map.on('move', this.onMapMove.bind(this));
         this.map.on('click', this.onMapClick.bind(this));
         this.map.on('mousemove', this.onMapMousemove.bind(this));
+        this.zoomLevel = this.map.getZoom();
       });
       this.zoomLevel = this.map.getZoom();
     });
@@ -408,6 +468,9 @@ export default {
     locationsGeoJson() {
       this.updateLocationsSource();
     },
+    hoverGeoJson() {
+      this.updateHoverSource();
+    },
     locationsMarkersGeoJson() {
       this.updateLocationsMarkersSource();
     },
@@ -420,6 +483,7 @@ export default {
       }
       this.map.setStyle(this.mapStyle);
       this.updateLocationsSource();
+      this.updateHoverSource();
       this.updateLocationsMarkersSource();
       this.map.setFilter(
         'active-intersections',
@@ -429,6 +493,24 @@ export default {
         'active-midblocksCasing',
         ['in', ['get', 'centrelineId'], ['literal', this.centrelineActiveMidblocks]],
       );
+    },
+    hoveredStudyRequest(newValue, oldValue) {
+      let newCentrelineId = -1;
+      let oldCentrelineId = -1;
+
+      if (typeof newValue === 'number' && !Number.isNaN(newValue)) {
+        newCentrelineId = this.centrelineByRequestId[newValue];
+        const feature = this.locationMarkersByRequestId[newValue];
+        feature.properties.selected = true;
+      }
+      if (typeof oldValue === 'number' && !Number.isNaN(oldValue)) {
+        oldCentrelineId = this.centrelineByRequestId[oldValue];
+        if (newCentrelineId !== oldCentrelineId) {
+          const feature = this.locationMarkersByRequestId[oldValue];
+          feature.properties.selected = false;
+        }
+      }
+      this.updateLocationsMarkersSource();
     },
   },
   methods: {
@@ -537,12 +619,15 @@ export default {
           'schoolsLevel1',
         );
       }
+      if (this.isRequestPage) {
+        layers.push('locations-markers');
+      }
 
       let features = this.map.queryRenderedFeatures(point, { layers });
       if (features.length > 0) {
         // see if a feature was clicked ... if so choose that one
         // if a feature was not clicked then get features in a bounding box
-        return features[0];
+        return this.pickTooltipFeature(features);
       }
       const { x, y } = point;
       const bbox = [[x - 10, y - 10], [x + 10, y + 10]];
@@ -550,6 +635,22 @@ export default {
       if (features.length === 0) {
         return null;
       }
+      return this.pickTooltipFeature(features);
+    },
+    pickTooltipFeature(features) {
+      if (features.length === 1) {
+        return features[0];
+      }
+      const preference = {
+        studies: 3,
+        intersections: 2,
+        midblocks: 1,
+      };
+      features.sort((a, b) => {
+        const left = preference[a.source] || 0;
+        const right = preference[b.source] || 0;
+        return right - left;
+      });
       return features[0];
     },
     onMapClick(e) {
@@ -575,6 +676,12 @@ export default {
     },
     setSelectedFeature(feature) {
       this.selectedFeature = feature;
+    },
+    updateHoverSource() {
+      GeoStyle.setData('hover-markers', this.hoverGeoJson);
+      if (this.map !== null) {
+        this.map.getSource('hover-markers').setData(this.hoverGeoJson);
+      }
     },
     updateLocationsSource() {
       GeoStyle.setData('locations', this.locationsGeoJson);
@@ -631,7 +738,7 @@ export default {
   & > .fc-map-legend-wrapper {
     right: 20px;
     top: 12px;
-    z-index: 1;
+    z-index: 9;
   }
   & > .fc-map-navigate {
     bottom: 77px;
@@ -646,6 +753,10 @@ export default {
   }
   & > .fc-half-width {
     width: 50%;
+  }
+  & .top-left-two {
+    margin-top: 50px;
+    z-index: 8 !important;
   }
 
   /*

@@ -1,49 +1,82 @@
 <template>
-  <div class="fc-aggregate-collisions mb-5 ml-5">
+  <div class="fc-aggregate-collisions mb-0 ml-5">
     <FcProgressLinear
       v-if="loading"
       aria-label="Loading Aggregate View collisions data" />
     <template v-else-if="collisionSummary.amount > 0">
-      <v-expansion-panels
-        v-model="indexOpen"
-        accordion
-        flat
-        focusable>
-        <v-expansion-panel
-          v-for="field in fields"
-          :key="field.name"
-          :aria-disabled="collisionSummary[field.name] === 0"
-          class="fc-collisions-summary-per-location"
-          :disabled="collisionSummary[field.name] === 0">
-          <v-expansion-panel-header class="pr-8">
-            <span class="body-1">{{field.description}}</span>
-            <v-spacer></v-spacer>
-            <FcTextSummaryFraction
-              :a="collisionSummary[field.name]"
-              :b="collisionSummaryUnfiltered[field.name]"
-              class="flex-grow-0 flex-shrink-0 mr-5"
-              :show-b="hasFiltersCollision || hasFiltersCommon"
-              small />
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="shading pt-1">
-            <FcListLocationMulti
-              class="shading"
-              :disabled="disabledPerLocationByField[field.name]"
-              icon-classes="mr-4"
-              :locations="locations"
-              :locations-selection="locationsSelection">
-              <template v-slot:action="{ i }">
-                <FcTextSummaryFraction
-                  :a="collisionSummaryPerLocation[i][field.name]"
-                  :b="collisionSummaryPerLocationUnfiltered[i][field.name]"
-                  class="mr-9"
-                  :show-b="hasFiltersCollision || hasFiltersCommon"
-                  small />
-              </template>
-            </FcListLocationMulti>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+      <div class="d-flex flex-grow-1 justify-space-around">
+        <div class="d-flex pa-2 fc-aggregate-collisions-row">
+          <div class="collision-fact">
+            <div class="body-1">
+              Total
+            </div>
+            <div>
+              <FcTextSummaryFraction
+                :a="collisionSummary.amount"
+                :b="collisionSummaryUnfiltered.amount"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </div>
+          </div>
+          <div class="collision-fact">
+            <div class="body-1">
+              KSI
+            </div>
+            <div>
+              <FcTextSummaryFraction
+                :a="collisionSummary.ksi"
+                :b="collisionSummaryUnfiltered.ksi"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </div>
+          </div>
+          <div class="collision-fact">
+            <div class="body-1">
+              Verified
+            </div>
+            <div>
+              <FcTextSummaryFraction
+                :a="collisionSummary.validated"
+                :b="collisionSummaryUnfiltered.validated"
+                class="mt-1"
+                :show-b="hasFiltersCollision || hasFiltersCommon" />
+            </div>
+          </div>
+          <slot />
+        </div>
+      </div>
+
+      <div class="fc-collision-detail-box ml-2 mr-4 body-1 mb-4">
+        <div class="d-flex fc-collision-detail-title ml-2 justify-space-apart">
+          <FcButton
+            type="tertiary"
+            class="fc-details-btn"
+            width="85px"
+            height="30px"
+            @click="showDetails= !showDetails">
+              <v-icon v-if="showDetails">mdi mdi-chevron-up</v-icon>
+              <v-icon v-else>mdi mdi-chevron-down</v-icon>
+              Details
+          </FcButton>
+          <slot name="second"></slot>
+        </div>
+        <table v-if="showDetails" class="fc-collision-detail-table pa-2 mb-2 elevation-1">
+          <th class="fc-detail-row fc-detail-header">
+            <td class="fc-detail-desc"></td>
+            <td class="fc-detail-num">Total</td>
+            <td class="fc-detail-num">KSI</td>
+            <td class="fc-detail-num">Verified</td>
+          </th>
+          <tr v-for="(location, i) in locations"
+           :key="location.centrelineId"
+            class="fc-detail-row">
+            <td class="fc-detail-desc text-sm">{{location.description}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].amount}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].ksi}}</td>
+            <td class="fc-detail-num">{{collisionSummaryPerLocation[i].validated}}</td>
+           </tr>
+        </table>
+      </div>
     </template>
   </div>
 </template>
@@ -54,14 +87,14 @@ import { mapGetters } from 'vuex';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import FcTextSummaryFraction from '@/web/components/data/FcTextSummaryFraction.vue';
 import FcProgressLinear from '@/web/components/dialogs/FcProgressLinear.vue';
-import FcListLocationMulti from '@/web/components/location/FcListLocationMulti.vue';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcAggregateCollisions',
   components: {
-    FcListLocationMulti,
     FcProgressLinear,
     FcTextSummaryFraction,
+    FcButton,
   },
   props: {
     collisionSummary: Object,
@@ -82,6 +115,7 @@ export default {
     return {
       fields,
       indexOpen: null,
+      showDetails: false,
     };
   },
   computed: {
@@ -109,6 +143,48 @@ export default {
   }
   & .data-empty {
     opacity: 0.37;
+  }
+  & .collision-fact {
+    min-width: 65px;
+    text-align: center;
+  }
+  & .fc-aggregate-collisions-row {
+    border-radius: 5px;
+    flex-grow: 1;
+    justify-content: space-around;
+  }
+  & .fc-detail-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    margin-bottom: 10px;
+  }
+  & .fc-detail-header {
+    border-bottom: 1px solid lightgrey;
+    font-size: 12px;
+  }
+  & .fc-detail-desc {
+    text-align: left;
+    width: 150px;
+    font-size: 12px;
+  }
+  & .fc-detail-num {
+    flex-grow: 1;
+    font-weight: bold;
+  }
+  & .fc-details-btn {
+    text-transform: none !important;
+    color: var(--v-secondary-base) !important
+  }
+  & .fc-collision-detail-title {
+    display: flex;
+    justify-content: space-between;
+  }
+  & .fc-collision-detail-table {
+    width: 100%;
+    text-align: center;
+    background: #fff;
   }
 }
 </style>
