@@ -24,7 +24,7 @@ organizationName            = Organization Name (eg, company)
 organizationName_default    = City of Toronto
 
 commonName           = Common Name (e.g. server FQDN or YOUR name)
-commonName_default   = backend
+commonName_default   = localhost
 
 emailAddress         = Email Address
 emailAddress_default = move-team@toronto.ca
@@ -41,4 +41,4 @@ nsComment            = "OpenSSL Generated Certificate"
 ####################################################################
 [ alternate_names ]
 
-DNS.1       = backend
+DNS.1       = localhost

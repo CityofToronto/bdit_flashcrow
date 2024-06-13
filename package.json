@@ -4,7 +4,7 @@
   "private": true,
   "description": "An integrated data platform for City of Toronto transportation data",
   "scripts": {
-    "concurrently": "concurrently \"npm run frontend\" \"npm run backend\" \"npm run reporter\" \"npm run scheduler\"",
+    "concurrently": "concurrently \"npm run backend\" \"npm run reporter\" \"npm run scheduler\"",
     "backend": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer nodemon -r esm -r module-alias/register web/web.js",
     "backend:inspect": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer nodemon -r esm -r module-alias/register --inspect=0.0.0.0:9100 web/web.js",
     "backend:inspect-brk": "NODE_EXTRA_CA_CERTS=./ssl/extra-ca-certs.cer node -r esm -r module-alias/register --inspect-brk=0.0.0.0:9100 web/web.js",
