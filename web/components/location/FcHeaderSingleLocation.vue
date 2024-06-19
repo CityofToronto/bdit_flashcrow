@@ -9,15 +9,21 @@
       <div class="label mt-2">
         {{textLocationFeatureType}} &#x2022; {{textMostRecentStudy}}
       </div>
+      <div v-if="frontendEnv() === FrontendEnv.LOCAL || frontendEnv() === FrontendEnv.DEV"
+        class="label mt-0">
+        Centreline ID: {{ this.location.centrelineId }}
+      </div>
     </template>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
+import FrontendEnv from '@/web/config/FrontendEnv';
 
 export default {
   name: 'FcHeaderSingleLocation',
@@ -29,6 +35,7 @@ export default {
     return {
       loading: false,
       studySummary: [],
+      FrontendEnv,
     };
   },
   computed: {
@@ -73,6 +80,7 @@ export default {
       this.studySummary = studySummary;
       this.loading = false;
     },
+    ...mapState(['frontendEnv']),
   },
 };
 </script>
