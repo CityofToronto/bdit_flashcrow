@@ -7,9 +7,7 @@
 set -e
 set -o nounset
 
-GIT_ROOT=$(realpath "$(dirname "$0")"/../..)
-DIR_SCRIPTS="$GIT_ROOT/scripts"
-DIR_DB="$DIR_SCRIPTS/db"
+DIR_DB="."
 
 # figure out next version
 NEXT_VERSION=1
