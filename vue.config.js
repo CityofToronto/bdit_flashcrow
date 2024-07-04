@@ -36,19 +36,20 @@ const vueConfig = {
     https: { key, cert },
     proxy: {
       '/api': {
-        target: 'https://localhost:8100/',
+        target: 'https://backend:8100/',
+        secure: false,
         pathRewrite: {
           '^/api': '',
         },
       },
       '/reporter': {
-        target: 'https://localhost:8200/',
+        target: 'https://backend:8200/',
         pathRewrite: {
           '^/reporter': '',
         },
       },
       '/scheduler': {
-        target: 'https://localhost:8300/',
+        target: 'https://backend:8300/',
         pathRewrite: {
           '^/scheduler': '',
         },
