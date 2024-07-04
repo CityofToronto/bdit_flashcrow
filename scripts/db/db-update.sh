@@ -43,7 +43,9 @@ function parse_args {
 
 parse_args "$@"
 
-DIR_DB="."
+GIT_ROOT=$(realpath "$(dirname "$0")"/../..)
+DIR_SCRIPTS="$GIT_ROOT/scripts"
+DIR_DB="$DIR_SCRIPTS/db"
 
 # install schema if necessary
 # shellcheck disable=SC2086
