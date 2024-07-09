@@ -16,7 +16,6 @@ set -o nounset
 
 PSQL_ARGS=
 TARGET_VERSION="-1"
-DIR_DB=
 
 function parse_args {
   while [[ $# -gt 0 ]]; do
@@ -46,12 +45,7 @@ parse_args "$@"
 
 GIT_ROOT=$(realpath "$(dirname "$0")"/../..)
 DIR_SCRIPTS="$GIT_ROOT/scripts"
-
-if [[ "$DOCKER_RUNNING" == true ]]; then
-  DIR_DB="."
-else
-  DIR_DB="$DIR_SCRIPTS/db"
-fi
+DIR_DB="$DIR_SCRIPTS/db"
 
 # install schema if necessary
 # shellcheck disable=SC2086
