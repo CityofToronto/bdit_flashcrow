@@ -6,10 +6,15 @@
 
 set -e
 set -o nounset
-
+DIR_DB=
 GIT_ROOT=$(realpath "$(dirname "$0")"/../..)
 DIR_SCRIPTS="$GIT_ROOT/scripts"
-DIR_DB="$DIR_SCRIPTS/db"
+
+if [[ "$DOCKER_RUNNING" == true ]]; then
+  DIR_DB="."
+else
+  DIR_DB="$DIR_SCRIPTS/db"
+fi
 
 # figure out next version
 NEXT_VERSION=1

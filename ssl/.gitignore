@@ -2,3 +2,4 @@
 *.txt.old
 0*.pem
 extra-ca-certs.cer
+zscaler.cer
