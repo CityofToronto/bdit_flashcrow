@@ -96,6 +96,7 @@ export default {
     filterChipsCollision(state) {
       const {
         details,
+        sources,
         drivact,
         drivcond,
         emphasisAreas,
@@ -116,6 +117,11 @@ export default {
           .map(({ text }) => text)
           .join(', ');
         const filterChip = { filter: 'details', label, value: details };
+        filterChipsCollision.push(filterChip);
+      }
+      if (sources.length > 0) {
+        const label = sources.map(({ chip }) => chip).join(', ');
+        const filterChip = { filter: 'sources', label, value: sources };
         filterChipsCollision.push(filterChip);
       }
       if (mvcr !== null) {
@@ -212,6 +218,7 @@ export default {
       } = state.filtersCommon;
       const {
         details,
+        sources,
         drivact,
         drivcond,
         emphasisAreas,
@@ -235,6 +242,9 @@ export default {
       }
       if (daysOfWeek.length > 0) {
         params.daysOfWeek = daysOfWeek;
+      }
+      if (sources.length > 0) {
+        params.sources = sources;
       }
       if (details.length > 0) {
         params.details = details;

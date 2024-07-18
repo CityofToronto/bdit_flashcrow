@@ -80,6 +80,7 @@ import TimeFormatters from '@/lib/time/TimeFormatters';
 import {
   CollisionDetail,
   CollisionEmphasisArea,
+  CollisionSource,
   StudyHours,
   StudyType,
 } from '@/lib/Constants';
@@ -107,6 +108,7 @@ export default {
       collisionFilters.details = collisionFilters.details.map(element => CollisionDetail[element]);
       collisionFilters.emphasisAreas = collisionFilters.emphasisAreas
         .map(element => CollisionEmphasisArea[element]);
+      collisionFilters.sources = collisionFilters.sources.map(element => CollisionSource[element]);
       this.setFiltersCollision(collisionFilters);
     }
 
