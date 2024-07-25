@@ -105,6 +105,7 @@ import { saveCollisionFilterState, saveCommonFilterState, saveStudyFilterState }
 function cloneCollisionFilters(filtersCollision) {
   const {
     details,
+    sources,
     drivact,
     drivcond,
     emphasisAreas,
@@ -121,6 +122,7 @@ function cloneCollisionFilters(filtersCollision) {
   } = filtersCollision;
   return {
     details: [...details],
+    sources: [...sources],
     drivact: [...drivact],
     drivcond: [...drivcond],
     emphasisAreas: [...emphasisAreas],

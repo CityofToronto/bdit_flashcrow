@@ -51,6 +51,34 @@
       </template>
     </FcRadioGroup>
 
+    <fieldset class="mt-4">
+      <div class="align-center d-flex">
+        <legend class="headline">Data Source</legend>
+        <v-spacer></v-spacer>
+        <FcTooltipCollisionFilter>
+          <span>
+            We receive data from two sources:
+            Toronto Police Services (TPS) and Collision Reporting Centres (CRC).
+            The police will attend collisions where the
+            minimum requirements are met (collisions involving pedestrians, cyclists,
+            KSIs, $2,000+ property damage, etc.). All other collisions are self-reported.
+          </span>
+        </FcTooltipCollisionFilter>
+      </div>
+
+      <div
+        v-for="source in CollisionSource.enumValues"
+        :key="source.name"
+        class="align-center d-flex">
+        <v-checkbox
+          v-model="internalValue.sources"
+          class="mt-0"
+          hide-details
+          :label="source.text"
+          :value="source"></v-checkbox>
+      </div>
+    </fieldset>
+
     <FcRadioGroup
       v-model="internalValue.mvcr"
       class="mt-6"
@@ -154,6 +182,7 @@
 import {
   CollisionDetail,
   CollisionEmphasisArea,
+  CollisionSource,
 } from '@/lib/Constants';
 import FcFilterHoursOfDay from '@/web/components/filters/FcFilterHoursOfDay.vue';
 import FcMvcrFieldFilter from '@/web/components/filters/FcMvcrFieldFilter.vue';
@@ -177,6 +206,7 @@ export default {
     return {
       CollisionDetail,
       CollisionEmphasisArea,
+      CollisionSource,
     };
   },
 };

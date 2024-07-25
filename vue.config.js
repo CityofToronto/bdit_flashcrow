@@ -9,6 +9,8 @@ const { ENV, DEV } = require('./lib/config/Env');
 const key = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.key'));
 const cert = fs.readFileSync(path.join(__dirname, 'ssl', 'localhost.crt'));
 
+const backEndRouteName = process.env.LOGNAME === 'vagrant' ? 'localhost' : 'backend';
+
 /**
  * Vue configuration.  Note that this is the only file in CommonJS module style;
  * `vue-cli-service` balks at running ES6 modules.
@@ -36,20 +38,20 @@ const vueConfig = {
     https: { key, cert },
     proxy: {
       '/api': {
-        target: 'https://backend:8100/',
+        target: `https://${backEndRouteName}:8100/`,
         secure: false,
         pathRewrite: {
           '^/api': '',
         },
       },
       '/reporter': {
-        target: 'https://backend:8200/',
+        target: `https://${backEndRouteName}:8200/`,
         pathRewrite: {
           '^/reporter': '',
         },
       },
       '/scheduler': {
-        target: 'https://backend:8300/',
+        target: `https://${backEndRouteName}:8300/`,
         pathRewrite: {
           '^/scheduler': '',
         },

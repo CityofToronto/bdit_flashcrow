@@ -21,6 +21,6 @@ test('Mailer.convertToSes', async () => {
       },
     },
     Source: 'move-team@email1.dev-toronto.ca',
-    ReplyToAddresses: ['move-team@toronto.ca'],
+    ReplyToAddresses: ['move-ops@toronto.ca'],
   });
 });
