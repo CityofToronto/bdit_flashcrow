@@ -1,4 +1,5 @@
 *.txt.attr
 *.txt.old
-01.pem
+0*.pem
 extra-ca-certs.cer
+zscaler.cer

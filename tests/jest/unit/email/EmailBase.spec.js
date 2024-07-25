@@ -26,7 +26,7 @@ test('EmailBase.getOptions', async () => {
   await expect(email.getOptions()).resolves.toEqual({
     from: 'move-team@email1.dev-toronto.ca',
     to: ['move-ops+1730@toronto.ca'],
-    reply_to: 'move-team@toronto.ca',
+    reply_to: 'move-ops@toronto.ca',
     subject: 'Foo: 1729 -> 1730',
     html: '<h1>Foo</h1><p>incremented to 1730</p>',
   });
