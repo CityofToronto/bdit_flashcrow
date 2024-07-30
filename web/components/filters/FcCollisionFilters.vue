@@ -51,7 +51,7 @@
       </template>
     </FcRadioGroup>
 
-    <fieldset class="mt-4">
+    <fieldset class="mt-6">
       <div class="align-center d-flex">
         <legend class="headline">Data Source</legend>
         <v-spacer></v-spacer>
@@ -72,7 +72,7 @@
         class="align-center d-flex">
         <v-checkbox
           v-model="internalValue.sources"
-          class="mt-0"
+          class="mt-2"
           hide-details
           :label="source.text"
           :value="source"></v-checkbox>
