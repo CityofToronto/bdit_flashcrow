@@ -421,7 +421,7 @@ export default {
   },
   methods: {
     changeLocation(num) {
-      this.reportRetrievalError = false;
+      this.studyRetrievalError = false;
       this.setLocationsIndex(num);
       this.updateReportLayout();
     },
