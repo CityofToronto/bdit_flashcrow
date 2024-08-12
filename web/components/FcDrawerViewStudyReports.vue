@@ -507,8 +507,6 @@ export default {
       ).catch(err => this.handleError(err));
 
       this.reportLayout = reportLayout;
-      // eslint-disable-next-line no-console
-      console.log(reportLayout.content[0].options?.body?.length);
       if (reportLayout.content[0].options?.body?.length === 0) {
         this.reportBodyEmpty = true;
         this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
