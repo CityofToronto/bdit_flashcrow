@@ -58,7 +58,7 @@
               icon-classes="mr-2"
               :locations="locations"
               :locations-selection="locationsSelection"
-              @click-location="setLocationsIndex" />
+              @click-location="changeLocation" />
           </v-menu>
           <v-menu
             v-if="studies.length > 1"
@@ -420,6 +420,11 @@ export default {
     this.$router.push(this.nextRoute);
   },
   methods: {
+    changeLocation(num) {
+      this.reportRetrievalError = false;
+      this.setLocationsIndex(num);
+      this.updateReportLayout();
+    },
     async actionDownload(format) {
       const { activeReportId, activeReportType, reportParameters } = this;
       if (activeReportId === null || activeReportType === null) {
