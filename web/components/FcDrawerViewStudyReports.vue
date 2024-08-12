@@ -58,7 +58,7 @@
               icon-classes="mr-2"
               :locations="locations"
               :locations-selection="locationsSelection"
-              @click-location="changeLocation" />
+              @click-location="setLocationsIndex" />
           </v-menu>
           <v-menu
             v-if="studies.length > 1"
@@ -420,12 +420,6 @@ export default {
     this.$router.push(this.nextRoute);
   },
   methods: {
-    changeLocation(num) {
-      this.reportBodyEmpty = false;
-      this.studyRetrievalError = false;
-      this.setLocationsIndex(num);
-      this.updateReportLayout();
-    },
     async actionDownload(format) {
       const { activeReportId, activeReportType, reportParameters } = this;
       if (activeReportId === null || activeReportType === null) {
@@ -513,6 +507,8 @@ export default {
       ).catch(err => this.handleError(err));
 
       this.reportLayout = reportLayout;
+      // eslint-disable-next-line no-console
+      console.log(reportLayout.content[0].options?.body?.length);
       if (reportLayout.content[0].options?.body?.length === 0) {
         this.reportBodyEmpty = true;
         this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
