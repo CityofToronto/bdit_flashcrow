@@ -26,28 +26,37 @@
             <span class="headline">Collisions</span>
             <span class="font-weight-light headline secondary--text">
               &#x2022;
-              {{ locationActive.description }}
+              {{locationActive.description}}
             </span>
           </h2>
           <v-spacer></v-spacer>
 
-          <v-menu v-if="locationMode !== LocationMode.SINGLE" max-height="320">
+          <v-menu
+            v-if="locationMode !== LocationMode.SINGLE"
+            max-height="320">
             <template v-slot:activator="{ on, attrs }">
-              <FcButton v-bind="attrs" v-on="on" class="flex-grow-0 mt-0 ml-2" type="secondary">
+              <FcButton
+                v-bind="attrs"
+                v-on="on"
+                class="flex-grow-0 mt-0 ml-2"
+                type="secondary">
                 <span class="pr-1">
                   <img v-if="locationActive.centrelineType == 1" title="Midblock"
-                    src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14" />
+                  src="/icons/map/location-multi-midblock.svg" alt="Midblock icon" width="14"/>
                   <img v-else title="Intersection"
-                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon"
-                    width="14" />
+                  src="/icons/map/location-multi-intersection.svg" alt="Midblock icon" width="14"/>
                 </span>
-                <span class="pl-2 fc-collision-btn-location">{{ locationActive.description }}</span>
+                <span class="pl-2 fc-collision-btn-location">{{locationActive.description}}</span>
                 <v-icon right>mdi-menu-down</v-icon>
               </FcButton>
             </template>
             <FcListLocationDropdown
-            :disabled="disabledPerLocation" icon-classes="mr-2" :locations="locations"
-              :locations-selection="locationsSelection" @click-location="changeLocation" />
+              :disabled="disabledPerLocation"
+              icon-classes="mr-2"
+              :locations="locations"
+              :locations-selection="locationsSelection"
+              @click-location="changeLocation"
+              />
           </v-menu>
 
           <v-tooltip bottom>
@@ -67,7 +76,7 @@
 
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
+                <v-icon @click="closeReport" v-bind="attrs" v-on="on">mdi-close-circle</v-icon>
             </template>
             <span>Close Report</span>
           </v-tooltip>
@@ -76,9 +85,11 @@
         <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
-              <v-tab v-for="reportType in reportTypes"
-              :disabled="reportRetrievalError" :key="reportType.name">
-                {{ reportType.label }}
+              <v-tab
+                v-for="reportType in reportTypes"
+                :disabled="reportRetrievalError"
+                :key="reportType.name">
+                {{reportType.label}}
               </v-tab>
             </v-tabs>
           </nav>
@@ -88,15 +99,22 @@
           <template v-if="!loadingReportLayout && !reportRetrievalError">
             <div v-if="isDirectoryReport && userLoggedIn
               && userHasMvcrReadPermission && mvcrIds.length > 0">
-              <FcButton small @click="downloadAllMvcrs" class="mx-2" :type="'secondary'">
-                <span>Export {{ mvcrIds.length }} MVCR</span>
+              <FcButton small
+                @click="downloadAllMvcrs"
+                class="mx-2"
+                :type="'secondary'">
+                  <span>Export {{ mvcrIds.length }} MVCR</span>
               </FcButton>
             </div>
           </template>
           <div class="mr-3">
-            <FcMenuDownloadReportFormat :disabled="reportRetrievalError" :loading="loadingDownload"
-              :report-type="activeReportType" :singleFile="true"
-              text-screen-reader="Collision Report" type="tertiary"
+            <FcMenuDownloadReportFormat
+              :disabled="reportRetrievalError"
+              :loading="loadingDownload"
+              :report-type="activeReportType"
+              :singleFile="true"
+              text-screen-reader="Collision Report"
+              type="tertiary"
               @download-report-format="actionDownload" />
           </div>
         </div>
@@ -104,19 +122,28 @@
         <v-divider></v-divider>
       </div>
 
-      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto" v-if="!collapseReport">
-        <div v-if="loadingReportLayout" class="ma-3 text-center">
-          <FcProgressCircular aria-label="Loading selected report" class="ma-3" />
+      <section class="flex-grow-1 flex-shrink-1 overflow-y-auto"  v-if="!collapseReport">
+        <div
+          v-if="loadingReportLayout"
+          class="ma-3 text-center">
+          <FcProgressCircular
+            aria-label="Loading selected report"
+            class="ma-3" />
           <div class="font-weight-regular headline secondary--text">
             This page is loading, please wait.
           </div>
         </div>
         <FcCallout v-if="reportRetrievalError"
-        icon="mdi-alert-circle" iconColor="white" textColor="white"
-          type="error-callout">There was a problem loading this report.
-          Email the&nbsp;<a href='mailto:move-team@toronto.ca'>MOVE Team</a>&nbsp;for assistance.
+        icon="mdi-alert-circle"
+        iconColor="white"
+        textColor="white"
+        type="error-callout"
+        >There was a problem loading this report.
+        Email the&nbsp;<a href='mailto:move-team@toronto.ca'>MOVE Team</a>&nbsp;for assistance.
         </FcCallout>
-        <div v-else class="fc-report-wrapper pa-3">
+        <div
+          v-else
+          class="fc-report-wrapper pa-3">
           <FcReport v-if="!loadingReportLayout" v-bind="reportLayout" />
         </div>
       </section>
@@ -301,7 +328,6 @@ export default {
   },
   methods: {
     changeLocation(num) {
-      this.reportRetrievalError = false;
       this.setLocationsIndex(num);
       this.activeLocation = num;
       this.updateReportLayout();
@@ -458,26 +484,21 @@ export default {
 
   .fc-report-wrapper {
     position: relative;
-
-    &>.fc-report-actions {
+    & > .fc-report-actions {
       position: absolute;
       top: 0;
       right: 0;
     }
   }
-
   & .fc-bg-white {
     background-color: #FFF;
   }
-
   & .v-slide-group__prev--disabled {
     visibility: hidden;
   }
-
   & .v-slide-group__next--disabled {
     visibility: hidden;
   }
-
   & .fc-collision-btn-location {
     font-size: 12px;
     overflow: hidden;
@@ -486,7 +507,6 @@ export default {
     text-transform: none;
     letter-spacing: normal;
   }
-
   & .fc-icon-dim {
     opacity: 0.6;
   }
