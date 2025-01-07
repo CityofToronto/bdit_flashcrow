@@ -5,11 +5,20 @@
       @click="recalcBulkSris">
       Recalculate Bulk SRIs
     </FcButton>
+    <FcButton type="primary" @click="setBanner(message)">SET BANNER</FcButton>
+    <FcButton type="primary" @click="deleteBanner()">DELETE BANNER</FcButton>
+    <v-color-picker v-model="pickedColor" mode="hexa" hide-mode-switch></v-color-picker>
+    <v-text-field
+            label="Solo"
+            placeholder="Placeholder"
+            solo
+            @input="storeMessage"
+          ></v-text-field>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import { putStudyRequestItems } from '@/lib/api/WebApi';
 
@@ -21,11 +30,35 @@ export default {
   computed: {
     ...mapState(['auth']),
   },
+  data() {
+    return {
+      pickedColor: '#FF0000FF',
+      message: null,
+    };
+  },
   methods: {
+    storeMessage(e) {
+      this.message = e;
+    },
+    async setBanner(message) {
+      const bannerState = {
+        bannerState: true,
+        bannerMessage: message,
+        bannerColor: this.pickedColor,
+      };
+      await this.saveAndSetBannerState(bannerState);
+    },
+    async deleteBanner() {
+      const bannerState = {
+        bannerState: false,
+      };
+      await this.saveAndSetBannerState(bannerState);
+    },
     async recalcBulkSris() {
       const response = await putStudyRequestItems(this.auth.csrf);
       return response;
     },
+    ...mapActions(['saveAndSetBannerState']),
   },
 };
 </script>

@@ -15,6 +15,8 @@ import {
   postStudyRequestBulk,
   putStudyRequest,
   putStudyRequestBulk,
+  setBannerMessage,
+  getBannerMessage,
 } from '@/lib/api/WebApi';
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import {
@@ -55,6 +57,9 @@ export default new Vuex.Store({
     toast: null,
     toastData: {},
     toastKey: 0,
+    bannerState: false,
+    bannerMessage: null,
+    bannerColor: null,
     isPreparingExport: false,
     newExportsCount: null,
     // NAVIGATION
@@ -179,6 +184,14 @@ export default new Vuex.Store({
     toast(state) {
       return state.toast;
     },
+    bannerState(state) {
+      const bannerState = {
+        bannerState: state.bannerState,
+        bannerMessage: state.bannerMessage,
+        bannerColor: state.bannerColor,
+      };
+      return bannerState;
+    },
   },
   mutations: {
     // AUTH / HELPERS STATE
@@ -206,6 +219,19 @@ export default new Vuex.Store({
     },
     setFiltersOpen(state, filtersOpen) {
       Vue.set(state, 'filtersOpen', filtersOpen);
+    },
+    setBanner(state, bannerState) {
+      // eslint-disable-next-line no-console
+      console.log('WAHAWDHAWDADW', bannerState);
+      if (bannerState.bannerState === false) {
+        Vue.set(state, 'bannerState', bannerState.bannerState);
+      } else {
+        Vue.set(state, 'bannerMessage', bannerState.bannerMessage);
+        Vue.set(state, 'bannerColor', bannerState.bannerColor);
+        Vue.set(state, 'bannerState', bannerState.bannerState);
+      }
+      // eslint-disable-next-line no-console
+      console.log(state);
     },
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
@@ -350,6 +376,26 @@ export default new Vuex.Store({
       const auth = await getAuth('/auth');
       commit('setAuth', auth);
       return auth;
+    },
+    async retrieveBannerState({ commit }) {
+      const result = await getBannerMessage();
+      const transformedData = {
+        bannerState: result.banner_state,
+        bannerMessage: result.banner_message,
+        bannerColor: result.color,
+      };
+      // eslint-disable-next-line no-console
+      console.log('tra', transformedData);
+      commit('setBanner', transformedData);
+
+      return result;
+    },
+    async setBannerState({ commit }, bannerState) {
+      commit('setBanner', bannerState);
+    },
+    async saveAndSetBannerState({ state, commit }, bannerState) {
+      await setBannerMessage(state.auth, bannerState);
+      commit('setBanner', bannerState);
     },
     // STUDY REQUESTS
     async saveStudyRequest({ state }, studyRequest) {
