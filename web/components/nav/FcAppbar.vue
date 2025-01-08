@@ -45,14 +45,23 @@ export default {
   },
   async mounted() {
     // eslint-disable-next-line no-console
-    console.log('test');
+    console.log('first', this);
     await this.retrieveBannerState();
-    const result = this.bannerState;
+    this.message = this.bannerMessage;
+    this.color = this.bannerColor;
     // eslint-disable-next-line no-console
-    console.log('hmm', result);
-    this.message = result.bannerMessage;
-    this.color = result.bannerColor;
-    this.showBanner = result.bannerState;
+    console.log('test', this);
+  },
+  watch: {
+    bannerMessage: {
+      handler() {
+        // eslint-disable-next-line no-console
+        console.log('testawd');
+        this.message = this.bannerMessage;
+        this.color = this.bannerColor;
+      },
+      immediate: true,
+    },
   },
   computed: {
     textH1() {
@@ -64,8 +73,8 @@ export default {
     urlProd() {
       return `https://move.intra.prod-toronto.ca${this.$route.fullPath}`;
     },
-    ...mapGetters(['bannerState']),
-    ...mapState(['frontendEnv', 'title']),
+    ...mapGetters(['banner', 'bannerMessage']),
+    ...mapState(['frontendEnv', 'title', 'bannerState', 'bannerMessage', 'bannerColor']),
   },
   methods: {
     actionProd() {

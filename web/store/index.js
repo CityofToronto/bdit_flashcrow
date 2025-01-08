@@ -184,7 +184,10 @@ export default new Vuex.Store({
     toast(state) {
       return state.toast;
     },
-    bannerState(state) {
+    bannerMessage(state) {
+      return state.bannerMessage;
+    },
+    banner(state) {
       const bannerState = {
         bannerState: state.bannerState,
         bannerMessage: state.bannerMessage,
@@ -395,7 +398,7 @@ export default new Vuex.Store({
     },
     async saveAndSetBannerState({ state, commit }, bannerState) {
       await setBannerMessage(state.auth, bannerState);
-      commit('setBanner', bannerState);
+      await commit('setBanner', bannerState);
     },
     // STUDY REQUESTS
     async saveStudyRequest({ state }, studyRequest) {

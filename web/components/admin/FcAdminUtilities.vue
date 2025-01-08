@@ -9,9 +9,8 @@
     <FcButton type="primary" @click="deleteBanner()">DELETE BANNER</FcButton>
     <v-color-picker v-model="pickedColor" mode="hexa" hide-mode-switch></v-color-picker>
     <v-text-field
-            label="Solo"
+            label="Message"
             placeholder="Placeholder"
-            solo
             @input="storeMessage"
           ></v-text-field>
   </div>
