@@ -8,9 +8,7 @@
     <FcDashboardNavBrand />
     <h1 class="headline ml-2 no-select">{{textH1}}</h1>
     <v-spacer></v-spacer>
-    <div :v-if=showBanner>
-      <FcAppBanner :message=message :color=color />
-    </div>
+      <FcAppBanner :message=bannerMessage :color=bannerColor />
     <v-spacer></v-spacer>
     <v-chip class="ml-2" small>
       {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
@@ -38,27 +36,26 @@ export default {
     return {
       FrontendEnv,
       frontendMeta,
-      color: null,
-      message: null,
-      showBanner: false,
+      bannerColor: null,
+      bannerMessage: null,
     };
   },
   async mounted() {
     // eslint-disable-next-line no-console
     console.log('first', this);
     await this.retrieveBannerState();
-    this.message = this.bannerMessage;
-    this.color = this.bannerColor;
+    this.bannerMessage = this.banner.message;
+    this.bannerColor = this.banner.color;
     // eslint-disable-next-line no-console
     console.log('test', this);
   },
   watch: {
-    bannerMessage: {
+    banner: {
       handler() {
         // eslint-disable-next-line no-console
-        console.log('testawd');
-        this.message = this.bannerMessage;
-        this.color = this.bannerColor;
+        console.log('awdawda', this.banner);
+        this.bannerMessage = this.banner.message;
+        this.bannerColor = this.banner.color;
       },
       immediate: true,
     },
@@ -73,8 +70,8 @@ export default {
     urlProd() {
       return `https://move.intra.prod-toronto.ca${this.$route.fullPath}`;
     },
-    ...mapGetters(['banner', 'bannerMessage']),
-    ...mapState(['frontendEnv', 'title', 'bannerState', 'bannerMessage', 'bannerColor']),
+    ...mapGetters(['banner']),
+    ...mapState(['frontendEnv', 'title', 'banner']),
   },
   methods: {
     actionProd() {

@@ -5,10 +5,13 @@
       @click="recalcBulkSris">
       Recalculate Bulk SRIs
     </FcButton>
+    <br/>
+    <br/>
     <FcButton type="primary" @click="setBanner(message)">SET BANNER</FcButton>
     <FcButton type="primary" @click="deleteBanner()">DELETE BANNER</FcButton>
     <v-color-picker v-model="pickedColor" mode="hexa" hide-mode-switch></v-color-picker>
     <v-text-field
+            class="banner-input"
             label="Message"
             placeholder="Placeholder"
             @input="storeMessage"
@@ -41,9 +44,9 @@ export default {
     },
     async setBanner(message) {
       const bannerState = {
-        bannerState: true,
-        bannerMessage: message,
-        bannerColor: this.pickedColor,
+        display: true,
+        message,
+        color: this.pickedColor,
       };
       await this.saveAndSetBannerState(bannerState);
     },
@@ -52,6 +55,7 @@ export default {
         bannerState: false,
       };
       await this.saveAndSetBannerState(bannerState);
+      this.$emit('delete-banner');
     },
     async recalcBulkSris() {
       const response = await putStudyRequestItems(this.auth.csrf);
@@ -61,3 +65,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+  v-text-field{
+    width: 400px;
+  }
+</style>

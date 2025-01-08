@@ -57,9 +57,11 @@ export default new Vuex.Store({
     toast: null,
     toastData: {},
     toastKey: 0,
-    bannerState: false,
-    bannerMessage: null,
-    bannerColor: null,
+    banner: {
+      display: false,
+      message: null,
+      color: null,
+    },
     isPreparingExport: false,
     newExportsCount: null,
     // NAVIGATION
@@ -185,13 +187,13 @@ export default new Vuex.Store({
       return state.toast;
     },
     bannerMessage(state) {
-      return state.bannerMessage;
+      return state.banner;
     },
     banner(state) {
       const bannerState = {
-        bannerState: state.bannerState,
-        bannerMessage: state.bannerMessage,
-        bannerColor: state.bannerColor,
+        display: state.display,
+        message: state.message,
+        color: state.color,
       };
       return bannerState;
     },
@@ -226,12 +228,10 @@ export default new Vuex.Store({
     setBanner(state, bannerState) {
       // eslint-disable-next-line no-console
       console.log('WAHAWDHAWDADW', bannerState);
-      if (bannerState.bannerState === false) {
-        Vue.set(state, 'bannerState', bannerState.bannerState);
+      if (bannerState.display === false) {
+        Vue.set(state, 'bannerState', bannerState.display);
       } else {
-        Vue.set(state, 'bannerMessage', bannerState.bannerMessage);
-        Vue.set(state, 'bannerColor', bannerState.bannerColor);
-        Vue.set(state, 'bannerState', bannerState.bannerState);
+        Vue.set(state, 'banner', bannerState);
       }
       // eslint-disable-next-line no-console
       console.log(state);
@@ -382,14 +382,8 @@ export default new Vuex.Store({
     },
     async retrieveBannerState({ commit }) {
       const result = await getBannerMessage();
-      const transformedData = {
-        bannerState: result.banner_state,
-        bannerMessage: result.banner_message,
-        bannerColor: result.color,
-      };
-      // eslint-disable-next-line no-console
-      console.log('tra', transformedData);
-      commit('setBanner', transformedData);
+
+      commit('setBanner', result);
 
       return result;
     },
