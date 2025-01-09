@@ -25,7 +25,7 @@
           <v-list-item-title>
             {{ item.text }}
           </v-list-item-title>
-          <v-list-item-subtitle>
+          <v-list-item-subtitle v-if="item.subtitle !== ''">
             {{ item.subtitle }}
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -136,7 +136,7 @@ export default {
           value: name,
           subtitle,
         })),
-        { text: 'Other', value: 'OTHER', subtitle: 'Other studies to observe specific traffic behaviour (e.g. left-turn, queue-delay, origin-destination, parking occupancy, radar gun)' },
+        { text: 'Other', value: 'OTHER', subtitle: 'Other studies to observe specific traffic behaviour. For example, left-turn, queue-delay, origin-destination, parking occupancy, radar gun.' },
       ];
     },
   },
@@ -169,10 +169,17 @@ export default {
   overflow:hidden;
 }
 
+.v-list-item__content {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
 .blank.alternative-studies-option {
     display: none !important;
-  }
+}
+
 .v-list-item__subtitle{
   white-space: pre-line;
+  font-weight: 600 !important;
 }
 </style>
