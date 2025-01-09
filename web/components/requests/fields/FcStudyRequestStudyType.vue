@@ -180,6 +180,6 @@ export default {
 
 .v-list-item__subtitle{
   white-space: pre-line;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
 }
 </style>
