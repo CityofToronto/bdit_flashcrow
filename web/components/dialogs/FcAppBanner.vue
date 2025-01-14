@@ -3,8 +3,8 @@
     <v-alert
       v-model="alert"
       :type="alertType"
-      prominent
       dismissible
+      max-height="48px"
       close-label="Close Alert"
       :class="{ 'fc-appbanner': !display, visibleBanner: display}"
       >
@@ -13,7 +13,12 @@
           {{ bannerMessage }}
         </v-col>
         <v-col v-if="bannerButton" class="shrink">
-          <v-btn><a target="_blank" :href=buttonLink>More information</a></v-btn>
+          <FcButton
+          class="alert-button"
+          type="secondary"
+          >
+          <a target="_blank" :href=buttonLink>Learn More</a>
+        </FcButton>
         </v-col>
       </v-row>
     </v-alert>
@@ -22,9 +27,13 @@
 
 <script>
 import { mapState } from 'vuex';
+import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
   name: 'FcAppBanner',
+  components: {
+    FcButton,
+  },
   props: {
     bannerMessage: String,
     display: Boolean,
@@ -59,12 +68,19 @@ export default {
   .visibleBanner {
     display: block;
     margin-bottom: 0 !important;
-    padding: 8px !important;
-    padding-right: 20px !important;
+    padding: 8px 20px !important;
+  }
+
+  .v-icon {
+    align-self: center !important;
+  }
+
+  .alert-button {
+    height: 28px !important;
   }
 
   a {
     text-decoration: none !important;
-    color: white !important;
+    color: black !important;
   }
 </style>
