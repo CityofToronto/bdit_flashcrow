@@ -17,7 +17,7 @@
           class="alert-button"
           type="secondary"
           >
-          <a target="_blank" :href=buttonLink>More information</a>
+          <a target="_blank" :href=buttonLink>Learn More</a>
         </FcButton>
         </v-col>
       </v-row>
