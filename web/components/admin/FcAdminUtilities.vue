@@ -7,29 +7,52 @@
     </FcButton>
     <br/>
     <br/>
-    <FcButton type="primary" @click="setBanner(message)">SET BANNER</FcButton>
+    <FcButton type="primary" @click="setBanner(
+      message, buttonMessage, buttonUrl)">SET BANNER</FcButton>
     <FcButton type="primary" @click="deleteBanner()">DELETE BANNER</FcButton>
+    <br/><br/>
+    <v-container>
+      <h2>Type of alert</h2>
     <v-radio-group v-model="alertTypeSelection">
       <v-radio
-        label="warning"
+        label="warning (yellow background with white text)"
         value="warning"
       ></v-radio>
       <v-radio
-        label="error"
+        label="error (red background with white text)"
         value="error"
       ></v-radio>
       <v-radio
-        label="success"
+        label="success (green background with white text)"
         value="success"
       ></v-radio>
     </v-radio-group>
     <v-text-field
             class="banner-input"
-            label="Message"
+            label="Alert Message"
             placeholder="Placeholder"
             :error-messages="errorOnSubmit ? errors : []"
             @input="storeMessage"
           ></v-text-field>
+    <h2>Include a link</h2>
+    <v-radio-group v-model="buttonSelection">
+      <v-radio
+        label="include link"
+        :value=true
+      ></v-radio>
+      <v-radio
+        label="no link"
+        :value=false
+      ></v-radio>
+    </v-radio-group>
+    <v-text-field v-if="buttonSelection"
+      class="input"
+      label="Button Link"
+      placeholder="Placeholder"
+      :error-messages="errorOnSubmit ? errors : []"
+      @input="storeButtonLink"
+    ></v-text-field>
+  </v-container>
   </div>
 </template>
 
@@ -50,9 +73,12 @@ export default {
     return {
       pickedColor: '#FF0000FF',
       message: null,
+      buttonMessage: null,
+      buttonUrl: null,
       errorOnSubmit: false,
       errors: [],
       alertTypeSelection: 'warning',
+      buttonSelection: false,
     };
   },
   methods: {
@@ -68,11 +94,20 @@ export default {
     storeMessage(e) {
       this.message = e;
     },
-    async setBanner(message) {
+    storeButtonText(e) {
+      this.buttonMessage = e;
+    },
+    storeButtonLink(e) {
+      this.buttonUrl = e;
+    },
+    async setBanner(message, buttonMessage, buttonUrl) {
       const bannerState = {
-        display: true,
-        message,
-        type: this.alertTypeSelection,
+        displayBanner: true,
+        bannerMessage: message,
+        bannerType: this.alertTypeSelection,
+        displayButton: this.buttonSelection,
+        buttonText: buttonMessage,
+        buttonLink: buttonUrl,
       };
       if (message) {
         this.errorOnSubmit = false;
@@ -84,7 +119,7 @@ export default {
       this.errorOnSubmit = false;
       this.errors = [];
       const bannerState = {
-        bannerState: false,
+        displayBanner: false,
       };
       await this.saveAndSetBannerState(bannerState);
       this.$emit('delete-banner');

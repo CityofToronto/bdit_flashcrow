@@ -17,9 +17,12 @@
     <FcNavbar />
     <v-main>
       <FcAppBanner
-      :message=banner.message
-      :bannerClass="banner.display"
-      :alertType="banner.type"/>
+      :buttonLink=banner.buttonLink
+      :bannerButton=banner.displayButton
+      :buttonText=banner.buttonText
+      :bannerMessage=banner.bannerMessage
+      :display="banner.displayBanner"
+      :alertType="banner.bannerType"/>
       <router-view>
       </router-view>
     </v-main>
