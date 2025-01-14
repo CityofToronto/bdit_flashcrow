@@ -191,9 +191,9 @@ export default new Vuex.Store({
     },
     banner(state) {
       const bannerState = {
-        display: state.display,
-        message: state.message,
-        color: state.color,
+        display: state.banner.display,
+        message: state.banner.message,
+        type: state.banner.type,
       };
       return bannerState;
     },
@@ -226,15 +226,11 @@ export default new Vuex.Store({
       Vue.set(state, 'filtersOpen', filtersOpen);
     },
     setBanner(state, bannerState) {
-      // eslint-disable-next-line no-console
-      console.log('WAHAWDHAWDADW', bannerState);
       if (bannerState.display === false) {
         Vue.set(state, 'bannerState', bannerState.display);
       } else {
         Vue.set(state, 'banner', bannerState);
       }
-      // eslint-disable-next-line no-console
-      console.log(state);
     },
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
@@ -382,7 +378,6 @@ export default new Vuex.Store({
     },
     async retrieveBannerState({ commit }) {
       const result = await getBannerMessage();
-
       commit('setBanner', result);
 
       return result;

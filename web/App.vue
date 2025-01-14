@@ -16,7 +16,12 @@
     <FcAppbar />
     <FcNavbar />
     <v-main>
-      <router-view></router-view>
+      <FcAppBanner
+      :message=banner.message
+      :bannerClass="banner.display"
+      :alertType="banner.type"/>
+      <router-view>
+      </router-view>
     </v-main>
     <FcGlobalFilterDrawer
       v-model="internalFiltersOpen" />
@@ -24,7 +29,12 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import {
+  mapGetters,
+  mapActions,
+  mapMutations,
+  mapState,
+} from 'vuex';
 
 import '@mdi/font/css/materialdesignicons.min.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -46,6 +56,7 @@ import FcAppbar from '@/web/components/nav/FcAppbar.vue';
 import FcNavbar from '@/web/components/nav/FcNavbar.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
 import FcToastMvcrJob from '@/web/components/dialogs/FcToastMvcrJob.vue';
+import FcAppBanner from '@/web/components/dialogs/FcAppBanner.vue';
 
 export default {
   name: 'App',
@@ -62,9 +73,15 @@ export default {
     FcToastInfo,
     FcToastJob,
     FcToastMvcrJob,
+    FcAppBanner,
   },
   data() {
-    return { FrontendEnv };
+    return {
+      FrontendEnv,
+    };
+  },
+  async mounted() {
+    await this.retrieveBannerState();
   },
   computed: {
     hasDialog: {
@@ -105,8 +122,9 @@ export default {
       'toast',
       'toastData',
       'toastKey',
+      'banner',
     ]),
-    ...mapGetters(['pageTitle']),
+    ...mapGetters(['pageTitle', 'banner']),
   },
   watch: {
     ariaNotification() {
@@ -124,6 +142,7 @@ export default {
   },
   methods: {
     ...mapMutations(['clearDialog', 'clearToast', 'setFiltersOpen']),
+    ...mapActions(['retrieveBannerState']),
   },
 };
 </script>
