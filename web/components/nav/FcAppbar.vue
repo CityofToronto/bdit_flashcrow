@@ -11,7 +11,6 @@
     <v-chip class="ml-2" small>
       {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
     </v-chip>
-
   </v-app-bar>
 </template>
 
@@ -29,7 +28,12 @@ export default {
   },
   data() {
     const frontendMeta = FrontendMeta.get();
-    return { FrontendEnv, frontendMeta };
+    return {
+      FrontendEnv,
+      frontendMeta,
+      bannerColor: null,
+      bannerMessage: null,
+    };
   },
   computed: {
     textH1() {

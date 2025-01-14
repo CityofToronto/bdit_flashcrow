@@ -15,6 +15,8 @@ import {
   postStudyRequestBulk,
   putStudyRequest,
   putStudyRequestBulk,
+  setBannerMessage,
+  getBannerMessage,
 } from '@/lib/api/WebApi';
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import {
@@ -55,6 +57,11 @@ export default new Vuex.Store({
     toast: null,
     toastData: {},
     toastKey: 0,
+    banner: {
+      display: false,
+      message: null,
+      color: null,
+    },
     isPreparingExport: false,
     newExportsCount: null,
     // NAVIGATION
@@ -179,6 +186,17 @@ export default new Vuex.Store({
     toast(state) {
       return state.toast;
     },
+    bannerMessage(state) {
+      return state.banner;
+    },
+    banner(state) {
+      const bannerState = {
+        display: state.banner.display,
+        message: state.banner.message,
+        type: state.banner.type,
+      };
+      return bannerState;
+    },
   },
   mutations: {
     // AUTH / HELPERS STATE
@@ -206,6 +224,13 @@ export default new Vuex.Store({
     },
     setFiltersOpen(state, filtersOpen) {
       Vue.set(state, 'filtersOpen', filtersOpen);
+    },
+    setBanner(state, bannerState) {
+      if (bannerState.display === false) {
+        Vue.set(state, 'bannerState', bannerState.display);
+      } else {
+        Vue.set(state, 'banner', bannerState);
+      }
     },
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
@@ -350,6 +375,19 @@ export default new Vuex.Store({
       const auth = await getAuth('/auth');
       commit('setAuth', auth);
       return auth;
+    },
+    async retrieveBannerState({ commit }) {
+      const result = await getBannerMessage();
+      commit('setBanner', result);
+
+      return result;
+    },
+    async setBannerState({ commit }, bannerState) {
+      commit('setBanner', bannerState);
+    },
+    async saveAndSetBannerState({ state, commit }, bannerState) {
+      await setBannerMessage(state.auth, bannerState);
+      await commit('setBanner', bannerState);
     },
     // STUDY REQUESTS
     async saveStudyRequest({ state }, studyRequest) {
