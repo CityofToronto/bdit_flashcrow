@@ -50,6 +50,7 @@ export default {
   }
   .visible {
     display: block;
+    margin-bottom: 0 !important;
   }
 
   p {
