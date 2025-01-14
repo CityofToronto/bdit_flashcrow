@@ -58,9 +58,12 @@ export default new Vuex.Store({
     toastData: {},
     toastKey: 0,
     banner: {
-      display: false,
-      message: null,
-      color: null,
+      displayBanner: false,
+      bannerMessage: null,
+      bannerType: null,
+      displayButton: false,
+      buttonLink: null,
+      buttonText: null,
     },
     isPreparingExport: false,
     newExportsCount: null,
@@ -186,14 +189,14 @@ export default new Vuex.Store({
     toast(state) {
       return state.toast;
     },
-    bannerMessage(state) {
-      return state.banner;
-    },
     banner(state) {
       const bannerState = {
-        display: state.banner.display,
-        message: state.banner.message,
-        type: state.banner.type,
+        displayBanner: state.banner.displayBanner,
+        bannerMessage: state.banner.bannerMessage,
+        bannerType: state.banner.bannerType,
+        displayButton: state.banner.displayButton,
+        buttonText: state.banner.buttonText,
+        buttonLink: state.banner.buttonLink,
       };
       return bannerState;
     },
@@ -226,8 +229,16 @@ export default new Vuex.Store({
       Vue.set(state, 'filtersOpen', filtersOpen);
     },
     setBanner(state, bannerState) {
-      if (bannerState.display === false) {
-        Vue.set(state, 'bannerState', bannerState.display);
+      if (bannerState.displayBanner === false) {
+        const banner = {
+          displayBanner: false,
+          bannerMessage: null,
+          bannerType: null,
+          displayButton: false,
+          buttonLink: null,
+          buttonText: null,
+        };
+        Vue.set(state, 'banner', banner);
       } else {
         Vue.set(state, 'banner', bannerState);
       }
@@ -378,7 +389,15 @@ export default new Vuex.Store({
     },
     async retrieveBannerState({ commit }) {
       const result = await getBannerMessage();
-      commit('setBanner', result);
+      const banner = {
+        displayBanner: result.display_alert,
+        bannerMessage: result.alert_text,
+        bannerType: result.alert_type,
+        displayButton: result.display_button,
+        buttonLink: result.button_link,
+        buttonText: result.button_text,
+      };
+      commit('setBanner', banner);
 
       return result;
     },
