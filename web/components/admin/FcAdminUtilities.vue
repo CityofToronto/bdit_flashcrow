@@ -7,10 +7,10 @@
     </FcButton>
     <br/>
     <br/>
-    <FcButton type="primary" @click="setBanner(
-      message, buttonMessage, buttonUrl)">SET BANNER</FcButton>
-    <FcButton type="primary" @click="deleteBanner()">DELETE BANNER</FcButton>
-    <br/><br/>
+    <br/>
+    <br/>
+    <h2>Add an alert banner to MOVE</h2>
+    <br/>
     <v-container>
       <h2>Type of alert</h2>
     <v-radio-group v-model="alertTypeSelection">
@@ -37,11 +37,11 @@
     <h2>Include a link</h2>
     <v-radio-group v-model="buttonSelection">
       <v-radio
-        label="include link"
+        label="Include hyperlink"
         :value=true
       ></v-radio>
       <v-radio
-        label="no link"
+        label="No hyperlink"
         :value=false
       ></v-radio>
     </v-radio-group>
@@ -52,6 +52,18 @@
       :error-messages="errorOnSubmit ? errors : []"
       @input="storeButtonLink"
     ></v-text-field>
+    <FcButton class='set-banner' type="primary" @click="setBanner(
+      message, buttonMessage, buttonUrl)">Set Banner</FcButton>
+    <FcButton class='remove-banner' type="primary" @click="deleteBanner()">Remove Banner</FcButton>
+    <br/>
+    <div v-if="banner.displayBanner">
+      <h2>Currently applied banner: </h2>
+      <p>Type: {{ banner.bannerType }}</p>
+      <p>Message: {{ banner.bannerMessage }}</p>
+      <div v-if="banner.displayButton">
+        <p>Hyperlink: {{ banner.buttonLink }}</p>
+      </div>
+    </div>
   </v-container>
   </div>
 </template>
@@ -67,7 +79,7 @@ export default {
     FcButton,
   },
   computed: {
-    ...mapState(['auth']),
+    ...mapState(['auth', 'banner']),
   },
   data() {
     return {
@@ -122,7 +134,6 @@ export default {
         displayBanner: false,
       };
       await this.saveAndSetBannerState(bannerState);
-      this.$emit('delete-banner');
     },
     async recalcBulkSris() {
       const response = await putStudyRequestItems(this.auth.csrf);
@@ -135,5 +146,12 @@ export default {
 <style scoped>
   v-text-field{
     width: 400px;
+  }
+  .set-banner {
+    margin-right: 2rem;
+  }
+
+  .fc-admin-utilities > h2 {
+    margin-left: 1rem;
   }
 </style>

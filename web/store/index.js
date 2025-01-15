@@ -58,6 +58,7 @@ export default new Vuex.Store({
     toastData: {},
     toastKey: 0,
     banner: {
+      bannerState: false,
       displayBanner: false,
       bannerMessage: null,
       bannerType: null,
@@ -191,6 +192,7 @@ export default new Vuex.Store({
     },
     banner(state) {
       const bannerState = {
+        bannerState: state.banner.bannerState,
         displayBanner: state.banner.displayBanner,
         bannerMessage: state.banner.bannerMessage,
         bannerType: state.banner.bannerType,
@@ -228,9 +230,31 @@ export default new Vuex.Store({
     setFiltersOpen(state, filtersOpen) {
       Vue.set(state, 'filtersOpen', filtersOpen);
     },
+    turnBannerOff(state) {
+      const {
+        dipsplayBanner,
+        bannerMessage,
+        bannerType,
+        displayButton,
+        buttonLink,
+        buttonText,
+      } = state.banner;
+
+      const banner = {
+        bannerState: false,
+        dipsplayBanner,
+        bannerMessage,
+        bannerType,
+        displayButton,
+        buttonLink,
+        buttonText,
+      };
+      Vue.set(state, 'banner', banner);
+    },
     setBanner(state, bannerState) {
       if (bannerState.displayBanner === false) {
         const banner = {
+          bannerState: false,
           displayBanner: false,
           bannerMessage: null,
           bannerType: null,
@@ -390,6 +414,7 @@ export default new Vuex.Store({
     async retrieveBannerState({ commit }) {
       const result = await getBannerMessage();
       const banner = {
+        bannerState: result.display_alert,
         displayBanner: result.display_alert,
         bannerMessage: result.alert_text,
         bannerType: result.alert_type,
@@ -400,6 +425,9 @@ export default new Vuex.Store({
       commit('setBanner', banner);
 
       return result;
+    },
+    async turnBannerOff({ commit }) {
+      commit('turnBannerOff');
     },
     async setBannerState({ commit }, bannerState) {
       commit('setBanner', bannerState);

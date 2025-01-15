@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -49,10 +49,18 @@ export default {
       alert: true,
     };
   },
+  methods: {
+    ...mapActions(['turnBannerOff']),
+  },
   computed: {
     ...mapState(['banner']),
   },
   watch: {
+    alert: {
+      async handler() {
+        await this.turnBannerOff();
+      },
+    },
     banner: {
       handler() {
         if (!this.alert && this.banner.displayBanner) {

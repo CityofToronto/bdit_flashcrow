@@ -31,8 +31,6 @@ export default {
     return {
       FrontendEnv,
       frontendMeta,
-      bannerColor: null,
-      bannerMessage: null,
     };
   },
   computed: {
