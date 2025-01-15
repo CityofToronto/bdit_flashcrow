@@ -13,12 +13,14 @@
           {{ bannerMessage }}
         </v-col>
         <v-col v-if="bannerButton" class="shrink">
-          <FcButton
-          class="alert-button"
-          type="secondary"
-          >
-          <a target="_blank" :href=buttonLink>Learn More</a>
-        </FcButton>
+          <a target="_blank" :href=buttonLink>
+            <FcButton
+            class="alert-button"
+            type="secondary"
+            >
+              Learn More
+          </FcButton>
+          </a>
         </v-col>
       </v-row>
     </v-alert>
