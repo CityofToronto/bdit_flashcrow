@@ -12,7 +12,7 @@
       >
       <v-row align="center">
         <v-col class="grow">
-          {{ banner.bannerMessage }}
+          <p class="app-banner-message">{{ banner.bannerMessage }}</p>
         </v-col>
         <v-col v-if="banner.displayButton" class="shrink">
           <a target="_blank" :href=banner.buttonLink>
@@ -85,24 +85,29 @@ export default {
     flex-grow: 1;
   }
 
+  .app-banner-message {
+    margin-bottom: 0;
+    word-wrap: break-word;
+  }
+
   a {
     text-decoration: none !important;
     color: black !important;
   }
 
-  @media only screen and (max-width: 1000px) {
+  @media only screen and (max-width: 1190px) {
     .visibleBanner {
       font-size: 0.8rem;
     }
   }
 
-  @media only screen and (max-width: 950px) {
-    #fc_app > div > header > div > div:nth-child(2) > div {
-      width: 40%;
+  @media only screen and (max-width: 1068px) {
+    .visibleBanner {
+      font-size: 0.8rem;
     }
   }
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (max-width: 990px) {
     .visibleBanner {
     display: none;
   }
