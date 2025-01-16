@@ -1,7 +1,10 @@
 <template>
   <v-app
     id="fc_app"
-    :class="frontendEnv.appClass">
+    :class="[
+      frontendEnv.appClass,
+      appWithBanner]"
+    >
     <component
       v-if="hasDialog"
       v-model="hasDialog"
@@ -16,13 +19,6 @@
     <FcAppbar />
     <FcNavbar />
     <v-main>
-      <FcAppBanner
-      :buttonLink=banner.buttonLink
-      :bannerButton=banner.displayButton
-      :buttonText=banner.buttonText
-      :bannerMessage=banner.bannerMessage
-      :display="banner.displayBanner"
-      :alertType="banner.bannerType"/>
       <router-view>
       </router-view>
     </v-main>
@@ -34,7 +30,6 @@
 <script>
 import {
   mapGetters,
-  mapActions,
   mapMutations,
   mapState,
 } from 'vuex';
@@ -81,10 +76,8 @@ export default {
   data() {
     return {
       FrontendEnv,
+      appWithBanner: '',
     };
-  },
-  async mounted() {
-    await this.retrieveBannerState();
   },
   computed: {
     hasDialog: {
@@ -125,9 +118,8 @@ export default {
       'toast',
       'toastData',
       'toastKey',
-      'banner',
     ]),
-    ...mapGetters(['pageTitle', 'banner']),
+    ...mapGetters(['pageTitle']),
   },
   watch: {
     ariaNotification() {
@@ -145,7 +137,6 @@ export default {
   },
   methods: {
     ...mapMutations(['clearDialog', 'clearToast', 'setFiltersOpen']),
-    ...mapActions(['retrieveBannerState']),
   },
 };
 </script>

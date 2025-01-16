@@ -8,6 +8,8 @@
     <FcDashboardNavBrand />
     <h1 class="headline ml-2 no-select">{{textH1}}</h1>
     <v-spacer></v-spacer>
+    <FcAppBanner/>
+    <v-spacer></v-spacer>
     <v-chip class="ml-2" small>
       {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
     </v-chip>
@@ -15,25 +17,28 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 import FcDashboardNavBrand from '@/web/components/nav/FcDashboardNavBrand.vue';
 import FrontendEnv from '@/web/config/FrontendEnv';
 import FrontendMeta from '@/web/config/FrontendMeta';
+import FcAppBanner from '../dialogs/FcAppBanner.vue';
 
 export default {
   name: 'FcAppbar',
   components: {
     FcDashboardNavBrand,
+    FcAppBanner,
   },
   data() {
     const frontendMeta = FrontendMeta.get();
     return {
       FrontendEnv,
       frontendMeta,
-      bannerColor: null,
-      bannerMessage: null,
     };
+  },
+  async mounted() {
+    await this.retrieveBannerState();
   },
   computed: {
     textH1() {
@@ -45,12 +50,13 @@ export default {
     urlProd() {
       return `https://move.intra.prod-toronto.ca${this.$route.fullPath}`;
     },
-    ...mapState(['frontendEnv', 'title']),
+    ...mapState(['frontendEnv', 'title', 'banner']),
   },
   methods: {
     actionProd() {
       window.open(this.urlProd, '_blank');
     },
+    ...mapActions(['retrieveBannerState']),
   },
 };
 </script>
