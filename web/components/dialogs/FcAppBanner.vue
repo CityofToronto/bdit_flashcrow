@@ -3,7 +3,6 @@
     <v-alert
       v-model="alert"
       text
-      shaped
       :type="banner.bannerType"
       dismissible
       max-height="48px"
@@ -95,15 +94,19 @@ export default {
     color: black !important;
   }
 
-  @media only screen and (max-width: 1190px) {
+  @media only screen and (max-width: 1200px) {
     .visibleBanner {
       font-size: 0.8rem;
+      padding: 5px 10px!important;
     }
   }
 
   @media only screen and (max-width: 1068px) {
     .visibleBanner {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
+    }
+    .alert-button{
+      font-size: 0.7rem;
     }
   }
 
