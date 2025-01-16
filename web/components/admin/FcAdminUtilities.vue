@@ -31,7 +31,7 @@
             class="banner-input"
             label="Alert Message"
             placeholder="Placeholder"
-            :error-messages="errorOnSubmit ? errors : []"
+            :error-messages="errorOnSubmitMessage ? messageErrors : []"
             @input="storeMessage"
           ></v-text-field>
     <h2>Include a link</h2>
@@ -49,7 +49,7 @@
       class="input"
       label="Button Link"
       placeholder="Placeholder"
-      :error-messages="errorOnSubmit ? errors : []"
+      :error-messages="errorOnSubmitButton ? buttonErrors : []"
       @input="storeButtonLink"
     ></v-text-field>
     <FcButton class='set-banner' type="primary" @click="setBanner(
@@ -89,21 +89,46 @@ export default {
       message: null,
       buttonMessage: null,
       buttonUrl: null,
-      errorOnSubmit: false,
-      errors: [],
+      errorOnSubmitMessage: false,
+      errorOnSubmitButton: false,
+      messageErrors: [],
+      buttonErrors: [],
       alertTypeSelection: 'warning',
       buttonSelection: false,
     };
   },
   methods: {
+    isValidUrl(urlString) {
+      try {
+        return Boolean(new URL(urlString));
+      } catch (e) {
+        return false;
+      }
+    },
+    emptyButtonUrlError() {
+      this.buttonErrors = [];
+      const errors = [];
+      errors.push('Please enter a valid URL');
+      this.errorOnSubmitButton = true;
+      this.buttonErrors = errors;
+    },
     emptyMessageError() {
-      this.errors = [];
+      this.messageErrors = [];
       const errors = [];
       if (!this.message) {
         errors.push('Please enter a message');
       }
-      this.errorOnSubmit = true;
-      this.errors = errors;
+      this.errorOnSubmitMessage = true;
+      this.messageErrors = errors;
+    },
+    longMessageError() {
+      this.messageErrors = [];
+      const errors = [];
+      if (this.message.length > 75) {
+        errors.push('Message cannot be longer than 75 characters');
+      }
+      this.errorOnSubmitMessage = true;
+      this.messageErrors = errors;
     },
     storeMessage(e) {
       this.message = e;
@@ -123,14 +148,22 @@ export default {
         buttonText: buttonMessage,
         buttonLink: buttonUrl,
       };
-      if (message) {
-        this.errorOnSubmit = false;
+
+      if ((this.buttonSelection && !buttonUrl)
+      || (this.buttonSelection && !this.isValidUrl(this.buttonUrl))) {
+        this.emptyButtonUrlError();
+      } else if (message && message.length <= 75) {
+        this.errorOnSubmitButton = false;
+        this.errorOnSubmitMessage = false;
         this.errors = [];
         await this.saveAndSetBannerState(bannerState);
+      } else if (message && message.length > 75) {
+        this.longMessageError();
       } else this.emptyMessageError();
     },
     async deleteBanner() {
-      this.errorOnSubmit = false;
+      this.errorOnSubmitMessage = false;
+      this.errorOnSubmitButton = false;
       this.errors = [];
       const bannerState = {
         displayBanner: false,
