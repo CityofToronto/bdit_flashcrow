@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="banner-container">
     <v-alert
       v-model="alert"
       text
@@ -76,12 +76,35 @@ export default {
     height: 28px !important;
   }
 
-  #fc_app > div > header > div > div:nth-child(5) {
-    width: 75%;
+  .banner-container {
+    display: flex;
+  }
+
+  #fc_app > div > header > div > div:nth-child(2) > div {
+    min-width: 540px;
+    flex-grow: 1;
   }
 
   a {
     text-decoration: none !important;
     color: black !important;
   }
+
+  @media only screen and (max-width: 1000px) {
+    .visibleBanner {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media only screen and (max-width: 950px) {
+    #fc_app > div > header > div > div:nth-child(2) > div {
+      width: 40%;
+    }
+  }
+
+  @media only screen and (max-width: 900px) {
+    .visibleBanner {
+    display: none;
+  }
+}
 </style>
