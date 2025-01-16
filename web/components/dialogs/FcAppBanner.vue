@@ -2,18 +2,19 @@
   <div>
     <v-alert
       v-model="alert"
-      :type="alertType"
+      text
+      :type="banner.bannerType"
       dismissible
       max-height="48px"
       close-label="Close Alert"
-      :class="{ 'fc-appbanner': !display, visibleBanner: display}"
+      :class="{ 'fc-appbanner': !banner.displayBanner, visibleBanner: banner.displayBanner}"
       >
       <v-row align="center">
         <v-col class="grow">
-          {{ bannerMessage }}
+          {{ banner.bannerMessage }}
         </v-col>
-        <v-col v-if="bannerButton" class="shrink">
-          <a target="_blank" :href=buttonLink>
+        <v-col v-if="banner.displayButton" class="shrink">
+          <a target="_blank" :href=banner.buttonLink>
             <FcButton
             class="alert-button"
             type="secondary"
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 
 export default {
@@ -36,31 +37,15 @@ export default {
   components: {
     FcButton,
   },
-  props: {
-    bannerMessage: String,
-    display: Boolean,
-    alertType: String,
-    buttonLink: String,
-    buttonText: String,
-    bannerButton: Boolean,
-  },
   data() {
     return {
       alert: true,
     };
   },
-  methods: {
-    ...mapActions(['turnBannerOff']),
-  },
   computed: {
     ...mapState(['banner']),
   },
   watch: {
-    alert: {
-      async handler() {
-        await this.turnBannerOff();
-      },
-    },
     banner: {
       handler() {
         if (!this.alert && this.banner.displayBanner) {
@@ -79,6 +64,7 @@ export default {
     display: block;
     margin-bottom: 0 !important;
     padding: 8px 20px !important;
+    width: 100% !important;
   }
 
   .v-icon {
@@ -87,6 +73,10 @@ export default {
 
   .alert-button {
     height: 28px !important;
+  }
+
+  #fc_app > div > header > div > div:nth-child(5) {
+    width: 75%;
   }
 
   a {

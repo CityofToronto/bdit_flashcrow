@@ -19,13 +19,6 @@
     <FcAppbar />
     <FcNavbar />
     <v-main>
-      <FcAppBanner
-      :buttonLink=banner.buttonLink
-      :bannerButton=banner.displayButton
-      :buttonText=banner.buttonText
-      :bannerMessage=banner.bannerMessage
-      :display="banner.displayBanner"
-      :alertType="banner.bannerType"/>
       <router-view>
       </router-view>
     </v-main>
@@ -37,7 +30,6 @@
 <script>
 import {
   mapGetters,
-  mapActions,
   mapMutations,
   mapState,
 } from 'vuex';
@@ -87,14 +79,6 @@ export default {
       appWithBanner: '',
     };
   },
-  async mounted() {
-    await this.retrieveBannerState();
-    // eslint-disable-next-line no-console
-    console.log(this.banner);
-    if (this.banner.displayBanner) {
-      this.appWithBanner = 'app-with-banner';
-    }
-  },
   computed: {
     hasDialog: {
       get() {
@@ -134,23 +118,13 @@ export default {
       'toast',
       'toastData',
       'toastKey',
-      'banner',
     ]),
-    ...mapGetters(['pageTitle', 'banner']),
+    ...mapGetters(['pageTitle']),
   },
   watch: {
     ariaNotification() {
       const $ariaNotification = document.querySelector('#aria_notification');
       $ariaNotification.innerText = this.ariaNotification;
-    },
-    banner: {
-      handler() {
-        // eslint-disable-next-line no-console
-        console.log('second handler', this.banner);
-        if (!this.banner.displayBanner) {
-          this.appWithBanner = false;
-        }
-      },
     },
     pageTitle: {
       handler() {
@@ -163,7 +137,6 @@ export default {
   },
   methods: {
     ...mapMutations(['clearDialog', 'clearToast', 'setFiltersOpen']),
-    ...mapActions(['retrieveBannerState']),
   },
 };
 </script>
@@ -195,14 +168,6 @@ export default {
   & .v-breadcrumbs .v-breadcrumbs__item--disabled {
     color: var(--v-secondary-base);
   }
-}
-
-#fc_app.app-with-banner {
-  --full-height: calc(100vh - 96px) !important;
-}
-
-.test{
-  color: red;
 }
 
 // remove extra scrollbar added by outdated version of ress

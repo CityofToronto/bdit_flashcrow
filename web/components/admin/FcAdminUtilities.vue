@@ -15,15 +15,15 @@
       <h2>Type of alert</h2>
     <v-radio-group v-model="alertTypeSelection">
       <v-radio
-        label="warning (yellow background with white text)"
+        label="Warning (yellow background with white text)"
         value="warning"
       ></v-radio>
       <v-radio
-        label="error (red background with white text)"
+        label="Error (red background with white text)"
         value="error"
       ></v-radio>
       <v-radio
-        label="success (green background with white text)"
+        label="Success (green background with white text)"
         value="success"
       ></v-radio>
     </v-radio-group>
@@ -57,7 +57,9 @@
     <FcButton class='remove-banner' type="primary" @click="deleteBanner()">Remove Banner</FcButton>
     <br/>
     <div v-if="banner.displayBanner">
+      <br/><br/>
       <h2>Currently applied banner: </h2>
+      <br/>
       <p>Type: {{ banner.bannerType }}</p>
       <p>Message: {{ banner.bannerMessage }}</p>
       <div v-if="banner.displayButton">

@@ -434,7 +434,7 @@ export default new Vuex.Store({
     },
     async saveAndSetBannerState({ state, commit }, bannerState) {
       await setBannerMessage(state.auth, bannerState);
-      await commit('setBanner', bannerState);
+      commit('setBanner', bannerState);
     },
     // STUDY REQUESTS
     async saveStudyRequest({ state }, studyRequest) {
