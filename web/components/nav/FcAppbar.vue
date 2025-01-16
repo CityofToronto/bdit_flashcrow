@@ -5,11 +5,11 @@
     color="white"
     clipped-left
     dense>
-    <FcDashboardNavBrand />
-    <h1 class="headline ml-2 no-select">{{textH1}}</h1>
-    <v-spacer></v-spacer>
+    <div class="appbar-logo-name">
+      <FcDashboardNavBrand />
+      <h1 class="headline ml-2 no-select">{{textH1}}</h1>
+    </div>
     <FcAppBanner/>
-    <v-spacer></v-spacer>
     <v-chip class="ml-2" small>
       {{frontendEnv.name.toLowerCase()}} v{{frontendMeta.version}}
     </v-chip>
@@ -63,11 +63,29 @@ export default {
 
 <style lang="scss">
 .fc-appbar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
   & > .v-toolbar__content {
+    display: flex;
     border-bottom: 1px solid var(--v-border-base);
+    width: 100%;
+    justify-content: space-between;
   }
   .no-select {
     user-select: none;
+  }
+}
+
+.appbar-logo-name{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .spacer {
+    display: none;
   }
 }
 </style>
