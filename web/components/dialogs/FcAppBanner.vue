@@ -3,6 +3,7 @@
     <v-alert
       v-model="alert"
       text
+      shaped
       :type="banner.bannerType"
       dismissible
       max-height="48px"
