@@ -73,7 +73,6 @@
             </template>
           </FcDataTable>
         </v-card-text>
-
         <v-divider></v-divider>
 
         <v-card-actions class="flex-grow-0 flex-shrink-0">
@@ -97,7 +96,11 @@ import { AuthScope, MvcrPermissions } from '@/lib/Constants';
 import { debounce } from '@/lib/FunctionUtils';
 import { formatUsername } from '@/lib/StringFormatters';
 import FcProgressCircular from '@/web/components/dialogs/FcProgressCircular.vue';
-import { getUsersPagination, getUsersTotal, putUser } from '@/lib/api/WebApi';
+import {
+  getUsersPagination,
+  getUsersTotal,
+  putUser,
+} from '@/lib/api/WebApi';
 import FcDataTable from '@/web/components/FcDataTable.vue';
 import FcTooltip from '@/web/components/dialogs/FcTooltip.vue';
 import FcMixinRouteAsync from '@/web/mixins/FcMixinRouteAsync';

@@ -31,6 +31,10 @@ const BUTTON_ATTRS = {
     color: 'primary',
     text: true,
   },
+  admin: {
+    color: 'primary',
+    outlined: true,
+  },
   'fab-icon': {
     fab: true,
     icon: true,
