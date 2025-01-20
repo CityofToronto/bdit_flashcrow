@@ -225,6 +225,7 @@ export default {
   .container {
     border: 1px solid black;
     margin-top: 2rem;
+    padding: 2rem 3rem;
   }
 
   p {
