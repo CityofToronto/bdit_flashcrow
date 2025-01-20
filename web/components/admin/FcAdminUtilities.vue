@@ -14,9 +14,9 @@
         <br/>
         <div v-if="banner.displayBanner">
           <h3 class="subheader">Active Banner</h3>
-          <p>Color: {{ this.alertTypeSelection === 'warning' ? 'Yellow' :
-          this.alertTypeSelection === 'success' ? 'green' :
-          this.alertTypeSelection === 'error' ? 'red' : '' }}</p>
+          <p>Color:  {{ banner.bannerType === 'warning' ? 'Yellow' :
+          banner.bannerType === 'success' ? 'Green' :
+          banner.bannerType === 'error' ? 'Red' : '' }}</p>
           <p>Message: {{ banner.bannerMessage }}</p>
           <div v-if="banner.displayButton">
             <p>Hyperlink: {{ banner.buttonLink }}</p>
