@@ -8,65 +8,65 @@
     <br/>
     <br/>
     <br/>
-    <br/>
-    <h2>Add an alert banner to MOVE</h2>
-    <br/>
-    <v-container>
-      <h2>Type of alert</h2>
-    <v-radio-group v-model="alertTypeSelection">
-      <v-radio
-        label="Warning (yellow background with white text)"
-        value="warning"
-      ></v-radio>
-      <v-radio
-        label="Error (red background with white text)"
-        value="error"
-      ></v-radio>
-      <v-radio
-        label="Success (green background with white text)"
-        value="success"
-      ></v-radio>
-    </v-radio-group>
-    <v-text-field
+    <div class="outer-container">
+      <h2 class="header">Banner</h2>
+      <v-container>
+        <br/>
+        <div v-if="banner.displayBanner">
+          <h3 class="subheader">Active Banner</h3>
+          <p>Color: {{ this.alertTypeSelection === 'warning' ? 'Yellow' :
+          this.alertTypeSelection === 'success' ? 'green' :
+          this.alertTypeSelection === 'error' ? 'red' : '' }}</p>
+          <p>Message: {{ banner.bannerMessage }}</p>
+          <div v-if="banner.displayButton">
+            <p>Hyperlink: {{ banner.buttonLink }}</p>
+          </div>
+          <FcButton class='remove-banner' type="admin"
+          @click="deleteBanner()">Remove Banner</FcButton>
+          <br/>
+          <br/>
+      </div>
+        <h3 class="subheader">Set banner</h3>
+      <h2 class="section-header">Message</h2>
+      <v-text-field
             class="banner-input"
-            label="Alert Message"
-            placeholder="Placeholder"
+            outlined
+            counter="75"
             :error-messages="errorOnSubmitMessage ? messageErrors : []"
             @input="storeMessage"
           ></v-text-field>
-    <h2>Include a link</h2>
-    <v-radio-group v-model="buttonSelection">
-      <v-radio
-        label="Include hyperlink"
-        :value=true
-      ></v-radio>
-      <v-radio
-        label="No hyperlink"
-        :value=false
-      ></v-radio>
-    </v-radio-group>
-    <v-text-field v-if="buttonSelection"
-      class="input"
-      label="Button Link"
-      placeholder="Placeholder"
-      :error-messages="errorOnSubmitButton ? buttonErrors : []"
-      @input="storeButtonLink"
-    ></v-text-field>
-    <FcButton class='set-banner' type="primary" @click="setBanner(
-      message, buttonMessage, buttonUrl)">Set Banner</FcButton>
-    <FcButton class='remove-banner' type="primary" @click="deleteBanner()">Remove Banner</FcButton>
-    <br/>
-    <div v-if="banner.displayBanner">
-      <br/><br/>
-      <h2>Currently applied banner: </h2>
-      <br/>
-      <p>Type: {{ banner.bannerType }}</p>
-      <p>Message: {{ banner.bannerMessage }}</p>
-      <div v-if="banner.displayButton">
-        <p>Hyperlink: {{ banner.buttonLink }}</p>
-      </div>
+      <h2 class="display-1 section-header color-input">Color</h2>
+      <v-radio-group v-model="alertTypeSelection">
+        <v-radio
+          label="Warning (yellow background with white text)"
+          value="warning"
+        ></v-radio>
+        <v-radio
+          label="Error (red background with white text)"
+          value="error"
+        ></v-radio>
+        <v-radio
+          label="Success (green background with white text)"
+          value="success"
+        ></v-radio>
+      </v-radio-group>
+      <h2 class="display-1 section-header link-input">Link</h2>
+      <v-checkbox
+        v-model="buttonSelection"
+        label='Include hyperlink to "Learn More"'
+      ></v-checkbox>
+      <v-text-field v-if="buttonSelection"
+        outlined
+        class="input"
+        label="Button Link"
+        placeholder="Placeholder"
+        :error-messages="errorOnSubmitButton ? buttonErrors : []"
+        @input="storeButtonLink"
+      ></v-text-field>
+      <FcButton class='set-banner' type="admin" @click="setBanner(
+        message, buttonMessage, buttonUrl)">Set Banner</FcButton>
+      </v-container>
     </div>
-  </v-container>
   </div>
 </template>
 
@@ -188,5 +188,70 @@ export default {
 
   .fc-admin-utilities > h2 {
     margin-left: 1rem;
+  }
+
+  .header {
+    font-size: 1.75rem;
+    font-weight: normal;
+  }
+
+  .subheader {
+    font-size: 1.15rem;
+    font-weight: normal;
+    margin-bottom: 1rem;
+  }
+
+  .v-text-field{
+    width: 50vw;
+  }
+
+  .link-input {
+    margin-bottom: -1rem;
+    font-size: 1rem;
+  }
+
+  .color-input {
+    margin-bottom: -1rem;
+    margin-top: -1rem;
+  }
+
+  .outer-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: 0 auto;
+  }
+
+  .container {
+    border: 1px solid black;
+    margin-top: 2rem;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header {
+    font-weight: normal !important;
+    font-size: 1rem !important;
+  }
+
+  @media only screen and (max-width: 1200px) {
+
+    .outer-container {
+      width: 50%;
+    }
+    .v-text-field{
+    width: 50vw;
+    }
+  }
+
+  @media only screen and (max-width: 900px) {
+    .outer-container {
+      width: 80%;
+    }
+    .v-text-field{
+    width: 60vw;
+    }
   }
 </style>
