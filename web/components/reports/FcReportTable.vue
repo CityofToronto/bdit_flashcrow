@@ -12,7 +12,7 @@
     </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
     <table
-      class="my-2"
+      class="inline-table"
       :class="{ 'auto-width': autoWidthTable }">
       <caption
         v-if="caption"
@@ -335,5 +335,13 @@ export default {
     z-index: 2;
     top: 0;
   }
+}
+.inline-table{
+  display: block;
+  overflow-x: auto;
+  max-width: min(100vw, 1300px);
+  max-height: 50vh;
+  border-radius:4px;
+  // border: 2px solid lightgrey;
 }
 </style>
