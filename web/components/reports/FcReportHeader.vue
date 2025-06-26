@@ -1,13 +1,13 @@
 <template>
   <header v-if="type" class="fc-report-header align-center d-flex">
-    <div>
+    <div class="ml-2">
       <img
         alt="City of Toronto"
         src="/cot_logo.png"
-        width="175" />
+        width="130" />
     </div>
-    <div v-if="type" class="ml-3">
-      <div  class="title">{{ORG_NAME}}</div>
+    <div v-if="type" class="ml-4">
+      <div>{{ORG_NAME}}</div>
       <h3 class="display-1">
         <span>{{type.label}}</span>
         <span class="sr-only">{{info}}</span>

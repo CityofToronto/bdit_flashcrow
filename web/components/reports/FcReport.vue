@@ -16,7 +16,7 @@
               :is="'FcReport' + blockType.suffix"
               :type="type"
               v-bind="options"
-              class="pt-4" />
+              class="pt-2" />
           </v-col>
         </v-row>
         <component
@@ -25,7 +25,7 @@
           :is="'FcReport' + contentRow.type.suffix"
           :type="type"
           v-bind="contentRow.options"
-          class="pt-4" />
+          class="pt-2" />
       </template>
     </div>
   </article>

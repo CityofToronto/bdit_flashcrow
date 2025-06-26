@@ -1,18 +1,21 @@
 <template>
   <div>
-    <v-row class="mb-6" tag="dl">
+    <!-- re-used on many study/collision reports -->
+    <v-row class="mb-2" tag="dl">
       <v-col v-for="({ cols, name, value, tooltip }, i) in entries" :key="i" :cols="cols">
-        <dt class="subtitle-1 font-weight-medium">{{ name }}</dt>
-        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium">
+        <dt class="subtitle-1 font-weight-medium text-center">{{ name }}</dt>
+        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium text-center">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <FcTextReportValue text-null="None" :value="value" style="padding-right: 0.5rem;"/>
-              <FcButton type="icon" v-on="on"><v-icon>mdi-help-circle-outline</v-icon></FcButton>
+              <FcTextReportValue text-null="None" :value="value" />
+              <FcButton type="icon" v-on="on">
+                <v-icon small>mdi-help-circle-outline</v-icon>
+              </FcButton>
             </template>
             <span>{{ tooltip }}</span>
           </v-tooltip>
         </dd>
-        <dd v-else class="mt-1 display-1 font-weight-medium">
+        <dd v-else class="mt-1 display-1 font-weight-medium text-center">
         <FcTextReportValue
           text-null="None"
           :value="value" />
@@ -20,6 +23,7 @@
       </v-col>
     </v-row>
 
+    <!-- show active filters -->
     <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
       <v-row class="align-center mx-0 px-1">
         <h3 class="flex-1 pr-1">{{ numFilters }}
@@ -38,8 +42,9 @@
       </v-expand-transition>
     </div>
 
+    <!-- 2nd row for TMC info -->
     <div class="callout-container" v-if="this.showCallOut">
-      <div class="callout ma-3">
+      <div class="callout">
         <div class="ma-3">
           <v-icon color="blue">mdi-information</v-icon>
         </div>
