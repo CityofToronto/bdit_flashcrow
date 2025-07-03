@@ -2,7 +2,7 @@
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
       <template v-if="!userLoggedIn">
-        <a @click="userLogin">Login to View</a>
+        <FcButton @click="userLogin" type="tertiary">Log in</FcButton>
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import Login from '@/web/components/Login.vue';
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -35,6 +36,7 @@ export default {
   ],
   components: {
     Login,
+    FcButton,
   },
   props: {
     value: {
