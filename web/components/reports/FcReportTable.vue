@@ -11,7 +11,12 @@
       />
     </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
-    <table :class="{ 'auto-width': autoWidthTable, 'inline-table':tableStyle.inlineTable }">
+    <table :class="{
+      'auto-width': autoWidthTable,
+      'inline-table': tableStyle.inlineTable,
+      'paddded-table': !tableStyle.inlineTable,
+      'extra-padding': extraPadding
+    }">
       <caption
         v-if="caption"
         class="font-size-m my-2 text-left">
@@ -237,6 +242,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    extraPadding: {
+      type: Boolean,
+      default: false,
+    },
     dontBreakTable: {
       type: Boolean,
       default: false,
@@ -338,12 +347,19 @@ export default {
     top: 0;
   }
 }
-.inline-table{
+.inline-table {
   display: block;
   overflow-x: auto;
   max-width: min(100vw, 1320px);
   max-height: 50vh;
   border-radius:5px;
   border: 2px solid --base-light;
+}
+.paddded-table {
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+.extra-padding {
+  margin-bottom: 60px !important;
 }
 </style>

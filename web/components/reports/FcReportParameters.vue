@@ -2,7 +2,7 @@
   <div style="margin:0 auto;">
 
     <div class="fc-report-parameters" >
-      <h2 class="display-1 mt-4">Set Parameters</h2>
+      <h2 class="display-1 mt-4" style="font-size:1rem;">Set Parameters</h2>
       <div class="warrant-component">
         <component
         :is="'FcReportParameters' + reportType.suffix"

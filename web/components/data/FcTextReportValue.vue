@@ -3,13 +3,13 @@
     <v-icon
       v-if="value === true"
       aria-hidden="false"
-      aria-label="Yes">
+      aria-label="Yes" color="success" size="25">
       mdi-check
     </v-icon>
     <v-icon
       v-else-if="value === false"
       aria-hidden="false"
-      aria-label="No">
+      aria-label="No" color="error" size="25">
       mdi-close
     </v-icon>
     <template v-else-if="value === null">
