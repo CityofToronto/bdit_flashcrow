@@ -21,6 +21,22 @@
           :value="value" />
       </dd>
       </v-col>
+
+    <!-- 2nd row for TMC info -->
+    <div class="col-3" v-if="this.showCallOut">
+      <div class="callout">
+        <div class="ma-3">
+          <v-icon color="blue">mdi-information</v-icon>
+        </div>
+        <div class="ml-1 mr-2 pr-2 py-2">
+          See our <a class="link"
+            href="https://bditto.notion.site/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196"
+            target="_blank" rel="noopener noreferrer">
+             TMC documentation
+          </a>
+        </div>
+      </div>
+    </div>
     </v-row>
 
     <!-- show active filters -->
@@ -40,23 +56,6 @@
           </li>
         </ul>
       </v-expand-transition>
-    </div>
-
-    <!-- 2nd row for TMC info -->
-    <div class="callout-container" v-if="this.showCallOut">
-      <div class="callout">
-        <div class="ma-3">
-          <v-icon color="blue">mdi-information</v-icon>
-        </div>
-        <div class="ml-1 mr-2 pr-2 py-2">
-          For an in-depth explanation of how to interpret this data,
-          <a class="link"
-            href="https://bditto.notion.site/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196"
-            target="_blank" rel="noopener noreferrer">
-            see here
-          </a>
-        </div>
-      </div>
     </div>
 
   </div>
