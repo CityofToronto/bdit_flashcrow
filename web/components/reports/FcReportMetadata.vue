@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- re-used on many study/collision reports -->
-    <v-row class="mb-2" tag="dl">
+    <v-row class="mb-2 mx-3" tag="dl">
       <v-col v-for="({ cols, name, value, tooltip }, i) in entries" :key="i" :cols="cols">
         <dt class="subtitle-1 font-weight-medium text-left">{{ name }}</dt>
         <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium text-left">

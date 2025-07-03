@@ -1,14 +1,14 @@
 <template>
   <header v-if="type" class="fc-report-header align-center d-flex">
-    <div class="ml-2">
+    <div class="ml-5 mb-2">
       <img
         alt="City of Toronto"
         src="/cot_logo.png"
-        width="130" />
+        width="120" />
     </div>
     <div v-if="type" class="ml-4">
-      <div>{{ORG_NAME}}</div>
-      <h3 class="display-1">
+      <div style="font-size:0.8rem;">{{ORG_NAME}}</div>
+      <h3 class="display-1" style="font-size:1.12rem !important;">
         <span>{{type.label}}</span>
         <span class="sr-only">{{info}}</span>
         <span class="sr-only">{{subinfo}}</span>
@@ -24,8 +24,8 @@
 
     <v-spacer></v-spacer>
 
-    <div class="text-right">
-      <div>{{info}}</div>
+    <div class="text-right" style="font-size:0.9rem;">
+      <div style="font-weight:normal;">{{info}}</div>
       <div>{{subinfo}}</div>
       <div v-if="type.label.startsWith('Collision')">{{ this.dateRange }}</div>
     </div>
