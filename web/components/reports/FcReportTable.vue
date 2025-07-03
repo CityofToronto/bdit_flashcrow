@@ -340,7 +340,7 @@ export default {
   display: block;
   overflow-x: auto;
   max-width: min(100vw, 1300px);
-  max-height: 50vh;
+  max-height: 60vh;
   border-radius:4px;
   // border: 2px solid lightgrey;
 }

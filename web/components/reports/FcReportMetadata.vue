@@ -3,8 +3,8 @@
     <!-- re-used on many study/collision reports -->
     <v-row class="mb-2" tag="dl">
       <v-col v-for="({ cols, name, value, tooltip }, i) in entries" :key="i" :cols="cols">
-        <dt class="subtitle-1 font-weight-medium text-center">{{ name }}</dt>
-        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium text-center">
+        <dt class="subtitle-1 font-weight-medium text-left">{{ name }}</dt>
+        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium text-left">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <FcTextReportValue text-null="None" :value="value" />
@@ -15,7 +15,7 @@
             <span>{{ tooltip }}</span>
           </v-tooltip>
         </dd>
-        <dd v-else class="mt-1 display-1 font-weight-medium text-center">
+        <dd v-else class="mt-1 display-1 font-weight-medium text-left">
         <FcTextReportValue
           text-null="None"
           :value="value" />
