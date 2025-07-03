@@ -1,5 +1,5 @@
 <template>
-  <article class="fc-report mx-2 mb-5">
+  <article class="fc-report mx-2">
     <FcReportHeader
       :study-type="studyType"
       :type="type"
@@ -25,7 +25,7 @@
           :is="'FcReport' + contentRow.type.suffix"
           :type="type"
           v-bind="contentRow.options"
-          class="py-4" />
+          class="pt-2" />
       </template>
     </div>
   </article>

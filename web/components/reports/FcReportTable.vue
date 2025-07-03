@@ -12,8 +12,7 @@
     </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
     <table
-      class="inline-table"
-      :class="{ 'auto-width': autoWidthTable }">
+      :class="{ 'auto-width': autoWidthTable, 'inline-table':tableStyle.inlineTable }">
       <caption
         v-if="caption"
         class="font-size-m my-2 text-left">
@@ -302,6 +301,8 @@ export default {
     if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
       this.showMvcrAccessDialog = true;
     }
+    console.log('=-=-=-=-'); //eslint-disable-line
+    console.log(this._props); //eslint-disable-line
   },
 };
 </script>
