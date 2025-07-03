@@ -1,15 +1,19 @@
 <template>
-  <div class="fc-report-parameters">
-    <h2 class="display-1 mt-4">Set Parameters</h2>
-    <div class="d-flex mt-2 mb-6">
-      <FcButton
-        class="ml-2"
+  <div style="margin:0 auto;">
+
+    <div class="fc-report-parameters" >
+      <h2 class="display-1 mt-4">Set Parameters</h2>
+      <div class="warrant-component">
+        <component
+        :is="'FcReportParameters' + reportType.suffix"
+        v-model="internalReportParameters" />
+      </div>
+      <div class="text-right">
+        <FcButton
         type="primary"
         @click="onClickSave">Generate Warrant</FcButton>
+      </div>
     </div>
-    <component
-      :is="'FcReportParameters' + reportType.suffix"
-      v-model="internalReportParameters" />
   </div>
 </template>
 
@@ -50,7 +54,17 @@ export default {
 
 <style lang="scss">
 .fc-report-parameters {
-  margin: 0 auto;
-  width: 240px;
+  width: 100%;
+  margin-bottom: 60px;
+  margin-left: 60px;
+  max-width:450px;
+}
+.warrant-component {
+  border-radius:4px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: 2px solid lightgrey;
+  padding-left:25px;
+  padding-right:25px;
 }
 </style>

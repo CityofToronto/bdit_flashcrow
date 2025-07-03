@@ -1,5 +1,5 @@
 <template>
-  <section class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
+  <section class="fc-report-parameters-warrant-traffic-signal-control">
     <v-checkbox
       name="adequateTrial"
       v-model="internalValue.adequateTrial"
