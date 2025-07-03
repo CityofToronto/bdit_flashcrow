@@ -11,8 +11,7 @@
       />
     </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
-    <table
-      :class="{ 'auto-width': autoWidthTable, 'inline-table':tableStyle.inlineTable }">
+    <table :class="{ 'auto-width': autoWidthTable, 'inline-table':tableStyle.inlineTable }">
       <caption
         v-if="caption"
         class="font-size-m my-2 text-left">
@@ -320,10 +319,11 @@ export default {
     tr > td {
       padding: var(--space-xs) var(--space-s);
       &.shade {
-        background-color: var(--base-lighter);
+        background-color: var(--base-lightest);
       }
       &.peak {
         background-color: var(--error-light);
+        font-weight:bold;
       }
     }
     & > thead {
@@ -331,7 +331,8 @@ export default {
     }
   }
   & .fc-table-sticky-header {
-    background-color: #ACACAC !important;
+    // background-color: #ACACAC !important;
+    background-color: --base-lighter !important;
     position: sticky;
     z-index: 2;
     top: 0;
@@ -340,9 +341,9 @@ export default {
 .inline-table{
   display: block;
   overflow-x: auto;
-  max-width: min(100vw, 1300px);
-  max-height: 60vh;
-  border-radius:4px;
-  // border: 2px solid lightgrey;
+  max-width: min(100vw, 1320px);
+  max-height: 50vh;
+  border-radius:5px;
+  border: 2px solid --base-light;
 }
 </style>
