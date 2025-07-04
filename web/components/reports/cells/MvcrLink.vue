@@ -2,7 +2,8 @@
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
       <template v-if="!userLoggedIn">
-        <FcButton type="tertiary" @click="userLogin">Log in</FcButton>
+        <button
+          style="font-size:0.7rem; white-space:nowrap;" @click="userLogin">Login to View</button>
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
