@@ -3,7 +3,7 @@
     <div
       v-for="({ location, mostRecent, studyRequest }, i) in items"
       :key="i"
-      class="align-center d-flex">
+      class="align-start d-flex">
 
       <FcCardStudyRequest
         class="flex-grow-1 flex-shrink-1 mr-3 my-1 ml-5"
