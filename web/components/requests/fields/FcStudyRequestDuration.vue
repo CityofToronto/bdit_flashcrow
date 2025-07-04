@@ -44,7 +44,8 @@ export default {
       return caption;
     },
     itemsDuration() {
-      if (this.studyType === StudyType.ATR_VOLUME_BICYCLE
+      if (this.studyType === StudyType.BIKE_VOLUME
+      || this.studyType === StudyType.PED_COUNT
       || this.studyType === StudyType.ATR_SVC) {
         const itemsDuration = [
           { text: '1 day', value: 24 },

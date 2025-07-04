@@ -55,6 +55,10 @@ test('CentrelineUtils.getLocationStudyTypes', () => {
       StudyType.TMC,
       StudyType.PED_DELAY,
       StudyType.PXO_OBSERVE,
+      StudyType.PED_CLASS,
+      StudyType.PED_COUNT,
+      StudyType.BIKE_VOLUME,
+      StudyType.BIKE_CLASS,
       StudyType.VID_OBSERVE,
       StudyType.SCHOOL_CROSS,
     ]);
