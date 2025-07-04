@@ -11,9 +11,12 @@
       />
     </template>
     <h4 v-if="title" class="headline">{{title}}</h4>
-    <table
-      class="my-2"
-      :class="{ 'auto-width': autoWidthTable }">
+    <table :class="{
+      'auto-width': autoWidthTable,
+      'inline-table': tableStyle.inlineTable,
+      'paddded-table': !tableStyle.inlineTable,
+      'extra-padding': extraPadding
+    }">
       <caption
         v-if="caption"
         class="font-size-m my-2 text-left">
@@ -239,6 +242,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    extraPadding: {
+      type: Boolean,
+      default: false,
+    },
     dontBreakTable: {
       type: Boolean,
       default: false,
@@ -302,6 +309,8 @@ export default {
     if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
       this.showMvcrAccessDialog = true;
     }
+    console.log('=-=-=-=-'); //eslint-disable-line
+    console.log(this._props); //eslint-disable-line
   },
 };
 </script>
@@ -319,10 +328,11 @@ export default {
     tr > td {
       padding: var(--space-xs) var(--space-s);
       &.shade {
-        background-color: var(--base-lighter);
+        background-color: var(--base-lightest);
       }
       &.peak {
         background-color: var(--error-light);
+        font-weight:bold;
       }
     }
     & > thead {
@@ -330,10 +340,26 @@ export default {
     }
   }
   & .fc-table-sticky-header {
-    background-color: #ACACAC !important;
+    // background-color: #ACACAC !important;
+    background-color: --base-lighter !important;
     position: sticky;
     z-index: 2;
     top: 0;
   }
+}
+.inline-table {
+  display: block;
+  overflow-x: auto;
+  max-width: min(100vw, 1320px);
+  max-height: 50vh;
+  border-radius:5px;
+  border: 2px solid --base-light;
+}
+.paddded-table {
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+.extra-padding {
+  margin-bottom: 60px !important;
 }
 </style>

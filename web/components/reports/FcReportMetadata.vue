@@ -1,25 +1,45 @@
 <template>
   <div>
-    <v-row class="mb-6" tag="dl">
+    <!-- re-used on many study/collision reports -->
+    <v-row class="mb-2 mx-3" tag="dl">
       <v-col v-for="({ cols, name, value, tooltip }, i) in entries" :key="i" :cols="cols">
-        <dt class="subtitle-1 font-weight-medium">{{ name }}</dt>
-        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium">
+        <dt class="subtitle-1 font-weight-medium text-left">{{ name }}</dt>
+        <dd v-if="tooltip != null" class="mt-1 display-1 font-weight-medium text-left">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <FcTextReportValue text-null="None" :value="value" style="padding-right: 0.5rem;"/>
-              <FcButton type="icon" v-on="on"><v-icon>mdi-help-circle-outline</v-icon></FcButton>
+              <FcTextReportValue text-null="None" :value="value" />
+              <FcButton type="icon" v-on="on">
+                <v-icon small>mdi-help-circle-outline</v-icon>
+              </FcButton>
             </template>
             <span>{{ tooltip }}</span>
           </v-tooltip>
         </dd>
-        <dd v-else class="mt-1 display-1 font-weight-medium">
+        <dd v-else class="mt-1 display-1 font-weight-medium text-left">
         <FcTextReportValue
           text-null="None"
           :value="value" />
       </dd>
       </v-col>
+
+    <!-- 2nd row for TMC info -->
+    <div class="col-3" v-if="this.showCallOut">
+      <div class="callout">
+        <div class="ma-3">
+          <v-icon color="blue">mdi-information</v-icon>
+        </div>
+        <div class="ml-1 mr-2 pr-2 py-2">
+          See our <a class="link"
+            href="https://bditto.notion.site/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196"
+            target="_blank" rel="noopener noreferrer">
+             TMC documentation
+          </a>
+        </div>
+      </div>
+    </div>
     </v-row>
 
+    <!-- show active filters -->
     <div v-if="numFilters > 0 && this.type.label.startsWith('Collision')" class="px-0">
       <v-row class="align-center mx-0 px-1">
         <h3 class="flex-1 pr-1">{{ numFilters }}
@@ -36,22 +56,6 @@
           </li>
         </ul>
       </v-expand-transition>
-    </div>
-
-    <div class="callout-container" v-if="this.showCallOut">
-      <div class="callout ma-3">
-        <div class="ma-3">
-          <v-icon color="blue">mdi-information</v-icon>
-        </div>
-        <div class="ml-1 mr-2 pr-2 py-2">
-          For an in-depth explanation of how to interpret this data,
-          <a class="link"
-            href="https://bditto.notion.site/How-to-interpret-a-TMC-Summary-Report-310c8b7e9ca74b18b99aadc50dc27196"
-            target="_blank" rel="noopener noreferrer">
-            see here
-          </a>
-        </div>
-      </div>
     </div>
 
   </div>
