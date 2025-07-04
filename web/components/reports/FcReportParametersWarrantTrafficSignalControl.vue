@@ -1,5 +1,5 @@
 <template>
-  <section class="fc-report-parameters fc-report-parameters-warrant-traffic-signal-control">
+  <section class="fc-report-parameters-warrant-traffic-signal-control">
     <v-checkbox
       name="adequateTrial"
       v-model="internalValue.adequateTrial"
@@ -9,27 +9,27 @@
       ]">
     </v-checkbox>
 
-    <fieldset class="my-4">
+    <fieldset class="my-8">
       <legend class="headline">Road Geometry Parameters</legend>
       <v-select
         v-model="internalValue.isTwoLane"
-        class="mt-2"
+        class="my-4"
         hide-details
         :items="itemsIsTwoLane"
         label="Road Width" />
       <v-select
         v-model="internalValue.isXIntersection"
-        class="mt-2"
+        class="my-4"
         hide-details
         :items="itemsIsXIntersection"
         label="Intersection Type" />
     </fieldset>
 
-    <fieldset class="mt-4">
+    <fieldset class="mt-8">
       <legend class="headline">Collision Parameters</legend>
       <FcDatePicker
         v-model="internalValue.startDate"
-        class="mt-2"
+        class="my-4"
         label="Start Date (YYYY-MM-DD)">
       </FcDatePicker>
       <v-text-field

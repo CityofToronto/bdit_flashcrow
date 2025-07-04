@@ -69,7 +69,7 @@ export default {
 
 <style lang="scss">
 .fc-report-bar-chart {
-  height: calc(var(--space-3xl) * 4);
+  height: calc(var(--space-3xl) * 3);
   & > svg {
     & rect.bar {
       fill: var(--v-secondary-base);
