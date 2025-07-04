@@ -15,6 +15,8 @@ import {
   postStudyRequestBulk,
   putStudyRequest,
   putStudyRequestBulk,
+  setBannerMessage,
+  getBannerMessage,
 } from '@/lib/api/WebApi';
 import { getLocationsSelectionDescription } from '@/lib/geo/CentrelineUtils';
 import {
@@ -55,6 +57,15 @@ export default new Vuex.Store({
     toast: null,
     toastData: {},
     toastKey: 0,
+    banner: {
+      bannerState: false,
+      displayBanner: false,
+      bannerMessage: null,
+      bannerType: null,
+      displayButton: false,
+      buttonLink: null,
+      buttonText: null,
+    },
     isPreparingExport: false,
     newExportsCount: null,
     // NAVIGATION
@@ -179,6 +190,18 @@ export default new Vuex.Store({
     toast(state) {
       return state.toast;
     },
+    banner(state) {
+      const bannerState = {
+        bannerState: state.banner.bannerState,
+        displayBanner: state.banner.displayBanner,
+        bannerMessage: state.banner.bannerMessage,
+        bannerType: state.banner.bannerType,
+        displayButton: state.banner.displayButton,
+        buttonText: state.banner.buttonText,
+        buttonLink: state.banner.buttonLink,
+      };
+      return bannerState;
+    },
   },
   mutations: {
     // AUTH / HELPERS STATE
@@ -206,6 +229,43 @@ export default new Vuex.Store({
     },
     setFiltersOpen(state, filtersOpen) {
       Vue.set(state, 'filtersOpen', filtersOpen);
+    },
+    turnBannerOff(state) {
+      const {
+        dipsplayBanner,
+        bannerMessage,
+        bannerType,
+        displayButton,
+        buttonLink,
+        buttonText,
+      } = state.banner;
+
+      const banner = {
+        bannerState: false,
+        dipsplayBanner,
+        bannerMessage,
+        bannerType,
+        displayButton,
+        buttonLink,
+        buttonText,
+      };
+      Vue.set(state, 'banner', banner);
+    },
+    setBanner(state, bannerState) {
+      if (bannerState.displayBanner === false) {
+        const banner = {
+          bannerState: false,
+          displayBanner: false,
+          bannerMessage: null,
+          bannerType: null,
+          displayButton: false,
+          buttonLink: null,
+          buttonText: null,
+        };
+        Vue.set(state, 'banner', banner);
+      } else {
+        Vue.set(state, 'banner', bannerState);
+      }
     },
     setToast(state, { toast, toastData = {} }) {
       Vue.set(state, 'toast', toast);
@@ -350,6 +410,31 @@ export default new Vuex.Store({
       const auth = await getAuth('/auth');
       commit('setAuth', auth);
       return auth;
+    },
+    async retrieveBannerState({ commit }) {
+      const result = await getBannerMessage();
+      const banner = {
+        bannerState: result.display_alert,
+        displayBanner: result.display_alert,
+        bannerMessage: result.alert_text,
+        bannerType: result.alert_type,
+        displayButton: result.display_button,
+        buttonLink: result.button_link,
+        buttonText: result.button_text,
+      };
+      commit('setBanner', banner);
+
+      return result;
+    },
+    async turnBannerOff({ commit }) {
+      commit('turnBannerOff');
+    },
+    async setBannerState({ commit }, bannerState) {
+      commit('setBanner', bannerState);
+    },
+    async saveAndSetBannerState({ state, commit }, bannerState) {
+      await setBannerMessage(state.auth, bannerState);
+      commit('setBanner', bannerState);
     },
     // STUDY REQUESTS
     async saveStudyRequest({ state }, studyRequest) {
