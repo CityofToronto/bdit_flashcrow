@@ -109,7 +109,7 @@
           </v-tooltip>
         </div>
 
-        <div class="align-center d-flex pt-1 fc-bg-white" v-if="!collapseReport">
+        <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
           <nav>
             <v-tabs v-model="indexActiveReportType" show-arrows>
               <v-tab
