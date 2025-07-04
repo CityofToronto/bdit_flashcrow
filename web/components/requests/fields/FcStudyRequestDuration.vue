@@ -44,7 +44,7 @@ export default {
       return caption;
     },
     itemsDuration() {
-      if (this.studyType === StudyType.BIKE_VOLUME
+      if (this.studyType === StudyType.BIKE_COUNT
       || this.studyType === StudyType.PED_COUNT
       || this.studyType === StudyType.ATR_SVC) {
         const itemsDuration = [
