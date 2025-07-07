@@ -32,18 +32,22 @@
         class="my-4"
         label="Start Date (YYYY-MM-DD)">
       </FcDatePicker>
-      <v-text-field
-        v-for="i in 3"
-        :key="i"
-        v-model.number="internalValue.preventablesByYear[i - 1]"
-        :disabled="internalValue.startDate === null"
-        min="0"
-        :name="'preventablesByYear' + (i - 1)"
-        type="number">
-        <template v-slot:label>
-          <span>Year {{i}}: {{startDateRanges[i - 1]}}</span>
-        </template>
-      </v-text-field>
+      <div v-for="i in 3" :key=i>
+        <v-text-field
+          v-model.number="internalValue.allSeverities[i - 1]"
+          :disabled="internalValue.startDate === null"
+          min="0"
+          :name="'preventablesByYear' + (i - 1)"
+          type="number">
+        </v-text-field>
+        <v-text-field
+          v-model.number="internalValue.allKsi[i - 1]"
+          :disabled="internalValue.startDate === null"
+          min="0"
+          :name="'preventablesByYear' + (i - 1)"
+          type="number">
+        </v-text-field>
+      </div>
     </fieldset>
   </section>
 </template>
