@@ -8,7 +8,7 @@
     </div>
     <div v-if="type" class="ml-4">
       <div style="font-size:0.8rem;">{{ORG_NAME}}</div>
-      <h3 class="display-1" style="font-size:1.12rem !important;">
+      <h3 class="display-1" style="font-size:0.9rem !important;">
         <span>{{type.label}}</span>
         <span class="sr-only">{{info}}</span>
         <span class="sr-only">{{subinfo}}</span>
