@@ -356,7 +356,8 @@ export default {
   max-width: min(100vw, 1320px);
   max-height: 50vh;
   border-radius:5px;
-  border: 2px solid --base-light;
+  border: 2px solid #cdd3d6;
+  padding-top: 0 !important;
 }
 .paddded-table {
   margin-top: 15px;
