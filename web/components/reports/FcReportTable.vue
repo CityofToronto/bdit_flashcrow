@@ -87,7 +87,7 @@ import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
 import MvcrNotFoundAlert from '@/web/components/dialogs/MvcrNotFoundAlert.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, ReportType } from '@/lib/Constants';
 import MvcrLink from './cells/MvcrLink.vue';
 
 const USE_STICKY_HEADER = {
@@ -292,7 +292,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'CR');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'Img');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
@@ -302,6 +302,9 @@ export default {
     },
     useStickyHeader() {
       return USE_STICKY_HEADER[this.type.name] === true;
+    },
+    isCollisionDirectory() {
+      return this.type === ReportType.COLLISION_DIRECTORY;
     },
   },
   mounted() {
