@@ -87,7 +87,7 @@ import FcTextReportValue from '@/web/components/data/FcTextReportValue.vue';
 import MvcrAccessDialog from '@/web/components/dialogs/MvcrAccessDialog.vue';
 import MvcrNotFoundAlert from '@/web/components/dialogs/MvcrNotFoundAlert.vue';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
-import { AuthScope } from '@/lib/Constants';
+import { AuthScope, ReportType } from '@/lib/Constants';
 import MvcrLink from './cells/MvcrLink.vue';
 
 const USE_STICKY_HEADER = {
@@ -292,7 +292,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'CR');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'Img');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
@@ -302,6 +302,9 @@ export default {
     },
     useStickyHeader() {
       return USE_STICKY_HEADER[this.type.name] === true;
+    },
+    isCollisionDirectory() {
+      return this.type === ReportType.COLLISION_DIRECTORY;
     },
   },
   mounted() {
@@ -349,9 +352,11 @@ export default {
   display: block;
   overflow-x: auto;
   max-width: min(100vw, 1320px);
-  max-height: 50vh;
+  // max-height: max(55vh, 380px);
+  max-height: 55vh;
   border-radius:5px;
-  border: 2px solid --base-light;
+  border: 2px solid #cdd3d6;
+  padding-top: 0 !important;
 }
 .paddded-table {
   margin-top: 15px;
