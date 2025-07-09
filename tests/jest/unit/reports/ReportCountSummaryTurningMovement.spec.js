@@ -7,6 +7,7 @@ import { loadJsonSync } from '@/lib/test/TestDataLoader';
 import {
   generateTmc,
   generateTmc14Hour,
+  generateWithMissing,
 } from '@/lib/test/random/CountDataGenerator';
 import { setup_5_36781 } from '@/tests/jest/unit/reports/data/SetupTestData';
 
@@ -58,18 +59,18 @@ test('ReportCountSummaryTurningMovement#transformData [fuzz test, 14-hour TMC]',
   }
 });
 
-// test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
-//   const reportInstance = new ReportCountSummaryTurningMovement();
+test('ReportCountSummaryTurningMovement#transformData [fuzz test, TMC with missing]', () => {
+  const reportInstance = new ReportCountSummaryTurningMovement();
 
-//   const { countLocation, counts, study } = setup_5_36781();
-//   for (let i = 0; i < 3; i++) {
-//     const countData = generateWithMissing(generateTmc());
-//     const studyData = new Map([[36781, countData]]);
-//     expect(() => {
-//       reportInstance.transformData(study, { countLocation, counts, studyData });
-//     }).not.toThrow();
-//   }
-// });
+  const { countLocation, counts, study } = setup_5_36781();
+  for (let i = 0; i < 3; i++) {
+    const countData = generateWithMissing(generateTmc());
+    const studyData = new Map([[36781, countData]]);
+    expect(() => {
+      reportInstance.transformData(study, { countLocation, counts, studyData });
+    }).not.toThrow();
+  }
+});
 
 test.skip('ReportCountSummaryTurningMovement#transformData [Gerrard and Sumach: 5/36781]', () => {
   const reportInstance = new ReportCountSummaryTurningMovement();

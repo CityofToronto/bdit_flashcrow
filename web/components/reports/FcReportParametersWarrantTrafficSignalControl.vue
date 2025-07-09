@@ -33,7 +33,10 @@
         label="Start Date (YYYY-MM-DD)">
       </FcDatePicker>
       <div v-for="i in 3" :key=i>
+
+        <p style="font-weight: bold;">Year {{ i }} ({{ startDateRanges[i - 1] }})</p>
         <v-text-field
+          label="All Severities"
           v-model.number="internalValue.allSeverities[i - 1]"
           :disabled="internalValue.startDate === null"
           min="0"
@@ -41,6 +44,7 @@
           type="number">
         </v-text-field>
         <v-text-field
+          label="KSI"
           v-model.number="internalValue.allKsi[i - 1]"
           :disabled="internalValue.startDate === null"
           min="0"
