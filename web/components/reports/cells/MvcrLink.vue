@@ -2,16 +2,21 @@
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
       <template v-if="!userLoggedIn">
-        <a @click="userLogin">Login to View</a>
+        <button
+          style="font-size:0.7rem; white-space:nowrap;" @click="userLogin">Login to View</button>
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <a v-on:click="fetchPdf()">View</a>
-        &bull;
-        <button v-on:click="download()">Download</button>
+        <div class="flex no-wrap justify-center" style="display:flex;flex-wrap:nowrap !important;">
+          <button type="tertiary" class="ml-2 mr-1 px-1"
+          style="font-size:1rem; font-weight:500;" v-on:click="fetchPdf()">View</button>
+          <button type="tertiary" class="mx-0 px-1" v-on:click="download()">
+            <v-icon color="primary" size="20" class="mr-1">mdi-download</v-icon>
+          </button>
+        </div>
       </template>
       <template v-else>
-        <a @click="showMvcrAccessDialog">Request Access</a>
+        <FcButton type="tertiary" @click="showMvcrAccessDialog">Request</FcButton>
       </template>
     </template>
     <template v-else>
@@ -21,6 +26,7 @@
 </template>
 
 <script>
+import FcButton from '@/web/components/inputs/FcButton.vue';
 import Login from '@/web/components/Login.vue';
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -35,6 +41,7 @@ export default {
   ],
   components: {
     Login,
+    FcButton,
   },
   props: {
     value: {

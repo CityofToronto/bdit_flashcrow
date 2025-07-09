@@ -63,21 +63,26 @@
   },
   "collisionHazard": {
     "a": {
-      "annual": [
-        3,
-        5,
-        10
-      ],
-      "compliance": 100,
+      "yearOneData": {
+        "severity": 1,
+        "ksi": 2,
+        "severityMetPct": 20,
+        "ksiMetPct": 66.66666666666666
+      },
+      "yearTwoData": { "severity": 5, "ksi": 6, "severityMetPct": 100, "ksiMetPct": 200 },
+      "yearThreeData": {
+        "severity": 2,
+        "ksi": 2,
+        "severityMetPct": 40,
+        "ksiMetPct": 66.66666666666666
+      },
+      "severityCompliance": [ 20, 100, 40, 100 ],
+      "ksiCompliance": [ 67, 100, 67, 100 ],
       "startDate": "2012-04-01 00:00:00.000",
-      "threshold": 5,
-      "value": {
-        "avg": 6,
-        "total": 18
-      }
+      "total3ASeverity": 8,
+      "total3AKsi": 10
     },
-    "b": true,
-    "compliance": 100
+    "b": true
   },
   "combination": false,
   "date": "2019-04-13 00:00:00.000"

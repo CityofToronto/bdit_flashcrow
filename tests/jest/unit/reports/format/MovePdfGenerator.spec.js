@@ -370,6 +370,8 @@ test('WARRANT_TRAFFIC_SIGNAL_CONTROL', async () => {
     adequateTrial: true,
     isTwoLane: null,
     isXIntersection: null,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   });
