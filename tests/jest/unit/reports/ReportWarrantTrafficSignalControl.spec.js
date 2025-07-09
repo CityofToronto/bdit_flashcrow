@@ -38,6 +38,8 @@ test('ReportWarrantTrafficSignalControl#transformData [empty dataset]', () => {
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -75,6 +77,8 @@ test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC]', () => {
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -100,10 +104,13 @@ test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC 14-hour]',
     segments,
     study,
   } = setup_5_38661_directional();
+
   const options = {
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -133,6 +140,8 @@ test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC with missi
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -150,7 +159,7 @@ test('ReportWarrantTrafficSignalControl#transformData [fuzz test, TMC with missi
   }
 });
 
-test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 5/38661]', () => {
+test('ReportWarrantTrafficSignalControl#transformData[Overlea and Thorncliffe: 5/38661]', () => {
   const reportInstance = new ReportWarrantTrafficSignalControl();
   const {
     count,
@@ -163,6 +172,8 @@ test('ReportWarrantTrafficSignalControl#transformData [Overlea and Thorncliffe: 
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };
@@ -201,6 +212,8 @@ test('ReportWarrantTrafficSignalControl#generateCsv [Overlea and Thorncliffe: 5/
     adequateTrial: true,
     isTwoLane: false,
     isXIntersection: true,
+    allSeverities: [1, 5, 2],
+    allKsi: [2, 6, 2],
     preventablesByYear: [3, 5, 10],
     startDate: DateTime.fromObject({ year: 2012, month: 4, day: 1 }),
   };

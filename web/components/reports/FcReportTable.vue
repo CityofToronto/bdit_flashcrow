@@ -309,8 +309,6 @@ export default {
     if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
       this.showMvcrAccessDialog = true;
     }
-    console.log('=-=-=-=-'); //eslint-disable-line
-    console.log(this._props); //eslint-disable-line
   },
 };
 </script>
