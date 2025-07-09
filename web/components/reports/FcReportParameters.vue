@@ -1,14 +1,14 @@
 <template>
-  <div style="margin:0 auto;">
+  <div style="display:flex; justify-content: center;">
 
     <div class="fc-report-parameters" >
-      <h2 class="display-1 mt-4" style="font-size:1rem;">Set Parameters</h2>
+      <h2 class="display-1 mt-4 mb-4" style="font-size:1rem;">Set Parameters</h2>
       <div class="warrant-component">
         <component
         :is="'FcReportParameters' + reportType.suffix"
         v-model="internalReportParameters" />
       </div>
-      <div class="text-right">
+      <div style="justify-self: center;">
         <FcButton
         type="primary"
         @click="onClickSave">Generate Warrant</FcButton>
