@@ -1,32 +1,38 @@
 <template>
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
-      <template v-if="!userLoggedIn">
-        <button
-          style="font-size:0.7rem; white-space:nowrap;" @click="userLogin">Login to View</button>
+      <template v-if="false && !userLoggedIn">
+        <button class="dl-button" @click="userLogin"
+        title="Permission required to Access MVCR">Login 🡥</button>
         <Login ref="login" />
       </template>
-      <template v-else-if="userHasMvcrReadPermission">
-        <div class="flex no-wrap justify-center" style="display:flex;flex-wrap:nowrap !important;">
-          <button type="tertiary" class="ml-2 mr-1 px-1"
-          style="font-size:1rem; font-weight:500;" v-on:click="fetchPdf()">View</button>
-          <button type="tertiary" class="mx-0 px-1" v-on:click="download()">
-            <v-icon color="primary" size="20" class="mr-1">mdi-download</v-icon>
+      <template v-else-if="true || userHasMvcrReadPermission">
+        <!-- <button class="dl-button" v-on:click="fetchPdf()">View</button> -->
+        <div style="display:flex; flex-flow:row nowrap;">
+          <button type="tertiary" v-on:click="download()">
+            <v-icon color="#4b88b4" size="25" class="mx-2"
+            title="Download MVCR Image">mdi-cloud-download</v-icon>
           </button>
+          <a class="tertiary" href="#" title="View MVCR Image"
+            style="text-decoration:none; margin-left:-4px; font-size: 10px;"
+            v-on:click="fetchPdf()">🡥</a>
         </div>
       </template>
       <template v-else>
-        <FcButton type="tertiary" @click="showMvcrAccessDialog">Request</FcButton>
+        <button class="dl-button" @click="showMvcrAccessDialog"
+        title="Additional permissions are required to view MVCR"
+        >Request 🡥</button>
       </template>
     </template>
     <template v-else>
-      <p class="unavailable">Unavailable</p>
+      <!-- <p class="unavailable">Unavailable</p> -->
+      <p class="unavailable" title="MVCR unavailable for this collision">—</p>
+      <!-- <v-icon size="20" title="MVCR unavailable for this collision">mdi-close</v-icon> -->
     </template>
   </div>
 </template>
 
 <script>
-import FcButton from '@/web/components/inputs/FcButton.vue';
 import Login from '@/web/components/Login.vue';
 import { AuthScope } from '@/lib/Constants';
 import FcMixinAuthScope from '@/web/mixins/FcMixinAuthScope';
@@ -41,7 +47,6 @@ export default {
   ],
   components: {
     Login,
-    FcButton,
   },
   props: {
     value: {
@@ -124,9 +129,19 @@ export default {
       text-decoration: underline;
     }
     .unavailable {
-      color: #757575;
+      color: #aba8a8;
+      font-size: 1rem !important;
       margin: 0;
     }
   }
 
+  .dl-button{
+    font-size:0.65rem;
+    white-space:nowrap;
+    padding:1px 6px 1px 6px;
+    background-color: #4b88b4;
+    border-radius:5px;
+    color:#fcfcfc;
+    text-decoration:none !important;
+  }
 </style>
