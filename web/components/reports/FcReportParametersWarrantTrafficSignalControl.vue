@@ -1,15 +1,6 @@
 <template>
   <section class="fc-report-parameters-warrant-traffic-signal-control">
-    <v-checkbox
-      name="adequateTrial"
-      v-model="internalValue.adequateTrial"
-      label="Adequate Trial"
-      :messages="[
-        'Has adequate trial of less restrictive remedies failed to reduce collisions?',
-      ]">
-    </v-checkbox>
-
-    <fieldset class="my-8">
+     <fieldset class="my-8">
       <legend class="headline">Road Geometry Parameters</legend>
       <v-select
         v-model="internalValue.isTwoLane"
@@ -24,14 +15,27 @@
         :items="itemsIsXIntersection"
         label="Intersection Type" />
     </fieldset>
-
+    <legend class="headline mt-4">Collision Parameters</legend>
+    <FcDatePicker
+      v-model="internalValue.startDate"
+      class="my-4"
+      label="Start Date (YYYY-MM-DD)">
+    </FcDatePicker>
+    <v-checkbox
+      name="adequateTrial"
+      v-model="internalValue.adequateTrial"
+      label="Adequate Trial"
+      :messages="[
+        'Has adequate trial of less restrictive remedies failed to reduce collisions?',
+      ]">
+    </v-checkbox>
+    <p class="mt-4">
+      <i>Number of reported, potentially reduceable collisions
+      (involving vehicles and/or pedestrians which under signalized
+      conditions, would move on separate phases).</i>
+    </p>
+    <a href="https://secure.toronto.ca/council/agenda-item.do?item=2025.IE22.4">2025.IE22.4</a>
     <fieldset class="mt-8">
-      <legend class="headline">Collision Parameters</legend>
-      <FcDatePicker
-        v-model="internalValue.startDate"
-        class="my-4"
-        label="Start Date (YYYY-MM-DD)">
-      </FcDatePicker>
       <div v-for="i in 3" :key=i>
 
         <p style="font-weight: bold;">Year {{ i }} ({{ startDateRanges[i - 1] }})</p>
