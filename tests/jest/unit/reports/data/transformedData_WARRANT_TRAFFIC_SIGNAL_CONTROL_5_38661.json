@@ -2,43 +2,43 @@
   "minVolume": {
     "a": {
       "compliance": {
-        "avg": 98,
+        "avg": 95,
         "full": 700,
-        "partial": 80,
-        "rest": 0,
-        "total": 780
+        "partial": 0,
+        "rest": 60,
+        "total": 760
       },
       "hourly": [
         {
-          "value": 804,
-          "compliance": 80
+          "value": 540,
+          "compliance": 60
         },
         {
-          "value": 1473,
+          "value": 1023,
           "compliance": 100
         },
         {
-          "value": 2167,
+          "value": 1590,
           "compliance": 100
         },
         {
-          "value": 2557,
+          "value": 1836,
           "compliance": 100
         },
         {
-          "value": 2792,
+          "value": 1922,
           "compliance": 100
         },
         {
-          "value": 2878,
+          "value": 2001,
           "compliance": 100
         },
         {
-          "value": 2716,
+          "value": 1859,
           "compliance": 100
         },
         {
-          "value": 2591,
+          "value": 1821,
           "compliance": 100
         }
       ],
@@ -46,55 +46,7 @@
         "full": 900,
         "partial": 720
       }
-    },
-    "b": {
-      "compliance": {
-        "avg": 100,
-        "full": 800,
-        "partial": 0,
-        "rest": 0,
-        "total": 800
-      },
-      "hourly": [
-        {
-          "value": 264,
-          "compliance": 100
-        },
-        {
-          "value": 450,
-          "compliance": 100
-        },
-        {
-          "value": 577,
-          "compliance": 100
-        },
-        {
-          "value": 721,
-          "compliance": 100
-        },
-        {
-          "value": 870,
-          "compliance": 100
-        },
-        {
-          "value": 877,
-          "compliance": 100
-        },
-        {
-          "value": 857,
-          "compliance": 100
-        },
-        {
-          "value": 770,
-          "compliance": 100
-        }
-      ],
-      "threshold": {
-        "full": 170,
-        "partial": 136
-      }
-    },
-    "compliance": 98
+    }
   },
   "delayToCross": {
     "a": {
@@ -198,22 +150,22 @@
       "yearOneData": {
         "severity": 1,
         "ksi": 2,
-        "severityMetPct": 33.33333333333333,
-        "ksiMetPct": 200
+        "severityMetPct": 25,
+        "ksiMetPct": 100
       },
       "yearTwoData": {
         "severity": 5,
         "ksi": 6,
-        "severityMetPct": 166.66666666666669,
-        "ksiMetPct": 600
+        "severityMetPct": 125,
+        "ksiMetPct": 300
       },
       "yearThreeData": {
         "severity": 2,
         "ksi": 2,
-        "severityMetPct": 66.66666666666666,
-        "ksiMetPct": 200
+        "severityMetPct": 50,
+        "ksiMetPct": 100
       },
-      "severityCompliance": [ 33, 100, 67, 100 ],
+      "severityCompliance": [ 100, 25, 50, 100 ],
       "ksiCompliance": [ 100, 100, 100, 100 ],
       "startDate": "2012-04-01 00:00:00.000",
       "total3ASeverity": 8,
@@ -221,6 +173,6 @@
     },
     "b": true
   },
-  "combination": true,
+  "combination": false,
   "date": "2019-04-13 00:00:00.000"
 }
