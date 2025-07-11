@@ -353,7 +353,7 @@ export default {
   overflow-x: auto;
   max-width: min(100vw, 1320px);
   // max-height: max(55vh, 380px);
-  max-height: 55vh;
+  max-height: 50vh;
   border-radius:5px;
   border: 2px solid #cdd3d6;
   padding-top: 0 !important;
