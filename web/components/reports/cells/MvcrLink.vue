@@ -9,13 +9,16 @@
       <template v-else-if="true || userHasMvcrReadPermission">
         <!-- <button class="dl-button" v-on:click="fetchPdf()">View</button> -->
         <div style="display:flex; flex-flow:row nowrap;">
-          <button type="tertiary" v-on:click="download()">
+          <button type="tertiary" v-on:click="fetchPdf()">
             <v-icon color="#4b88b4" size="25" class="mx-2"
-            title="Download MVCR Image">mdi-cloud-download</v-icon>
+            title="View MVCR Image">mdi-eye-outline</v-icon>
           </button>
           <a class="tertiary" href="#" title="View MVCR Image"
             style="text-decoration:none; margin-left:-4px; font-size: 10px;"
-            v-on:click="fetchPdf()">🡥</a>
+            v-on:click="download()">
+            <v-icon color="#4b88b4" size="18"
+            title="Download MVCR Image">mdi-download</v-icon>
+          </a>
         </div>
       </template>
       <template v-else>
