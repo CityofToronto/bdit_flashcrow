@@ -292,7 +292,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'Img');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'PDF');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
