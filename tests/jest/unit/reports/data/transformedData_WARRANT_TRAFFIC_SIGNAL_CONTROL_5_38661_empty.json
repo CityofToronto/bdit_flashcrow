@@ -30,6 +30,14 @@
     },
     "compliance": 0
   },
+  "minVolumeMajorOnly": {
+        "a":{
+          "compliance": { "avg": 0, "full": 0, "partial": 0, "rest": 0, "total": 0 },
+          "hourly": [],
+          "threshold": { "full": 900, "partial": 720 }
+        },
+        "compliance": null
+  },
   "delayToCross": {
     "a": {
       "compliance": {
