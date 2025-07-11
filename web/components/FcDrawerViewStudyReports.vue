@@ -505,9 +505,11 @@ export default {
         activeReportId,
         reportParameters,
       ).catch(err => this.handleError(err));
-
       this.reportLayout = reportLayout;
-      if (reportLayout.content[0].options?.body?.length === 0) {
+      if (reportLayout.content.length === 0) {
+        this.reportBodyEmpty = true;
+        this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
+      } else if (reportLayout.content[0].options?.body?.length === 0) {
         this.reportBodyEmpty = true;
         this.setToastError('The report body is empty. Please contact the MOVE team for assistance.');
       } else {
