@@ -292,7 +292,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'Img');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'PDF');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
@@ -353,7 +353,7 @@ export default {
   overflow-x: auto;
   max-width: min(100vw, 1320px);
   // max-height: max(55vh, 380px);
-  max-height: 55vh;
+  max-height: 50vh;
   border-radius:5px;
   border: 2px solid #cdd3d6;
   padding-top: 0 !important;
