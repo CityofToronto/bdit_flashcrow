@@ -7,7 +7,6 @@
         <Login ref="login" />
       </template>
       <template v-else-if="userHasMvcrReadPermission">
-        <!-- <button class="dl-button" v-on:click="fetchPdf()">View</button> -->
         <div style="display:flex; flex-flow:row nowrap;">
           <button type="tertiary" v-on:click="fetchPdf()">
             <v-icon color="#4b88b4" size="25" class="mx-2"
@@ -16,7 +15,7 @@
           <a class="tertiary" href="#" title="View MVCR Image"
             style="text-decoration:none; margin-left:-4px; font-size: 10px;"
             v-on:click="download()">
-            <v-icon color="#4b88b4" size="18"
+            <v-icon color="#4b88b4" size="25"
             title="Download MVCR Image">mdi-download</v-icon>
           </a>
         </div>
