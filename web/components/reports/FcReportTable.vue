@@ -352,19 +352,15 @@ export default {
   display: block;
   overflow-x: auto;
   margin: 0 auto;
-  max-width: min(100vw, 1520px);
-  // max-height: max(55vh, 380px);
+  margin-bottom: 10px;
+  // 1400px is the smallest table render i've seen, in the wild
+  max-width: min(100vw, 1400px);
   max-height: 50vh;
   border-radius:5px;
-  border: 2px solid #cdd3d6;
+  border: 1px solid #cdd3d6;
   padding-top: 0 !important;
 }
-// wide screens
-@media (min-width: 1001px) {
-  .inline-table {
-    // background-color:red;
-  }
-}
+
 // tall screens
 @media (min-height: 1001px) {
   .inline-table {
