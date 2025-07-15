@@ -1,12 +1,12 @@
 <template>
   <div class='get-MVCR'>
     <template v-if="collisionHasMvcrFile">
-      <template v-if="!userLoggedIn">
+      <template v-if="false && !userLoggedIn">
         <button class="dl-button" @click="userLogin"
         title="Permission required to Access MVCR">Login 🡥</button>
         <Login ref="login" />
       </template>
-      <template v-else-if="userHasMvcrReadPermission">
+      <template v-else-if="false && userHasMvcrReadPermission">
         <!-- <button class="dl-button" v-on:click="fetchPdf()">View</button> -->
         <div style="display:flex; flex-flow:row nowrap;">
           <button type="tertiary" v-on:click="fetchPdf()">
@@ -16,7 +16,7 @@
           <a class="tertiary" href="#" title="View MVCR Image"
             style="text-decoration:none; margin-left:-4px; font-size: 10px;"
             v-on:click="download()">
-            <v-icon color="#4b88b4" size="18"
+            <v-icon color="#4b88b4" size="25"
             title="Download MVCR Image">mdi-download</v-icon>
           </a>
         </div>
