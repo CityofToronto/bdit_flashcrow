@@ -292,7 +292,7 @@ export default {
       const secondHeaderRow = this.header[1];
       let colIndex = false;
       if (Array.isArray(secondHeaderRow)) {
-        colIndex = secondHeaderRow.findIndex(h => h.value === 'PDF');
+        colIndex = secondHeaderRow.findIndex(h => h.value === 'Report');
         if (colIndex === -1) colIndex = false;
       }
       return colIndex;
@@ -351,13 +351,27 @@ export default {
 .inline-table {
   display: block;
   overflow-x: auto;
-  max-width: min(100vw, 1320px);
+  margin: 0 auto;
+  max-width: min(100vw, 1520px);
   // max-height: max(55vh, 380px);
   max-height: 50vh;
   border-radius:5px;
   border: 2px solid #cdd3d6;
   padding-top: 0 !important;
 }
+// wide screens
+@media (min-width: 1001px) {
+  .inline-table {
+    // background-color:red;
+  }
+}
+// tall screens
+@media (min-height: 1001px) {
+  .inline-table {
+    max-height: 70vh;
+  }
+}
+
 .paddded-table {
   margin-top: 15px;
   margin-bottom: 25px;
