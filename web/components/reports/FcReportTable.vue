@@ -1,6 +1,6 @@
 <template>
   <div class="fc-report-table">
-    <template v-if="mvcrImgColumnIndex">
+    <template v-if="mvcrImgColumnIndex || mvcrImgColumnIndex === 0">
       <MvcrAccessDialog
         :showDialog="showMvcrAccessDialog"
         @close="showMvcrAccessDialog = false"
