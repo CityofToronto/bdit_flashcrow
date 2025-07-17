@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.14.2] - 2025-07-16
 
 ### Improvements and Fixes
-- To-Do
+- Usability related changes and bugfixes:
+  - Collision directory report UI improvements
+  - MVCR visibility fix
+  - Speed percentile report fix
+  - Error state loads on empty report page
+  - Warrant page scroll fix
+- Improvements:
+  - TCS Warrant collision hazards calculated using the latest definition
+  - New collision factors have been added to the Map filter
+  - Copy changes to study request form
+  - Added new study types to study request form
 
 ## [1.14.1] - 2025-01-23
 
