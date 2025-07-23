@@ -312,6 +312,14 @@ export default {
     if ('mvcrRead' in routeParams && routeParams.mvcrRead && !this.userHasMvcrReadPermission) {
       this.showMvcrAccessDialog = true;
     }
+    // grow the table to needed width
+    const divElement = this.$el.querySelector('.inline-table');
+    if (divElement) {
+      const contentWidth = divElement.scrollWidth; // Actual content width
+      if (contentWidth > 1400) {
+        divElement.style.maxWidth = `${contentWidth}px`;
+      }
+    }
   },
 };
 </script>
@@ -351,7 +359,6 @@ export default {
 .inline-table {
   display: block;
   overflow-x: auto;
-  margin: 0 auto;
   margin-bottom: 10px;
   // 1400px is the smallest table render i've seen, in the wild
   max-width: min(100vw, 1400px);
