@@ -22,7 +22,7 @@
         class="font-size-m my-2 text-left">
         {{caption}}
       </caption>
-      <colgroup v-if="colgroup.length > 0">
+      <colgroup style="width: 100vw;" v-if="colgroup.length > 0">
         <col
           v-for="({ attrs }, c) in colgroup"
           :key="'col_' + c"
@@ -361,7 +361,7 @@ export default {
   overflow-x: auto;
   margin-bottom: 10px;
   // 1400px is the smallest table render i've seen, in the wild
-  max-width: min(100vw, 1400px);
+  // max-width: min(100vw, 1400px);
   max-height: 50vh;
   border-radius:5px;
   border: 1px solid #cdd3d6;
