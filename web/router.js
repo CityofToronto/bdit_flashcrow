@@ -103,6 +103,14 @@ const router = new Router({
       },
       component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcDownloadsManage.vue'),
     },
+    {
+      path: '/mvcr/view/:year/:month/:id',
+      name: 'mvcrView',
+      meta: {
+        title: 'View MVCR',
+      },
+      component: () => import(/* webpackChunkName: "home" */ '@/web/views/FcMvcrView.vue'),
+    },
     // VIEW DATA ROUTES
     {
       path: '/view',
