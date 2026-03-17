@@ -13,13 +13,19 @@
         class="label mt-0">
         Centreline ID: {{ this.location.centrelineId }}
       </div>
+      <div v-if="this.cautionList.includes(this.location.centrelineId)">
+        <div class="special-list-badge">
+          Studies at this location may be skewed by the geometry of the roads.
+          Please email us for the raw data.
+        </div>
+      </div>
     </template>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
+import { getStudiesByCentrelineSummary, getCautionCaseCentrelineIds } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -36,6 +42,7 @@ export default {
       loading: false,
       studySummary: [],
       FrontendEnv,
+      cautionList: [],
     };
   },
   computed: {
@@ -65,10 +72,15 @@ export default {
       this.syncLocation();
     },
   },
-  created() {
+  async created() {
     this.syncLocation();
+    await this.getCautionList();
   },
   methods: {
+    async getCautionList() {
+      const cautionList = await getCautionCaseCentrelineIds();
+      this.cautionList = cautionList;
+    },
     async syncLocation() {
       if (this.location === null) {
         return;
@@ -88,5 +100,16 @@ export default {
 <style lang="scss">
 .add-location-btn {
   text-transform: none !important;
+}
+.special-list-badge {
+  display: inline-block;
+  background-color: #c0392b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 12px;
 }
 </style>
