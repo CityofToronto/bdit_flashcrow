@@ -1,4 +1,5 @@
 import AuthController from '@/lib/controller/AuthController';
+import SpecialCasesController from '@/lib/controller/SpecialCasesController';
 import CollisionController from '@/lib/controller/CollisionController';
 import DynamicTileController from '@/lib/controller/DynamicTileController';
 import LocationController from '@/lib/controller/LocationController';
@@ -16,6 +17,7 @@ class WebServer extends MoveServer {
 
     this
       .addController(AuthController)
+      .addController(SpecialCasesController)
       .addController(CollisionController)
       .addController(DynamicTileController)
       .addController(LocationController)
