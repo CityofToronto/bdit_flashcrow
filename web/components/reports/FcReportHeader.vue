@@ -27,6 +27,8 @@
     <span>Studies at this location may be skewed by the geometry of the roads.
           We recommend downloading the raw data for this study.</span>
   </v-tooltip>
+  <span style="color: #C62828;
+  font-size: 0.75rem; font-weight: 600; margin-left: 4px;">Caution</span>
 </span>
         <span class="sr-only">{{info}}</span>
         <span class="sr-only">{{subinfo}}</span>

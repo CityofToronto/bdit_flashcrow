@@ -147,6 +147,7 @@
       <section class="flex-grow-1 flex-shrink-1 overflow-y-auto" v-if="!collapseReport">
         <FcReportParameters
           v-if="showReportParameters"
+          :centrelineId="locationActive.centrelineId"
           :report-parameters="reportParameters"
           :report-type="activeReportType"
           @set-report-parameters="setReportParameters" />

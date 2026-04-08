@@ -2,7 +2,28 @@
   <div style="display:flex; justify-content: center;">
 
     <div class="fc-report-parameters" >
-      <h2 class="display-1 mt-4 mb-4" style="font-size:1rem;">Set Parameters</h2>
+     <span v-if="this.cautionList.includes(centrelineId)"
+  style="display: flex; align-items: center;">
+  <h2 class="display-1 mt-4 mb-4" style="font-size:1rem;">Set Parameters</h2>
+  <v-tooltip right>
+    <template #activator="{ on, attrs }">
+      <v-icon
+        v-bind="attrs"
+        v-on="on"
+        color="error"
+        small
+        class="ml-1"
+        style="vertical-align: middle;">
+        mdi-alert-circle
+      </v-icon>
+    </template>
+    <span>Studies at this location may be skewed by the geometry of the roads.
+          We recommend downloading the raw data for this study and
+          running the warrant manually.</span>
+  </v-tooltip>
+  <span style="color: #C62828;
+  font-size: 0.75rem; font-weight: 600; margin-left: 4px;">Caution</span>
+</span>
       <div class="warrant-component">
         <component
         :is="'FcReportParameters' + reportType.suffix"
@@ -23,6 +44,7 @@ import { reviver } from '@/lib/JsonUtils';
 import FcButton from '@/web/components/inputs/FcButton.vue';
 import FcReportParametersWarrantTrafficSignalControl
   from '@/web/components/reports/FcReportParametersWarrantTrafficSignalControl.vue';
+import { getCautionCaseCentrelineIds } from '../../../lib/api/WebApi';
 
 export default {
   name: 'FcReportParameters',
@@ -33,6 +55,7 @@ export default {
   props: {
     reportParameters: Object,
     reportType: ReportType,
+    centrelineId: Number,
   },
   data() {
     const internalReportParameters = JSON.parse(
@@ -42,9 +65,17 @@ export default {
 
     return {
       internalReportParameters,
+      cautionList: [],
     };
   },
+  async created() {
+    await this.getCautionList();
+  },
   methods: {
+    async getCautionList() {
+      const cautionList = await getCautionCaseCentrelineIds();
+      this.cautionList = cautionList;
+    },
     onClickSave() {
       this.$emit('set-report-parameters', this.internalReportParameters);
     },
