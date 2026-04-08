@@ -178,6 +178,7 @@
           v-else
           class="fc-report-wrapper pa-3">
           <FcReport
+            :centrelineId="locationActive.centrelineId"
             :study-type="studyType"
             v-bind="reportLayout" />
         </div>

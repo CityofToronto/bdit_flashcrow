@@ -10,6 +10,24 @@
       <div style="font-size:0.8rem;">{{ORG_NAME}}</div>
       <h3 class="display-1" style="font-size:0.9rem !important;">
         <span>{{type.label}}</span>
+        <span v-if="this.cautionList.includes(centrelineId)
+        && type.label == 'Intersection Summary Report'">
+        <v-tooltip bottom>
+    <template #activator="{ on, attrs }">
+      <v-icon
+        v-bind="attrs"
+        v-on="on"
+        color="error"
+        small
+        class="ml-1"
+        style="vertical-align: middle;">
+        mdi-alert-circle
+      </v-icon>
+    </template>
+    <span>Studies at this location may be skewed by the geometry of the roads.
+          We recommend downloading the raw data for this study.</span>
+  </v-tooltip>
+</span>
         <span class="sr-only">{{info}}</span>
         <span class="sr-only">{{subinfo}}</span>
       </h3>
@@ -36,6 +54,7 @@
 import { mapGetters } from 'vuex';
 import { ORG_NAME, ReportType, StudyType } from '@/lib/Constants';
 import FcTextStudyTypeBeta from '@/web/components/data/FcTextStudyTypeBeta.vue';
+import { getCautionCaseCentrelineIds } from '../../../lib/api/WebApi';
 
 export default {
   name: 'FcReportHeader',
@@ -50,11 +69,16 @@ export default {
       default: null,
     },
     type: ReportType,
+    centrelineId: Number,
   },
   data() {
     return {
       ORG_NAME,
+      cautionList: [],
     };
+  },
+  async created() {
+    await this.getCautionList();
   },
   computed: {
     dateRange() {
@@ -63,6 +87,10 @@ export default {
     },
   },
   methods: {
+    async getCautionList() {
+      const cautionList = await getCautionCaseCentrelineIds();
+      this.cautionList = cautionList;
+    },
     ...mapGetters('viewData', ['filterChipsCommon']),
   },
 };

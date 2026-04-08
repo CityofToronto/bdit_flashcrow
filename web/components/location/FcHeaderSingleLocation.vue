@@ -13,19 +13,13 @@
         class="label mt-0">
         Centreline ID: {{ this.location.centrelineId }}
       </div>
-      <div v-if="this.cautionList.includes(this.location.centrelineId)">
-        <div class="special-list-badge">
-          Studies at this location may be skewed by the geometry of the roads.
-          Please email us for the raw data.
-        </div>
-      </div>
     </template>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { getStudiesByCentrelineSummary, getCautionCaseCentrelineIds } from '@/lib/api/WebApi';
+import { getStudiesByCentrelineSummary } from '@/lib/api/WebApi';
 import { getLocationFeatureType } from '@/lib/geo/CentrelineUtils';
 import DateTime from '@/lib/time/DateTime';
 import TimeFormatters from '@/lib/time/TimeFormatters';
@@ -42,7 +36,6 @@ export default {
       loading: false,
       studySummary: [],
       FrontendEnv,
-      cautionList: [],
     };
   },
   computed: {
@@ -74,13 +67,8 @@ export default {
   },
   async created() {
     this.syncLocation();
-    await this.getCautionList();
   },
   methods: {
-    async getCautionList() {
-      const cautionList = await getCautionCaseCentrelineIds();
-      this.cautionList = cautionList;
-    },
     async syncLocation() {
       if (this.location === null) {
         return;

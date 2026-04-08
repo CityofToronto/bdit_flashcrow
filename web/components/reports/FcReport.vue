@@ -1,6 +1,7 @@
 <template>
   <article class="fc-report mx-2">
     <FcReportHeader
+      :centrelineId="centrelineId"
       :study-type="studyType"
       :type="type"
       v-bind="header" />
@@ -61,6 +62,7 @@ export default {
     content: Array,
     generatedAt: DateTime,
     header: Object,
+    centrelineId: Number,
     studyType: {
       type: StudyType,
       default: null,
