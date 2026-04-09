@@ -1,7 +1,5 @@
 BEGIN;
 
-DROP TABLE app_banner;
-
 CREATE TABLE IF NOT EXISTS public.hacky_ids (
 	id int4 GENERATED ALWAYS AS IDENTITY,
 	centreline_id int8 NULL,
