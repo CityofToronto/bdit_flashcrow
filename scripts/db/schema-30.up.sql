@@ -2,7 +2,7 @@ BEGIN;
 
 DROP TABLE app_banner;
 
-CREATE TABLE public.app_banner (
+CREATE TABLE IF NOT EXISTS public.app_banner (
 	id int4 GENERATED ALWAYS AS (1) STORED NULL,
 	display_alert bool NULL,
 	created_by text NULL,
