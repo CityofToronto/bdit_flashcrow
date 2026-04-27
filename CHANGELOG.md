@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-05-28
+
+### Improvements and Fixes
+- Usability related changes and bugfixes:
+  -	A minor fix to the warrant summary report where year 1 and year 2 headers were identical (Year 1 was wrong)
+- Improvements:
+  -	At intersections where a road changes names (e.g. Carlton -> College), these segments are now treated as a single road which eliminates the issue of orphaned segments muddling up intersection summary reports.
+  - The intersection summary report will now assign a singular major segment based on the total volumes over the entire 8 hour study. Previously the segments would potentially alternate as per the interpretation of the OTM guidelines that were being applied at the time.
+  -	A cautionary message has been added to intersection summary reports that are potentially broken (and are very difficult to fix). A good example is Driftwood Ave and Grandravine Dr
+
 ## [1.14.2] - 2025-07-16
 
 ### Improvements and Fixes
