@@ -110,16 +110,33 @@
         </div>
 
         <div class="align-center d-flex fc-bg-white" v-if="!collapseReport">
-          <nav>
-            <v-tabs v-model="indexActiveReportType" show-arrows>
-              <v-tab
-                v-for="reportType in reportTypes"
-                :key="reportType.name"
-                :disabled="reportBodyEmpty || studyRetrievalError">
-                {{reportType.label}}
-              </v-tab>
-            </v-tabs>
-          </nav>
+         <nav>
+          <v-tabs v-model="indexActiveReportType" show-arrows>
+            <v-tooltip
+              v-for="reportType in reportTypes"
+              :key="reportType.name"
+              bottom
+              :disabled="!reportType.isCautionDisabled">
+              <template v-slot:activator="{ on, attrs }">
+                <span v-on="on" v-bind="attrs" class="d-inline-block">
+                  <v-tab
+                    :disabled="reportBodyEmpty
+                    || studyRetrievalError || reportType.isCautionDisabled">
+                    <v-icon
+                      v-if="reportType.isCautionDisabled"
+                      color="error"
+                      left
+                      small>
+                      mdi-alert
+                    </v-icon>
+                    {{ reportType.label }}
+                  </v-tab>
+                </span>
+              </template>
+              <span>This report is unavailable due to data constraints at this location.</span>
+            </v-tooltip>
+          </v-tabs>
+        </nav>
 
           <v-spacer></v-spacer>
 
@@ -195,7 +212,6 @@ import {
   mapMutations,
   mapState,
 } from 'vuex';
-
 import {
   LocationMode,
   LocationSelectionType,
@@ -208,6 +224,7 @@ import {
   getReportWeb,
   getStudiesByCentreline,
   getStudiesByCentrelineSummaryPerLocation,
+  getCautionCaseCentrelineIds,
 } from '@/lib/api/WebApi';
 import { getLocationsIconProps } from '@/lib/geo/CentrelineUtils';
 import CompositeId from '@/lib/io/CompositeId';
@@ -261,7 +278,11 @@ export default {
       studyRetrievalError: false,
       collapseReport: false,
       studySummaryPerLocation: [],
+      cautionList: [],
     };
+  },
+  async created() {
+    await this.getCautionList();
   },
   computed: {
     activeReportId() {
@@ -353,7 +374,30 @@ export default {
       },
     },
     reportTypes() {
-      return this.studyType.reportTypes;
+      if (!this.studyType || !this.studyType.reportTypes) {
+        return [];
+      }
+
+      const isCautionLocation = this.locationActive
+        && this.cautionList.includes(this.locationActive.centrelineId);
+      return this.studyType.reportTypes.map((reportType) => {
+        let isCautionDisabled = false;
+
+        if (isCautionLocation) {
+          const { name } = reportType;
+          const isIntersectionSummary = name === 'INTERSECTION_SUMMARY';
+          const isWarrantReport = name.startsWith('WARRANT_');
+
+          if (isIntersectionSummary || isWarrantReport) {
+            isCautionDisabled = true;
+          }
+        }
+
+        return {
+          ...reportType,
+          isCautionDisabled,
+        };
+      });
     },
     studyType() {
       const { studyTypeName } = this.$route.params;
@@ -422,14 +466,19 @@ export default {
     this.$router.push(this.nextRoute);
   },
   methods: {
+    async getCautionList() {
+      const cautionList = await getCautionCaseCentrelineIds();
+      this.cautionList = cautionList;
+    },
     async actionDownload(format) {
       const { activeReportId, activeReportType, reportParameters } = this;
       if (activeReportId === null || activeReportType === null) {
         return;
       }
       this.loadingDownload = true;
+
       getReportDownload(
-        activeReportType,
+        activeReportType.name,
         activeReportId,
         format,
         reportParameters,
@@ -502,11 +551,19 @@ export default {
         return;
       }
       this.loadingReportLayout = true;
+
       const reportLayout = await getReportWeb(
-        activeReportType,
+        activeReportType.name,
         activeReportId,
         reportParameters,
       ).catch(err => this.handleError(err));
+
+      if (!reportLayout || !reportLayout.content) {
+        this.reportLayout = null;
+        this.reportBodyEmpty = true;
+        return;
+      }
+
       this.reportLayout = reportLayout;
       if (reportLayout.content.length === 0) {
         this.reportBodyEmpty = true;
@@ -528,6 +585,13 @@ export default {
 <style lang="scss">
 .fc-drawer-view-study-reports {
   max-height: calc(50vh - 26px);
+
+  nav {
+    .v-tabs-bar__content > span {
+      display: flex !important;
+      height: 100%;
+    }
+  }
 
   .fc-report-wrapper {
     position: relative;

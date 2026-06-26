@@ -6,7 +6,6 @@
       <v-menu
         v-model="showLocationSuggestions"
         ref="menuLocationSuggestions"
-        :attach="$el"
         :close-on-click="false"
         :close-on-content-click="false"
         :offset-y="true"

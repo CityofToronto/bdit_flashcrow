@@ -6,6 +6,7 @@
         @mouseleave="isHovering = !isHovering">
         <v-menu
           v-model="showMenu"
+          :z-index="200"
           :close-on-content-click="false">
           <template v-slot:activator="{ on, attrs }">
             <FcButton
