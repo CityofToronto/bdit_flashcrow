@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-07-02
+
+### Improvements and Fixes
+- Search result modal is no longer contained. Overflow is given place to scroll.
+- z-index issues on study requests are resolved (legend/buttons no longer interfering with edit status dropdown)
+- Cancel request button size is fixed (no longer the narrow button)
+- More aggressive caution on studies that have questionable/tricky geography that recommend users download the data
+- Changed SES config to point to `ca-central-1` region
+
 ## [1.15.0] - 2026-05-28
 
 ### Improvements and Fixes
