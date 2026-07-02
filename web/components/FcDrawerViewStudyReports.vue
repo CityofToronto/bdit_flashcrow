@@ -133,7 +133,15 @@
                   </v-tab>
                 </span>
               </template>
-              <span>This report is unavailable due to data constraints at this location.</span>
+             <div class="mx-auto my-3" style="max-width: 800px;">
+                To run a Traffic Control Signal (TCS) Warrant,
+                please download the TMC Detailed Report and compute the values manually.
+              </div>
+             <div class="mx-auto my-3" style="max-width: 800px;">
+                Due to the unusual geometry or street names at this intersection,
+                we cannot automatically detect the major and minor approaches.
+                This happens when the major road turns or bends, the street names
+                do not continue along a straight path, or a continuous street changes name.</div>
             </v-tooltip>
           </v-tabs>
         </nav>
