@@ -327,7 +327,7 @@ export default {
       };
     },
     hasReportParameters() {
-      return this.activeReportType === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL;
+      return this.activeReportType?.name === ReportType.WARRANT_TRAFFIC_SIGNAL_CONTROL.name;
     },
     itemsStudies() {
       return this.studies.map(({ startDate }, i) => {
